@@ -1,0 +1,47 @@
+package com.tribe.app.presentation.internal.di.components;
+
+import android.content.Context;
+
+import com.tribe.app.data.network.authorizer.MarvelAuthorizer;
+import com.tribe.app.data.repository.marvel.CloudMarvelDataRepository;
+import com.tribe.app.data.repository.marvel.DiskMarvelDataRepository;
+import com.tribe.app.domain.executor.PostExecutionThread;
+import com.tribe.app.domain.executor.ThreadExecutor;
+import com.tribe.app.domain.interactor.friendship.FriendshipRepository;
+import com.tribe.app.domain.interactor.marvel.MarvelRepository;
+import com.tribe.app.presentation.internal.di.PerApplication;
+import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
+import com.tribe.app.presentation.internal.di.modules.NetModule;
+import com.tribe.app.presentation.view.BaseActivity;
+
+import dagger.Component;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+
+import javax.inject.Singleton;
+
+/**
+ * A component whose lifetime is the life of the application.
+ */
+@Singleton // Constraints this component to one-per-application or unscoped bindings.
+@PerApplication
+@Component(modules = {ApplicationModule.class, NetModule.class})
+public interface ApplicationComponent {
+
+    void inject(BaseActivity baseActivity);
+
+    //Exposed to sub-graphs.
+    Context context();
+
+    ThreadExecutor threadExecutor();
+
+    PostExecutionThread postExecutionThread();
+
+    FriendshipRepository friendshipRepository();
+
+    CloudMarvelDataRepository cloudMarvelRepository();
+
+    DiskMarvelDataRepository diskMarvelRepository();
+
+    MarvelAuthorizer marvelAuthorizer();
+}

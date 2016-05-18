@@ -1,0 +1,15 @@
+package com.tribe.app.data.network;
+
+import com.tribe.app.data.realm.FriendshipRealm;
+
+import java.util.List;
+
+import retrofit2.http.GET;
+import retrofit2.http.Query;
+import rx.Observable;
+
+public interface TribeApi {
+
+    @GET("/v1/friendships")
+    Observable<List<FriendshipRealm>> friendships(@Query("userId") int userId);
+}
