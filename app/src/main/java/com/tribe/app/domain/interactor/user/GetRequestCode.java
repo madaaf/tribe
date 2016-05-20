@@ -11,13 +11,13 @@ import rx.Observable;
 /**
  * Created by tiago on 04/05/2016.
  */
-public class UseCaseRequestCode extends UseCase {
+public class GetRequestCode extends UseCase {
 
     private final String phoneNumber;
     private UserRepository userRepository;
 
     @Inject
-    public UseCaseRequestCode(String phoneNumber, UserRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+    public GetRequestCode(String phoneNumber, UserRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
         super(threadExecutor, postExecutionThread);
         this.phoneNumber = phoneNumber;
         this.userRepository = userRepository;

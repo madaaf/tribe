@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.app.Application;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -15,10 +14,9 @@ import android.widget.Toast;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.MarvelCharacter;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.internal.di.components.DaggerApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerAvengersComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.mvp.presenter.CharacterListPresenter;
+import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.CharacterListView;
 import com.tribe.app.presentation.view.adapter.AvengersListAdapter;
 import com.tribe.app.presentation.view.widget.RecyclerInsetsDecoration;
@@ -50,18 +48,18 @@ public class CharacterListActivity extends AppCompatActivity implements Characte
     View mErrorView;
 
     @Inject
-    CharacterListPresenter mAvengersListPresenter;
+    HomeGridPresenter mAvengersListPresenter;
 
     private AvengersListAdapter mCharacterListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initUi();
-        initializeToolbar();
-        initializeRecyclerView();
-        initializeDependencyInjector();
-        initializePresenter();
+//        initUi();
+//        initializeToolbar();
+//        initializeRecyclerView();
+//        initializeDependencyInjector();
+//        initializePresenter();
     }
 
     private void initUi() {
@@ -75,7 +73,7 @@ public class CharacterListActivity extends AppCompatActivity implements Characte
 
     @OnClick(R.id.view_error_retry_button)
     public void onRetryButtonClicked(View v) {
-        mAvengersListPresenter.onErrorRetryRequest();
+        //mAvengersListPresenter.onErrorRetryRequest();
     }
 
     @Override
@@ -113,7 +111,7 @@ public class CharacterListActivity extends AppCompatActivity implements Characte
     public void bindCharacterList(List<MarvelCharacter> avengers) {
         mCharacterListAdapter = new AvengersListAdapter(avengers, this,
             (position, sharedView, characterImageView) -> {
-                mAvengersListPresenter.onElementClick(position);
+                //mAvengersListPresenter.onElementClick(position);
             });
 
         mAvengersRecycler.setAdapter(mCharacterListAdapter);

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- AVENGERS EXAMPLE / TO REMOVE -->
     <color name="brand_primary">#28292C</color>
     <color name="brand_primary_dark">#28292C</color>
     <color name="brand_secondary">#ff2900</color>

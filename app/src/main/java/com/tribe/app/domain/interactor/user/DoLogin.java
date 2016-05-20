@@ -11,14 +11,14 @@ import rx.Observable;
 /**
  * Created by tiago on 04/05/2016.
  */
-public class UseCaseLogin extends UseCase {
+public class DoLogin extends UseCase {
 
     private final String phoneNumber;
     private final String code;
     private UserRepository userRepository;
 
     @Inject
-    public UseCaseLogin(String phoneNumber, String code, UserRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+    public DoLogin(String phoneNumber, String code, UserRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
         super(threadExecutor, postExecutionThread);
         this.phoneNumber = phoneNumber;
         this.code = code;
@@ -27,6 +27,6 @@ public class UseCaseLogin extends UseCase {
 
     @Override
     protected Observable buildUseCaseObservable() {
-        return this.userRepository.login(phoneNumber, code);
+        return this.userRepository.loginWithPhoneNumber(phoneNumber, code);
     }
 }

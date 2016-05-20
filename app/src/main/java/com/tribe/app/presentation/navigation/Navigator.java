@@ -9,22 +9,21 @@ import javax.inject.Singleton;
 /**
  * Class used to navigate through the application.
  */
-@Singleton
 public class Navigator {
 
     @Inject
     public Navigator() {
-        //empty
+
     }
 
     /**
-     * Goes to the user list screen.
+     * Goes to the main grid.
      *
      * @param context A Context needed to open the destiny activity.
      */
-    public void navigateToGrid(Context context) {
+    public void navigateToHome(Context context) {
         if (context != null) {
-            // TODO LAUNCH INTENT
+
         }
     }
 }

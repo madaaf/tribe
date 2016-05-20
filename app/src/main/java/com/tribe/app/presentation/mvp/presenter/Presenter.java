@@ -11,9 +11,13 @@ public interface Presenter {
 
     void onStart();
 
+    void onResume();
+
     void onStop();
 
     void onPause();
+
+    void onDestroy();
 
     void attachView(View v);
 

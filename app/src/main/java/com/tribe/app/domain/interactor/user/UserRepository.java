@@ -26,5 +26,13 @@ public interface UserRepository {
      * @param phoneNumber The phoneNumber used to login.
      * @param code the validation code the user entered.
      */
-    Observable<User> login(final String phoneNumber, final String code);
+    Observable<User> loginWithPhoneNumber(final String phoneNumber, final String code);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link User}.
+     *
+     * @param username The username used to login.
+     * @param password the password the user entered.
+     */
+    Observable<User> loginWithUserName(final String username, final String password);
 }

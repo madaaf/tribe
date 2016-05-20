@@ -34,8 +34,11 @@ android {
         testInstrumentationRunner globalConfiguration.getAt("testInstrumentationRunner")
         testApplicationId globalConfiguration.getAt("testApplicationId")
 
-        buildConfigField "String", "MARVEL_PUBLIC_KEY", "\"${marvel_public_key}\""
-        buildConfigField "String", "MARVEL_PRIVATE_KEY", "\"${marvel_private_key}\""
+        buildConfigField "String", "TRIBE_PUBLIC_KEY", "\"${tribe_public_key}\""
+        buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key}\""
+
+        buildConfigField "String", "MARVEL_PUBLIC_KEY", "\"${tribe_public_key}\""
+        buildConfigField "String", "MARVEL_PRIVATE_KEY", "\"${tribe_private_key}\""
     }
 
     compileOptions {
@@ -100,6 +103,7 @@ dependencies {
     compile presentationDependencies.androidAnnotations
     provided presentationDependencies.javaxAnnotation
     compile presentationDependencies.priorityJobQueue
+    compile presentationDependencies.adapterDelegates
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker

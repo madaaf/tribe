@@ -1,9 +1,11 @@
-package com.tribe.app.presentation.view;
+package com.tribe.app.presentation.view.activity;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
@@ -14,7 +16,7 @@ import javax.inject.Inject;
 /**
  * Base {@link android.app.Activity} class for every Activity in this application.
  */
-public abstract class BaseActivity extends Activity {
+public abstract class BaseActivity extends AppCompatActivity {
 
     @Inject
     Navigator navigator;

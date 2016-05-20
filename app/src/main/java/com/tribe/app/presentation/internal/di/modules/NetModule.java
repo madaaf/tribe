@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.internal.di.modules;
 
+import android.util.Base64;
+
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -9,18 +11,24 @@ import com.tribe.app.BuildConfig;
 import com.tribe.app.data.network.MarvelApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.authorizer.MarvelAuthorizer;
+import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.deserializer.MarvelResultsDeserializer;
 import com.tribe.app.data.network.interceptor.MarvelSigningInterceptor;
+import com.tribe.app.data.network.interceptor.TribeSigningInterceptor;
 import com.tribe.app.data.realm.MarvelCharacterRealm;
 import com.tribe.app.domain.entity.MarvelCharacter;
 import com.tribe.app.presentation.internal.di.PerApplication;
 
+import java.io.IOException;
 import java.util.List;
 
 import dagger.Module;
 import dagger.Provides;
 import io.realm.RealmObject;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
@@ -64,8 +72,32 @@ public class NetModule {
 
     @Provides
     @PerApplication
-    static TribeApi provideTribeApi(Gson gson, OkHttpClient okHttpClient) {
+    TribeAuthorizer provideTribeAuthorizer() {
+        return new TribeAuthorizer(BuildConfig.TRIBE_PUBLIC_KEY, BuildConfig.TRIBE_PRIVATE_KEY);
+    }
+
+    @Provides
+    @PerApplication
+    static TribeApi provideTribeApi(Gson gson, OkHttpClient okHttpClient, TribeAuthorizer tribeAuthorizer) {
         OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
+
+        httpClientBuilder.addInterceptor(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Request original = chain.request();
+
+                byte[] data = (tribeAuthorizer.getApiClient() + ":" + tribeAuthorizer.getApiSecret()).getBytes("UTF-8");
+                String base64 = Base64.encodeToString(data, Base64.DEFAULT).replace("\n", "");
+
+                Request.Builder requestBuilder = original.newBuilder()
+                        .header("Content-type", "application/json")
+                        .header("Authorization", "Basic " + base64)
+                        .method(original.method(), original.body());
+
+                Request request = requestBuilder.build();
+                return chain.proceed(request);
+            }
+        });
 
         if (BuildConfig.DEBUG) {
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
