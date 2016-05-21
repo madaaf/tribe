@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Text.Grid.Name">
-        <item name="customFont"></item>
+        <item name="customFont">Roboto-Regular.ttf</item>
         <item name="android:textSize">13sp</item>
         <item name="android:singleLine">true</item>
         <item name="android:textColor">@color/white</item>

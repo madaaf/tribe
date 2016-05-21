@@ -43,7 +43,8 @@ public class PaletteGrid {
                 ContextCompat.getColor(context, R.color.palette_two_one),
                 ContextCompat.getColor(context, R.color.palette_two_two),
                 ContextCompat.getColor(context, R.color.palette_two_three),
-                ContextCompat.getColor(context, R.color.palette_two_four)
+                ContextCompat.getColor(context, R.color.palette_two_four),
+                ContextCompat.getColor(context, R.color.palette_two_five)
         };
     }
 
