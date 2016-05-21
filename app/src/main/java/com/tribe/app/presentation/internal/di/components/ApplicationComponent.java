@@ -10,15 +10,14 @@ import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.friendship.FriendshipRepository;
-import com.tribe.app.domain.interactor.marvel.MarvelRepository;
 import com.tribe.app.presentation.internal.di.PerApplication;
 import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
 import com.tribe.app.presentation.internal.di.modules.NetModule;
 import com.tribe.app.presentation.view.activity.BaseActivity;
+import com.tribe.app.presentation.view.adapter.delegate.MeGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.UserGridAdapterDelegate;
 
 import dagger.Component;
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
 
 import javax.inject.Singleton;
 
@@ -31,6 +30,8 @@ import javax.inject.Singleton;
 public interface ApplicationComponent {
 
     void inject(BaseActivity baseActivity);
+    void inject(MeGridAdapterDelegate meGridAdapterDelegate);
+    void inject(UserGridAdapterDelegate userGridAdapterDelegate);
 
     //Exposed to sub-graphs.
     Context context();

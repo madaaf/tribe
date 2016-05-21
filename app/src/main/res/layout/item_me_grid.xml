@@ -16,28 +16,7 @@
         android:layout_gravity="top|left"
         android:layout_marginTop="15dp"
         android:layout_marginLeft="15dp"
-        android:layout_marginRight="35dp"
-        />
-    
-    <ImageView
-        android:id="@+id/btnText"
-        android:layout_width="@dimen/button_size"
-        android:layout_height="@dimen/button_size"
-        android:src="@drawable/picto_text"
-        android:scaleType="centerInside"
-        android:layout_gravity="bottom|right"
-        android:background="@drawable/shape_rect_rounded_bottom_right"
-        />
-
-    <ImageView
-        android:id="@+id/btnMore"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/picto_more"
-        android:scaleType="centerInside"
-        android:layout_gravity="top|right"
-        android:layout_marginRight="15dp"
-        android:layout_marginTop="17dp"
+        android:layout_marginRight="30dp"
         />
 
 </com.tribe.app.presentation.view.widget.SquareFrameLayout>

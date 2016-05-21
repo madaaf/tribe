@@ -7,7 +7,9 @@ import android.view.ViewGroup;
 
 import com.hannesdorfmann.adapterdelegates2.AdapterDelegatesManager;
 import com.tribe.app.domain.entity.MarvelCharacter;
+import com.tribe.app.presentation.view.adapter.delegate.MeGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.UserGridAdapterDelegate;
+import com.tribe.app.presentation.view.utils.PaletteGrid;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,8 +28,14 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
     @Inject
     public HomeGridAdapter(Context context) {
         delegatesManager = new AdapterDelegatesManager<>();
+        delegatesManager.addDelegate(new MeGridAdapterDelegate(context));
         delegatesManager.addDelegate(new UserGridAdapterDelegate(context));
         items = new ArrayList<>();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return delegatesManager.getItemViewType(items, position);
     }
 
     @Override

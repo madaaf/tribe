@@ -26,6 +26,7 @@ import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.UIThread;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.view.utils.PaletteGrid;
 
 import dagger.Module;
 import dagger.Provides;
@@ -109,6 +110,12 @@ public class ApplicationModule {
     @Singleton
     Navigator provideNavigator() {
         return new Navigator();
+    }
+
+    @Provides
+    @Singleton
+    PaletteGrid providePaletteGrid(Context context) {
+        return new PaletteGrid(context);
     }
 
     @Provides

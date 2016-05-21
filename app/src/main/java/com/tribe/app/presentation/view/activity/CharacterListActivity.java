@@ -19,7 +19,7 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.CharacterListView;
 import com.tribe.app.presentation.view.adapter.AvengersListAdapter;
-import com.tribe.app.presentation.view.widget.RecyclerInsetsDecoration;
+import com.tribe.app.presentation.view.decorator.RecyclerInsetsDecoration;
 
 import java.util.List;
 

@@ -1,4 +1,6 @@
 <resources>
+
+    <!-- FROM MARVEL TO REMOE TODO -->
     <dimen name="toolbar">56dp</dimen>
     <dimen name="toolbar_x2">112dp</dimen>
     <dimen name="toolbar_x3">168dp</dimen>
@@ -21,5 +23,11 @@
     <dimen name="insets">2dp</dimen>
     <dimen name="avenger_header_height">150dp</dimen>
     <dimen name="toolbarHeight">56dp</dimen>
+
+    <!-- DIVIDER -->
+    <dimen name="divider_size">0.5dp</dimen>
+
+    <!-- SHAPES -->
+    <dimen name="button_size">45dp</dimen>
 
 </resources>

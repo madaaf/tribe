@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.widget;
+package com.tribe.app.presentation.view.decorator;
 
 import android.content.Context;
 import android.graphics.Rect;

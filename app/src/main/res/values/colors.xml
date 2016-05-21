@@ -17,4 +17,25 @@
 
     <color name="black_dark">#202020</color>
 
+    <!-- BLACKS -->
+    <color name="black.opacity.5">#0D000000</color>
+
+    <!-- ME -->
+
+
+    <!-- PALETTE ONE -->
+    <color name="palette.one.one">#acacac</color>
+    <color name="palette.one.two">#b9b9b9</color>
+    <color name="palette.one.three">#c6c6c6</color>
+    <color name="palette.one.four">#d3d3d3</color>
+    <color name="palette.one.five">#dfdfdf</color>
+    <color name="palette.one.six">#ececec</color>
+    <color name="palette.one.seven">#f9f9f9</color>
+
+    <!-- PALETTE TWO -->
+    <color name="palette.two.one">#cc8259</color>
+    <color name="palette.two.two">#eaaae1</color>
+    <color name="palette.two.three">#e29a93</color>
+    <color name="palette.two.four">#f09a49</color>
+    <color name="palette.two.five">#f08b02</color>
 </resources>
