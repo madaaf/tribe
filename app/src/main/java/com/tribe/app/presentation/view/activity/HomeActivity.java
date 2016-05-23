@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.MarvelCharacter;
 import com.tribe.app.presentation.internal.di.HasComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerFriendshipComponent;
 import com.tribe.app.presentation.internal.di.components.FriendshipComponent;
@@ -19,7 +20,8 @@ import com.tribe.app.presentation.view.fragment.MediaGridFragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class HomeActivity extends BaseActivity implements HasComponent<FriendshipComponent> {
+public class HomeActivity extends BaseActivity implements HasComponent<FriendshipComponent>,
+        HomeGridFragment.FriendListListener {
 
     public static Intent getCallingIntent(Context context) {
         return new Intent(context, HomeActivity.class);
@@ -59,6 +61,11 @@ public class HomeActivity extends BaseActivity implements HasComponent<Friendshi
 
     private void initializePresenter() {
 
+    }
+
+    @Override
+    public void onTextClicked(MarvelCharacter friend) {
+        this.navigator.navigateToChat(this, friend.getId());
     }
 
     @Override

@@ -104,6 +104,10 @@ dependencies {
     provided presentationDependencies.javaxAnnotation
     compile presentationDependencies.priorityJobQueue
     compile presentationDependencies.adapterDelegates
+    compile presentationDependencies.pahoMQTT3
+    compile presentationDependencies.stetho
+    compile presentationDependencies.stethoOkHttp
+    compile presentationDependencies.rxBindings
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker

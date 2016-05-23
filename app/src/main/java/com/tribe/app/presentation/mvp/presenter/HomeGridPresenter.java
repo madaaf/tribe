@@ -77,6 +77,10 @@ public class HomeGridPresenter implements Presenter {
         cloudCharactersUsecase.execute(new FriendListSubscriber());
     }
 
+    public void onTextClicked(MarvelCharacter friend) {
+        homeGridView.onTextClicked(friend);
+    }
+
     private void showFriendCollectionInView(List<MarvelCharacter> friendList) {
         this.homeGridView.renderFriendList(friendList);
     }

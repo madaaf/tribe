@@ -17,6 +17,7 @@ import com.tribe.app.presentation.internal.di.components.FriendshipComponent;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
+import com.tribe.app.presentation.view.adapter.delegate.UserGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 
 import java.util.Collection;
@@ -34,15 +35,21 @@ import butterknife.Unbinder;
  */
 public class HomeGridFragment extends BaseFragment implements HomeGridView {
 
-    @Inject
-    HomeGridPresenter homeGridPresenter;
-    @Inject
-    HomeGridAdapter homeGridAdapter;
+    /**
+     * Interface for listening friend list events.
+     */
+    public interface FriendListListener {
+        void onTextClicked(final MarvelCharacter friend);
+    }
+
+    @Inject HomeGridPresenter homeGridPresenter;
+    @Inject HomeGridAdapter homeGridAdapter;
 
     @BindView(R.id.recyclerViewFriends)
     RecyclerView recyclerViewFriends;
 
     private Unbinder unbinder;
+    private FriendListListener friendListListener;
 
     public HomeGridFragment() {
         setRetainInstance(true);
@@ -51,6 +58,9 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        if (context instanceof FriendListListener) {
+            this.friendListListener = (FriendListListener) context;
+        }
     }
 
     @Override
@@ -131,6 +141,11 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     }
 
     @Override
+    public void onTextClicked(MarvelCharacter friend) {
+        if (friendListListener != null) friendListListener.onTextClicked(friend);
+    }
+
+    @Override
     public void showError(String message) {
         this.showToastMessage(message);
     }
@@ -143,6 +158,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private void setupRecyclerView() {
         this.recyclerViewFriends.setLayoutManager(new HomeLayoutManager(context()));
         this.recyclerViewFriends.setAdapter(homeGridAdapter);
+        homeGridAdapter.setOnFriendClickListener(onFriendClickListener);
     }
 
     /**
@@ -151,4 +167,14 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private void loadFriendList() {
         this.homeGridPresenter.onCreate();
     }
+
+    private UserGridAdapterDelegate.OnFriendClickListener onFriendClickListener =
+            new UserGridAdapterDelegate.OnFriendClickListener() {
+                @Override
+                public void onTextClickListener(MarvelCharacter friend) {
+                    if (HomeGridFragment.this.homeGridPresenter != null) {
+                        HomeGridFragment.this.homeGridPresenter.onTextClicked(friend);
+                    }
+                }
+            };
 }

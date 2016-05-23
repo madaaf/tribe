@@ -2,6 +2,7 @@ package com.tribe.app.presentation.internal.di.modules;
 
 import android.util.Base64;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -16,8 +17,14 @@ import com.tribe.app.data.network.deserializer.MarvelResultsDeserializer;
 import com.tribe.app.data.network.interceptor.MarvelSigningInterceptor;
 import com.tribe.app.data.network.interceptor.TribeSigningInterceptor;
 import com.tribe.app.data.realm.MarvelCharacterRealm;
+import com.tribe.app.data.rxmqtt.constants.Constants;
+import com.tribe.app.data.rxmqtt.exceptions.RxMqttException;
+import com.tribe.app.data.rxmqtt.impl.RxMqttAsyncClient;
+import com.tribe.app.data.rxmqtt.impl.RxMqttClient;
 import com.tribe.app.domain.entity.MarvelCharacter;
 import com.tribe.app.presentation.internal.di.PerApplication;
+
+import org.eclipse.paho.client.mqttv3.MqttClient;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,7 +47,7 @@ public class NetModule {
 
     @Provides
     @PerApplication
-    static Gson provideGson() {
+    Gson provideGson() {
         return new GsonBuilder()
                 .setExclusionStrategies(new ExclusionStrategy() {
                     @Override
@@ -60,7 +67,7 @@ public class NetModule {
 
     @Provides
     @PerApplication
-    static OkHttpClient provideOkHttpClient() {
+    OkHttpClient provideOkHttpClient() {
         return new OkHttpClient();
     }
 
@@ -78,7 +85,7 @@ public class NetModule {
 
     @Provides
     @PerApplication
-    static TribeApi provideTribeApi(Gson gson, OkHttpClient okHttpClient, TribeAuthorizer tribeAuthorizer) {
+    TribeApi provideTribeApi(Gson gson, OkHttpClient okHttpClient, TribeAuthorizer tribeAuthorizer) {
         OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
         httpClientBuilder.addInterceptor(new Interceptor() {
@@ -103,6 +110,7 @@ public class NetModule {
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
             httpClientBuilder.addInterceptor(loggingInterceptor);
+            httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
         }
 
         return new Retrofit.Builder()
@@ -115,7 +123,7 @@ public class NetModule {
 
     @Provides
     @PerApplication
-    static MarvelApi provideMarvelApi(Gson gson, OkHttpClient okHttpClient, MarvelAuthorizer marvelAuthorizer) {
+    MarvelApi provideMarvelApi(Gson gson, OkHttpClient okHttpClient, MarvelAuthorizer marvelAuthorizer) {
         OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
         MarvelSigningInterceptor signingIterceptor =

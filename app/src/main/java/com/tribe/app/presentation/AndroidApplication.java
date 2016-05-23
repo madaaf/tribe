@@ -2,6 +2,7 @@ package com.tribe.app.presentation;
 
 import android.app.Application;
 
+import com.facebook.stetho.Stetho;
 import com.squareup.leakcanary.LeakCanary;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -24,6 +25,7 @@ public class AndroidApplication extends Application {
         this.initializeInjector();
         this.initializeLeakDetection();
         this.initializeRealm();
+        this.initializeStetho();
     }
 
     private void initializeInjector() {
@@ -42,8 +44,17 @@ public class AndroidApplication extends Application {
         }
     }
 
+    private void initializeStetho() {
+        if (BuildConfig.DEBUG) {
+            Stetho.initializeWithDefaults(this);
+        }
+    }
+
     private void initializeRealm() {
-        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(this).build();
+        RealmConfiguration realmConfiguration = new RealmConfiguration
+                .Builder(this)
+                .deleteRealmIfMigrationNeeded()
+                .build();
         Realm.setDefaultConfiguration(realmConfiguration);
     }
 }

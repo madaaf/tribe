@@ -22,6 +22,8 @@ public class ErrorMessageFactory {
      * @return {@link String} an error message.
      */
     public static String create(Context context, Exception exception) {
+        exception.printStackTrace();
+
         String message = context.getString(R.string.exception_message_generic);
 
         if (exception instanceof NetworkConnectionException) {

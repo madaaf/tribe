@@ -10,18 +10,22 @@ import com.tribe.app.data.cache.FriendshipCache;
 import com.tribe.app.data.cache.FriendshipCacheImpl;
 import com.tribe.app.data.cache.MarvelCache;
 import com.tribe.app.data.cache.MarvelCacheImpl;
+import com.tribe.app.data.cache.TextCache;
+import com.tribe.app.data.cache.TextCacheImpl;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.cache.UserCacheImpl;
 import com.tribe.app.data.executor.JobExecutor;
 import com.tribe.app.data.repository.friendship.FriendshipDataRepository;
 import com.tribe.app.data.repository.marvel.CloudMarvelDataRepository;
 import com.tribe.app.data.repository.marvel.DiskMarvelDataRepository;
+import com.tribe.app.data.repository.text.TextDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.data.repository.user.datasource.CloudUserDataStore;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.friendship.FriendshipRepository;
 import com.tribe.app.domain.interactor.marvel.MarvelRepository;
+import com.tribe.app.domain.interactor.text.TextRepository;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.UIThread;
@@ -104,6 +108,18 @@ public class ApplicationModule {
     @Singleton
     UserCache provideUserCache(UserCacheImpl userCache) {
         return userCache;
+    }
+
+    @Provides
+    @Singleton
+    TextRepository provideTextRepository(TextDataRepository textDataRepository) {
+        return textDataRepository;
+    }
+
+    @Provides
+    @Singleton
+    TextCache provideTextCache(TextCacheImpl textCache) {
+        return textCache;
     }
 
     @Provides

@@ -31,8 +31,13 @@ import butterknife.ButterKnife;
  */
 public class UserGridAdapterDelegate implements AdapterDelegate<List<MarvelCharacter>> {
 
-    private LayoutInflater layoutInflater;
     @Inject PaletteGrid paletteGrid;
+    private LayoutInflater layoutInflater;
+    private OnFriendClickListener onFriendClickListener;
+
+    public interface OnFriendClickListener {
+        void onTextClickListener(MarvelCharacter marvelCharacter);
+    }
 
     public UserGridAdapterDelegate(Context context) {
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -57,6 +62,12 @@ public class UserGridAdapterDelegate implements AdapterDelegate<List<MarvelChara
 
         vh.txtName.setText(marvelCharacter.getName());
         vh.layoutContent.setBackgroundColor(paletteGrid.get(position - 1));
+
+        vh.btnText.setOnClickListener(v -> onFriendClickListener.onTextClickListener(marvelCharacter));
+    }
+
+    public void setOnFriendClickListener(OnFriendClickListener onFriendClickListener) {
+        this.onFriendClickListener = onFriendClickListener;
     }
 
     static class UserGridViewHolder extends RecyclerView.ViewHolder {

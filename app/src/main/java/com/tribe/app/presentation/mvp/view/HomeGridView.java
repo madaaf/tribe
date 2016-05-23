@@ -8,4 +8,5 @@ import java.util.List;
 public interface HomeGridView extends LoadDataView {
 
     void renderFriendList(List<MarvelCharacter> friendCollection);
+    void onTextClicked(MarvelCharacter friend);
 }
