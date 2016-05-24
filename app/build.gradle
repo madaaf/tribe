@@ -105,9 +105,11 @@ dependencies {
     compile presentationDependencies.priorityJobQueue
     compile presentationDependencies.adapterDelegates
     compile presentationDependencies.pahoMQTT3
-    compile presentationDependencies.stetho
-    compile presentationDependencies.stethoOkHttp
     compile presentationDependencies.rxBindings
+    compile presentationDependencies.graphQL
+    compile presentationDependencies.picasso
+    compile presentationDependencies.picassoDownloader
+    compile presentationDependencies.byteUnits
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker
@@ -118,4 +120,6 @@ dependencies {
 
     // Development
     compile developmentDependencies.leakCanary
+    compile developmentDependencies.stetho
+    compile developmentDependencies.stethoOkHttp
 }

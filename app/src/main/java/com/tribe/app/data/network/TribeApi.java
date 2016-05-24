@@ -21,4 +21,7 @@ public interface TribeApi {
 
     @POST("/token")
     Observable<UserRealm> loginWithUsername(@Body LoginEntity loginEntity);
+
+    @POST("/graphql")
+    Observable<UserRealm> getUserInfos(@Body String query);
 }

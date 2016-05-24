@@ -2,6 +2,7 @@ package com.tribe.app.data.repository.user.datasource;
 
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.User;
 
 import java.util.List;
 
@@ -17,4 +18,11 @@ public interface UserDataStore {
      * @param password the password the user entered.
      */
     Observable<UserRealm> loginWithUsername(String username, String password);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link User}
+     * @param userId the id of the user for which we get the info
+     *
+     */
+    Observable<UserRealm> getUserInfos(final String userId);
 }

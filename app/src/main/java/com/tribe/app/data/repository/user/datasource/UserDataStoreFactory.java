@@ -57,6 +57,6 @@ public class UserDataStoreFactory {
      * Create {@link UserDataStore} to retrieve data from the Cloud.
      */
     public UserDataStore createCloudDataStore() {
-        return new CloudUserDataStore(this.userCache, this.tribeApi);
+        return new CloudUserDataStore(this.userCache, this.tribeApi, this.context);
     }
 }

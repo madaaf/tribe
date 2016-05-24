@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.internal.di.modules;
 
+import android.app.Application;
+import android.content.Context;
 import android.util.Base64;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
@@ -8,6 +10,9 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.jakewharton.byteunits.DecimalByteUnit;
+import com.jakewharton.picasso.OkHttp3Downloader;
+import com.squareup.picasso.Picasso;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.data.network.MarvelApi;
 import com.tribe.app.data.network.TribeApi;
@@ -15,23 +20,19 @@ import com.tribe.app.data.network.authorizer.MarvelAuthorizer;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.deserializer.MarvelResultsDeserializer;
 import com.tribe.app.data.network.interceptor.MarvelSigningInterceptor;
-import com.tribe.app.data.network.interceptor.TribeSigningInterceptor;
 import com.tribe.app.data.realm.MarvelCharacterRealm;
-import com.tribe.app.data.rxmqtt.constants.Constants;
-import com.tribe.app.data.rxmqtt.exceptions.RxMqttException;
-import com.tribe.app.data.rxmqtt.impl.RxMqttAsyncClient;
-import com.tribe.app.data.rxmqtt.impl.RxMqttClient;
-import com.tribe.app.domain.entity.MarvelCharacter;
 import com.tribe.app.presentation.internal.di.PerApplication;
 
-import org.eclipse.paho.client.mqttv3.MqttClient;
-
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
+
+import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
 import io.realm.RealmObject;
+import okhttp3.Cache;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -44,6 +45,9 @@ import rx.schedulers.Schedulers;
 
 @Module
 public class NetModule {
+
+
+    static final int DISK_CACHE_SIZE = (int) DecimalByteUnit.MEGABYTES.toBytes(50);
 
     @Provides
     @PerApplication
@@ -67,8 +71,8 @@ public class NetModule {
 
     @Provides
     @PerApplication
-    OkHttpClient provideOkHttpClient() {
-        return new OkHttpClient();
+    OkHttpClient provideOkHttpClient(Context context) {
+        return createOkHttpClient(context).build();
     }
 
     @Provides
@@ -145,5 +149,22 @@ public class NetModule {
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .callFactory(httpClientBuilder.build())
                 .build().create(MarvelApi.class);
+    }
+
+    @Provides
+    @Singleton
+    Picasso providePicasso(Context context, OkHttpClient client) {
+        return new Picasso.Builder(context)
+                .downloader(new OkHttp3Downloader(client))
+                .build();
+    }
+
+    static OkHttpClient.Builder createOkHttpClient(Context context) {
+        // Install an HTTP cache in the application cache directory.
+        File cacheDir = new File(context.getCacheDir(), "http");
+        Cache cache = new Cache(cacheDir, DISK_CACHE_SIZE);
+
+        return new OkHttpClient.Builder()
+                .cache(cache);
     }
 }

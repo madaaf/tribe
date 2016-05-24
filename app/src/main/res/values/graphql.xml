@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vehicle.infos">
+        query QueryVehicles {
+            vehicle (id: %1$s) {
+                id
+                name
+                vehicleClass
+            }
+        }
+    </string>
+
+    <string name="user.infos">
+        query QueryVehicles {
+            vehicle (id: %1$s) {
+                id
+                name
+                vehicleClass
+            }
+        }
+    </string>
+</resources>

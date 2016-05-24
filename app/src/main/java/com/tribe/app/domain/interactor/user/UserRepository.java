@@ -35,4 +35,12 @@ public interface UserRepository {
      * @param password the password the user entered.
      */
     Observable<User> loginWithUserName(final String username, final String password);
+
+
+    /**
+     * Get an {@link Observable} which will emit a {@link User}
+     * @param userId the id of the user for which we get the info
+     *
+     */
+    Observable<User> getUserInfos(final String userId);
 }

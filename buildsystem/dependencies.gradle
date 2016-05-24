@@ -29,6 +29,10 @@ ext {
     pahoMQTT3Version = '1.0.2'
     stethoVersion = '1.3.1'
     rxBindingsVersion = '0.4.0'
+    graphQLVersion = '2.0.0'
+    picassoVersion = '2.5.2'
+    picassoDownloaderVersion = '1.0.2'
+    byteUnitsVersion = '0.9.1'
 
     //Testing
     robolectricVersion = '3.0'
@@ -63,9 +67,11 @@ ext {
             priorityJobQueue        : "com.birbit:android-priority-jobqueue:${priorityJobQueueVersion}",
             adapterDelegates        : "com.hannesdorfmann:adapterdelegates2:${adapterDelegatesVersion}",
             pahoMQTT3               : "org.eclipse.paho:org.eclipse.paho.client.mqttv3:${pahoMQTT3Version}",
-            stetho                  : "com.facebook.stetho:stetho:${stethoVersion}",
-            stethoOkHttp            : "com.facebook.stetho:stetho-okhttp3:${stethoVersion}",
-            rxBindings              : "com.jakewharton.rxbinding:rxbinding:${rxBindingsVersion}"
+            rxBindings              : "com.jakewharton.rxbinding:rxbinding:${rxBindingsVersion}",
+            graphQL                 : "com.graphql-java:graphql-java:${graphQLVersion}",
+            picasso                 : "com.squareup.picasso:picasso:${picassoVersion}",
+            picassoDownloader       : "com.jakewharton.picasso:picasso2-okhttp3-downloader:${picassoDownloaderVersion}",
+            byteUnits               : "com.jakewharton.byteunits:byteunits:${byteUnitsVersion}"
     ]
 
     presentationTestDependencies = [
@@ -79,5 +85,7 @@ ext {
 
     developmentDependencies = [
             leakCanary: "com.squareup.leakcanary:leakcanary-android:${leakCanaryVersion}",
+            stetho                  : "com.facebook.stetho:stetho:${stethoVersion}",
+            stethoOkHttp            : "com.facebook.stetho:stetho-okhttp3:${stethoVersion}"
     ]
 }

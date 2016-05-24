@@ -50,4 +50,11 @@ public class CloudUserDataRepository implements UserRepository {
         return userDataStore.loginWithUsername(username, password)
                 .map(userRealm -> this.userRealmDataMapper.transform(userRealm));
     }
+
+    @Override
+    public Observable<User> getUserInfos(String userId) {
+        final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
+        return userDataStore.getUserInfos(userId)
+                .map(userRealm -> this.userRealmDataMapper.transform(userRealm));
+    }
 }

@@ -12,6 +12,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import graphql.schema.GraphQLObjectType;
 import rx.Observable;
 
 /**
