@@ -3,10 +3,9 @@ package com.tribe.app.presentation.navigation;
 import android.content.Context;
 import android.content.Intent;
 
-import com.tribe.app.presentation.view.activity.TextActivity;
+import com.tribe.app.presentation.view.activity.ChatActivity;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 /**
  * Class used to navigate through the application.
@@ -34,9 +33,9 @@ public class Navigator {
      *
      * @param context A Context needed to open the destiny activity.
      */
-    public void navigateToChat(Context context, int id) {
+    public void navigateToChat(Context context, String id) {
         if (context != null) {
-            Intent intent = TextActivity.getCallingIntent(context, id);
+            Intent intent = ChatActivity.getCallingIntent(context, id);
             context.startActivity(intent);
         }
     }

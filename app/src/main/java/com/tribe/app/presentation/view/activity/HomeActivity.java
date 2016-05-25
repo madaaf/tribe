@@ -65,7 +65,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<Friendshi
 
     @Override
     public void onTextClicked(MarvelCharacter friend) {
-        this.navigator.navigateToChat(this, friend.getId());
+        this.navigator.navigateToChat(this, friend.getStringId());
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.tribe.app.data.rxmqtt.interfaces;
 
+import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.rxmqtt.impl.RxMqttClientStatus;
 import com.tribe.app.data.rxmqtt.impl.RxMqttMessage;
 

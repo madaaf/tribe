@@ -5,16 +5,19 @@ package com.tribe.app.domain.interactor.text;
  */
 
 import com.tribe.app.data.rxmqtt.impl.RxMqttMessage;
+import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.User;
 
 import org.eclipse.paho.client.mqttv3.IMqttToken;
+
+import java.util.List;
 
 import rx.Observable;
 
 /**
  * Interface that represents a Repository for observing text messages MQTT.
  */
-public interface TextRepository {
+public interface ChatRepository {
 
     /**
      * Get an {@link Observable} which will emit a {@link org.eclipse.paho.client.mqttv3.IMqttToken}.
@@ -28,7 +31,7 @@ public interface TextRepository {
      *
      * @param topic observing the incoming messages.
      */
-    Observable<RxMqttMessage> subscribing(final String topic);
+    Observable<List<Message>> subscribing(final String topic);
 
     /**
      * Get an {@link Observable} which will emit a {@link IMqttToken}.

@@ -1,15 +1,11 @@
 package com.tribe.app.presentation.view.fragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.RelativeLayout;
 
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.MarvelCharacter;
@@ -17,17 +13,15 @@ import com.tribe.app.presentation.internal.di.components.FriendshipComponent;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
-import com.tribe.app.presentation.view.adapter.delegate.UserGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 
-import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 
 /**

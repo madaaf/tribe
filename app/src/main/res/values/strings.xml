@@ -3,4 +3,6 @@
 
     <string name="exception_message_generic">Generic error message</string>
     <string name="exception_message_no_connection">No Internet connection</string>
+
+    <string name="tap.to.send">Tap &amp; hold!</string>
 </resources>

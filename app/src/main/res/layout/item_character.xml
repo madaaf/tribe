@@ -40,5 +40,5 @@
         android:textAllCaps="true"
         android:textColor="@color/white"
         android:textSize="18sp"
-        tools:text="An amazing avenger" />
+        tools:message="An amazing avenger" />
 </FrameLayout>

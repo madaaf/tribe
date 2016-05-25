@@ -1,18 +1,15 @@
 package com.tribe.app.presentation.view.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import com.hannesdorfmann.adapterdelegates2.AdapterDelegatesManager;
 import com.tribe.app.domain.entity.MarvelCharacter;
-import com.tribe.app.presentation.view.adapter.delegate.MeGridAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.UserGridAdapterDelegate;
-import com.tribe.app.presentation.view.utils.PaletteGrid;
+import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;

@@ -4,8 +4,6 @@ import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
 
-import org.w3c.dom.Text;
-
 import javax.inject.Inject;
 
 import rx.Observable;
@@ -15,18 +13,18 @@ import rx.Observable;
  */
 public class ConnectAndSubscribeMQTT extends UseCase {
 
-    private TextRepository textRepository;
+    private ChatRepository chatRepository;
     private String topic;
 
     @Inject
-    public ConnectAndSubscribeMQTT(TextRepository textRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+    public ConnectAndSubscribeMQTT(ChatRepository chatRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
         super(threadExecutor, postExecutionThread);
-        this.textRepository = textRepository;
+        this.chatRepository = chatRepository;
     }
 
     @Override
     protected Observable buildUseCaseObservable() {
-        return textRepository.connectAndSubscribe(topic);
+        return chatRepository.connectAndSubscribe(topic);
     }
 
     public void setTopic(String topic) {

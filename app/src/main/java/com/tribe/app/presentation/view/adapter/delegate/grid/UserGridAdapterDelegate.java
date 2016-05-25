@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.adapter.delegate;
+package com.tribe.app.presentation.view.adapter.delegate.grid;
 
 import android.app.Activity;
 import android.content.Context;

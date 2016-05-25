@@ -8,12 +8,16 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by tiago on 04/05/2016.
  */
-public class TextRealm extends RealmObject {
+public class MessageRealm extends RealmObject {
 
     @PrimaryKey
     private int id;
 
+    private String localId;
     private String text;
+    private String senderId;
+    private String receiverId;
+    private String topic;
     private Date createdAt;
     private Date updatedAt;
 
@@ -33,6 +37,22 @@ public class TextRealm extends RealmObject {
         this.text = text;
     }
 
+    public String getSenderId() {
+        return senderId;
+    }
+
+    public void setSenderId(String senderId) {
+        this.senderId = senderId;
+    }
+
+    public String getReceiverId() {
+        return receiverId;
+    }
+
+    public void setReceiverId(String receiverId) {
+        this.receiverId = receiverId;
+    }
+
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -47,5 +67,21 @@ public class TextRealm extends RealmObject {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getLocalId() {
+        return localId;
+    }
+
+    public void setLocalId(String localId) {
+        this.localId = localId;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
     }
 }

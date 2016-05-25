@@ -31,6 +31,6 @@ public class CloudMarvelDataStore implements MarvelDataStore {
 
     @Override
     public Observable<List<MarvelCharacterRealm>> characters() {
-        return this.marvelApi.getCharacters(0).doOnNext(saveToCacheAction).limit(1);
+        return this.marvelApi.getCharacters(0).doOnNext(saveToCacheAction);
     }
 }

@@ -13,18 +13,18 @@ import rx.Observable;
  */
 public class UnsubscribeMQTT extends UseCase {
 
-    private TextRepository textRepository;
+    private ChatRepository chatRepository;
     private String topic;
 
     @Inject
-    public UnsubscribeMQTT(TextRepository textRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+    public UnsubscribeMQTT(ChatRepository chatRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
         super(threadExecutor, postExecutionThread);
-        this.textRepository = textRepository;
+        this.chatRepository = chatRepository;
     }
 
     @Override
     protected Observable buildUseCaseObservable() {
-        return textRepository.unsubscribe(topic);
+        return chatRepository.unsubscribe(topic);
     }
 
     public void setTopic(String topic) {

@@ -21,6 +21,10 @@ public class MarvelCharacter {
         return id;
     }
 
+    public String getStringId() {
+        return String.valueOf(id);
+    }
+
     public void setId(int id) {
         this.id = id;
     }

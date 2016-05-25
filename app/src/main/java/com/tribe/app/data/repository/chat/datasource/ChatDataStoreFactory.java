@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.tribe.app.data.repository.text.datasource;
+package com.tribe.app.data.repository.chat.datasource;
 
 import android.content.Context;
 
-import com.tribe.app.data.cache.TextCache;
-import com.tribe.app.data.cache.UserCache;
-import com.tribe.app.data.network.TribeApi;
-import com.tribe.app.data.repository.user.datasource.CloudUserDataStore;
-import com.tribe.app.data.repository.user.datasource.UserDataStore;
+import com.google.gson.Gson;
+import com.tribe.app.data.cache.ChatCache;
+import com.tribe.app.data.realm.mapper.MQTTMessageDataMapper;
 import com.tribe.app.data.rxmqtt.constants.Constants;
 import com.tribe.app.data.rxmqtt.exceptions.RxMqttException;
 import com.tribe.app.data.rxmqtt.impl.RxMqttAsyncClient;
@@ -31,22 +29,24 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
- * Factory that creates different implementations of {@link TextDataStoreFactory}.
+ * Factory that creates different implementations of {@link ChatDataStoreFactory}.
  */
 @Singleton
-public class TextDataStoreFactory {
+public class ChatDataStoreFactory {
 
     private final Context context;
-    private final TextCache textCache;
+    private final ChatCache chatCache;
     private IRxMqttClient client = null;
+    private final MQTTMessageDataMapper mqttMessageDataMapper;
 
     @Inject
-    public TextDataStoreFactory(Context context, TextCache textCache) {
-        if (context == null || textCache == null) {
+    public ChatDataStoreFactory(Context context, ChatCache chatCache, MQTTMessageDataMapper mqttMessageDataMapper) {
+        if (context == null || chatCache == null) {
             throw new IllegalArgumentException("Constructor parameters cannot be null!");
         }
         this.context = context.getApplicationContext();
-        this.textCache = textCache;
+        this.chatCache = chatCache;
+        this.mqttMessageDataMapper = mqttMessageDataMapper;
         try {
             this.client = new RxMqttAsyncClient(String.format("%s://%s:%d", Constants.TCP, "176.58.122.224", 1883), "tiago");
         } catch (RxMqttException e) {
@@ -55,16 +55,20 @@ public class TextDataStoreFactory {
     }
 
     /**
-     * Create {@link TextDataStore}
+     * Create {@link ChatDataStore}
      */
-    public TextDataStore create() {
+    public ChatDataStore create() {
         return createMQTTStore();
     }
 
     /**
-     * Create {@link TextDataStore} to retrieve data from the Cloud.
+     * Create {@link ChatDataStore} to retrieve data from the Cloud.
      */
-    public TextDataStore createMQTTStore() {
-        return new MQTTTextDataStore(this.textCache, this.client);
+    public ChatDataStore createMQTTStore() {
+        return new MQTTChatDataStore(this.chatCache, this.client, this.mqttMessageDataMapper);
+    }
+
+    public ChatDataStore createDiskChatStore() {
+        return new DiskChatDataStore(this.chatCache);
     }
 }

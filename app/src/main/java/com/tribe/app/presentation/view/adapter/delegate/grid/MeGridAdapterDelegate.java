@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.adapter.delegate;
+package com.tribe.app.presentation.view.adapter.delegate.grid;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -51,7 +51,6 @@ public class MeGridAdapterDelegate implements AdapterDelegate<List<MarvelCharact
     public void onBindViewHolder(@NonNull List<MarvelCharacter> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         MeGridViewHolder vh = (MeGridViewHolder) holder;
         MarvelCharacter marvelCharacter = (MarvelCharacter) items.get(position);
-        vh.layoutContent.setBackgroundColor(Color.parseColor("#094D92"));
     }
 
     static class MeGridViewHolder extends RecyclerView.ViewHolder {

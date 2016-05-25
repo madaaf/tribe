@@ -1,5 +1,6 @@
 package com.tribe.app.data.rxmqtt.impl;
 
+import com.google.gson.Gson;
 import com.tribe.app.data.rxmqtt.enums.RxMqttClientState;
 import com.tribe.app.data.rxmqtt.enums.RxMqttExceptionType;
 import com.tribe.app.data.rxmqtt.exceptions.RxMqttException;
@@ -15,14 +16,15 @@ import rx.subjects.PublishSubject;
 
 
 public abstract class RxMqttClient implements IRxMqttClient {
+
     private MqttConnectOptions conOpt;
     private RxMqttClientStatus status;
     private PublishSubject<RxMqttClientStatus> statusSubject;
+    protected Gson gson;
 
     protected RxMqttClient() {
         this.conOpt = new MqttConnectOptions();
         this.configOtherOptions(true, 60, 300);
-        //init status
         status = new RxMqttClientStatus();
         status.setLogTime(new Timestamp(System.currentTimeMillis()));
         status.setState(RxMqttClientState.INIT);

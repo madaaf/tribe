@@ -3,10 +3,8 @@ package com.tribe.app.data.cache;
 import android.content.Context;
 
 import com.fernandocejas.frodo.annotation.RxLogObservable;
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.MarvelCharacterRealm;
 import com.tribe.app.data.realm.MessageRealm;
-import com.tribe.app.domain.interactor.marvel.MarvelRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,44 +12,38 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 import rx.Observable;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 
 /**
  * Created by tiago on 06/05/2016.
  */
-public class MarvelCacheImpl implements MarvelCache {
+public class ChatCacheImpl implements ChatCache {
 
     private Context context;
 
     @Inject
-    public MarvelCacheImpl(Context context) {
+    public ChatCacheImpl(Context context) {
         this.context = context;
     }
 
-    @Override
     public boolean isExpired() {
         return true;
     }
 
-    @Override
-    public boolean isCached(int marvelId) {
+    public boolean isCached(int userId) {
         return false;
     }
 
     @RxLogObservable
     @Override
-    public Observable<List<MarvelCharacterRealm>> characters() {
-
-        return Observable.create(new Observable.OnSubscribe<List<MarvelCharacterRealm>>() {
+    public Observable<List<MessageRealm>> messages() {
+        return Observable.create(new Observable.OnSubscribe<List<MessageRealm>>() {
             @Override
-            public void call(final Subscriber<? super List<MarvelCharacterRealm>> subscriber) {
+            public void call(final Subscriber<? super List<MessageRealm>> subscriber) {
                 Realm obsRealm = Realm.getDefaultInstance();
-                final RealmResults<MarvelCharacterRealm> results = obsRealm.where(MarvelCharacterRealm.class).findAll();
+                final RealmResults<MessageRealm> results = obsRealm.where(MessageRealm.class).findAll();
                 subscriber.onNext(obsRealm.copyFromRealm(results));
                 obsRealm.close();
             }
@@ -59,10 +51,19 @@ public class MarvelCacheImpl implements MarvelCache {
     }
 
     @Override
-    public void put(List<MarvelCharacterRealm> marvelCharacterListRealm) {
+    public void put(List<MessageRealm> messageListRealm) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        realm.copyToRealmOrUpdate(marvelCharacterListRealm);
+        realm.copyToRealmOrUpdate(messageListRealm);
+        realm.commitTransaction();
+        realm.close();
+    }
+
+    @Override
+    public void put(MessageRealm messageRealm) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(messageRealm);
         realm.commitTransaction();
         realm.close();
     }

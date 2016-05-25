@@ -13,16 +13,16 @@ import rx.Observable;
  */
 public class DisconnectMQTT extends UseCase {
 
-    private TextRepository textRepository;
+    private ChatRepository chatRepository;
 
     @Inject
-    public DisconnectMQTT(TextRepository textRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+    public DisconnectMQTT(ChatRepository chatRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
         super(threadExecutor, postExecutionThread);
-        this.textRepository = textRepository;
+        this.chatRepository = chatRepository;
     }
 
     @Override
     protected Observable buildUseCaseObservable() {
-        return textRepository.disconnect();
+        return chatRepository.disconnect();
     }
 }

@@ -1,37 +1,37 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.tribe.app.data.rxmqtt.impl.RxMqttMessage;
-import com.tribe.app.domain.entity.User;
-import com.tribe.app.domain.exception.DefaultErrorBundle;
-import com.tribe.app.domain.exception.ErrorBundle;
+import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
-import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.text.ConnectAndSubscribeMQTT;
 import com.tribe.app.domain.interactor.text.DisconnectMQTT;
 import com.tribe.app.domain.interactor.text.SubscribingMQTT;
 import com.tribe.app.domain.interactor.text.UnsubscribeMQTT;
-import com.tribe.app.domain.interactor.user.DoLoginWithUsername;
-import com.tribe.app.presentation.exception.ErrorMessageFactory;
-import com.tribe.app.presentation.mvp.view.IntroView;
-import com.tribe.app.presentation.mvp.view.TextView;
+import com.tribe.app.presentation.mvp.view.MessageView;
 import com.tribe.app.presentation.mvp.view.View;
 
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
-public class TextPresenter implements Presenter {
+public class ChatPresenter implements Presenter {
 
     private final ConnectAndSubscribeMQTT connectAndSubscribeMQTT;
     private final SubscribingMQTT subscribingMQTT;
     private final DisconnectMQTT disconnectMQTT;
     private final UnsubscribeMQTT unsubscribeMQTT;
 
-    private TextView textView;
+    private MessageView messageView;
+
+    private String friendId;
 
     @Inject
-    public TextPresenter(@Named("connectAndSubscribe") ConnectAndSubscribeMQTT connectAndSubscribeMQTT,
+    public ChatPresenter(@Named("connectAndSubscribe") ConnectAndSubscribeMQTT connectAndSubscribeMQTT,
                          @Named("subscribing") SubscribingMQTT subscribingMQTT,
                          @Named("disconnect") DisconnectMQTT disconnectMQTT,
                          @Named("unsubscribe") UnsubscribeMQTT unsubscribeMQTT) {
@@ -48,8 +48,6 @@ public class TextPresenter implements Presenter {
 
     @Override
     public void onStart() {
-        connectAndSubscribeMQTT.setTopic("bavon");
-        connectAndSubscribeMQTT.execute(new ConnectAndSubscribeMQTTSubscriber());
     }
 
     @Override
@@ -77,7 +75,13 @@ public class TextPresenter implements Presenter {
 
     @Override
     public void attachView(View v) {
-        textView = (TextView) v;
+        messageView = (MessageView) v;
+    }
+
+    public void subscribe(String id) {
+        friendId = id;
+        connectAndSubscribeMQTT.setTopic("chats/" + id + "/#");
+        connectAndSubscribeMQTT.execute(new ConnectAndSubscribeMQTTSubscriber());
     }
 
     private final class ConnectAndSubscribeMQTTSubscriber extends DefaultSubscriber<IMqttToken> {
@@ -85,7 +89,7 @@ public class TextPresenter implements Presenter {
         @Override
         public void onCompleted() {
             System.out.println("ON COMPLETED SUBSCRIBE");
-            subscribingMQTT.setTopic("bavon");
+            subscribingMQTT.setTopic("^chats/" + friendId + ".*");
             subscribingMQTT.execute(new ListenSubscribingMQTTSubscriber());
         }
 
@@ -100,7 +104,7 @@ public class TextPresenter implements Presenter {
         }
     }
 
-    private final class ListenSubscribingMQTTSubscriber extends DefaultSubscriber<RxMqttMessage> {
+    private final class ListenSubscribingMQTTSubscriber extends DefaultSubscriber<List<Message>> {
 
         @Override
         public void onCompleted() {
@@ -113,8 +117,8 @@ public class TextPresenter implements Presenter {
         }
 
         @Override
-        public void onNext(RxMqttMessage message) {
-            System.out.println("ON NEXT MESSAGE : " + message.getMessage() + " FOR TOPIC : " + message.getTopic());
+        public void onNext(List<Message> messageList) {
+            messageView.renderMessageList(messageList);
         }
     }
 
