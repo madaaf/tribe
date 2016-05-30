@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.hannesdorfmann.adapterdelegates2.AdapterDelegatesManager;
@@ -14,10 +15,13 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Observable;
+import rx.subjects.PublishSubject;
+
 /**
  * Created by tiago on 18/05/2016.
  */
-public class HomeGridAdapter extends RecyclerView.Adapter {
+public class HomeGridAdapter extends RxAdapter {
 
     private AdapterDelegatesManager<List<MarvelCharacter>> delegatesManager;
     private List<MarvelCharacter> items;
@@ -59,7 +63,15 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
         return items.size();
     }
 
-    public void setOnFriendClickListener(UserGridAdapterDelegate.OnFriendClickListener onFriendClickListener) {
-        userGridAdapterDelegate.setOnFriendClickListener(onFriendClickListener);
+    public Observable<View> onClickChat() {
+        return userGridAdapterDelegate.onClickChat();
+    }
+
+    public MarvelCharacter getItemAtPosition(int position) {
+        if (items.size() > 0 && position < items.size()) {
+            return items.get(position);
+        } else {
+            return null;
+        }
     }
 }

@@ -11,7 +11,6 @@
 
     <color name="white">#FFFFFF</color>
     <color name="grey.light.hight">#e8e8e8</color>
-    <color name="grey.light">#bcbcbc</color>
     <color name="grey.medium">#ff808080</color>
     <color name="grey.dark">#ff2c2c2c</color>
 
@@ -20,6 +19,13 @@
     <!-- BLACKS -->
     <color name="black.opacity.5">#0D000000</color>
     <color name="black.opacity.40">#66000000</color>
+    <color name="black.opacity.50">#80000000</color>
+
+    <!-- WHITES -->
+    <color name="white.opacity.40">#66FFFFFF</color>
+
+    <!-- GREYS -->
+    <color name="grey.light">#D9E0E9</color>
 
     <!-- ME -->
 
@@ -39,4 +45,10 @@
     <color name="palette.two.three">#e29a93</color>
     <color name="palette.two.four">#f09a49</color>
     <color name="palette.two.five">#f08b02</color>
+
+    <!-- GREYS -->
+    <color name="grey.action.tint">#98aab4</color>
+
+    <!-- YELLOWS -->
+    <color name="yellow">#FEBE00</color>
 </resources>

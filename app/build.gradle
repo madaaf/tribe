@@ -110,6 +110,7 @@ dependencies {
     compile presentationDependencies.picasso
     compile presentationDependencies.picassoDownloader
     compile presentationDependencies.byteUnits
+    compile presentationDependencies.rebound
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker

@@ -19,6 +19,7 @@ import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelega
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.text.MeMessageAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.text.UserMessageAdapterDelegate;
+import com.tribe.app.presentation.view.widget.AvatarView;
 
 import dagger.Component;
 
@@ -35,8 +36,7 @@ public interface ApplicationComponent {
     void inject(BaseActivity baseActivity);
     void inject(MeGridAdapterDelegate meGridAdapterDelegate);
     void inject(UserGridAdapterDelegate userGridAdapterDelegate);
-    void inject(MeMessageAdapterDelegate meMessageAdapterDelegate);
-    void inject(UserMessageAdapterDelegate userMessageAdapterDelegate);
+    void inject(AvatarView avatarView);
 
     //Exposed to sub-graphs.
     Context context();

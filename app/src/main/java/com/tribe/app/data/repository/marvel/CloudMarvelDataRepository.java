@@ -1,5 +1,6 @@
 package com.tribe.app.data.repository.marvel;
 
+import com.fernandocejas.frodo.annotation.RxLogObservable;
 import com.tribe.app.data.realm.mapper.MarvelRealmDataMapper;
 import com.tribe.app.data.repository.marvel.datasource.MarvelDataStore;
 import com.tribe.app.data.repository.marvel.datasource.MarvelDataStoreFactory;
@@ -26,6 +27,7 @@ public class CloudMarvelDataRepository implements MarvelRepository {
         this.marvelRealmDataMapper = marvelRealmDataMapper;
     }
 
+    @RxLogObservable
     @Override
     public Observable<List<MarvelCharacter>> characters() {
         final MarvelDataStore marvelCloudDataStore = this.marvelDataStoreFactory.createCloudDataStore();

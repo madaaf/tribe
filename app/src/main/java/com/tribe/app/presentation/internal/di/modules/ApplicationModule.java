@@ -1,11 +1,14 @@
 package com.tribe.app.presentation.internal.di.modules;
 
 import android.content.Context;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.config.Configuration;
 import com.birbit.android.jobqueue.log.CustomLogger;
+import com.tribe.app.R;
 import com.tribe.app.data.cache.FriendshipCache;
 import com.tribe.app.data.cache.FriendshipCacheImpl;
 import com.tribe.app.data.cache.MarvelCache;
@@ -34,6 +37,7 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import dagger.Module;
 import dagger.Provides;
 
+import javax.annotation.Resource;
 import javax.inject.Singleton;
 
 /**

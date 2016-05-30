@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/bottom_bar_height"
+    android:background="@null">
+
+    <com.tribe.app.presentation.view.widget.EditTextFont
+        android:id="@+id/editTextMessage"
+        android:background="@null"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="@dimen/horizontal_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:hint="@string/Chat.Text.Hint"
+        style="@style/Text.Message.Input"
+        android:inputType="textCapSentences|textShortMessage|textImeMultiLine|textMultiLine"
+        />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btnSendEnabled"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|right"
+        android:layout_marginRight="@dimen/horizontal_margin"
+        android:src="@drawable/picto_send"
+        android:tint="@android:color/white"
+        app:backgroundTint="@color/grey.action.tint"
+        android:background="@null"
+        app:fabSize="mini"
+        />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btnSendDisabled"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|right"
+        android:layout_marginRight="@dimen/horizontal_margin"
+        android:src="@drawable/picto_send"
+        android:tint="@color/grey.action.tint"
+        android:background="@null"
+        app:backgroundTint="@null"
+        app:fabSize="mini"
+        />
+
+    <ImageView
+        android:id="@+id/btnPhotoPicker"
+        android:background="?attr/selectableItemBackground"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:padding="8dp"
+        android:src="@drawable/picto_camera"
+        android:tint="@color/grey.action.tint"
+        android:clickable="true"
+        />
+
+</FrameLayout>

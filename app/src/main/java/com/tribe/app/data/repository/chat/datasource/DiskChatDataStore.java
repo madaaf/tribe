@@ -1,5 +1,6 @@
 package com.tribe.app.data.repository.chat.datasource;
 
+import com.fernandocejas.frodo.annotation.RxLogObservable;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.mapper.MQTTMessageDataMapper;
@@ -44,6 +45,7 @@ public class DiskChatDataStore implements ChatDataStore {
         return null;
     }
 
+    @RxLogObservable
     @Override
     public Observable<List<MessageRealm>> messages(String topic) {
         return chatCache.messages();

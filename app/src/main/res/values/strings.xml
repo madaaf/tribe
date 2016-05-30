@@ -5,4 +5,8 @@
     <string name="exception_message_no_connection">No Internet connection</string>
 
     <string name="tap.to.send">Tap &amp; hold!</string>
+    <string name="Chat.Text.Hint">Type a message &#8320;</string>
+
+    <!-- GRID -->
+    <string name="Grid.Me.Points">Points</string>
 </resources>

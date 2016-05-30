@@ -1,5 +1,6 @@
 package com.tribe.app.data.repository.chat;
 
+import com.fernandocejas.frodo.annotation.RxLogObservable;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.mapper.MessageRealmDataMapper;
 import com.tribe.app.data.repository.chat.datasource.ChatDataStore;
@@ -49,6 +50,7 @@ public class ChatDataRepository implements ChatRepository {
         return chatDataStoreFactory.createMQTTStore().connectAndSubscribe(topic);
     }
 
+    @RxLogObservable
     @Override
     public Observable<List<Message>> subscribing(String topic) {
         ChatDataStore mqttChatDataStore = chatDataStoreFactory.createMQTTStore();

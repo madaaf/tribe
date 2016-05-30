@@ -7,13 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.R;
+import com.tribe.app.presentation.view.activity.HomeActivity;
 
 /**
  * Fragment that shows a list of media.
  */
-public class MediaGridFragment extends BaseFragment {
+public class GroupsGridFragment extends BaseFragment {
 
-    public MediaGridFragment() {
+    public GroupsGridFragment() {
         setRetainInstance(true);
     }
 
@@ -29,7 +30,8 @@ public class MediaGridFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View fragmentView = inflater.inflate(R.layout.fragment_media_grid, container, false);
+        final View fragmentView = inflater.inflate(R.layout.fragment_groups_grid, container, false);
+        fragmentView.setTag(HomeActivity.GROUPS_FRAGMENT_PAGE);
         return fragmentView;
     }
 

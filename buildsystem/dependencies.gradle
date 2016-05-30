@@ -33,6 +33,8 @@ ext {
     picassoVersion = '2.5.2'
     picassoDownloaderVersion = '1.0.2'
     byteUnitsVersion = '0.9.1'
+    reboundVersion = '0.3.8'
+    blackboardVersion = '0.1.0'
 
     //Testing
     robolectricVersion = '3.0'
@@ -71,7 +73,9 @@ ext {
             graphQL                 : "com.graphql-java:graphql-java:${graphQLVersion}",
             picasso                 : "com.squareup.picasso:picasso:${picassoVersion}",
             picassoDownloader       : "com.jakewharton.picasso:picasso2-okhttp3-downloader:${picassoDownloaderVersion}",
-            byteUnits               : "com.jakewharton.byteunits:byteunits:${byteUnitsVersion}"
+            byteUnits               : "com.jakewharton.byteunits:byteunits:${byteUnitsVersion}",
+            rebound                 : "com.facebook.rebound:rebound:${reboundVersion}",
+            blackboard              : "com.tumblr:backboard:${blackboardVersion}"
     ]
 
     presentationTestDependencies = [

@@ -27,7 +27,6 @@ public class MeMessageAdapterDelegate implements AdapterDelegate<List<Message>> 
 
     public MeMessageAdapterDelegate(Context context) {
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
     }
 
     @Override

@@ -39,6 +39,17 @@ public class MessageAdapter extends RecyclerView.Adapter {
     }
 
     @Override
+    public long getItemId(int position) {
+        Message message = getMessage(position);
+
+        if (message.getLocalId() == null) {
+            return message.hashCode();
+        } else {
+            return message.getLocalId().hashCode() * 31 + message.getText().hashCode();
+        }
+    }
+
+    @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return delegatesManager.onCreateViewHolder(parent, viewType);
     }

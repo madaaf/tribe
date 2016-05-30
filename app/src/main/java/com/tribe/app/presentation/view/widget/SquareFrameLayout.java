@@ -6,7 +6,7 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
-/** A RelativeLayout that will always be square (based out of its width) */
+/** A FrameLayout that will always be square (based out of its width) */
 public class SquareFrameLayout extends FrameLayout {
 
     public SquareFrameLayout(Context context) {

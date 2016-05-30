@@ -70,7 +70,6 @@ public class ChatPresenter implements Presenter {
         connectAndSubscribeMQTT.unsubscribe();
         subscribingMQTT.unsubscribe();
         disconnectMQTT.unsubscribe();
-        unsubscribeMQTT.unsubscribe();
     }
 
     @Override
@@ -82,6 +81,14 @@ public class ChatPresenter implements Presenter {
         friendId = id;
         connectAndSubscribeMQTT.setTopic("chats/" + id + "/#");
         connectAndSubscribeMQTT.execute(new ConnectAndSubscribeMQTTSubscriber());
+    }
+
+    public void sendMessage(String str) {
+        System.out.println("HEY : " + str);
+    }
+
+    public void sendTypingEvent() {
+        System.out.println("Typing !");
     }
 
     private final class ConnectAndSubscribeMQTTSubscriber extends DefaultSubscriber<IMqttToken> {

@@ -30,4 +30,26 @@
     <!-- SHAPES -->
     <dimen name="button_size">45dp</dimen>
 
+    <!-- MARGINS -->
+    <dimen name="horizontal_margin">20dp</dimen>
+    <dimen name="vertical_margin">20dp</dimen>
+    <dimen name="horizontal_margin_small">15dp</dimen>
+    <dimen name="vertical_margin_small">15dp</dimen>
+    <dimen name="horizontal_margin_large">25dp</dimen>
+    <dimen name="vertical_margin_large">25dp</dimen>
+
+    <!-- HEIGHTS -->
+    <dimen name="bottom_bar_height">60dp</dimen>
+
+    <!-- SIZES -->
+    <dimen name="avatar_size">75dp</dimen>
+    <dimen name="avatar_size_inner">74dp</dimen>
+    <dimen name="avatar_size_small">50dp</dimen>
+    <dimen name="nav_size_max">55dp</dimen>
+    <dimen name="nav_size_small">45dp</dimen>
+    <dimen name="nav_layout_height">75dp</dimen>
+
+    <!-- TRANSLATIONS -->
+    <dimen name="transition_grid_pressed">45dp</dimen>
+    <dimen name="transition_grid_back_to_top">150dp</dimen>
 </resources>

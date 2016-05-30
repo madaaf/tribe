@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v7.widget.RecyclerView;
 
 import com.tribe.app.R;
@@ -12,6 +13,7 @@ import com.tribe.app.presentation.mvp.presenter.ChatPresenter;
 import com.tribe.app.presentation.mvp.view.MessageView;
 import com.tribe.app.presentation.view.adapter.MessageAdapter;
 import com.tribe.app.presentation.view.adapter.manager.MessageLayoutManager;
+import com.tribe.app.presentation.view.component.ChatInputView;
 
 import java.util.List;
 
@@ -20,6 +22,9 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.Subscription;
+import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.Subscriptions;
 
 public class ChatActivity extends BaseActivity implements MessageView {
 
@@ -37,11 +42,18 @@ public class ChatActivity extends BaseActivity implements MessageView {
     @BindView(R.id.recyclerViewText)
     RecyclerView recyclerViewText;
 
+    @BindView(R.id.viewChatInput)
+    ChatInputView chatInputView;
+
+    // PARAMS
     private String friendId;
 
+    // BINDERS / SUBSCRIPTIONS
     private Unbinder unbinder;
-    private MessageLayoutManager messageLayoutManager;
+    private CompositeSubscription subscriptions;
 
+    // LAYOUT VARIABLES
+    private MessageLayoutManager messageLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +62,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
         initParams();
         initializeDependencyInjector();
         initRecyclerView();
+        initializeSubscriptions();
     }
 
     @Override
@@ -67,7 +80,12 @@ public class ChatActivity extends BaseActivity implements MessageView {
     @Override
     protected void onDestroy() {
         if (unbinder != null) unbinder.unbind();
-        chatPresenter.onDestroy();
+        if (chatPresenter != null) chatPresenter.onDestroy();
+        if (chatInputView != null) chatInputView.onDestroy();
+        if (subscriptions != null && subscriptions.hasSubscriptions()) {
+            subscriptions.unsubscribe();
+            subscriptions.clear();
+        }
         super.onDestroy();
     }
 
@@ -85,6 +103,12 @@ public class ChatActivity extends BaseActivity implements MessageView {
     private void initParams() {
         if (getIntent() != null && getIntent().hasExtra(FRIEND_ID))
         friendId = getIntent().getStringExtra(FRIEND_ID);
+    }
+
+    private void initializeSubscriptions() {
+        subscriptions = new CompositeSubscription();
+        subscriptions.add(chatInputView.sendClick().subscribe(s -> chatPresenter.sendMessage(s)));
+        subscriptions.add(chatInputView.textChanges().subscribe(s -> chatPresenter.sendTypingEvent()));
     }
 
     private void initializeDependencyInjector() {

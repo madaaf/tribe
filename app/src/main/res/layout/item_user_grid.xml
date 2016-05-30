@@ -1,9 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?><!--suppress Annotator -->
+<?xml version="1.0" encoding="utf-8"?>
 <com.tribe.app.presentation.view.widget.SquareFrameLayout
-    android:id="@+id/layoutContent"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutContent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
@@ -52,6 +50,55 @@
         android:drawableLeft="@drawable/picto_to_send"
         android:drawablePadding="8dp"
         android:text="@string/tap.to.send"
+        />
+
+    <com.tribe.app.presentation.view.widget.AvatarView
+        android:id="@+id/avatar"
+        android:layout_width="@dimen/avatar_size"
+        android:layout_height="@dimen/avatar_size"
+        android:layout_gravity="center"
+        android:background="@null"
+        />
+
+    <View
+        android:id="@+id/viewForeground"
+        android:layout_width="@dimen/avatar_size_inner"
+        android:layout_height="@dimen/avatar_size_inner"
+        android:layout_gravity="center"
+        android:background="@drawable/shape_ring_foreground_white"
+        />
+
+    <ImageView
+        android:id="@+id/imgCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_cancel"
+        android:scaleX="0"
+        android:scaleY="0"
+        />
+
+    <ImageView
+        android:id="@+id/imgDone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_done"
+        android:scaleX="0"
+        android:scaleY="0"
+        />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="@dimen/avatar_size"
+        android:layout_height="@dimen/avatar_size"
+        android:layout_gravity="center"
+        android:max="@integer/time_tap_to_cancel"
+        android:progress="0"
+        android:progressDrawable="@drawable/progress_circular"
         />
 
 </com.tribe.app.presentation.view.widget.SquareFrameLayout>

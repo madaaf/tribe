@@ -1,5 +1,6 @@
 package com.tribe.app.data.repository.chat.datasource;
 
+import com.fernandocejas.frodo.annotation.RxLogObservable;
 import com.google.gson.Gson;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.realm.MarvelCharacterRealm;
@@ -43,6 +44,7 @@ public class MQTTChatDataStore implements ChatDataStore {
         this.mqttMessageDataMapper = mqttMessageDataMapper;
     }
 
+    @RxLogObservable
     @Override
     public Observable<IMqttToken> connectAndSubscribe(String topic) {
         return Observable.concat(mqttClient.connect(), mqttClient.subscribeTopic(topic, 2));
@@ -53,11 +55,13 @@ public class MQTTChatDataStore implements ChatDataStore {
         return mqttClient.disconnect();
     }
 
+    @RxLogObservable
     @Override
     public Observable<IMqttToken> unsubscribe(String topic) {
         return mqttClient.unsubscribeTopic(topic);
     }
 
+    @RxLogObservable
     @Override
     public Observable<List<MessageRealm>> messages(String topic) {
         return mqttClient.subscribing(topic)

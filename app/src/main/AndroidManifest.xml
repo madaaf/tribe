@@ -36,5 +36,11 @@
             android:label="@string/app_name"
             android:screenOrientation="portrait"
         />
+
+        <activity
+            android:name=".presentation.view.activity.DummyActivity"
+            android:theme="@style/AppTheme.Transparent"
+            android:screenOrientation="portrait"
+            />
     </application>
 </manifest>

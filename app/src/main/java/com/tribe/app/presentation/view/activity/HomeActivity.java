@@ -7,21 +7,35 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.MarvelCharacter;
 import com.tribe.app.presentation.internal.di.HasComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerFriendshipComponent;
 import com.tribe.app.presentation.internal.di.components.FriendshipComponent;
-import com.tribe.app.presentation.view.fragment.DiscoverGridFragment;
+import com.tribe.app.presentation.mvp.view.HomeGridView;
+import com.tribe.app.presentation.mvp.view.HomeView;
+import com.tribe.app.presentation.view.fragment.FriendsGridFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
-import com.tribe.app.presentation.view.fragment.MediaGridFragment;
+import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import rx.Observable;
+import rx.Subscription;
+import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.Subscriptions;
 
-public class HomeActivity extends BaseActivity implements HasComponent<FriendshipComponent>,
-        HomeGridFragment.FriendListListener {
+public class HomeActivity extends BaseActivity implements HasComponent<FriendshipComponent>, HomeView {
+
+    public static final int FRIENDS_FRAGMENT_PAGE = 0;
+    public static final int GRID_FRAGMENT_PAGE = 1;
+    public static final int GROUPS_FRAGMENT_PAGE = 2;
 
     public static Intent getCallingIntent(Context context) {
         return new Intent(context, HomeActivity.class);
@@ -30,15 +44,44 @@ public class HomeActivity extends BaseActivity implements HasComponent<Friendshi
     @BindView(R.id.viewPager)
     ViewPager viewPager;
 
+    @BindView(R.id.imgNavGrid)
+    ImageView imgNavGrid;
+
+    @BindView(R.id.imgNavFriends)
+    ImageView imgNavFriends;
+
+    @BindView(R.id.imgNavGroups)
+    ImageView imgNavGroups;
+
+    @BindView(R.id.imgNavBackToTop)
+    ImageView imgNavBackToTop;
+
     private FriendshipComponent friendshipComponent;
+    private CompositeSubscription subscriptions = new CompositeSubscription();
+    private HomeViewPagerAdapter homeViewPagerAdapter;
+
+    // DIMEN
+    private int sizeNavMax, sizeNavSmall, marginHorizontalSmall, translationBackToTop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initUi();
+        initDimensions();
         initializeViewPager();
         initializeDependencyInjector();
         initializePresenter();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+        super.onDestroy();
     }
 
     private void initUi() {
@@ -46,10 +89,19 @@ public class HomeActivity extends BaseActivity implements HasComponent<Friendshi
         ButterKnife.bind(this);
     }
 
+    private void initDimensions() {
+        sizeNavMax = getResources().getDimensionPixelSize(R.dimen.nav_size_max);
+        sizeNavSmall = getResources().getDimensionPixelSize(R.dimen.nav_size_small);
+        marginHorizontalSmall = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
+        translationBackToTop = getResources().getDimensionPixelSize(R.dimen.transition_grid_back_to_top);
+    }
+
     private void initializeViewPager() {
-        viewPager.setAdapter(new HomeViewPagerAdapter(getSupportFragmentManager()));
+        homeViewPagerAdapter = new HomeViewPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(homeViewPagerAdapter);
         viewPager.setOffscreenPageLimit(3);
         viewPager.setCurrentItem(1);
+        viewPager.setPageTransformer(false, new HomePageTransformer());
     }
 
     private void initializeDependencyInjector() {
@@ -64,8 +116,60 @@ public class HomeActivity extends BaseActivity implements HasComponent<Friendshi
     }
 
     @Override
-    public void onTextClicked(MarvelCharacter friend) {
-        this.navigator.navigateToChat(this, friend.getStringId());
+    public void initializeClicksOnChat(Observable<MarvelCharacter> observable) {
+        subscriptions.add(observable.subscribe(friend -> {
+            HomeActivity.this.navigator.navigateToChat(HomeActivity.this, friend.getStringId());
+        }));
+    }
+
+    @Override
+    public void initializeScrollOnGrid(Observable<Integer> observable) {
+        subscriptions.add(observable.subscribe(dy -> {
+            float percent = (float) dy / translationBackToTop;
+
+            if (dy <= translationBackToTop) {
+                imgNavFriends.setTranslationY(dy);
+                imgNavGroups.setTranslationY(dy);
+                imgNavGrid.setTranslationY(dy);
+                imgNavFriends.setAlpha(1 - percent);
+                imgNavGroups.setAlpha(1 - percent);
+                imgNavGrid.setAlpha(1 - percent);
+                imgNavBackToTop.setTranslationY(translationBackToTop - dy);
+                imgNavBackToTop.setAlpha((float) dy / translationBackToTop);
+            } else if (imgNavBackToTop.getTranslationY() != 0) {
+                imgNavBackToTop.setTranslationY(0);
+                imgNavBackToTop.setAlpha(1f);
+            }
+        }));
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        // This is important : Hack to open a dummy activity for 200-500ms (cannot be noticed by user as it is for 500ms
+        //  and transparent floating activity and auto finishes)
+        startActivity(new Intent(this, DummyActivity.class));
+        finish();
+    }
+
+    @OnClick(R.id.imgNavGroups)
+    public void goToGroups() {
+        viewPager.setCurrentItem(GROUPS_FRAGMENT_PAGE, true);
+    }
+
+    @OnClick(R.id.imgNavGrid)
+    public void goToGrid() {
+        viewPager.setCurrentItem(GRID_FRAGMENT_PAGE, true);
+    }
+
+    @OnClick(R.id.imgNavFriends)
+    public void goToFriends() {
+        viewPager.setCurrentItem(FRIENDS_FRAGMENT_PAGE, true);
+    }
+
+    @OnClick(R.id.imgNavBackToTop)
+    public void goBackToTop() {
+        ((HomeGridView) homeViewPagerAdapter.getCurrentFragment()).scrollToTop();
     }
 
     @Override
@@ -76,6 +180,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<Friendshi
     public class HomeViewPagerAdapter extends FragmentStatePagerAdapter {
 
         public String[] pagers = new String[] {"Discover", "Home", "Media"};
+        public Fragment currentFragment;
 
         public HomeViewPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
@@ -83,9 +188,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<Friendshi
 
         @Override
         public Fragment getItem(int position) {
-            if (position == 0) return new DiscoverGridFragment();
+            if (position == 0) return new FriendsGridFragment();
             else if (position == 1) return new HomeGridFragment();
-            else return new MediaGridFragment();
+            else return new GroupsGridFragment();
         }
 
         @Override
@@ -96,6 +201,55 @@ public class HomeActivity extends BaseActivity implements HasComponent<Friendshi
         @Override
         public CharSequence getPageTitle(int position) {
             return pagers[position];
+        }
+
+        @Override
+        public void setPrimaryItem(ViewGroup container, int position, Object object) {
+            if (currentFragment != object) {
+                currentFragment = (Fragment) object;
+            }
+
+            super.setPrimaryItem(container, position, object);
+        }
+
+        public Fragment getCurrentFragment() {
+            return currentFragment;
+        }
+    }
+
+    public class HomePageTransformer implements ViewPager.PageTransformer {
+
+        @Override
+        public void transformPage(View page, float position) {
+            int pagePosition = (int) page.getTag();
+            int pageWidth = page.getWidth();
+
+            if (pagePosition == 1 && position > 0) {
+                float sizeImgNavFriends = sizeNavSmall + ((sizeNavMax - sizeNavSmall) * position);
+                float translationImgNavFriends = ((pageWidth >> 1) - marginHorizontalSmall - (imgNavFriends.getWidth() / 2)) * position;
+                layoutNav(imgNavFriends, sizeImgNavFriends, translationImgNavFriends);
+
+                float sizeImgNavGrid = sizeNavMax - ((sizeNavMax - sizeNavSmall) * position);
+                float translationImgNavGrid = ((pageWidth >> 1) - (imgNavGrid.getWidth() / 2) - 2 * marginHorizontalSmall - imgNavGroups.getWidth()) * position;
+                layoutNav(imgNavGrid, sizeImgNavGrid, translationImgNavGrid);
+            } else if (pagePosition == 1 && position < 0) {
+                float sizeImgNavGroups = sizeNavSmall + ((sizeNavMax - sizeNavSmall) * -position);
+                float translationImgNavGroups = ((pageWidth >> 1) - marginHorizontalSmall - (imgNavGroups.getWidth() / 2)) * position;
+                layoutNav(imgNavGroups, sizeImgNavGroups, translationImgNavGroups);
+
+                float sizeImgNavGrid = sizeNavMax - ((sizeNavMax - sizeNavSmall) * -position);
+                float translationImgNavGrid = ((pageWidth >> 1) - (imgNavGrid.getWidth() / 2) - 2 * marginHorizontalSmall - imgNavFriends.getWidth()) * position;
+                layoutNav(imgNavGrid, sizeImgNavGrid, translationImgNavGrid);
+            }
+        }
+
+        public void layoutNav(View v, float size, float translationX) {
+            v.setTranslationX(translationX);
+            ViewGroup.LayoutParams params = v.getLayoutParams();
+            params.width = (int) size;
+            params.height = (int) size;
+            v.setLayoutParams(params);
+            v.invalidate();
         }
     }
 }

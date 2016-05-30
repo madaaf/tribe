@@ -2,33 +2,19 @@ package com.tribe.app.presentation.view.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.MarvelCharacter;
-import com.tribe.app.presentation.internal.di.components.FriendshipComponent;
-import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
-import com.tribe.app.presentation.mvp.view.HomeGridView;
-import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
-import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
-
-import java.util.List;
-
-import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
+import com.tribe.app.presentation.view.activity.HomeActivity;
 
 /**
  * Fragment that shows a list of discovery users.
  */
-public class DiscoverGridFragment extends BaseFragment {
+public class FriendsGridFragment extends BaseFragment {
 
-    public DiscoverGridFragment() {
+    public FriendsGridFragment() {
         setRetainInstance(true);
     }
 
@@ -44,7 +30,8 @@ public class DiscoverGridFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View fragmentView = inflater.inflate(R.layout.fragment_discover_grid, container, false);
+        final View fragmentView = inflater.inflate(R.layout.fragment_friends_grid, container, false);
+        fragmentView.setTag(HomeActivity.FRIENDS_FRAGMENT_PAGE);
         return fragmentView;
     }
 

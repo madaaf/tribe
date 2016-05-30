@@ -37,6 +37,7 @@ public class DiskMarvelDataRepository implements MarvelRepository {
         this.marvelRealmDataMapper = marvelRealmDataMapper;
     }
 
+    @RxLogObservable
     @Override
     public Observable<List<MarvelCharacter>> characters() {
         final MarvelDataStore marvelDiskDataStore = this.marvelDataStoreFactory.createDiskDataStore();

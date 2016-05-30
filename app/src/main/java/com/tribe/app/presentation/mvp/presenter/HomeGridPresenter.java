@@ -73,12 +73,9 @@ public class HomeGridPresenter implements Presenter {
     public void loadFriendList() {
         isTheFriendRequestRunning = true;
         showViewLoading();
-        diskCharactersUsecase.execute(new FriendListSubscriber());
-        cloudCharactersUsecase.execute(new FriendListSubscriber());
-    }
-
-    public void onTextClicked(MarvelCharacter friend) {
-        homeGridView.onTextClicked(friend);
+        FriendListSubscriber subscriber = new FriendListSubscriber();
+        diskCharactersUsecase.execute(subscriber);
+        //cloudCharactersUsecase.execute(subscriber);
     }
 
     private void showFriendCollectionInView(List<MarvelCharacter> friendList) {

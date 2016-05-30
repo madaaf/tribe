@@ -14,7 +14,10 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.MarvelCharacter;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
+import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -51,11 +54,16 @@ public class MeGridAdapterDelegate implements AdapterDelegate<List<MarvelCharact
     public void onBindViewHolder(@NonNull List<MarvelCharacter> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         MeGridViewHolder vh = (MeGridViewHolder) holder;
         MarvelCharacter marvelCharacter = (MarvelCharacter) items.get(position);
+
+        vh.txtName.setText(marvelCharacter.getName());
+        vh.avatar.load("");
     }
 
     static class MeGridViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.layoutContent) public ViewGroup layoutContent;
+        @BindView(R.id.avatar) public AvatarView avatar;
+        @BindView(R.id.txtName) public TextViewFont txtName;
 
         public MeGridViewHolder(View itemView) {
             super(itemView);

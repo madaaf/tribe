@@ -1,0 +1,18 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape
+            android:innerRadius="0dp"
+            android:shape="ring"
+            android:thicknessRatio="2"
+            android:useLevel="false">
+
+            <solid android:color="@android:color/transparent" />
+
+            <stroke
+                android:width="5dp"
+                android:antialias="true"
+                android:color="@color/white.opacity.40" />
+        </shape>
+    </item>
+    <item android:drawable="@drawable/transition_drawable_cancel" />
+</layer-list>
