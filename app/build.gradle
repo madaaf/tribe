@@ -89,7 +89,6 @@ dependencies {
     compile presentationDependencies.dagger
     apt presentationDependencies.butterKnifeCompiler
     compile presentationDependencies.butterKnife
-    compile presentationDependencies.recyclerView
     compile presentationDependencies.appCompat
     compile presentationDependencies.designSupport
     compile presentationDependencies.rxJava
@@ -103,7 +102,6 @@ dependencies {
     compile presentationDependencies.androidAnnotations
     provided presentationDependencies.javaxAnnotation
     compile presentationDependencies.priorityJobQueue
-    compile presentationDependencies.adapterDelegates
     compile presentationDependencies.pahoMQTT3
     compile presentationDependencies.rxBindings
     compile presentationDependencies.graphQL
@@ -111,6 +109,7 @@ dependencies {
     compile presentationDependencies.picassoDownloader
     compile presentationDependencies.byteUnits
     compile presentationDependencies.rebound
+    compile presentationDependencies.rxSharedPreferences
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker
@@ -123,4 +122,6 @@ dependencies {
     compile developmentDependencies.leakCanary
     compile developmentDependencies.stetho
     compile developmentDependencies.stethoOkHttp
+
+    compile project(':AdapterDelegates')
 }

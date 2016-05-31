@@ -1,5 +1,6 @@
 package com.tribe.app.data.repository.user;
 
+import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.user.datasource.UserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
@@ -45,10 +46,9 @@ public class CloudUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<User> loginWithUserName(String username, String password) {
+    public Observable<AccessToken> loginWithUserName(String username, String password) {
         final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-        return userDataStore.loginWithUsername(username, password)
-                .map(userRealm -> this.userRealmDataMapper.transform(userRealm));
+        return userDataStore.loginWithUsername(username, password);
     }
 
     @Override

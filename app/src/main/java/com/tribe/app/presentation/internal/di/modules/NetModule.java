@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.internal.di.modules;
 
-import android.app.Application;
 import android.content.Context;
 import android.util.Base64;
 
@@ -20,6 +19,7 @@ import com.tribe.app.data.network.authorizer.MarvelAuthorizer;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.deserializer.MarvelResultsDeserializer;
 import com.tribe.app.data.network.interceptor.MarvelSigningInterceptor;
+import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.MarvelCharacterRealm;
 import com.tribe.app.presentation.internal.di.PerApplication;
 
@@ -43,9 +43,10 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.schedulers.Schedulers;
 
-@Module
+@Module(
+    includes = DataModule.class
+)
 public class NetModule {
-
 
     static final int DISK_CACHE_SIZE = (int) DecimalByteUnit.MEGABYTES.toBytes(50);
 
@@ -83,8 +84,8 @@ public class NetModule {
 
     @Provides
     @PerApplication
-    TribeAuthorizer provideTribeAuthorizer() {
-        return new TribeAuthorizer(BuildConfig.TRIBE_PUBLIC_KEY, BuildConfig.TRIBE_PRIVATE_KEY);
+    TribeAuthorizer provideTribeAuthorizer(AccessToken accessToken) {
+        return new TribeAuthorizer(BuildConfig.TRIBE_PUBLIC_KEY, BuildConfig.TRIBE_PRIVATE_KEY, accessToken);
     }
 
     @Provides
@@ -92,22 +93,26 @@ public class NetModule {
     TribeApi provideTribeApi(Gson gson, OkHttpClient okHttpClient, TribeAuthorizer tribeAuthorizer) {
         OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
-        httpClientBuilder.addInterceptor(new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-                Request original = chain.request();
+        httpClientBuilder.addInterceptor(chain -> {
+            Request original = chain.request();
 
+            Request.Builder requestBuilder = original.newBuilder()
+                    .header("Content-type", "application/json");
+
+            if (tribeAuthorizer.getAccessToken() != null && tribeAuthorizer.getAccessToken().getAccessToken() != null) {
+                        requestBuilder.header("Authorization", tribeAuthorizer.getAccessToken().getTokenType()
+                                + " " + tribeAuthorizer.getAccessToken().getAccessToken());
+            } else {
                 byte[] data = (tribeAuthorizer.getApiClient() + ":" + tribeAuthorizer.getApiSecret()).getBytes("UTF-8");
                 String base64 = Base64.encodeToString(data, Base64.DEFAULT).replace("\n", "");
 
-                Request.Builder requestBuilder = original.newBuilder()
-                        .header("Content-type", "application/json")
-                        .header("Authorization", "Basic " + base64)
-                        .method(original.method(), original.body());
-
-                Request request = requestBuilder.build();
-                return chain.proceed(request);
+                requestBuilder.header("Authorization", "Basic " + base64);
             }
+
+            requestBuilder.method(original.method(), original.body());
+
+            Request request = requestBuilder.build();
+            return chain.proceed(request);
         });
 
         if (BuildConfig.DEBUG) {
@@ -118,7 +123,7 @@ public class NetModule {
         }
 
         return new Retrofit.Builder()
-                .baseUrl("http://104.196.20.232:3000/")
+                .baseUrl("http://104.196.53.120:3000/")
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .callFactory(httpClientBuilder.build())

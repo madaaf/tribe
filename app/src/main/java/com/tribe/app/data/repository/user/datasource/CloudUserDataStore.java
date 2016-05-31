@@ -2,15 +2,15 @@ package com.tribe.app.data.repository.user.datasource;
 
 import android.content.Context;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
-import com.tribe.app.data.cache.FriendshipCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.TribeApi;
+import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.network.entity.LoginEntity;
-import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.data.realm.MarvelCharacterRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.repository.friendship.datasource.FriendshipDataStore;
-import com.tribe.app.domain.entity.User;
 
 import java.util.List;
 
@@ -39,12 +39,20 @@ public class CloudUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<UserRealm> loginWithUsername(String username, String password) {
-        return this.tribeApi.loginWithUsername(new LoginEntity(username, password, "password"));
+    public Observable<AccessToken> loginWithUsername(String username, String password) {
+        return this.tribeApi
+                .loginWithUsername(new LoginEntity(username, password, "password"))
+                .doOnNext(saveToCacheAction);
     }
 
     @Override
     public Observable<UserRealm> getUserInfos(String userId) {
         return this.tribeApi.getUserInfos(context.getString(R.string.user_infos));
     }
+
+    private final Action1<AccessToken> saveToCacheAction = accessToken -> {
+        if (accessToken != null && accessToken.getAccessToken() != null) {
+            CloudUserDataStore.this.userCache.put(accessToken);
+        }
+    };
 }

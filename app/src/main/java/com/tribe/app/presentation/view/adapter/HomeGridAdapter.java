@@ -5,7 +5,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.hannesdorfmann.adapterdelegates2.AdapterDelegatesManager;
 import com.tribe.app.domain.entity.MarvelCharacter;
 import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate;
@@ -16,21 +15,20 @@ import java.util.List;
 import javax.inject.Inject;
 
 import rx.Observable;
-import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 18/05/2016.
  */
-public class HomeGridAdapter extends RxAdapter {
+public class HomeGridAdapter extends RecyclerView.Adapter {
 
-    private AdapterDelegatesManager<List<MarvelCharacter>> delegatesManager;
-    private List<MarvelCharacter> items;
-
+    protected RxAdapterDelegatesManager delegatesManager;
     private UserGridAdapterDelegate userGridAdapterDelegate;
+
+    private List<MarvelCharacter> items;
 
     @Inject
     public HomeGridAdapter(Context context) {
-        delegatesManager = new AdapterDelegatesManager<>();
+        delegatesManager = new RxAdapterDelegatesManager<>();
         delegatesManager.addDelegate(new MeGridAdapterDelegate(context));
 
         userGridAdapterDelegate = new UserGridAdapterDelegate(context);
@@ -51,6 +49,10 @@ public class HomeGridAdapter extends RxAdapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         delegatesManager.onBindViewHolder(items, position, holder);
+    }
+
+    public void releaseSubscriptions() {
+        delegatesManager.releaseSubscriptions();
     }
 
     public void setItems(List<MarvelCharacter> items) {

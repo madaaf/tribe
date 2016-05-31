@@ -44,7 +44,7 @@ public class IntroActivity extends BaseActivity implements IntroView {
 
     @OnClick(R.id.btnLogin)
     public void doLogin() {
-        introPresenter.login("sofiane@tribe.pm", "okayokay");
+        introPresenter.login("tiago@tribe.pm", "okayokay");
     }
 
     @Override

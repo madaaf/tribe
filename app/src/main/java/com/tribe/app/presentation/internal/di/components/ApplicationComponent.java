@@ -13,6 +13,7 @@ import com.tribe.app.domain.interactor.friendship.FriendshipRepository;
 import com.tribe.app.domain.interactor.text.ChatRepository;
 import com.tribe.app.presentation.internal.di.PerApplication;
 import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
+import com.tribe.app.presentation.internal.di.modules.DataModule;
 import com.tribe.app.presentation.internal.di.modules.NetModule;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;

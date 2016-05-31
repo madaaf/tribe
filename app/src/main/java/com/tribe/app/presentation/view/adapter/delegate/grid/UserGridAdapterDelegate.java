@@ -59,7 +59,6 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<MarvelCharac
 
     @Inject PaletteGrid paletteGrid;
     private LayoutInflater layoutInflater;
-    private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
     private long longDown = 0L;
     private boolean isDown = false;
@@ -88,7 +87,7 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<MarvelCharac
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
         UserGridViewHolder userGridViewHolder = new UserGridViewHolder(layoutInflater.inflate(R.layout.item_user_grid, parent, false));
 
-        compositeSubscription.add(RxView.clicks(userGridViewHolder.btnText)
+        subscriptions.add(RxView.clicks(userGridViewHolder.btnText)
                 .takeUntil(RxView.detaches(parent))
                 .map(aVoid -> userGridViewHolder.itemView)
                 .subscribe(clickChatView));

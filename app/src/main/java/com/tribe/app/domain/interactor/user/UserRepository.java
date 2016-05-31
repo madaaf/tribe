@@ -4,6 +4,7 @@ package com.tribe.app.domain.interactor.user;
  * Created by tiago on 04/05/2016.
  */
 
+import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.User;
 
 import rx.Observable;
@@ -34,7 +35,7 @@ public interface UserRepository {
      * @param username The username used to login.
      * @param password the password the user entered.
      */
-    Observable<User> loginWithUserName(final String username, final String password);
+    Observable<AccessToken> loginWithUserName(final String username, final String password);
 
 
     /**

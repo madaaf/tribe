@@ -1,10 +1,8 @@
 package com.tribe.app.data.repository.user.datasource;
 
-import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
-
-import java.util.List;
 
 import rx.Observable;
 
@@ -13,11 +11,11 @@ import rx.Observable;
  */
 public interface UserDataStore {
     /**
-     * Get an {@link Observable} which will emit a logged in User.
+     * Get an {@link Observable} which will emit an Access Token.
      * @param username The username used to login.
      * @param password the password the user entered.
      */
-    Observable<UserRealm> loginWithUsername(String username, String password);
+    Observable<AccessToken> loginWithUsername(String username, String password);
 
     /**
      * Get an {@link Observable} which will emit a {@link User}

@@ -9,7 +9,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public abstract class RxAdapterDelegate<T> implements AdapterDelegate<T> {
 
-    private CompositeSubscription subscriptions = new CompositeSubscription();
+    protected CompositeSubscription subscriptions = new CompositeSubscription();
 
     public void releaseSubscriptions() {
         if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();

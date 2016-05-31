@@ -1,5 +1,6 @@
 package com.tribe.app.data.cache;
 
+import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.UserRealm;
 
@@ -14,4 +15,5 @@ public interface UserCache {
     public boolean isExpired();
     public boolean isCached(int userId);
     public void put(UserRealm userRealm);
+    public void put(AccessToken accessToken);
 }

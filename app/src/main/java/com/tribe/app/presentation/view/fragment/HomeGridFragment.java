@@ -113,6 +113,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     public void onDestroy() {
         super.onDestroy();
         this.homeGridPresenter.onDestroy();
+        this.homeGridAdapter.releaseSubscriptions();
 
         if (onClickChatSubscription != null)
             onClickChatSubscription.unsubscribe();
