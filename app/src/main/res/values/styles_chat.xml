@@ -22,6 +22,5 @@
         <item name="android:textColorHint">@color/black.opacity.40</item>
     </style>
 
-    <style name="Text.Message">
-    </style>
+    <style name="Text.Message" />
 </resources>

@@ -7,31 +7,30 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.MarvelCharacter;
+import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.HasComponent;
-import com.tribe.app.presentation.internal.di.components.DaggerFriendshipComponent;
-import com.tribe.app.presentation.internal.di.components.FriendshipComponent;
+import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.HomeView;
 import com.tribe.app.presentation.view.fragment.FriendsGridFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
+import com.tribe.app.presentation.view.widget.CustomViewPager;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import rx.Observable;
-import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.Subscriptions;
 
-public class HomeActivity extends BaseActivity implements HasComponent<FriendshipComponent>, HomeView {
+public class HomeActivity extends BaseActivity implements HasComponent<UserComponent>, HomeView {
 
     public static final int FRIENDS_FRAGMENT_PAGE = 0;
     public static final int GRID_FRAGMENT_PAGE = 1;
@@ -42,7 +41,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<Friendshi
     }
 
     @BindView(R.id.viewPager)
-    ViewPager viewPager;
+    CustomViewPager viewPager;
 
     @BindView(R.id.imgNavGrid)
     ImageView imgNavGrid;
@@ -56,7 +55,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<Friendshi
     @BindView(R.id.imgNavBackToTop)
     ImageView imgNavBackToTop;
 
-    private FriendshipComponent friendshipComponent;
+    private UserComponent userComponent;
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private HomeViewPagerAdapter homeViewPagerAdapter;
 
@@ -100,12 +99,13 @@ public class HomeActivity extends BaseActivity implements HasComponent<Friendshi
         homeViewPagerAdapter = new HomeViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(homeViewPagerAdapter);
         viewPager.setOffscreenPageLimit(3);
+        viewPager.setScrollDurationFactor(2f);
         viewPager.setCurrentItem(1);
         viewPager.setPageTransformer(false, new HomePageTransformer());
     }
 
     private void initializeDependencyInjector() {
-        this.friendshipComponent = DaggerFriendshipComponent.builder()
+        this.userComponent = DaggerUserComponent.builder()
                 .applicationComponent(getApplicationComponent())
                 .activityModule(getActivityModule())
                 .build();
@@ -116,9 +116,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<Friendshi
     }
 
     @Override
-    public void initializeClicksOnChat(Observable<MarvelCharacter> observable) {
+    public void initializeClicksOnChat(Observable<Friendship> observable) {
         subscriptions.add(observable.subscribe(friend -> {
-            HomeActivity.this.navigator.navigateToChat(HomeActivity.this, friend.getStringId());
+            HomeActivity.this.navigator.navigateToChat(HomeActivity.this, friend.getId());
         }));
     }
 
@@ -173,8 +173,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<Friendshi
     }
 
     @Override
-    public FriendshipComponent getComponent() {
-        return friendshipComponent;
+    public UserComponent getComponent() {
+        return userComponent;
     }
 
     public class HomeViewPagerAdapter extends FragmentStatePagerAdapter {

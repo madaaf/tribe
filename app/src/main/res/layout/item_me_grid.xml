@@ -9,39 +9,6 @@
     android:background="@null"
     >
 
-    <com.tribe.app.presentation.view.widget.AvatarView
-        android:id="@+id/avatar"
-        android:layout_width="@dimen/avatar_size_small"
-        android:layout_height="@dimen/avatar_size_small"
-        android:layout_marginLeft="@dimen/horizontal_margin_small"
-        android:layout_marginTop="@dimen/vertical_margin"
-        android:background="@null"
-        />
-
-    <ImageView
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_alignLeft="@id/avatar"
-        android:layout_alignTop="@id/avatar"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="30dp"
-        android:background="@drawable/shape_oval_white"
-        android:src="@drawable/picto_settings"
-        android:scaleType="centerInside"
-        />
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtName"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/avatar_size_small"
-        android:layout_toRightOf="@id/avatar"
-        android:layout_marginLeft="@dimen/horizontal_margin_small"
-        android:layout_marginTop="@dimen/vertical_margin"
-        android:layout_marginRight="@dimen/horizontal_margin_small"
-        android:gravity="center_vertical"
-        style="@style/Text.Grid.Me.Name"
-        />
-
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
@@ -62,7 +29,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="41dp"
+        android:layout_height="@dimen/avatar_size_small"
         android:layout_toRightOf="@id/imgPoints"
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="@dimen/horizontal_margin_small"
@@ -76,7 +43,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/Text.Grid.Me.Points"
-            android:text="124,245"
             />
 
         <com.tribe.app.presentation.view.widget.TextViewFont
@@ -88,5 +54,39 @@
             style="@style/Text.Grid.Me.Label"
             />
     </LinearLayout>
+
+    <com.tribe.app.presentation.view.widget.AvatarView
+        android:id="@+id/avatar"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_marginTop="@dimen/vertical_margin"
+        android:layout_marginLeft="5dp"
+        android:layout_alignLeft="@id/imgPoints"
+        android:background="@null"
+        />
+
+    <ImageView
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_alignLeft="@id/avatar"
+        android:layout_alignTop="@id/avatar"
+        android:layout_marginLeft="25dp"
+        android:layout_marginTop="25dp"
+        android:background="@drawable/shape_oval_white"
+        android:src="@drawable/picto_settings"
+        android:scaleType="centerInside"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtName"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_toRightOf="@id/avatar"
+        android:layout_marginLeft="@dimen/horizontal_margin_small"
+        android:layout_marginTop="@dimen/vertical_margin"
+        android:layout_marginRight="@dimen/horizontal_margin_small"
+        android:gravity="center_vertical"
+        style="@style/Text.Grid.Me.Name"
+        />
 
 </com.tribe.app.presentation.view.widget.SquareRelativeLayout>

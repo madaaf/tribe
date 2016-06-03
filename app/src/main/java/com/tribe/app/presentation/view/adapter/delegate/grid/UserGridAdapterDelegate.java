@@ -4,7 +4,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
@@ -21,10 +24,10 @@ import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
 import com.fernandocejas.frodo.annotation.RxLogObservable;
-import com.hannesdorfmann.adapterdelegates2.AdapterDelegate;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.MarvelCharacter;
+import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
@@ -40,25 +43,29 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
-import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by tiago on 18/05/2016.
  */
-public class UserGridAdapterDelegate extends RxAdapterDelegate<List<MarvelCharacter>> {
+public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
 
-    private final float BOUNCINESS = 15f;
-    private final float SPEED = 12.5f;
+    private final float BOUNCINESS_INSIDE = 10f;
+    private final float SPEED_INSIDE = 12.5f;
+    private final float BOUNCINESS_OUTSIDE = 1f;
+    private final float SPEED_OUTSIDE = 20f;
     private final int LONG_PRESS = 200;
     private final int FADE_DURATION = 200;
     private final int SCALE_DURATION = 150;
     private final int END_RECORD_DELAY = 1000;
+    private final float OVERSHOOT = 2f;
 
     @Inject PaletteGrid paletteGrid;
     private LayoutInflater layoutInflater;
+    private Context context;
 
     private long longDown = 0L;
     private boolean isDown = false;
@@ -66,18 +73,33 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<MarvelCharac
     // RESOURCES
     private int transitionGridPressed;
     private int timeTapToCancel;
+    private int sizePressedBorder;
+    private int sizeAvatar;
+    private int sizeAvatarScaled;
+    private int sizeAvatarInner;
+    private int sizeAvatarInnerScaled;
+    private int colorBlackOpacity20;
 
+    // RX SUBSCRIPTIONS / SUBJECTS
     private final PublishSubject<View> clickChatView = PublishSubject.create();
+    private final PublishSubject<View> clickMoreView = PublishSubject.create();
 
     public UserGridAdapterDelegate(Context context) {
+        this.context = context;
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         transitionGridPressed = context.getResources().getDimensionPixelSize(R.dimen.transition_grid_pressed);
+        sizePressedBorder = context.getResources().getDimensionPixelSize(R.dimen.inside_cell_border);
+        sizeAvatarScaled = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_scaled);
+        sizeAvatar = context.getResources().getDimensionPixelSize(R.dimen.avatar_size);
+        sizeAvatarInner = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_inner);
+        sizeAvatarInnerScaled = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_inner_scaled);
         timeTapToCancel = context.getResources().getInteger(R.integer.time_tap_to_cancel);
+        colorBlackOpacity20 = context.getResources().getColor(R.color.black_opacity_20);
         ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
     }
 
     @Override
-    public boolean isForViewType(@NonNull List<MarvelCharacter> items, int position) {
+    public boolean isForViewType(@NonNull List<Friendship> items, int position) {
         return position != 0;
     }
 
@@ -92,25 +114,48 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<MarvelCharac
                 .map(aVoid -> userGridViewHolder.itemView)
                 .subscribe(clickChatView));
 
+        subscriptions.add(RxView.clicks(userGridViewHolder.btnMore)
+                .takeUntil(RxView.detaches(parent))
+                .map(aVoid -> userGridViewHolder.itemView)
+                .subscribe(clickMoreView));
+
         userGridViewHolder.itemView.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 if (isDown) return false;
 
-                longDown = System.currentTimeMillis();
-                isDown = true;
-                Observable.timer(LONG_PRESS, TimeUnit.MILLISECONDS)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(time -> {
-                            if ((System.currentTimeMillis() - longDown) >= LONG_PRESS && isDown) {
-                                Spring spring = (Spring) v.getTag(R.id.spring);
-                                spring.setEndValue(1f);
-                            }
-                        });
+                boolean isTapToCancel = false;
+
+                if (userGridViewHolder.itemView.getTag(R.id.is_tap_to_cancel) != null)
+                    isTapToCancel = (Boolean) userGridViewHolder.itemView.getTag(R.id.is_tap_to_cancel);
+
+                if (isTapToCancel) {
+                    resetViewAfterTapToCancel(userGridViewHolder, false);
+                    return false;
+                } else {
+                    longDown = System.currentTimeMillis();
+                    isDown = true;
+                    Observable.timer(LONG_PRESS, TimeUnit.MILLISECONDS)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(time -> {
+                                if ((System.currentTimeMillis() - longDown) >= LONG_PRESS && isDown) {
+                                    Spring springInside = (Spring) v.getTag(R.id.spring_inside);
+                                    springInside.setEndValue(1f);
+
+                                    Spring springOutside = (Spring) v.getTag(R.id.spring_outside);
+                                    springOutside.setEndValue(1f);
+                                }
+                            });
+                }
             } else if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
                 if ((System.currentTimeMillis() - longDown) >= LONG_PRESS && isDown) {
                     ((TransitionDrawable) ((LayerDrawable) userGridViewHolder.viewForeground.getBackground()).getDrawable(1)).startTransition(FADE_DURATION);
-                    AnimationUtils.scaleUp(userGridViewHolder.imgCancel, SCALE_DURATION);
+                    AnimationUtils.scaleUp(userGridViewHolder.imgCancel, SCALE_DURATION, new OvershootInterpolator(OVERSHOOT));
+
+                    Spring springOutside = (Spring) userGridViewHolder.itemView.getTag(R.id.spring_outside);
+                    springOutside.setEndValue(0f);
+
+                    userGridViewHolder.itemView.setTag(R.id.is_tap_to_cancel, true);
 
                     ObjectAnimator animation = ObjectAnimator.ofInt(userGridViewHolder.progressBar, "progress", 0, timeTapToCancel);
                     animation.setDuration(timeTapToCancel);
@@ -118,25 +163,25 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<MarvelCharac
                     animation.addListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
                             AnimationUtils.scaleDown(userGridViewHolder.imgCancel, SCALE_DURATION);
-                            AnimationUtils.scaleUp(userGridViewHolder.imgDone, SCALE_DURATION, SCALE_DURATION);
+                            AnimationUtils.scaleUp(userGridViewHolder.imgDone, SCALE_DURATION, SCALE_DURATION, new OvershootInterpolator(OVERSHOOT));
 
                             Observable.timer(END_RECORD_DELAY, TimeUnit.MILLISECONDS)
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(time -> {
-                                        AnimationUtils.scaleDown(userGridViewHolder.imgDone, SCALE_DURATION);
-                                        userGridViewHolder.progressBar.setProgress(0);
-                                        Spring spring = (Spring) v.getTag(R.id.spring);
-                                        spring.setEndValue(0f);
-
-                                        ((TransitionDrawable) ((LayerDrawable) userGridViewHolder.viewForeground.getBackground()).getDrawable(1)).reverseTransition(FADE_DURATION);
+                                        resetViewAfterTapToCancel(userGridViewHolder, true);
                                     });
+                        }
 
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+                            animation.removeAllListeners();
                         }
                     });
                     animation.start();
+
+                    userGridViewHolder.itemView.setTag(R.id.progress_bar_animation, animation);
                 }
 
                 isDown = false;
@@ -146,57 +191,110 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<MarvelCharac
         });
 
         SpringSystem springSystem = SpringSystem.create();
-        Spring spring = springSystem.createSpring();
-        SpringConfig config = SpringConfig.fromBouncinessAndSpeed(BOUNCINESS, SPEED);
-        spring.setSpringConfig(config);
-        spring.addListener(new SimpleSpringListener() {
+
+        // SPRING INSIDE CONFIGURATION
+        Spring springInside = springSystem.createSpring();
+        SpringConfig configInside = SpringConfig.fromBouncinessAndSpeed(BOUNCINESS_INSIDE, SPEED_INSIDE);
+        springInside.setSpringConfig(configInside);
+        springInside.addListener(new SimpleSpringListener() {
             @Override
             public void onSpringUpdate(Spring spring) {
                 float value = (float) spring.getCurrentValue();
 
-                float scaleDown = 1f - (value * 0.10f);
-                userGridViewHolder.itemView.setScaleX(scaleDown);
-                userGridViewHolder.itemView.setScaleY(scaleDown);
+                int scaleUp = (int) (sizeAvatar + ((sizeAvatarScaled - sizeAvatar) * value));
+                ViewGroup.LayoutParams paramsAvatar = userGridViewHolder.avatar.getLayoutParams();
+                paramsAvatar.height = scaleUp;
+                paramsAvatar.width = scaleUp;
+                userGridViewHolder.avatar.setLayoutParams(paramsAvatar);
 
-                float scaleUp = 1f + (value * 0.8f);
-                userGridViewHolder.avatar.setScaleX(scaleUp);
-                userGridViewHolder.avatar.setScaleY(scaleUp);
+                float scale = 1f + (value * (((float) sizeAvatarInnerScaled / sizeAvatarInner) - 1));
+                userGridViewHolder.progressBar.setScaleX(scale);
+                userGridViewHolder.progressBar.setScaleY(scale);
 
-                userGridViewHolder.progressBar.setScaleX(scaleUp);
-                userGridViewHolder.progressBar.setScaleY(scaleUp);
+                userGridViewHolder.viewForeground.setScaleX(scale);
+                userGridViewHolder.viewForeground.setScaleY(scale);
 
-                userGridViewHolder.viewForeground.setScaleX(scaleUp);
-                userGridViewHolder.viewForeground.setScaleY(scaleUp);
+//                ViewGroup.LayoutParams paramsProgressBar = userGridViewHolder.progressBar.getLayoutParams();
+//                paramsProgressBar.height = scaleUp;
+//                paramsProgressBar.width = scaleUp;
+//                userGridViewHolder.progressBar.setLayoutParams(paramsProgressBar);
+//
+//                int scaleUpInner = (int) (sizeAvatarInner + ((sizeAvatarInnerScaled - sizeAvatarInner) * value));
+//                ViewGroup.LayoutParams paramsViewForeground = userGridViewHolder.viewForeground.getLayoutParams();
+//                paramsViewForeground.height = scaleUpInner;
+//                paramsViewForeground.width = scaleUpInner;
+//                userGridViewHolder.viewForeground.setLayoutParams(paramsProgressBar);
 
-                float transitionItems = transitionGridPressed * value;
-                userGridViewHolder.txtName.setTranslationX(-transitionItems);
-                userGridViewHolder.txtName.setTranslationY(-transitionItems);
-                userGridViewHolder.txtStatus.setTranslationX(-transitionItems);
-                userGridViewHolder.txtStatus.setTranslationY(transitionItems);
-                userGridViewHolder.btnText.setTranslationX(transitionItems);
-                userGridViewHolder.btnText.setTranslationY(transitionItems);
-                userGridViewHolder.btnMore.setTranslationX(transitionItems);
-                userGridViewHolder.btnMore.setTranslationY(-transitionItems);
+                float alpha = 1 - value;
+                userGridViewHolder.txtName.setAlpha(alpha);
+                userGridViewHolder.txtStatus.setAlpha(alpha);
+                userGridViewHolder.btnText.setAlpha(alpha);
+                userGridViewHolder.btnMore.setAlpha(alpha);
             }
         });
-        spring.setEndValue(0f);
-        userGridViewHolder.itemView.setTag(R.id.spring, spring);
+
+        springInside.setEndValue(0f);
+        userGridViewHolder.itemView.setTag(R.id.spring_inside, springInside);
+
+        final GradientDrawable drawable = (GradientDrawable) userGridViewHolder.viewPressedForeground.getBackground();
+
+        // SPRING OUTSIDE CONFIGURATION
+        Spring springOutside = springSystem.createSpring();
+        SpringConfig configOutside = SpringConfig.fromBouncinessAndSpeed(BOUNCINESS_OUTSIDE, SPEED_OUTSIDE);
+        springOutside.setSpringConfig(configOutside);
+        springOutside.addListener(new SimpleSpringListener() {
+            @Override
+            public void onSpringUpdate(Spring spring) {
+                float value = (float) spring.getCurrentValue();
+
+                int borderSize = (int) (sizePressedBorder * value);
+                drawable.setStroke(borderSize, colorBlackOpacity20);
+            }
+        });
+
+        springOutside.setEndValue(0f);
+        userGridViewHolder.itemView.setTag(R.id.spring_outside, springOutside);
 
         return userGridViewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull List<MarvelCharacter> items, int position, @NonNull RecyclerView.ViewHolder holder) {
+    public void onBindViewHolder(@NonNull List<Friendship> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         UserGridViewHolder vh = (UserGridViewHolder) holder;
-        MarvelCharacter marvelCharacter = items.get(position);
+        User user = (User) items.get(position);
 
-        vh.txtName.setText(marvelCharacter.getName());
+        vh.txtName.setText(user.getDisplayName());
         vh.layoutContent.setBackgroundColor(PaletteGrid.get(position - 1));
-        vh.avatar.load("");
+        vh.avatar.load(user.getProfilePicture());
+    }
+
+    private void resetViewAfterTapToCancel(UserGridViewHolder viewHolder, boolean hasFinished) {
+        if (hasFinished) AnimationUtils.scaleDown(viewHolder.imgDone, SCALE_DURATION);
+        else AnimationUtils.scaleDown(viewHolder.imgCancel, SCALE_DURATION);
+
+        if (viewHolder.itemView.getTag(R.id.progress_bar_animation) != null) {
+            ObjectAnimator animator = (ObjectAnimator) viewHolder.itemView.getTag(R.id.progress_bar_animation);
+            animator.cancel();
+            viewHolder.itemView.setTag(R.id.progress_bar_animation, null);
+        }
+
+        viewHolder.progressBar.clearAnimation();
+        viewHolder.progressBar.setProgress(0);
+
+        Spring springInside = (Spring) viewHolder.itemView.getTag(R.id.spring_inside);
+        springInside.setEndValue(0f);
+
+        viewHolder.itemView.setTag(R.id.is_tap_to_cancel, false);
+
+        ((TransitionDrawable) ((LayerDrawable) viewHolder.viewForeground.getBackground()).getDrawable(1)).reverseTransition(FADE_DURATION);
     }
 
     public Observable<View> onClickChat() {
         return clickChatView;
+    }
+
+    public Observable<View> onClickMore() {
+        return clickMoreView;
     }
 
     static class UserGridViewHolder extends RecyclerView.ViewHolder {
@@ -211,6 +309,7 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<MarvelCharac
         @BindView(R.id.viewForeground) public View viewForeground;
         @BindView(R.id.imgCancel) public ImageView imgCancel;
         @BindView(R.id.imgDone) public ImageView imgDone;
+        @BindView(R.id.viewPressedForeground) public View viewPressedForeground;
 
         public UserGridViewHolder(View itemView) {
             super(itemView);

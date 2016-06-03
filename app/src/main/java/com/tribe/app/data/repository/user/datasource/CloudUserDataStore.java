@@ -2,23 +2,18 @@ package com.tribe.app.data.repository.user.datasource;
 
 import android.content.Context;
 
-import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.network.entity.LoginEntity;
-import com.tribe.app.data.realm.MarvelCharacterRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.data.repository.friendship.datasource.FriendshipDataStore;
-
-import java.util.List;
 
 import rx.Observable;
 import rx.functions.Action1;
 
 /**
- * {@link FriendshipDataStore} implementation based on connections to the api (Cloud).
+ * {@link UserDataStore} implementation based on connections to the api (Cloud).
  */
 public class CloudUserDataStore implements UserDataStore {
 
@@ -46,7 +41,7 @@ public class CloudUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<UserRealm> getUserInfos(String userId) {
+    public Observable<UserRealm> userInfos(String userId) {
         return this.tribeApi.getUserInfos(context.getString(R.string.user_infos));
     }
 

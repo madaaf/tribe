@@ -1,19 +1,17 @@
 package com.tribe.app.presentation.mvp.presenter;
 
-import com.tribe.app.domain.entity.MarvelCharacter;
+import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.exception.DefaultErrorBundle;
 import com.tribe.app.domain.exception.ErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
-import com.tribe.app.domain.interactor.marvel.GetCloudMarvelCharacterList;
-import com.tribe.app.domain.interactor.marvel.GetDiskMarvelCharacterList;
+import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
+import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
-import com.tribe.app.presentation.mvp.view.CharacterListView;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.View;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -21,17 +19,17 @@ import javax.inject.Named;
 
 public class HomeGridPresenter implements Presenter {
 
-    private final UseCase cloudCharactersUsecase;
-    private final UseCase diskCharactersUsecase;
+    private UseCase cloudUserInfosUsecase;
+    private UseCase diskUserInfosUsecase;
     private boolean isTheFriendRequestRunning;
 
     private HomeGridView homeGridView;
 
     @Inject
-    public HomeGridPresenter(@Named("cloudMarvelCharactersList") UseCase cloudCharactersUsecase,
-                             @Named("diskMarvelCharactersList") UseCase mDiskCharactersUsecase) {
-        this.cloudCharactersUsecase = cloudCharactersUsecase;
-        this.diskCharactersUsecase = mDiskCharactersUsecase;
+    public HomeGridPresenter(@Named("cloudUserInfos") UseCase cloudUserInfos,
+                             @Named("diskUserInfos") UseCase diskUserInfos) {
+        this.cloudUserInfosUsecase = cloudUserInfos;
+        this.diskUserInfosUsecase = diskUserInfos;
     }
 
     @Override
@@ -61,8 +59,8 @@ public class HomeGridPresenter implements Presenter {
 
     @Override
     public void onDestroy() {
-        diskCharactersUsecase.unsubscribe();
-        cloudCharactersUsecase.unsubscribe();
+        diskUserInfosUsecase.unsubscribe();
+        cloudUserInfosUsecase.unsubscribe();
     }
 
     @Override
@@ -74,12 +72,12 @@ public class HomeGridPresenter implements Presenter {
         isTheFriendRequestRunning = true;
         showViewLoading();
         FriendListSubscriber subscriber = new FriendListSubscriber();
-        diskCharactersUsecase.execute(subscriber);
-        //cloudCharactersUsecase.execute(subscriber);
+        //diskUserInfosUsecase.execute(subscriber);
+        cloudUserInfosUsecase.execute(subscriber);
     }
 
-    private void showFriendCollectionInView(List<MarvelCharacter> friendList) {
-        this.homeGridView.renderFriendList(friendList);
+    private void showFriendCollectionInView(List<Friendship> friendList) {
+        this.homeGridView.renderFriendshipList(friendList);
     }
 
     private void showViewLoading() {
@@ -96,7 +94,7 @@ public class HomeGridPresenter implements Presenter {
         this.homeGridView.showError(errorMessage);
     }
 
-    private final class FriendListSubscriber extends DefaultSubscriber<List<MarvelCharacter>> {
+    private final class FriendListSubscriber extends DefaultSubscriber<User> {
 
         @Override
         public void onCompleted() {
@@ -109,8 +107,8 @@ public class HomeGridPresenter implements Presenter {
         }
 
         @Override
-        public void onNext(List<MarvelCharacter> friendList) {
-            showFriendCollectionInView(friendList);
+        public void onNext(User user) {
+            showFriendCollectionInView(user.getFriendshipList());
         }
     }
 }

@@ -2,35 +2,29 @@ package com.tribe.app.domain.entity;
 
 import java.util.Date;
 
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
 /**
  * Created by tiago on 04/05/2016.
  */
 public class Friendship {
 
-    private int id;
+    private String id;
 
-    public Friendship(int id) {
+    public Friendship(String id) {
         this.id = id;
     }
 
-    private User friend;
     private Date createdAt;
     private Date updatedAt;
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
-    }
-
-    public User getFriend() {
-        return friend;
-    }
-
-    public void setFriend(User friend) {
-        this.friend = friend;
     }
 
     public Date getCreatedAt() {
@@ -47,19 +41,5 @@ public class Friendship {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        stringBuilder.append("***** Friendship Details *****\n");
-        stringBuilder.append("id = " + id);
-        stringBuilder.append("friend = " + friend);
-        stringBuilder.append("createdAt = " + createdAt);
-        stringBuilder.append("updatedAt = " + updatedAt);
-        stringBuilder.append("*******************************");
-
-        return stringBuilder.toString();
     }
 }

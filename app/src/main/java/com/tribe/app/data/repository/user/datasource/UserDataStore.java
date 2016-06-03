@@ -2,7 +2,6 @@ package com.tribe.app.data.repository.user.datasource;
 
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.domain.entity.User;
 
 import rx.Observable;
 
@@ -22,5 +21,5 @@ public interface UserDataStore {
      * @param userId the id of the user for which we get the info
      *
      */
-    Observable<UserRealm> getUserInfos(final String userId);
+    Observable<UserRealm> userInfos(final String userId);
 }

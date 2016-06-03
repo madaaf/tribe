@@ -1,26 +1,23 @@
 package com.tribe.app.presentation.view.fragment;
 
-import android.app.ActivityOptions;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.MarvelCharacter;
-import com.tribe.app.presentation.internal.di.components.FriendshipComponent;
+import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.HomeView;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
-import com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
-import com.tribe.app.presentation.view.component.ChatInputView;
 
 import java.util.List;
 
@@ -32,13 +29,11 @@ import butterknife.Unbinder;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.functions.Action1;
-import rx.functions.Func1;
 import rx.subjects.PublishSubject;
-import rx.subscriptions.Subscriptions;
+import rx.subscriptions.CompositeSubscription;
 
 /**
- * Fragment that shows a list of Friends.
+ * Fragment that shows a list of Friendships.
  */
 public class HomeGridFragment extends BaseFragment implements HomeGridView {
 
@@ -49,9 +44,10 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     RecyclerView recyclerViewFriends;
 
     private HomeView homeView;
-    private Subscription onClickChatSubscription;
-    private PublishSubject<MarvelCharacter> clickChatViewSubject = PublishSubject.create();
+    private CompositeSubscription subscriptions = new CompositeSubscription();
+    private PublishSubject<Friendship> clickChatViewSubject = PublishSubject.create();
     private Unbinder unbinder;
+    private BottomSheetDialog dialog;
 
     public HomeGridFragment() {
         setRetainInstance(true);
@@ -69,7 +65,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.getComponent(FriendshipComponent.class).inject(this);
+        this.getComponent(UserComponent.class).inject(this);
     }
 
     @Override
@@ -115,8 +111,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         this.homeGridPresenter.onDestroy();
         this.homeGridAdapter.releaseSubscriptions();
 
-        if (onClickChatSubscription != null)
-            onClickChatSubscription.unsubscribe();
+        if (subscriptions != null && subscriptions.hasSubscriptions())
+            subscriptions.unsubscribe();
     }
 
     @Override
@@ -142,7 +138,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     }
 
     @Override
-    public void renderFriendList(List<MarvelCharacter> friendCollection) {
+    public void renderFriendshipList(List<Friendship> friendCollection) {
         if (friendCollection != null) {
             this.homeGridAdapter.setItems(friendCollection);
         }
@@ -180,12 +176,38 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
             }
         });
 
-        onClickChatSubscription = homeGridAdapter.onClickChat()
+        subscriptions.add(homeGridAdapter.onClickChat()
             .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
-            .subscribe(clickChatViewSubject);
+            .subscribe(clickChatViewSubject));
+
+        subscriptions.add(homeGridAdapter.onClickMore()
+                .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
+                .subscribe(friendship -> {
+                    setupBottomSheet();
+                }));
 
         if (homeView != null) homeView.initializeClicksOnChat(clickChatViewSubject);
         if (homeView != null) homeView.initializeScrollOnGrid(scrollDetector);
+    }
+
+    private void setupBottomSheet() {
+        if (dismissDialog()) {
+            return;
+        }
+
+        View view = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_user, null);
+        dialog = new BottomSheetDialog(getContext());
+        dialog.setContentView(view);
+        dialog.show();
+    }
+
+    private boolean dismissDialog() {
+        if (dialog != null && dialog.isShowing()) {
+            dialog.dismiss();
+            return true;
+        }
+
+        return false;
     }
 
     /**

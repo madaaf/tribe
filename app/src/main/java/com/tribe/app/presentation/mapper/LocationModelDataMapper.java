@@ -1,14 +1,8 @@
 package com.tribe.app.presentation.mapper;
 
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.LocationRealm;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Location;
 import com.tribe.app.presentation.internal.di.PerActivity;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 
 import javax.inject.Inject;
 

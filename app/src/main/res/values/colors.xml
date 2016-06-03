@@ -18,6 +18,7 @@
 
     <!-- BLACKS -->
     <color name="black.opacity.5">#0D000000</color>
+    <color name="black.opacity.20">#33000000</color>
     <color name="black.opacity.40">#66000000</color>
     <color name="black.opacity.50">#80000000</color>
 

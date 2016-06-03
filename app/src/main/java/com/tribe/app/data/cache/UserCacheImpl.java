@@ -3,12 +3,14 @@ package com.tribe.app.data.cache;
 import android.content.Context;
 
 import com.tribe.app.data.realm.AccessToken;
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.UserRealm;
 
 import javax.inject.Inject;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
+import rx.Observable;
+import rx.Subscriber;
 
 /**
  * Created by tiago on 06/05/2016.
@@ -41,5 +43,21 @@ public class UserCacheImpl implements UserCache {
         realm.copyToRealm(accessToken);
         realm.commitTransaction();
         realm.close();
+    }
+
+    @Override
+    public Observable<UserRealm> userInfos(String userId) {
+        return Observable.create(new Observable.OnSubscribe<UserRealm>() {
+            @Override
+            public void call(final Subscriber<? super UserRealm> subscriber) {
+                Realm obsRealm = Realm.getDefaultInstance();
+                final RealmResults<UserRealm> results = obsRealm.where(UserRealm.class).findAll();
+                if (results != null && results.size() > 0)
+                    subscriber.onNext(obsRealm.copyFromRealm(results).get(0));
+                else
+                    subscriber.onCompleted();
+                obsRealm.close();
+            }
+        });
     }
 }

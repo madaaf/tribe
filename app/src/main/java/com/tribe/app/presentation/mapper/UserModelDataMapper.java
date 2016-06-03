@@ -1,9 +1,6 @@
 package com.tribe.app.presentation.mapper;
 
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.PerActivity;
 
@@ -42,20 +39,15 @@ public class UserModelDataMapper {
         userRealm.setId(user.getId());
         userRealm.setUpdatedAt(user.getUpdatedAt());
         userRealm.setCreatedAt(user.getCreatedAt());
-        userRealm.setCountryCode(user.getCountryCode());
-        userRealm.setHidePinCode(user.isHidePinCode());
         userRealm.setDisableSaveTribe(user.isDisableSaveTribe());
         userRealm.setDisplayName(user.getDisplayName());
         userRealm.setEmail(user.getEmail());
         userRealm.setEmailVerified(user.isEmailVerified());
         userRealm.setInvited(user.isInvited());
         userRealm.setLocation(locationModelDataMapper.transform(user.getLocation()));
-        userRealm.setPhoneNumber(user.getPhoneNumber());
-        userRealm.setPinCode(user.getPinCode());
         userRealm.setProfilePicture(user.getProfilePicture());
         userRealm.setReal(user.isReal());
         userRealm.setScore(user.getScore());
-        userRealm.setShouldSync(user.isShouldSync());
 
         return userRealm;
     }

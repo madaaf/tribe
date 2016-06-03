@@ -3,7 +3,6 @@ package com.tribe.app.data.cache;
 import android.content.Context;
 
 import com.fernandocejas.frodo.annotation.RxLogObservable;
-import com.tribe.app.data.realm.MarvelCharacterRealm;
 import com.tribe.app.data.realm.MessageRealm;
 
 import java.util.ArrayList;

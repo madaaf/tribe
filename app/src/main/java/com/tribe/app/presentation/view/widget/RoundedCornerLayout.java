@@ -54,9 +54,11 @@ public class RoundedCornerLayout extends FrameLayout {
 
         super.draw(offscreenCanvas);
 
-        if (maskBitmap == null) {
-            maskBitmap = createMask(canvas.getWidth(), canvas.getHeight());
+        if (maskBitmap != null) {
+            maskBitmap = null;
         }
+
+        maskBitmap = createMask(canvas.getWidth(), canvas.getHeight());
 
         offscreenCanvas.drawBitmap(maskBitmap, 0f, 0f, maskPaint);
         canvas.drawBitmap(offscreenBitmap, 0f, 0f, paint);

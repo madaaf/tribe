@@ -36,7 +36,7 @@
         <item name="android:textColor">@color/black.opacity.40</item>
     </style>
 
-    <style name="Text.Grid"></style>
-    <style name="Text.Grid.Me"></style>
+    <style name="Text.Grid" />
+    <style name="Text.Grid.Me" />
 
 </resources>

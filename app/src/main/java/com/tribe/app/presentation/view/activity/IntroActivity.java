@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.tribe.app.R;
@@ -14,6 +15,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class IntroActivity extends BaseActivity implements IntroView {
+
+    public static Intent getCallingIntent(Context context) {
+        return new Intent(context, IntroActivity.class);
+    }
 
     @Inject
     IntroPresenter introPresenter;

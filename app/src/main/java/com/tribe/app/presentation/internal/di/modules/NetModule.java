@@ -13,18 +13,14 @@ import com.jakewharton.byteunits.DecimalByteUnit;
 import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 import com.tribe.app.BuildConfig;
-import com.tribe.app.data.network.MarvelApi;
 import com.tribe.app.data.network.TribeApi;
-import com.tribe.app.data.network.authorizer.MarvelAuthorizer;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
-import com.tribe.app.data.network.deserializer.MarvelResultsDeserializer;
-import com.tribe.app.data.network.interceptor.MarvelSigningInterceptor;
+import com.tribe.app.data.network.deserializer.TribeUserDeserializer;
 import com.tribe.app.data.realm.AccessToken;
-import com.tribe.app.data.realm.MarvelCharacterRealm;
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.internal.di.PerApplication;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Singleton;
@@ -33,10 +29,8 @@ import dagger.Module;
 import dagger.Provides;
 import io.realm.RealmObject;
 import okhttp3.Cache;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
@@ -65,8 +59,7 @@ public class NetModule {
                         return false;
                     }
                 })
-                .registerTypeAdapter(new TypeToken<List<MarvelCharacterRealm>>() {}.getType(),
-                        new MarvelResultsDeserializer<MarvelCharacterRealm>())
+                .registerTypeAdapter(new TypeToken<UserRealm>() {}.getType(), new TribeUserDeserializer<>())
                 .create();
     }
 
@@ -74,12 +67,6 @@ public class NetModule {
     @PerApplication
     OkHttpClient provideOkHttpClient(Context context) {
         return createOkHttpClient(context).build();
-    }
-
-    @Provides
-    @PerApplication
-    MarvelAuthorizer provideMarvelAuthorizer() {
-        return new MarvelAuthorizer(BuildConfig.MARVEL_PUBLIC_KEY, BuildConfig.MARVEL_PRIVATE_KEY);
     }
 
     @Provides
@@ -128,32 +115,6 @@ public class NetModule {
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .callFactory(httpClientBuilder.build())
                 .build().create(TribeApi.class);
-    }
-
-    @Provides
-    @PerApplication
-    MarvelApi provideMarvelApi(Gson gson, OkHttpClient okHttpClient, MarvelAuthorizer marvelAuthorizer) {
-        OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
-
-        MarvelSigningInterceptor signingIterceptor =
-                new MarvelSigningInterceptor(
-                        marvelAuthorizer.getApiClient(),
-                        marvelAuthorizer.getApiSecret());
-
-        httpClientBuilder.addInterceptor(signingIterceptor);
-
-        if (BuildConfig.DEBUG) {
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-            httpClientBuilder.addInterceptor(loggingInterceptor);
-        }
-
-        return new Retrofit.Builder()
-                .baseUrl("http://gateway.marvel.com/")
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
-                .callFactory(httpClientBuilder.build())
-                .build().create(MarvelApi.class);
     }
 
     @Provides

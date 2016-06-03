@@ -1,14 +1,10 @@
 package com.tribe.app.data.realm.mapper;
 
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Location;
 import com.tribe.app.domain.entity.User;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -21,10 +17,13 @@ import javax.inject.Singleton;
 public class UserRealmDataMapper {
 
     LocationRealmDataMapper locationRealmDataMapper;
+    GroupRealmDataMapper groupRealmDataMapper;
 
     @Inject
-    public UserRealmDataMapper(LocationRealmDataMapper locationRealmDataMapper) {
+    public UserRealmDataMapper(LocationRealmDataMapper locationRealmDataMapper,
+                               GroupRealmDataMapper groupRealmDataMapper) {
         this.locationRealmDataMapper = locationRealmDataMapper;
+        this.groupRealmDataMapper = groupRealmDataMapper;
     }
 
     /**
@@ -40,18 +39,17 @@ public class UserRealmDataMapper {
             user.setCreatedAt(userRealm.getCreatedAt());
             user.setUpdatedAt(userRealm.getUpdatedAt());
             user.setDisplayName(userRealm.getDisplayName());
-            user.setCountryCode(userRealm.getCountryCode());
-            user.setPhoneNumber(userRealm.getPhoneNumber());
             user.setProfilePicture(userRealm.getProfilePicture());
             user.setScore(userRealm.getScore());
             user.setEmail(userRealm.getEmail());
             user.setEmailVerified(userRealm.isEmailVerified());
             user.setReal(userRealm.isReal());
             user.setInvited(userRealm.isInvited());
-            user.setLocation(locationRealmDataMapper.transform(userRealm.getLocation()));
+            if (userRealm.getLocation() != null) user.setLocation(locationRealmDataMapper.transform(userRealm.getLocation()));
             user.setDisableSaveTribe(userRealm.isDisableSaveTribe());
-            user.setShouldSync(userRealm.isShouldSync());
-            user.setHidePinCode(userRealm.isHidePinCode());
+            if (userRealm.getGroups() != null) user.setGroupList(groupRealmDataMapper.transform(userRealm.getGroups()));
+            if (userRealm.getFriends() != null) user.setFriendList(transform(userRealm.getFriends()));
+            if (userRealm.getReported() != null) user.setReportedList(transform(userRealm.getReported()));
         }
 
         return user;

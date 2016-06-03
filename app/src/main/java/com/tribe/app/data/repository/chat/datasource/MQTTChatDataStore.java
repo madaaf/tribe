@@ -1,13 +1,9 @@
 package com.tribe.app.data.repository.chat.datasource;
 
 import com.fernandocejas.frodo.annotation.RxLogObservable;
-import com.google.gson.Gson;
 import com.tribe.app.data.cache.ChatCache;
-import com.tribe.app.data.realm.MarvelCharacterRealm;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.mapper.MQTTMessageDataMapper;
-import com.tribe.app.data.repository.friendship.datasource.FriendshipDataStore;
-import com.tribe.app.data.rxmqtt.impl.RxMqttMessage;
 import com.tribe.app.data.rxmqtt.interfaces.IRxMqttClient;
 
 import org.eclipse.paho.client.mqttv3.IMqttToken;
@@ -16,10 +12,9 @@ import java.util.List;
 
 import rx.Observable;
 import rx.functions.Action1;
-import rx.functions.Func1;
 
 /**
- * {@link FriendshipDataStore} implementation based on connections to the api (Cloud).
+ * {@link ChatDataStore} implementation based on connections to the MQTT server (Cloud).
  */
 public class MQTTChatDataStore implements ChatDataStore {
 

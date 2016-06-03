@@ -43,5 +43,5 @@ public interface UserRepository {
      * @param userId the id of the user for which we get the info
      *
      */
-    Observable<User> getUserInfos(final String userId);
+    Observable<User> userInfos(final String userId);
 }

@@ -1,40 +1,35 @@
 package com.tribe.app.domain.entity;
 
-import java.util.Date;
+import com.tribe.app.data.realm.LocationRealm;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by tiago on 04/05/2016.
- *
- * Class that represents a User in the domain layer.
  */
-public class User {
+public class User extends Friendship {
 
-    private final int id;
-
-    public User(int id) {
-        this.id = id;
+    public User(String id) {
+        super(id);
     }
 
     private String displayName;
-    private String pinCode;
-    private String countryCode;
-    private String phoneNumber;
+    private String username;
+    private String phone;
     private String profilePicture;
-    private String score;
+    private int score = 0;
     private String email;
     private boolean emailVerified;
     private boolean isReal;
     private boolean isInvited;
     private Location location;
     private boolean disableSaveTribe;
-    private boolean shouldSync;
-    private boolean hidePinCode;
-    private Date createdAt;
-    private Date updatedAt;
-
-    public int getId() {
-        return id;
-    }
+    private boolean hideUsername;
+    private List<User> friendList;
+    private List<User> reportedList;
+    private List<Group> groupList;
+    private List<Friendship> friendshipList;
 
     public String getDisplayName() {
         return displayName;
@@ -42,30 +37,6 @@ public class User {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
-    }
-
-    public String getPinCode() {
-        return pinCode;
-    }
-
-    public void setPinCode(String pinCode) {
-        this.pinCode = pinCode;
-    }
-
-    public String getCountryCode() {
-        return countryCode;
-    }
-
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
     }
 
     public String getProfilePicture() {
@@ -76,11 +47,15 @@ public class User {
         this.profilePicture = profilePicture;
     }
 
-    public String getScore() {
+    public int getScore() {
         return score;
     }
 
-    public void setScore(String score) {
+    public String getScoreStr() {
+        return "" + score;
+    }
+
+    public void setScore(int score) {
         this.score = score;
     }
 
@@ -132,62 +107,59 @@ public class User {
         this.disableSaveTribe = disableSaveTribe;
     }
 
-    public boolean isShouldSync() {
-        return shouldSync;
+    public String getUsername() {
+        return username;
     }
 
-    public void setShouldSync(boolean shouldSync) {
-        this.shouldSync = shouldSync;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public boolean isHidePinCode() {
-        return hidePinCode;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setHidePinCode(boolean hidePinCode) {
-        this.hidePinCode = hidePinCode;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
+    public boolean isHideUsername() {
+        return hideUsername;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
+    public void setHideUsername(boolean hideUsername) {
+        this.hideUsername = hideUsername;
     }
 
-    public Date getUpdatedAt() {
-        return updatedAt;
+    public List<User> getFriendList() {
+        return friendList;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setFriendList(List<User> friendList) {
+        this.friendList = friendList;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
+    public List<User> getReportedList() {
+        return reportedList;
+    }
 
-        stringBuilder.append("***** User Details *****\n");
-        stringBuilder.append("id = " + id);
-        stringBuilder.append("displayName = " + displayName);
-        stringBuilder.append("pinCode = " + pinCode);
-        stringBuilder.append("countryCode = " + countryCode);
-        stringBuilder.append("phoneNumber = " + phoneNumber);
-        stringBuilder.append("profilePicture = " + profilePicture);
-        stringBuilder.append("score = " + score);
-        stringBuilder.append("email = " + email);
-        stringBuilder.append("emailVerified = " + emailVerified);
-        stringBuilder.append("isReal = " + isReal);
-        stringBuilder.append("location = " + location);
-        stringBuilder.append("isInvited = " + isInvited);
-        stringBuilder.append("disableSaveTribe = " + disableSaveTribe);
-        stringBuilder.append("shouldSync = " + shouldSync);
-        stringBuilder.append("hidePinCode = " + hidePinCode);
-        stringBuilder.append("createdAt = " + createdAt);
-        stringBuilder.append("updatedAt = " + updatedAt);
-        stringBuilder.append("*******************************");
+    public void setReportedList(List<User> reportedList) {
+        this.reportedList = reportedList;
+    }
 
-        return stringBuilder.toString();
+    public List<Group> getGroupList() {
+        return groupList;
+    }
+
+    public void setGroupList(List<Group> groupList) {
+        this.groupList = groupList;
+    }
+
+    public List<Friendship> getFriendshipList() {
+        friendshipList = new ArrayList<>();
+        friendshipList.add(this);
+        if (friendList != null) friendshipList.addAll(friendList);
+        //if (groupList != null) friendshipList.addAll(groupList);
+        return friendshipList;
     }
 }

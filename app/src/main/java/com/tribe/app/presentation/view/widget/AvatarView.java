@@ -91,7 +91,8 @@ public class AvatarView extends RoundedCornerLayout {
     }
 
     public void load(String url) {
-        picasso.load(R.drawable.fry)
+
+        picasso.load(url)
                 .fit()
                 .centerCrop()
                 .into(imgAvatar);

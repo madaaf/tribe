@@ -1,9 +1,9 @@
 package com.tribe.app.data.realm;
 
-import com.tribe.app.domain.entity.Location;
-
 import java.util.Date;
+import java.util.List;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -13,31 +13,49 @@ import io.realm.annotations.PrimaryKey;
 public class UserRealm extends RealmObject {
 
     @PrimaryKey
-    private int id;
+    private String id;
 
+    private Date createdAt;
+    private Date updatedAt;
     private String displayName;
-    private String pinCode;
-    private String countryCode;
-    private String phoneNumber;
+    private String username;
+    private String phone;
     private String profilePicture;
-    private String score;
+    private int score;
     private String email;
     private boolean emailVerified;
     private boolean isReal;
     private boolean isInvited;
     private LocationRealm location;
     private boolean disableSaveTribe;
-    private boolean shouldSync;
-    private boolean hidePinCode;
-    private Date createdAt;
-    private Date updatedAt;
+    private boolean hideUsername;
+    private RealmList<UserRealm> friends;
+    private RealmList<UserRealm> reported;
+    private RealmList<GroupRealm> groups;
 
-    public void setId(int id) {
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
         this.id = id;
     }
 
-    public int getId() {
-        return id;
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public String getDisplayName() {
@@ -48,30 +66,6 @@ public class UserRealm extends RealmObject {
         this.displayName = displayName;
     }
 
-    public String getPinCode() {
-        return pinCode;
-    }
-
-    public void setPinCode(String pinCode) {
-        this.pinCode = pinCode;
-    }
-
-    public String getCountryCode() {
-        return countryCode;
-    }
-
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
     public String getProfilePicture() {
         return profilePicture;
     }
@@ -80,11 +74,11 @@ public class UserRealm extends RealmObject {
         this.profilePicture = profilePicture;
     }
 
-    public String getScore() {
+    public int getScore() {
         return score;
     }
 
-    public void setScore(String score) {
+    public void setScore(int score) {
         this.score = score;
     }
 
@@ -136,35 +130,51 @@ public class UserRealm extends RealmObject {
         this.disableSaveTribe = disableSaveTribe;
     }
 
-    public boolean isShouldSync() {
-        return shouldSync;
+    public String getUsername() {
+        return username;
     }
 
-    public void setShouldSync(boolean shouldSync) {
-        this.shouldSync = shouldSync;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public boolean isHidePinCode() {
-        return hidePinCode;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setHidePinCode(boolean hidePinCode) {
-        this.hidePinCode = hidePinCode;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
+    public boolean isHideUsername() {
+        return hideUsername;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
+    public void setHideUsername(boolean hideUsername) {
+        this.hideUsername = hideUsername;
     }
 
-    public Date getUpdatedAt() {
-        return updatedAt;
+    public RealmList<UserRealm> getFriends() {
+        return friends;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setFriends(RealmList<UserRealm> friends) {
+        this.friends = friends;
+    }
+
+    public RealmList<UserRealm> getReported() {
+        return reported;
+    }
+
+    public void setReported(RealmList<UserRealm> reported) {
+        this.reported = reported;
+    }
+
+    public RealmList<GroupRealm> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(RealmList<GroupRealm> groups) {
+        this.groups = groups;
     }
 }

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.tribe.app.presentation.view.activity.ChatActivity;
+import com.tribe.app.presentation.view.activity.HomeActivity;
+import com.tribe.app.presentation.view.activity.IntroActivity;
 
 import javax.inject.Inject;
 
@@ -18,13 +20,26 @@ public class Navigator {
     }
 
     /**
+     * Goes to the login.
+     *
+     * @param context A Context needed to open the destiny activity.
+     */
+    public void navigateToLogin(Context context) {
+        if (context != null) {
+            Intent intent = IntroActivity.getCallingIntent(context);
+            context.startActivity(intent);
+        }
+    }
+
+    /**
      * Goes to the main grid.
      *
      * @param context A Context needed to open the destiny activity.
      */
     public void navigateToHome(Context context) {
         if (context != null) {
-
+            Intent intent = HomeActivity.getCallingIntent(context);
+            context.startActivity(intent);
         }
     }
 

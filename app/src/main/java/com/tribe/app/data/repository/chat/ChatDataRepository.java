@@ -9,7 +9,6 @@ import com.tribe.app.data.repository.chat.datasource.DiskChatDataStore;
 import com.tribe.app.data.repository.chat.datasource.MQTTChatDataStore;
 import com.tribe.app.data.rxmqtt.impl.RxMqttMessage;
 import com.tribe.app.domain.entity.Message;
-import com.tribe.app.domain.interactor.friendship.FriendshipRepository;
 import com.tribe.app.domain.interactor.text.ChatRepository;
 
 import org.eclipse.paho.client.mqttv3.IMqttToken;
@@ -33,7 +32,7 @@ public class ChatDataRepository implements ChatRepository {
     private final MessageRealmDataMapper messageRealmDataMapper;
 
     /**
-     * Constructs a {@link FriendshipRepository}.
+     * Constructs a {@link ChatRepository}.
      *
      * @param dataStoreFactory A factory to construct different data source implementations.
      * @param realmDataMapper {@link MessageRealmDataMapper}.

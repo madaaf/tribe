@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.tribe.app.domain.entity.MarvelCharacter;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate;
 
@@ -24,7 +24,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
     protected RxAdapterDelegatesManager delegatesManager;
     private UserGridAdapterDelegate userGridAdapterDelegate;
 
-    private List<MarvelCharacter> items;
+    private List<Friendship> items;
 
     @Inject
     public HomeGridAdapter(Context context) {
@@ -55,7 +55,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
         delegatesManager.releaseSubscriptions();
     }
 
-    public void setItems(List<MarvelCharacter> items) {
+    public void setItems(List<Friendship> items) {
         this.items = items;
         this.notifyDataSetChanged();
     }
@@ -69,7 +69,11 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
         return userGridAdapterDelegate.onClickChat();
     }
 
-    public MarvelCharacter getItemAtPosition(int position) {
+    public Observable<View> onClickMore() {
+        return userGridAdapterDelegate.onClickMore();
+    }
+
+    public Friendship getItemAtPosition(int position) {
         if (items.size() > 0 && position < items.size()) {
             return items.get(position);
         } else {

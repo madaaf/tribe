@@ -4,7 +4,6 @@ import com.fernandocejas.frodo.annotation.RxLogObservable;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.mapper.MQTTMessageDataMapper;
-import com.tribe.app.data.repository.friendship.datasource.FriendshipDataStore;
 import com.tribe.app.data.rxmqtt.interfaces.IRxMqttClient;
 
 import org.eclipse.paho.client.mqttv3.IMqttToken;

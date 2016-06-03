@@ -1,22 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="vehicle.infos">
-        query QueryVehicles {
-            vehicle (id: %1$s) {
-                id
-                name
-                vehicleClass
+    <string name="user.infos">
+        {
+            user(id: \"SJxX3BUM7\") {
+                ...UserInfos
+
+                friends {
+                    ...UserInfos
+                }
+
+                groups {
+                    name
+                    members {
+                        ...UserInfos
+                    }
+                }
+
+                reported {
+                    ...UserInfos
+                }
+
+                installs {
+                    gcm_id
+                    user {
+                        ...UserInfos
+                    }
+                }
             }
         }
-    </string>
 
-    <string name="user.infos">
-        query QueryVehicles {
-            vehicle (id: %1$s) {
-                id
-                name
-                vehicleClass
-            }
+        fragment UserInfos on User {
+            id
+            displayName
+            profilePicture
         }
     </string>
 </resources>

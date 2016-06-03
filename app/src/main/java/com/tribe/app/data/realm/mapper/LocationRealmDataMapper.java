@@ -1,13 +1,7 @@
 package com.tribe.app.data.realm.mapper;
 
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.LocationRealm;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Location;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

@@ -1,32 +1,22 @@
 package com.tribe.app.presentation.internal.di.modules;
 
 import android.content.Context;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.config.Configuration;
 import com.birbit.android.jobqueue.log.CustomLogger;
-import com.tribe.app.R;
-import com.tribe.app.data.cache.FriendshipCache;
-import com.tribe.app.data.cache.FriendshipCacheImpl;
-import com.tribe.app.data.cache.MarvelCache;
-import com.tribe.app.data.cache.MarvelCacheImpl;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.ChatCacheImpl;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.cache.UserCacheImpl;
 import com.tribe.app.data.executor.JobExecutor;
-import com.tribe.app.data.repository.friendship.FriendshipDataRepository;
-import com.tribe.app.data.repository.marvel.CloudMarvelDataRepository;
-import com.tribe.app.data.repository.marvel.DiskMarvelDataRepository;
+import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.repository.chat.ChatDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
+import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
-import com.tribe.app.domain.interactor.friendship.FriendshipRepository;
-import com.tribe.app.domain.interactor.marvel.MarvelRepository;
 import com.tribe.app.domain.interactor.text.ChatRepository;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.AndroidApplication;
@@ -36,8 +26,9 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 
 import dagger.Module;
 import dagger.Provides;
+import io.realm.Realm;
+import io.realm.RealmResults;
 
-import javax.annotation.Resource;
 import javax.inject.Singleton;
 
 /**
@@ -72,37 +63,13 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    FriendshipRepository provideFriendshipRepository(FriendshipDataRepository friendshipDataRepository) {
-        return friendshipDataRepository;
-    }
-
-    @Provides
-    @Singleton
-    FriendshipCache provideFriendshipCache(FriendshipCacheImpl friendshipCache) {
-        return friendshipCache;
-    }
-
-    @Provides
-    @Singleton
-    MarvelRepository provideCloudMarvelRepository(CloudMarvelDataRepository marvelDataRepository) {
-        return marvelDataRepository;
-    }
-
-    @Provides
-    @Singleton
-    MarvelRepository provideDiskMarvelRepository(DiskMarvelDataRepository marvelDataRepository) {
-        return marvelDataRepository;
-    }
-
-    @Provides
-    @Singleton
-    MarvelCache provideMarvelCache(MarvelCacheImpl marvelCache) {
-        return marvelCache;
-    }
-
-    @Provides
-    @Singleton
     UserRepository provideCloudUserRepository(CloudUserDataRepository userDataRepository) {
+        return userDataRepository;
+    }
+
+    @Provides
+    @Singleton
+    UserRepository provideDiskUserRepository(DiskUserDataRepository userDataRepository) {
         return userDataRepository;
     }
 
@@ -128,6 +95,20 @@ public class ApplicationModule {
     @Singleton
     Navigator provideNavigator() {
         return new Navigator();
+    }
+
+    @Provides
+    @Singleton
+    AccessToken provideAccessToken() {
+        AccessToken accessToken = new AccessToken();
+
+        Realm realm = Realm.getDefaultInstance();
+        final RealmResults<AccessToken> results = realm.where(AccessToken.class).findAll();
+        if (results != null && results.size() > 0)
+            accessToken = realm.copyFromRealm(results.get(0));
+        realm.close();
+
+        return accessToken;
     }
 
     @Provides

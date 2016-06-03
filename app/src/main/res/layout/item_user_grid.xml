@@ -24,18 +24,18 @@
         android:src="@drawable/picto_text"
         android:scaleType="centerInside"
         android:layout_gravity="bottom|right"
-        android:background="@drawable/shape_rect_rounded_bottom_right"
+        android:background="@drawable/selectable_button_text_mode"
+        android:clickable="true"
         />
 
     <ImageView
         android:id="@+id/btnMore"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/button_size"
+        android:layout_height="@dimen/button_size"
         android:src="@drawable/picto_more"
         android:scaleType="centerInside"
         android:layout_gravity="top|right"
-        android:layout_marginRight="15dp"
-        android:layout_marginTop="17dp"
+        android:background="@drawable/selectable_button_oval"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -101,4 +101,11 @@
         android:progressDrawable="@drawable/progress_circular"
         />
 
+    <View
+        android:id="@+id/viewPressedForeground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:background="@drawable/shape_rectangle_border_black_opacity"
+        />
 </com.tribe.app.presentation.view.widget.SquareFrameLayout>
