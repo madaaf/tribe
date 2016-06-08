@@ -23,13 +23,14 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.UIThread;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
+
+import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
 import io.realm.Realm;
 import io.realm.RealmResults;
-
-import javax.inject.Singleton;
 
 /**
  * Dagger module that provides objects which will live during the application lifecycle.
@@ -115,6 +116,12 @@ public class ApplicationModule {
     @Singleton
     PaletteGrid providePaletteGrid(Context context) {
         return new PaletteGrid(context);
+    }
+
+    @Provides
+    @Singleton
+    ScreenUtils provideScreenUtils(Context context) {
+        return new ScreenUtils(context);
     }
 
     @Provides

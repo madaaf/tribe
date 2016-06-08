@@ -6,7 +6,6 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -43,7 +42,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -53,15 +51,15 @@ import rx.subjects.PublishSubject;
  */
 public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
 
-    private final float BOUNCINESS_INSIDE = 10f;
+    private final float BOUNCINESS_INSIDE = 15f;
     private final float SPEED_INSIDE = 12.5f;
     private final float BOUNCINESS_OUTSIDE = 1f;
     private final float SPEED_OUTSIDE = 20f;
     private final int LONG_PRESS = 200;
     private final int FADE_DURATION = 200;
-    private final int SCALE_DURATION = 150;
+    private final int SCALE_DURATION = 200;
     private final int END_RECORD_DELAY = 1000;
-    private final float OVERSHOOT = 2f;
+    private final float OVERSHOOT = 3f;
 
     @Inject PaletteGrid paletteGrid;
     private LayoutInflater layoutInflater;
@@ -79,6 +77,7 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
     private int sizeAvatarInner;
     private int sizeAvatarInnerScaled;
     private int colorBlackOpacity20;
+    private int diffSizeForScale;
 
     // RX SUBSCRIPTIONS / SUBJECTS
     private final PublishSubject<View> clickChatView = PublishSubject.create();
@@ -95,6 +94,7 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
         sizeAvatarInnerScaled = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_inner_scaled);
         timeTapToCancel = context.getResources().getInteger(R.integer.time_tap_to_cancel);
         colorBlackOpacity20 = context.getResources().getColor(R.color.black_opacity_20);
+        diffSizeForScale = (int) (context.getResources().getDisplayMetrics().density * 0.5);
         ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
     }
 
@@ -203,27 +203,18 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
 
                 int scaleUp = (int) (sizeAvatar + ((sizeAvatarScaled - sizeAvatar) * value));
                 ViewGroup.LayoutParams paramsAvatar = userGridViewHolder.avatar.getLayoutParams();
-                paramsAvatar.height = scaleUp;
-                paramsAvatar.width = scaleUp;
-                userGridViewHolder.avatar.setLayoutParams(paramsAvatar);
+                if (Math.abs(scaleUp - paramsAvatar.height) > diffSizeForScale) {
+                    paramsAvatar.height = scaleUp;
+                    paramsAvatar.width = scaleUp;
+                    userGridViewHolder.avatar.setLayoutParams(paramsAvatar);
 
-                float scale = 1f + (value * (((float) sizeAvatarInnerScaled / sizeAvatarInner) - 1));
-                userGridViewHolder.progressBar.setScaleX(scale);
-                userGridViewHolder.progressBar.setScaleY(scale);
+                    float scale = 1f + (value * (((float) sizeAvatarInnerScaled / sizeAvatarInner) - 1));
+                    userGridViewHolder.progressBar.setScaleX(scale);
+                    userGridViewHolder.progressBar.setScaleY(scale);
 
-                userGridViewHolder.viewForeground.setScaleX(scale);
-                userGridViewHolder.viewForeground.setScaleY(scale);
-
-//                ViewGroup.LayoutParams paramsProgressBar = userGridViewHolder.progressBar.getLayoutParams();
-//                paramsProgressBar.height = scaleUp;
-//                paramsProgressBar.width = scaleUp;
-//                userGridViewHolder.progressBar.setLayoutParams(paramsProgressBar);
-//
-//                int scaleUpInner = (int) (sizeAvatarInner + ((sizeAvatarInnerScaled - sizeAvatarInner) * value));
-//                ViewGroup.LayoutParams paramsViewForeground = userGridViewHolder.viewForeground.getLayoutParams();
-//                paramsViewForeground.height = scaleUpInner;
-//                paramsViewForeground.width = scaleUpInner;
-//                userGridViewHolder.viewForeground.setLayoutParams(paramsProgressBar);
+                    userGridViewHolder.viewForeground.setScaleX(scale);
+                    userGridViewHolder.viewForeground.setScaleY(scale);
+                }
 
                 float alpha = 1 - value;
                 userGridViewHolder.txtName.setAlpha(alpha);

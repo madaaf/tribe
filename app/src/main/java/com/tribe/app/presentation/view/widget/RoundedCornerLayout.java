@@ -1,9 +1,9 @@
 package com.tribe.app.presentation.view.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
@@ -13,8 +13,10 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.widget.FrameLayout;
 
+import com.tribe.app.R;
+
 public class RoundedCornerLayout extends FrameLayout {
-    private final static float CORNER_RADIUS = 400.0f;
+    private final static int CORNER_RADIUS_DEFAULT = 400;
 
     private Bitmap maskBitmap;
     private Paint paint, maskPaint;
@@ -37,7 +39,8 @@ public class RoundedCornerLayout extends FrameLayout {
 
     private void init(Context context, AttributeSet attrs, int defStyle) {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-        cornerRadius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, CORNER_RADIUS, metrics);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RoundedCornerLayout);
+        cornerRadius = a.getDimensionPixelSize(R.styleable.RoundedCornerLayout_cornerRadius, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, CORNER_RADIUS_DEFAULT, metrics));
 
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
@@ -45,6 +48,7 @@ public class RoundedCornerLayout extends FrameLayout {
         maskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
 
         setWillNotDraw(false);
+        a.recycle();
     }
 
     @Override

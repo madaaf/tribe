@@ -9,6 +9,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/AdapterDelegates" />
+            <option value="$PROJECT_DIR$/Backboard" />
             <option value="$PROJECT_DIR$/app" />
           </set>
         </option>
@@ -16,6 +17,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/AdapterDelegates" />
+            <option value="$PROJECT_DIR$/Backboard" />
             <option value="$PROJECT_DIR$/app" />
           </set>
         </option>

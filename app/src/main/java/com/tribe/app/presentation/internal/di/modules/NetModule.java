@@ -3,7 +3,6 @@ package com.tribe.app.presentation.internal.di.modules;
 import android.content.Context;
 import android.util.Base64;
 
-import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -21,7 +20,6 @@ import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.internal.di.PerApplication;
 
 import java.io.File;
-import java.util.List;
 
 import javax.inject.Singleton;
 
@@ -31,7 +29,6 @@ import io.realm.RealmObject;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -102,12 +99,12 @@ public class NetModule {
             return chain.proceed(request);
         });
 
-        if (BuildConfig.DEBUG) {
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-            httpClientBuilder.addInterceptor(loggingInterceptor);
-            httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
-        }
+//        if (BuildConfig.DEBUG) {
+//            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+//            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+//            httpClientBuilder.addInterceptor(loggingInterceptor);
+//            httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+//        }
 
         return new Retrofit.Builder()
                 .baseUrl("http://104.196.53.120:3000/")

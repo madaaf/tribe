@@ -13,15 +13,15 @@ import android.widget.ImageView;
 
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.HasComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.HomeView;
 import com.tribe.app.presentation.view.fragment.FriendsGridFragment;
-import com.tribe.app.presentation.view.fragment.HomeGridFragment;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
+import com.tribe.app.presentation.view.fragment.HomeGridFragment;
+import com.tribe.app.presentation.view.widget.CameraView;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
 
 import butterknife.BindView;
@@ -40,6 +40,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         return new Intent(context, HomeActivity.class);
     }
 
+    @BindView(android.R.id.content)
+    ViewGroup rootView;
+
     @BindView(R.id.viewPager)
     CustomViewPager viewPager;
 
@@ -55,6 +58,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @BindView(R.id.imgNavBackToTop)
     ImageView imgNavBackToTop;
 
+    @BindView(R.id.viewCamera)
+    CameraView viewCamera;
+
     private UserComponent userComponent;
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private HomeViewPagerAdapter homeViewPagerAdapter;
@@ -67,6 +73,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         super.onCreate(savedInstanceState);
         initUi();
         initDimensions();
+        initializeCamera();
         initializeViewPager();
         initializeDependencyInjector();
         initializePresenter();
@@ -75,6 +82,13 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     protected void onResume() {
         super.onResume();
+        viewCamera.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        viewCamera.onPause();
     }
 
     @Override
@@ -94,6 +108,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         marginHorizontalSmall = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
         translationBackToTop = getResources().getDimensionPixelSize(R.dimen.transition_grid_back_to_top);
     }
+
+    private void initializeCamera() {
+    }
+
 
     private void initializeViewPager() {
         homeViewPagerAdapter = new HomeViewPagerAdapter(getSupportFragmentManager());
