@@ -5,6 +5,7 @@ package com.tribe.app.domain.interactor.user;
  */
 
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.User;
 
 import rx.Observable;
@@ -15,19 +16,20 @@ import rx.Observable;
 public interface UserRepository {
 
     /**
-     * Get an {@link Observable} which will emit a {@link String} containing info about the code.
+     * Get an {@link Observable} which will emit a {@link com.tribe.app.domain.entity.Pin} containing info about the code.
      *
      * @param phoneNumber The phoneNumber used to login.
      */
-    Observable<User> requestCode(final String phoneNumber);
+    Observable<Pin> requestCode(final String phoneNumber);
 
     /**
      * Get an {@link Observable} which will emit a {@link User}.
      *
      * @param phoneNumber The phoneNumber used to login.
      * @param code the validation code the user entered.
+     * @param scope The scope for the call.
      */
-    Observable<User> loginWithPhoneNumber(final String phoneNumber, final String code);
+    Observable<AccessToken> loginWithPhoneNumber(final String phoneNumber, final String code, final String scope);
 
     /**
      * Get an {@link Observable} which will emit a {@link User}.

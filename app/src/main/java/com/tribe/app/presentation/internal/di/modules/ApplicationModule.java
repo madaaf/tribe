@@ -23,6 +23,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.UIThread;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
+import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 import javax.inject.Singleton;
@@ -116,6 +117,12 @@ public class ApplicationModule {
     @Singleton
     PaletteGrid providePaletteGrid(Context context) {
         return new PaletteGrid(context);
+    }
+
+    @Provides
+    @Singleton
+    PhoneUtils providePhoneUtils(Context context) {
+        return new PhoneUtils(context);
     }
 
     @Provides

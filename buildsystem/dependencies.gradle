@@ -34,6 +34,7 @@ ext {
     byteUnitsVersion = '0.9.1'
     reboundVersion = '0.3.8'
     rxSharedPreferencesVersion = '1.0.1'
+    libPhoneNumberVersion = '7.1.0'
 
     //Testing
     robolectricVersion = '3.0'
@@ -73,7 +74,8 @@ ext {
             picassoDownloader       : "com.jakewharton.picasso:picasso2-okhttp3-downloader:${picassoDownloaderVersion}",
             byteUnits               : "com.jakewharton.byteunits:byteunits:${byteUnitsVersion}",
             rebound                 : "com.facebook.rebound:rebound:${reboundVersion}",
-            rxSharedPreferences     : "com.f2prateek.rx.preferences:rx-preferences:${rxSharedPreferencesVersion}"
+            rxSharedPreferences     : "com.f2prateek.rx.preferences:rx-preferences:${rxSharedPreferencesVersion}",
+            libPhoneNumber          : "com.googlecode.libphonenumber:libphonenumber:7.1.0"
     ]
 
     presentationTestDependencies = [

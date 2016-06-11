@@ -16,8 +16,9 @@ import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate;
+import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.widget.AvatarView;
-import com.tribe.app.presentation.view.widget.CameraView;
+import com.tribe.app.presentation.view.widget.CameraWrapper;
 
 import javax.inject.Singleton;
 
@@ -36,7 +37,7 @@ public interface ApplicationComponent {
     void inject(MeGridAdapterDelegate meGridAdapterDelegate);
     void inject(UserGridAdapterDelegate userGridAdapterDelegate);
     void inject(AvatarView avatarView);
-    void inject(CameraView cameraView);
+    void inject(CameraWrapper cameraWrapper);
 
     //Exposed to sub-graphs.
     Context context();
@@ -54,4 +55,6 @@ public interface ApplicationComponent {
     ChatRepository textRepository();
 
     TribeAuthorizer tribeAuthorizer();
+
+    PhoneUtils phoneUtils();
 }

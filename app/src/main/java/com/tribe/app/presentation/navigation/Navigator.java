@@ -1,9 +1,11 @@
 package com.tribe.app.presentation.navigation;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
 import com.tribe.app.presentation.view.activity.ChatActivity;
+import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 
@@ -13,6 +15,8 @@ import javax.inject.Inject;
  * Class used to navigate through the application.
  */
 public class Navigator {
+
+    public static int REQUEST_COUNTRY = 1000;
 
     @Inject
     public Navigator() {
@@ -28,6 +32,18 @@ public class Navigator {
         if (context != null) {
             Intent intent = IntroActivity.getCallingIntent(context);
             context.startActivity(intent);
+        }
+    }
+
+    /**
+     * Opens the country list.
+     *
+     * @param activity An activity needed to open the destiny activity.
+     */
+    public void navigateToCountries(Activity activity) {
+        if (activity != null) {
+            Intent intent = CountryActivity.getCallingIntent(activity);
+            activity.startActivityForResult(intent, REQUEST_COUNTRY);
         }
     }
 

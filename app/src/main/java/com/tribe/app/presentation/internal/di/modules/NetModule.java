@@ -3,6 +3,7 @@ package com.tribe.app.presentation.internal.di.modules;
 import android.content.Context;
 import android.util.Base64;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -12,6 +13,7 @@ import com.jakewharton.byteunits.DecimalByteUnit;
 import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 import com.tribe.app.BuildConfig;
+import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.deserializer.TribeUserDeserializer;
@@ -29,6 +31,7 @@ import io.realm.RealmObject;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -99,19 +102,61 @@ public class NetModule {
             return chain.proceed(request);
         });
 
-//        if (BuildConfig.DEBUG) {
-//            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-//            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-//            httpClientBuilder.addInterceptor(loggingInterceptor);
-//            httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
-//        }
+        if (BuildConfig.DEBUG) {
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            httpClientBuilder.addInterceptor(loggingInterceptor);
+            httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+        }
 
         return new Retrofit.Builder()
-                .baseUrl("http://104.196.53.120:3000/")
+                .baseUrl("http://api.tribe.pm/")
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .callFactory(httpClientBuilder.build())
                 .build().create(TribeApi.class);
+    }
+
+    @Provides
+    @PerApplication
+    LoginApi provideLoginApi(Gson gson, OkHttpClient okHttpClient, TribeAuthorizer tribeAuthorizer) {
+        OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
+
+        httpClientBuilder.addInterceptor(chain -> {
+            Request original = chain.request();
+
+            Request.Builder requestBuilder = original.newBuilder()
+                    .header("Content-type", "application/json");
+
+            if (tribeAuthorizer.getAccessToken() != null && tribeAuthorizer.getAccessToken().getAccessToken() != null) {
+                requestBuilder.header("Authorization", tribeAuthorizer.getAccessToken().getTokenType()
+                        + " " + tribeAuthorizer.getAccessToken().getAccessToken());
+            } else {
+                byte[] data = (tribeAuthorizer.getApiClient() + ":" + tribeAuthorizer.getApiSecret()).getBytes("UTF-8");
+                String base64 = Base64.encodeToString(data, Base64.DEFAULT).replace("\n", "");
+
+                requestBuilder.header("Authorization", "Basic " + base64);
+            }
+
+            requestBuilder.method(original.method(), original.body());
+
+            Request request = requestBuilder.build();
+            return chain.proceed(request);
+        });
+
+        if (BuildConfig.DEBUG) {
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            httpClientBuilder.addInterceptor(loggingInterceptor);
+            httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+        }
+
+        return new Retrofit.Builder()
+                .baseUrl("http://login.tribe.pm/")
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
+                .callFactory(httpClientBuilder.build())
+                .build().create(LoginApi.class);
     }
 
     @Provides

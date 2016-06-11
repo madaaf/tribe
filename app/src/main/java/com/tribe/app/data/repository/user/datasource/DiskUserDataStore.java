@@ -1,18 +1,11 @@
 package com.tribe.app.data.repository.user.datasource;
 
-import android.content.Context;
-
-import com.tribe.app.R;
 import com.tribe.app.data.cache.UserCache;
-import com.tribe.app.data.network.TribeApi;
-import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.UserRealm;
 
-import java.util.List;
-
 import rx.Observable;
-import rx.functions.Action1;
 
 /**
  * {@link UserDataStore} implementation based on connections to the database.
@@ -26,6 +19,17 @@ public class DiskUserDataStore implements UserDataStore {
      */
     public DiskUserDataStore(UserCache userCache) {
         this.userCache = userCache;
+    }
+
+    @Override
+    public Observable<PinRealm> requestCode(String phoneNumber) {
+        //return this.userCache.;
+        return null;
+    }
+
+    @Override
+    public Observable<AccessToken> loginWithPhoneNumber(String phoneNumber, String code, String scope) {
+        return null;
     }
 
     @Override

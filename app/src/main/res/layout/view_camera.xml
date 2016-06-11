@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <com.tribe.app.presentation.view.widget.CameraManager
+    <com.tribe.app.presentation.view.camera.view.CameraView
         android:id="@+id/cameraManager"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </com.tribe.app.presentation.view.widget.CameraManager>
+    </com.tribe.app.presentation.view.camera.view.CameraView>
 
     <View
         android:id="@+id/viewCameraForeground"

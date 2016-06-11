@@ -1,9 +1,10 @@
 package com.tribe.app.presentation.internal.di.modules;
 
 import com.tribe.app.domain.interactor.common.UseCase;
-import com.tribe.app.domain.interactor.user.DoLoginWithUsername;
+import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
+import com.tribe.app.domain.interactor.user.GetRequestCode;
 import com.tribe.app.presentation.internal.di.PerActivity;
 
 import javax.inject.Named;
@@ -22,8 +23,14 @@ public class UserModule {
 
     @Provides
     @PerActivity
-    UseCase provideDoLoginWithUsernameUseCase(DoLoginWithUsername doLoginWithUsername) {
-        return doLoginWithUsername;
+    UseCase provideGetRequestCodeUseCase(GetRequestCode getRequestCode) {
+        return getRequestCode;
+    }
+
+    @Provides
+    @PerActivity
+    UseCase provideDoLoginWithUsernameUseCase(DoLoginWithPhoneNumber doLoginWithPhoneNumber) {
+        return doLoginWithPhoneNumber;
     }
 
     @Provides

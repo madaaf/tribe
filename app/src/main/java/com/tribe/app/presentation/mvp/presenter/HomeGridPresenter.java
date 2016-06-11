@@ -6,8 +6,6 @@ import com.tribe.app.domain.exception.DefaultErrorBundle;
 import com.tribe.app.domain.exception.ErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
-import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
-import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.View;

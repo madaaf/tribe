@@ -11,27 +11,36 @@ import android.widget.FrameLayout;
 
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.camera.shader.fx.GlLutShader;
+import com.tribe.app.presentation.view.camera.view.CameraView;
+import com.tribe.app.presentation.view.camera.view.GlPreview;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * A layout which handles the preview aspect ratio.
  */
-public class CameraView extends FrameLayout {
+public class CameraWrapper extends FrameLayout {
 
-    public static final String TAG = "CameraView";
+    public static final String TAG = "CameraWrapper";
     public static final int DURATION = 200;
 
     @Inject ScreenUtils screenUtils;
 
     @BindView(R.id.cameraManager)
-    CameraManager cameraManager;
+    CameraView cameraView;
 
     // Variables
+    private GlPreview preview;
     private double aspectRatio;
 
     // Resources
@@ -41,12 +50,15 @@ public class CameraView extends FrameLayout {
     // Drag camera
     private int downX, downY, xDelta, yDelta;
 
-    public CameraView(Context context, AttributeSet attrs) {
+    public CameraWrapper(Context context, AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.view_camera, this, true);
 
         ButterKnife.bind(this);
+
+        preview = new GlPreview(context);
+        preview.setShader(new GlLutShader(context.getResources(), R.drawable.video_filter_blue));
 
         ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
         marginLeftInit = context.getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
@@ -64,11 +76,22 @@ public class CameraView extends FrameLayout {
     }
 
     public void onPause() {
-        cameraManager.pause();
+        if (cameraView != null) {
+            cameraView.stopPreview();
+        }
     }
 
     public void onResume() {
-        cameraManager.resume();
+        if (cameraView != null ) {
+            cameraView.setPreview(preview);
+
+            Observable.timer(1000, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(time -> {
+                    cameraView.startPreview();
+                });
+        }
     }
 
     public void setAspectRatio(double ratio) {

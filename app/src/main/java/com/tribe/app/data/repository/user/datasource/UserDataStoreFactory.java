@@ -2,10 +2,9 @@ package com.tribe.app.data.repository.user.datasource;
 
 import android.content.Context;
 
-import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.data.cache.UserCache;
+import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
-import com.tribe.app.data.realm.AccessToken;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -19,15 +18,18 @@ public class UserDataStoreFactory {
     private final Context context;
     private final UserCache userCache;
     private final TribeApi tribeApi;
+    private final LoginApi loginApi;
 
     @Inject
-    public UserDataStoreFactory(Context context, UserCache userCache, TribeApi tribeApi) {
+    public UserDataStoreFactory(Context context, UserCache userCache, TribeApi tribeApi, LoginApi loginApi) {
         if (context == null || userCache == null) {
             throw new IllegalArgumentException("Constructor parameters cannot be null!");
         }
+
         this.context = context.getApplicationContext();
         this.userCache = userCache;
         this.tribeApi = tribeApi;
+        this.loginApi = loginApi;
     }
 
     /**
@@ -39,6 +41,6 @@ public class UserDataStoreFactory {
      * Create {@link UserDataStore} to retrieve data from the Cloud.
      */
     public UserDataStore createCloudDataStore() {
-        return new CloudUserDataStore(this.userCache, this.tribeApi, this.context);
+        return new CloudUserDataStore(this.userCache, this.tribeApi, loginApi, this.context);
     }
 }

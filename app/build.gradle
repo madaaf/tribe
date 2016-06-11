@@ -107,6 +107,7 @@ dependencies {
     compile presentationDependencies.byteUnits
     compile presentationDependencies.rebound
     compile presentationDependencies.rxSharedPreferences
+    compile presentationDependencies.libPhoneNumber
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker

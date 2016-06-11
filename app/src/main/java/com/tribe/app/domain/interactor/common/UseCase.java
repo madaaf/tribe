@@ -26,7 +26,7 @@ import rx.subscriptions.Subscriptions;
 
 /**
  * Abstract class for a Use Case (Interactor in terms of Clean Architecture).
- * This interface represents a execution unit for different use cases (this means any use case
+ * This interfaces represents a execution unit for different use cases (this means any use case
  * in the application should implement this contract).
  *
  * By convention each UseCase implementation will return the result using a {@link rx.Subscriber}

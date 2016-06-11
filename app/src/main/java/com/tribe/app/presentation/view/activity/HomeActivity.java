@@ -21,7 +21,7 @@ import com.tribe.app.presentation.mvp.view.HomeView;
 import com.tribe.app.presentation.view.fragment.FriendsGridFragment;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
-import com.tribe.app.presentation.view.widget.CameraView;
+import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
 
 import butterknife.BindView;
@@ -59,7 +59,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     ImageView imgNavBackToTop;
 
     @BindView(R.id.viewCamera)
-    CameraView viewCamera;
+    CameraWrapper viewCamera;
 
     private UserComponent userComponent;
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -111,7 +111,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     private void initializeCamera() {
     }
-
 
     private void initializeViewPager() {
         homeViewPagerAdapter = new HomeViewPagerAdapter(getSupportFragmentManager());

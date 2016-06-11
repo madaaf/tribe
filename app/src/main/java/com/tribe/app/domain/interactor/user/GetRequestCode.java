@@ -1,5 +1,6 @@
 package com.tribe.app.domain.interactor.user;
 
+import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
@@ -13,14 +14,17 @@ import rx.Observable;
  */
 public class GetRequestCode extends UseCase {
 
-    private final String phoneNumber;
+    private String phoneNumber;
     private UserRepository userRepository;
 
     @Inject
-    public GetRequestCode(String phoneNumber, UserRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+    public GetRequestCode(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
         super(threadExecutor, postExecutionThread);
-        this.phoneNumber = phoneNumber;
         this.userRepository = userRepository;
+    }
+
+    public void prepare(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     @Override
