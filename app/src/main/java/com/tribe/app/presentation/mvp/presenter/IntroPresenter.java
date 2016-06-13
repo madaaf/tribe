@@ -74,8 +74,8 @@ public class IntroPresenter implements Presenter {
         cloudLoginUseCase.execute(new LoginSubscriber());
     }
 
-    public void goToHome() {
-        this.introView.goToHome();
+    public void goToHome(AccessToken accessToken) {
+        this.introView.goToHome(accessToken);
     }
 
     public void goToCode(Pin pin) {
@@ -128,7 +128,7 @@ public class IntroPresenter implements Presenter {
 
         @Override
         public void onNext(AccessToken accessToken) {
-            goToHome();
+            goToHome(accessToken);
         }
     }
 }

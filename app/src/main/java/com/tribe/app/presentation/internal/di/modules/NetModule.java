@@ -16,6 +16,7 @@ import com.tribe.app.BuildConfig;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
+import com.tribe.app.data.network.deserializer.TribeAccessTokenDeserializer;
 import com.tribe.app.data.network.deserializer.TribeUserDeserializer;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.UserRealm;
@@ -60,6 +61,7 @@ public class NetModule {
                     }
                 })
                 .registerTypeAdapter(new TypeToken<UserRealm>() {}.getType(), new TribeUserDeserializer<>())
+                .registerTypeAdapter(AccessToken.class, new TribeAccessTokenDeserializer())
                 .create();
     }
 

@@ -12,9 +12,12 @@ import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.cache.UserCacheImpl;
 import com.tribe.app.data.executor.JobExecutor;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.chat.ChatDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.data.repository.user.DiskUserDataRepository;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.text.ChatRepository;
@@ -111,6 +114,20 @@ public class ApplicationModule {
         realm.close();
 
         return accessToken;
+    }
+
+    @Provides
+    @Singleton
+    User provideCurrentUser(AccessToken accessToken, UserRealmDataMapper userRealmDataMapper) {
+        Realm realm = Realm.getDefaultInstance();
+        User user = new User("-1");
+
+        final UserRealm userRealm = realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
+        if (userRealm != null)
+            user = userRealmDataMapper.transform(realm.copyFromRealm(userRealm));
+        realm.close();
+
+        return user;
     }
 
     @Provides

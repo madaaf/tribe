@@ -64,6 +64,11 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
     }
 
     @Override
+    public int getNextCamera() {
+        return (cameraId + 1) % getNumberOfCameras();
+    }
+
+    @Override
     public final void releaseCamera() {
         if (camera != null) {
             stopPreview();

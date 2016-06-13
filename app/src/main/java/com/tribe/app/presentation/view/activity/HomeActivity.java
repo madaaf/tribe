@@ -58,8 +58,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @BindView(R.id.imgNavBackToTop)
     ImageView imgNavBackToTop;
 
-    @BindView(R.id.viewCamera)
-    CameraWrapper viewCamera;
+    @BindView(R.id.cameraWrapper)
+    CameraWrapper cameraWrapper;
 
     private UserComponent userComponent;
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -82,13 +82,13 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     protected void onResume() {
         super.onResume();
-        viewCamera.onResume();
+        cameraWrapper.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        viewCamera.onPause();
+        cameraWrapper.onPause();
     }
 
     @Override

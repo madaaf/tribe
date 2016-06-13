@@ -23,6 +23,7 @@ public class CloudUserDataStore implements UserDataStore {
     private final LoginApi loginApi;
     private final UserCache userCache;
     private final Context context;
+    private final AccessToken accessToken;
 
     /**
      * Construct a {@link UserDataStore} based on connections to the api (Cloud).
@@ -30,12 +31,14 @@ public class CloudUserDataStore implements UserDataStore {
      * @param tribeApi an implementation of the api
      * @param loginApi an implementation of the login api
      * @param context the context
+     * @param accessToken the access token
      */
-    public CloudUserDataStore(UserCache userCache, TribeApi tribeApi, LoginApi loginApi, Context context) {
+    public CloudUserDataStore(UserCache userCache, TribeApi tribeApi, LoginApi loginApi, AccessToken accessToken, Context context) {
         this.userCache = userCache;
         this.tribeApi = tribeApi;
         this.loginApi = loginApi;
         this.context = context;
+        this.accessToken = accessToken;
     }
 
     @Override
@@ -48,24 +51,31 @@ public class CloudUserDataStore implements UserDataStore {
     public Observable<AccessToken> loginWithPhoneNumber(String phoneNumber, String code, String scope) {
         return this.loginApi
                 .loginWithUsername(new LoginEntity(phoneNumber, code, scope, "password"))
-                .doOnNext(saveToCacheAction);
+                .doOnNext(saveToCacheAccessToken);
     }
 
     @Override
     public Observable<AccessToken> loginWithUsername(String username, String password) {
         return this.loginApi
                 .loginWithUsername(new LoginEntity(username, password, "", "password"))
-                .doOnNext(saveToCacheAction);
+                .doOnNext(saveToCacheAccessToken);
     }
 
     @Override
     public Observable<UserRealm> userInfos(String userId) {
-        return this.tribeApi.getUserInfos(context.getString(R.string.user_infos));
+        return this.tribeApi.getUserInfos(context.getString(R.string.user_infos).replace("%1$s", accessToken.getUserId()))
+                .doOnNext(saveToCacheUser);
     }
 
-    private final Action1<AccessToken> saveToCacheAction = accessToken -> {
+    private final Action1<AccessToken> saveToCacheAccessToken = accessToken -> {
         if (accessToken != null && accessToken.getAccessToken() != null) {
             CloudUserDataStore.this.userCache.put(accessToken);
+        }
+    };
+
+    private final Action1<UserRealm> saveToCacheUser = userRealm -> {
+        if (userRealm != null) {
+            CloudUserDataStore.this.userCache.put(userRealm);
         }
     };
 }

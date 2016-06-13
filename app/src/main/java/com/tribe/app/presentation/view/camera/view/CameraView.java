@@ -34,7 +34,6 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
     private SurfaceView pushBufferSurface;
     private boolean autoStart = true;
     private boolean previewAlignCenter;
-    private View overlayView;
     private CameraStateListener cameraStateListener;
     private OnErrorListener onErrorListener;
 
@@ -121,42 +120,28 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
             if (pushBufferSurface != null) {
                 pushBufferSurface.layout(previewSel.getLeft(), previewSel.getTop(), previewSel.getRight(), previewSel.getBottom());
             }
-            if (overlayView != null) {
-                overlayView.layout(previewSel.getLeft(), previewSel.getTop(), previewSel.getRight(), previewSel.getBottom());
-            }
         }
     }
 
     @Override
     public void removeAllViews() {
-        overlayView = null;
         super.removeAllViews();
     }
 
     @Override
     public void removeView(final View view) {
-        if (overlayView != null && overlayView.equals(view)) {
-            overlayView = null;
-        }
-
         super.removeView(view);
     }
 
     @Override
     public void removeViewAt(final int index) {
-        final View view = getChildAt(index);
-
-        if (overlayView != null && overlayView.equals(view)) {
-            overlayView = null;
-        }
-
         super.removeViewAt(index);
     }
 
     @Override
     public void surfaceCreated(final SurfaceHolder holder) {
         try {
-            openCamera(1);
+            openCamera(CameraHelper.DEFAULT_CAMERA_ID);
         } catch (final RuntimeException e) {
             if (onErrorListener != null) {
                 onErrorListener.onError(OnErrorListener.ERROR_CAMERA_INITIAL_OPEN, e, this);
@@ -279,22 +264,6 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
         requestLayout();
     }
 
-    public void setOverlayView(final View child) {
-        if (overlayView != null) {
-            removeView(overlayView);
-        }
-
-        overlayView = child;
-
-        if (overlayView != null) {
-            addView(child);
-        }
-    }
-
-    public View getOverlayView() {
-        return overlayView;
-    }
-
     public void setCameraStateListener(final CameraStateListener callback) {
         cameraStateListener = callback;
     }
@@ -303,8 +272,8 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
         onErrorListener = l;
     }
 
-    public void switchCamera(final int cameraId) {
-        openCamera(cameraId);
+    public void switchCamera() {
+        openCamera(cameraHelper.getNextCamera());
         startPreview();
     }
 

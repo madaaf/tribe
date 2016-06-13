@@ -2,7 +2,7 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <com.tribe.app.presentation.view.camera.view.CameraView
-        android:id="@+id/cameraManager"
+        android:id="@+id/cameraView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -13,5 +13,43 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/shape_camera_foreground"
+        />
+
+    <ImageView
+        android:id="@+id/imgSound"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="bottom|left"
+        android:layout_marginLeft="@dimen/horizontal_margin"
+        android:layout_marginBottom="@dimen/vertical_margin"
+        android:background="@drawable/selectable_button_oval"
+        android:src="@drawable/picto_sound"
+        android:scaleType="centerInside"
+        android:clickable="true"
+        />
+
+    <ImageView
+        android:id="@+id/imgFlash"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="@dimen/horizontal_margin"
+        android:layout_marginBottom="@dimen/vertical_margin"
+        android:background="@drawable/selectable_button_oval"
+        android:src="@drawable/picto_flash_on"
+        android:scaleType="centerInside"
+        android:clickable="true"
+        />
+
+    <ImageView
+        android:id="@+id/imgVideo"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="@dimen/vertical_margin"
+        android:background="@drawable/selectable_button_oval"
+        android:src="@drawable/picto_camera"
+        android:scaleType="centerInside"
+        android:clickable="true"
         />
 </merge>

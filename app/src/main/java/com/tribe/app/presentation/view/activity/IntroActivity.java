@@ -10,6 +10,7 @@ import android.view.View;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.IntroPresenter;
@@ -149,7 +150,7 @@ public class IntroActivity extends BaseActivity implements IntroView {
     }
 
     @Override
-    public void goToHome() {
+    public void goToHome(AccessToken token) {
         navigator.navigateToHome(context());
     }
 

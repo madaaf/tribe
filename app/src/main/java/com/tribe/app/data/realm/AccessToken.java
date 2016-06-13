@@ -10,6 +10,7 @@ public class AccessToken extends RealmObject {
     private String access_token;
     private String token_type;
     private String refresh_token;
+    private String user_id;
 
     public String getAccessToken() {
         return access_token;
@@ -20,7 +21,7 @@ public class AccessToken extends RealmObject {
     }
 
     public String getTokenType() {
-        if(!Character.isUpperCase(token_type.charAt(0))) {
+        if (!Character.isUpperCase(token_type.charAt(0))) {
             token_type = Character.toString(token_type.charAt(0)).toUpperCase() + token_type.substring(1);
         }
 
@@ -37,5 +38,13 @@ public class AccessToken extends RealmObject {
 
     public void setRefreshToken(String refresh_token) {
         this.refresh_token = refresh_token;
+    }
+
+    public String getUserId() {
+        return user_id;
+    }
+
+    public void setUserId(String user_id) {
+        this.user_id = user_id;
     }
 }

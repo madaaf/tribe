@@ -33,6 +33,8 @@ public interface CameraHelper {
 
     void nextCamera();
 
+    int getNextCamera();
+
     void initializeFocusMode();
 
     void releaseCamera();

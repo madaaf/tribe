@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 
 import com.tribe.app.R;
@@ -22,6 +23,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -33,36 +35,59 @@ public class CameraWrapper extends FrameLayout {
 
     public static final String TAG = "CameraWrapper";
     public static final int DURATION = 200;
+    public static final int DURATION_ICONS = 360;
+    public static final int DELAY = 500;
+    public static final int DIFF_TOUCH = 20;
+    public static final int RATIO = 3;
 
     @Inject ScreenUtils screenUtils;
 
-    @BindView(R.id.cameraManager)
+    @BindView(R.id.cameraView)
     CameraView cameraView;
+
+    @BindView(R.id.imgSound)
+    View imgSound;
+
+    @BindView(R.id.imgFlash)
+    View imgFlash;
+
+    @BindView(R.id.imgVideo)
+    View imgVideo;
 
     // Variables
     private GlPreview preview;
     private double aspectRatio;
 
     // Resources
-    private int marginLeftInit;
-    private int marginBottomInit;
+    private int marginLeftInit, marginBottomInit, marginVerticalIcons, marginHorizontalIcons, diffTouch;
 
     // Drag camera
     private int downX, downY, xDelta, yDelta;
 
     public CameraWrapper(Context context, AttributeSet attrs) {
         super(context, attrs);
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
+
+        initDimens();
+        initUI();
+    }
+
+    public void initDimens() {
+        marginLeftInit = getContext().getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
+        marginBottomInit = getContext().getResources().getDimensionPixelOffset(R.dimen.nav_layout_height);
+        marginHorizontalIcons = getContext().getResources().getDimensionPixelOffset(R.dimen.horizontal_margin);
+        marginVerticalIcons = getContext().getResources().getDimensionPixelOffset(R.dimen.vertical_margin);
+        diffTouch = screenUtils.dpToPx(DIFF_TOUCH);
+    }
+
+    public void initUI() {
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.view_camera, this, true);
 
         ButterKnife.bind(this);
 
-        preview = new GlPreview(context);
-        preview.setShader(new GlLutShader(context.getResources(), R.drawable.video_filter_blue));
-
-        ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
-        marginLeftInit = context.getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
-        marginBottomInit = context.getResources().getDimensionPixelOffset(R.dimen.nav_layout_height);
+        preview = new GlPreview(getContext());
+        preview.setShader(new GlLutShader(getContext().getResources(), R.drawable.video_filter_blue));
 
         setAspectRatio(3.0 / 2.0);
 
@@ -73,6 +98,8 @@ public class CameraWrapper extends FrameLayout {
                 getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
+
+        imgVideo.setTranslationX(screenUtils.getWidth() / RATIO);
     }
 
     public void onPause() {
@@ -116,8 +143,8 @@ public class CameraWrapper extends FrameLayout {
     @Override
     protected void onMeasure(int widthSpec, int heightSpec) {
         // Scale the preview while keeping the aspect ratio
-        int fullWidth = screenUtils.getWidth() / 3;
-        int fullHeight =  (int) (screenUtils.getWidth() / 3 * aspectRatio);
+        int fullWidth = screenUtils.getWidth() / RATIO;
+        int fullHeight =  (int) (screenUtils.getWidth() / RATIO * aspectRatio);
 
         setMeasuredDimension(fullWidth, fullHeight);
 
@@ -141,6 +168,10 @@ public class CameraWrapper extends FrameLayout {
                 break;
 
             case MotionEvent.ACTION_UP:
+                if (Math.abs(touchY - downY) < diffTouch && Math.abs(touchX - downX) < diffTouch) {
+                    cameraView.switchCamera();
+                }
+
                 snapCamera();
                 break;
 
@@ -196,6 +227,63 @@ public class CameraWrapper extends FrameLayout {
             lp.topMargin = (Integer) animation.getAnimatedValue();
             setLayoutParams(lp);
         });
+
         animator2.start();
+    }
+
+    @OnClick(R.id.imgSound)
+    public void activateSound() {
+        if (cameraView != null)
+            cameraView.stopPreview();
+
+        imgSound.animate()
+                .translationX((getWidth() >> 1) - marginHorizontalIcons - (imgSound.getWidth() >> 1))
+                .translationY(-((getHeight() >> 1) - marginVerticalIcons - (imgSound.getHeight() >> 1)))
+                .setDuration(DURATION_ICONS)
+                .setInterpolator(new DecelerateInterpolator())
+                .start();
+
+        imgFlash.animate()
+                .translationX(getWidth() >> 1)
+                .alpha(0)
+                .setDuration(DURATION_ICONS)
+                .setInterpolator(new DecelerateInterpolator())
+                .start();
+
+        imgVideo.animate()
+                .translationX(0)
+                .setDuration(DURATION_ICONS)
+                .setInterpolator(new DecelerateInterpolator())
+                .setStartDelay(DELAY)
+                .start();
+    }
+
+    @OnClick(R.id.imgVideo)
+    public void activateVideo() {
+        if (cameraView != null)
+            cameraView.startPreview();
+
+        imgSound.animate()
+                .translationX(0)
+                .translationY(0)
+                .setDuration(DURATION_ICONS)
+                .setStartDelay(DELAY)
+                .setInterpolator(new DecelerateInterpolator())
+                .start();
+
+        imgFlash.animate()
+                .translationX(0)
+                .translationY(0)
+                .alpha(1)
+                .setDuration(DURATION_ICONS)
+                .setStartDelay(DELAY)
+                .setInterpolator(new DecelerateInterpolator())
+                .start();
+
+        imgVideo.animate()
+                .translationX(getWidth())
+                .setDuration(DURATION_ICONS)
+                .setInterpolator(new DecelerateInterpolator())
+                .start();
     }
 }

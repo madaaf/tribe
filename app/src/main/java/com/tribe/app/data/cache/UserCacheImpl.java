@@ -33,7 +33,11 @@ public class UserCacheImpl implements UserCache {
     }
 
     public void put(UserRealm userRealm) {
-
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(userRealm);
+        realm.commitTransaction();
+        realm.close();
     }
 
     public void put(AccessToken accessToken) {

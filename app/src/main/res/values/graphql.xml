@@ -2,7 +2,7 @@
 <resources>
     <string name="user.infos">
         {
-            user(id: \"SJxX3BUM7\") {
+            user(id: \"%1$s\") {
                 ...UserInfos
 
                 friends {
@@ -33,6 +33,18 @@
             id
             displayName
             profilePicture
+        }
+    </string>
+
+    <string name="user.mutate.name">
+        mutation {
+            updateUser(id: \"%1$s\", user:{
+                displayName : "Tiago"
+            })
+
+            {
+                displayName
+            }
         }
     </string>
 </resources>

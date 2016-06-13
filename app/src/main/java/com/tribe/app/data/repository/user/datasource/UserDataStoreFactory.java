@@ -5,6 +5,7 @@ import android.content.Context;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
+import com.tribe.app.data.realm.AccessToken;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -19,9 +20,10 @@ public class UserDataStoreFactory {
     private final UserCache userCache;
     private final TribeApi tribeApi;
     private final LoginApi loginApi;
+    private final AccessToken accessToken;
 
     @Inject
-    public UserDataStoreFactory(Context context, UserCache userCache, TribeApi tribeApi, LoginApi loginApi) {
+    public UserDataStoreFactory(Context context, UserCache userCache, TribeApi tribeApi, LoginApi loginApi, AccessToken accessToken) {
         if (context == null || userCache == null) {
             throw new IllegalArgumentException("Constructor parameters cannot be null!");
         }
@@ -30,6 +32,7 @@ public class UserDataStoreFactory {
         this.userCache = userCache;
         this.tribeApi = tribeApi;
         this.loginApi = loginApi;
+        this.accessToken = accessToken;
     }
 
     /**
@@ -41,6 +44,6 @@ public class UserDataStoreFactory {
      * Create {@link UserDataStore} to retrieve data from the Cloud.
      */
     public UserDataStore createCloudDataStore() {
-        return new CloudUserDataStore(this.userCache, this.tribeApi, loginApi, this.context);
+        return new CloudUserDataStore(this.userCache, this.tribeApi, loginApi, this.accessToken, this.context);
     }
 }

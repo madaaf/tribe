@@ -61,7 +61,7 @@
     </FrameLayout>
     
     <com.tribe.app.presentation.view.widget.CameraWrapper
-        android:id="@+id/viewCamera"
+        android:id="@+id/cameraWrapper"
         android:layout_width="@dimen/camera_width"
         android:layout_height="@dimen/camera_height"
         android:layout_gravity="top|left"
