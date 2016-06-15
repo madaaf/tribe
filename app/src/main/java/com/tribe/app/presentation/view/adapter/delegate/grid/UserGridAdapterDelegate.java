@@ -82,6 +82,8 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
     // RX SUBSCRIPTIONS / SUBJECTS
     private final PublishSubject<View> clickChatView = PublishSubject.create();
     private final PublishSubject<View> clickMoreView = PublishSubject.create();
+    private final PublishSubject<View> recordStarted = PublishSubject.create();
+    private final PublishSubject<View> recordEnded = PublishSubject.create();
 
     public UserGridAdapterDelegate(Context context) {
         this.context = context;
@@ -139,6 +141,8 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(time -> {
                                 if ((System.currentTimeMillis() - longDown) >= LONG_PRESS && isDown) {
+                                    recordStarted.onNext(userGridViewHolder.itemView);
+
                                     Spring springInside = (Spring) v.getTag(R.id.spring_inside);
                                     springInside.setEndValue(1f);
 
@@ -154,6 +158,8 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
 
                     Spring springOutside = (Spring) userGridViewHolder.itemView.getTag(R.id.spring_outside);
                     springOutside.setEndValue(0f);
+
+                    recordEnded.onNext(userGridViewHolder.itemView);
 
                     userGridViewHolder.itemView.setTag(R.id.is_tap_to_cancel, true);
 
@@ -286,6 +292,14 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
 
     public Observable<View> onClickMore() {
         return clickMoreView;
+    }
+
+    public Observable<View> onRecordStart() {
+        return recordStarted;
+    }
+
+    public Observable<View> onRecordEnd() {
+        return recordEnded;
     }
 
     static class UserGridViewHolder extends RecyclerView.ViewHolder {

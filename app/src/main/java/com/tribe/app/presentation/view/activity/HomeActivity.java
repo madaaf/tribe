@@ -133,14 +133,28 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     }
 
     @Override
-    public void initializeClicksOnChat(Observable<Friendship> observable) {
+    public void initClicksOnChat(Observable<Friendship> observable) {
         subscriptions.add(observable.subscribe(friend -> {
             HomeActivity.this.navigator.navigateToChat(HomeActivity.this, friend.getId());
         }));
     }
 
     @Override
-    public void initializeScrollOnGrid(Observable<Integer> observable) {
+    public void initOnRecordStart(Observable<Friendship> observable) {
+        subscriptions.add(observable.subscribe(friend -> {
+            cameraWrapper.onStartRecord();
+        }));
+    }
+
+    @Override
+    public void initOnRecordEnd(Observable<Friendship> observable) {
+        subscriptions.add(observable.subscribe(friend -> {
+            cameraWrapper.onEndRecord();
+        }));
+    }
+
+    @Override
+    public void initScrollOnGrid(Observable<Integer> observable) {
         subscriptions.add(observable.subscribe(dy -> {
             float percent = (float) dy / translationBackToTop;
 

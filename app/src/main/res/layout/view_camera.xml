@@ -8,6 +8,14 @@
 
     </com.tribe.app.presentation.view.camera.view.CameraView>
 
+    <com.tribe.app.presentation.view.camera.view.VisualizerView
+        android:id="@+id/visualizerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/camera_stroke_width">
+
+    </com.tribe.app.presentation.view.camera.view.VisualizerView>
+
     <View
         android:id="@+id/viewCameraForeground"
         android:layout_width="match_parent"

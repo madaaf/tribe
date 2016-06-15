@@ -1,9 +1,9 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.domain.entity.Tribe;
 
 import javax.inject.Inject;
 
@@ -19,11 +19,12 @@ public class LauncherActivity extends BaseActivity {
 
         this.getApplicationComponent().inject(this);
 
-        if (accessToken == null || accessToken.getAccessToken() == null) {
-            navigator.navigateToLogin(this);
-        } else {
-            navigator.navigateToHome(this);
-        }
+        navigator.navigateToTribe(this, new Tribe("LOL"));
+//        if (accessToken == null || accessToken.getAccessToken() == null) {
+//            navigator.navigateToLogin(this);
+//        } else {
+//            navigator.navigateToHome(this);
+//        }
 
         finish();
     }

@@ -1,102 +1,144 @@
 package com.tribe.app.presentation.view.camera.view;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
-import android.widget.FrameLayout;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.LinearLayout;
 
+import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
+import java.util.Random;
+
 import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  *
  * Created by tiago on 2016/06/13.
  */
-public class VisualizerView extends FrameLayout {
+public class VisualizerView extends LinearLayout {
+
+    private static int THRESHOLD = 200;
+    private static int DURATION_ULTRA_SHORT = 100;
+    private static int DURATION_SHORT = 200;
+    private static int DURATION_LONG = 500;
 
     @Inject
     ScreenUtils screenUtils;
 
-    private int numColumns = 6;
-    private int color;
+    @BindView(R.id.viewFirstColumn)
+    View viewFirstColumn;
 
-    private float columnWidth;
+    @BindView(R.id.viewSecondColumn)
+    View viewSecondColumn;
 
-    private Canvas canvas;
-    private Bitmap canvasBitmap;
-    private Rect rect = new Rect();
-    private Paint paint = new Paint();
+    @BindView(R.id.viewThirdColumn)
+    View viewThirdColumn;
+
+    @BindView(R.id.viewFourthColumn)
+    View viewFourthColumn;
+
+    @BindView(R.id.viewFifthColumn)
+    View viewFifthColumn;
+
+    @BindView(R.id.viewSixthColumn)
+    View viewSixthColumn;
+
+    // Variables
+    private int lastValue = Integer.MAX_VALUE;
 
     public VisualizerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
-
     }
 
     private void init(Context context, AttributeSet attrs) {
-        ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
-        paint.setColor(Color.WHITE);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        inflater.inflate(R.layout.view_visualizer, this, true);
+        ButterKnife.bind(this);
+        ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
+
+        setWillNotDraw(false);
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-
-        rect.set(0, 0, getWidth(), getHeight());
-
-        if (canvasBitmap == null) {
-            canvasBitmap = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);
-        }
-
-        if (canvas == null) {
-            canvas = new Canvas(canvasBitmap);
-        }
-
-        columnWidth = (float) getWidth() / (float) numColumns;
-
-        canvas.drawBitmap(canvasBitmap, new Matrix(), null);
-    }
-
-    public void receive(final int volume) {
+    public void receive(final double[]... toTransform) {
         new Handler(Looper.getMainLooper()).post(() -> {
-            if (canvas == null) {
-                return;
+            int max = Integer.MIN_VALUE;
+
+            for (int i = 0; i < toTransform[0].length; i++) {
+                int value = (int) (toTransform[0][i] * 20);
+                if (value > max) max = value;
             }
 
-            if (volume == 0) {
-                canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+            if (Math.abs(lastValue - max) > THRESHOLD) {
+                layoutBar(viewThirdColumn, null, max, true);
+                layoutBar(viewFourthColumn, null, max, true);
+                layoutBar(viewSecondColumn, viewThirdColumn, 0, true);
+                layoutBar(viewFifthColumn, viewFourthColumn, 0, true);
+                layoutBar(viewFirstColumn, viewSecondColumn, 0, true);
+                layoutBar(viewSixthColumn, viewFifthColumn, 0, true);
+                lastValue = max;
             }
-
-            for (int i = 0; i < numColumns; i++) {
-                float height = computeHeight(volume);
-                float left = i * columnWidth;
-                float right = (i + 1) * columnWidth;
-
-                RectF rect = createRect(left, right, height);
-                canvas.drawRect(rect, paint);
-            }
-
-            invalidate();
         });
     }
 
-    private float computeHeight(int volume) {
-        double randomVolume = Math.random() * volume + 1;
-        return (getHeight() / 60f) * (float) randomVolume;
+    private void layoutBar(View bar, View barFrom, int height, boolean hasReturn) {
+        int newHeight = 0;
+        ValueAnimator va = null;
+
+        if (barFrom == null) newHeight = height;
+        else newHeight = barFrom.getHeight();
+
+        if (hasReturn) va = ValueAnimator.ofInt(bar.getHeight(), newHeight, 0);
+        else va =  ValueAnimator.ofInt(bar.getHeight(), newHeight);
+
+        va.setDuration(DURATION_LONG);
+        va.setInterpolator(new DecelerateInterpolator());
+        va.addUpdateListener(animation -> {
+            Integer value = (Integer) animation.getAnimatedValue();
+            bar.getLayoutParams().height = value.intValue();
+            bar.requestLayout();
+        });
+        bar.clearAnimation();
+        va.start();
     }
 
-    private RectF createRect(float left, float right, float height) {
-        return new RectF(left, height, right, 0);
+    public void activate() {
+        Random r = new Random();
+        layoutBar(viewFirstColumn, null, r.nextInt((getHeight() >> 1) - 0) + 0, false);
+        layoutBar(viewSecondColumn, null, r.nextInt((getHeight() >> 1) - 0) + 0, false);
+        layoutBar(viewThirdColumn, null, r.nextInt((getHeight() >> 1) - 0) + 0, false);
+        layoutBar(viewFourthColumn, null, r.nextInt((getHeight() >> 1) - 0) + 0, false);
+        layoutBar(viewFifthColumn, null, r.nextInt((getHeight() >> 1) - 0) + 0, false);
+        layoutBar(viewSixthColumn, null, r.nextInt((getHeight() >> 1) - 0) + 0, false);
+        setAlpha(0);
+        animate().alpha(0.2f).setInterpolator(new DecelerateInterpolator()).setDuration(DURATION_SHORT).start();
+    }
+
+    public void startRecording() {
+        animate().alpha(1f).setInterpolator(new DecelerateInterpolator()).setDuration(DURATION_SHORT).start();
+    }
+
+    public void stopRecording() {
+        activate();
+    }
+
+    public void deactivate() {
+        layoutBar(viewFirstColumn, null, 0, false);
+        layoutBar(viewSecondColumn, null, 0, false);
+        layoutBar(viewThirdColumn, null, 0, false);
+        layoutBar(viewFourthColumn, null, 0, false);
+        layoutBar(viewFifthColumn, null, 0, false);
+        layoutBar(viewSixthColumn, null, 0, false);
+        animate().alpha(0.2f).setInterpolator(new DecelerateInterpolator()).setDuration(DURATION_ULTRA_SHORT).start();
     }
 }

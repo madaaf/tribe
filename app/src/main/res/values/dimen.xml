@@ -28,6 +28,7 @@
     <dimen name="inside_cell_border">20dp</dimen>
     <dimen name="camera_height">165dp</dimen>
     <dimen name="camera_width">110dp</dimen>
+    <dimen name="camera_stroke_width">8dp</dimen>
 
     <!-- TRANSLATIONS -->
     <dimen name="transition_grid_pressed">45dp</dimen>

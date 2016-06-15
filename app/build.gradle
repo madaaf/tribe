@@ -101,13 +101,14 @@ dependencies {
     compile presentationDependencies.priorityJobQueue
     compile presentationDependencies.pahoMQTT3
     compile presentationDependencies.rxBindings
-    compile presentationDependencies.graphQL
     compile presentationDependencies.picasso
     compile presentationDependencies.picassoDownloader
     compile presentationDependencies.byteUnits
     compile presentationDependencies.rebound
     compile presentationDependencies.rxSharedPreferences
     compile presentationDependencies.libPhoneNumber
+    compile presentationDependencies.exoplayer
+    compile presentationDependencies.swipe
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker

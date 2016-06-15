@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.view.widget;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
@@ -12,9 +14,11 @@ import android.widget.FrameLayout;
 
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.recording.AudioRecorder;
 import com.tribe.app.presentation.view.camera.shader.fx.GlLutShader;
 import com.tribe.app.presentation.view.camera.view.CameraView;
 import com.tribe.app.presentation.view.camera.view.GlPreview;
+import com.tribe.app.presentation.view.camera.view.VisualizerView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -54,9 +58,15 @@ public class CameraWrapper extends FrameLayout {
     @BindView(R.id.imgVideo)
     View imgVideo;
 
+    @BindView(R.id.visualizerView)
+    VisualizerView visualizerView;
+
     // Variables
     private GlPreview preview;
     private double aspectRatio;
+    private AudioRecorder audioRecorder;
+    private boolean isAudioMode;
+    private PathView pathView;
 
     // Resources
     private int marginLeftInit, marginBottomInit, marginVerticalIcons, marginHorizontalIcons, diffTouch;
@@ -70,6 +80,7 @@ public class CameraWrapper extends FrameLayout {
 
         initDimens();
         initUI();
+        initAudioRecorder();
     }
 
     public void initDimens() {
@@ -100,25 +111,42 @@ public class CameraWrapper extends FrameLayout {
         });
 
         imgVideo.setTranslationX(screenUtils.getWidth() / RATIO);
+
+        setBackgroundResource(R.color.black_opacity_20);
+    }
+
+    public void initAudioRecorder() {
+        audioRecorder = new AudioRecorder();
+        audioRecorder.link(visualizerView);
     }
 
     public void onPause() {
-        if (cameraView != null) {
-            cameraView.stopPreview();
-        }
+        pauseCamera();
+        if (audioRecorder.isRecording()) audioRecorder.stopRecording();
     }
 
     public void onResume() {
-        if (cameraView != null ) {
-            cameraView.setPreview(preview);
+        resumeCamera();
+    }
 
-            Observable.timer(1000, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(time -> {
-                    cameraView.startPreview();
-                });
+    public void onStartRecord() {
+        if (isAudioMode) {
+            hideIcons();
+            audioRecorder.startRecording();
+            visualizerView.startRecording();
         }
+
+        addPathView();
+    }
+
+    public void onEndRecord() {
+        if (isAudioMode) {
+            showIcons();
+            audioRecorder.stopRecording();
+            visualizerView.stopRecording();
+        }
+
+        removePathView();
     }
 
     public void setAspectRatio(double ratio) {
@@ -137,14 +165,13 @@ public class CameraWrapper extends FrameLayout {
         layoutParams.leftMargin = marginLeftInit;
         layoutParams.topMargin = ((View) getParent()).getHeight() - getMeasuredHeight() - marginBottomInit;
         setLayoutParams(layoutParams);
-
     }
 
     @Override
     protected void onMeasure(int widthSpec, int heightSpec) {
         // Scale the preview while keeping the aspect ratio
         int fullWidth = screenUtils.getWidth() / RATIO;
-        int fullHeight =  (int) (screenUtils.getWidth() / RATIO * aspectRatio);
+        int fullHeight = (int) (screenUtils.getWidth() / RATIO * aspectRatio);
 
         setMeasuredDimension(fullWidth, fullHeight);
 
@@ -233,9 +260,13 @@ public class CameraWrapper extends FrameLayout {
 
     @OnClick(R.id.imgSound)
     public void activateSound() {
-        if (cameraView != null)
-            cameraView.stopPreview();
+        isAudioMode = true;
 
+        if (cameraView != null) {
+            cameraView.animate().alpha(0).setDuration(DURATION).setInterpolator(new DecelerateInterpolator()).start();
+        }
+
+        imgSound.setEnabled(false);
         imgSound.animate()
                 .translationX((getWidth() >> 1) - marginHorizontalIcons - (imgSound.getWidth() >> 1))
                 .translationY(-((getHeight() >> 1) - marginVerticalIcons - (imgSound.getHeight() >> 1)))
@@ -255,14 +286,17 @@ public class CameraWrapper extends FrameLayout {
                 .setDuration(DURATION_ICONS)
                 .setInterpolator(new DecelerateInterpolator())
                 .setStartDelay(DELAY)
+                .setListener(null)
                 .start();
+
+        visualizerView.activate();
     }
 
     @OnClick(R.id.imgVideo)
     public void activateVideo() {
-        if (cameraView != null)
-            cameraView.startPreview();
+        visualizerView.deactivate();
 
+        imgSound.setEnabled(true);
         imgSound.animate()
                 .translationX(0)
                 .translationY(0)
@@ -281,9 +315,62 @@ public class CameraWrapper extends FrameLayout {
                 .start();
 
         imgVideo.animate()
-                .translationX(getWidth())
+                .translationX(screenUtils.getWidth() / RATIO)
                 .setDuration(DURATION_ICONS)
                 .setInterpolator(new DecelerateInterpolator())
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+
+                        if (cameraView != null) {
+                            cameraView.animate().alpha(1).setDuration(DURATION).setInterpolator(new DecelerateInterpolator()).start();
+                        }
+                    }
+                })
                 .start();
+    }
+
+    private void pauseCamera() {
+        if (cameraView != null) {
+            cameraView.stopPreview();
+        }
+    }
+
+    private void resumeCamera() {
+        if (cameraView != null ) {
+            cameraView.setPreview(preview);
+
+            Observable.timer(1000, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(time -> {
+                    cameraView.startPreview();
+                });
+        }
+    }
+
+    private void hideIcons() {
+        imgVideo.animate().alpha(0).setDuration(DURATION).setInterpolator(new DecelerateInterpolator()).start();
+        imgSound.animate().alpha(0).setDuration(DURATION).setInterpolator(new DecelerateInterpolator()).start();
+        imgFlash.animate().alpha(0).setDuration(DURATION).setInterpolator(new DecelerateInterpolator()).start();
+    }
+
+    private void showIcons() {
+        imgVideo.animate().alpha(1).setDuration(DURATION).setInterpolator(new DecelerateInterpolator()).start();
+        imgSound.animate().alpha(1).setDuration(DURATION).setInterpolator(new DecelerateInterpolator()).start();
+        imgFlash.animate().alpha(1).setDuration(DURATION).setInterpolator(new DecelerateInterpolator()).start();
+    }
+
+    private void addPathView() {
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(getWidth(), getHeight());
+        pathView = new PathView(getContext());
+        pathView.setLayoutParams(params);
+        addView(pathView);
+        pathView.start(getWidth(), getHeight());
+    }
+
+    private void removePathView() {
+        removeView(pathView);
     }
 }

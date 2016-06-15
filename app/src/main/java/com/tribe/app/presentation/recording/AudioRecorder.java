@@ -3,11 +3,10 @@ package com.tribe.app.presentation.recording;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.util.Log;
 
 import com.tribe.app.presentation.view.camera.view.VisualizerView;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -17,32 +16,26 @@ import java.util.TimerTask;
  */
 public class AudioRecorder {
 
-    private static final int RECORDING_SAMPLE_RATE = 44100;
+    private static String TAG = "AudioRecorder";
+
+    private static final int BLOCK_SIZE = 256;
+    private static int[] sampleRates = new int[] { 44100, 8000, 11025, 22050 };
+    public static final int SAMPLING_INTERVAL = 1;
 
     private AudioRecord audioRecord;
     private boolean isRecording;
     private int bufferSize;
+    private RealDoubleFFT transformer;
 
-    private CalculateVolumeListener volumeListener;
-    private int samplingInterval = 100;
     private Timer timer;
 
-    private List<VisualizerView> visualizerViews = new ArrayList<>();
+    private VisualizerView visualizerView = null;
 
     public AudioRecorder() {
-        initAudioRecord();
     }
 
     public void link(VisualizerView visualizerView) {
-        visualizerViews.add(visualizerView);
-    }
-
-    public void setVolumeListener(CalculateVolumeListener volumeListener) {
-        this.volumeListener = volumeListener;
-    }
-
-    public void setSamplingInterval(int samplingInterval) {
-        this.samplingInterval = samplingInterval;
+        this.visualizerView = visualizerView;
     }
 
     public boolean isRecording() {
@@ -50,27 +43,33 @@ public class AudioRecorder {
     }
 
     private void initAudioRecord() {
-        int bufferSize = AudioRecord.getMinBufferSize(
-                RECORDING_SAMPLE_RATE,
-                AudioFormat.CHANNEL_IN_MONO,
-                AudioFormat.ENCODING_PCM_16BIT
-        );
+        for (int rate : sampleRates) {
+            for (short audioFormat : new short[] { AudioFormat.ENCODING_PCM_16BIT, AudioFormat.ENCODING_PCM_8BIT }) {
+                for (short channelConfig : new short[] { AudioFormat.CHANNEL_IN_MONO, AudioFormat.CHANNEL_IN_STEREO }) {
+                    try {
+                        bufferSize = AudioRecord.getMinBufferSize(
+                                rate,
+                                channelConfig,
+                                audioFormat
+                        );
 
-        audioRecord = new AudioRecord(
-                MediaRecorder.AudioSource.MIC,
-                RECORDING_SAMPLE_RATE,
-                AudioFormat.CHANNEL_IN_MONO,
-                AudioFormat.ENCODING_PCM_16BIT,
-                bufferSize
-        );
+                        if (bufferSize != AudioRecord.ERROR_BAD_VALUE) {
+                            audioRecord = new AudioRecord(MediaRecorder.AudioSource.DEFAULT, rate, channelConfig, audioFormat, bufferSize);
 
-        if (audioRecord.getState() == AudioRecord.STATE_INITIALIZED) {
-            this.bufferSize = bufferSize;
+                            if (audioRecord.getState() == AudioRecord.STATE_INITIALIZED)
+                                return;
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Exception, keep trying : " + e.getMessage());
+                    }
+                }
+            }
         }
     }
 
     public void startRecording() {
         timer = new Timer();
+        initAudioRecord();
         audioRecord.startRecording();
         isRecording = true;
         runRecording();
@@ -79,16 +78,14 @@ public class AudioRecorder {
     public void stopRecording() {
         isRecording = false;
         timer.cancel();
-
-        if (visualizerViews != null && !visualizerViews.isEmpty()) {
-            for (int i = 0; i < visualizerViews.size(); i++) {
-                visualizerViews.get(i).receive(0);
-            }
-        }
+        audioRecord.release();
     }
 
     private void runRecording() {
-        final byte buf[] = new byte[bufferSize];
+        short[] buffer = new short[BLOCK_SIZE];
+        double[] toTransform = new double[BLOCK_SIZE];
+        transformer = new RealDoubleFFT(BLOCK_SIZE);
+
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -96,30 +93,20 @@ public class AudioRecorder {
                     audioRecord.stop();
                     return;
                 }
-                audioRecord.read(buf, 0, bufferSize);
 
-                int decibel = calculateDecibel(buf);
-                if (visualizerViews != null && !visualizerViews.isEmpty()) {
-                    for (int i = 0; i < visualizerViews.size(); i++) {
-                        visualizerViews.get(i).receive(decibel);
-                    }
+                int bufferReadResult = audioRecord.read(buffer, 0, BLOCK_SIZE);
+
+                for (int i = 0; i < BLOCK_SIZE && i < bufferReadResult; i++) {
+                    toTransform[i] = (double) buffer[i] / 32768.0;
                 }
 
-                if (volumeListener != null) {
-                    volumeListener.onCalculateVolume(decibel);
+                transformer.ft(toTransform);
+
+                if (visualizerView != null) {
+                    visualizerView.receive(toTransform);
                 }
             }
-        }, 0, samplingInterval);
-    }
-
-    private int calculateDecibel(byte[] buf) {
-        int sum = 0;
-
-        for (int i = 0; i < bufferSize; i++) {
-            sum += Math.abs(buf[i]);
-        }
-
-        return sum / bufferSize;
+        }, 100, SAMPLING_INTERVAL);
     }
 
     public void release() {
@@ -127,15 +114,5 @@ public class AudioRecorder {
         audioRecord.release();
         audioRecord = null;
         timer = null;
-    }
-
-    public interface CalculateVolumeListener {
-
-        /**
-         * Calculate input volume
-         *
-         * @param volume mic-input volume
-         */
-        void onCalculateVolume(int volume);
     }
 }

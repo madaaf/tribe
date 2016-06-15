@@ -21,6 +21,7 @@ import com.tribe.app.presentation.view.camera.view.VisualizerView;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
+import com.tribe.app.presentation.view.widget.PathView;
 
 import javax.inject.Singleton;
 
@@ -41,6 +42,7 @@ public interface ApplicationComponent {
     void inject(AvatarView avatarView);
     void inject(CameraWrapper cameraWrapper);
     void inject(VisualizerView visualizerView);
+    void inject(PathView pathView);
 
     //Exposed to sub-graphs.
     Context context();

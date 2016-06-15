@@ -3,7 +3,7 @@
     android:fromDegrees="270"
     android:toDegrees="270"
     android:pivotX="50%"
-    android:pivotY="50%" >
+    android:pivotY="50%">
     <shape
         android:innerRadiusRatio="2.3"
         android:shape="ring"

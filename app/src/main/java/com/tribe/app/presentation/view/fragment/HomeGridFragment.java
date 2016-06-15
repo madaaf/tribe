@@ -2,7 +2,6 @@ package com.tribe.app.presentation.view.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -28,7 +27,6 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import rx.Observable;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -46,6 +44,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private HomeView homeView;
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private PublishSubject<Friendship> clickChatViewSubject = PublishSubject.create();
+    private PublishSubject<Friendship> onRecordStart = PublishSubject.create();
+    private PublishSubject<Friendship> onRecordEnd = PublishSubject.create();
     private Unbinder unbinder;
     private BottomSheetDialog dialog;
 
@@ -186,8 +186,18 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                     setupBottomSheet();
                 }));
 
-        if (homeView != null) homeView.initializeClicksOnChat(clickChatViewSubject);
-        if (homeView != null) homeView.initializeScrollOnGrid(scrollDetector);
+        subscriptions.add(homeGridAdapter.onRecordStart()
+                .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
+                .subscribe(onRecordStart));
+
+        subscriptions.add(homeGridAdapter.onRecordEnd()
+                .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
+                .subscribe(onRecordEnd));
+
+        if (homeView != null) homeView.initClicksOnChat(clickChatViewSubject);
+        if (homeView != null) homeView.initOnRecordStart(onRecordStart);
+        if (homeView != null) homeView.initOnRecordEnd(onRecordEnd);
+        if (homeView != null) homeView.initScrollOnGrid(scrollDetector);
     }
 
     private void setupBottomSheet() {

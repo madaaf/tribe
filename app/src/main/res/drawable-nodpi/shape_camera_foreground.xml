@@ -3,7 +3,7 @@
         <shape
             android:shape="rectangle">
             <stroke
-                android:width="8dp"
+                android:width="@dimen/camera_stroke_width"
                 android:antialias="true"
                 android:color="@color/white.opacity.40" />
 

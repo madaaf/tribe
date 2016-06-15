@@ -6,6 +6,8 @@ import rx.Observable;
 
 public interface HomeView extends View {
 
-    void initializeClicksOnChat(Observable<Friendship> observable);
-    void initializeScrollOnGrid(Observable<Integer> observable);
+    void initClicksOnChat(Observable<Friendship> observable);
+    void initOnRecordStart(Observable<Friendship> observable);
+    void initOnRecordEnd(Observable<Friendship> observable);
+    void initScrollOnGrid(Observable<Integer> observable);
 }

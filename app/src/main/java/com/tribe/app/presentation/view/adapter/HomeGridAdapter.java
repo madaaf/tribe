@@ -73,6 +73,14 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
         return userGridAdapterDelegate.onClickMore();
     }
 
+    public Observable<View> onRecordStart() {
+        return userGridAdapterDelegate.onRecordStart();
+    }
+
+    public Observable<View> onRecordEnd() {
+        return userGridAdapterDelegate.onRecordEnd();
+    }
+
     public Friendship getItemAtPosition(int position) {
         if (items.size() > 0 && position < items.size()) {
             return items.get(position);
