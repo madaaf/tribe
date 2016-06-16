@@ -4,4 +4,5 @@
     <item type="id" name="spring_outside" />
     <item type="id" name="is_tap_to_cancel" />
     <item type="id" name="progress_bar_animation" />
+    <item type="id" name="tag_tribe" />
 </resources>

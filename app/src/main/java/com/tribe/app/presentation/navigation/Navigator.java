@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.R;
 import com.tribe.app.presentation.view.activity.ChatActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
@@ -76,13 +76,15 @@ public class Navigator {
     /**
      * Goes to the text chat screen.
      *
-     * @param context A Context needed to open the destiny activity.
-     * @param tribe a tribe to open
+     * @param activity An activity needed to open the destiny activity.
+     * @param friendId a friendship (user / group)
+     *                 id to open the tribes
      */
-    public void navigateToTribe(Context context, Tribe tribe) {
-        if (context != null) {
-            Intent intent = TribeActivity.getCallingIntent(context, tribe);
-            context.startActivity(intent);
+    public void navigateToTribe(Activity activity, String friendId) {
+        if (activity != null) {
+            Intent intent = TribeActivity.getCallingIntent(activity, friendId);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
         }
     }
 }

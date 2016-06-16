@@ -5,18 +5,11 @@
     android:background="@null"
     >
 
-    <com.tribe.app.presentation.view.widget.CustomViewPager
+    <com.tribe.app.presentation.view.component.TribeViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@null"
-        />
-
-    <com.tribe.app.presentation.view.component.TribeComponentView
-        android:id="@+id/viewTribe"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
         />
 
 </FrameLayout>

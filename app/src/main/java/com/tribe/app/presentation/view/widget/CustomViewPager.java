@@ -13,14 +13,14 @@ import java.lang.reflect.Field;
 
 public class CustomViewPager extends ViewPager {
 
-    public static final int ALL = 0;
-    public static final int LEFT = 1;
-    public static final int RIGHT = 2;
-    public static final int DOWN = 3;
-    public static final int UP = 4;
-    public static final int NONE = 5;
+    public static final int SWIPE_MODE_ALL = 0;
+    public static final int SWIPE_MODE_LEFT = 1;
+    public static final int SWIPE_MODE_RIGHT = 2;
+    public static final int SWIPE_MODE_DOWN = 3;
+    public static final int SWIPE_MODE_UP = 4;
+    public static final int SWIPE_MODE_NONE = 5;
 
-    @IntDef({ALL, LEFT, RIGHT, DOWN, UP, NONE})
+    @IntDef({SWIPE_MODE_ALL, SWIPE_MODE_LEFT, SWIPE_MODE_RIGHT, SWIPE_MODE_DOWN, SWIPE_MODE_UP, SWIPE_MODE_NONE})
     public @interface SwipeDirection {}
 
     private ScrollerCustomDuration scroller = null;
@@ -54,10 +54,10 @@ public class CustomViewPager extends ViewPager {
         return false;
     }
 
-    private boolean isSwipeAllowed(MotionEvent event) {
-        if (this.swipeDirection == ALL) return true;
+    protected boolean isSwipeAllowed(MotionEvent event) {
+        if (this.swipeDirection == SWIPE_MODE_ALL) return true;
 
-        if (this.swipeDirection == NONE) return false;
+        if (this.swipeDirection == SWIPE_MODE_NONE) return false;
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             downX = event.getX();
@@ -69,9 +69,9 @@ public class CustomViewPager extends ViewPager {
             try {
                 float diffX = event.getX() - downX;
 
-                if (diffX > 0 && swipeDirection == RIGHT) {
+                if (diffX > 0 && swipeDirection == SWIPE_MODE_RIGHT) {
                     return false;
-                } else if (diffX < 0 && swipeDirection == LEFT) {
+                } else if (diffX < 0 && swipeDirection == SWIPE_MODE_LEFT) {
                     return false;
                 }
             } catch (Exception exception) {
@@ -90,7 +90,7 @@ public class CustomViewPager extends ViewPager {
      * Override the Scroller instance with our own class so we can change the
      * duration
      */
-    private void postInitViewPager() {
+    protected void postInitViewPager() {
         try {
             Field rScroller = ViewPager.class.getDeclaredField("mScroller");
             rScroller.setAccessible(true);

@@ -17,12 +17,12 @@ package com.tribe.app.presentation.view.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.SurfaceView;
+import android.view.TextureView;
 
 /**
  * A SurfaceView that resizes itself to match a specified aspect ratio.
  */
-public class VideoSurfaceView extends SurfaceView {
+public class VideoTextureView extends TextureView {
 
     /**
      * The surface view will not resize itself if the fractional difference between its default
@@ -38,16 +38,16 @@ public class VideoSurfaceView extends SurfaceView {
     private float videoAspectRatio;
     private int scalingMode = ScalingMode.FIT;
 
-    public VideoSurfaceView(Context context) {
+    public VideoTextureView(Context context) {
         super(context);
     }
 
-    public VideoSurfaceView(Context context, AttributeSet attrs) {
+    public VideoTextureView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
     /**
-     * Set the aspect ratio that this {@link VideoSurfaceView} should satisfy.
+     * Set the aspect ratio that this {@link VideoTextureView} should satisfy.
      *
      * @param widthHeightRatio The width to height ratio.
      */

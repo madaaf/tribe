@@ -135,7 +135,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     public void initClicksOnChat(Observable<Friendship> observable) {
         subscriptions.add(observable.subscribe(friend -> {
-            HomeActivity.this.navigator.navigateToChat(HomeActivity.this, friend.getId());
+            HomeActivity.this.navigator.navigateToTribe(HomeActivity.this, friend.getId());
+            //HomeActivity.this.navigator.navigateToChat(HomeActivity.this, friend.getId());
         }));
     }
 

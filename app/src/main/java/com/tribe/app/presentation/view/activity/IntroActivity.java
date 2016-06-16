@@ -118,7 +118,7 @@ public class IntroActivity extends BaseActivity implements IntroView {
         viewPager.setOffscreenPageLimit(3);
         viewPager.setScrollDurationFactor(2f);
         viewPager.setCurrentItem(PAGE_PHONE_NUMBER);
-        viewPager.setPagingEnabled(false);
+        viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_NONE);
         viewPager.setPageTransformer(false, new IntroPageTransformer());
     }
 

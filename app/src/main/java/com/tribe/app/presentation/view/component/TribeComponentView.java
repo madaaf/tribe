@@ -1,11 +1,14 @@
 package com.tribe.app.presentation.view.component;
 
 import android.content.Context;
+import android.graphics.SurfaceTexture;
 import android.media.MediaCodec;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.Surface;
+import android.view.TextureView;
 import android.widget.FrameLayout;
 
 import com.google.android.exoplayer.ExoPlaybackException;
@@ -20,7 +23,7 @@ import com.google.android.exoplayer.upstream.AssetDataSource;
 import com.google.android.exoplayer.upstream.DefaultAllocator;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.listener.MediaCodecVideoListener;
-import com.tribe.app.presentation.view.widget.VideoSurfaceView;
+import com.tribe.app.presentation.view.widget.VideoTextureView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,7 +32,7 @@ import butterknife.Unbinder;
 /**
  * Created by tiago on 10/06/2016.
  */
-public class TribeComponentView extends FrameLayout {
+public class TribeComponentView extends FrameLayout implements TextureView.SurfaceTextureListener {
 
     private static final int RENDERER_COUNT = 300000;
     private static final int MIN_BUFFER_MS = 250000;
@@ -37,7 +40,7 @@ public class TribeComponentView extends FrameLayout {
     private static final int BUFFER_SEGMENT_COUNT = 256;
 
     @BindView(R.id.surfaceView)
-    VideoSurfaceView surfaceView;
+    VideoTextureView surfaceView;
 
     // OBSERVABLES
     private Unbinder unbinder;
@@ -66,15 +69,13 @@ public class TribeComponentView extends FrameLayout {
 
     @Override
     protected void onFinishInflate() {
-        super.onFinishInflate();
-
         LayoutInflater.from(getContext()).inflate(R.layout.view_tribe, this);
         unbinder = ButterKnife.bind(this);
-
-        initExoPlayer();
+        surfaceView.setSurfaceTextureListener(this);
+        super.onFinishInflate();
     }
 
-    private void initExoPlayer() {
+    public void initPlayer() {
         String url = "asset:///binary.mp4";
         Allocator allocator = new DefaultAllocator(MIN_BUFFER_MS);
         AssetDataSource dataSource = new AssetDataSource(getContext());
@@ -88,7 +89,7 @@ public class TribeComponentView extends FrameLayout {
             @Override
             public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
                 surfaceView.setVideoWidthHeightRatio(height == 0 ? 1 : (width * pixelWidthHeightRatio) / height);
-                surfaceView.setScalingMode(VideoSurfaceView.ScalingMode.CROP);
+                surfaceView.setScalingMode(VideoTextureView.ScalingMode.CROP);
             }
         }, 1);
 
@@ -118,12 +119,37 @@ public class TribeComponentView extends FrameLayout {
         exoPlayer.seekTo(0);
         exoPlayer.sendMessage(videoRenderer,
                 MediaCodecVideoTrackRenderer.MSG_SET_SURFACE,
-                surfaceView.getHolder().getSurface());
-        exoPlayer.setPlayWhenReady(true);
+                new Surface(surfaceView.getSurfaceTexture()));
+        exoPlayer.setPlayWhenReady(false);
+    }
+
+    public void startPlayer() {
+        if (surfaceView.getSurfaceTexture() != null)
+            exoPlayer.setPlayWhenReady(true);
     }
 
     public void release() {
         exoPlayer.stop();
         exoPlayer.release();
+    }
+
+    @Override
+    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+        initPlayer();
+    }
+
+    @Override
+    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+        return false;
+    }
+
+    @Override
+    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+
+    }
+
+    @Override
+    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
     }
 }

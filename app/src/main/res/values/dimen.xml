@@ -30,6 +30,9 @@
     <dimen name="camera_width">110dp</dimen>
     <dimen name="camera_stroke_width">8dp</dimen>
 
+    <!-- THRESHOLDS -->
+    <dimen name="threshold_end_tribe">150dp</dimen>
+
     <!-- TRANSLATIONS -->
     <dimen name="transition_grid_pressed">45dp</dimen>
     <dimen name="transition_grid_back_to_top">150dp</dimen>
