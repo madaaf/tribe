@@ -109,6 +109,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 
             public void onPageSelected(int currentPosition) {
+                if (currentPosition == tribePagerAdapter.getCount() - 1) viewPager.setBackground(null);
                 tribePagerAdapter.setCurrentPosition(currentPosition);
                 tribePagerAdapter.releaseTribe(currentPosition, (TribeComponentView) viewPager.findViewWithTag(previousPosition));
                 tribePagerAdapter.startTribe(currentPosition, (TribeComponentView) viewPager.findViewWithTag(currentPosition));
@@ -128,6 +129,8 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
     private void initializeSubscriptions() {
         subscriptions = new CompositeSubscription();
+
+        subscriptions.add(viewPager.onDismiss().subscribe(aVoid -> finish()));
     }
 
     private void initializeDependencyInjector() {

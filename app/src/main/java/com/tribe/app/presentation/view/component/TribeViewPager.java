@@ -4,13 +4,15 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
-import android.view.ViewTreeObserver;
 
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringSystem;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
+
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 public class TribeViewPager extends CustomViewPager {
 
@@ -36,6 +38,10 @@ public class TribeViewPager extends CustomViewPager {
     private float lastDownXTr;
     private int activePointerId;
     private VelocityTracker velocityTracker;
+
+    // CALLBACKS
+    private final PublishSubject<Void> onDismiss = PublishSubject.create();
+
 
     public TribeViewPager(Context context) {
         super(context);
@@ -80,24 +86,6 @@ public class TribeViewPager extends CustomViewPager {
         springRightListener = new RightSpringListener();
         springTopListener = new TopSpringListener();
         springBottomListener = new BottomSpringListener();
-
-        getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                springLeft.setCurrentValue(-getWidth());
-                springRight.setCurrentValue(-getWidth());
-                springTop.setCurrentValue(-getWidth());
-                springBottom.setCurrentValue(-getWidth());
-
-                postDelayed(() -> {
-                    springLeft.setEndValue(0);
-                    springRight.setEndValue(0);
-                    springTop.setEndValue(0);
-                    springBottom.setEndValue(0);
-                }, 500);
-            }
-        });
 
         thresholdEnd = getContext().getResources().getDimensionPixelSize(R.dimen.threshold_end_tribe);
     }
@@ -151,10 +139,12 @@ public class TribeViewPager extends CustomViewPager {
                             float x = event.getX(pointerIndex) + location[0];
                             float offset = x - lastDownX + lastDownXTr;
 
-                            if (offset < -thresholdEnd)
+                            if (offset < -thresholdEnd) {
                                 springLeft.setVelocity(velocityTracker.getXVelocity()).setEndValue(-getWidth());
-                            else
+                                onDismiss.onNext(null);
+                            } else {
                                 springLeft.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
+                            }
                             //springRight.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
                             //springTop.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
                             //springBottom.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
@@ -214,5 +204,9 @@ public class TribeViewPager extends CustomViewPager {
             float value = (float) spring.getCurrentValue();
             setTranslationX(value);
         }
+    }
+
+    public Observable<Void> onDismiss() {
+        return onDismiss;
     }
 }
