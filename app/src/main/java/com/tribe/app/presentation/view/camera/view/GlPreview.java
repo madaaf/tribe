@@ -69,6 +69,7 @@ public class GlPreview  extends GLSurfaceView implements Preview, Camera.Picture
         setRenderer(renderer);
 
         setRenderMode(RENDERMODE_WHEN_DIRTY);
+        setPreserveEGLContextOnPause(true);
     }
 
     public final boolean isFaceMirror() {

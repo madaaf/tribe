@@ -7,6 +7,7 @@ import android.view.VelocityTracker;
 
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
+import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
@@ -15,6 +16,9 @@ import rx.Observable;
 import rx.subjects.PublishSubject;
 
 public class TribeViewPager extends CustomViewPager {
+
+    private static final SpringConfig ORIGAMI_SPRING_BOUNCE_CONFIG = SpringConfig.fromOrigamiTensionAndFriction(132, 13);
+    private static final SpringConfig ORIGAMI_SPRING_CONFIG = SpringConfig.fromOrigamiTensionAndFriction(70, 11);
 
     // SPRINGS
     private SpringSystem springSystem = null;
@@ -32,16 +36,20 @@ public class TribeViewPager extends CustomViewPager {
 
     // DIMENS
     private int thresholdEnd;
+    private int backToMessageHeight;
+    private int snoozeModeWidth;
 
     // TOUCH HANDLING
     private float lastDownX;
     private float lastDownXTr;
+    private float lastDownY;
+    private float lastDownYTr;
     private int activePointerId;
     private VelocityTracker velocityTracker;
 
     // CALLBACKS
-    private final PublishSubject<Void> onDismiss = PublishSubject.create();
-
+    private final PublishSubject<Void> onDismissHorizontal = PublishSubject.create();
+    private final PublishSubject<Void> onDismissVertical = PublishSubject.create();
 
     public TribeViewPager(Context context) {
         super(context);
@@ -56,9 +64,9 @@ public class TribeViewPager extends CustomViewPager {
         super.onAttachedToWindow();
 
         springLeft.addListener(springLeftListener);
-        //springRight.addListener(springRightListener);
-        //springTop.addListener(springTopListener);
-        //springBottom.addListener(springBottomListener);
+        springRight.addListener(springRightListener);
+        springTop.addListener(springTopListener);
+        springBottom.addListener(springBottomListener);
     }
 
     @Override
@@ -66,9 +74,9 @@ public class TribeViewPager extends CustomViewPager {
         super.onDetachedFromWindow();
 
         springLeft.removeListener(springLeftListener);
-        //springRight.addListener(springRightListener);
-        //springTop.addListener(springTopListener);
-        //springBottom.addListener(springBottomListener);
+        springRight.addListener(springRightListener);
+        springTop.addListener(springTopListener);
+        springBottom.addListener(springBottomListener);
     }
 
     @Override
@@ -82,32 +90,41 @@ public class TribeViewPager extends CustomViewPager {
         springTop = springSystem.createSpring();
         springBottom = springSystem.createSpring();
 
+        springLeft.setSpringConfig(ORIGAMI_SPRING_CONFIG);
+        springRight.setSpringConfig(ORIGAMI_SPRING_BOUNCE_CONFIG);
+        springTop.setSpringConfig(ORIGAMI_SPRING_CONFIG);
+        springBottom.setSpringConfig(ORIGAMI_SPRING_CONFIG);
+
         springLeftListener = new LeftSpringListener();
         springRightListener = new RightSpringListener();
         springTopListener = new TopSpringListener();
         springBottomListener = new BottomSpringListener();
 
         thresholdEnd = getContext().getResources().getDimensionPixelSize(R.dimen.threshold_end_tribe);
+        backToMessageHeight = getContext().getResources().getDimensionPixelSize(R.dimen.back_to_message_height);
+        snoozeModeWidth = getContext().getResources().getDimensionPixelSize(R.dimen.snooze_mode_width);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (this.isSwipeAllowed(event)) {
-            if (getCurrentItem() == countItems - 1) {
-                int action = event.getAction();
+            int action = event.getAction();
                 switch (action & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_DOWN:
                         activePointerId = event.getPointerId(0);
                         lastDownXTr = getTranslationX();
                         lastDownX = event.getRawX();
 
+                        lastDownYTr = getTranslationY();
+                        lastDownY = event.getRawY();
+
                         velocityTracker = VelocityTracker.obtain();
                         velocityTracker.addMovement(event);
 
-                        springLeft.setCurrentValue(lastDownXTr);
-                        springRight.setCurrentValue(lastDownXTr);
-                        springTop.setCurrentValue(lastDownXTr);
-                        springBottom.setCurrentValue(lastDownXTr);
+                        springLeft.setAtRest();
+                        springBottom.setAtRest();
+                        springRight.setAtRest();
+                        springTop.setAtRest();
 
                         break;
                     case MotionEvent.ACTION_MOVE: {
@@ -116,14 +133,38 @@ public class TribeViewPager extends CustomViewPager {
                         if (pointerIndex != -1) {
                             final int location[] = {0, 0};
                             getLocationOnScreen(location);
-                            float x = event.getX(pointerIndex) + location[0];
-                            float offset = x - lastDownX + lastDownXTr;
-                            springLeft.setCurrentValue(offset);
-                            //springRight.setCurrentValue(offset);
-                            //springTop.setCurrentValue(offset);
-                            //springBottom.setCurrentValue(offset);
-                            //velocityTracker.addMovement(event);
+
+                            if (currentSwipeDirection == SWIPE_MODE_RIGHT || currentSwipeDirection == SWIPE_MODE_LEFT) {
+                                float x = event.getX(pointerIndex) + location[0];
+                                float offsetX = x - lastDownX + lastDownXTr;
+
+                                if (getCurrentItem() == countItems - 1) {
+                                    if (offsetX <= 0) {
+                                        springLeft.setCurrentValue(offsetX);
+                                    } else {
+                                        springRight.setCurrentValue(offsetX);
+                                    }
+                                } else {
+                                    if (offsetX <= 0) {
+                                        return super.onTouchEvent(event);
+                                    } else {
+                                        springRight.setCurrentValue(offsetX);
+                                    }
+                                }
+                            } else if (currentSwipeDirection == SWIPE_MODE_DOWN || currentSwipeDirection == SWIPE_MODE_UP) {
+                                float y = event.getY(pointerIndex) + location[1];
+                                float offsetY = y - lastDownY + lastDownYTr;
+
+                                if (offsetY >= 0) {
+                                    springBottom.setCurrentValue(offsetY);
+                                } else {
+                                    springTop.setCurrentValue(offsetY);
+                                }
+                            }
+
+                            velocityTracker.addMovement(event);
                         }
+
                         break;
                     }
 
@@ -132,39 +173,67 @@ public class TribeViewPager extends CustomViewPager {
                         final int pointerIndex = event.findPointerIndex(activePointerId);
                         if (pointerIndex != -1) {
                             velocityTracker.addMovement(event);
-                            velocityTracker.computeCurrentVelocity(10000);
+                            velocityTracker.computeCurrentVelocity(1000);
 
                             final int location[] = {0, 0};
                             getLocationOnScreen(location);
-                            float x = event.getX(pointerIndex) + location[0];
-                            float offset = x - lastDownX + lastDownXTr;
 
-                            if (offset < -thresholdEnd) {
-                                springLeft.setVelocity(velocityTracker.getXVelocity()).setEndValue(-getWidth());
-                                onDismiss.onNext(null);
-                            } else {
-                                springLeft.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
+                            if (currentSwipeDirection == SWIPE_MODE_RIGHT || currentSwipeDirection == SWIPE_MODE_LEFT) {
+                                float x = event.getX(pointerIndex) + location[0];
+                                float offsetX = x - lastDownX + lastDownXTr;
+
+                                if (getCurrentItem() == countItems - 1) {
+                                    if (offsetX <= 0) {
+                                        if (offsetX < -thresholdEnd) {
+                                            springLeft.setVelocity(velocityTracker.getXVelocity()).setEndValue(-getWidth());
+                                            onDismissHorizontal.onNext(null);
+                                        } else {
+                                            springLeft.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
+                                        }
+                                    } else {
+                                        if (offsetX > thresholdEnd) {
+                                            springRight.setVelocity(velocityTracker.getXVelocity()).setEndValue(getWidth() - snoozeModeWidth);
+                                        } else {
+                                            springRight.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
+                                        }
+                                    }
+                                } else {
+                                    if (offsetX <= 0) {
+                                        springRight.setCurrentValue(0);
+                                        return super.onTouchEvent(event);
+                                    } else {
+                                        if (offsetX > thresholdEnd) {
+                                            springRight.setVelocity(velocityTracker.getXVelocity()).setEndValue(getWidth() - snoozeModeWidth);
+                                        } else {
+                                            springRight.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
+                                        }
+                                    }
+                                }
+                            } else if (currentSwipeDirection == SWIPE_MODE_DOWN || currentSwipeDirection == SWIPE_MODE_UP) {
+                                float y = event.getY(pointerIndex) - location[1];
+                                float offsetY = y - lastDownY + lastDownYTr;
+
+                                if (offsetY <= 0) {
+                                    if (offsetY < -thresholdEnd) {
+                                        springBottom.setVelocity(velocityTracker.getYVelocity()).setEndValue(getHeight());
+                                        onDismissVertical.onNext(null);
+                                    } else {
+                                        springBottom.setVelocity(velocityTracker.getYVelocity()).setEndValue(0);
+                                    }
+                                } else {
+                                    if (offsetY > thresholdEnd) {
+                                        springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(-getHeight() + backToMessageHeight);
+                                    } else {
+                                        springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(0);
+                                    }
+                                }
                             }
-                            //springRight.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
-                            //springTop.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
-                            //springBottom.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
                         }
 
                         break;
                 }
+
                 return true;
-            } else {
-                return super.onTouchEvent(event);
-            }
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent event) {
-        if (this.isSwipeAllowed(event)) {
-            return super.onInterceptTouchEvent(event);
         }
 
         return false;
@@ -194,7 +263,7 @@ public class TribeViewPager extends CustomViewPager {
         @Override
         public void onSpringUpdate(Spring spring) {
             float value = (float) spring.getCurrentValue();
-            setTranslationX(value);
+            setTranslationY(value);
         }
     }
 
@@ -202,11 +271,15 @@ public class TribeViewPager extends CustomViewPager {
         @Override
         public void onSpringUpdate(Spring spring) {
             float value = (float) spring.getCurrentValue();
-            setTranslationX(value);
+            setTranslationY(value);
         }
     }
 
-    public Observable<Void> onDismiss() {
-        return onDismiss;
+    public Observable<Void> onDismissHorizontal() {
+        return onDismissHorizontal;
+    }
+
+    public Observable<Void> onDismissVertical() {
+        return onDismissVertical;
     }
 }

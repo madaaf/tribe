@@ -19,6 +19,7 @@ import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelega
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate;
 import com.tribe.app.presentation.view.camera.view.VisualizerView;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.PathView;
@@ -64,4 +65,6 @@ public interface ApplicationComponent {
     PhoneUtils phoneUtils();
 
     AccessToken accessToken();
+
+    ScreenUtils screenUtils();
 }

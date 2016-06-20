@@ -8,6 +8,22 @@
 
     </com.tribe.app.presentation.view.camera.view.CameraView>
 
+    <View
+        android:id="@+id/viewGradient"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/bg_gradient_tribe_bottom"
+        android:layout_gravity="bottom"
+        />
+
+    <View
+        android:id="@+id/viewGradientTop"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/bg_gradient_tribe_top"
+        android:layout_gravity="top"
+        />
+
     <com.tribe.app.presentation.view.camera.view.VisualizerView
         android:id="@+id/visualizerView"
         android:layout_width="match_parent"

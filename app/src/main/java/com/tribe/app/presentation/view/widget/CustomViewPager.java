@@ -7,11 +7,15 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.animation.Interpolator;
 
+import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ScrollerCustomDuration;
 
 import java.lang.reflect.Field;
 
 public class CustomViewPager extends ViewPager {
+
+    public static final int SWIPING_THRESHOLD = 10;
 
     public static final int SWIPE_MODE_ALL = 0;
     public static final int SWIPE_MODE_LEFT = 1;
@@ -19,12 +23,17 @@ public class CustomViewPager extends ViewPager {
     public static final int SWIPE_MODE_DOWN = 3;
     public static final int SWIPE_MODE_UP = 4;
     public static final int SWIPE_MODE_NONE = 5;
+    public static final int SWIPE_MODE_UNKNOWN = -1;
 
-    @IntDef({SWIPE_MODE_ALL, SWIPE_MODE_LEFT, SWIPE_MODE_RIGHT, SWIPE_MODE_DOWN, SWIPE_MODE_UP, SWIPE_MODE_NONE})
+    @IntDef({SWIPE_MODE_ALL, SWIPE_MODE_LEFT, SWIPE_MODE_RIGHT, SWIPE_MODE_DOWN, SWIPE_MODE_UP, SWIPE_MODE_NONE, SWIPE_MODE_UNKNOWN})
     public @interface SwipeDirection {}
 
+    // VARIABLES
+    private ScreenUtils screenUtils;
     private ScrollerCustomDuration scroller = null;
     private @SwipeDirection int swipeDirection;
+    protected @SwipeDirection int currentSwipeDirection;
+    protected boolean isInMotion = false;
     private float downX, downY;
 
     public CustomViewPager(Context context) {
@@ -36,49 +45,51 @@ public class CustomViewPager extends ViewPager {
         postInitViewPager();
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (this.isSwipeAllowed(event)) {
-            return super.onTouchEvent(event);
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent event) {
-        if (this.isSwipeAllowed(event)) {
-            return super.onInterceptTouchEvent(event);
-        }
-
-        return false;
-    }
-
     protected boolean isSwipeAllowed(MotionEvent event) {
-        if (this.swipeDirection == SWIPE_MODE_ALL) return true;
-
         if (this.swipeDirection == SWIPE_MODE_NONE) return false;
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             downX = event.getX();
             downY = event.getY();
+            isInMotion = false;
+            currentSwipeDirection = SWIPE_MODE_UNKNOWN;
             return true;
         }
 
         if (event.getAction() == MotionEvent.ACTION_MOVE) {
             try {
+                float diffY = event.getY() - downY;
                 float diffX = event.getX() - downX;
 
-                if (diffX > 0 && swipeDirection == SWIPE_MODE_RIGHT) {
-                    return false;
-                } else if (diffX < 0 && swipeDirection == SWIPE_MODE_LEFT) {
-                    return false;
+                final boolean isSwipingHorizontally = Math.abs(diffX) > screenUtils.dpToPx(SWIPING_THRESHOLD);
+                final boolean isSwipingVertically = Math.abs(diffY) > screenUtils.dpToPx(SWIPING_THRESHOLD);
+
+                if (isSwipingHorizontally && (!isInMotion || currentSwipeDirection == SWIPE_MODE_RIGHT || currentSwipeDirection == SWIPE_MODE_LEFT)) {
+                    if (diffX > 0) {
+                        return setCurrentSwipeDirection(SWIPE_MODE_RIGHT);
+                    } else {
+                        return setCurrentSwipeDirection(SWIPE_MODE_LEFT);
+                    }
+                }
+
+                if (isSwipingVertically && (!isInMotion || currentSwipeDirection == SWIPE_MODE_DOWN || currentSwipeDirection == SWIPE_MODE_UP)) {
+                    if (diffY > 0) {
+                        return setCurrentSwipeDirection(SWIPE_MODE_DOWN);
+                    } else {
+                        return setCurrentSwipeDirection(SWIPE_MODE_UP);
+                    }
                 }
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
         }
 
+        return true;
+    }
+
+    private boolean setCurrentSwipeDirection(@SwipeDirection int newSwipeDirection) {
+        isInMotion = true;
+        currentSwipeDirection = newSwipeDirection;
         return true;
     }
 
@@ -91,6 +102,8 @@ public class CustomViewPager extends ViewPager {
      * duration
      */
     protected void postInitViewPager() {
+        screenUtils = ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().screenUtils();
+
         try {
             Field rScroller = ViewPager.class.getDeclaredField("mScroller");
             rScroller.setAccessible(true);

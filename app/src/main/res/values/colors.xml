@@ -24,6 +24,7 @@
     <color name="black.opacity.50">#80000000</color>
 
     <!-- WHITES -->
+    <color name="white.opacity.20">#33FFFFFF</color>
     <color name="white.opacity.40">#66FFFFFF</color>
     <color name="white.opacity.50">#80FFFFFF</color>
 

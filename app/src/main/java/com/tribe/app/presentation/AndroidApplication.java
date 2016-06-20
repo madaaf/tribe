@@ -3,7 +3,6 @@ package com.tribe.app.presentation;
 import android.app.Application;
 
 import com.facebook.stetho.Stetho;
-import com.squareup.leakcanary.LeakCanary;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerApplicationComponent;
@@ -40,7 +39,7 @@ public class AndroidApplication extends Application {
 
     private void initializeLeakDetection() {
         if (BuildConfig.DEBUG) {
-            LeakCanary.install(this);
+            //LeakCanary.install(this);
         }
     }
 

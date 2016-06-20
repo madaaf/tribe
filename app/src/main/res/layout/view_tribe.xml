@@ -8,4 +8,161 @@
         android:background="@null"
         />
 
+    <View
+        android:id="@+id/viewGradient"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@drawable/bg_gradient_tribe_bottom"
+        android:layout_gravity="bottom"
+        />
+
+    <View
+        android:id="@+id/viewGradientTop"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@drawable/bg_gradient_tribe_top"
+        android:layout_gravity="top"
+        />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_marginLeft="@dimen/horizontal_margin_small"
+        android:layout_marginTop="@dimen/vertical_margin_small"
+        android:layout_marginRight="@dimen/horizontal_margin_small"
+        android:background="@null"
+        >
+
+        <View
+            android:id="@+id/imgAvatar"
+            android:layout_height="@dimen/avatar_size_small"
+            android:layout_width="@dimen/avatar_size_small"
+            android:background="@android:color/white">
+
+        </View>
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/horizontal_margin_small"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@id/imgAvatar"
+            style="@style/Text.Tribe.Name"
+            android:text="Tiago Duarte"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/horizontal_margin_small"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@id/imgAvatar"
+            style="@style/Text.Tribe.Sub"
+            android:text="2 minutes ago"
+            />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/tribe_bottom_bar_height"
+        android:layout_gravity="bottom"
+        android:background="@null"
+        >
+
+        <ImageView
+            android:id="@+id/imgSpeed"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="3dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/picto_speed_regular"
+            android:background="@drawable/selectable_button_oval_light"
+            android:clickable="true"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtSpeed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp"
+            android:layout_centerVertical="true"
+            style="@style/Text.Tribe.Name"
+            android:text="1x"
+            />
+
+        <ImageView
+            android:id="@+id/imgMore"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="3dp"
+            android:background="@drawable/selectable_button_oval_light"
+            android:scaleType="centerInside"
+            android:src="@drawable/picto_more"
+            android:rotation="90"
+            android:clickable="true"
+            />
+
+        <ImageView
+            android:id="@+id/imgSave"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/imgMore"
+            android:layout_marginRight="40dp"
+            android:background="@drawable/selectable_button_oval_light"
+            android:scaleType="centerInside"
+            android:src="@drawable/picto_save"
+            android:clickable="true"
+            />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_size"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="@dimen/tribe_bottom_bar_height"
+        android:layout_marginLeft="@dimen/horizontal_margin_small"
+        android:layout_marginRight="@dimen/horizontal_margin_small"
+        android:background="@color/white.opacity.20"
+        />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/horizontal_margin_small"
+        android:layout_marginRight="@dimen/horizontal_margin_small"
+        android:layout_marginBottom="58.5dp"
+        android:layout_gravity="bottom"
+        android:background="@null"
+        >
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtCity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/vertical_margin_large"
+            style="@style/Text.Tribe.City"
+            android:text="Manhattan"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtDistance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            style="@style/Text.Tribe.Sub"
+            android:text="12489 mi"
+            />
+
+    </RelativeLayout>
+
 </merge>

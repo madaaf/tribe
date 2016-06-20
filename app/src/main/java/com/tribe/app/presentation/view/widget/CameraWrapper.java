@@ -97,9 +97,6 @@ public class CameraWrapper extends FrameLayout {
 
         ButterKnife.bind(this);
 
-        preview = new GlPreview(getContext());
-        preview.setShader(new GlLutShader(getContext().getResources(), R.drawable.video_filter_blue));
-
         setAspectRatio(3.0 / 2.0);
 
         getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -294,6 +291,7 @@ public class CameraWrapper extends FrameLayout {
 
     @OnClick(R.id.imgVideo)
     public void activateVideo() {
+        isAudioMode = false;
         visualizerView.deactivate();
 
         imgSound.setEnabled(true);
@@ -334,11 +332,15 @@ public class CameraWrapper extends FrameLayout {
     private void pauseCamera() {
         if (cameraView != null) {
             cameraView.stopPreview();
+            cameraView.removeAllViews();
+            preview = null;
         }
     }
 
     private void resumeCamera() {
         if (cameraView != null ) {
+            preview = new GlPreview(getContext());
+            preview.setShader(new GlLutShader(getContext().getResources(), R.drawable.video_filter_blue));
             cameraView.setPreview(preview);
 
             Observable.timer(1000, TimeUnit.MILLISECONDS)
@@ -348,6 +350,9 @@ public class CameraWrapper extends FrameLayout {
                     cameraView.startPreview();
                 });
         }
+
+        if (preview != null)
+            preview.onResume();
     }
 
     private void hideIcons() {

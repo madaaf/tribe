@@ -17,6 +17,7 @@ import com.tribe.app.presentation.view.widget.CustomViewPager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -99,9 +100,9 @@ public class TribeActivity extends BaseActivity implements TribeView {
         tribePagerAdapter = new TribePagerAdapter(this);
         viewPager.setAdapter(tribePagerAdapter);
         viewPager.setOffscreenPageLimit(5);
-        viewPager.setScrollDurationFactor(1.75f);
+        viewPager.setScrollDurationFactor(1.0f);
         viewPager.setCurrentItem(0);
-        viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_RIGHT);
+        viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_ALL);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
             public void onPageScrollStateChanged(int state) {}
@@ -130,7 +131,8 @@ public class TribeActivity extends BaseActivity implements TribeView {
     private void initializeSubscriptions() {
         subscriptions = new CompositeSubscription();
 
-        subscriptions.add(viewPager.onDismiss().subscribe(aVoid -> finish()));
+        subscriptions.add(viewPager.onDismissHorizontal().delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
+        subscriptions.add(viewPager.onDismissVertical().delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
     }
 
     private void initializeDependencyInjector() {
