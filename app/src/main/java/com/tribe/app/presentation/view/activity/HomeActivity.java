@@ -110,6 +110,11 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     }
 
     private void initializeCamera() {
+        cameraWrapper.initDimens(
+                getResources().getDimensionPixelSize(R.dimen.vertical_margin_small),
+                getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small),
+                getResources().getDimensionPixelSize(R.dimen.nav_layout_height)
+        );
     }
 
     private void initializeViewPager() {
@@ -135,7 +140,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     public void initClicksOnChat(Observable<Friendship> observable) {
         subscriptions.add(observable.subscribe(friend -> {
-            HomeActivity.this.navigator.navigateToTribe(HomeActivity.this, friend.getId());
+            HomeActivity.this.navigator.navigateToTribe(HomeActivity.this, friend.getPosition(), friend.getId());
             //HomeActivity.this.navigator.navigateToChat(HomeActivity.this, friend.getId());
         }));
     }

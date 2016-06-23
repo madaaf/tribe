@@ -80,4 +80,8 @@ public class AnimationUtils {
     public static void scaleDown(final View view, long duration) {
         scaleDown(view, duration, 0);
     }
+
+    public static void fadeOut(View v, long duration) {
+        v.animate().alpha(0).setInterpolator(new DecelerateInterpolator()).setDuration(duration).start();
+    }
 }

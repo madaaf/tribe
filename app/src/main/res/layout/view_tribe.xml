@@ -115,7 +115,7 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/imgMore"
-            android:layout_marginRight="40dp"
+            android:layout_marginRight="60dp"
             android:background="@drawable/selectable_button_oval_light"
             android:scaleType="centerInside"
             android:src="@drawable/picto_save"
@@ -125,6 +125,7 @@
     </RelativeLayout>
 
     <View
+        android:id="@+id/viewSeparator"
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_size"
         android:layout_gravity="bottom"
@@ -163,6 +164,50 @@
             android:text="12489 mi"
             />
 
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtWeather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            style="@style/Text.Tribe.Weather"
+            android:text="28°"
+            />
+
+        <ImageView
+            android:id="@+id/imgWeather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/txtWeather"
+            android:layout_marginRight="@dimen/horizontal_margin_small"
+            android:layout_alignParentBottom="true"
+            android:background="@null"
+            android:scaleType="centerInside"
+            android:src="@drawable/picto_weather_fake"
+            />
+
     </RelativeLayout>
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtSwipeDown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_marginTop="@dimen/vertical_margin_small"
+        style="@style/Text.Tribe.Infos"
+        android:text="@string/Tribe.Swipe.Down"
+        android:alpha="0"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtSwipeUp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="@dimen/vertical_margin_small"
+        style="@style/Text.Tribe.Infos"
+        android:text="@string/Tribe.Swipe.Up"
+        android:alpha="0"
+        />
 
 </merge>

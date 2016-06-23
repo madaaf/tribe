@@ -11,20 +11,10 @@
 
                 groups {
                     name
-                    members {
-                        ...UserInfos
-                    }
                 }
 
                 reported {
                     ...UserInfos
-                }
-
-                installs {
-                    gcm_id
-                    user {
-                        ...UserInfos
-                    }
                 }
             }
         }
@@ -35,7 +25,16 @@
             profilePicture
         }
     </string>
+    <!-- installs {
+        gcm_id
+        user {
+            ...UserInfos
+        }
 
+        members {
+            ...UserInfos
+        }
+    } -->
     <string name="user.mutate.name">
         mutation {
             updateUser(id: \"%1$s\", user:{

@@ -2,9 +2,6 @@ package com.tribe.app.domain.entity;
 
 import java.util.Date;
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-
 /**
  * Created by tiago on 04/05/2016.
  */
@@ -18,6 +15,8 @@ public class Friendship {
 
     private Date createdAt;
     private Date updatedAt;
+
+    private int position;
 
     public String getId() {
         return id;
@@ -41,5 +40,13 @@ public class Friendship {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
+    public int getPosition() {
+        return position;
     }
 }

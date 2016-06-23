@@ -69,7 +69,7 @@ public class CameraWrapper extends FrameLayout {
     private PathView pathView;
 
     // Resources
-    private int marginLeftInit, marginBottomInit, marginVerticalIcons, marginHorizontalIcons, diffTouch;
+    private int marginTopInit, marginLeftInit, marginBottomInit, marginVerticalIcons, marginHorizontalIcons, diffTouch;
 
     // Drag camera
     private int downX, downY, xDelta, yDelta;
@@ -78,14 +78,14 @@ public class CameraWrapper extends FrameLayout {
         super(context, attrs);
         ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
 
-        initDimens();
         initUI();
         initAudioRecorder();
     }
 
-    public void initDimens() {
-        marginLeftInit = getContext().getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
-        marginBottomInit = getContext().getResources().getDimensionPixelOffset(R.dimen.nav_layout_height);
+    public void initDimens(int marginTopInit, int marginLeftInit, int marginBottomInit) {
+        this.marginTopInit = marginTopInit;
+        this.marginLeftInit = marginLeftInit;
+        this.marginBottomInit = marginBottomInit;
         marginHorizontalIcons = getContext().getResources().getDimensionPixelOffset(R.dimen.horizontal_margin);
         marginVerticalIcons = getContext().getResources().getDimensionPixelOffset(R.dimen.vertical_margin);
         diffTouch = screenUtils.dpToPx(DIFF_TOUCH);
@@ -164,6 +164,10 @@ public class CameraWrapper extends FrameLayout {
         setLayoutParams(layoutParams);
     }
 
+    public int getHeightFromRatio() {
+        return (int) (screenUtils.getWidth() / RATIO * aspectRatio);
+    }
+
     @Override
     protected void onMeasure(int widthSpec, int heightSpec) {
         // Scale the preview while keeping the aspect ratio
@@ -209,6 +213,7 @@ public class CameraWrapper extends FrameLayout {
                 layoutParams.leftMargin = touchX - xDelta;
                 layoutParams.topMargin = touchY - yDelta;
                 setLayoutParams(layoutParams);
+                invalidate();
 
                 break;
         }
@@ -234,7 +239,7 @@ public class CameraWrapper extends FrameLayout {
         if (lp.topMargin > screenUtils.getHeight() / 4) {
             topMargin = ((View) getParent()).getHeight() - getMeasuredHeight() - marginBottomInit;
         } else {
-            topMargin = marginLeftInit;
+            topMargin = marginTopInit;
         }
 
         ValueAnimator animator = ValueAnimator.ofInt(lp.leftMargin, leftMargin);
@@ -341,6 +346,8 @@ public class CameraWrapper extends FrameLayout {
         if (cameraView != null ) {
             preview = new GlPreview(getContext());
             preview.setShader(new GlLutShader(getContext().getResources(), R.drawable.video_filter_blue));
+            preview.setZOrderOnTop(false);
+            preview.setZOrderMediaOverlay(false);
             cameraView.setPreview(preview);
 
             Observable.timer(1000, TimeUnit.MILLISECONDS)

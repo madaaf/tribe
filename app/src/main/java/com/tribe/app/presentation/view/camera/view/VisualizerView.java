@@ -27,7 +27,7 @@ import butterknife.ButterKnife;
  */
 public class VisualizerView extends LinearLayout {
 
-    private static int THRESHOLD = 200;
+    private static int THRESHOLD = 150;
     private static int DURATION_ULTRA_SHORT = 100;
     private static int DURATION_SHORT = 200;
     private static int DURATION_LONG = 500;

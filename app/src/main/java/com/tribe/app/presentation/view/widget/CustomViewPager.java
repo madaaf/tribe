@@ -45,7 +45,12 @@ public class CustomViewPager extends ViewPager {
         postInitViewPager();
     }
 
-    protected boolean isSwipeAllowed(MotionEvent event) {
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        return super.onTouchEvent(ev);
+    }
+
+    public boolean isSwipeAllowed(MotionEvent event) {
         if (this.swipeDirection == SWIPE_MODE_NONE) return false;
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -65,7 +70,7 @@ public class CustomViewPager extends ViewPager {
                 final boolean isSwipingVertically = Math.abs(diffY) > screenUtils.dpToPx(SWIPING_THRESHOLD);
 
                 if (isSwipingHorizontally && (!isInMotion || currentSwipeDirection == SWIPE_MODE_RIGHT || currentSwipeDirection == SWIPE_MODE_LEFT)) {
-                    if (diffX > 0) {
+                    if (diffX < 0) {
                         return setCurrentSwipeDirection(SWIPE_MODE_RIGHT);
                     } else {
                         return setCurrentSwipeDirection(SWIPE_MODE_LEFT);
@@ -123,5 +128,9 @@ public class CustomViewPager extends ViewPager {
      */
     public void setScrollDurationFactor(double scrollFactor) {
         scroller.setScrollDurationFactor(scrollFactor);
+    }
+
+    public int getCurrentSwipeDirection() {
+        return currentSwipeDirection;
     }
 }

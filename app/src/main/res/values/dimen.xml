@@ -11,13 +11,17 @@
     <dimen name="horizontal_margin_small">15dp</dimen>
     <dimen name="vertical_margin_small">15dp</dimen>
     <dimen name="horizontal_margin_large">25dp</dimen>
+    <dimen name="horizontal_margin_xlarge">30dp</dimen>
     <dimen name="vertical_margin_large">25dp</dimen>
+    <dimen name="vertical_margin_xlarge">30dp</dimen>
     <dimen name="vertical_margin_proximity">5dp</dimen>
+    <dimen name="vertical_margin_reply_tile">50dp</dimen>
 
     <!-- HEIGHTS -->
     <dimen name="bottom_bar_height">60dp</dimen>
     <dimen name="tribe_bottom_bar_height">47.5dp</dimen>
     <dimen name="back_to_message_height">48dp</dimen>
+    <dimen name="snooze_items_height">100dp</dimen>
 
     <!-- WIDTHS -->
     <dimen name="snooze_mode_width">93dp</dimen>
@@ -35,6 +39,8 @@
     <dimen name="camera_height">165dp</dimen>
     <dimen name="camera_width">110dp</dimen>
     <dimen name="camera_stroke_width">8dp</dimen>
+    <dimen name="tribe_icon_size">15dp</dimen>
+    <dimen name="tribe_icon_size_max">70dp</dimen>
 
     <!-- THRESHOLDS -->
     <dimen name="threshold_end_tribe">125dp</dimen>

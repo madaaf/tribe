@@ -1,0 +1,914 @@
+---- AspectJ Properties ---
+AspectJ Compiler 1.8.6 built on Friday Jun 5, 2015 at 23:41:42 GMT
+---- Dump Properties ---
+Dump file: ajcore.20160620.221645.230.txt
+Dump reason: abort
+Dump on exception: true
+Dump at exit condition: abort
+---- System Properties ---
+java.vendor=Oracle Corporation
+com.apple.mrj.application.live-resize=false
+sun.java.launcher=SUN_STANDARD
+idea.executable=studio
+sun.management.compiler=HotSpot 64-Bit Tiered Compilers
+idea.paths.selector=AndroidStudio2.1
+jnidispatch.path=/Users/tiago/Library/Caches/AndroidStudio2.1/tmp/jna-110353012/jna8833966343503231078.tmp
+os.name=Mac OS X
+sun.boot.class.path=/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/sunrsasign.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/classes
+java.vm.specification.vendor=Oracle Corporation
+java.runtime.version=1.8.0_91-b14
+jb.vmOptionsFile=/Applications/Android Studio.app/Contents/bin/studio.vmoptions,/Users/tiago/Library/Preferences/AndroidStudio2.1/studio.vmoptions
+idea.java.redist=NoJavaDistribution
+user.name=tiago
+java.rmi.server.disableHttp=true
+idea.use.default.antialiasing.in.editor=false
+idea.home.path=/Applications/Android Studio.app/Contents
+http.keepAlive=true
+svnkit.http.methods=Basic,Digest,NTLM
+user.language=fr
+sun.boot.library.path=/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib
+jna.nosys=true
+idea.fatal.error.notification=disabled
+swing.bufferPerWindow=false
+CVS_PASSFILE=~/.cvspass
+java.version=1.8.0_91
+java.net.preferIPv4Stack=true
+user.timezone=Europe/Paris
+sun.arch.data.model=64
+http.nonProxyHosts=local|*.local|169.254/16|*.169.254/16
+java.endorsed.dirs=/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/endorsed
+sun.cpu.isalist=
+sun.jnu.encoding=UTF-8
+file.encoding.pkg=sun.io
+file.separator=/
+java.specification.name=Java Platform API Specification
+java.class.version=52.0
+user.country=FR
+jna.boot.library.path=
+java.home=/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre
+java.vm.info=mixed mode
+jna.debug_load=true
+os.version=10.11.1
+path.separator=:
+java.vm.version=25.91-b14
+idea.smooth.progress=false
+jna.debug_load.jna=true
+idea.no.launcher=false
+user.variant=
+java.awt.printerjob=sun.lwawt.macosx.CPrinterJob
+sun.io.unicode.encoding=UnicodeBig
+idea.cycle.buffer.size=1024
+awt.toolkit=sun.lwawt.macosx.LWCToolkit
+ide.new.welcome.screen.force=true
+socksNonProxyHosts=local|*.local|169.254/16|*.169.254/16
+log4j.defaultInitOverride=true
+ftp.nonProxyHosts=local|*.local|169.254/16|*.169.254/16
+io.netty.processId=36485
+idea.platform.prefix=AndroidStudio
+idea.dynamic.classpath=false
+user.home=/Users/tiago
+__idea.mac.env.lock=unlocked
+java.specification.vendor=Oracle Corporation
+apple.laf.useScreenMenuBar=true
+jna.encoding=UTF8
+java.library.path=/Users/tiago/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:.
+java.vendor.url=http://java.oracle.com/
+java.vm.vendor=Oracle Corporation
+gopherProxySet=false
+external.system.remote.process.idle.ttl.ms=-1
+java.runtime.name=Java(TM) SE Runtime Environment
+sun.java.command=org.gradle.launcher.daemon.bootstrap.GradleDaemon 2.10
+java.class.path=/Users/tiago/Dev/gradle/wrapper/dists/gradle-2.10-all/a4w5fzrkeut1ox71xslb49gst/gradle-2.10/lib/gradle-launcher-2.10.jar
+io.netty.machineId=9e43d860
+java.vm.specification.name=Java Virtual Machine Specification
+idea.xdebug.key=-Xdebug
+java.vm.specification.version=1.8
+idea.popup.weight=heavy
+sun.cpu.endian=little
+sun.os.patch.level=unknown
+java.io.tmpdir=/var/folders/h1/qnqh09_d0kq5xvy7b2g2ylbc0000gn/T/
+java.vendor.url.bug=http://bugreport.sun.com/bugreport/
+svnkit.log.native.calls=true
+java.rmi.server.hostname=localhost
+jna.platform.library.path=/usr/lib:/usr/lib
+os.arch=x86_64
+java.awt.graphicsenv=sun.awt.CGraphicsEnvironment
+idea.max.intellisense.filesize=2500
+java.ext.dirs=/Users/tiago/Library/Java/Extensions:/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/ext:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java
+user.dir=/Users/tiago/Dev/Tribe2
+line.separator=
+
+java.vm.name=Java HotSpot(TM) 64-Bit Server VM
+file.encoding=UTF-8
+studio.record.file=/Users/tiago/Library/Caches/AndroidStudio2.1/tmp/AndroidStudio.0a8424f6-f6f2-46cb-a707-a457d59a4a0f
+java.specification.version=1.8
+---- Command Line ---
+-showWeaveInfo
+-1.5
+-inpath
+/Users/tiago/Dev/Tribe2/app/build/retrolambda/debug
+-aspectpath
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.fernandocejas.frodo/frodo-api/0.8.1/f58e3edff23a9f04fddd17e36807c1d0fa395cdc/frodo-api-0.8.1.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/design/23.3.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/org.aspectj/aspectjrt/1.8.6/a7db7ea5f7bb18a1cbd9f24edd0e666504800be/aspectjrt-1.8.6.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/2.0.1/516c03b21d50a644d538de0f0369c620989cd8f0/jsr305-2.0.1.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.3.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/23.3.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.3.0/jars/libs/internal_impl-23.3.0.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.picasso/picasso/2.5.2/7446d06ec8d4f7ffcc53f1da37c95f200dcb9387/picasso-2.5.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton.byteunits/byteunits/0.9.1/202a0c874feafe7ece9be0a53e9640c9a26f2197/byteunits-0.9.1.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/io.reactivex/rxandroid/1.1.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.fernandocejas.frodo/frodo-runtime/0.8.1/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.jakewharton.rxbinding/rxbinding/0.4.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okio/okio/1.6.0/98476622f10715998eacf9240d6b479f12c66143/okio-1.6.0.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/io.realm/realm-android-library/0.90.1/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.f2prateek.rx.preferences/rx-preferences/1.0.1/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.leakcanary/leakcanary-analyzer/1.3.1/325e7401a7ea16918eb39ba8baad8fd5561a55d3/leakcanary-analyzer-1.3.1.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/adapter-rxjava/2.0.2/a60c039ba54c73d1133b72178e1b04133c73d13d/adapter-rxjava-2.0.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/org.eclipse.paho/org.eclipse.paho.client.mqttv3/1.0.2/11752d3f24d1a9deda4533a7ca18d8496417ceeb/org.eclipse.paho.client.mqttv3-1.0.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/commons-cli/commons-cli/1.2/2bf96b7aa8b611c177d329452af1dc933e14501c/commons-cli-1.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton/butterknife-annotations/8.0.1/345b89f45d02d8b09400b472fab7b7e38f4ede1f/butterknife-annotations-8.0.1.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okhttp3/okhttp/3.2.0/f7873a2ebde246a45c2a8d6f3247108b4c88a879/okhttp-3.2.0.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.birbit/android-priority-jobqueue/2.0.0-alpha2/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.squareup.leakcanary/leakcanary-android/1.3.1/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/23.3.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.stetho/stetho-okhttp3/1.3.1/c596b3b33b5a92107bb70544bb5ee35f597bc6d8/stetho-okhttp3-1.3.1.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.rebound/rebound/0.3.8/c8b90640dddaf1e7ad75d7cb00b09a44b3788f7e/rebound-0.3.8.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/javax.annotation/jsr250-api/1.0/5025422767732a1ab45d93abfea846513d742dcf/jsr250-api-1.0.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/javax.inject/javax.inject/1/6975da39a7040257bd51d21a231b76c915872d38/javax.inject-1.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.android.exoplayer/exoplayer/r1.5.9/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/23.3.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/retrofit/2.0.2/43eeae0b9fb087bb3194ba59ab63a38a32fbf3e/retrofit-2.0.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/io.reactivex/rxjava/1.1.3/5a1aef6a9d56efb473b8be6b66689077e7317c45/rxjava-1.1.3.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.6.2/f1bc476cc167b18e66c297df599b2377131a8947/gson-2.6.2.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.github.pwittchen/swipe/0.0.1/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.dagger/dagger/2.2/febfd2d9e89bde4c3a9723bcd9522cba96bddac7/dagger-2.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton.picasso/picasso2-okhttp3-downloader/1.0.2/74a586d03a233d356290983d1ef23a64c1d122b2/picasso2-okhttp3-downloader-1.0.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/converter-gson/2.0.2/f8d87f15b94b8d74e7ccf61d7eedb558811cdb30/converter-gson-2.0.2.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.jakewharton/butterknife/8.0.1/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.stetho/stetho/1.3.1/2c4076b466a0eb4d6ddf5721edd35cd1adc1f317/stetho-1.3.1.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.3.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/Tribe2/AdapterDelegates/unspecified/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.getkeepsafe.relinker/relinker/1.2.1/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/io.realm/realm-annotations/0.90.1/b95a9d367cc87c6fc6d9cd11803678962c8575b0/realm-annotations-0.90.1.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okhttp3/logging-interceptor/3.2.0/a56f28d5b7fab623c6c1d2afa08dd496d873ac21/logging-interceptor-3.2.0.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.haha/haha/1.3/d2c832f9d14a11c79f58a7ee2e10526a12152c72/haha-1.3.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.googlecode.libphonenumber/libphonenumber/7.1.0/a8144be5e41b43f2660e7532347f8f367e4b442f/libphonenumber-7.1.0.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.leakcanary/leakcanary-watcher/1.3.1/6904771474c058abfc5912c13d12b02754712165/leakcanary-watcher-1.3.1.jar:/Users/tiago/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/23.3.0/support-annotations-23.3.0.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/rt.jar
+-d
+/Users/tiago/Dev/Tribe2/app/build/retrolambda/debug
+-classpath
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.fernandocejas.frodo/frodo-api/0.8.1/f58e3edff23a9f04fddd17e36807c1d0fa395cdc/frodo-api-0.8.1.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/design/23.3.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/org.aspectj/aspectjrt/1.8.6/a7db7ea5f7bb18a1cbd9f24edd0e666504800be/aspectjrt-1.8.6.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/2.0.1/516c03b21d50a644d538de0f0369c620989cd8f0/jsr305-2.0.1.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.3.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/23.3.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.3.0/jars/libs/internal_impl-23.3.0.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.picasso/picasso/2.5.2/7446d06ec8d4f7ffcc53f1da37c95f200dcb9387/picasso-2.5.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton.byteunits/byteunits/0.9.1/202a0c874feafe7ece9be0a53e9640c9a26f2197/byteunits-0.9.1.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/io.reactivex/rxandroid/1.1.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.fernandocejas.frodo/frodo-runtime/0.8.1/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.jakewharton.rxbinding/rxbinding/0.4.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okio/okio/1.6.0/98476622f10715998eacf9240d6b479f12c66143/okio-1.6.0.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/io.realm/realm-android-library/0.90.1/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.f2prateek.rx.preferences/rx-preferences/1.0.1/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.leakcanary/leakcanary-analyzer/1.3.1/325e7401a7ea16918eb39ba8baad8fd5561a55d3/leakcanary-analyzer-1.3.1.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/adapter-rxjava/2.0.2/a60c039ba54c73d1133b72178e1b04133c73d13d/adapter-rxjava-2.0.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/org.eclipse.paho/org.eclipse.paho.client.mqttv3/1.0.2/11752d3f24d1a9deda4533a7ca18d8496417ceeb/org.eclipse.paho.client.mqttv3-1.0.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/commons-cli/commons-cli/1.2/2bf96b7aa8b611c177d329452af1dc933e14501c/commons-cli-1.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton/butterknife-annotations/8.0.1/345b89f45d02d8b09400b472fab7b7e38f4ede1f/butterknife-annotations-8.0.1.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okhttp3/okhttp/3.2.0/f7873a2ebde246a45c2a8d6f3247108b4c88a879/okhttp-3.2.0.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.birbit/android-priority-jobqueue/2.0.0-alpha2/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.squareup.leakcanary/leakcanary-android/1.3.1/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/23.3.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.stetho/stetho-okhttp3/1.3.1/c596b3b33b5a92107bb70544bb5ee35f597bc6d8/stetho-okhttp3-1.3.1.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.rebound/rebound/0.3.8/c8b90640dddaf1e7ad75d7cb00b09a44b3788f7e/rebound-0.3.8.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/javax.annotation/jsr250-api/1.0/5025422767732a1ab45d93abfea846513d742dcf/jsr250-api-1.0.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/javax.inject/javax.inject/1/6975da39a7040257bd51d21a231b76c915872d38/javax.inject-1.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.android.exoplayer/exoplayer/r1.5.9/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/23.3.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/retrofit/2.0.2/43eeae0b9fb087bb3194ba59ab63a38a32fbf3e/retrofit-2.0.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/io.reactivex/rxjava/1.1.3/5a1aef6a9d56efb473b8be6b66689077e7317c45/rxjava-1.1.3.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.6.2/f1bc476cc167b18e66c297df599b2377131a8947/gson-2.6.2.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.github.pwittchen/swipe/0.0.1/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.dagger/dagger/2.2/febfd2d9e89bde4c3a9723bcd9522cba96bddac7/dagger-2.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton.picasso/picasso2-okhttp3-downloader/1.0.2/74a586d03a233d356290983d1ef23a64c1d122b2/picasso2-okhttp3-downloader-1.0.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/converter-gson/2.0.2/f8d87f15b94b8d74e7ccf61d7eedb558811cdb30/converter-gson-2.0.2.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.jakewharton/butterknife/8.0.1/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.stetho/stetho/1.3.1/2c4076b466a0eb4d6ddf5721edd35cd1adc1f317/stetho-1.3.1.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.3.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/Tribe2/AdapterDelegates/unspecified/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.getkeepsafe.relinker/relinker/1.2.1/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/io.realm/realm-annotations/0.90.1/b95a9d367cc87c6fc6d9cd11803678962c8575b0/realm-annotations-0.90.1.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okhttp3/logging-interceptor/3.2.0/a56f28d5b7fab623c6c1d2afa08dd496d873ac21/logging-interceptor-3.2.0.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.haha/haha/1.3/d2c832f9d14a11c79f58a7ee2e10526a12152c72/haha-1.3.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.googlecode.libphonenumber/libphonenumber/7.1.0/a8144be5e41b43f2660e7532347f8f367e4b442f/libphonenumber-7.1.0.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.leakcanary/leakcanary-watcher/1.3.1/6904771474c058abfc5912c13d12b02754712165/leakcanary-watcher-1.3.1.jar:/Users/tiago/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/23.3.0/support-annotations-23.3.0.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/rt.jar
+-bootclasspath
+/Users/tiago/Library/Android/sdk/platforms/android-23/android.jar
+---- Full Classpath ---
+/Users/tiago/Library/Android/sdk/platforms/android-23/android.jar(23947250 bytes)
+/Users/tiago/Dev/Tribe2/app/build/retrolambda/debug(3 entries)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.fernandocejas.frodo/frodo-api/0.8.1/f58e3edff23a9f04fddd17e36807c1d0fa395cdc/frodo-api-0.8.1.jar(1610 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/design/23.3.0/jars/classes.jar(288295 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/org.aspectj/aspectjrt/1.8.6/a7db7ea5f7bb18a1cbd9f24edd0e666504800be/aspectjrt-1.8.6.jar(117529 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/2.0.1/516c03b21d50a644d538de0f0369c620989cd8f0/jsr305-2.0.1.jar(31866 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.3.0/jars/classes.jar(606590 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/23.3.0/jars/classes.jar(298791 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.3.0/jars/libs/internal_impl-23.3.0.jar(322724 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.picasso/picasso/2.5.2/7446d06ec8d4f7ffcc53f1da37c95f200dcb9387/picasso-2.5.2.jar(120459 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton.byteunits/byteunits/0.9.1/202a0c874feafe7ece9be0a53e9640c9a26f2197/byteunits-0.9.1.jar(23349 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/io.reactivex/rxandroid/1.1.0/jars/classes.jar(8596 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.fernandocejas.frodo/frodo-runtime/0.8.1/jars/classes.jar(24044 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.jakewharton.rxbinding/rxbinding/0.4.0/jars/classes.jar(200238 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okio/okio/1.6.0/98476622f10715998eacf9240d6b479f12c66143/okio-1.6.0.jar(65928 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/io.realm/realm-android-library/0.90.1/jars/classes.jar(273046 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.f2prateek.rx.preferences/rx-preferences/1.0.1/jars/classes.jar(22061 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.leakcanary/leakcanary-analyzer/1.3.1/325e7401a7ea16918eb39ba8baad8fd5561a55d3/leakcanary-analyzer-1.3.1.jar(14774 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/adapter-rxjava/2.0.2/a60c039ba54c73d1133b72178e1b04133c73d13d/adapter-rxjava-2.0.2.jar(19611 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/org.eclipse.paho/org.eclipse.paho.client.mqttv3/1.0.2/11752d3f24d1a9deda4533a7ca18d8496417ceeb/org.eclipse.paho.client.mqttv3-1.0.2.jar(171372 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/commons-cli/commons-cli/1.2/2bf96b7aa8b611c177d329452af1dc933e14501c/commons-cli-1.2.jar(41123 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton/butterknife-annotations/8.0.1/345b89f45d02d8b09400b472fab7b7e38f4ede1f/butterknife-annotations-8.0.1.jar(16124 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okhttp3/okhttp/3.2.0/f7873a2ebde246a45c2a8d6f3247108b4c88a879/okhttp-3.2.0.jar(335509 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.birbit/android-priority-jobqueue/2.0.0-alpha2/jars/classes.jar(151602 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.squareup.leakcanary/leakcanary-android/1.3.1/jars/classes.jar(75028 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/23.3.0/jars/classes.jar(40821 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.stetho/stetho-okhttp3/1.3.1/c596b3b33b5a92107bb70544bb5ee35f597bc6d8/stetho-okhttp3-1.3.1.jar(43892 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.rebound/rebound/0.3.8/c8b90640dddaf1e7ad75d7cb00b09a44b3788f7e/rebound-0.3.8.jar(42706 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/javax.annotation/jsr250-api/1.0/5025422767732a1ab45d93abfea846513d742dcf/jsr250-api-1.0.jar(5848 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/javax.inject/javax.inject/1/6975da39a7040257bd51d21a231b76c915872d38/javax.inject-1.jar(2497 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.android.exoplayer/exoplayer/r1.5.9/jars/classes.jar(768748 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/23.3.0/jars/classes.jar(11288 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/retrofit/2.0.2/43eeae0b9fb087bb3194ba59ab63a38a32fbf3e/retrofit-2.0.2.jar(86225 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/io.reactivex/rxjava/1.1.3/5a1aef6a9d56efb473b8be6b66689077e7317c45/rxjava-1.1.3.jar(1038620 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.6.2/f1bc476cc167b18e66c297df599b2377131a8947/gson-2.6.2.jar(229650 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.github.pwittchen/swipe/0.0.1/jars/classes.jar(5832 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.dagger/dagger/2.2/febfd2d9e89bde4c3a9723bcd9522cba96bddac7/dagger-2.2.jar(23473 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton.picasso/picasso2-okhttp3-downloader/1.0.2/74a586d03a233d356290983d1ef23a64c1d122b2/picasso2-okhttp3-downloader-1.0.2.jar(5503 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/converter-gson/2.0.2/f8d87f15b94b8d74e7ccf61d7eedb558811cdb30/converter-gson-2.0.2.jar(5490 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.jakewharton/butterknife/8.0.1/jars/classes.jar(16500 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.stetho/stetho/1.3.1/2c4076b466a0eb4d6ddf5721edd35cd1adc1f317/stetho-1.3.1.jar(529919 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.3.0/jars/classes.jar(1074102 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/Tribe2/AdapterDelegates/unspecified/jars/classes.jar(7973 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.getkeepsafe.relinker/relinker/1.2.1/jars/classes.jar(27295 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/io.realm/realm-annotations/0.90.1/b95a9d367cc87c6fc6d9cd11803678962c8575b0/realm-annotations-0.90.1.jar(2958 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okhttp3/logging-interceptor/3.2.0/a56f28d5b7fab623c6c1d2afa08dd496d873ac21/logging-interceptor-3.2.0.jar(7488 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.haha/haha/1.3/d2c832f9d14a11c79f58a7ee2e10526a12152c72/haha-1.3.jar(316913 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.googlecode.libphonenumber/libphonenumber/7.1.0/a8144be5e41b43f2660e7532347f8f367e4b442f/libphonenumber-7.1.0.jar(308186 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.leakcanary/leakcanary-watcher/1.3.1/6904771474c058abfc5912c13d12b02754712165/leakcanary-watcher-1.3.1.jar(13798 bytes)
+/Users/tiago/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/23.3.0/support-annotations-23.3.0.jar(19252 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/rt.jar(66591469 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/ext/cldrdata.jar(3860522 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/ext/dnsns.jar(8286 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/ext/jaccess.jar(44516 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/ext/jfxrt.jar(18552899 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/ext/localedata.jar(1178848 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/ext/nashorn.jar(2028225 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/ext/sunec.jar(39771 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/ext/sunjce_provider.jar(278718 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/ext/sunpkcs11.jar(250826 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/ext/zipfs.jar(68849 bytes)
+/System/Library/Java/Extensions/MRJToolkit.jar(12849 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.fernandocejas.frodo/frodo-api/0.8.1/f58e3edff23a9f04fddd17e36807c1d0fa395cdc/frodo-api-0.8.1.jar(1610 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/design/23.3.0/jars/classes.jar(288295 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/org.aspectj/aspectjrt/1.8.6/a7db7ea5f7bb18a1cbd9f24edd0e666504800be/aspectjrt-1.8.6.jar(117529 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/2.0.1/516c03b21d50a644d538de0f0369c620989cd8f0/jsr305-2.0.1.jar(31866 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.3.0/jars/classes.jar(606590 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/23.3.0/jars/classes.jar(298791 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.3.0/jars/libs/internal_impl-23.3.0.jar(322724 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.picasso/picasso/2.5.2/7446d06ec8d4f7ffcc53f1da37c95f200dcb9387/picasso-2.5.2.jar(120459 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton.byteunits/byteunits/0.9.1/202a0c874feafe7ece9be0a53e9640c9a26f2197/byteunits-0.9.1.jar(23349 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/io.reactivex/rxandroid/1.1.0/jars/classes.jar(8596 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.fernandocejas.frodo/frodo-runtime/0.8.1/jars/classes.jar(24044 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.jakewharton.rxbinding/rxbinding/0.4.0/jars/classes.jar(200238 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okio/okio/1.6.0/98476622f10715998eacf9240d6b479f12c66143/okio-1.6.0.jar(65928 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/io.realm/realm-android-library/0.90.1/jars/classes.jar(273046 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.f2prateek.rx.preferences/rx-preferences/1.0.1/jars/classes.jar(22061 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.leakcanary/leakcanary-analyzer/1.3.1/325e7401a7ea16918eb39ba8baad8fd5561a55d3/leakcanary-analyzer-1.3.1.jar(14774 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/adapter-rxjava/2.0.2/a60c039ba54c73d1133b72178e1b04133c73d13d/adapter-rxjava-2.0.2.jar(19611 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/org.eclipse.paho/org.eclipse.paho.client.mqttv3/1.0.2/11752d3f24d1a9deda4533a7ca18d8496417ceeb/org.eclipse.paho.client.mqttv3-1.0.2.jar(171372 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/commons-cli/commons-cli/1.2/2bf96b7aa8b611c177d329452af1dc933e14501c/commons-cli-1.2.jar(41123 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton/butterknife-annotations/8.0.1/345b89f45d02d8b09400b472fab7b7e38f4ede1f/butterknife-annotations-8.0.1.jar(16124 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okhttp3/okhttp/3.2.0/f7873a2ebde246a45c2a8d6f3247108b4c88a879/okhttp-3.2.0.jar(335509 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.birbit/android-priority-jobqueue/2.0.0-alpha2/jars/classes.jar(151602 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.squareup.leakcanary/leakcanary-android/1.3.1/jars/classes.jar(75028 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/23.3.0/jars/classes.jar(40821 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.stetho/stetho-okhttp3/1.3.1/c596b3b33b5a92107bb70544bb5ee35f597bc6d8/stetho-okhttp3-1.3.1.jar(43892 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.rebound/rebound/0.3.8/c8b90640dddaf1e7ad75d7cb00b09a44b3788f7e/rebound-0.3.8.jar(42706 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/javax.annotation/jsr250-api/1.0/5025422767732a1ab45d93abfea846513d742dcf/jsr250-api-1.0.jar(5848 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/javax.inject/javax.inject/1/6975da39a7040257bd51d21a231b76c915872d38/javax.inject-1.jar(2497 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.android.exoplayer/exoplayer/r1.5.9/jars/classes.jar(768748 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/23.3.0/jars/classes.jar(11288 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/retrofit/2.0.2/43eeae0b9fb087bb3194ba59ab63a38a32fbf3e/retrofit-2.0.2.jar(86225 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/io.reactivex/rxjava/1.1.3/5a1aef6a9d56efb473b8be6b66689077e7317c45/rxjava-1.1.3.jar(1038620 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.6.2/f1bc476cc167b18e66c297df599b2377131a8947/gson-2.6.2.jar(229650 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.github.pwittchen/swipe/0.0.1/jars/classes.jar(5832 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.dagger/dagger/2.2/febfd2d9e89bde4c3a9723bcd9522cba96bddac7/dagger-2.2.jar(23473 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton.picasso/picasso2-okhttp3-downloader/1.0.2/74a586d03a233d356290983d1ef23a64c1d122b2/picasso2-okhttp3-downloader-1.0.2.jar(5503 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/converter-gson/2.0.2/f8d87f15b94b8d74e7ccf61d7eedb558811cdb30/converter-gson-2.0.2.jar(5490 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.jakewharton/butterknife/8.0.1/jars/classes.jar(16500 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.stetho/stetho/1.3.1/2c4076b466a0eb4d6ddf5721edd35cd1adc1f317/stetho-1.3.1.jar(529919 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.3.0/jars/classes.jar(1074102 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/Tribe2/AdapterDelegates/unspecified/jars/classes.jar(7973 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.getkeepsafe.relinker/relinker/1.2.1/jars/classes.jar(27295 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/io.realm/realm-annotations/0.90.1/b95a9d367cc87c6fc6d9cd11803678962c8575b0/realm-annotations-0.90.1.jar(2958 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okhttp3/logging-interceptor/3.2.0/a56f28d5b7fab623c6c1d2afa08dd496d873ac21/logging-interceptor-3.2.0.jar(7488 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.haha/haha/1.3/d2c832f9d14a11c79f58a7ee2e10526a12152c72/haha-1.3.jar(316913 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.googlecode.libphonenumber/libphonenumber/7.1.0/a8144be5e41b43f2660e7532347f8f367e4b442f/libphonenumber-7.1.0.jar(308186 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.leakcanary/leakcanary-watcher/1.3.1/6904771474c058abfc5912c13d12b02754712165/leakcanary-watcher-1.3.1.jar(13798 bytes)
+/Users/tiago/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/23.3.0/support-annotations-23.3.0.jar(19252 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/rt.jar(66591469 bytes)
+---- Compiler Messages ---
+info Pipelining compilation
+info weaver operating in reweavable mode.  Need to verify any required types exist.
+info woven class com.tribe.app.presentation.view.utils.Degrees$ActivityOrientation (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/utils/Degrees$ActivityOrientation.class)
+info woven class com.tribe.app.presentation.view.utils.ScreenUtils (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/utils/ScreenUtils.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ChatModule (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ChatModule.class)
+info woven class com.tribe.app.presentation.recording.RealDoubleFFT (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/recording/RealDoubleFFT.class)
+info woven class android.support.design.R$string (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/design/R$string.class)
+info woven class com.tribe.app.presentation.view.camera.interfaces.PreviewTexture (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/interfaces/PreviewTexture.class)
+info woven class com.tribe.app.presentation.view.camera.utils.OpenGlUtils (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/utils/OpenGlUtils.class)
+info woven class com.tribe.app.presentation.view.widget.CircularImageView (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/CircularImageView.class)
+info woven class com.tribe.app.presentation.mvp.presenter.IntroPresenter$RequestCodeSubscriber (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/presenter/IntroPresenter$RequestCodeSubscriber.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ApplicationModule_ProvideCloudUserRepositoryFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ApplicationModule_ProvideCloudUserRepositoryFactory.class)
+info woven class com.tribe.app.presentation.view.activity.DummyActivity$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/DummyActivity$1.class)
+info woven class io.realm.UserRealmRealmProxy$UserRealmColumnInfo (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/io/realm/UserRealmRealmProxy$UserRealmColumnInfo.class)
+info woven class com.tribe.app.data.rxmqtt.impl.RxMqttAsyncClient$3 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/impl/RxMqttAsyncClient$3.class)
+info woven class com.tribe.app.presentation.view.camera.shader.GlShaderGroup (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/shader/GlShaderGroup.class)
+info woven class com.tribe.app.presentation.internal.di.components.DaggerUserComponent$2 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/DaggerUserComponent$2.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ApplicationModule (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ApplicationModule.class)
+info woven class com.tribe.app.presentation.internal.di.PerApplication (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/PerApplication.class)
+info woven class com.tribe.app.domain.interactor.user.GetDiskUserInfos_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/interactor/user/GetDiskUserInfos_Factory.class)
+info woven class com.tribe.app.domain.entity.Message (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/entity/Message.class)
+info woven class com.tribe.app.presentation.view.component.CodeView (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/CodeView.class)
+info woven class com.tribe.app.data.network.deserializer.MarvelResultsDeserializer (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/network/deserializer/MarvelResultsDeserializer.class)
+info woven class com.tribe.app.domain.exception.DefaultErrorBundle (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/exception/DefaultErrorBundle.class)
+info woven class com.tribe.app.presentation.view.gles.ScaledDrawable2d (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/gles/ScaledDrawable2d.class)
+info woven class com.tribe.app.domain.interactor.common.DefaultSubscriber (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/interactor/common/DefaultSubscriber.class)
+info woven class com.tribe.app.presentation.view.component.TribePagerView$AlphaSpringListener (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/TribePagerView$AlphaSpringListener.class)
+info woven class com.tribe.app.presentation.view.activity.ChatActivity (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/ChatActivity.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.country.CountryAdapterDelegate$CountryViewHolder$$ViewBinder$InnerUnbinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/country/CountryAdapterDelegate$CountryViewHolder$$ViewBinder$InnerUnbinder.class)
+info woven class com.tribe.app.presentation.view.camera.helper.CameraHelper$CameraInfoCompat (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/helper/CameraHelper$CameraInfoCompat.class)
+info woven class com.tribe.app.presentation.view.component.PhoneNumberView$$ViewBinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/PhoneNumberView$$ViewBinder.class)
+info woven class com.tribe.app.presentation.view.activity.HomeActivity$HomeViewPagerAdapter (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/HomeActivity$HomeViewPagerAdapter.class)
+info woven class com.tribe.app.presentation.view.widget.AvatarView$$ViewBinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/AvatarView$$ViewBinder.class)
+info woven class io.realm.UserRealmRealmProxy (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/io/realm/UserRealmRealmProxy.class)
+info woven class com.tribe.app.presentation.view.activity.TribeActivity$$ViewBinder$InnerUnbinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/TribeActivity$$ViewBinder$InnerUnbinder.class)
+info woven class com.tribe.app.data.realm.AccessToken (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/realm/AccessToken.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/grid/MeGridAdapterDelegate.class)
+info woven class com.tribe.app.presentation.mvp.presenter.IntroPresenter$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/presenter/IntroPresenter$1.class)
+info woven class com.squareup.leakcanary.R$integer (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/squareup/leakcanary/R$integer.class)
+info woven class com.tribe.app.presentation.navigation.Navigator_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/navigation/Navigator_Factory.class)
+info woven class com.tribe.app.presentation.view.camera.view.GlPreview (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/view/GlPreview.class)
+info woven class com.tribe.app.R$string (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/R$string.class)
+info woven class com.tribe.app.presentation.recording.AudioRecorder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/recording/AudioRecorder.class)
+info woven class com.tribe.app.data.rxmqtt.impl.RxMqttAsyncClient$8 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/impl/RxMqttAsyncClient$8.class)
+info woven class com.tribe.app.presentation.internal.di.modules.UserModule_ProvideGetRequestCodeUseCaseFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/UserModule_ProvideGetRequestCodeUseCaseFactory.class)
+info woven class android.support.design.R$attr (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/design/R$attr.class)
+info woven class com.tribe.app.presentation.view.camera.gles.GlPreviewTextureFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/GlPreviewTextureFactory.class)
+info woven class com.tribe.app.presentation.recording.Complex1D (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/recording/Complex1D.class)
+info woven class com.tribe.app.presentation.recording.RealDoubleFFT_Mixed (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/recording/RealDoubleFFT_Mixed.class)
+info woven class com.tribe.app.presentation.view.camera.gles.GlTextureView$GLThreadManager (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/GlTextureView$GLThreadManager.class)
+info woven class com.tribe.app.presentation.view.widget.DefaultPreview (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/DefaultPreview.class)
+info woven class com.tribe.app.presentation.view.component.TribePagerView$LeftSpringListener (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/TribePagerView$LeftSpringListener.class)
+info woven class com.tribe.app.presentation.internal.di.components.UserComponent (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/UserComponent.class)
+info woven class com.tribe.app.data.network.deserializer.TribeAccessTokenDeserializer (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/network/deserializer/TribeAccessTokenDeserializer.class)
+info woven class com.tribe.app.data.realm.LocationRealm (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/realm/LocationRealm.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/grid/UserGridAdapterDelegate$1.class)
+info woven class com.tribe.app.data.cache.UserCacheImpl$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/cache/UserCacheImpl$1.class)
+info woven class com.tribe.app.presentation.view.camera.gles.PreviewSurfaceHelperFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/PreviewSurfaceHelperFactory.class)
+info woven class com.tribe.app.presentation.view.utils.AnimationUtils$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/utils/AnimationUtils$1.class)
+info woven class io.realm.GroupRealmRealmProxy$GroupRealmColumnInfo (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/io/realm/GroupRealmRealmProxy$GroupRealmColumnInfo.class)
+info woven class com.tribe.app.presentation.view.camera.renderer.GlFrameBufferObjectRenderer (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/renderer/GlFrameBufferObjectRenderer.class)
+info woven class com.tribe.app.presentation.view.component.TribeComponentView$$ViewBinder$InnerUnbinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/TribeComponentView$$ViewBinder$InnerUnbinder.class)
+info woven class com.tribe.app.presentation.mvp.view.TribeView (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/view/TribeView.class)
+info woven class com.tribe.app.presentation.view.camera.helper.CameraHelper (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/helper/CameraHelper.class)
+info woven class com.tribe.app.presentation.exception.ErrorMessageFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/exception/ErrorMessageFactory.class)
+info woven class com.tribe.app.domain.interactor.text.DisconnectMQTT (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/interactor/text/DisconnectMQTT.class)
+info woven class com.tribe.app.presentation.view.component.CodeView$$ViewBinder$InnerUnbinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/CodeView$$ViewBinder$InnerUnbinder.class)
+info woven class com.tribe.app.data.network.deserializer.TribeUserDeserializer (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/network/deserializer/TribeUserDeserializer.class)
+info woven class com.tribe.app.data.network.util.TribeApiUtils (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/network/util/TribeApiUtils.class)
+info woven class com.tribe.app.presentation.view.activity.HomeActivity$$ViewBinder$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/HomeActivity$$ViewBinder$1.class)
+info woven class com.tribe.app.presentation.view.camera.interfaces.CameraStateListener (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/interfaces/CameraStateListener.class)
+info woven class com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/interactor/user/DoLoginWithPhoneNumber_Factory.class)
+info woven class com.tribe.app.presentation.view.widget.CameraManager$RenderHandler (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/CameraManager$RenderHandler.class)
+info woven class com.tribe.app.presentation.view.activity.CountryActivity$$ViewBinder$InnerUnbinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/CountryActivity$$ViewBinder$InnerUnbinder.class)
+info woven class com.hannesdorfmann.adapterdelegates2.R$attr (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/hannesdorfmann/adapterdelegates2/R$attr.class)
+info woven class com.tribe.app.presentation.view.camera.gles.GlImageBitmapTexture (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/GlImageBitmapTexture.class)
+info woven class com.hannesdorfmann.adapterdelegates2.R$id (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/hannesdorfmann/adapterdelegates2/R$id.class)
+info woven class com.tribe.app.R$styleable (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/R$styleable.class)
+info woven class com.tribe.app.presentation.view.widget.CameraWrapper_MembersInjector (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/CameraWrapper_MembersInjector.class)
+info woven class com.tribe.app.presentation.view.widget.CameraWrapper$$ViewBinder$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/CameraWrapper$$ViewBinder$1.class)
+info woven class com.tribe.app.domain.interactor.text.DisconnectMQTT_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/interactor/text/DisconnectMQTT_Factory.class)
+info woven class com.tribe.app.presentation.internal.di.components.ActivityComponent (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/ActivityComponent.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate$3 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/grid/UserGridAdapterDelegate$3.class)
+info woven class com.tribe.app.data.repository.chat.datasource.ChatDataStoreFactory_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/repository/chat/datasource/ChatDataStoreFactory_Factory.class)
+info woven class com.tribe.app.presentation.view.gles.GeneratedTexture (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/gles/GeneratedTexture.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ChatModule_ProvideDisconnectMQTTUseCaseFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ChatModule_ProvideDisconnectMQTTUseCaseFactory.class)
+info woven class io.realm.PinRealmRealmProxyInterface (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/io/realm/PinRealmRealmProxyInterface.class)
+info woven class com.tribe.app.presentation.view.activity.IntroActivity$$ViewBinder$InnerUnbinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/IntroActivity$$ViewBinder$InnerUnbinder.class)
+info woven class io.realm.AccessTokenRealmProxy (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/io/realm/AccessTokenRealmProxy.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.country.CountryAdapterDelegate$CountryViewHolder$$ViewBinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/country/CountryAdapterDelegate$CountryViewHolder$$ViewBinder.class)
+info woven class com.tribe.app.data.realm.mapper.GroupRealmDataMapper (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/realm/mapper/GroupRealmDataMapper.class)
+info woven class com.tribe.app.presentation.view.adapter.RxAdapterDelegatesManager (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/RxAdapterDelegatesManager.class)
+info woven class com.tribe.app.presentation.view.component.TribePagerView$TopSpringListener (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/TribePagerView$TopSpringListener.class)
+info woven class com.tribe.app.R$id (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/R$id.class)
+info woven class com.tribe.app.presentation.view.widget.CustomViewPager$SwipeDirection (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/CustomViewPager$SwipeDirection.class)
+info woven class com.tribe.app.presentation.view.camera.gles.PreviewSurfaceHelper (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/PreviewSurfaceHelper.class)
+info woven class io.realm.AccessTokenRealmProxyInterface (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/io/realm/AccessTokenRealmProxyInterface.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate_MembersInjector (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/grid/MeGridAdapterDelegate_MembersInjector.class)
+info woven class com.tribe.app.presentation.internal.di.components.DaggerApplicationComponent$Builder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/DaggerApplicationComponent$Builder.class)
+info woven class com.tribe.app.presentation.view.listener.MediaCodecVideoListener (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/listener/MediaCodecVideoListener.class)
+info woven class android.support.design.R$bool (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/design/R$bool.class)
+info woven class com.tribe.app.data.rxmqtt.impl.RxMqttMessage (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/impl/RxMqttMessage.class)
+info woven class com.tribe.app.presentation.internal.di.components.DaggerActivityComponent$Builder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/DaggerActivityComponent$Builder.class)
+info woven class com.tribe.app.presentation.view.camera.helper.PreviewSurfaceHelperBase (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/helper/PreviewSurfaceHelperBase.class)
+info woven class com.tribe.app.data.rxmqtt.constants.Constants (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/constants/Constants.class)
+info woven class com.tribe.app.data.rxmqtt.impl.RxMqttAsyncClient$2$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/impl/RxMqttAsyncClient$2$1.class)
+info woven class com.tribe.app.data.repository.user.datasource.CloudUserDataStore (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/repository/user/datasource/CloudUserDataStore.class)
+info woven class com.birbit.android.jobqueue.R (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/birbit/android/jobqueue/R.class)
+info woven class com.tribe.app.data.rxmqtt.impl.RxMqttAsyncClient$5$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/impl/RxMqttAsyncClient$5$1.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ActivityModule_ActivityFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ActivityModule_ActivityFactory.class)
+info woven class com.tribe.app.presentation.view.activity.HomeActivity$$ViewBinder$4 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/HomeActivity$$ViewBinder$4.class)
+info woven class com.tribe.app.presentation.view.component.ChatInputView$2 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/ChatInputView$2.class)
+info woven class android.support.v7.appcompat.R (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/v7/appcompat/R.class)
+info woven class com.tribe.app.presentation.view.camera.utils.BitmapFactoryUtils (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/utils/BitmapFactoryUtils.class)
+info woven class io.realm.PinRealmRealmProxy (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/io/realm/PinRealmRealmProxy.class)
+info woven class android.support.v7.appcompat.R$styleable (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/v7/appcompat/R$styleable.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ApplicationModule_ProvideApplicationContextFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ApplicationModule_ProvideApplicationContextFactory.class)
+info woven class com.hannesdorfmann.adapterdelegates2.R$dimen (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/hannesdorfmann/adapterdelegates2/R$dimen.class)
+info woven class com.tribe.app.presentation.view.camera.renderer.MainRenderer (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/renderer/MainRenderer.class)
+info woven class com.tribe.app.presentation.view.utils.ScrollerCustomDuration (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/utils/ScrollerCustomDuration.class)
+info woven class com.tribe.app.presentation.view.adapter.HomeGridAdapter_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/HomeGridAdapter_Factory.class)
+info woven class com.tribe.app.presentation.view.widget.EditTextFont (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/EditTextFont.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/RxAdapterDelegate.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ChatModule_ProvideConnectAndSubscribeMQTTUseCaseFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ChatModule_ProvideConnectAndSubscribeMQTTUseCaseFactory.class)
+info woven class com.tribe.app.presentation.view.camera.shader.GlShader (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/shader/GlShader.class)
+info woven class com.tribe.app.presentation.view.camera.gles.DefaultWindowSurfaceFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/DefaultWindowSurfaceFactory.class)
+info woven class com.tribe.app.presentation.view.widget.CameraManager$CameraViewSurface (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/CameraManager$CameraViewSurface.class)
+info woven class com.tribe.app.data.network.exception.NetworkErrorException (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/network/exception/NetworkErrorException.class)
+info woven class com.tribe.app.presentation.mapper.LocationModelDataMapper (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mapper/LocationModelDataMapper.class)
+info woven class com.tribe.app.presentation.view.activity.IntroActivity$IntroViewPagerAdapter (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/IntroActivity$IntroViewPagerAdapter.class)
+info woven class android.support.design.R$integer (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/design/R$integer.class)
+info woven class com.tribe.app.presentation.view.activity.TribeActivity_MembersInjector (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/TribeActivity_MembersInjector.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ChatModule_ProvideSubscribingMQTTUseCaseFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ChatModule_ProvideSubscribingMQTTUseCaseFactory.class)
+info woven class android.support.design.R$anim (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/design/R$anim.class)
+info woven class com.hannesdorfmann.adapterdelegates2.R$styleable (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/hannesdorfmann/adapterdelegates2/R$styleable.class)
+info woven class com.tribe.app.data.realm.mapper.LocationRealmDataMapper_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/realm/mapper/LocationRealmDataMapper_Factory.class)
+info woven class com.tribe.app.data.realm.PinRealm (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/realm/PinRealm.class)
+info woven class com.tribe.app.presentation.view.utils.Degrees (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/utils/Degrees.class)
+info woven class io.realm.LocationRealmRealmProxyInterface (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/io/realm/LocationRealmRealmProxyInterface.class)
+info woven class com.tribe.app.presentation.view.widget.TextViewFont (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/TextViewFont.class)
+info woven class io.realm.MessageRealmRealmProxyInterface (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/io/realm/MessageRealmRealmProxyInterface.class)
+info woven class com.tribe.app.data.realm.mapper.MQTTMessageDataMapper (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/realm/mapper/MQTTMessageDataMapper.class)
+info woven class com.tribe.app.presentation.internal.di.modules.NetModule_ProvideLoginApiFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/NetModule_ProvideLoginApiFactory.class)
+info woven class com.tribe.app.data.realm.mapper.PinRealmDataMapper_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/realm/mapper/PinRealmDataMapper_Factory.class)
+info woven class com.tribe.app.presentation.view.component.ChatInputView$$ViewBinder$InnerUnbinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/ChatInputView$$ViewBinder$InnerUnbinder.class)
+info woven class com.tribe.app.presentation.view.camera.gles.DefaultConfigChooser (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/DefaultConfigChooser.class)
+info woven class com.tribe.app.presentation.view.fragment.HomeGridFragment$1$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/fragment/HomeGridFragment$1$1.class)
+info woven class com.tribe.app.presentation.view.activity.LauncherActivity (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/LauncherActivity.class)
+weaveinfo Join point 'method-execution(android.support.v7.widget.RecyclerView$ViewHolder com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate.onCreateViewHolder(android.view.ViewGroup))' in Type 'com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate' (UserGridAdapterDelegate.java:109) advised by around advice from 'com.fernandocejas.frodo.aspect.LogObservable' (classes.jar!LogObservable.class(from LogObservable.java)) [with runtime test]
+info woven class com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/grid/UserGridAdapterDelegate.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate$AjcClosure1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/grid/UserGridAdapterDelegate.class)
+info woven class com.tribe.app.data.rxmqtt.impl.RxMqttClient (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/impl/RxMqttClient.class)
+info woven class com.tribe.app.data.rxmqtt.impl.RxMqttClientStatus (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/impl/RxMqttClientStatus.class)
+info woven class com.tribe.app.domain.interactor.common.UseCase (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/interactor/common/UseCase.class)
+info woven class com.tribe.app.R$bool (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/R$bool.class)
+info woven class com.tribe.app.domain.interactor.user.GetCloudUserInfos_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/interactor/user/GetCloudUserInfos_Factory.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ApplicationModule_ProvidePhoneUtilsFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ApplicationModule_ProvidePhoneUtilsFactory.class)
+info woven class android.support.v7.appcompat.R$layout (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/v7/appcompat/R$layout.class)
+info woven class com.squareup.leakcanary.R$id (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/squareup/leakcanary/R$id.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate$MeGridViewHolder$$ViewBinder$InnerUnbinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/grid/MeGridAdapterDelegate$MeGridViewHolder$$ViewBinder$InnerUnbinder.class)
+info woven class com.squareup.leakcanary.R$drawable (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/squareup/leakcanary/R$drawable.class)
+info woven class com.tribe.app.data.realm.mapper.UserRealmDataMapper (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/realm/mapper/UserRealmDataMapper.class)
+info woven class com.tribe.app.presentation.view.utils.ScreenUtils_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/utils/ScreenUtils_Factory.class)
+info woven class com.tribe.app.presentation.internal.di.PerActivity (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/PerActivity.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate$UserGridViewHolder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/grid/UserGridAdapterDelegate$UserGridViewHolder.class)
+info woven class com.tribe.app.presentation.view.activity.ChatActivity_MembersInjector (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/ChatActivity_MembersInjector.class)
+info woven class com.tribe.app.presentation.mvp.presenter.HomeGridPresenter$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/presenter/HomeGridPresenter$1.class)
+info woven class com.tribe.app.presentation.view.gles.FlatShadedProgram (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/gles/FlatShadedProgram.class)
+info woven class com.tribe.app.presentation.view.adapter.MessageAdapter_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/MessageAdapter_Factory.class)
+info woven class com.birbit.android.jobqueue.R$attr (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/birbit/android/jobqueue/R$attr.class)
+weaveinfo Join point 'method-execution(rx.Observable com.tribe.app.data.repository.chat.datasource.DiskChatDataStore.messages(java.lang.String))' in Type 'com.tribe.app.data.repository.chat.datasource.DiskChatDataStore' (DiskChatDataStore.java:50) advised by around advice from 'com.fernandocejas.frodo.aspect.LogObservable' (classes.jar!LogObservable.class(from LogObservable.java)) [with runtime test]
+info woven class com.tribe.app.data.repository.chat.datasource.DiskChatDataStore (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/repository/chat/datasource/DiskChatDataStore.class)
+info woven class com.tribe.app.data.repository.chat.datasource.DiskChatDataStore$AjcClosure1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/repository/chat/datasource/DiskChatDataStore.class)
+info woven class com.tribe.app.presentation.view.activity.IntroActivity (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/IntroActivity.class)
+info woven class com.tribe.app.presentation.UIThread_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/UIThread_Factory.class)
+info woven class com.tribe.app.presentation.view.gles.WindowSurface (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/gles/WindowSurface.class)
+info woven class com.tribe.app.data.rxmqtt.interfaces.IRxMqttMessage (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/interfaces/IRxMqttMessage.class)
+info woven class com.tribe.app.domain.executor.PostExecutionThread (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/executor/PostExecutionThread.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.text.MeMessageAdapterDelegate$MeTextViewHolder$$ViewBinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/text/MeMessageAdapterDelegate$MeTextViewHolder$$ViewBinder.class)
+info woven class com.tribe.app.presentation.view.component.TribeComponentView$$ViewBinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/TribeComponentView$$ViewBinder.class)
+info woven class com.tribe.app.data.realm.mapper.MQTTMessageDataMapper_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/realm/mapper/MQTTMessageDataMapper_Factory.class)
+info woven class com.tribe.app.data.rxmqtt.impl.RxMqttAsyncClient$3$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/impl/RxMqttAsyncClient$3$1.class)
+info woven class com.tribe.app.data.rxmqtt.impl.RxMqttAsyncClient (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/impl/RxMqttAsyncClient.class)
+info woven class com.tribe.app.presentation.mvp.presenter.ChatPresenter$DisconnectMQTTSubscriber (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/presenter/ChatPresenter$DisconnectMQTTSubscriber.class)
+info woven class com.tribe.app.presentation.internal.di.components.DaggerTribeComponent$Builder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/DaggerTribeComponent$Builder.class)
+info woven class com.tribe.app.presentation.internal.di.modules.UserModule_ProvideCloudGetUserInfosFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/UserModule_ProvideCloudGetUserInfosFactory.class)
+info woven class com.tribe.app.presentation.view.widget.CameraManager$RenderThread (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/CameraManager$RenderThread.class)
+info woven class com.tribe.app.presentation.view.widget.SquareFrameLayout (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/SquareFrameLayout.class)
+info woven class com.tribe.app.presentation.view.widget.RoundedCornerLayout (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/RoundedCornerLayout.class)
+info woven class android.support.v7.appcompat.R$anim (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/v7/appcompat/R$anim.class)
+info woven class com.tribe.app.data.exception.NetworkConnectionException (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/exception/NetworkConnectionException.class)
+info woven class io.realm.MessageRealmRealmProxy$MessageRealmColumnInfo (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/io/realm/MessageRealmRealmProxy$MessageRealmColumnInfo.class)
+info woven class android.support.v7.appcompat.R$bool (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/v7/appcompat/R$bool.class)
+info woven class com.tribe.app.data.repository.user.datasource.UserDataStoreFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/repository/user/datasource/UserDataStoreFactory.class)
+info woven class com.tribe.app.presentation.mvp.presenter.HomeGridPresenter (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/presenter/HomeGridPresenter.class)
+info woven class com.tribe.app.presentation.view.adapter.manager.MessageLayoutManager (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/manager/MessageLayoutManager.class)
+info woven class io.realm.MessageRealmRealmProxy (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/io/realm/MessageRealmRealmProxy.class)
+info woven class com.tribe.app.domain.interactor.text.ConnectAndSubscribeMQTT (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/interactor/text/ConnectAndSubscribeMQTT.class)
+info woven class android.support.design.R$drawable (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/design/R$drawable.class)
+info woven class com.tribe.app.data.realm.mapper.UserRealmDataMapper_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/realm/mapper/UserRealmDataMapper_Factory.class)
+info woven class com.tribe.app.presentation.view.component.PhoneNumberView (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/PhoneNumberView.class)
+info woven class android.support.v7.appcompat.R$drawable (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/v7/appcompat/R$drawable.class)
+info woven class com.tribe.app.data.cache.UserCache (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/cache/UserCache.class)
+info woven class com.tribe.app.data.repository.user.CloudUserDataRepository (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/repository/user/CloudUserDataRepository.class)
+info woven class com.tribe.app.presentation.view.widget.VideoTextureView$ScalingMode (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/VideoTextureView$ScalingMode.class)
+info woven class com.tribe.app.presentation.view.camera.view.CameraView (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/view/CameraView.class)
+info woven class com.tribe.app.data.repository.chat.datasource.ChatDataStoreFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/repository/chat/datasource/ChatDataStoreFactory.class)
+info woven class com.tribe.app.presentation.view.camera.gles.EGLLogWrapper (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/EGLLogWrapper.class)
+info woven class android.support.v7.appcompat.R$attr (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/v7/appcompat/R$attr.class)
+info woven class com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/interactor/user/DoLoginWithPhoneNumber.class)
+info woven class com.tribe.app.presentation.view.gles.Texture2dProgram$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/gles/Texture2dProgram$1.class)
+info woven class com.tribe.app.data.rxmqtt.enums.RxMqttExceptionType (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/enums/RxMqttExceptionType.class)
+info woven class com.tribe.app.data.realm.MessageRealm (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/realm/MessageRealm.class)
+info woven class com.tribe.app.data.repository.user.datasource.UserDataStore (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/repository/user/datasource/UserDataStore.class)
+info woven class com.tribe.app.presentation.view.fragment.HomeGridFragment$$ViewBinder$InnerUnbinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/fragment/HomeGridFragment$$ViewBinder$InnerUnbinder.class)
+info woven class com.tribe.app.presentation.view.camera.gles.DefaultContextFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/DefaultContextFactory.class)
+info woven class com.tribe.app.presentation.internal.di.modules.NetModule_ProvideGsonFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/NetModule_ProvideGsonFactory.class)
+info woven class io.realm.GroupRealmRealmProxyInterface (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/io/realm/GroupRealmRealmProxyInterface.class)
+info woven class com.tribe.app.presentation.view.gles.OffscreenSurface (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/gles/OffscreenSurface.class)
+info woven class com.tribe.app.presentation.mvp.view.MessageView (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/view/MessageView.class)
+info woven class com.birbit.android.jobqueue.R$drawable (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/birbit/android/jobqueue/R$drawable.class)
+info woven class com.tribe.app.presentation.view.widget.CameraWrapper$2 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/CameraWrapper$2.class)
+info woven class com.tribe.app.domain.executor.ThreadExecutor (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/executor/ThreadExecutor.class)
+info woven class com.tribe.app.data.network.exception.NetworkUknownHostException (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/network/exception/NetworkUknownHostException.class)
+info woven class com.tribe.app.data.repository.user.datasource.DiskUserDataStore (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/repository/user/datasource/DiskUserDataStore.class)
+weaveinfo Join point 'method-execution(rx.Observable com.tribe.app.data.repository.chat.datasource.MQTTChatDataStore.connectAndSubscribe(java.lang.String))' in Type 'com.tribe.app.data.repository.chat.datasource.MQTTChatDataStore' (MQTTChatDataStore.java:45) advised by around advice from 'com.fernandocejas.frodo.aspect.LogObservable' (classes.jar!LogObservable.class(from LogObservable.java)) [with runtime test]
+weaveinfo Join point 'method-execution(rx.Observable com.tribe.app.data.repository.chat.datasource.MQTTChatDataStore.unsubscribe(java.lang.String))' in Type 'com.tribe.app.data.repository.chat.datasource.MQTTChatDataStore' (MQTTChatDataStore.java:56) advised by around advice from 'com.fernandocejas.frodo.aspect.LogObservable' (classes.jar!LogObservable.class(from LogObservable.java)) [with runtime test]
+weaveinfo Join point 'method-execution(rx.Observable com.tribe.app.data.repository.chat.datasource.MQTTChatDataStore.messages(java.lang.String))' in Type 'com.tribe.app.data.repository.chat.datasource.MQTTChatDataStore' (MQTTChatDataStore.java:62) advised by around advice from 'com.fernandocejas.frodo.aspect.LogObservable' (classes.jar!LogObservable.class(from LogObservable.java)) [with runtime test]
+info woven class com.tribe.app.data.repository.chat.datasource.MQTTChatDataStore (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/repository/chat/datasource/MQTTChatDataStore.class)
+info woven class com.tribe.app.data.repository.chat.datasource.MQTTChatDataStore$AjcClosure1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/repository/chat/datasource/MQTTChatDataStore.class)
+info woven class com.tribe.app.data.repository.chat.datasource.MQTTChatDataStore$AjcClosure3 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/repository/chat/datasource/MQTTChatDataStore.class)
+info woven class com.tribe.app.data.repository.chat.datasource.MQTTChatDataStore$AjcClosure5 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/repository/chat/datasource/MQTTChatDataStore.class)
+info woven class com.tribe.app.presentation.internal.di.modules.NetModule$2 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/NetModule$2.class)
+info woven class com.tribe.app.presentation.mvp.presenter.ChatPresenter (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/presenter/ChatPresenter.class)
+info woven class com.tribe.app.data.rxmqtt.interfaces.IRxMqttClient (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/interfaces/IRxMqttClient.class)
+info woven class com.tribe.app.presentation.view.camera.interfaces.PreviewTexture$OnFrameAvailableListener (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/interfaces/PreviewTexture$OnFrameAvailableListener.class)
+info woven class com.tribe.app.data.cache.UserCacheImpl (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/cache/UserCacheImpl.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ApplicationModule_ProvideDiskUserRepositoryFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ApplicationModule_ProvideDiskUserRepositoryFactory.class)
+info woven class com.tribe.app.presentation.mvp.presenter.ChatPresenter$ListenSubscribingMQTTSubscriber (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/presenter/ChatPresenter$ListenSubscribingMQTTSubscriber.class)
+info woven class android.support.design.R$id (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/design/R$id.class)
+info woven class com.tribe.app.presentation.internal.di.components.DaggerTribeComponent$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/DaggerTribeComponent$1.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ApplicationModule_ProvidePaletteGridFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ApplicationModule_ProvidePaletteGridFactory.class)
+info woven class com.tribe.app.presentation.view.camera.view.GlPreview$Renderer (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/view/GlPreview$Renderer.class)
+info woven class com.tribe.app.data.network.Constant (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/network/Constant.class)
+info woven class com.tribe.app.presentation.view.component.TribeComponentView$2 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/TribeComponentView$2.class)
+info woven class com.tribe.app.presentation.view.camera.interfaces.Preview (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/interfaces/Preview.class)
+info woven class com.tribe.app.presentation.mvp.view.LoadDataView (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/view/LoadDataView.class)
+info woven class com.tribe.app.data.rxmqtt.exceptions.RxMqttException (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/exceptions/RxMqttException.class)
+info woven class com.tribe.app.R$color (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/R$color.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ApplicationModule_ProvideTextCacheFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ApplicationModule_ProvideTextCacheFactory.class)
+info woven class com.tribe.app.presentation.view.component.TribeComponentView$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/TribeComponentView$1.class)
+info woven class com.tribe.app.domain.interactor.text.SubscribingMQTT (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/interactor/text/SubscribingMQTT.class)
+info woven class com.tribe.app.data.realm.mapper.MessageRealmDataMapper_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/realm/mapper/MessageRealmDataMapper_Factory.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ApplicationModule$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ApplicationModule$1.class)
+weaveinfo Join point 'method-execution(rx.Observable com.tribe.app.data.repository.chat.ChatDataRepository.subscribing(java.lang.String))' in Type 'com.tribe.app.data.repository.chat.ChatDataRepository' (ChatDataRepository.java:55) advised by around advice from 'com.fernandocejas.frodo.aspect.LogObservable' (classes.jar!LogObservable.class(from LogObservable.java)) [with runtime test]
+info woven class com.tribe.app.data.repository.chat.ChatDataRepository (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/repository/chat/ChatDataRepository.class)
+info woven class com.tribe.app.data.repository.chat.ChatDataRepository$AjcClosure1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/repository/chat/ChatDataRepository.class)
+info woven class com.tribe.app.presentation.internal.di.modules.UserModule (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/UserModule.class)
+info woven class com.tribe.app.presentation.view.utils.PhoneUtils (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/utils/PhoneUtils.class)
+info woven class com.tribe.app.presentation.view.widget.CameraWrapper$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/CameraWrapper$1.class)
+info woven class com.tribe.app.presentation.view.utils.FontCache (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/utils/FontCache.class)
+info woven class com.birbit.android.jobqueue.R$id (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/birbit/android/jobqueue/R$id.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ApplicationModule_ProvideNavigatorFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ApplicationModule_ProvideNavigatorFactory.class)
+info woven class com.tribe.app.presentation.view.camera.helper.PreviewSurfaceHelper (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/helper/PreviewSurfaceHelper.class)
+info woven class com.tribe.app.presentation.view.utils.Degrees$DegreeUnits (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/utils/Degrees$DegreeUnits.class)
+info woven class com.tribe.app.R$anim (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/R$anim.class)
+info woven class com.birbit.android.jobqueue.R$integer (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/birbit/android/jobqueue/R$integer.class)
+info woven class com.tribe.app.domain.interactor.user.UserRepository (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/interactor/user/UserRepository.class)
+info woven class com.tribe.app.presentation.view.utils.CameraUtils (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/utils/CameraUtils.class)
+info woven class com.tribe.app.data.network.exception.NetworkTimeOutException (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/network/exception/NetworkTimeOutException.class)
+info woven class com.tribe.app.presentation.internal.di.components.DaggerChatComponent$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/DaggerChatComponent$1.class)
+info woven class com.tribe.app.presentation.internal.di.modules.NetModule$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/NetModule$1.class)
+info woven class com.tribe.app.presentation.view.activity.HomeActivity$HomePageTransformer (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/HomeActivity$HomePageTransformer.class)
+info woven class com.tribe.app.presentation.view.gles.Texture2dProgram$ProgramType (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/gles/Texture2dProgram$ProgramType.class)
+info woven class android.support.design.R$dimen (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/design/R$dimen.class)
+info woven class com.tribe.app.data.rxmqtt.impl.RxMqttAsyncClient$4$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/impl/RxMqttAsyncClient$4$1.class)
+info woven class io.realm.GroupRealmRealmProxy (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/io/realm/GroupRealmRealmProxy.class)
+info woven class com.tribe.app.BuildConfig (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/BuildConfig.class)
+info woven class android.support.v7.appcompat.R$string (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/v7/appcompat/R$string.class)
+info woven class com.tribe.app.presentation.internal.di.modules.NetModule_ProvideTribeApiFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/NetModule_ProvideTribeApiFactory.class)
+info woven class com.tribe.app.presentation.view.camera.shader.GlPreviewShader (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/shader/GlPreviewShader.class)
+info woven class com.tribe.app.presentation.view.camera.gles.GlTextureView$EglHelper (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/GlTextureView$EglHelper.class)
+info woven class com.tribe.app.data.cache.ChatCacheImpl_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/cache/ChatCacheImpl_Factory.class)
+info woven class com.tribe.app.data.repository.user.DiskUserDataRepository (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/repository/user/DiskUserDataRepository.class)
+info woven class com.tribe.app.data.network.authorizer.TribeAuthorizer (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/network/authorizer/TribeAuthorizer.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ApplicationModule_ProvidePostExecutionThreadFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ApplicationModule_ProvidePostExecutionThreadFactory.class)
+info woven class com.tribe.app.data.rxmqtt.exceptions.RxMqttTokenException (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/exceptions/RxMqttTokenException.class)
+info woven class com.tribe.app.presentation.view.widget.AvatarView (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/AvatarView.class)
+info woven class io.realm.AccessTokenRealmProxy$AccessTokenColumnInfo (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/io/realm/AccessTokenRealmProxy$AccessTokenColumnInfo.class)
+info woven class com.tribe.app.R$dimen (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/R$dimen.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate$MeGridViewHolder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/grid/MeGridAdapterDelegate$MeGridViewHolder.class)
+info woven class com.tribe.app.domain.entity.Pin (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/entity/Pin.class)
+info woven class com.tribe.app.presentation.view.component.TribePagerView$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/TribePagerView$1.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate$MeGridViewHolder$$ViewBinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/grid/MeGridAdapterDelegate$MeGridViewHolder$$ViewBinder.class)
+info woven class com.tribe.app.presentation.internal.di.components.DaggerUserComponent (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/DaggerUserComponent.class)
+info woven class com.tribe.app.presentation.view.widget.CustomViewPager (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/CustomViewPager.class)
+info woven class com.tribe.app.data.network.entity.LoginEntity (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/network/entity/LoginEntity.class)
+info woven class com.tribe.app.presentation.mvp.view.HomeView (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/view/HomeView.class)
+info woven class com.tribe.app.presentation.view.widget.CameraWrapper$$ViewBinder$InnerUnbinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/CameraWrapper$$ViewBinder$InnerUnbinder.class)
+info woven class com.tribe.app.presentation.internal.di.modules.NetModule_ProvidePicassoFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/NetModule_ProvidePicassoFactory.class)
+info woven class com.tribe.app.domain.entity.Location (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/entity/Location.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ApplicationModule_ProvideCurrentUserFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ApplicationModule_ProvideCurrentUserFactory.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate$2 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/grid/UserGridAdapterDelegate$2.class)
+info woven class android.support.v7.recyclerview.R$attr (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/v7/recyclerview/R$attr.class)
+info woven class com.tribe.app.presentation.view.widget.CameraWrapper$$ViewBinder$2 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/CameraWrapper$$ViewBinder$2.class)
+info woven class com.tribe.app.domain.entity.Tribe (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/entity/Tribe.class)
+info woven class com.tribe.app.presentation.view.component.ChatInputView$$ViewBinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/ChatInputView$$ViewBinder.class)
+info woven class com.tribe.app.presentation.mvp.view.HomeGridView (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/view/HomeGridView.class)
+info woven class android.support.design.R$style (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/design/R$style.class)
+info woven class android.support.design.R$styleable (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/design/R$styleable.class)
+info woven class com.tribe.app.presentation.view.camera.helper.CameraHelperBase$CameraSizeComparator (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/helper/CameraHelperBase$CameraSizeComparator.class)
+info woven class com.tribe.app.presentation.view.component.TribePagerView$$ViewBinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/TribePagerView$$ViewBinder.class)
+info woven class com.tribe.app.presentation.view.adapter.pager.TribePagerAdapter_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/pager/TribePagerAdapter_Factory.class)
+info woven class com.tribe.app.presentation.view.camera.renderer.GLES20FramebufferObject (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/renderer/GLES20FramebufferObject.class)
+info woven class com.tribe.app.presentation.view.widget.CameraManager (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/CameraManager.class)
+info woven class com.tribe.app.R$style (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/R$style.class)
+info woven class android.support.v7.recyclerview.R (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/v7/recyclerview/R.class)
+info woven class com.tribe.app.presentation.internal.di.modules.DataModule_ProvideRxSharedPreferencesFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/DataModule_ProvideRxSharedPreferencesFactory.class)
+info woven class com.tribe.app.presentation.view.utils.Extras (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/utils/Extras.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ApplicationModule_ProvideScreenUtilsFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ApplicationModule_ProvideScreenUtilsFactory.class)
+info woven class com.tribe.app.presentation.view.listener.RecyclerClickListener (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/listener/RecyclerClickListener.class)
+info woven class com.tribe.app.data.cache.ChatCache (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/cache/ChatCache.class)
+info woven class com.tribe.app.R (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/R.class)
+info woven class com.squareup.leakcanary.R$layout (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/squareup/leakcanary/R$layout.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ChatModule_ProvideUnsubscribeMQTTUseCaseFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ChatModule_ProvideUnsubscribeMQTTUseCaseFactory.class)
+info woven class com.tribe.app.presentation.internal.di.modules.TribeModule (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/TribeModule.class)
+info woven class com.tribe.app.presentation.view.utils.PaletteGrid_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/utils/PaletteGrid_Factory.class)
+info woven class com.tribe.app.presentation.view.camera.helper.CameraHelperBase (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/helper/CameraHelperBase.class)
+info woven class com.tribe.app.domain.interactor.text.UnsubscribeMQTT (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/interactor/text/UnsubscribeMQTT.class)
+info woven class com.tribe.app.presentation.internal.di.modules.NetModule_ProvideOkHttpClientFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/NetModule_ProvideOkHttpClientFactory.class)
+info woven class com.tribe.app.presentation.view.gles.FullFrameRect (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/gles/FullFrameRect.class)
+info woven class android.support.v7.recyclerview.R$dimen (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/v7/recyclerview/R$dimen.class)
+info woven class android.support.v7.appcompat.R$integer (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/v7/appcompat/R$integer.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate$UserGridViewHolder$$ViewBinder$InnerUnbinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/grid/UserGridAdapterDelegate$UserGridViewHolder$$ViewBinder$InnerUnbinder.class)
+info woven class com.tribe.app.presentation.mvp.view.IntroView (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/view/IntroView.class)
+info woven class com.tribe.app.presentation.mvp.presenter.IntroPresenter$LoginSubscriber (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/presenter/IntroPresenter$LoginSubscriber.class)
+info woven class com.tribe.app.presentation.UIThread (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/UIThread.class)
+info woven class com.tribe.app.data.repository.user.DiskUserDataRepository_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/repository/user/DiskUserDataRepository_Factory.class)
+info woven class com.tribe.app.presentation.view.camera.gles.GlImageResourceTexture (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/GlImageResourceTexture.class)
+info woven class com.tribe.app.presentation.view.component.ChatInputView$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/ChatInputView$1.class)
+info woven class com.tribe.app.presentation.view.fragment.HomeGridFragment$$ViewBinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/fragment/HomeGridFragment$$ViewBinder.class)
+info woven class android.support.v7.recyclerview.R$id (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/v7/recyclerview/R$id.class)
+info woven class com.tribe.app.presentation.internal.di.components.DaggerUserComponent$6 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/DaggerUserComponent$6.class)
+info woven class com.tribe.app.presentation.mapper.UserModelDataMapper (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mapper/UserModelDataMapper.class)
+info woven class android.support.v7.appcompat.R$style (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/v7/appcompat/R$style.class)
+info woven class com.tribe.app.domain.interactor.user.DoLogin (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/interactor/user/DoLogin.class)
+info woven class com.tribe.app.presentation.view.utils.PaletteGrid (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/utils/PaletteGrid.class)
+info woven class com.tribe.app.presentation.view.widget.CameraManager$MainHandler (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/CameraManager$MainHandler.class)
+info woven class com.tribe.app.presentation.view.camera.interfaces.CaptureCallback (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/interfaces/CaptureCallback.class)
+info woven class com.tribe.app.presentation.view.component.TribePagerView$BottomSpringListener (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/TribePagerView$BottomSpringListener.class)
+info woven class android.support.v7.appcompat.R$color (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/v7/appcompat/R$color.class)
+info woven class com.tribe.app.domain.interactor.text.ChatRepository (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/interactor/text/ChatRepository.class)
+info woven class com.tribe.app.data.network.TribeApi (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/network/TribeApi.class)
+info woven class com.tribe.app.presentation.view.gles.Drawable2d (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/gles/Drawable2d.class)
+info woven class com.tribe.app.presentation.internal.di.HasComponent (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/HasComponent.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.text.MeMessageAdapterDelegate$MeTextViewHolder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/text/MeMessageAdapterDelegate$MeTextViewHolder.class)
+info woven class com.squareup.leakcanary.R$style (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/squareup/leakcanary/R$style.class)
+info woven class com.tribe.app.presentation.view.camera.utils.ExifUtils (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/utils/ExifUtils.class)
+info woven class com.birbit.android.jobqueue.R$styleable (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/birbit/android/jobqueue/R$styleable.class)
+info woven class com.tribe.app.presentation.view.adapter.HomeGridAdapter (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/HomeGridAdapter.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.text.MeMessageAdapterDelegate$MeTextViewHolder$$ViewBinder$InnerUnbinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/text/MeMessageAdapterDelegate$MeTextViewHolder$$ViewBinder$InnerUnbinder.class)
+info woven class com.tribe.app.presentation.view.fragment.HomeGridFragment$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/fragment/HomeGridFragment$1.class)
+info woven class io.realm.DefaultRealmModule (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/io/realm/DefaultRealmModule.class)
+info woven class com.tribe.app.data.executor.JobExecutor (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/executor/JobExecutor.class)
+info woven class com.tribe.app.data.executor.JobExecutor$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/executor/JobExecutor$1.class)
+info woven class com.tribe.app.presentation.view.gles.EglCore (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/gles/EglCore.class)
+info woven class com.tribe.app.presentation.view.gles.GlUtil (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/gles/GlUtil.class)
+info woven class com.tribe.app.presentation.view.gles.Texture2dProgram (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/gles/Texture2dProgram.class)
+info woven class com.tribe.app.presentation.recording.AudioRecorder$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/recording/AudioRecorder$1.class)
+info woven class com.tribe.app.data.realm.mapper.LocationRealmDataMapper (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/realm/mapper/LocationRealmDataMapper.class)
+info woven class com.tribe.app.presentation.view.activity.ChatActivity$$ViewBinder$InnerUnbinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/ChatActivity$$ViewBinder$InnerUnbinder.class)
+info woven class com.tribe.app.domain.entity.User (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/entity/User.class)
+info woven class com.tribe.app.presentation.view.camera.gles.GLES20ContextFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/GLES20ContextFactory.class)
+info woven class com.tribe.app.presentation.internal.di.components.DaggerTribeComponent (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/DaggerTribeComponent.class)
+info woven class com.tribe.app.presentation.view.adapter.CountryPhoneNumberAdapter_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/CountryPhoneNumberAdapter_Factory.class)
+info woven class android.support.design.R (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/design/R.class)
+info woven class com.tribe.app.data.network.job.Priority (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/network/job/Priority.class)
+info woven class com.tribe.app.presentation.view.widget.CameraManager$CameraViewListener (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/CameraManager$CameraViewListener.class)
+info woven class com.tribe.app.presentation.view.widget.VideoTextureView (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/VideoTextureView.class)
+info woven class com.tribe.app.presentation.view.camera.view.VisualizerView (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/view/VisualizerView.class)
+info woven class com.tribe.app.data.network.exception.UknownErrorException (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/network/exception/UknownErrorException.class)
+info woven class com.tribe.app.presentation.view.activity.TribeActivity$$ViewBinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/TribeActivity$$ViewBinder.class)
+info woven class com.tribe.app.data.executor.JobExecutor$JobThreadFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/executor/JobExecutor$JobThreadFactory.class)
+info woven class com.tribe.app.data.repository.user.CloudUserDataRepository_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/repository/user/CloudUserDataRepository_Factory.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ApplicationModule_ProvideAccessTokenFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ApplicationModule_ProvideAccessTokenFactory.class)
+info woven class com.tribe.app.R$drawable (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/R$drawable.class)
+info woven class com.tribe.app.presentation.mvp.presenter.IntroPresenter (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/presenter/IntroPresenter.class)
+info woven class com.tribe.app.presentation.view.activity.CountryActivity (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/CountryActivity.class)
+info woven class com.tribe.app.presentation.view.component.TribePagerView$$ViewBinder$InnerUnbinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/TribePagerView$$ViewBinder$InnerUnbinder.class)
+info woven class com.tribe.app.presentation.view.camera.gles.GlTextureView (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/GlTextureView.class)
+info woven class com.tribe.app.presentation.view.gles.Drawable2d$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/gles/Drawable2d$1.class)
+info woven class com.tribe.app.presentation.view.component.PhoneNumberView$$ViewBinder$InnerUnbinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/PhoneNumberView$$ViewBinder$InnerUnbinder.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.text.UserMessageAdapterDelegate$UserTextViewHolder$$ViewBinder$InnerUnbinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/text/UserMessageAdapterDelegate$UserTextViewHolder$$ViewBinder$InnerUnbinder.class)
+info woven class com.birbit.android.jobqueue.R$string (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/birbit/android/jobqueue/R$string.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ActivityModule (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ActivityModule.class)
+info woven class com.tribe.app.presentation.view.decorator.GridDividerItemDecoration (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/decorator/GridDividerItemDecoration.class)
+weaveinfo Join point 'method-execution(rx.Observable com.tribe.app.data.cache.ChatCacheImpl.messages())' in Type 'com.tribe.app.data.cache.ChatCacheImpl' (ChatCacheImpl.java:41) advised by around advice from 'com.fernandocejas.frodo.aspect.LogObservable' (classes.jar!LogObservable.class(from LogObservable.java)) [with runtime test]
+info woven class com.tribe.app.data.cache.ChatCacheImpl (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/cache/ChatCacheImpl.class)
+info woven class com.tribe.app.data.cache.ChatCacheImpl$AjcClosure1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/cache/ChatCacheImpl.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate$UserGridViewHolder$$ViewBinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/grid/UserGridAdapterDelegate$UserGridViewHolder$$ViewBinder.class)
+info woven class com.tribe.app.data.executor.JobExecutor_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/executor/JobExecutor_Factory.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ApplicationModule_ProvideThreadExecutorFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ApplicationModule_ProvideThreadExecutorFactory.class)
+info woven class com.tribe.app.presentation.view.activity.HomeActivity$$ViewBinder$3 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/HomeActivity$$ViewBinder$3.class)
+info woven class com.tribe.app.presentation.view.gles.GeneratedTexture$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/gles/GeneratedTexture$1.class)
+info woven class com.tribe.app.presentation.view.camera.utils.Fps$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/utils/Fps$1.class)
+info woven class com.tribe.app.presentation.view.utils.AnimationUtils (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/utils/AnimationUtils.class)
+info woven class android.support.v7.recyclerview.R$styleable (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/v7/recyclerview/R$styleable.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ApplicationModule_ProvideTextRepositoryFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ApplicationModule_ProvideTextRepositoryFactory.class)
+info woven class android.support.v7.appcompat.R$id (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/v7/appcompat/R$id.class)
+info woven class com.tribe.app.presentation.view.camera.gles.GLES20ConfigChooser (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/GLES20ConfigChooser.class)
+info woven class com.tribe.app.presentation.mvp.presenter.Presenter (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/presenter/Presenter.class)
+info woven class com.tribe.app.presentation.view.activity.HomeActivity$$ViewBinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/HomeActivity$$ViewBinder.class)
+info woven class io.realm.LocationRealmRealmProxy (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/io/realm/LocationRealmRealmProxy.class)
+info woven class com.tribe.app.domain.entity.Country (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/entity/Country.class)
+info woven class com.tribe.app.presentation.view.camera.gles.PreviewSurfaceHelperBase (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/PreviewSurfaceHelperBase.class)
+info woven class com.tribe.app.presentation.view.gles.Sprite2d (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/gles/Sprite2d.class)
+info woven class com.tribe.app.presentation.internal.di.components.DaggerChatComponent$Builder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/DaggerChatComponent$Builder.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.text.UserMessageAdapterDelegate$UserTextViewHolder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/text/UserMessageAdapterDelegate$UserTextViewHolder.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.text.MeMessageAdapterDelegate (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/text/MeMessageAdapterDelegate.class)
+info woven class com.tribe.app.data.realm.GroupRealm (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/realm/GroupRealm.class)
+info woven class com.tribe.app.data.realm.mapper.MessageRealmDataMapper (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/realm/mapper/MessageRealmDataMapper.class)
+info woven class com.tribe.app.presentation.internal.di.modules.DataModule (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/DataModule.class)
+info woven class com.tribe.app.presentation.mvp.presenter.ChatPresenter_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/presenter/ChatPresenter_Factory.class)
+info woven class com.tribe.app.presentation.mvp.presenter.HomeGridPresenter_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/presenter/HomeGridPresenter_Factory.class)
+info woven class com.tribe.app.presentation.view.widget.CameraWrapper$$ViewBinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/CameraWrapper$$ViewBinder.class)
+info woven class com.tribe.app.presentation.view.camera.utils.Fps$Callback (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/utils/Fps$Callback.class)
+info woven class com.birbit.android.jobqueue.R$color (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/birbit/android/jobqueue/R$color.class)
+info woven class com.tribe.app.presentation.mvp.presenter.ChatPresenter$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/presenter/ChatPresenter$1.class)
+info woven class com.tribe.app.presentation.view.widget.CameraManager$RenderThread$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/CameraManager$RenderThread$1.class)
+info woven class com.tribe.app.presentation.internal.di.components.ChatComponent (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/ChatComponent.class)
+info woven class com.tribe.app.presentation.view.component.TribePagerView$RightSpringListener (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/TribePagerView$RightSpringListener.class)
+info woven class com.tribe.app.presentation.view.component.TribeComponentView (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/TribeComponentView.class)
+info woven class com.tribe.app.presentation.view.camera.gles.GlImageTexture$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/GlImageTexture$1.class)
+info woven class com.tribe.app.domain.interactor.user.GetCloudUserInfos (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/interactor/user/GetCloudUserInfos.class)
+info woven class com.tribe.app.presentation.view.camera.utils.Fps (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/utils/Fps.class)
+info woven class com.tribe.app.presentation.mapper.LocationModelDataMapper_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mapper/LocationModelDataMapper_Factory.class)
+info woven class com.tribe.app.data.network.exception.ServerErrorException (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/network/exception/ServerErrorException.class)
+info woven class com.tribe.app.presentation.internal.di.components.DaggerApplicationComponent (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/DaggerApplicationComponent.class)
+info woven class com.tribe.app.presentation.view.activity.HomeActivity$$ViewBinder$2 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/HomeActivity$$ViewBinder$2.class)
+info woven class com.tribe.app.presentation.view.camera.gles.GlSurfaceTexture (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/GlSurfaceTexture.class)
+info woven class com.tribe.app.presentation.view.component.CodeView$$ViewBinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/CodeView$$ViewBinder.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.country.CountryAdapterDelegate$CountryViewHolder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/country/CountryAdapterDelegate$CountryViewHolder.class)
+info woven class com.tribe.app.R$attr (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/R$attr.class)
+info woven class com.tribe.app.domain.interactor.text.ConnectAndSubscribeMQTT_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/interactor/text/ConnectAndSubscribeMQTT_Factory.class)
+info woven class io.realm.UserRealmRealmProxyInterface (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/io/realm/UserRealmRealmProxyInterface.class)
+info woven class io.realm.PinRealmRealmProxy$PinRealmColumnInfo (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/io/realm/PinRealmRealmProxy$PinRealmColumnInfo.class)
+info woven class android.support.v7.appcompat.R$dimen (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/v7/appcompat/R$dimen.class)
+info woven class com.tribe.app.presentation.internal.di.components.DaggerChatComponent$4 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/DaggerChatComponent$4.class)
+info woven class com.tribe.app.presentation.mvp.view.View (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/view/View.class)
+info woven class com.tribe.app.presentation.internal.di.components.DaggerActivityComponent$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/DaggerActivityComponent$1.class)
+info woven class com.tribe.app.presentation.internal.di.modules.NetModule_ProvideTribeAuthorizerFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/NetModule_ProvideTribeAuthorizerFactory.class)
+info woven class com.tribe.app.presentation.view.fragment.GroupsGridFragment (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/fragment/GroupsGridFragment.class)
+info woven class com.tribe.app.data.rxmqtt.impl.RxMqttAsyncClient$6 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/impl/RxMqttAsyncClient$6.class)
+info woven class com.tribe.app.presentation.view.activity.CountryActivity_MembersInjector (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/CountryActivity_MembersInjector.class)
+info woven class com.tribe.app.presentation.view.fragment.HomeGridFragment (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/fragment/HomeGridFragment.class)
+info woven class com.tribe.app.presentation.internal.di.modules.NetModule (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/NetModule.class)
+info woven class com.tribe.app.presentation.view.utils.AnimationUtils$2 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/utils/AnimationUtils$2.class)
+info woven class com.tribe.app.presentation.view.camera.shader.fx.GlLutShader (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/shader/fx/GlLutShader.class)
+info woven class com.tribe.app.R$mipmap (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/R$mipmap.class)
+info woven class com.tribe.app.presentation.view.activity.IntroActivity_MembersInjector (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/IntroActivity_MembersInjector.class)
+info woven class com.tribe.app.data.repository.user.datasource.UserDataStoreFactory_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/repository/user/datasource/UserDataStoreFactory_Factory.class)
+info woven class com.tribe.app.presentation.view.camera.gles.GlImageTexture$GLES20FlipVerticalShader (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/GlImageTexture$GLES20FlipVerticalShader.class)
+info woven class com.tribe.app.presentation.view.camera.gles.PixelBuffer (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/PixelBuffer.class)
+info woven class com.tribe.app.presentation.internal.di.components.ApplicationComponent (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/ApplicationComponent.class)
+info woven class com.tribe.app.data.rxmqtt.impl.RxMqttAsyncClient$7 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/impl/RxMqttAsyncClient$7.class)
+info woven class com.tribe.app.data.cache.UserCacheImpl_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/cache/UserCacheImpl_Factory.class)
+info woven class com.tribe.app.presentation.view.camera.gles.GlImageTexture (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/GlImageTexture.class)
+info woven class com.tribe.app.data.rxmqtt.enums.RxMqttClientState (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/enums/RxMqttClientState.class)
+info woven class com.tribe.app.presentation.internal.di.components.TribeComponent (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/TribeComponent.class)
+info woven class com.tribe.app.presentation.view.camera.view.VisualizerView_MembersInjector (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/view/VisualizerView_MembersInjector.class)
+info woven class com.tribe.app.presentation.internal.di.modules.UserModule_ProvideDoLoginWithUsernameUseCaseFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/UserModule_ProvideDoLoginWithUsernameUseCaseFactory.class)
+info woven class com.tribe.app.presentation.view.widget.SquareRelativeLayout (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/SquareRelativeLayout.class)
+info woven class com.tribe.app.presentation.view.camera.view.VisualizerView$$ViewBinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/view/VisualizerView$$ViewBinder.class)
+info woven class com.tribe.app.presentation.view.camera.view.GlPreview$Renderer$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/view/GlPreview$Renderer$1.class)
+info woven class com.tribe.app.presentation.view.gles.Drawable2d$Prefab (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/gles/Drawable2d$Prefab.class)
+info woven class com.tribe.app.presentation.internal.di.components.DaggerUserComponent$5 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/DaggerUserComponent$5.class)
+info woven class com.tribe.app.data.repository.chat.ChatDataRepository_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/repository/chat/ChatDataRepository_Factory.class)
+info woven class com.tribe.app.presentation.view.widget.AvatarView_MembersInjector (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/AvatarView_MembersInjector.class)
+info woven class com.tribe.app.data.cache.ChatCacheImpl$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/cache/ChatCacheImpl$1.class)
+info woven class com.tribe.app.data.realm.UserRealm (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/realm/UserRealm.class)
+info woven class com.tribe.app.presentation.view.activity.DummyActivity (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/DummyActivity.class)
+info woven class com.squareup.leakcanary.R$string (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/squareup/leakcanary/R$string.class)
+info woven class com.tribe.app.presentation.view.activity.HomeActivity (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/HomeActivity.class)
+info woven class com.tribe.app.data.rxmqtt.impl.RxMqttAsyncClient$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/impl/RxMqttAsyncClient$1.class)
+info woven class com.tribe.app.presentation.mvp.presenter.ChatPresenter$ConnectAndSubscribeMQTTSubscriber (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/presenter/ChatPresenter$ConnectAndSubscribeMQTTSubscriber.class)
+info woven class com.tribe.app.data.realm.mapper.PinRealmDataMapper (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/realm/mapper/PinRealmDataMapper.class)
+info woven class com.tribe.app.presentation.view.activity.LauncherActivity_MembersInjector (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/LauncherActivity_MembersInjector.class)
+info woven class com.tribe.app.presentation.view.adapter.MessageAdapter (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/MessageAdapter.class)
+info woven class com.tribe.app.presentation.view.camera.gles.GlTextureView$GLThread (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/GlTextureView$GLThread.class)
+info woven class com.tribe.app.R$integer (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/R$integer.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ApplicationModule_ProvideJobManagerFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ApplicationModule_ProvideJobManagerFactory.class)
+info woven class com.tribe.app.presentation.view.activity.ChatActivity$$ViewBinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/ChatActivity$$ViewBinder.class)
+info woven class com.tribe.app.presentation.internal.di.components.DaggerUserComponent$4 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/DaggerUserComponent$4.class)
+info woven class com.tribe.app.presentation.view.camera.gles.GlTextureView$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/GlTextureView$1.class)
+info woven class io.realm.DefaultRealmModuleMediator (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/io/realm/DefaultRealmModuleMediator.class)
+info woven class com.tribe.app.presentation.mapper.UserModelDataMapper_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mapper/UserModelDataMapper_Factory.class)
+info woven class com.tribe.app.presentation.view.utils.PhoneUtils_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/utils/PhoneUtils_Factory.class)
+info woven class com.tribe.app.presentation.view.activity.TribeActivity (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/TribeActivity.class)
+info woven class com.tribe.app.presentation.mvp.presenter.TribePresenter_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/presenter/TribePresenter_Factory.class)
+info woven class com.hannesdorfmann.adapterdelegates2.R (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/hannesdorfmann/adapterdelegates2/R.class)
+info woven class com.tribe.app.domain.interactor.user.DoLogin_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/interactor/user/DoLogin_Factory.class)
+info woven class com.tribe.app.presentation.view.activity.IntroActivity$$ViewBinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/IntroActivity$$ViewBinder.class)
+info woven class com.tribe.app.presentation.internal.di.components.DaggerChatComponent (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/DaggerChatComponent.class)
+info woven class com.tribe.app.domain.interactor.text.SubscribingMQTT_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/interactor/text/SubscribingMQTT_Factory.class)
+info woven class com.tribe.app.presentation.view.component.TribePagerView (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/TribePagerView.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.text.UserMessageAdapterDelegate$UserTextViewHolder$$ViewBinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/text/UserMessageAdapterDelegate$UserTextViewHolder$$ViewBinder.class)
+info woven class com.tribe.app.data.rxmqtt.impl.RxMqttAsyncClient$2 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/impl/RxMqttAsyncClient$2.class)
+info woven class com.tribe.app.presentation.view.component.TribePagerView_MembersInjector (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/TribePagerView_MembersInjector.class)
+info woven class com.tribe.app.presentation.view.fragment.BaseFragment (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/fragment/BaseFragment.class)
+info woven class com.squareup.leakcanary.R (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/squareup/leakcanary/R.class)
+info woven class com.tribe.app.presentation.internal.di.components.DaggerActivityComponent (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/DaggerActivityComponent.class)
+info woven class com.tribe.app.presentation.view.widget.PathView_MembersInjector (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/PathView_MembersInjector.class)
+info woven class com.tribe.app.data.rxmqtt.impl.RxMqttAsyncClient$5 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/impl/RxMqttAsyncClient$5.class)
+info woven class com.tribe.app.presentation.internal.di.components.DaggerApplicationComponent$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/DaggerApplicationComponent$1.class)
+info woven class com.tribe.app.presentation.internal.di.components.DaggerUserComponent$3 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/DaggerUserComponent$3.class)
+info woven class com.tribe.app.presentation.view.fragment.HomeGridFragment_MembersInjector (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/fragment/HomeGridFragment_MembersInjector.class)
+info woven class com.tribe.app.R$layout (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/R$layout.class)
+info woven class com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/manager/HomeLayoutManager.class)
+info woven class com.tribe.app.presentation.view.widget.PathView (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/PathView.class)
+info woven class com.tribe.app.presentation.view.fragment.FriendsGridFragment (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/fragment/FriendsGridFragment.class)
+info woven class com.tribe.app.data.repository.chat.datasource.ChatDataStore (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/repository/chat/datasource/ChatDataStore.class)
+info woven class com.tribe.app.presentation.view.camera.gles.Texture (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/Texture.class)
+info woven class com.tribe.app.presentation.view.widget.CameraWrapper (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/CameraWrapper.class)
+info woven class com.tribe.app.presentation.view.widget.AvatarView$$ViewBinder$InnerUnbinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/AvatarView$$ViewBinder$InnerUnbinder.class)
+info woven class com.tribe.app.data.rxmqtt.impl.RxMqttAsyncClient$6$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/impl/RxMqttAsyncClient$6$1.class)
+info woven class com.tribe.app.presentation.mvp.presenter.IntroPresenter_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/presenter/IntroPresenter_Factory.class)
+info woven class com.tribe.app.presentation.view.activity.BaseActivity (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/BaseActivity.class)
+info woven class com.tribe.app.presentation.navigation.Navigator (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/navigation/Navigator.class)
+info woven class com.tribe.app.presentation.view.activity.CountryActivity$$ViewBinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/CountryActivity$$ViewBinder.class)
+info woven class com.tribe.app.domain.exception.ErrorBundle (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/exception/ErrorBundle.class)
+info woven class com.tribe.app.domain.entity.Group (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/entity/Group.class)
+abort trouble in: 
+public final class com.tribe.app.presentation.internal.di.modules.UserModule_ProvideDiskGetUserInfosFactory extends java.lang.Object implements dagger.internal.Factory:
+  private final com.tribe.app.presentation.internal.di.modules.UserModule module
+  private final javax.inject.Provider getDiskUserInfosProvider [Signature(Ljavax/inject/Provider<Lcom/tribe/app/domain/interactor/user/GetDiskUserInfos;>;)]
+  static final boolean $assertionsDisabled
+  public void <init>(com.tribe.app.presentation.internal.di.modules.UserModule, javax.inject.Provider):
+                    ALOAD_0     // Lcom/tribe/app/presentation/internal/di/modules/UserModule_ProvideDiskGetUserInfosFactory; this   (line 20)
+                    INVOKESPECIAL java.lang.Object.<init> ()V
+    constructor-execution(void com.tribe.app.presentation.internal.di.modules.UserModule_ProvideDiskGetUserInfosFactory.<init>(com.tribe.app.presentation.internal.di.modules.UserModule, javax.inject.Provider))
+    |               GETSTATIC com.tribe.app.presentation.internal.di.modules.UserModule_ProvideDiskGetUserInfosFactory.$assertionsDisabled Z   (line 21)
+    |               IFNE L0
+    |               ALOAD_1     // Lcom/tribe/app/presentation/internal/di/modules/UserModule; module
+    |               IFNONNULL L0
+    |               NEW java.lang.AssertionError
+    |               DUP
+    |               INVOKESPECIAL java.lang.AssertionError.<init> ()V
+    |               ATHROW
+    |           L0: ALOAD_0     // Lcom/tribe/app/presentation/internal/di/modules/UserModule_ProvideDiskGetUserInfosFactory; this   (line 22)
+    |               ALOAD_1     // Lcom/tribe/app/presentation/internal/di/modules/UserModule; module
+    |               PUTFIELD com.tribe.app.presentation.internal.di.modules.UserModule_ProvideDiskGetUserInfosFactory.module Lcom/tribe/app/presentation/internal/di/modules/UserModule;
+    |               GETSTATIC com.tribe.app.presentation.internal.di.modules.UserModule_ProvideDiskGetUserInfosFactory.$assertionsDisabled Z   (line 23)
+    |               IFNE L1
+    |               ALOAD_2     // Ljavax/inject/Provider; getDiskUserInfosProvider
+    |               IFNONNULL L1
+    |               NEW java.lang.AssertionError
+    |               DUP
+    |               INVOKESPECIAL java.lang.AssertionError.<init> ()V
+    |               ATHROW
+    |           L1: ALOAD_0     // Lcom/tribe/app/presentation/internal/di/modules/UserModule_ProvideDiskGetUserInfosFactory; this   (line 24)
+    |               ALOAD_2     // Ljavax/inject/Provider; getDiskUserInfosProvider
+    |               PUTFIELD com.tribe.app.presentation.internal.di.modules.UserModule_ProvideDiskGetUserInfosFactory.getDiskUserInfosProvider Ljavax/inject/Provider;
+    |               RETURN   (line 25)
+    constructor-execution(void com.tribe.app.presentation.internal.di.modules.UserModule_ProvideDiskGetUserInfosFactory.<init>(com.tribe.app.presentation.internal.di.modules.UserModule, javax.inject.Provider))
+  end public void <init>(com.tribe.app.presentation.internal.di.modules.UserModule, javax.inject.Provider)
+
+  public com.tribe.app.domain.interactor.common.UseCase get():
+    method-execution(com.tribe.app.domain.interactor.common.UseCase com.tribe.app.presentation.internal.di.modules.UserModule_ProvideDiskGetUserInfosFactory.get())
+    |               ALOAD_0     // Lcom/tribe/app/presentation/internal/di/modules/UserModule_ProvideDiskGetUserInfosFactory; this   (line 29)
+    |               GETFIELD com.tribe.app.presentation.internal.di.modules.UserModule_ProvideDiskGetUserInfosFactory.module Lcom/tribe/app/presentation/internal/di/modules/UserModule;
+    |               ALOAD_0     // Lcom/tribe/app/presentation/internal/di/modules/UserModule_ProvideDiskGetUserInfosFactory; this
+    |               GETFIELD com.tribe.app.presentation.internal.di.modules.UserModule_ProvideDiskGetUserInfosFactory.getDiskUserInfosProvider Ljavax/inject/Provider;
+    | method-call(java.lang.Object javax.inject.Provider.get())
+    | |             INVOKEINTERFACE javax.inject.Provider.get ()Ljava/lang/Object;   (line 30)
+    | method-call(java.lang.Object javax.inject.Provider.get())
+    |               CHECKCAST com.tribe.app.domain.interactor.user.GetDiskUserInfos
+    | method-call(com.tribe.app.domain.interactor.common.UseCase com.tribe.app.presentation.internal.di.modules.UserModule.provideDiskGetUserInfos(com.tribe.app.domain.interactor.user.GetDiskUserInfos))
+    | |             INVOKEVIRTUAL com.tribe.app.presentation.internal.di.modules.UserModule.provideDiskGetUserInfos (Lcom/tribe/app/domain/interactor/user/GetDiskUserInfos;)Lcom/tribe/app/domain/interactor/common/UseCase;
+    | method-call(com.tribe.app.domain.interactor.common.UseCase com.tribe.app.presentation.internal.di.modules.UserModule.provideDiskGetUserInfos(com.tribe.app.domain.interactor.user.GetDiskUserInfos))
+    |               LDC "Cannot return null from a non-@Nullable @Provides method"
+    |               INVOKESTATIC dagger.internal.Preconditions.checkNotNull (Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;   (line 29)
+    |               CHECKCAST com.tribe.app.domain.interactor.common.UseCase
+    |               ARETURN
+    method-execution(com.tribe.app.domain.interactor.common.UseCase com.tribe.app.presentation.internal.di.modules.UserModule_ProvideDiskGetUserInfosFactory.get())
+  end public com.tribe.app.domain.interactor.common.UseCase get()
+
+  public static dagger.internal.Factory create(com.tribe.app.presentation.internal.di.modules.UserModule, javax.inject.Provider):
+                    NEW com.tribe.app.presentation.internal.di.modules.UserModule_ProvideDiskGetUserInfosFactory   (line 36)
+                    DUP
+                    ALOAD_0     // Lcom/tribe/app/presentation/internal/di/modules/UserModule; module
+                    ALOAD_1     // Ljavax/inject/Provider; getDiskUserInfosProvider
+                    INVOKESPECIAL com.tribe.app.presentation.internal.di.modules.UserModule_ProvideDiskGetUserInfosFactory.<init> (Lcom/tribe/app/presentation/internal/di/modules/UserModule;Ljavax/inject/Provider;)V
+                    ARETURN
+  end public static dagger.internal.Factory create(com.tribe.app.presentation.internal.di.modules.UserModule, javax.inject.Provider)
+
+  public volatile Object get():
+                    ALOAD_0     // Lcom/tribe/app/presentation/internal/di/modules/UserModule_ProvideDiskGetUserInfosFactory; this   (line 10)
+                    INVOKEVIRTUAL com.tribe.app.presentation.internal.di.modules.UserModule_ProvideDiskGetUserInfosFactory.get ()Lcom/tribe/app/domain/interactor/common/UseCase;
+                    ARETURN
+  end public volatile Object get()
+
+  static void <clinit>():
+                    LDC com.tribe.app.presentation.internal.di.modules.UserModule_ProvideDiskGetUserInfosFactory   (line 10)
+                    INVOKEVIRTUAL java.lang.Class.desiredAssertionStatus ()Z
+                    IFNE L0
+                    ICONST_1
+                    GOTO L1
+                L0: ICONST_0
+                L1: PUTSTATIC com.tribe.app.presentation.internal.di.modules.UserModule_ProvideDiskGetUserInfosFactory.$assertionsDisabled Z
+                    RETURN
+  end static void <clinit>()
+end public final class com.tribe.app.presentation.internal.di.modules.UserModule_ProvideDiskGetUserInfosFactory
+ -- (OutOfMemoryError) GC overhead limit exceeded
+GC overhead limit exceeded
+java.lang.OutOfMemoryError: GC overhead limit exceeded
+	at org.aspectj.apache.bcel.classfile.LocalVariableTypeTable.<init>(LocalVariableTypeTable.java:69)
+	at org.aspectj.apache.bcel.classfile.Attribute.readAttribute(Attribute.java:159)
+	at org.aspectj.apache.bcel.classfile.AttributeUtils.readAttributes(AttributeUtils.java:19)
+	at org.aspectj.apache.bcel.classfile.Code.<init>(Code.java:118)
+	at org.aspectj.apache.bcel.classfile.Attribute.readAttribute(Attribute.java:131)
+	at org.aspectj.apache.bcel.classfile.AttributeUtils.readAttributes(AttributeUtils.java:19)
+	at org.aspectj.apache.bcel.classfile.FieldOrMethod.<init>(FieldOrMethod.java:97)
+	at org.aspectj.apache.bcel.classfile.Method.<init>(Method.java:97)
+	at org.aspectj.apache.bcel.classfile.ClassParser.readMethods(ClassParser.java:240)
+	at org.aspectj.apache.bcel.classfile.ClassParser.parse(ClassParser.java:144)
+	at org.aspectj.weaver.bcel.BcelWorld.lookupJavaClass(BcelWorld.java:440)
+	at org.aspectj.weaver.bcel.BcelWorld.resolveDelegate(BcelWorld.java:392)
+	at org.aspectj.weaver.World.resolveToReferenceType(World.java:477)
+	at org.aspectj.weaver.World.resolve(World.java:318)
+	at org.aspectj.weaver.World.resolve(World.java:228)
+	at org.aspectj.weaver.World.resolve(World.java:433)
+	at org.aspectj.weaver.bcel.BcelWorld.makeJoinPointSignatureForMethodInvocation(BcelWorld.java:643)
+	at org.aspectj.weaver.bcel.BcelShadow.makeMethodCall(BcelShadow.java:781)
+	at org.aspectj.weaver.bcel.BcelClassWeaver.matchInvokeInstruction(BcelClassWeaver.java:3252)
+	at org.aspectj.weaver.bcel.BcelClassWeaver.match(BcelClassWeaver.java:2905)
+	at org.aspectj.weaver.bcel.BcelClassWeaver.match(BcelClassWeaver.java:2685)
+	at org.aspectj.weaver.bcel.BcelClassWeaver.weave(BcelClassWeaver.java:480)
+	at org.aspectj.weaver.bcel.BcelClassWeaver.weave(BcelClassWeaver.java:100)
+	at org.aspectj.weaver.bcel.BcelWeaver.weave(BcelWeaver.java:1689)
+	at org.aspectj.weaver.bcel.BcelWeaver.weaveWithoutDump(BcelWeaver.java:1633)
+	at org.aspectj.weaver.bcel.BcelWeaver.weaveAndNotify(BcelWeaver.java:1398)
+	at org.aspectj.weaver.bcel.BcelWeaver.weave(BcelWeaver.java:1184)
+	at org.aspectj.ajdt.internal.compiler.AjPipeliningCompilerAdapter.weaveQueuedEntries(AjPipeliningCompilerAdapter.java:514)
+	at org.aspectj.ajdt.internal.compiler.AjPipeliningCompilerAdapter.afterCompiling(AjPipeliningCompilerAdapter.java:375)
+	at org.aspectj.ajdt.internal.compiler.CompilerAdapter.ajc$afterReturning$org_aspectj_ajdt_internal_compiler_CompilerAdapter$2$f9cc9ca0(CompilerAdapter.aj:78)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.compile(Compiler.java:421)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.performCompilation(AjBuildManager.java:1036)
+
+info woven class com.tribe.app.presentation.internal.di.modules.UserModule_ProvideDiskGetUserInfosFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/UserModule_ProvideDiskGetUserInfosFactory.class)
+info woven class com.tribe.app.presentation.view.adapter.CountryPhoneNumberAdapter (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/CountryPhoneNumberAdapter.class)
+info woven class com.tribe.app.presentation.AndroidApplication (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/AndroidApplication.class)
+info woven class io.realm.LocationRealmRealmProxy$LocationRealmColumnInfo (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/io/realm/LocationRealmRealmProxy$LocationRealmColumnInfo.class)
+info woven class com.tribe.app.data.exception.RepositoryErrorBundle (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/exception/RepositoryErrorBundle.class)
+info woven class com.tribe.app.data.network.LoginApi (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/network/LoginApi.class)
+info woven class com.tribe.app.presentation.view.camera.view.GlPreview$Renderer$2 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/view/GlPreview$Renderer$2.class)
+info woven class com.tribe.app.presentation.internal.di.modules.ApplicationModule_ProvideUserCacheFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ApplicationModule_ProvideUserCacheFactory.class)
+info woven class com.tribe.app.data.realm.mapper.GroupRealmDataMapper_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/realm/mapper/GroupRealmDataMapper_Factory.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.country.CountryAdapterDelegate (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/country/CountryAdapterDelegate.class)
+info woven class com.tribe.app.presentation.internal.di.modules.DataModule_ProvideSharedPreferencesFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/DataModule_ProvideSharedPreferencesFactory.class)
+info woven class com.tribe.app.presentation.internal.di.components.DaggerChatComponent$3 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/DaggerChatComponent$3.class)
+info woven class com.tribe.app.presentation.internal.di.components.DaggerUserComponent$1 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/DaggerUserComponent$1.class)
+info woven class com.tribe.app.presentation.view.gles.EglSurfaceBase (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/gles/EglSurfaceBase.class)
+info woven class android.support.design.R$layout (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/design/R$layout.class)
+info woven class com.tribe.app.presentation.view.activity.BaseActivity_MembersInjector (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/BaseActivity_MembersInjector.class)
+info woven class com.tribe.app.domain.interactor.text.UnsubscribeMQTT_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/interactor/text/UnsubscribeMQTT_Factory.class)
+info woven class com.tribe.app.domain.entity.Friendship (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/entity/Friendship.class)
+info woven class com.tribe.app.presentation.view.activity.HomeActivity$$ViewBinder$InnerUnbinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/HomeActivity$$ViewBinder$InnerUnbinder.class)
+info woven class android.support.design.R$color (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/design/R$color.class)
+info woven class com.tribe.app.presentation.view.adapter.delegate.text.UserMessageAdapterDelegate (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/delegate/text/UserMessageAdapterDelegate.class)
+info woven class com.tribe.app.presentation.internal.di.components.DaggerUserComponent$Builder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/DaggerUserComponent$Builder.class)
+info woven class com.tribe.app.presentation.view.adapter.pager.TribePagerAdapter (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/pager/TribePagerAdapter.class)
+info woven class com.tribe.app.presentation.mvp.presenter.HomeGridPresenter$FriendListSubscriber (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/presenter/HomeGridPresenter$FriendListSubscriber.class)
+info woven class com.tribe.app.domain.interactor.user.GetRequestCode (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/interactor/user/GetRequestCode.class)
+info woven class com.tribe.app.presentation.view.component.ChatInputView (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/component/ChatInputView.class)
+info woven class com.tribe.app.presentation.view.gles.GeneratedTexture$Image (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/gles/GeneratedTexture$Image.class)
+info woven class com.tribe.app.presentation.view.camera.view.VisualizerView$$ViewBinder$InnerUnbinder (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/view/VisualizerView$$ViewBinder$InnerUnbinder.class)
+info woven class com.tribe.app.domain.interactor.user.GetRequestCode_Factory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/interactor/user/GetRequestCode_Factory.class)
+info woven class com.tribe.app.data.rxmqtt.impl.RxMqttAsyncClient$4 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/rxmqtt/impl/RxMqttAsyncClient$4.class)
+info woven class com.tribe.app.presentation.view.camera.interfaces.OnErrorListener (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/interfaces/OnErrorListener.class)
+info woven class com.tribe.app.presentation.internal.di.components.DaggerChatComponent$2 (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/components/DaggerChatComponent$2.class)
+info woven class com.tribe.app.domain.interactor.user.GetDiskUserInfos (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/domain/interactor/user/GetDiskUserInfos.class)
+info woven class com.tribe.app.presentation.view.activity.IntroActivity$IntroPageTransformer (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/activity/IntroActivity$IntroPageTransformer.class)
+info woven class com.tribe.app.presentation.mvp.presenter.TribePresenter (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/mvp/presenter/TribePresenter.class)
+warning at /Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.fernandocejas.frodo/frodo-runtime/0.8.1/jars/classes.jar!com/fernandocejas/frodo/aspect/LogSubscriber.class::0 advice defined in com.fernandocejas.frodo.aspect.LogSubscriber has not been applied [Xlint:adviceDidNotMatch]

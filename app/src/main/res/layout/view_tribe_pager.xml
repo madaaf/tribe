@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+    <FrameLayout
+        android:id="@+id/layoutReply"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@null"
+        >
+
+        <ImageView
+            android:id='@+id/imgReply'
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="@dimen/vertical_margin_xlarge"
+            android:layout_gravity="center_horizontal|bottom"
+            android:src="@drawable/picto_reply"
+            android:scaleType="centerInside"
+            />
+
+        <com.tribe.app.presentation.view.widget.SquareFrameLayout
+            android:id="@+id/layoutTile"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="@dimen/vertical_margin_reply_tile"
+            android:background="@drawable/shape_rounded_reply"
+            >
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:id="@+id/txtName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|center_horizontal"
+                android:layout_marginTop="@dimen/vertical_margin_small"
+                style="@style/Text.Grid.Name"
+                />
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:id="@+id/txtStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Text.Grid.Status"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="@dimen/vertical_margin_small"
+                android:text="@string/Tribe.Reply.Hint"
+                />
+
+            <com.tribe.app.presentation.view.widget.AvatarView
+                android:id="@+id/avatar"
+                android:layout_width="@dimen/avatar_size"
+                android:layout_height="@dimen/avatar_size"
+                android:layout_gravity="center"
+                />
+
+            <View
+                android:id="@+id/viewForeground"
+                android:layout_width="@dimen/avatar_size_inner"
+                android:layout_height="@dimen/avatar_size_inner"
+                android:layout_gravity="center"
+                android:background="@drawable/shape_ring_foreground_white"
+                />
+        </com.tribe.app.presentation.view.widget.SquareFrameLayout>
+
+        <com.tribe.app.presentation.view.widget.CameraWrapper
+            android:id="@+id/cameraWrapper"
+            android:layout_width="@dimen/camera_width"
+            android:layout_height="@dimen/camera_height"
+            android:layout_gravity="top|left"
+            android:elevation="5dp"
+            android:clipToPadding="false"
+            app:cornerRadius="5dp"
+            android:background="@null"
+            />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/layoutSnooze"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_snooze_transition"
+        android:visibility="visible"
+        >
+
+        <ImageView
+            android:id='@+id/imgSnooze'
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/vertical_margin_xlarge"
+            android:layout_marginLeft="@dimen/horizontal_margin_xlarge"
+            android:src="@drawable/picto_snooze"
+            android:scaleType="centerInside"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtSnooze"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="60dp"
+            android:layout_marginTop="28dp"
+            style="@style/Text.Tribe.Name"
+            android:text="@string/Tribe.Snooze.Snooze"
+            />
+        
+        <RelativeLayout
+            android:id="@+id/layoutLater"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/snooze_items_height"
+            android:layout_marginTop="70dp"
+            android:paddingLeft="@dimen/horizontal_margin_xlarge"
+            android:background="@drawable/selectable_button_light"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            >
+
+            <ImageView
+                android:id='@+id/imgLater'
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/picto_later"
+                android:scaleType="centerInside"
+                />
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:id="@+id/txtLater"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/horizontal_margin_small"
+                android:layout_alignTop="@id/imgLater"
+                android:layout_toRightOf="@id/imgLater"
+                style="@style/Text.Tribe.Name"
+                android:text="@string/Tribe.Snooze.Later"
+                />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutTomorrow"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/snooze_items_height"
+            android:layout_marginTop="180dp"
+            android:paddingLeft="@dimen/horizontal_margin_xlarge"
+            android:background="@drawable/selectable_button_light"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            >
+
+            <ImageView
+                android:id='@+id/imgTomorrow'
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/picto_tomorrow"
+                android:scaleType="centerInside"
+                />
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:id="@+id/txtTomorrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/horizontal_margin_small"
+                android:layout_alignTop="@id/imgTomorrow"
+                android:layout_toRightOf="@id/imgTomorrow"
+                style="@style/Text.Tribe.Name"
+                android:text="@string/Tribe.Snooze.Tomorrow"
+                />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutWeekend"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/snooze_items_height"
+            android:layout_marginTop="290dp"
+            android:paddingLeft="@dimen/horizontal_margin_xlarge"
+            android:background="@drawable/selectable_button_light"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            >
+
+            <ImageView
+                android:id='@+id/imgWeekend'
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/picto_weekend"
+                android:scaleType="centerInside"
+                />
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:id="@+id/txtWeekend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/horizontal_margin_small"
+                android:layout_alignTop="@id/imgWeekend"
+                android:layout_toRightOf="@id/imgWeekend"
+                style="@style/Text.Tribe.Name"
+                android:text="@string/Tribe.Snooze.Weekend"
+                />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutWeek"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/snooze_items_height"
+            android:layout_marginTop="400dp"
+            android:paddingLeft="@dimen/horizontal_margin_xlarge"
+            android:background="@drawable/selectable_button_light"
+            android:gravity="center_vertical"
+            >
+
+            <ImageView
+                android:id='@+id/imgWeek'
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/picto_next_week"
+                android:scaleType="centerInside"
+                />
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:id="@+id/txtWeek"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/horizontal_margin_small"
+                android:layout_alignTop="@id/imgWeek"
+                android:layout_toRightOf="@id/imgWeek"
+                style="@style/Text.Tribe.Name"
+                android:text="@string/Tribe.Snooze.Next"
+                />
+
+        </RelativeLayout>
+    </FrameLayout>
+
+    <View
+        android:id="@+id/viewShadowTop"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_marginTop="-10dp"
+        android:background="@drawable/shadow_top"
+        />
+
+    <View
+        android:id="@+id/viewShadowLeft"
+        android:layout_width="10dp"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="-10dp"
+        android:background="@drawable/shadow_left"
+        />
+
+    <View
+        android:id="@+id/viewShadowBottom"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_marginBottom="-10dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/shadow_bottom"
+        />
+
+    <com.tribe.app.presentation.view.widget.CustomViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black"
+        android:visibility="visible"
+        />
+
+    <ImageView
+        android:id="@+id/imgBigSnooze"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/picto_big_snooze"
+        android:scaleX="0"
+        android:scaleY="0"
+        android:alpha="0"
+        android:rotation="0"
+        />
+
+</merge>

@@ -5,11 +5,11 @@
     android:background="@null"
     >
 
-    <com.tribe.app.presentation.view.component.TribeViewPager
-        android:id="@+id/viewPager"
+    <com.tribe.app.presentation.view.component.TribePagerView
+        android:id="@+id/viewTribePager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/black"
+        android:background="@null"
         />
 
 </FrameLayout>

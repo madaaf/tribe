@@ -37,8 +37,6 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
@@ -61,7 +59,6 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
     private final int END_RECORD_DELAY = 1000;
     private final float OVERSHOOT = 3f;
 
-    @Inject PaletteGrid paletteGrid;
     private LayoutInflater layoutInflater;
     private Context context;
 
@@ -263,6 +260,8 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
         vh.txtName.setText(user.getDisplayName());
         vh.layoutContent.setBackgroundColor(PaletteGrid.get(position - 1));
         vh.avatar.load(user.getProfilePicture());
+
+        user.setPosition(position);
     }
 
     private void resetViewAfterTapToCancel(UserGridViewHolder viewHolder, boolean hasFinished) {

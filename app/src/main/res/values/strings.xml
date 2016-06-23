@@ -14,11 +14,14 @@
     <!-- GRID -->
     <string name="Grid.Me.Points">Points</string>
 
-    <!-- TODO REMOVE -->
-    <string name="tfcCameraParams">Camera params: %1$dx%2$d @%3$.1f fps</string>
-    <string name="tfcRectSize">Rect size (pixels): %1$dx%2$d</string>
-    <string name="tfcZoomArea">Zoom area (pixels): %1$dx%2$d</string>
-    <string name="tfcZoomLabel">Zoom: </string>
-    <string name="tfcSizeLabel">Size: </string>
-    <string name="tfcRotateLabel">Rotate: </string>
+    <!-- TRIBE -->
+    <string name="Tribe.Swipe.Down">Swipe down to dismiss</string>
+    <string name="Tribe.Swipe.Up">Swipe up to reply</string>
+    <string name="Tribe.Back">Back to message</string>
+    <string name="Tribe.Snooze.Snooze">Snooze it</string>
+    <string name="Tribe.Snooze.Later">Later</string>
+    <string name="Tribe.Snooze.Tomorrow">Tomorrow</string>
+    <string name="Tribe.Snooze.Weekend">This weekend</string>
+    <string name="Tribe.Snooze.Next">Next week</string>
+    <string name="Tribe.Reply.Hint">Tap and hold to reply</string>
 </resources>

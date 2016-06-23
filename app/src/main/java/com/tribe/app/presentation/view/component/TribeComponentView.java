@@ -9,7 +9,9 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.TextureView;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.google.android.exoplayer.ExoPlaybackException;
 import com.google.android.exoplayer.ExoPlayer;
@@ -23,6 +25,7 @@ import com.google.android.exoplayer.upstream.AssetDataSource;
 import com.google.android.exoplayer.upstream.DefaultAllocator;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.listener.MediaCodecVideoListener;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.VideoTextureView;
 
 import butterknife.BindView;
@@ -41,6 +44,44 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
     @BindView(R.id.surfaceView)
     VideoTextureView surfaceView;
+
+    @BindView(R.id.imgAvatar)
+    View imgAvatar;
+
+    @BindView(R.id.imgSave)
+    ImageView imgSave;
+
+    @BindView(R.id.imgMore)
+    ImageView imgMore;
+
+    @BindView(R.id.txtDistance)
+    TextViewFont txtDistance;
+
+    @BindView(R.id.txtName)
+    TextViewFont txtName;
+
+    @BindView(R.id.txtTime)
+    TextViewFont txtTime;
+
+    @BindView(R.id.imgSpeed)
+    ImageView imgSpeed;
+
+    @BindView(R.id.txtSpeed)
+    TextViewFont txtSpeed;
+
+    @BindView(R.id.viewSeparator)
+    View viewSeparator;
+
+    @BindView(R.id.txtCity)
+    TextViewFont txtCity;
+
+    @BindView(R.id.txtSwipeUp)
+    TextViewFont txtSwipeUp;
+
+    @BindView(R.id.txtSwipeDown)
+    TextViewFont txtSwipeDown;
+
+
 
     // OBSERVABLES
     private Unbinder unbinder;
@@ -73,6 +114,26 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         unbinder = ButterKnife.bind(this);
         surfaceView.setSurfaceTextureListener(this);
         super.onFinishInflate();
+    }
+
+    @Override
+    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+        initPlayer();
+    }
+
+    @Override
+    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+        return false;
+    }
+
+    @Override
+    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+
+    }
+
+    @Override
+    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
     }
 
     public void initPlayer() {
@@ -133,23 +194,24 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         exoPlayer.release();
     }
 
-    @Override
-    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        initPlayer();
+    public void setIconsAlpha(float alpha) {
+        imgAvatar.setAlpha(alpha);
+        imgSpeed.setAlpha(alpha);
+        imgMore.setAlpha(alpha);
+        imgSave.setAlpha(alpha);
+        viewSeparator.setAlpha(alpha);
+        txtCity.setAlpha(alpha);
+        txtDistance.setAlpha(alpha);
+        txtName.setAlpha(alpha);
+        txtSpeed.setAlpha(alpha);
+        txtTime.setAlpha(alpha);
     }
 
-    @Override
-    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        return false;
+    public void setSwipeUpAlpha(float alpha) {
+        txtSwipeUp.setAlpha(alpha);
     }
 
-    @Override
-    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-
-    }
-
-    @Override
-    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-
+    public void setSwipeDownAlpha(float alpha) {
+        txtSwipeDown.setAlpha(alpha);
     }
 }

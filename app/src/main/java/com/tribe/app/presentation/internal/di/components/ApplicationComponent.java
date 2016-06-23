@@ -7,6 +7,7 @@ import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.data.repository.user.DiskUserDataRepository;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.text.ChatRepository;
@@ -18,6 +19,7 @@ import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate;
 import com.tribe.app.presentation.view.camera.view.VisualizerView;
+import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.AvatarView;
@@ -44,6 +46,7 @@ public interface ApplicationComponent {
     void inject(CameraWrapper cameraWrapper);
     void inject(VisualizerView visualizerView);
     void inject(PathView pathView);
+    void inject(TribePagerView tribePagerView);
 
     //Exposed to sub-graphs.
     Context context();
@@ -67,4 +70,6 @@ public interface ApplicationComponent {
     AccessToken accessToken();
 
     ScreenUtils screenUtils();
+
+    User currentUser();
 }

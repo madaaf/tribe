@@ -3,17 +3,14 @@ package com.tribe.app.presentation.view.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
 
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.presentation.internal.di.components.DaggerTribeComponent;
 import com.tribe.app.presentation.mvp.presenter.TribePresenter;
 import com.tribe.app.presentation.mvp.view.TribeView;
-import com.tribe.app.presentation.view.adapter.pager.TribePagerAdapter;
-import com.tribe.app.presentation.view.component.TribeComponentView;
-import com.tribe.app.presentation.view.component.TribeViewPager;
-import com.tribe.app.presentation.view.widget.CustomViewPager;
+import com.tribe.app.presentation.view.component.TribePagerView;
+import com.tribe.app.presentation.view.utils.PaletteGrid;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +26,11 @@ import rx.subscriptions.CompositeSubscription;
 public class TribeActivity extends BaseActivity implements TribeView {
 
     public static final String FRIEND_ID = "FRIEND_ID";
+    public static final String POSITION = "POSITION";
 
-    public static Intent getCallingIntent(Context context, String friendId) {
+    public static Intent getCallingIntent(Context context, int position, String friendId) {
         Intent intent = new Intent(context, TribeActivity.class);
+        intent.putExtra(POSITION, position);
         intent.putExtra(FRIEND_ID, friendId);
         return intent;
     }
@@ -39,18 +38,16 @@ public class TribeActivity extends BaseActivity implements TribeView {
     @Inject
     TribePresenter tribePresenter;
 
-    @Inject
-    TribePagerAdapter tribePagerAdapter;
+    @BindView(R.id.viewTribePager)
+    TribePagerView viewTribePager;
 
-    @BindView(R.id.viewPager)
-    TribeViewPager viewPager;
+    // VARIABLES
+    private String friendId;
+    private int position;
 
     // BINDERS / SUBSCRIPTIONS
     private Unbinder unbinder;
     private CompositeSubscription subscriptions;
-
-    // VARIABLES
-    private int previousPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +55,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
         initUi();
         initParams();
         initializeDependencyInjector();
-        initViewPager();
+        initTribePagerView();
         initializeSubscriptions();
     }
 
@@ -66,6 +63,18 @@ public class TribeActivity extends BaseActivity implements TribeView {
     protected void onStart() {
         super.onStart();
         initializePresenter();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        viewTribePager.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        viewTribePager.onPause();
+        super.onPause();
     }
 
     @Override
@@ -87,7 +96,8 @@ public class TribeActivity extends BaseActivity implements TribeView {
     }
 
     private void initParams() {
-
+        friendId = getIntent().getStringExtra(FRIEND_ID);
+        position = getIntent().getIntExtra(POSITION, 0);
     }
 
     private void initUi() {
@@ -96,43 +106,22 @@ public class TribeActivity extends BaseActivity implements TribeView {
         unbinder = ButterKnife.bind(this);
     }
 
-    private void initViewPager() {
-        tribePagerAdapter = new TribePagerAdapter(this);
-        viewPager.setAdapter(tribePagerAdapter);
-        viewPager.setOffscreenPageLimit(5);
-        viewPager.setScrollDurationFactor(1.0f);
-        viewPager.setCurrentItem(0);
-        viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_ALL);
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-
-            public void onPageScrollStateChanged(int state) {}
-
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
-
-            public void onPageSelected(int currentPosition) {
-                if (currentPosition == tribePagerAdapter.getCount() - 1) viewPager.setBackground(null);
-                tribePagerAdapter.setCurrentPosition(currentPosition);
-                tribePagerAdapter.releaseTribe(currentPosition, (TribeComponentView) viewPager.findViewWithTag(previousPosition));
-                tribePagerAdapter.startTribe(currentPosition, (TribeComponentView) viewPager.findViewWithTag(currentPosition));
-                previousPosition = currentPosition;
-            }
-        });
-
+    private void initTribePagerView() {
         List<Tribe> tribeList = new ArrayList<>();
         tribeList.add(new Tribe("0"));
         tribeList.add(new Tribe("1"));
         tribeList.add(new Tribe("2"));
         tribeList.add(new Tribe("3"));
         tribeList.add(new Tribe("4"));
-        tribePagerAdapter.setItems(tribeList);
-        viewPager.setCount(tribeList.size());
+        viewTribePager.setItems(tribeList);
+        viewTribePager.setBackgroundColor(PaletteGrid.get(position - 1));
     }
 
     private void initializeSubscriptions() {
         subscriptions = new CompositeSubscription();
 
-        subscriptions.add(viewPager.onDismissHorizontal().delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
-        subscriptions.add(viewPager.onDismissVertical().delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
+        subscriptions.add(viewTribePager.onDismissHorizontal().delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
+        subscriptions.add(viewTribePager.onDismissVertical().delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
     }
 
     private void initializeDependencyInjector() {
