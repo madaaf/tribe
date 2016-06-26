@@ -10,7 +10,7 @@
         android:id="@+id/txtName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/Text.Grid.Name"
+        style="@style/Body.Two.White"
         android:layout_gravity="top|left"
         android:layout_marginTop="15dp"
         android:layout_marginLeft="15dp"
@@ -52,6 +52,25 @@
         android:text="@string/tap.to.send"
         />
 
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtSending"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="15dp"
+        android:text="@string/Grid.User.Sending"
+        style="@style/Caption.White.1"
+        android:alpha="0"
+        />
+
+    <View
+        android:id="@+id/viewShadow"
+        android:layout_height="@dimen/avatar_size_with_shadow"
+        android:layout_width="@dimen/avatar_size_with_shadow"
+        android:layout_gravity="center"
+        android:background="@drawable/shadow_circle"
+        />
+
     <com.tribe.app.presentation.view.widget.AvatarView
         android:id="@+id/avatar"
         android:layout_width="@dimen/avatar_size"
@@ -66,6 +85,7 @@
         android:layout_height="@dimen/avatar_size_inner"
         android:layout_gravity="center"
         android:background="@drawable/shape_ring_foreground_white"
+        android:alpha="0"
         />
 
     <ImageView

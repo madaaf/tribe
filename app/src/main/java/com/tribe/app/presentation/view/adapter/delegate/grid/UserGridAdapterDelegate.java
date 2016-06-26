@@ -70,8 +70,10 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
     private int timeTapToCancel;
     private int sizePressedBorder;
     private int sizeAvatar;
+    private int sizeAvatarIntermediate;
     private int sizeAvatarScaled;
     private int sizeAvatarInner;
+    private int sizeAvatarInnerIntermediate;
     private int sizeAvatarInnerScaled;
     private int colorBlackOpacity20;
     private int diffSizeForScale;
@@ -89,7 +91,9 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
         sizePressedBorder = context.getResources().getDimensionPixelSize(R.dimen.inside_cell_border);
         sizeAvatarScaled = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_scaled);
         sizeAvatar = context.getResources().getDimensionPixelSize(R.dimen.avatar_size);
+        sizeAvatarIntermediate = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_intermediate);
         sizeAvatarInner = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_inner);
+        sizeAvatarInnerIntermediate = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_inner_intermediate);
         sizeAvatarInnerScaled = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_inner_scaled);
         timeTapToCancel = context.getResources().getInteger(R.integer.time_tap_to_cancel);
         colorBlackOpacity20 = context.getResources().getColor(R.color.black_opacity_20);
@@ -143,6 +147,9 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
                                     Spring springInside = (Spring) v.getTag(R.id.spring_inside);
                                     springInside.setEndValue(1f);
 
+                                    Spring springAvatar = (Spring) v.getTag(R.id.spring_avatar);
+                                    springAvatar.setEndValue(1f);
+
                                     Spring springOutside = (Spring) v.getTag(R.id.spring_outside);
                                     springOutside.setEndValue(1f);
                                 }
@@ -150,11 +157,14 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
                 }
             } else if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
                 if ((System.currentTimeMillis() - longDown) >= LONG_PRESS && isDown) {
-                    ((TransitionDrawable) ((LayerDrawable) userGridViewHolder.viewForeground.getBackground()).getDrawable(1)).startTransition(FADE_DURATION);
+                    AnimationUtils.fadeIn(userGridViewHolder.viewForeground, 0);
+                    ((TransitionDrawable) ((LayerDrawable) userGridViewHolder.viewForeground.getBackground()).getDrawable(0)).startTransition(FADE_DURATION);
                     AnimationUtils.scaleUp(userGridViewHolder.imgCancel, SCALE_DURATION, new OvershootInterpolator(OVERSHOOT));
 
                     Spring springOutside = (Spring) userGridViewHolder.itemView.getTag(R.id.spring_outside);
                     springOutside.setEndValue(0f);
+
+                    showSending(userGridViewHolder);
 
                     recordEnded.onNext(userGridViewHolder.itemView);
 
@@ -168,6 +178,8 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
                         public void onAnimationEnd(Animator animation) {
                             AnimationUtils.scaleDown(userGridViewHolder.imgCancel, SCALE_DURATION);
                             AnimationUtils.scaleUp(userGridViewHolder.imgDone, SCALE_DURATION, SCALE_DURATION, new OvershootInterpolator(OVERSHOOT));
+
+                            userGridViewHolder.txtSending.setText(R.string.Grid_User_Sent);
 
                             Observable.timer(END_RECORD_DELAY, TimeUnit.MILLISECONDS)
                                     .subscribeOn(Schedulers.io())
@@ -204,8 +216,29 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
             public void onSpringUpdate(Spring spring) {
                 float value = (float) spring.getCurrentValue();
 
+                float alpha = 1 - value;
+                userGridViewHolder.txtName.setAlpha(alpha);
+                userGridViewHolder.txtStatus.setAlpha(alpha);
+                userGridViewHolder.btnText.setAlpha(alpha);
+                userGridViewHolder.btnMore.setAlpha(alpha);
+            }
+        });
+
+        springInside.setEndValue(0f);
+        userGridViewHolder.itemView.setTag(R.id.spring_inside, springInside);
+
+        // SPRING INSIDE CONFIGURATION
+        Spring springAvatar = springSystem.createSpring();
+        SpringConfig configAvatar = SpringConfig.fromBouncinessAndSpeed(BOUNCINESS_INSIDE, SPEED_INSIDE);
+        springAvatar.setSpringConfig(configAvatar);
+        springAvatar.addListener(new SimpleSpringListener() {
+            @Override
+            public void onSpringUpdate(Spring spring) {
+                float value = (float) spring.getCurrentValue();
+
                 int scaleUp = (int) (sizeAvatar + ((sizeAvatarScaled - sizeAvatar) * value));
                 ViewGroup.LayoutParams paramsAvatar = userGridViewHolder.avatar.getLayoutParams();
+
                 if (Math.abs(scaleUp - paramsAvatar.height) > diffSizeForScale) {
                     paramsAvatar.height = scaleUp;
                     paramsAvatar.width = scaleUp;
@@ -217,18 +250,15 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
 
                     userGridViewHolder.viewForeground.setScaleX(scale);
                     userGridViewHolder.viewForeground.setScaleY(scale);
-                }
 
-                float alpha = 1 - value;
-                userGridViewHolder.txtName.setAlpha(alpha);
-                userGridViewHolder.txtStatus.setAlpha(alpha);
-                userGridViewHolder.btnText.setAlpha(alpha);
-                userGridViewHolder.btnMore.setAlpha(alpha);
+                    userGridViewHolder.viewShadow.setScaleX(scale);
+                    userGridViewHolder.viewShadow.setScaleY(scale);
+                }
             }
         });
 
-        springInside.setEndValue(0f);
-        userGridViewHolder.itemView.setTag(R.id.spring_inside, springInside);
+        springAvatar.setEndValue(0f);
+        userGridViewHolder.itemView.setTag(R.id.spring_avatar, springAvatar);
 
         final GradientDrawable drawable = (GradientDrawable) userGridViewHolder.viewPressedForeground.getBackground();
 
@@ -268,6 +298,9 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
         if (hasFinished) AnimationUtils.scaleDown(viewHolder.imgDone, SCALE_DURATION);
         else AnimationUtils.scaleDown(viewHolder.imgCancel, SCALE_DURATION);
 
+        AnimationUtils.fadeOut(viewHolder.viewForeground, 0);
+        AnimationUtils.fadeOut(viewHolder.txtSending, 0);
+
         if (viewHolder.itemView.getTag(R.id.progress_bar_animation) != null) {
             ObjectAnimator animator = (ObjectAnimator) viewHolder.itemView.getTag(R.id.progress_bar_animation);
             animator.cancel();
@@ -280,9 +313,19 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
         Spring springInside = (Spring) viewHolder.itemView.getTag(R.id.spring_inside);
         springInside.setEndValue(0f);
 
+        Spring springAvatar = (Spring) viewHolder.itemView.getTag(R.id.spring_avatar);
+        springAvatar.setEndValue(0f);
+
         viewHolder.itemView.setTag(R.id.is_tap_to_cancel, false);
 
-        ((TransitionDrawable) ((LayerDrawable) viewHolder.viewForeground.getBackground()).getDrawable(1)).reverseTransition(FADE_DURATION);
+        ((TransitionDrawable) ((LayerDrawable) viewHolder.viewForeground.getBackground()).getDrawable(0)).reverseTransition(FADE_DURATION);
+    }
+
+    private void showSending(UserGridViewHolder viewHolder) {
+        AnimationUtils.fadeIn(viewHolder.txtSending, 0);
+
+        Spring springOutside = (Spring) viewHolder.itemView.getTag(R.id.spring_avatar);
+        springOutside.setEndValue(0.75f);
     }
 
     public Observable<View> onClickChat() {
@@ -307,7 +350,9 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
         @BindView(R.id.btnText) public ImageView btnText;
         @BindView(R.id.btnMore) public ImageView btnMore;
         @BindView(R.id.txtStatus) public TextViewFont txtStatus;
+        @BindView(R.id.txtSending) public TextViewFont txtSending;
         @BindView(R.id.layoutContent) public ViewGroup layoutContent;
+        @BindView(R.id.viewShadow) public View viewShadow;
         @BindView(R.id.avatar) public AvatarView avatar;
         @BindView(R.id.progressBar) public ProgressBar progressBar;
         @BindView(R.id.viewForeground) public View viewForeground;

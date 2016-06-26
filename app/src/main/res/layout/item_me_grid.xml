@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@null"
+    android:background="@android:color/white"
     >
 
     <View
@@ -54,6 +54,16 @@
             style="@style/Text.Grid.Me.Label"
             />
     </LinearLayout>
+
+    <View
+        android:id="@+id/viewShadow"
+        android:layout_height="@dimen/avatar_size_small_with_shadow"
+        android:layout_width="@dimen/avatar_size_small_with_shadow"
+        android:layout_marginTop="18dp"
+        android:layout_marginLeft="3dp"
+        android:layout_alignLeft="@id/imgPoints"
+        android:background="@drawable/shadow_circle"
+        />
 
     <com.tribe.app.presentation.view.widget.AvatarView
         android:id="@+id/avatar"

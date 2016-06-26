@@ -15,7 +15,7 @@ import java.lang.reflect.Field;
 
 public class CustomViewPager extends ViewPager {
 
-    public static final int SWIPING_THRESHOLD = 10;
+    public static final int SWIPING_THRESHOLD = 20;
 
     public static final int SWIPE_MODE_ALL = 0;
     public static final int SWIPE_MODE_LEFT = 1;
@@ -50,7 +50,7 @@ public class CustomViewPager extends ViewPager {
         return super.onTouchEvent(ev);
     }
 
-    public boolean isSwipeAllowed(MotionEvent event) {
+    public boolean computeSwipeDirection(MotionEvent event) {
         if (this.swipeDirection == SWIPE_MODE_NONE) return false;
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {

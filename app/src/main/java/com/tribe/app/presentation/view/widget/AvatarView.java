@@ -82,5 +82,6 @@ public class AvatarView extends RoundedCornerLayout {
                 .fit()
                 .centerCrop()
                 .into(imgAvatar);
+        //imgAvatar.setImageResource(R.drawable.cage);
     }
 }

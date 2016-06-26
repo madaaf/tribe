@@ -32,6 +32,8 @@ import rx.subscriptions.CompositeSubscription;
 
 public class HomeActivity extends BaseActivity implements HasComponent<UserComponent>, HomeView {
 
+    private static final int THRESHOLD_SCROLL = 12;
+
     public static final int FRIENDS_FRAGMENT_PAGE = 0;
     public static final int GRID_FRAGMENT_PAGE = 1;
     public static final int GROUPS_FRAGMENT_PAGE = 2;
@@ -162,20 +164,26 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     public void initScrollOnGrid(Observable<Integer> observable) {
         subscriptions.add(observable.subscribe(dy -> {
-            float percent = (float) dy / translationBackToTop;
+            if (homeViewPagerAdapter.getCurrentFragment() != null && homeViewPagerAdapter.getCurrentFragment() instanceof HomeGridFragment) {
+                HomeGridFragment fragment = (HomeGridFragment) homeViewPagerAdapter.getCurrentFragment();
 
-            if (dy <= translationBackToTop) {
-                imgNavFriends.setTranslationY(dy);
-                imgNavGroups.setTranslationY(dy);
-                imgNavGrid.setTranslationY(dy);
-                imgNavFriends.setAlpha(1 - percent);
-                imgNavGroups.setAlpha(1 - percent);
-                imgNavGrid.setAlpha(1 - percent);
-                imgNavBackToTop.setTranslationY(translationBackToTop - dy);
-                imgNavBackToTop.setAlpha((float) dy / translationBackToTop);
-            } else if (imgNavBackToTop.getTranslationY() != 0) {
-                imgNavBackToTop.setTranslationY(0);
-                imgNavBackToTop.setAlpha(1f);
+                if (fragment.getNbItems() > THRESHOLD_SCROLL) {
+                    float percent = (float) dy / translationBackToTop;
+
+                    if (dy <= translationBackToTop) {
+                        imgNavFriends.setTranslationY(dy);
+                        imgNavGroups.setTranslationY(dy);
+                        imgNavGrid.setTranslationY(dy);
+                        imgNavFriends.setAlpha(1 - percent);
+                        imgNavGroups.setAlpha(1 - percent);
+                        imgNavGrid.setAlpha(1 - percent);
+                        imgNavBackToTop.setTranslationY(translationBackToTop - dy);
+                        imgNavBackToTop.setAlpha((float) dy / translationBackToTop);
+                    } else if (imgNavBackToTop.getTranslationY() != 0) {
+                        imgNavBackToTop.setTranslationY(0);
+                        imgNavBackToTop.setAlpha(1f);
+                    }
+                }
             }
         }));
     }
@@ -262,6 +270,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             int pageWidth = page.getWidth();
 
             if (pagePosition == 1 && position > 0) {
+                cameraWrapper.setTranslationX(pageWidth * position);
+
                 float sizeImgNavFriends = sizeNavSmall + ((sizeNavMax - sizeNavSmall) * position);
                 float translationImgNavFriends = ((pageWidth >> 1) - marginHorizontalSmall - (imgNavFriends.getWidth() / 2)) * position;
                 layoutNav(imgNavFriends, sizeImgNavFriends, translationImgNavFriends);
@@ -270,6 +280,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 float translationImgNavGrid = ((pageWidth >> 1) - (imgNavGrid.getWidth() / 2) - 2 * marginHorizontalSmall - imgNavGroups.getWidth()) * position;
                 layoutNav(imgNavGrid, sizeImgNavGrid, translationImgNavGrid);
             } else if (pagePosition == 1 && position < 0) {
+                cameraWrapper.setTranslationX(pageWidth * position);
+
                 float sizeImgNavGroups = sizeNavSmall + ((sizeNavMax - sizeNavSmall) * -position);
                 float translationImgNavGroups = ((pageWidth >> 1) - marginHorizontalSmall - (imgNavGroups.getWidth() / 2)) * position;
                 layoutNav(imgNavGroups, sizeImgNavGroups, translationImgNavGroups);

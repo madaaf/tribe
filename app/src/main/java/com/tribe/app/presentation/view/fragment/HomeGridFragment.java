@@ -150,6 +150,11 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     }
 
     @Override
+    public int getNbItems() {
+        return this.homeGridAdapter.getItemCount();
+    }
+
+    @Override
     public void showError(String message) {
         this.showToastMessage(message);
     }

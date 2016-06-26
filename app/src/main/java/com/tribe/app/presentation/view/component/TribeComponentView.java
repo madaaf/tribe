@@ -25,6 +25,7 @@ import com.google.android.exoplayer.upstream.AssetDataSource;
 import com.google.android.exoplayer.upstream.DefaultAllocator;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.listener.MediaCodecVideoListener;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.VideoTextureView;
 
@@ -81,7 +82,8 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     @BindView(R.id.txtSwipeDown)
     TextViewFont txtSwipeDown;
 
-
+    @BindView(R.id.btnBackToTribe)
+    View btnBackToTribe;
 
     // OBSERVABLES
     private Unbinder unbinder;
@@ -213,5 +215,15 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
     public void setSwipeDownAlpha(float alpha) {
         txtSwipeDown.setAlpha(alpha);
+    }
+
+    public void showBackToTribe(int duration) {
+        btnBackToTribe.setClickable(true);
+        AnimationUtils.fadeIn(btnBackToTribe, duration);
+    }
+
+    public void hideBackToTribe(int duration) {
+        btnBackToTribe.setClickable(false);
+        AnimationUtils.fadeOut(btnBackToTribe, duration);
     }
 }

@@ -13,6 +13,8 @@
 
     <!-- GRID -->
     <string name="Grid.Me.Points">Points</string>
+    <string name="Grid.User.Sending">Sending...</string>
+    <string name="Grid.User.Sent">Sent!</string>
 
     <!-- TRIBE -->
     <string name="Tribe.Swipe.Down">Swipe down to dismiss</string>

@@ -44,4 +44,53 @@
 
     <style name="Text.Tribe" />
 
+    <style name="Body">
+        <item name="android:textSize">13sp</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="Body.One" parent="Body">
+        <item name="customFont">Roboto-Regular.ttf</item>
+    </style>
+
+    <style name="Body.Two" parent="Body">
+        <item name="customFont">Roboto-Bold.ttf</item>
+    </style>
+
+    <style name="Body.One.Black" parent="@style/Body.One">
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="Body.One.White" parent="@style/Body.One">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="Body.Two.Black" parent="@style/Body.Two">
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="Body.Two.White" parent="@style/Body.Two">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="Caption">
+        <item name="android:textSize">11sp</item>
+        <item name="android:singleLine">true</item>
+        <item name="customFont">Roboto-Regular.ttf</item>
+    </style>
+
+    <style name="Caption.White" parent="@style/Caption">
+    </style>
+
+    <style name="Caption.Black" parent="@style/Caption">
+    </style>
+
+    <style name="Caption.White.40">
+        <item name="android:textColor">@color/white.opacity.40</item>
+    </style>
+
+    <style name="Caption.White.1">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
 </resources>

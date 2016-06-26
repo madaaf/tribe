@@ -54,14 +54,6 @@
                 android:layout_height="@dimen/avatar_size"
                 android:layout_gravity="center"
                 />
-
-            <View
-                android:id="@+id/viewForeground"
-                android:layout_width="@dimen/avatar_size_inner"
-                android:layout_height="@dimen/avatar_size_inner"
-                android:layout_gravity="center"
-                android:background="@drawable/shape_ring_foreground_white"
-                />
         </com.tribe.app.presentation.view.widget.SquareFrameLayout>
 
         <com.tribe.app.presentation.view.widget.CameraWrapper

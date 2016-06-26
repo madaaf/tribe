@@ -63,12 +63,12 @@ public class PathView extends View {
         paint.setAntiAlias(true);
 
         path = new Path();
-        path.moveTo(x, y);
+        path.moveTo(width >> 1, y);
         path.lineTo(width, y);
         path.lineTo(width, height);
         path.lineTo(x, height);
         path.lineTo(x, y);
-        path.lineTo(x, y);
+        path.lineTo(width >> 1, y);
 
         // Measure the path
         PathMeasure measure = new PathMeasure(path, false);

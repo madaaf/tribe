@@ -28,10 +28,14 @@
 
     <!-- SIZES -->
     <dimen name="avatar_size">75dp</dimen>
+    <dimen name="avatar_size_with_shadow">82dp</dimen>
     <dimen name="avatar_size_scaled">110dp</dimen>
+    <dimen name="avatar_size_intermediate">85dp</dimen>
     <dimen name="avatar_size_inner">74dp</dimen>
     <dimen name="avatar_size_inner_scaled">109dp</dimen>
+    <dimen name="avatar_size_inner_intermediate">84dp</dimen>
     <dimen name="avatar_size_small">41dp</dimen>
+    <dimen name="avatar_size_small_with_shadow">45dp</dimen>
     <dimen name="nav_size_max">55dp</dimen>
     <dimen name="nav_size_small">45dp</dimen>
     <dimen name="nav_layout_height">75dp</dimen>

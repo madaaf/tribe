@@ -1,4 +1,5 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/transition_drawable_cancel" />
     <item>
         <shape
             android:innerRadius="0dp"
@@ -14,5 +15,4 @@
                 android:color="@color/white.opacity.40" />
         </shape>
     </item>
-    <item android:drawable="@drawable/transition_drawable_cancel" />
 </layer-list>

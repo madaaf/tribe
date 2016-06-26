@@ -7,6 +7,8 @@ import java.util.Date;
  */
 public class Friendship {
 
+    public static final String ID_EMPTY = "EMPTY";
+
     private String id;
 
     public Friendship(String id) {

@@ -210,4 +210,17 @@
         android:alpha="0"
         />
 
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/btnBackToTribe"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/tribe_bottom_bar_height"
+        android:layout_gravity="bottom"
+        android:gravity="center"
+        android:background="@drawable/selectable_button_light"
+        style="@style/Text.Tribe.Infos"
+        android:text="@string/Tribe.Back"
+        android:alpha="0"
+        android:clickable="false"
+        />
+
 </merge>

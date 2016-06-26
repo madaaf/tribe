@@ -7,6 +7,6 @@ import java.util.List;
 public interface HomeGridView extends LoadDataView {
 
     void renderFriendshipList(List<Friendship> friendCollection);
-
     void scrollToTop();
+    int getNbItems();
 }
