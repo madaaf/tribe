@@ -30,10 +30,8 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.view.adapter.pager.TribePagerAdapter;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
-import com.tribe.app.presentation.view.widget.SquareFrameLayout;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
@@ -116,16 +114,7 @@ public class TribePagerView extends FrameLayout {
     ImageView imgReply;
 
     @BindView(R.id.layoutTile)
-    SquareFrameLayout layoutTile;
-
-    @BindView(R.id.txtName)
-    TextViewFont txtName;
-
-    @BindView(R.id.txtStatus)
-    TextViewFont txtStatus;
-
-    @BindView(R.id.avatar)
-    AvatarView avatarView;
+    TileView viewTile;
 
     @BindView(R.id.cameraWrapper)
     CameraWrapper cameraWrapper;
@@ -306,14 +295,13 @@ public class TribePagerView extends FrameLayout {
         springAlphaSwipeUpListener = new AlphaSwipeUpSpringListener();
         springAlphaSwipeDownListener = new AlphaSwipeDownSpringListener();
 
-        txtName.setText(currentUser.getDisplayName());
-        avatarView.load(currentUser.getProfilePicture());
-
-        ViewGroup.LayoutParams paramsLayoutTile = layoutTile.getLayoutParams();
+        ViewGroup.LayoutParams paramsLayoutTile = viewTile.getLayoutParams();
         paramsLayoutTile.width = screenUtils.getWidth() >> 1;
         paramsLayoutTile.height = paramsLayoutTile.width;
-        layoutTile.setLayoutParams(paramsLayoutTile);
-        layoutTile.invalidate();
+        viewTile.setLayoutParams(paramsLayoutTile);
+        viewTile.invalidate();
+        viewTile.setInfo(currentUser);
+        viewTile.initWithParent(null);
 
         FrameLayout.LayoutParams paramsCamera = (FrameLayout.LayoutParams) cameraWrapper.getLayoutParams();
         paramsCamera.topMargin = screenUtils.getHeight() - cameraWrapper.getHeightFromRatio() - marginCameraBottomInit;
@@ -389,14 +377,16 @@ public class TribePagerView extends FrameLayout {
                     final int location[] = {0, 0};
                     getLocationOnScreen(location);
 
-                    final int locationCamera[] = {0, 0};
-                    cameraWrapper.getLocationOnScreen(locationCamera);
+                    if (inReplyMode) {
+                        final int locationCamera[] = {0, 0};
+                        cameraWrapper.getLocationOnScreen(locationCamera);
 
-                    if (event.getX() <= locationCamera[0] + cameraWrapper.getWidth()
-                            && event.getX() > locationCamera[0]
-                            && event.getY() <= locationCamera[1] + cameraWrapper.getHeight()
-                            && event.getY() > locationCamera[1]) {
-                        return false;
+                        if (event.getX() <= locationCamera[0] + cameraWrapper.getWidth()
+                                && event.getX() > locationCamera[0]
+                                && event.getY() <= locationCamera[1] + cameraWrapper.getHeight()
+                                && event.getY() > locationCamera[1]) {
+                            return false;
+                        }
                     }
 
                     if (currentSwipeDirection == CustomViewPager.SWIPE_MODE_RIGHT || currentSwipeDirection == CustomViewPager.SWIPE_MODE_LEFT) {
@@ -733,10 +723,9 @@ public class TribePagerView extends FrameLayout {
         imgReply.setAlpha(1f);
         TransitionDrawable trd = ((TransitionDrawable) layoutReply.getBackground());
         trd.resetTransition();
-        layoutTile.setRotation(-10f);
-        layoutTile.setTranslationY(0);
-        avatarView.setScaleX(0.8f);
-        avatarView.setScaleY(0.8f);
+        viewTile.setRotation(-10f);
+        viewTile.setTranslationY(0);
+        viewTile.setAvatarScale(0.8f, 0, 0, null);
         cameraWrapper.setTranslationY(getHeight());
     }
 
@@ -866,12 +855,8 @@ public class TribePagerView extends FrameLayout {
         trd.setCrossFadeEnabled(false);
         trd.startTransition(DURATION);
 
-        avatarView.animate().scaleX(1).scaleY(1).setInterpolator(new OvershootInterpolator(OVERSHOOT_MEDIUM))
-                .setDuration(DURATION)
-                .setStartDelay(DURATION >> 1)
-                .start();
-
-        layoutTile.animate().translationY(-((getHeight() >> 1) - (layoutTile.getHeight() >> 1) - marginBottomReplyTile))
+        viewTile.setAvatarScale(1, DURATION, DURATION >> 1, new OvershootInterpolator(OVERSHOOT_MEDIUM));
+        viewTile.animate().translationY(-((getHeight() >> 1) - (viewTile.getHeight() >> 1) - marginBottomReplyTile))
                 .rotation(0)
                 .setInterpolator(new DecelerateInterpolator())
                 .setDuration(DURATION)
@@ -894,8 +879,8 @@ public class TribePagerView extends FrameLayout {
         trd.setCrossFadeEnabled(false);
         trd.reverseTransition(DURATION);
 
-        avatarView.animate().scaleX(0.8f).scaleY(0.8f).setDuration(DURATION).start();
-        layoutTile.animate().translationY(marginBottomReplyTile).rotation(-10f).setDuration(DURATION_SLOW).start();
+        viewTile.setAvatarScale(0.8f, DURATION, 0, null);
+        viewTile.animate().translationY(marginBottomReplyTile).rotation(-10f).setDuration(DURATION_SLOW).start();
         cameraWrapper.animate().translationY(getHeight()).setDuration(DURATION_SLOW).start();
 
         currentView.hideBackToTribe(DURATION);
@@ -964,7 +949,7 @@ public class TribePagerView extends FrameLayout {
         currentOffsetTop = -computeOffsetWithTension(scrollTop, totalDragDistance);
         scrollTop(currentOffsetTop);
         updateIconSize(imgReply, (int) (currentDragPercent * iconSizeMax));
-        layoutTile.setTranslationY(currentOffsetTop);
+        viewTile.setTranslationY(currentOffsetTop);
 
         springAlpha.setCurrentValue(1 - (offsetY / -thresholdAlphaEnd));
         springAlphaSwipeUp.setCurrentValue(offsetY / (-thresholdAlphaEnd * 2));

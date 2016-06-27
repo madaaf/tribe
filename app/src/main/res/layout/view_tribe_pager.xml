@@ -20,41 +20,41 @@
             android:scaleType="centerInside"
             />
 
-        <com.tribe.app.presentation.view.widget.SquareFrameLayout
+        <com.tribe.app.presentation.view.component.TileView
             android:id="@+id/layoutTile"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_marginBottom="@dimen/vertical_margin_reply_tile"
             android:background="@drawable/shape_rounded_reply"
-            >
+            app:tileType="tile"
+            />
 
-            <com.tribe.app.presentation.view.widget.TextViewFont
-                android:id="@+id/txtName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top|center_horizontal"
-                android:layout_marginTop="@dimen/vertical_margin_small"
-                style="@style/Text.Grid.Name"
-                />
+        <!--<com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center_horizontal"
+            android:layout_marginTop="@dimen/vertical_margin_small"
+            style="@style/Text.Grid.Name"
+            />
 
-            <com.tribe.app.presentation.view.widget.TextViewFont
-                android:id="@+id/txtStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/Text.Grid.Status"
-                android:layout_gravity="bottom|center_horizontal"
-                android:layout_marginBottom="@dimen/vertical_margin_small"
-                android:text="@string/Tribe.Reply.Hint"
-                />
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Text.Grid.Status"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="@dimen/vertical_margin_small"
+            android:text="@string/Tribe.Reply.Hint"
+            />
 
-            <com.tribe.app.presentation.view.widget.AvatarView
-                android:id="@+id/avatar"
-                android:layout_width="@dimen/avatar_size"
-                android:layout_height="@dimen/avatar_size"
-                android:layout_gravity="center"
-                />
-        </com.tribe.app.presentation.view.widget.SquareFrameLayout>
+        <com.tribe.app.presentation.view.widget.AvatarView
+            android:id="@+id/avatar"
+            android:layout_width="@dimen/avatar_size"
+            android:layout_height="@dimen/avatar_size"
+            android:layout_gravity="center"
+            />-->
 
         <com.tribe.app.presentation.view.widget.CameraWrapper
             android:id="@+id/cameraWrapper"

@@ -14,4 +14,11 @@
     <declare-styleable name="RoundedCornerLayout">
         <attr name="cornerRadius" format="dimension"></attr>
     </declare-styleable>
+
+    <declare-styleable name="TileView">
+        <attr name="tileType" format="enum">
+            <enum name="grid" value="0" />
+            <enum name="tile" value="1" />
+        </attr>
+    </declare-styleable>
 </resources>
