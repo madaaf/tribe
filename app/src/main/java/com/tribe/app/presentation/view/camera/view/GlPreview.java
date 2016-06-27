@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 
+import com.tribe.app.R;
 import com.tribe.app.presentation.view.camera.gles.GLES20ConfigChooser;
 import com.tribe.app.presentation.view.camera.gles.GLES20ContextFactory;
 import com.tribe.app.presentation.view.camera.gles.GlImageBitmapTexture;
@@ -21,10 +22,12 @@ import com.tribe.app.presentation.view.camera.interfaces.CameraStateListener;
 import com.tribe.app.presentation.view.camera.interfaces.CaptureCallback;
 import com.tribe.app.presentation.view.camera.interfaces.Preview;
 import com.tribe.app.presentation.view.camera.interfaces.PreviewTexture;
+import com.tribe.app.presentation.view.camera.recorder.TribeRecorder;
 import com.tribe.app.presentation.view.camera.renderer.GLES20FramebufferObject;
 import com.tribe.app.presentation.view.camera.renderer.GlFrameBufferObjectRenderer;
 import com.tribe.app.presentation.view.camera.shader.GlPreviewShader;
 import com.tribe.app.presentation.view.camera.shader.GlShader;
+import com.tribe.app.presentation.view.camera.shader.fx.GlRecordLutShader;
 import com.tribe.app.presentation.view.camera.utils.Fps;
 import com.tribe.app.presentation.view.camera.utils.OpenGlUtils;
 
@@ -44,10 +47,12 @@ import static android.opengl.GLES20.glGenTextures;
 import static android.opengl.GLES20.glGetIntegerv;
 import static android.opengl.GLES20.glViewport;
 
-public class GlPreview  extends GLSurfaceView implements Preview, Camera.PictureCallback {
+public class GlPreview extends GLSurfaceView implements Preview, Camera.PictureCallback {
 
-    CameraHelper cameraHelper;
-    Renderer renderer;
+    private CameraHelper cameraHelper;
+    private Renderer renderer;
+    private TribeRecorder recorder;
+    private Camera.Size videoSize;
 
     boolean faceMirror = true;
 
@@ -181,6 +186,24 @@ public class GlPreview  extends GLSurfaceView implements Preview, Camera.Picture
     }
 
     @Override
+    public void startRecording() {
+        if (recorder == null) {
+            recorder = new TribeRecorder();
+            recorder.prepareEncoder(getContext(), cameraHelper.getVideoSize());
+            renderer.setRecorder(recorder);
+        }
+    }
+
+    @Override
+    public void stopRecording() {
+        if (recorder != null) {
+            recorder.stop();
+            recorder = null;
+            renderer.setRecorder(null);
+        }
+    }
+
+    @Override
     public void onPictureTaken(final byte[] data, final Camera camera) {
         cameraHelper.stopPreview();
         Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
@@ -232,6 +255,7 @@ public class GlPreview  extends GLSurfaceView implements Preview, Camera.Picture
         private GLES20FramebufferObject mFramebufferObject;
         private GlPreviewShader mPreviewShader;
         private GlPreviewShader mImageShader;
+        private GlRecordLutShader recordShader;
 
         private GlShader mShader;
         private boolean mIsNewShader;
@@ -272,12 +296,7 @@ public class GlPreview  extends GLSurfaceView implements Preview, Camera.Picture
                 Log.e(TAG, "Cannot set preview texture target!");
             }
 
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    onStartPreviewFinished();
-                }
-            });
+            mHandler.post(() -> onStartPreviewFinished());
         }
 
         public void setTexture(final Texture texture) {
@@ -347,12 +366,7 @@ public class GlPreview  extends GLSurfaceView implements Preview, Camera.Picture
             glGetIntegerv(GL_MAX_TEXTURE_SIZE, args, 0);
             mMaxTextureSize = args[0];
 
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    onRendererInitialized();
-                }
-            });
+            mHandler.post(() -> onRendererInitialized());
         }
 
         @Override
@@ -370,7 +384,6 @@ public class GlPreview  extends GLSurfaceView implements Preview, Camera.Picture
 
         @Override
         public void onDrawFrame(final GLES20FramebufferObject fbo) {
-
             synchronized (this) {
                 if (mUpdateSurface) {
                     mPreviewTexture.updateTexImage();
@@ -401,13 +414,19 @@ public class GlPreview  extends GLSurfaceView implements Preview, Camera.Picture
 
             glClear(GL_COLOR_BUFFER_BIT);
 
-            Matrix.multiplyMM(mMVPMatrix, 0, mVMatrix, 0, mMMatrix, 0);			// 視野行列とモデルビュー行列を乗算します。
-            Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);	// 投影行列と乗算します。
+            Matrix.multiplyMM(mMVPMatrix, 0, mVMatrix, 0, mMMatrix, 0);
+            Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);
 
             if (mImageTexture != null) {
                 mImageShader.draw(mImageTexture.getTexName(), mMVPMatrix, mSTMatrix, mCameraRatio);
             } else {
                 mPreviewShader.draw(mTexName, mMVPMatrix, mSTMatrix, mCameraRatio);
+
+                if (recordShader != null) {
+                    recordShader.setup();
+                    recordShader.setFrameSize(mFramebufferObject.getHeight(), mFramebufferObject.getWidth());
+                    recordShader.draw(mFramebufferObject.getTexName(), fbo);
+                }
             }
 
             if (mShader != null) {
@@ -422,6 +441,17 @@ public class GlPreview  extends GLSurfaceView implements Preview, Camera.Picture
         public synchronized void onFrameAvailable(final PreviewTexture previewTexture) {
             mUpdateSurface = true;
             requestRender();
+        }
+
+        public void setRecorder(TribeRecorder recorder) {
+            synchronized(this) {
+                if (recorder != null) {
+                    recordShader = new GlRecordLutShader(getContext().getResources(), R.drawable.video_filter_blue);
+                    recordShader.setTribeRecorder(recorder);
+                } else {
+                    recordShader = null;
+                }
+            }
         }
     }
 }

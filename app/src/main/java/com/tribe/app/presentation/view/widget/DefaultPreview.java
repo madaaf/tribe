@@ -101,6 +101,16 @@ public class DefaultPreview extends SurfaceView implements Preview, Camera.Pictu
     }
 
     @Override
+    public void startRecording() {
+
+    }
+
+    @Override
+    public void stopRecording() {
+
+    }
+
+    @Override
     public void onPictureTaken(final byte[] data, final Camera camera) {
         cameraHelper.stopPreview();
 

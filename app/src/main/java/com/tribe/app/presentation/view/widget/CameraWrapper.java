@@ -131,6 +131,8 @@ public class CameraWrapper extends FrameLayout {
             hideIcons();
             audioRecorder.startRecording();
             visualizerView.startRecording();
+        } else {
+            preview.startRecording();
         }
 
         addPathView();
@@ -141,6 +143,8 @@ public class CameraWrapper extends FrameLayout {
             showIcons();
             audioRecorder.stopRecording();
             visualizerView.stopRecording();
+        } else {
+            preview.stopRecording();
         }
 
         removePathView();

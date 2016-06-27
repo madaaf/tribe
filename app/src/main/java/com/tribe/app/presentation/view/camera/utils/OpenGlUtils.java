@@ -8,6 +8,7 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.hardware.Camera;
+import android.opengl.EGL14;
 import android.opengl.GLES20;
 import android.opengl.GLException;
 import android.opengl.GLUtils;
@@ -48,6 +49,7 @@ public class OpenGlUtils {
     public static final int GL_TEXTURE_EXTERNAL_OES = 0x8D65;
     private static final int FLOAT_SIZE_BYTES = 4;
     public static final int NO_TEXTURE = -1;
+    private static final String TAG = "OpenGL";
 
     public static int loadTexture(final Bitmap img, final int usedTexId) {
         return loadTexture(img, usedTexId, true);
@@ -280,5 +282,21 @@ public class OpenGlUtils {
         final ByteBuffer buffer = ByteBuffer.allocateDirect(size);
         buffer.position(0);
         return buffer;
+    }
+
+    public static void checkGlError(String op) {
+        int error;
+        while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
+            Log.e(TAG, op + ": glGetError: 0x" + Integer.toHexString(error));
+            throw new RuntimeException("glGetError encountered (see log)");
+        }
+    }
+
+    public static void checkEglError(String op) {
+        int error;
+        while ((error = EGL14.eglGetError()) != EGL14.EGL_SUCCESS) {
+            Log.e(TAG, op + ": eglGetError: 0x" + Integer.toHexString(error));
+            throw new RuntimeException("eglGetError encountered (see log)");
+        }
     }
 }

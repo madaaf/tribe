@@ -1,5 +1,11 @@
 package com.tribe.app.presentation.view.camera.shader;
 
+import android.opengl.EGL14;
+import android.opengl.EGLContext;
+import android.opengl.EGLDisplay;
+import android.opengl.EGLSurface;
+
+import com.tribe.app.presentation.view.camera.recorder.TribeRecorder;
 import com.tribe.app.presentation.view.camera.utils.OpenGlUtils;
 
 import static android.opengl.GLES20.GL_ARRAY_BUFFER;
@@ -18,7 +24,7 @@ import static android.opengl.GLES20.glUniform1i;
 import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glVertexAttribPointer;
 
-public class GlPreviewShader extends GlShader {
+public class GlRecordShader extends GlShader {
 
     private static final String VERTEX_SHADER =
             "uniform mat4 uMVPMatrix;\n" +
@@ -37,8 +43,14 @@ public class GlPreviewShader extends GlShader {
                     "}\n";
 
     private final int texTarget;
+    private TribeRecorder tribeRecorder;
 
-    public GlPreviewShader(final int texTarget) {
+    private EGLDisplay mSavedEglDisplay     = null;
+    private EGLSurface mSavedEglDrawSurface = null;
+    private EGLSurface mSavedEglReadSurface = null;
+    private EGLContext mSavedEglContext     = null;
+
+    public GlRecordShader(final int texTarget) {
         super(VERTEX_SHADER, createFragmentShaderSourceOESIfNeed(texTarget));
         this.texTarget = texTarget;
     }
@@ -54,6 +66,14 @@ public class GlPreviewShader extends GlShader {
     }
 
     public void draw(final int texName, final float[] mvpMatrix, final float[] stMatrix, final float aspectRatio) {
+        saveRenderState();
+
+        if (tribeRecorder.firstTimeSetup()) {
+            tribeRecorder.makeCurrent();
+        } else {
+            tribeRecorder.makeCurrent();
+        }
+
         useProgram();
 
         glUniformMatrix4fv(getHandle("uMVPMatrix"), 1, false, mvpMatrix, 0);
@@ -76,5 +96,30 @@ public class GlPreviewShader extends GlShader {
         glDisableVertexAttribArray(getHandle("aTextureCoord"));
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindTexture(GL_TEXTURE_2D, 0);
+
+        tribeRecorder.swapBuffers();
+
+        restoreRenderState();
+    }
+
+    public void setTribeRecorder(TribeRecorder tribeRecorder) {
+        this.tribeRecorder = tribeRecorder;
+    }
+
+    private void saveRenderState() {
+        mSavedEglDisplay     = EGL14.eglGetCurrentDisplay();
+        mSavedEglDrawSurface = EGL14.eglGetCurrentSurface(EGL14.EGL_DRAW);
+        mSavedEglReadSurface = EGL14.eglGetCurrentSurface(EGL14.EGL_READ);
+        mSavedEglContext     = EGL14.eglGetCurrentContext();
+    }
+
+    private void restoreRenderState() {
+        if (!EGL14.eglMakeCurrent(
+                mSavedEglDisplay,
+                mSavedEglDrawSurface,
+                mSavedEglReadSurface,
+                mSavedEglContext)) {
+            throw new RuntimeException("eglMakeCurrent failed");
+        }
     }
 }

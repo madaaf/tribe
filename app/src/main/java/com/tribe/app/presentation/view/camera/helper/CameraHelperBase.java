@@ -288,7 +288,7 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
 
     @Override
     public Size getVideoSize() {
-        return null;
+        return camera.getParameters().getSupportedVideoSizes().get(0);
     }
 
     @Override

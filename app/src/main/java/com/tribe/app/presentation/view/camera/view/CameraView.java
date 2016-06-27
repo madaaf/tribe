@@ -18,7 +18,6 @@ import com.tribe.app.presentation.view.camera.interfaces.CameraStateListener;
 import com.tribe.app.presentation.view.camera.interfaces.CaptureCallback;
 import com.tribe.app.presentation.view.camera.interfaces.OnErrorListener;
 import com.tribe.app.presentation.view.camera.interfaces.Preview;
-import com.tribe.app.presentation.view.widget.DefaultPreview;
 
 import java.io.IOException;
 
@@ -55,7 +54,7 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
     private void initialize(final Context context) {
         cameraHelper = new CameraHelperBase(context);
         previewSurfaceHelper = new PreviewSurfaceHelperBase(cameraHelper);
-        setPreview(new DefaultPreview(context), false);
+        //setPreview(new DefaultPreview(context), false);
     }
 
     @Override
