@@ -22,7 +22,9 @@ import com.tribe.app.presentation.view.camera.interfaces.CameraStateListener;
 import com.tribe.app.presentation.view.camera.interfaces.CaptureCallback;
 import com.tribe.app.presentation.view.camera.interfaces.Preview;
 import com.tribe.app.presentation.view.camera.interfaces.PreviewTexture;
-import com.tribe.app.presentation.view.camera.recorder.TribeRecorder;
+import com.tribe.app.presentation.view.camera.recorder.MediaAudioEncoder;
+import com.tribe.app.presentation.view.camera.recorder.MediaVideoEncoder;
+import com.tribe.app.presentation.view.camera.recorder.TribeMuxerWrapper;
 import com.tribe.app.presentation.view.camera.renderer.GLES20FramebufferObject;
 import com.tribe.app.presentation.view.camera.renderer.GlFrameBufferObjectRenderer;
 import com.tribe.app.presentation.view.camera.shader.GlPreviewShader;
@@ -51,8 +53,8 @@ public class GlPreview extends GLSurfaceView implements Preview, Camera.PictureC
 
     private CameraHelper cameraHelper;
     private Renderer renderer;
-    private TribeRecorder recorder;
-    private Camera.Size videoSize;
+    private TribeMuxerWrapper muxerWrapper;
+    private MediaVideoEncoder mediaVideoEncoder;
 
     boolean faceMirror = true;
 
@@ -186,20 +188,27 @@ public class GlPreview extends GLSurfaceView implements Preview, Camera.PictureC
     }
 
     @Override
-    public void startRecording() {
-        if (recorder == null) {
-            recorder = new TribeRecorder();
-            recorder.prepareEncoder(getContext(), cameraHelper.getVideoSize());
-            renderer.setRecorder(recorder);
+    public void startRecording(String friendId) {
+        if (muxerWrapper == null) {
+            try {
+                muxerWrapper = new TribeMuxerWrapper(friendId);
+                mediaVideoEncoder = new MediaVideoEncoder(getContext(), muxerWrapper);
+                new MediaAudioEncoder(getContext(), muxerWrapper);
+                queueEvent(() -> renderer.setMediaVideoEncoder(mediaVideoEncoder));
+                muxerWrapper.prepare(getContext(), getWidth(), getHeight());
+                muxerWrapper.startRecording();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     @Override
-    public void stopRecording() {
-        if (recorder != null) {
-            recorder.stop();
-            recorder = null;
-            renderer.setRecorder(null);
+    public void stopRecording(String friendId) {
+        if (muxerWrapper != null) {
+            muxerWrapper.stopRecording();
+            muxerWrapper = null;
+            renderer.setMediaVideoEncoder(null);
         }
     }
 
@@ -310,8 +319,6 @@ public class GlPreview extends GLSurfaceView implements Preview, Camera.PictureC
             }
             requestRender();
         }
-
-        private static final int GINGERBREAD = 9;
 
         public void capture() {
             final Bitmap bitmap;
@@ -443,11 +450,11 @@ public class GlPreview extends GLSurfaceView implements Preview, Camera.PictureC
             requestRender();
         }
 
-        public void setRecorder(TribeRecorder recorder) {
+        public void setMediaVideoEncoder(MediaVideoEncoder mediaVideoEncoder) {
             synchronized(this) {
-                if (recorder != null) {
+                if (mediaVideoEncoder != null) {
                     recordShader = new GlRecordLutShader(getContext().getResources(), R.drawable.video_filter_blue);
-                    recordShader.setTribeRecorder(recorder);
+                    recordShader.setMediaVideoEncoder(mediaVideoEncoder);
                 } else {
                     recordShader = null;
                 }

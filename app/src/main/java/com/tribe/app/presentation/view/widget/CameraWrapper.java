@@ -126,25 +126,25 @@ public class CameraWrapper extends FrameLayout {
         resumeCamera();
     }
 
-    public void onStartRecord() {
+    public void onStartRecord(String friendId) {
         if (isAudioMode) {
             hideIcons();
             audioRecorder.startRecording();
             visualizerView.startRecording();
         } else {
-            preview.startRecording();
+            preview.startRecording(friendId);
         }
 
         addPathView();
     }
 
-    public void onEndRecord() {
+    public void onEndRecord(String friendId) {
         if (isAudioMode) {
             showIcons();
             audioRecorder.stopRecording();
             visualizerView.stopRecording();
         } else {
-            preview.stopRecording();
+            preview.stopRecording(friendId);
         }
 
         removePathView();

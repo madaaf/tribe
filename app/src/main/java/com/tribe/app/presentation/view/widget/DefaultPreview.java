@@ -101,12 +101,12 @@ public class DefaultPreview extends SurfaceView implements Preview, Camera.Pictu
     }
 
     @Override
-    public void startRecording() {
+    public void startRecording(String friendId) {
 
     }
 
     @Override
-    public void stopRecording() {
+    public void stopRecording(String friendId) {
 
     }
 

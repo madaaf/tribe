@@ -150,14 +150,14 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     public void initOnRecordStart(Observable<Friendship> observable) {
         subscriptions.add(observable.subscribe(friend -> {
-            cameraWrapper.onStartRecord();
+            cameraWrapper.onStartRecord(friend.getId());
         }));
     }
 
     @Override
     public void initOnRecordEnd(Observable<Friendship> observable) {
         subscriptions.add(observable.subscribe(friend -> {
-            cameraWrapper.onEndRecord();
+            cameraWrapper.onEndRecord(friend.getId());
         }));
     }
 

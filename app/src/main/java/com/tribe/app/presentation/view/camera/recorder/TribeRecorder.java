@@ -1,31 +1,14 @@
-/*
- * Copyright (C) 2013 MorihiroSoft
- * Copyright 2013 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.tribe.app.presentation.view.camera.recorder;
 
 import android.content.Context;
-import android.hardware.Camera;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 import android.media.MediaMuxer;
-import android.os.Environment;
 import android.util.Log;
 
-import java.io.File;
+import com.tribe.app.R;
+
 import java.nio.ByteBuffer;
 
 public class TribeRecorder {
@@ -33,59 +16,47 @@ public class TribeRecorder {
     private static final String MIME_TYPE = "video/avc";
     private static final int FRAME_RATE = 15;
     private static final int FRAME_INTERVAL = 5;
-    private static final long DURATION_SEC = 8;
-    private static final int BITRATE = 2000000;
+    private static final int BITRATE = 500000;
 
-    private MediaCodec mMediaCodec = null;
-    private InputSurface mInputSurface = null;
-    private MediaCodec.BufferInfo mBufferInfo = null;
-    private MediaMuxer mMediaMuxer = null;
-    private int mTrackIndex = -1;
-    private boolean mMuxerStarted = false;
-    private int mTotalSize = 0; //TODO: DEBUG
+    // VARIABLES
+    private MediaCodec mediaCodec = null;
+    private MediaMuxer mediaMuxer = null;
+    private InputSurface inputSurface = null;
+    private MediaCodec.BufferInfo bufferInfo = null;
+    private int trackIndex = -1;
+    private boolean muxerStarted = false;
+    private int totalSize = 0;
 
-    //---------------------------------------------------------------------
-    // PUBLIC METHODS
-    //---------------------------------------------------------------------
-    public TribeRecorder() {
+    // RESOURCES
+    private int timeRecord;
+
+    public TribeRecorder(Context context) {
+        timeRecord = context.getResources().getInteger(R.integer.time_record);
     }
 
-    public void prepareEncoder(Context context, Camera.Size videoSize) {
-        if (mMediaCodec != null || mInputSurface != null) {
+    public void prepareEncoder(Context context, String filePath, int width, int height) {
+        if (mediaCodec != null || inputSurface != null) {
             throw new RuntimeException("prepareEncoder called twice?");
         }
 
-        mBufferInfo = new MediaCodec.BufferInfo();
+        bufferInfo = new MediaCodec.BufferInfo();
 
         try {
             MediaFormat format = MediaFormat.createVideoFormat(
                     MIME_TYPE,
-                    videoSize.height,
-                    videoSize.width);
+                    width,
+                    height);
             format.setInteger(MediaFormat.KEY_COLOR_FORMAT,
                     MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
             format.setInteger(MediaFormat.KEY_BIT_RATE, BITRATE);
             format.setInteger(MediaFormat.KEY_FRAME_RATE, FRAME_RATE);
             format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, FRAME_INTERVAL);
 
-            mMediaCodec = MediaCodec.createEncoderByType(MIME_TYPE);
-            mMediaCodec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
-
-            File videosDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/Tribe/Sent");
-
-            if (!videosDir.exists()) {
-                videosDir.mkdirs();
-            }
-
-            String idVideo = "video_" + System.currentTimeMillis();
-
-            File videoFile = new File(videosDir, idVideo + ".mp4");
-
-            System.out.println("videoFile : " + videoFile.getAbsolutePath());
-
-            mMediaMuxer = new MediaMuxer(videoFile.getAbsolutePath(),
+            mediaCodec = MediaCodec.createEncoderByType(MIME_TYPE);
+            mediaCodec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+            mediaMuxer = new MediaMuxer(filePath,
                     MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
-            mMuxerStarted = false;
+            muxerStarted = false;
         } catch (Exception e) {
             releaseEncoder();
             throw (RuntimeException) e;
@@ -93,34 +64,37 @@ public class TribeRecorder {
     }
 
     public boolean firstTimeSetup() {
-        if (!isRecording() || mInputSurface != null) {
+        if (!isRecording() || inputSurface != null) {
             return false;
         }
+
         try {
-            mInputSurface = new InputSurface(mMediaCodec.createInputSurface());
-            mMediaCodec.start();
+            inputSurface = new InputSurface(mediaCodec.createInputSurface());
+            mediaCodec.start();
         } catch (Exception e) {
             releaseEncoder();
             throw (RuntimeException) e;
         }
+
         return true;
     }
 
     public boolean isRecording() {
-        return mMediaCodec != null;
+        return mediaCodec != null;
     }
 
     public void makeCurrent() {
-        mInputSurface.makeCurrent();
+        inputSurface.makeCurrent();
     }
 
     synchronized public void swapBuffers() {
         if (!isRecording()) {
             return;
         }
+
         drainEncoder(false);
-        mInputSurface.swapBuffers();
-        mInputSurface.setPresentationTime(System.nanoTime());
+        inputSurface.swapBuffers();
+        inputSurface.setPresentationTime(System.nanoTime());
     }
 
     synchronized public void stop() {
@@ -128,76 +102,84 @@ public class TribeRecorder {
         releaseEncoder();
     }
 
-    //---------------------------------------------------------------------
-    // PRIVATE...
-    //---------------------------------------------------------------------
     private void releaseEncoder() {
-        if (mMediaCodec != null) {
-            mMediaCodec.stop();
-            mMediaCodec.release();
-            mMediaCodec = null;
+        if (mediaCodec != null) {
+            mediaCodec.stop();
+            mediaCodec.release();
+            mediaCodec = null;
         }
-        if (mInputSurface != null) {
-            mInputSurface.release();
-            mInputSurface = null;
+
+        if (inputSurface != null) {
+            inputSurface.release();
+            inputSurface = null;
         }
-        if (mMediaMuxer != null) {
-            mMediaMuxer.stop();
-            mMediaMuxer.release();
-            mMediaMuxer = null;
+
+        if (mediaMuxer != null) {
+            mediaMuxer.stop();
+            mediaMuxer.release();
+            mediaMuxer = null;
         }
     }
 
     private void drainEncoder(boolean endOfStream) {
         if (endOfStream) {
-            mMediaCodec.signalEndOfInputStream();
+            mediaCodec.signalEndOfInputStream();
         }
-        ByteBuffer[] encoderOutputBuffers = mMediaCodec.getOutputBuffers();
+
+        ByteBuffer[] encoderOutputBuffers = mediaCodec.getOutputBuffers();
+
         while (true) {
-            int encoderStatus = mMediaCodec.dequeueOutputBuffer(mBufferInfo, 0);
+            int encoderStatus = mediaCodec.dequeueOutputBuffer(bufferInfo, 0);
             if (encoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
                 if (!endOfStream) {
                     break;
                 }
             } else if (encoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
-                encoderOutputBuffers = mMediaCodec.getOutputBuffers();
+                encoderOutputBuffers = mediaCodec.getOutputBuffers();
             } else if (encoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-                if (mMuxerStarted) {
+                if (muxerStarted) {
                     throw new RuntimeException("format changed twice");
                 }
-                MediaFormat newFormat = mMediaCodec.getOutputFormat();
-                mTrackIndex = mMediaMuxer.addTrack(newFormat);
-                mMediaMuxer.start();
-                mMuxerStarted = true;
+
+                MediaFormat newFormat = mediaCodec.getOutputFormat();
+                trackIndex = mediaMuxer.addTrack(newFormat);
+                mediaMuxer.start();
+                muxerStarted = true;
             } else {
                 ByteBuffer encodedData = encoderOutputBuffers[encoderStatus];
+
                 if (encodedData == null) {
                     throw new RuntimeException("encoderOutputBuffer " + encoderStatus + " was null");
                 }
-                if ((mBufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
-                    mBufferInfo.size = 0;
+
+                if ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
+                    bufferInfo.size = 0;
                 }
-                if (mBufferInfo.size != 0) {
-                    if (!mMuxerStarted) {
+
+                if (bufferInfo.size != 0) {
+                    if (!muxerStarted) {
                         throw new RuntimeException("muxer hasn't started");
                     }
-                    encodedData.position(mBufferInfo.offset);
-                    encodedData.limit(mBufferInfo.offset + mBufferInfo.size);
+                    encodedData.position(bufferInfo.offset);
+                    encodedData.limit(bufferInfo.offset + bufferInfo.size);
 
-                    boolean calc_time = true; //TODO: DEBUG
-                    if (calc_time) {
+                    boolean calcTime = true;
+
+                    if (calcTime) {
                         long t0 = System.currentTimeMillis();
-                        mMediaMuxer.writeSampleData(mTrackIndex, encodedData, mBufferInfo);
-                        mTotalSize += mBufferInfo.size;
+                        mediaMuxer.writeSampleData(trackIndex, encodedData, bufferInfo);
+                        totalSize += bufferInfo.size;
                         long dt = System.currentTimeMillis() - t0;
                         if (dt > 50)
-                            Log.e("DEBUG", String.format("XXX: dt=%d, size=%.2f", dt, (float) mTotalSize / 1024 / 1024));
+                            Log.e("DEBUG", String.format("XXX: dt=%d, size=%.2f", dt, (float) totalSize / 1024 / 1024));
                     } else {
-                        mMediaMuxer.writeSampleData(mTrackIndex, encodedData, mBufferInfo);
+                        mediaMuxer.writeSampleData(trackIndex, encodedData, bufferInfo);
                     }
                 }
-                mMediaCodec.releaseOutputBuffer(encoderStatus, false);
-                if ((mBufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+
+                mediaCodec.releaseOutputBuffer(encoderStatus, false);
+
+                if ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
                     break;
                 }
             }

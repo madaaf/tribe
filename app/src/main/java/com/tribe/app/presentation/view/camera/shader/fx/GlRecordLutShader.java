@@ -9,7 +9,7 @@ import android.opengl.EGLDisplay;
 import android.opengl.EGLSurface;
 import android.opengl.GLES20;
 
-import com.tribe.app.presentation.view.camera.recorder.TribeRecorder;
+import com.tribe.app.presentation.view.camera.recorder.MediaVideoEncoder;
 import com.tribe.app.presentation.view.camera.renderer.GLES20FramebufferObject;
 import com.tribe.app.presentation.view.camera.shader.GlShader;
 import com.tribe.app.presentation.view.camera.utils.OpenGlUtils;
@@ -53,23 +53,22 @@ public class GlRecordLutShader extends GlShader {
 
     private Bitmap lutTexture;
 
-    private TribeRecorder tribeRecorder;
-
-    private EGLDisplay mSavedEglDisplay     = null;
-    private EGLSurface mSavedEglDrawSurface = null;
-    private EGLSurface mSavedEglReadSurface = null;
-    private EGLContext mSavedEglContext     = null;
+    private MediaVideoEncoder mediaVideoEncoder;
+    private EGLDisplay savedEglDisplay     = null;
+    private EGLSurface savedEglDrawSurface = null;
+    private EGLSurface savedEglReadSurface = null;
+    private EGLContext savedEglContext     = null;
 
     @Override
     public void draw(int texName, GLES20FramebufferObject fbo) {
         saveRenderState();
 
-        tribeRecorder.firstTimeSetup();
-        tribeRecorder.makeCurrent();
+        mediaVideoEncoder.firstTimeSetup();
+        mediaVideoEncoder.makeCurrent();
 
         super.draw(texName, fbo);
 
-        tribeRecorder.swapBuffers();
+        mediaVideoEncoder.swapBuffers();
 
         restoreRenderState();
     }
@@ -95,23 +94,23 @@ public class GlRecordLutShader extends GlShader {
         hTex = OpenGlUtils.loadTexture(lutTexture, OpenGlUtils.NO_TEXTURE, false);
     }
 
-    public void setTribeRecorder(TribeRecorder tribeRecorder) {
-        this.tribeRecorder = tribeRecorder;
+    public void setMediaVideoEncoder(MediaVideoEncoder mediaVideoEncoder) {
+        this.mediaVideoEncoder = mediaVideoEncoder;
     }
 
     private void saveRenderState() {
-        mSavedEglDisplay     = EGL14.eglGetCurrentDisplay();
-        mSavedEglDrawSurface = EGL14.eglGetCurrentSurface(EGL14.EGL_DRAW);
-        mSavedEglReadSurface = EGL14.eglGetCurrentSurface(EGL14.EGL_READ);
-        mSavedEglContext     = EGL14.eglGetCurrentContext();
+        savedEglDisplay     = EGL14.eglGetCurrentDisplay();
+        savedEglDrawSurface = EGL14.eglGetCurrentSurface(EGL14.EGL_DRAW);
+        savedEglReadSurface = EGL14.eglGetCurrentSurface(EGL14.EGL_READ);
+        savedEglContext     = EGL14.eglGetCurrentContext();
     }
 
     private void restoreRenderState() {
         if (!EGL14.eglMakeCurrent(
-                mSavedEglDisplay,
-                mSavedEglDrawSurface,
-                mSavedEglReadSurface,
-                mSavedEglContext)) {
+                savedEglDisplay,
+                savedEglDrawSurface,
+                savedEglReadSurface,
+                savedEglContext)) {
             throw new RuntimeException("eglMakeCurrent failed");
         }
     }
