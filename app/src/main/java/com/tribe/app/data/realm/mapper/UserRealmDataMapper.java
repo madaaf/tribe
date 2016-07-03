@@ -10,6 +10,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import io.realm.RealmList;
+
 /**
  * Created by tiago on 06/05/2016.
  */
@@ -72,5 +74,55 @@ public class UserRealmDataMapper {
         }
 
         return userList;
+    }
+
+    /**
+     * Transform a {@link User} into an {@link UserRealm}.
+     *
+     * @param user Object to be transformed.
+     * @return {@link UserRealm} if valid {@link User} otherwise null.
+     */
+    public UserRealm transform(User user) {
+        UserRealm userRealm = null;
+
+        if (user != null) {
+            userRealm = new UserRealm();
+            userRealm.setId(user.getId());
+            userRealm.setCreatedAt(userRealm.getCreatedAt());
+            userRealm.setUpdatedAt(userRealm.getUpdatedAt());
+            userRealm.setDisplayName(userRealm.getDisplayName());
+            userRealm.setProfilePicture(userRealm.getProfilePicture());
+            userRealm.setScore(userRealm.getScore());
+            userRealm.setEmail(userRealm.getEmail());
+            userRealm.setEmailVerified(userRealm.isEmailVerified());
+            userRealm.setReal(userRealm.isReal());
+            userRealm.setInvited(userRealm.isInvited());
+            if (user.getLocation() != null) userRealm.setLocation(locationRealmDataMapper.transform(user.getLocation()));
+            userRealm.setDisableSaveTribe(userRealm.isDisableSaveTribe());
+            if (user.getGroupList() != null) userRealm.setGroups(groupRealmDataMapper.transformGroups(user.getGroupList()));
+            if (user.getFriendList() != null) userRealm.setFriends(transformList(user.getFriendList()));
+            if (user.getReportedList() != null) userRealm.setReported(transformList(user.getReportedList()));
+        }
+
+        return userRealm;
+    }
+
+    /**
+     * Transform a List of {@link User} into a Collection of {@link UserRealm}.
+     *
+     * @param userCollection Object Collection to be transformed.
+     * @return {@link UserRealm} if valid {@link User} otherwise null.
+     */
+    public RealmList<UserRealm> transformList(Collection<User> userCollection) {
+        RealmList<UserRealm> userRealmList = new RealmList<>();
+        UserRealm userRealm;
+        for (User user : userCollection) {
+            userRealm = transform(user);
+            if (userRealm != null) {
+                userRealmList.add(userRealm);
+            }
+        }
+
+        return userRealmList;
     }
 }

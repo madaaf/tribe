@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
@@ -17,6 +19,8 @@ import com.tribe.app.presentation.mvp.view.HomeView;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
+import com.tribe.app.presentation.view.component.TileView;
+import com.tribe.app.presentation.view.widget.CameraWrapper;
 
 import java.util.List;
 
@@ -41,13 +45,20 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     @BindView(R.id.recyclerViewFriends)
     RecyclerView recyclerViewFriends;
 
-    private HomeView homeView;
+    // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private PublishSubject<Friendship> clickChatViewSubject = PublishSubject.create();
-    private PublishSubject<Friendship> onRecordStart = PublishSubject.create();
+    private PublishSubject<String> onRecordStart = PublishSubject.create();
     private PublishSubject<Friendship> onRecordEnd = PublishSubject.create();
+
+    // VARIABLES
+    private HomeView homeView;
     private Unbinder unbinder;
+    private HomeLayoutManager layoutManager;
     private BottomSheetDialog dialog;
+    private User currentUser;
+    private @CameraWrapper.TribeMode String tribeMode;
+    private Tribe currentTribe;
 
     public HomeGridFragment() {
         setRetainInstance(true);
@@ -66,14 +77,17 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.getComponent(UserComponent.class).inject(this);
+        this.currentUser = getCurrentUser();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View fragmentView = inflater.inflate(R.layout.fragment_home_grid, container, false);
         unbinder = ButterKnife.bind(this, fragmentView);
-        setupRecyclerView();
+
         fragmentView.setTag(HomeActivity.GRID_FRAGMENT_PAGE);
+
+        setupRecyclerView();
         return fragmentView;
     }
 
@@ -164,14 +178,24 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         return this.getActivity().getApplicationContext();
     }
 
+    @Override
+    public void setCurrentTribe(Tribe currentTribe) {
+        this.currentTribe = currentTribe;
+    }
+
+    public void setTribeMode(String tribeMode) {
+        this.tribeMode = tribeMode;
+    }
+
     private void setupRecyclerView() {
-        this.recyclerViewFriends.setLayoutManager(new HomeLayoutManager(context()));
+        this.layoutManager = new HomeLayoutManager(context());
+        this.recyclerViewFriends.setLayoutManager(layoutManager);
         this.recyclerViewFriends.setAdapter(homeGridAdapter);
 
         Observable<Integer> scrollDetector = Observable.create(new Observable.OnSubscribe<Integer>() {
             @Override
             public void call(final Subscriber<? super Integer> subscriber) {
-                recyclerViewFriends.setOnScrollListener(new RecyclerView.OnScrollListener() {
+                recyclerViewFriends.addOnScrollListener(new RecyclerView.OnScrollListener() {
                     @Override
                     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                         super.onScrolled(recyclerView, dx, dy);
@@ -193,10 +217,16 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
 
         subscriptions.add(homeGridAdapter.onRecordStart()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
+                .map(friendship -> homeGridPresenter.createTribe(currentUser, friendship, tribeMode))
                 .subscribe(onRecordStart));
 
         subscriptions.add(homeGridAdapter.onRecordEnd()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
+                .doOnNext(friendship -> {
+                    TileView tileView = (TileView) layoutManager.findViewByPosition(friendship.getPosition());
+                    tileView.showTapToCancel(currentTribe);
+                    homeGridAdapter.updateItemWithTribe(friendship.getPosition(), currentTribe);
+                })
                 .subscribe(onRecordEnd));
 
         if (homeView != null) homeView.initClicksOnChat(clickChatViewSubject);

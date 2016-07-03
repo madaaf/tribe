@@ -2,9 +2,12 @@ package com.tribe.app.presentation.internal.di.components;
 
 import android.content.Context;
 
+import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.repository.tribe.CloudTribeDataRepository;
+import com.tribe.app.data.repository.tribe.DiskTribeDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.domain.entity.User;
@@ -25,6 +28,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.PathView;
+import com.tribe.app.presentation.view.widget.PlayerView;
 
 import javax.inject.Singleton;
 
@@ -47,6 +51,7 @@ public interface ApplicationComponent {
     void inject(VisualizerView visualizerView);
     void inject(PathView pathView);
     void inject(TribePagerView tribePagerView);
+    void inject(PlayerView playerView);
 
     //Exposed to sub-graphs.
     Context context();
@@ -72,4 +77,10 @@ public interface ApplicationComponent {
     ScreenUtils screenUtils();
 
     User currentUser();
+
+    CloudTribeDataRepository cloudTribeRepository();
+
+    DiskTribeDataRepository diskTribeRepository();
+
+    TribeCache tribeCache();
 }

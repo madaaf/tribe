@@ -31,4 +31,22 @@ public class LocationRealmDataMapper {
 
         return location;
     }
+
+    /**
+     * Transform a {@link Location} into an {@link LocationRealm}.
+     *
+     * @param location Object to be transformed.
+     * @return {@link LocationRealm} if valid {@link Location} otherwise null.
+     */
+    public LocationRealm transform(Location location) {
+        LocationRealm locationRealm = null;
+
+        if (location != null) {
+            locationRealm = new LocationRealm();
+            locationRealm.setLongitude(location.getLongitude());
+            locationRealm.setLatitude(location.getLatitude());
+        }
+
+        return locationRealm;
+    }
 }

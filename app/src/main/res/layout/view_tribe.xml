@@ -2,7 +2,7 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <com.tribe.app.presentation.view.widget.VideoTextureView
-        android:id="@+id/surfaceView"
+        android:id="@+id/viewTextureVideo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@null"

@@ -7,7 +7,7 @@ import rx.Observable;
 public interface HomeView extends View {
 
     void initClicksOnChat(Observable<Friendship> observable);
-    void initOnRecordStart(Observable<Friendship> observable);
+    void initOnRecordStart(Observable<String> observable);
     void initOnRecordEnd(Observable<Friendship> observable);
     void initScrollOnGrid(Observable<Integer> observable);
 }

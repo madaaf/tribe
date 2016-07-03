@@ -35,7 +35,7 @@ ext {
     rxSharedPreferencesVersion = '1.0.1'
     libPhoneNumberVersion = '7.1.0'
     exoPlayerVersion = 'r1.5.9'
-    swipeVersion = '0.0.1'
+    vlcPlayerVersion = '1.9.8'
 
     //Testing
     robolectricVersion = '3.0'
@@ -77,7 +77,7 @@ ext {
             rxSharedPreferences     : "com.f2prateek.rx.preferences:rx-preferences:${rxSharedPreferencesVersion}",
             libPhoneNumber          : "com.googlecode.libphonenumber:libphonenumber:${libPhoneNumberVersion}",
             exoplayer               : "com.google.android.exoplayer:exoplayer:${exoPlayerVersion}",
-            swipe                   : "com.github.pwittchen:swipe:${swipeVersion}"
+            vlcPlayer               : "de.mrmaffen:vlc-android-sdk:${vlcPlayerVersion}"
     ]
 
     presentationTestDependencies = [

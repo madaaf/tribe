@@ -19,6 +19,7 @@ public class Friendship {
     private Date updatedAt;
 
     private int position;
+    private Tribe tribe;
 
     public String getId() {
         return id;
@@ -50,5 +51,13 @@ public class Friendship {
 
     public int getPosition() {
         return position;
+    }
+
+    public void setTribe(Tribe tribe) {
+        this.tribe = tribe;
+    }
+
+    public Tribe getTribe() {
+        return tribe;
     }
 }

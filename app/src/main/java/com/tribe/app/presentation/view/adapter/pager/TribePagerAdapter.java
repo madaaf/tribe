@@ -38,8 +38,7 @@ public class TribePagerAdapter extends PagerAdapter {
 
         TribeComponentView tribeComponentView = (TribeComponentView) itemView.findViewById(R.id.viewTribe);
         tribeComponentView.setTag(position);
-        //tribeComponentView.initPlayer();
-        //if (position == currentPosition) tribeComponentView.startPlayer();
+        if (position == currentPosition) tribeComponentView.startPlayer();
 
         itemView.setTag(R.id.tag_tribe, position);
 
@@ -81,10 +80,10 @@ public class TribePagerAdapter extends PagerAdapter {
     }
 
     public void releaseTribe(int position, TribeComponentView tribeComponentView) {
-        //tribeComponentView.release();
+        tribeComponentView.releasePlayer();
     }
 
     public void startTribe(int position, TribeComponentView tribeComponentView) {
-        //tribeComponentView.startPlayer();
+        tribeComponentView.startPlayer();
     }
 }

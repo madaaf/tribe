@@ -74,6 +74,13 @@
         android:background="@null"
         />
 
+    <com.tribe.app.presentation.view.widget.PlayerView
+        android:id="@+id/viewPlayer"
+        android:layout_width="@dimen/avatar_size_intermediate"
+        android:layout_height="@dimen/avatar_size_intermediate"
+        android:layout_gravity="center"
+        />
+
     <View
         android:id="@+id/viewForeground"
         android:layout_width="@dimen/avatar_size_inner"

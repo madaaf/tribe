@@ -107,8 +107,7 @@ dependencies {
     compile presentationDependencies.rebound
     compile presentationDependencies.rxSharedPreferences
     compile presentationDependencies.libPhoneNumber
-    compile presentationDependencies.exoplayer
-    compile presentationDependencies.swipe
+    compile presentationDependencies.vlcPlayer
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker

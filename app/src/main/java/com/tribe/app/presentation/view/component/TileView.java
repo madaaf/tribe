@@ -26,10 +26,13 @@ import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.FileUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.widget.AvatarView;
+import com.tribe.app.presentation.view.widget.PlayerView;
 import com.tribe.app.presentation.view.widget.SquareFrameLayout;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
@@ -61,6 +64,7 @@ public class TileView extends SquareFrameLayout {
     private final int SCALE_DURATION = 200;
     private final int END_RECORD_DELAY = 1000;
     private final float OVERSHOOT = 3f;
+    private final float TAP_TO_CANCEL_SPRING_VALUE = 0.60f;
 
     @BindView(R.id.txtName) public TextViewFont txtName;
     @Nullable @BindView(R.id.btnText) public ImageView btnText;
@@ -74,6 +78,7 @@ public class TileView extends SquareFrameLayout {
     @BindView(R.id.imgCancel) public ImageView imgCancel;
     @BindView(R.id.imgDone) public ImageView imgDone;
     @Nullable @BindView(R.id.viewPressedForeground) public View viewPressedForeground;
+    @BindView(R.id.viewPlayer) public PlayerView playerView;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions;
@@ -102,6 +107,7 @@ public class TileView extends SquareFrameLayout {
     private int type;
     private long longDown = 0L;
     private boolean isDown = false;
+    private Tribe currentTribe;
 
     public TileView(Context context) {
         super(context);
@@ -213,48 +219,7 @@ public class TileView extends SquareFrameLayout {
                 }
             } else if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
                 if ((System.currentTimeMillis() - longDown) >= LONG_PRESS && isDown) {
-                    AnimationUtils.fadeIn(viewForeground, 0);
-                    ((TransitionDrawable) ((LayerDrawable) viewForeground.getBackground()).getDrawable(0)).startTransition(FADE_DURATION);
-                    AnimationUtils.scaleUp(imgCancel, SCALE_DURATION, new OvershootInterpolator(OVERSHOOT));
-
-                    if (type == TYPE_GRID) {
-                        Spring springOutside = (Spring) getTag(R.id.spring_outside);
-                        springOutside.setEndValue(0f);
-                    }
-
-                    showSending();
-
                     recordEnded.onNext(this);
-
-                    setTag(R.id.is_tap_to_cancel, true);
-
-                    ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", 0, timeTapToCancel);
-                    animation.setDuration(timeTapToCancel);
-                    animation.setInterpolator(new DecelerateInterpolator());
-                    animation.addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            AnimationUtils.scaleDown(imgCancel, SCALE_DURATION);
-                            AnimationUtils.scaleUp(imgDone, SCALE_DURATION, SCALE_DURATION, new OvershootInterpolator(OVERSHOOT));
-
-                            txtSending.setText(R.string.Grid_User_Sent);
-
-                            Observable.timer(END_RECORD_DELAY, TimeUnit.MILLISECONDS)
-                                    .subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(time -> {
-                                        resetViewAfterTapToCancel(true);
-                                    });
-                        }
-
-                        @Override
-                        public void onAnimationCancel(Animator animation) {
-                            animation.removeAllListeners();
-                        }
-                    });
-                    animation.start();
-
-                    setTag(R.id.progress_bar_animation, animation);
                 }
 
                 isDown = false;
@@ -316,6 +281,17 @@ public class TileView extends SquareFrameLayout {
                     viewShadow.setScaleY(scale);
                 }
             }
+
+            @Override
+            public void onSpringAtRest(Spring spring) {
+                super.onSpringAtRest(spring);
+
+                if (currentTribe != null && spring.getCurrentValue() == TAP_TO_CANCEL_SPRING_VALUE) {
+                    playerView.createPlayer(FileUtils.getPathForId(currentTribe.getId()));
+                }
+
+                if (spring.getCurrentValue() == 0f) playerView.releasePlayer();
+            }
         });
 
         springAvatar.setEndValue(0f);
@@ -358,6 +334,8 @@ public class TileView extends SquareFrameLayout {
 
         progressBar.clearAnimation();
         progressBar.setProgress(0);
+        currentTribe = null;
+        playerView.hideVideo();
 
         Spring springInside = (Spring) getTag(R.id.spring_inside);
         springInside.setEndValue(0f);
@@ -371,10 +349,12 @@ public class TileView extends SquareFrameLayout {
     }
 
     private void showSending() {
+        txtSending.setText(R.string.Grid_User_Sending);
+
         AnimationUtils.fadeIn(txtSending, 0);
 
-        Spring springOutside = (Spring) getTag(R.id.spring_avatar);
-        springOutside.setEndValue(0.60f);
+        Spring springAvatar = (Spring) getTag(R.id.spring_avatar);
+        springAvatar.setEndValue(TAP_TO_CANCEL_SPRING_VALUE);
     }
 
     public void setInfo(User user) {
@@ -388,6 +368,51 @@ public class TileView extends SquareFrameLayout {
 
     public void setAvatarScale(float scale, int duration, int delay, Interpolator interpolator) {
         avatar.animate().scaleX(scale).scaleY(scale).setDuration(duration).setStartDelay(delay).setInterpolator(interpolator).start();
+    }
+
+    public void showTapToCancel(Tribe tribe) {
+        currentTribe = tribe;
+
+        AnimationUtils.fadeIn(viewForeground, 0);
+        ((TransitionDrawable) ((LayerDrawable) viewForeground.getBackground()).getDrawable(0)).startTransition(FADE_DURATION);
+        AnimationUtils.scaleUp(imgCancel, SCALE_DURATION, new OvershootInterpolator(OVERSHOOT));
+
+        if (type == TYPE_GRID) {
+            Spring springOutside = (Spring) getTag(R.id.spring_outside);
+            springOutside.setEndValue(0f);
+        }
+
+        showSending();
+
+        setTag(R.id.is_tap_to_cancel, true);
+
+        ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", 0, timeTapToCancel);
+        animation.setDuration(timeTapToCancel);
+        animation.setInterpolator(new DecelerateInterpolator());
+        animation.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                AnimationUtils.scaleDown(imgCancel, SCALE_DURATION);
+                AnimationUtils.scaleUp(imgDone, SCALE_DURATION, SCALE_DURATION, new OvershootInterpolator(OVERSHOOT));
+
+                txtSending.setText(R.string.Grid_User_Sent);
+
+                Observable.timer(END_RECORD_DELAY, TimeUnit.MILLISECONDS)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(time -> {
+                            resetViewAfterTapToCancel(true);
+                        });
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                animation.removeAllListeners();
+            }
+        });
+        animation.start();
+
+        setTag(R.id.progress_bar_animation, animation);
     }
 
     public Observable<View> onClickChat() {

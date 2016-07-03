@@ -1,5 +1,8 @@
 package com.tribe.app.domain.entity;
 
+import com.tribe.app.presentation.view.utils.FileUtils;
+import com.tribe.app.presentation.view.widget.CameraWrapper;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -17,27 +20,14 @@ public class Tribe implements Serializable {
     }
 
     private String localId;
-    private Date createdAt;
-    private Date updatedAt;
+    private User from;
+    private String type;
+    private Friendship to;
+    private boolean toGroup;
+    private Date recordedAt;
 
     public String getId() {
         return id;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public String getLocalId() {
@@ -46,6 +36,55 @@ public class Tribe implements Serializable {
 
     public void setLocalId(String localId) {
         this.localId = localId;
+    }
+
+    public User getFrom() {
+        return from;
+    }
+
+    public void setFrom(User from) {
+        this.from = from;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Friendship getTo() {
+        return to;
+    }
+
+    public void setTo(Friendship to) {
+        this.to = to;
+    }
+
+    public boolean isToGroup() {
+        return toGroup;
+    }
+
+    public void setToGroup(boolean toGroup) {
+        this.toGroup = toGroup;
+    }
+
+    public Date getRecordedAt() {
+        return recordedAt;
+    }
+
+    public void setRecordedAt(Date recordedAt) {
+        this.recordedAt = recordedAt;
+    }
+
+    public static Tribe createTribe(User user, Friendship friendship, @CameraWrapper.TribeMode String mode) {
+        Tribe tribe = new Tribe(FileUtils.generateIdForTribe());
+        tribe.setRecordedAt(new Date(System.currentTimeMillis()));
+        tribe.setFrom(user);
+        tribe.setTo(friendship);
+        tribe.setType(mode);
+        return tribe;
     }
 
     @Override
@@ -72,8 +111,7 @@ public class Tribe implements Serializable {
         stringBuilder.append("***** User Details *****\n");
         stringBuilder.append("id = " + id);
         stringBuilder.append("localId = " + localId);
-        stringBuilder.append("createdAt = " + createdAt);
-        stringBuilder.append("updatedAt = " + updatedAt);
+        stringBuilder.append("recordedAt = " + recordedAt);
         stringBuilder.append("*******************************");
 
         return stringBuilder.toString();

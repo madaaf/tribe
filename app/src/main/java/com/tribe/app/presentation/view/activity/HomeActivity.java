@@ -65,6 +65,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     private UserComponent userComponent;
     private CompositeSubscription subscriptions = new CompositeSubscription();
+
+    // VARIABLES
     private HomeViewPagerAdapter homeViewPagerAdapter;
 
     // DIMEN
@@ -75,10 +77,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         super.onCreate(savedInstanceState);
         initUi();
         initDimensions();
-        initializeCamera();
-        initializeViewPager();
-        initializeDependencyInjector();
-        initializePresenter();
+        initCamera();
+        initViewPager();
+        initDependencyInjector();
+        initPresenter();
     }
 
     @Override
@@ -111,15 +113,22 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         translationBackToTop = getResources().getDimensionPixelSize(R.dimen.transition_grid_back_to_top);
     }
 
-    private void initializeCamera() {
+    private void initCamera() {
         cameraWrapper.initDimens(
                 getResources().getDimensionPixelSize(R.dimen.vertical_margin_small),
                 getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small),
                 getResources().getDimensionPixelSize(R.dimen.nav_layout_height)
         );
+
+        subscriptions.add(cameraWrapper.tribeMode().subscribe(mode -> {
+            if (homeViewPagerAdapter.getCurrentFragment() != null && homeViewPagerAdapter.getCurrentFragment() instanceof HomeGridFragment) {
+                HomeGridFragment fragment = (HomeGridFragment) homeViewPagerAdapter.getCurrentFragment();
+                fragment.setTribeMode(mode);
+            }
+        }));
     }
 
-    private void initializeViewPager() {
+    private void initViewPager() {
         homeViewPagerAdapter = new HomeViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(homeViewPagerAdapter);
         viewPager.setOffscreenPageLimit(3);
@@ -128,14 +137,14 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         viewPager.setPageTransformer(false, new HomePageTransformer());
     }
 
-    private void initializeDependencyInjector() {
+    private void initDependencyInjector() {
         this.userComponent = DaggerUserComponent.builder()
                 .applicationComponent(getApplicationComponent())
                 .activityModule(getActivityModule())
                 .build();
     }
 
-    private void initializePresenter() {
+    private void initPresenter() {
 
     }
 
@@ -148,9 +157,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     }
 
     @Override
-    public void initOnRecordStart(Observable<Friendship> observable) {
-        subscriptions.add(observable.subscribe(friend -> {
-            cameraWrapper.onStartRecord(friend.getId());
+    public void initOnRecordStart(Observable<String> observable) {
+        subscriptions.add(observable.subscribe(id -> {
+            cameraWrapper.onStartRecord(id);
         }));
     }
 
@@ -192,7 +201,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     public void onBackPressed() {
         super.onBackPressed();
         // This is important : Hack to open a dummy activity for 200-500ms (cannot be noticed by user as it is for 500ms
-        //  and transparent floating activity and auto finishes)
+        // and transparent floating activity and auto finishes)
         startActivity(new Intent(this, DummyActivity.class));
         finish();
     }

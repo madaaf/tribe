@@ -2,32 +2,25 @@ package com.tribe.app.presentation.view.component;
 
 import android.content.Context;
 import android.graphics.SurfaceTexture;
-import android.media.MediaCodec;
-import android.net.Uri;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Toast;
 
-import com.google.android.exoplayer.ExoPlaybackException;
-import com.google.android.exoplayer.ExoPlayer;
-import com.google.android.exoplayer.MediaCodecAudioTrackRenderer;
-import com.google.android.exoplayer.MediaCodecSelector;
-import com.google.android.exoplayer.MediaCodecVideoTrackRenderer;
-import com.google.android.exoplayer.extractor.ExtractorSampleSource;
-import com.google.android.exoplayer.extractor.mp4.Mp4Extractor;
-import com.google.android.exoplayer.upstream.Allocator;
-import com.google.android.exoplayer.upstream.AssetDataSource;
-import com.google.android.exoplayer.upstream.DefaultAllocator;
 import com.tribe.app.R;
-import com.tribe.app.presentation.view.listener.MediaCodecVideoListener;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.VideoTextureView;
+
+import org.videolan.libvlc.IVLCVout;
+import org.videolan.libvlc.LibVLC;
+import org.videolan.libvlc.Media;
+import org.videolan.libvlc.MediaPlayer;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,15 +29,10 @@ import butterknife.Unbinder;
 /**
  * Created by tiago on 10/06/2016.
  */
-public class TribeComponentView extends FrameLayout implements TextureView.SurfaceTextureListener {
+public class TribeComponentView extends FrameLayout implements TextureView.SurfaceTextureListener, IVLCVout.Callback {
 
-    private static final int RENDERER_COUNT = 300000;
-    private static final int MIN_BUFFER_MS = 250000;
-    private static final int BUFFER_SEGMENT_SIZE = 64 * 1024;
-    private static final int BUFFER_SEGMENT_COUNT = 256;
-
-    @BindView(R.id.surfaceView)
-    VideoTextureView surfaceView;
+    @BindView(R.id.viewTextureVideo)
+    VideoTextureView viewTextureVideo;
 
     @BindView(R.id.imgAvatar)
     View imgAvatar;
@@ -88,8 +76,12 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     // OBSERVABLES
     private Unbinder unbinder;
 
-    // VARIABLES
-    private ExoPlayer exoPlayer;
+    // PLAYER
+    private LibVLC libVLC;
+    private MediaPlayer mediaPlayer = null;
+    private MediaPlayer.EventListener playerListener;
+    private int videoWidth, videoHeight;
+    private SurfaceTexture surfaceTexture;
 
     public TribeComponentView(Context context) {
         super(context);
@@ -102,6 +94,23 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     }
 
     public void init(Context context, AttributeSet attrs) {
+        releasePlayer();
+
+        try {
+            ArrayList<String> options = new ArrayList<>();
+            options.add("--aout=opensles");
+            options.add("--audio-time-stretch");
+            options.add("-vvv");
+
+            libVLC = new LibVLC(options);
+
+            mediaPlayer = new MediaPlayer(libVLC);
+            playerListener = new PlayerListener();
+            mediaPlayer.setEventListener(playerListener);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "Error creating player!", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -114,86 +123,26 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     protected void onFinishInflate() {
         LayoutInflater.from(getContext()).inflate(R.layout.view_tribe, this);
         unbinder = ButterKnife.bind(this);
-        surfaceView.setSurfaceTextureListener(this);
+        viewTextureVideo.setSurfaceTextureListener(this);
         super.onFinishInflate();
     }
 
-    @Override
-    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        initPlayer();
-    }
-
-    @Override
-    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        return false;
-    }
-
-    @Override
-    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-
-    }
-
-    @Override
-    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-
-    }
-
-    public void initPlayer() {
-        String url = "asset:///binary.mp4";
-        Allocator allocator = new DefaultAllocator(MIN_BUFFER_MS);
-        AssetDataSource dataSource = new AssetDataSource(getContext());
-
-        ExtractorSampleSource sampleSource = new ExtractorSampleSource(Uri.parse(url), dataSource, allocator,
-                BUFFER_SEGMENT_COUNT * BUFFER_SEGMENT_SIZE, new Mp4Extractor());
-
-        MediaCodecVideoTrackRenderer videoRenderer = new MediaCodecVideoTrackRenderer(
-                getContext(), sampleSource, MediaCodecSelector.DEFAULT, MediaCodec.VIDEO_SCALING_MODE_SCALE_TO_FIT,
-                1, new Handler(), new MediaCodecVideoListener() {
-            @Override
-            public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
-                surfaceView.setVideoWidthHeightRatio(height == 0 ? 1 : (width * pixelWidthHeightRatio) / height);
-                surfaceView.setScalingMode(VideoTextureView.ScalingMode.CROP);
-            }
-        }, 1);
-
-        MediaCodecAudioTrackRenderer audioRenderer = new MediaCodecAudioTrackRenderer(sampleSource, MediaCodecSelector.DEFAULT);
-
-        exoPlayer = ExoPlayer.Factory.newInstance(RENDERER_COUNT);
-        exoPlayer.prepare(videoRenderer, audioRenderer);
-        exoPlayer.addListener(new ExoPlayer.Listener() {
-
-            @Override
-            public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-                switch(playbackState) {
-                    case ExoPlayer.STATE_ENDED:
-                        exoPlayer.seekTo(0);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            @Override
-            public void onPlayWhenReadyCommitted() {}
-
-            @Override
-            public void onPlayerError(ExoPlaybackException error) {}
-        });
-        exoPlayer.seekTo(0);
-        exoPlayer.sendMessage(videoRenderer,
-                MediaCodecVideoTrackRenderer.MSG_SET_SURFACE,
-                new Surface(surfaceView.getSurfaceTexture()));
-        exoPlayer.setPlayWhenReady(false);
-    }
-
     public void startPlayer() {
-        if (surfaceView.getSurfaceTexture() != null)
-            exoPlayer.setPlayWhenReady(true);
+        Media media = new Media(libVLC, "/storage/emulated/0/Download/Tribe/Sent/c643528f-34cb-4449-ac0a-74ca6dd36142.mp4");
+        mediaPlayer.setMedia(media);
+
+        if (surfaceTexture != null) prepareWithSurface();
     }
 
-    public void release() {
-        exoPlayer.stop();
-        exoPlayer.release();
+    public void releasePlayer() {
+        if (libVLC == null) return;
+
+        mediaPlayer.stop();
+        final IVLCVout vout = mediaPlayer.getVLCVout();
+        vout.removeCallback(this);
+        vout.detachViews();
+        libVLC.release();
+        libVLC = null;
     }
 
     public void setIconsAlpha(float alpha) {
@@ -225,5 +174,84 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     public void hideBackToTribe(int duration) {
         btnBackToTribe.setClickable(false);
         AnimationUtils.fadeOut(btnBackToTribe, duration);
+    }
+
+    @Override
+    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+        this.surfaceTexture = surface;
+        if (mediaPlayer != null) prepareWithSurface();
+    }
+
+    @Override
+    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+
+    }
+
+    @Override
+    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+        return false;
+    }
+
+    @Override
+    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
+    }
+
+    @Override
+    public void onNewLayout(IVLCVout vlcVout, int width, int height, int visibleWidth, int visibleHeight, int sarNum, int sarDen) {
+        if (width * height == 0)
+            return;
+
+        videoWidth = width;
+        videoHeight = height;
+    }
+
+    @Override
+    public void onSurfacesCreated(IVLCVout vlcVout) {
+
+    }
+
+    @Override
+    public void onSurfacesDestroyed(IVLCVout vlcVout) {
+
+    }
+
+    @Override
+    public void onHardwareAccelerationError(IVLCVout vlcVout) {
+        this.releasePlayer();
+        Toast.makeText(getContext(), "Error with hardware acceleration", Toast.LENGTH_LONG).show();
+    }
+
+    private void prepareWithSurface() {
+        if (mediaPlayer.getMedia() != null) {
+            final IVLCVout vout = mediaPlayer.getVLCVout();
+            vout.setVideoSurface(surfaceTexture);
+            vout.addCallback(this);
+            vout.attachViews();
+            mediaPlayer.play();
+        }
+    }
+
+    private class PlayerListener implements MediaPlayer.EventListener {
+
+        public PlayerListener() {
+
+        }
+
+        @Override
+        public void onEvent(MediaPlayer.Event event) {
+            switch(event.type) {
+                case MediaPlayer.Event.EndReached:
+                    mediaPlayer.setPosition(0);
+                    mediaPlayer.play();
+                    break;
+                case MediaPlayer.Event.Vout:
+                case MediaPlayer.Event.Playing:
+                case MediaPlayer.Event.Paused:
+                case MediaPlayer.Event.Stopped:
+                default:
+                    break;
+            }
+        }
     }
 }

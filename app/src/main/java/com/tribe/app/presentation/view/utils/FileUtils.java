@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.utils;
 import android.os.Environment;
 
 import java.io.File;
+import java.util.UUID;
 
 /**
  * Created by tiago on 28/06/2016.
@@ -21,10 +22,7 @@ public class FileUtils {
             audioDir.mkdirs();
         }
 
-        String idVideo = "audio_" + id + "_" + System.currentTimeMillis();
-
-        File audioFile = new File(audioDir, idVideo + ".mp4");
-        return audioFile.getAbsolutePath();
+        return generateOutputFile(audioDir, id);
     }
 
     public static String generateFileForVideo(String id) {
@@ -34,10 +32,7 @@ public class FileUtils {
             videoDir.mkdirs();
         }
 
-        String idVideo = "audio_" + id + "_" + System.currentTimeMillis();
-
-        File audioFile = new File(videoDir, idVideo + ".mp4");
-        return audioFile.getAbsolutePath();
+        return generateOutputFile(videoDir, id);
     }
 
     public static String generateFileEnd(String id) {
@@ -47,9 +42,20 @@ public class FileUtils {
             endDir.mkdirs();
         }
 
-        String idFile = "tribe_" + id + "_" + System.currentTimeMillis();
+        return generateOutputFile(endDir, id);
+    }
 
-        File endFile = new File(endDir, idFile + ".mp4");
-        return endFile.getAbsolutePath();
+    public static String getPathForId(String id) {
+        File endDir = new File(pathOrigin + pathEnd);
+        return generateOutputFile(endDir, id);
+    }
+
+    public static String generateOutputFile(File dir, String id) {
+        File finalDir = new File(dir, id + ".mp4");
+        return finalDir.getAbsolutePath();
+    }
+
+    public static String generateIdForTribe() {
+        return UUID.randomUUID().toString();
     }
 }

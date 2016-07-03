@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
@@ -105,5 +106,9 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
         } else {
             return null;
         }
+    }
+
+    public void updateItemWithTribe(int position, Tribe tribe) {
+        items.get(position).setTribe(tribe);
     }
 }

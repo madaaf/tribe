@@ -1,6 +1,8 @@
 package com.tribe.app.presentation.internal.di.modules;
 
 import com.tribe.app.domain.interactor.common.UseCase;
+import com.tribe.app.domain.interactor.tribe.SaveTribe;
+import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
@@ -46,4 +48,19 @@ public class UserModule {
     UseCase provideDiskGetUserInfos(GetDiskUserInfos getDiskUserInfos) {
         return getDiskUserInfos;
     }
+
+    @Provides
+    @PerActivity
+    @Named("diskSaveTribe")
+    SaveTribe provideDiskSendTribe(SaveTribe saveTribeDisk) {
+        return saveTribeDisk;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("cloudSendTribe")
+    UseCase provideCloudSendTribe(SendTribe sendTribeDisk) {
+        return sendTribeDisk;
+    }
+
 }

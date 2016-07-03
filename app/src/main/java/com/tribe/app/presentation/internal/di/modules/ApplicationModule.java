@@ -8,6 +8,8 @@ import com.birbit.android.jobqueue.config.Configuration;
 import com.birbit.android.jobqueue.log.CustomLogger;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.ChatCacheImpl;
+import com.tribe.app.data.cache.TribeCache;
+import com.tribe.app.data.cache.TribeCacheImpl;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.cache.UserCacheImpl;
 import com.tribe.app.data.executor.JobExecutor;
@@ -15,12 +17,15 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.chat.ChatDataRepository;
+import com.tribe.app.data.repository.tribe.CloudTribeDataRepository;
+import com.tribe.app.data.repository.tribe.DiskTribeDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.text.ChatRepository;
+import com.tribe.app.domain.interactor.tribe.TribeRepository;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.UIThread;
@@ -94,6 +99,24 @@ public class ApplicationModule {
     @Singleton
     ChatCache provideTextCache(ChatCacheImpl textCache) {
         return textCache;
+    }
+
+    @Provides
+    @Singleton
+    TribeCache provideTribeCache(TribeCacheImpl tribeCache) {
+        return tribeCache;
+    }
+
+    @Provides
+    @Singleton
+    TribeRepository provideCloudTribeRepository(CloudTribeDataRepository tribeDataRepository) {
+        return tribeDataRepository;
+    }
+
+    @Provides
+    @Singleton
+    TribeRepository provideDiskTribeRepository(DiskTribeDataRepository tribeDataRepository) {
+        return tribeDataRepository;
     }
 
     @Provides

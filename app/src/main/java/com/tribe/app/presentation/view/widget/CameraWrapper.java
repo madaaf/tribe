@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.support.annotation.StringDef;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -31,11 +32,19 @@ import butterknife.OnClick;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 /**
  * A layout which handles the preview aspect ratio.
  */
 public class CameraWrapper extends FrameLayout {
+
+    @StringDef({VIDEO, AUDIO, PHOTO})
+    public @interface TribeMode {}
+
+    public static final String VIDEO = "video";
+    public static final String AUDIO = "audio";
+    public static final String PHOTO = "photo";
 
     public static final String TAG = "CameraWrapper";
     public static final int DURATION = 200;
@@ -61,18 +70,21 @@ public class CameraWrapper extends FrameLayout {
     @BindView(R.id.visualizerView)
     VisualizerView visualizerView;
 
-    // Variables
+    // VARIABLES
     private GlPreview preview;
     private double aspectRatio;
     private AudioRecorder audioRecorder;
     private boolean isAudioMode;
     private PathView pathView;
 
-    // Resources
+    // RESOURCES
     private int marginTopInit, marginLeftInit, marginBottomInit, marginVerticalIcons, marginHorizontalIcons, diffTouch;
 
-    // Drag camera
+    // DRAG CAMERA
     private int downX, downY, xDelta, yDelta;
+
+    // OBSERVABLES
+    private PublishSubject<String> tribeModePublishSubject = PublishSubject.create();
 
     public CameraWrapper(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -110,6 +122,8 @@ public class CameraWrapper extends FrameLayout {
         imgVideo.setTranslationX(screenUtils.getWidth() / RATIO);
 
         setBackgroundResource(R.color.black_opacity_20);
+
+        tribeModePublishSubject.onNext(VIDEO);
     }
 
     public void initAudioRecorder() {
@@ -126,13 +140,13 @@ public class CameraWrapper extends FrameLayout {
         resumeCamera();
     }
 
-    public void onStartRecord(String friendId) {
+    public void onStartRecord(String fileId) {
         if (isAudioMode) {
             hideIcons();
             audioRecorder.startRecording();
             visualizerView.startRecording();
         } else {
-            preview.startRecording(friendId);
+            preview.startRecording(fileId);
         }
 
         addPathView();
@@ -267,6 +281,7 @@ public class CameraWrapper extends FrameLayout {
     @OnClick(R.id.imgSound)
     public void activateSound() {
         isAudioMode = true;
+        tribeModePublishSubject.onNext(AUDIO);
 
         if (cameraView != null) {
             cameraView.animate().alpha(0).setDuration(DURATION).setInterpolator(new DecelerateInterpolator()).start();
@@ -301,6 +316,7 @@ public class CameraWrapper extends FrameLayout {
     @OnClick(R.id.imgVideo)
     public void activateVideo() {
         isAudioMode = false;
+        tribeModePublishSubject.onNext(VIDEO);
         visualizerView.deactivate();
 
         imgSound.setEnabled(true);
@@ -336,6 +352,10 @@ public class CameraWrapper extends FrameLayout {
                     }
                 })
                 .start();
+    }
+
+    public Observable<String> tribeMode() {
+        return tribeModePublishSubject;
     }
 
     private void pauseCamera() {

@@ -21,7 +21,7 @@ public class MediaAudioEncoder extends MediaEncoder {
     private static final boolean DEBUG = BuildConfig.DEBUG;
     private static final String TAG = "MediaAudioEncoder";
 
-    private static final String MIME_TYPE = "audio/aac";
+    private static final String MIME_TYPE = "audio/mp4a-latm";
     private static final int SAMPLE_RATE = 44100;
     private static final int BIT_RATE = 64000;
     public static final int SAMPLES_PER_FRAME = 1024;

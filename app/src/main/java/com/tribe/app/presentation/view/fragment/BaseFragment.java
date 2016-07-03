@@ -2,6 +2,9 @@ package com.tribe.app.presentation.view.fragment;
 
 import android.support.v4.app.Fragment;
 import android.widget.Toast;
+
+import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.HasComponent;
 
 /**
@@ -24,5 +27,9 @@ public abstract class BaseFragment extends Fragment {
     @SuppressWarnings("unchecked")
     protected <C> C getComponent(Class<C> componentType) {
         return componentType.cast(((HasComponent<C>) getActivity()).getComponent());
+    }
+
+    protected User getCurrentUser() {
+        return ((AndroidApplication) getActivity().getApplication()).getApplicationComponent().currentUser();
     }
 }

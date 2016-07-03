@@ -66,9 +66,14 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
     public void onBindViewHolder(@NonNull List<Friendship> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         UserGridViewHolder vh = (UserGridViewHolder) holder;
         User user = (User) items.get(position);
-        vh.viewTile.setInfo(user);
-        vh.viewTile.setBackground(position);
-        user.setPosition(position);
+
+        if (user.getTribe() == null) {
+            vh.viewTile.setInfo(user);
+            vh.viewTile.setBackground(position);
+            user.setPosition(position);
+        } else {
+            vh.viewTile.showTapToCancel(user.getTribe());
+        }
     }
 
     public Observable<View> onClickChat() {
