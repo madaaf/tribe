@@ -10,7 +10,11 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
+import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.internal.di.FloatDef;
+import com.tribe.app.presentation.internal.di.SpeedPlayback;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.VideoTextureView;
@@ -20,16 +24,27 @@ import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 
-import java.util.ArrayList;
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 /**
  * Created by tiago on 10/06/2016.
  */
 public class TribeComponentView extends FrameLayout implements TextureView.SurfaceTextureListener, IVLCVout.Callback {
+
+    public static final float SPEED_NORMAL = 1f;
+    public static final float SPEED_LIGHTLY_FASTER = 1.25f;
+    public static final float SPEED_FAST = 1.5f;
+
+    @FloatDef({SPEED_NORMAL, SPEED_LIGHTLY_FASTER, SPEED_FAST})
+    public @interface SpeedPlaybackValues{}
+
+    @Inject LibVLC libVLC;
+    @Inject @SpeedPlayback Preference<Float> speedPlayback;
 
     @BindView(R.id.viewTextureVideo)
     VideoTextureView viewTextureVideo;
@@ -77,7 +92,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     private Unbinder unbinder;
 
     // PLAYER
-    private LibVLC libVLC;
+    private boolean isPaused = false;
     private MediaPlayer mediaPlayer = null;
     private MediaPlayer.EventListener playerListener;
     private int videoWidth, videoHeight;
@@ -94,23 +109,6 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     }
 
     public void init(Context context, AttributeSet attrs) {
-        releasePlayer();
-
-        try {
-            ArrayList<String> options = new ArrayList<>();
-            options.add("--aout=opensles");
-            options.add("--audio-time-stretch");
-            options.add("-vvv");
-
-            libVLC = new LibVLC(options);
-
-            mediaPlayer = new MediaPlayer(libVLC);
-            playerListener = new PlayerListener();
-            mediaPlayer.setEventListener(playerListener);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(getContext(), "Error creating player!", Toast.LENGTH_LONG).show();
-        }
     }
 
     @Override
@@ -123,26 +121,58 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     protected void onFinishInflate() {
         LayoutInflater.from(getContext()).inflate(R.layout.view_tribe, this);
         unbinder = ButterKnife.bind(this);
+        ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
+
+        txtSpeed.setText(getContext().getResources().getString(R.string.Tribe_Speed, speedPlayback.get()));
+
+        try {
+            mediaPlayer = new MediaPlayer(libVLC);
+            playerListener = new PlayerListener();
+            mediaPlayer.setEventListener(playerListener);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "Error creating player!", Toast.LENGTH_LONG).show();
+        }
+
         viewTextureVideo.setSurfaceTextureListener(this);
         super.onFinishInflate();
     }
 
     public void startPlayer() {
-        Media media = new Media(libVLC, "/storage/emulated/0/Download/Tribe/Sent/c643528f-34cb-4449-ac0a-74ca6dd36142.mp4");
-        mediaPlayer.setMedia(media);
-
+        setMedia();
         if (surfaceTexture != null) prepareWithSurface();
     }
 
+    public void setMedia() {
+        Media media = new Media(libVLC, "/storage/emulated/0/Download/Tribe/Sent/c643528f-34cb-4449-ac0a-74ca6dd36142.mp4");
+        mediaPlayer.setMedia(media);
+    }
+
     public void releasePlayer() {
-        if (libVLC == null) return;
+        if (mediaPlayer == null) return;
 
         mediaPlayer.stop();
         final IVLCVout vout = mediaPlayer.getVLCVout();
         vout.removeCallback(this);
         vout.detachViews();
-        libVLC.release();
-        libVLC = null;
+    }
+
+    public void pausePlayer() {
+        if (mediaPlayer != null && mediaPlayer.isPlaying() && !isPaused) {
+            isPaused = true;
+            mediaPlayer.pause();
+        }
+    }
+
+    public void resumePlayer() {
+        if (mediaPlayer != null && isPaused) {
+            isPaused = false;
+            mediaPlayer.play();
+        }
+    }
+
+    public boolean isPaused() {
+        return isPaused;
     }
 
     public void setIconsAlpha(float alpha) {
@@ -176,6 +206,20 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         AnimationUtils.fadeOut(btnBackToTribe, duration);
     }
 
+    @OnClick(R.id.imgSpeed)
+    public void changeSpeed(View view) {
+        if (mediaPlayer.isPlaying()) {
+            Float newSpeed;
+            if (speedPlayback.get().equals(SPEED_NORMAL)) newSpeed = SPEED_LIGHTLY_FASTER;
+            else if (speedPlayback.get().equals(SPEED_LIGHTLY_FASTER)) newSpeed = SPEED_FAST;
+            else newSpeed = SPEED_NORMAL;
+
+            txtSpeed.setText(getContext().getResources().getString(R.string.Tribe_Speed, newSpeed));
+            speedPlayback.set(newSpeed);
+            mediaPlayer.setRate(newSpeed);
+        }
+    }
+
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         this.surfaceTexture = surface;
@@ -204,6 +248,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
         videoWidth = width;
         videoHeight = height;
+        viewTextureVideo.setVideoWidthHeight(width, height);
     }
 
     @Override
@@ -242,10 +287,11 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         public void onEvent(MediaPlayer.Event event) {
             switch(event.type) {
                 case MediaPlayer.Event.EndReached:
-                    mediaPlayer.setPosition(0);
+                    setMedia();
                     mediaPlayer.play();
                     break;
                 case MediaPlayer.Event.Vout:
+                    mediaPlayer.setRate(speedPlayback.get());
                 case MediaPlayer.Event.Playing:
                 case MediaPlayer.Event.Paused:
                 case MediaPlayer.Event.Stopped:

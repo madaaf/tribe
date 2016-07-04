@@ -29,7 +29,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
-import com.tribe.app.presentation.view.utils.FileUtils;
+import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.PlayerView;
@@ -287,7 +287,7 @@ public class TileView extends SquareFrameLayout {
                 super.onSpringAtRest(spring);
 
                 if (currentTribe != null && spring.getCurrentValue() == TAP_TO_CANCEL_SPRING_VALUE) {
-                    playerView.createPlayer(FileUtils.getPathForId(currentTribe.getId()));
+                    playerView.showPlayer();
                 }
 
                 if (spring.getCurrentValue() == 0f) playerView.releasePlayer();
@@ -372,6 +372,10 @@ public class TileView extends SquareFrameLayout {
 
     public void showTapToCancel(Tribe tribe) {
         currentTribe = tribe;
+
+        if (currentTribe != null) {
+            playerView.createPlayer(FileUtils.getPathForId(currentTribe.getId()));
+        }
 
         AnimationUtils.fadeIn(viewForeground, 0);
         ((TransitionDrawable) ((LayerDrawable) viewForeground.getBackground()).getDrawable(0)).startTransition(FADE_DURATION);

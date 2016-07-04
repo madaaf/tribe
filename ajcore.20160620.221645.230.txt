@@ -546,7 +546,7 @@ info woven class com.tribe.app.presentation.view.widget.CameraManager (from /Use
 info woven class com.tribe.app.R$style (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/R$style.class)
 info woven class android.support.v7.recyclerview.R (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/android/support/v7/recyclerview/R.class)
 info woven class com.tribe.app.presentation.internal.di.modules.DataModule_ProvideRxSharedPreferencesFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/DataModule_ProvideRxSharedPreferencesFactory.class)
-info woven class com.tribe.app.presentation.view.utils.Extras (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/utils/Extras.class)
+info woven class com.tribe.app.presentation.utils.Extras (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/utils/Extras.class)
 info woven class com.tribe.app.presentation.internal.di.modules.ApplicationModule_ProvideScreenUtilsFactory (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/internal/di/modules/ApplicationModule_ProvideScreenUtilsFactory.class)
 info woven class com.tribe.app.presentation.view.listener.RecyclerClickListener (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/listener/RecyclerClickListener.class)
 info woven class com.tribe.app.data.cache.ChatCache (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/cache/ChatCache.class)

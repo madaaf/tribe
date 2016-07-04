@@ -180,6 +180,7 @@ public class RoundedTextureView extends GLTextureView {
         public void onSurfaceChanged(GL10 glUnused, int width, int height) {
             GLES20.glViewport(0, 0, width, height);
             viewPortSize.set(width, height);
+            setCornerRadius(150, 150, 150, 150);
         }
 
         @Override

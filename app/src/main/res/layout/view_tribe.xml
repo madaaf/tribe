@@ -91,7 +91,6 @@
             android:layout_marginLeft="40dp"
             android:layout_centerVertical="true"
             style="@style/Text.Tribe.Name"
-            android:text="1x"
             />
 
         <ImageView

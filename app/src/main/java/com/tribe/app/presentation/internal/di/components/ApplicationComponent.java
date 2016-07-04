@@ -22,6 +22,7 @@ import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate;
 import com.tribe.app.presentation.view.camera.view.VisualizerView;
+import com.tribe.app.presentation.view.component.TribeComponentView;
 import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -29,6 +30,8 @@ import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.PathView;
 import com.tribe.app.presentation.view.widget.PlayerView;
+
+import org.videolan.libvlc.LibVLC;
 
 import javax.inject.Singleton;
 
@@ -52,6 +55,7 @@ public interface ApplicationComponent {
     void inject(PathView pathView);
     void inject(TribePagerView tribePagerView);
     void inject(PlayerView playerView);
+    void inject(TribeComponentView tribeComponentView);
 
     //Exposed to sub-graphs.
     Context context();
@@ -83,4 +87,6 @@ public interface ApplicationComponent {
     DiskTribeDataRepository diskTribeRepository();
 
     TribeCache tribeCache();
+
+    LibVLC libVLC();
 }

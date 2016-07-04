@@ -18,7 +18,7 @@ import com.tribe.app.presentation.mvp.view.IntroView;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.component.CodeView;
 import com.tribe.app.presentation.view.component.PhoneNumberView;
-import com.tribe.app.presentation.view.utils.Extras;
+import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
 
 import javax.inject.Inject;

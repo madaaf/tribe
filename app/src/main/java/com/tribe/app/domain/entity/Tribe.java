@@ -1,6 +1,6 @@
 package com.tribe.app.domain.entity;
 
-import com.tribe.app.presentation.view.utils.FileUtils;
+import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 
 import java.io.Serializable;

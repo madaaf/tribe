@@ -7,7 +7,7 @@ import android.media.MediaMuxer;
 import android.support.design.BuildConfig;
 import android.util.Log;
 
-import com.tribe.app.presentation.view.utils.FileUtils;
+import com.tribe.app.presentation.utils.FileUtils;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

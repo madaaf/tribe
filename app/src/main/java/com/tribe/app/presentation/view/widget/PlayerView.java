@@ -17,27 +17,32 @@ import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 
-import java.util.ArrayList;
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 /**
  * Created by tiago on 17/02/2016.
  */
 public class PlayerView extends FrameLayout implements IVLCVout.Callback, RoundedTextureView.SurfaceProvider {
 
+    @Inject LibVLC libVLC;
+
     @BindView(R.id.roundedTextureView)
     RoundedTextureView roundedTextureView;
 
     // VARIABLES
     private String pathToVideo;
-    private LibVLC libVLC;
     private MediaPlayer mediaPlayer = null;
     private int videoWidth;
     private int videoHeight;
     private MediaPlayer.EventListener playerListener;
     private SurfaceTexture surfaceTexture;
+
+    // OBSERVABLES
+    private Unbinder unbinder;
 
     public PlayerView(Context context) {
         this(context, null);
@@ -52,7 +57,7 @@ public class PlayerView extends FrameLayout implements IVLCVout.Callback, Rounde
     private void init(Context context, AttributeSet attrs) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.view_player, this, true);
-        ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this);
         ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
 
         roundedTextureView.setSurfaceProvider(this);
@@ -89,41 +94,34 @@ public class PlayerView extends FrameLayout implements IVLCVout.Callback, Rounde
     }
 
     public void createPlayer(String pathToVideo) {
-        roundedTextureView.setVisibility(View.VISIBLE);
-
         this.pathToVideo = pathToVideo;
         releasePlayer();
 
         try {
-            ArrayList<String> options = new ArrayList<>();
-            options.add("--aout=opensles");
-            options.add("--audio-time-stretch");
-            options.add("-vvv");
-            libVLC = new LibVLC(options);
-
             mediaPlayer = new MediaPlayer(libVLC);
             playerListener = new PlayerListener();
             mediaPlayer.setEventListener(playerListener);
 
             Media m = new Media(libVLC, pathToVideo);
             mediaPlayer.setMedia(m);
-
-            if (surfaceTexture != null) prepareWithSurface();
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(getContext(), "Error creating player!", Toast.LENGTH_LONG).show();
         }
     }
 
+    public void showPlayer() {
+        roundedTextureView.setVisibility(View.VISIBLE);
+        if (surfaceTexture != null) prepareWithSurface();
+    }
+
     public void releasePlayer() {
-        if (libVLC == null) return;
+        if (mediaPlayer == null) return;
 
         mediaPlayer.stop();
         final IVLCVout vout = mediaPlayer.getVLCVout();
         vout.removeCallback(this);
         vout.detachViews();
-        libVLC.release();
-        libVLC = null;
 
         videoWidth = 0;
         videoHeight = 0;
@@ -163,6 +161,8 @@ public class PlayerView extends FrameLayout implements IVLCVout.Callback, Rounde
                     mediaPlayer.play();
                     break;
                 case MediaPlayer.Event.Vout:
+                    mediaPlayer.setVolume(0);
+                    break;
                 case MediaPlayer.Event.Playing:
                 case MediaPlayer.Event.Paused:
                 case MediaPlayer.Event.Stopped:

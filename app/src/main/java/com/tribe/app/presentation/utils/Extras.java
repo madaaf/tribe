@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.utils;
+package com.tribe.app.presentation.utils;
 
 /**
  * Created by tiago on 10/06/2016.

@@ -11,7 +11,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Country;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.view.adapter.CountryPhoneNumberAdapter;
-import com.tribe.app.presentation.view.utils.Extras;
+import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 
 import java.util.Collections;

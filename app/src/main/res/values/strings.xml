@@ -26,4 +26,5 @@
     <string name="Tribe.Snooze.Weekend">This weekend</string>
     <string name="Tribe.Snooze.Next">Next week</string>
     <string name="Tribe.Reply.Hint">Tap and hold to reply</string>
+    <string name="Tribe.Speed">%1$.2fx</string>
 </resources>

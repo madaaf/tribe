@@ -738,11 +738,19 @@ public class TribePagerView extends FrameLayout {
     }
 
     private void dismissScreenToLeft() {
+        if (currentView != null) {
+            currentView.releasePlayer();
+        }
+
         springLeft.setVelocity(velocityTracker.getXVelocity()).setEndValue(-getWidth());
         onDismissHorizontal.onNext(null);
     }
 
     private void dismissScreenToBottom() {
+        if (currentView != null) {
+            currentView.releasePlayer();
+        }
+
         springAlpha.setVelocity(velocityTracker.getYVelocity()).setEndValue(0);
         springAlphaSwipeDown.setCurrentValue(1).setAtRest();
         springBottom.setVelocity(velocityTracker.getYVelocity()).setEndValue(getHeight());
@@ -761,6 +769,8 @@ public class TribePagerView extends FrameLayout {
         layoutTomorrow.animate().translationX(0).setInterpolator(new OvershootInterpolator(OVERSHOOT)).setDuration(DURATION).setStartDelay(DELAY_INIT + DELAY).start();
         layoutWeekend.animate().translationX(0).setInterpolator(new OvershootInterpolator(OVERSHOOT)).setDuration(DURATION).setStartDelay(DELAY_INIT + DELAY * 2).start();
         layoutWeek.animate().translationX(0).setInterpolator(new OvershootInterpolator(OVERSHOOT)).setDuration(DURATION).setStartDelay(DELAY_INIT + DELAY * 3).start();
+
+        if (currentView != null) currentView.pausePlayer();
     }
 
     private void closeSnoozeMenu(boolean hasSelectedSnooze) {
@@ -787,6 +797,8 @@ public class TribePagerView extends FrameLayout {
                     showBigSnoozeIcon();
                 }));
         }
+
+        if (currentView != null) currentView.resumePlayer();
     }
 
     @OnClick({R.id.layoutLater, R.id.layoutTomorrow, R.id.layoutWeekend, R.id.layoutWeek})
@@ -866,6 +878,8 @@ public class TribePagerView extends FrameLayout {
 
         computeCurrentView();
         currentView.showBackToTribe(DURATION);
+
+        if (currentView != null) currentView.pausePlayer();
     }
 
     private void closeReplyMode() {
@@ -884,6 +898,8 @@ public class TribePagerView extends FrameLayout {
         cameraWrapper.animate().translationY(getHeight()).setDuration(DURATION_SLOW).start();
 
         currentView.hideBackToTribe(DURATION);
+
+        if (currentView != null) currentView.resumePlayer();
     }
 
     private boolean applyOffsetLeftWithTension(float offsetX) {

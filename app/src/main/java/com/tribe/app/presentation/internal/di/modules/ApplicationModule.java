@@ -34,6 +34,10 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
+import org.videolan.libvlc.LibVLC;
+
+import java.util.ArrayList;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -169,6 +173,16 @@ public class ApplicationModule {
     @Singleton
     ScreenUtils provideScreenUtils(Context context) {
         return new ScreenUtils(context);
+    }
+
+    @Provides
+    @Singleton
+    LibVLC provideLibVLC() {
+        ArrayList<String> options = new ArrayList<>();
+        options.add("--aout=opensles");
+        options.add("--audio-time-stretch");
+        options.add("-vvv");
+        return new LibVLC(options);
     }
 
     @Provides

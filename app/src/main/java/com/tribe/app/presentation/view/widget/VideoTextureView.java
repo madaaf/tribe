@@ -16,6 +16,7 @@
 package com.tribe.app.presentation.view.widget;
 
 import android.content.Context;
+import android.graphics.Matrix;
 import android.util.AttributeSet;
 import android.view.TextureView;
 
@@ -35,8 +36,8 @@ public class VideoTextureView extends TextureView {
      */
     private static final float MAX_ASPECT_RATIO_DEFORMATION_PERCENT = 0;
 
-    private float videoAspectRatio;
-    private int scalingMode = ScalingMode.FIT;
+    private float videoWidth;
+    private float videoHeight;
 
     public VideoTextureView(Context context) {
         super(context);
@@ -47,61 +48,58 @@ public class VideoTextureView extends TextureView {
     }
 
     /**
-     * Set the aspect ratio that this {@link VideoTextureView} should satisfy.
+     * Set the video / height that this {@link VideoTextureView} should satisfy.
      *
-     * @param widthHeightRatio The width to height ratio.
+     * @param videoWidth The width of the video.
+     * @param videoHeight The height of the video
      */
-    public void setVideoWidthHeightRatio(float widthHeightRatio) {
-        if (this.videoAspectRatio != widthHeightRatio) {
-            this.videoAspectRatio = widthHeightRatio;
-            requestLayout();
-        }
-    }
+    public void setVideoWidthHeight(float videoWidth, float videoHeight) {
+        if (this.videoWidth != videoWidth
+                && this.videoHeight != videoHeight) {
+            this.videoHeight = videoHeight;
+            this.videoWidth = videoWidth;
 
-    public void setScalingMode(int mode) {
-        this.scalingMode = mode;
-        requestLayout();
-    }
+            int viewWidth = getWidth();
+            int viewHeight = getHeight();
+            double aspectRatio = (double) videoHeight / videoWidth;
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int width = getMeasuredWidth();
-        int height = getMeasuredHeight();
-        float screenAspectRatio = (float)width / (float)height;
-        switch (this.scalingMode) {
-            case ScalingMode.FIT:
-                if (videoAspectRatio != 0) {
-                    float viewAspectRatio = (float) width / height;
-                    float aspectDeformation = videoAspectRatio / viewAspectRatio - 1;
-                    if (aspectDeformation > MAX_ASPECT_RATIO_DEFORMATION_PERCENT) {
-                        height = (int) (width / videoAspectRatio);
-                    } else if (aspectDeformation < -MAX_ASPECT_RATIO_DEFORMATION_PERCENT) {
-                        width = (int) (height * videoAspectRatio);
-                    }
+            int newWidth, newHeight;
+            if (viewHeight > (int) (viewWidth * aspectRatio)) {
+                // limited by narrow width; restrict height
+                newWidth = viewWidth;
+                newHeight = (int) (viewWidth * aspectRatio);
+
+                if (newHeight < viewHeight) {
+                    newWidth = (int) (newWidth * ((float) viewHeight / newHeight));
+                    newHeight = (int) (newHeight * ((float) viewHeight / newHeight));
                 }
-                break;
+            } else {
+                // limited by short height; restrict width
+                newWidth = (int) (viewHeight / aspectRatio);
+                newHeight = viewHeight;
 
-            case ScalingMode.CROP:
-        /* fill the entire screen without stretching the video */
-                if (this.videoAspectRatio > 1 && !(screenAspectRatio > this.videoAspectRatio)) {
-                    width = (int)((float) height * videoAspectRatio);
-                } else {
-                    height = (int)((float) width / videoAspectRatio);
+                if (newWidth < viewWidth) {
+                    newWidth = (int) (newWidth * ((float) viewWidth / newWidth));
+                    newHeight = (int) (newHeight * ((float) viewWidth / newWidth));
                 }
-                break;
+            }
+            int xoff = (viewWidth - newWidth) / 2;
+            int yoff = (viewHeight - newHeight) / 2;
 
-            case ScalingMode.STRETCH:
-        /* nothing to do here */
-                break;
+            Matrix txform = new Matrix();
+            getTransform(txform);
+
+            float scaleWidth = (float) newWidth / viewWidth;
+            float scaleHeight =  (float) newHeight / viewHeight;
+            if (scaleWidth < 1 && newWidth < viewWidth) {
+                float scaleDiff = 1 - scaleWidth;
+                scaleWidth = 1 + scaleDiff;
+                scaleHeight = scaleHeight + scaleDiff;
+            }
+
+            txform.setScale(scaleWidth, scaleHeight);
+            txform.postTranslate(xoff, yoff);
+            setTransform(txform);
         }
-
-        setMeasuredDimension(width, height);
-    }
-
-    public final class ScalingMode {
-        public final static int FIT = 0;
-        public final static int CROP = 1;
-        public final static int STRETCH = 2;
     }
 }

@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.utils;
+package com.tribe.app.presentation.utils;
 
 import android.os.Environment;
 
