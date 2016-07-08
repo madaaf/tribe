@@ -13,7 +13,7 @@ import android.widget.ImageView;
 
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.presentation.internal.di.HasComponent;
+import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
@@ -77,8 +77,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         super.onCreate(savedInstanceState);
         initUi();
         initDimensions();
-        initCamera();
         initViewPager();
+        initCamera();
         initDependencyInjector();
         initPresenter();
     }
@@ -151,7 +151,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     public void initClicksOnChat(Observable<Friendship> observable) {
         subscriptions.add(observable.subscribe(friend -> {
-            HomeActivity.this.navigator.navigateToTribe(HomeActivity.this, friend.getPosition(), friend.getId());
+            HomeActivity.this.navigator.navigateToTribe(HomeActivity.this, friend.getPosition(), friend);
             //HomeActivity.this.navigator.navigateToChat(HomeActivity.this, friend.getId());
         }));
     }

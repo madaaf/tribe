@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.presentation.view.activity.ChatActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
@@ -78,12 +79,11 @@ public class Navigator {
      *
      * @param activity An activity needed to open the destiny activity.
      * @param position position of the friendship in the grid
-     * @param friendId a friendship (user / group)
-     *                 id to open the tribes
+     * @param friendship a friendship (user / group) to open the tribes
      */
-    public void navigateToTribe(Activity activity, int position, String friendId) {
+    public void navigateToTribe(Activity activity, int position, Friendship friendship) {
         if (activity != null) {
-            Intent intent = TribeActivity.getCallingIntent(activity, position, friendId);
+            Intent intent = TribeActivity.getCallingIntent(activity, position, friendship);
             activity.startActivity(intent);
             activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
         }

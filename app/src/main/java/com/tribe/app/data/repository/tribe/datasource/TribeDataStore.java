@@ -15,4 +15,18 @@ public interface TribeDataStore {
      * @param tribeRealm The tribe to save.
      */
     Observable<TribeRealm> saveTribe(TribeRealm tribeRealm);
+
+    /**
+     * Get an {@link Observable} which will delete a tribe.
+     *
+     * @param tribeRealm The tribe to delete.
+     */
+    Observable<Void> deleteTribe(TribeRealm tribeRealm);
+
+    /**
+     * Get an {@link Observable} which will emit a tribe.
+     *
+     * @param tribeRealm The tribe to send.
+     */
+    Observable<TribeRealm> sendTribe(TribeRealm tribeRealm);
 }

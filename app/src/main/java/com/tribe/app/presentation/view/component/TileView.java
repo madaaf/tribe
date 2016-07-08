@@ -87,6 +87,8 @@ public class TileView extends SquareFrameLayout {
     // RX SUBSCRIPTIONS / SUBJECTS
     private final PublishSubject<View> clickChatView = PublishSubject.create();
     private final PublishSubject<View> clickMoreView = PublishSubject.create();
+    private final PublishSubject<View> clickTapToCancel = PublishSubject.create();
+    private final PublishSubject<View> onNotCancel = PublishSubject.create();
     private final PublishSubject<View> recordStarted = PublishSubject.create();
     private final PublishSubject<View> recordEnded = PublishSubject.create();
 
@@ -192,6 +194,7 @@ public class TileView extends SquareFrameLayout {
                     isTapToCancel = (Boolean) getTag(R.id.is_tap_to_cancel);
 
                 if (isTapToCancel) {
+                    clickTapToCancel.onNext(this);
                     resetViewAfterTapToCancel(false);
                     return false;
                 } else {
@@ -374,7 +377,7 @@ public class TileView extends SquareFrameLayout {
         currentTribe = tribe;
 
         if (currentTribe != null) {
-            playerView.createPlayer(FileUtils.getPathForId(currentTribe.getId()));
+            playerView.createPlayer(FileUtils.getPathForId(currentTribe.getLocalId()));
         }
 
         AnimationUtils.fadeIn(viewForeground, 0);
@@ -405,6 +408,7 @@ public class TileView extends SquareFrameLayout {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(time -> {
+                            onNotCancel.onNext(TileView.this);
                             resetViewAfterTapToCancel(true);
                         });
             }
@@ -433,5 +437,13 @@ public class TileView extends SquareFrameLayout {
 
     public Observable<View> onRecordEnd() {
         return recordEnded;
+    }
+
+    public Observable<View> onTapToCancel() {
+        return clickTapToCancel;
+    }
+
+    public Observable<View> onNotCancel() {
+        return onNotCancel;
     }
 }

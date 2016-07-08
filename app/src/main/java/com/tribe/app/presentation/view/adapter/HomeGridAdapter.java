@@ -96,6 +96,14 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
         return userGridAdapterDelegate.onRecordStart();
     }
 
+    public Observable<View> onClickTapToCancel() {
+        return userGridAdapterDelegate.onClickTapToCancel();
+    }
+
+    public Observable<View> onNotCancel() {
+        return userGridAdapterDelegate.onNotCancel();
+    }
+
     public Observable<View> onRecordEnd() {
         return userGridAdapterDelegate.onRecordEnd();
     }

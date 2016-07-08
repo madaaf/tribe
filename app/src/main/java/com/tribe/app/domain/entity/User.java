@@ -1,7 +1,5 @@
 package com.tribe.app.domain.entity;
 
-import com.tribe.app.data.realm.LocationRealm;
-
 import java.util.ArrayList;
 import java.util.List;
 

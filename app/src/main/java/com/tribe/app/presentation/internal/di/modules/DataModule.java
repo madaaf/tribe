@@ -5,8 +5,8 @@ import android.content.SharedPreferences;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
-import com.tribe.app.presentation.internal.di.PerApplication;
-import com.tribe.app.presentation.internal.di.SpeedPlayback;
+import com.tribe.app.presentation.internal.di.scope.PerApplication;
+import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.utils.PreferencesConstants;
 import com.tribe.app.presentation.view.component.TribeComponentView;
 

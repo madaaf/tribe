@@ -2,8 +2,7 @@ package com.tribe.app.presentation.internal.di.components;
 
 import android.app.Activity;
 
-import com.tribe.app.presentation.internal.di.PerActivity;
-import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.internal.di.scope.PerActivity;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 
 import dagger.Component;
@@ -13,7 +12,7 @@ import dagger.Component;
  * Activity-level components should extend this component.
  * <p>
  * Subtypes of ActivityComponent should be decorated with annotation:
- * {@link com.tribe.app.presentation.internal.di.PerActivity}
+ * {@link PerActivity}
  */
 @PerActivity
 @Component(dependencies = ApplicationComponent.class, modules = ActivityModule.class)

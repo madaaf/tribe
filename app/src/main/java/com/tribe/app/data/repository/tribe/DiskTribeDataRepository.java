@@ -40,4 +40,10 @@ public class DiskTribeDataRepository implements TribeRepository {
         return tribeDataStore.saveTribe(tribeRealmDataMapper.transform(tribe))
                 .map(tribeRealm -> tribeRealmDataMapper.transform(tribeRealm));
     }
+
+    @Override
+    public Observable<Void> deleteTribe(Tribe tribe) {
+        final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
+        return tribeDataStore.deleteTribe(tribeRealmDataMapper.transform(tribe));
+    }
 }

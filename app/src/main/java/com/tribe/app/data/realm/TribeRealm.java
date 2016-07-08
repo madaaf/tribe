@@ -10,10 +10,10 @@ import io.realm.annotations.PrimaryKey;
  */
 public class TribeRealm extends RealmObject {
 
-    @PrimaryKey
-    private String id;
 
+    @PrimaryKey
     private String localId;
+    private String id;
     private UserRealm from;
     private String type;
     private UserRealm toUser;

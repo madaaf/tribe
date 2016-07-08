@@ -4,7 +4,7 @@ import com.tribe.app.domain.interactor.text.ConnectAndSubscribeMQTT;
 import com.tribe.app.domain.interactor.text.DisconnectMQTT;
 import com.tribe.app.domain.interactor.text.SubscribingMQTT;
 import com.tribe.app.domain.interactor.text.UnsubscribeMQTT;
-import com.tribe.app.presentation.internal.di.PerActivity;
+import com.tribe.app.presentation.internal.di.scope.PerActivity;
 
 import javax.inject.Named;
 

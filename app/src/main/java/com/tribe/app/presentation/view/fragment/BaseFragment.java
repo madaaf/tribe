@@ -5,7 +5,7 @@ import android.widget.Toast;
 
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.internal.di.HasComponent;
+import com.tribe.app.presentation.internal.di.scope.HasComponent;
 
 /**
  * Base {@link android.app.Fragment} class for every fragment in this application.

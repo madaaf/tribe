@@ -5,7 +5,7 @@ import com.tribe.app.domain.entity.Tribe;
 
 import java.util.List;
 
-public interface HomeGridView extends LoadDataView {
+public interface HomeGridView extends SendTribeView {
 
     void renderFriendshipList(List<Friendship> friendCollection);
     void scrollToTop();

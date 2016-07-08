@@ -6,6 +6,8 @@ package com.tribe.app.domain.interactor.tribe;
 
 import com.tribe.app.domain.entity.Tribe;
 
+import java.util.List;
+
 import rx.Observable;
 
 /**
@@ -16,7 +18,20 @@ public interface TribeRepository {
     /**
      * Get an {@link Observable} which will emit a {@link Tribe} containing info about the tribe.
      *
-     * @param
+     * @param tribe the Tribe to save
      */
     Observable<Tribe> sendTribe(final Tribe tribe);
+
+    /**
+     * Get an {@link Observable} which will delete a tribe.
+     *
+     * @param tribe the Tribe to delete
+     */
+    Observable<Void> deleteTribe(final Tribe tribe);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link List<Tribe>} containing infos
+     * about the tribes received and sent.
+     */
+    Observable<List<Tribe>> tribes();
 }

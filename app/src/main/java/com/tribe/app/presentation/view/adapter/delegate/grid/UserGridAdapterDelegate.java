@@ -33,6 +33,8 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
     // RX SUBSCRIPTIONS / SUBJECTS
     private final PublishSubject<View> clickChatView = PublishSubject.create();
     private final PublishSubject<View> clickMoreView = PublishSubject.create();
+    private final PublishSubject<View> clickTapToCancel = PublishSubject.create();
+    private final PublishSubject<View> onNotCancel = PublishSubject.create();
     private final PublishSubject<View> recordStarted = PublishSubject.create();
     private final PublishSubject<View> recordEnded = PublishSubject.create();
 
@@ -58,6 +60,8 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
         userGridViewHolder.viewTile.onRecordEnd().subscribe(recordEnded);
         userGridViewHolder.viewTile.onClickChat().subscribe(clickChatView);
         userGridViewHolder.viewTile.onClickMore().subscribe(clickMoreView);
+        userGridViewHolder.viewTile.onTapToCancel().subscribe(clickTapToCancel);
+        userGridViewHolder.viewTile.onNotCancel().subscribe(onNotCancel);
 
         return userGridViewHolder;
     }
@@ -90,6 +94,14 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
 
     public Observable<View> onRecordEnd() {
         return recordEnded;
+    }
+
+    public Observable<View> onClickTapToCancel() {
+        return clickTapToCancel;
+    }
+
+    public Observable<View> onNotCancel() {
+        return onNotCancel;
     }
 
     static class UserGridViewHolder extends RecyclerView.ViewHolder {

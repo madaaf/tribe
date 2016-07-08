@@ -90,7 +90,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="40dp"
             android:layout_centerVertical="true"
-            style="@style/Text.Tribe.Name"
+            style="@style/Title.1"
             />
 
         <ImageView
@@ -150,7 +150,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="@dimen/vertical_margin_large"
-            style="@style/Text.Tribe.City"
+            style="@style/Title.1"
             android:text="Manhattan"
             />
 
@@ -193,7 +193,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|top"
         android:layout_marginTop="@dimen/vertical_margin_small"
-        style="@style/Text.Tribe.Infos"
+        style="@style/Title.2"
         android:text="@string/Tribe.Swipe.Down"
         android:alpha="0"
         />
@@ -204,7 +204,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|bottom"
         android:layout_marginBottom="@dimen/vertical_margin_small"
-        style="@style/Text.Tribe.Infos"
+        style="@style/Title.2"
         android:text="@string/Tribe.Swipe.Up"
         android:alpha="0"
         />

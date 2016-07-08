@@ -22,7 +22,7 @@ public class FileUtils {
             audioDir.mkdirs();
         }
 
-        return generateOutputFile(audioDir, id);
+        return generateOutputFile(audioDir, id).getAbsolutePath();
     }
 
     public static String generateFileForVideo(String id) {
@@ -32,7 +32,7 @@ public class FileUtils {
             videoDir.mkdirs();
         }
 
-        return generateOutputFile(videoDir, id);
+        return generateOutputFile(videoDir, id).getAbsolutePath();
     }
 
     public static String generateFileEnd(String id) {
@@ -42,20 +42,29 @@ public class FileUtils {
             endDir.mkdirs();
         }
 
-        return generateOutputFile(endDir, id);
+        return generateOutputFile(endDir, id).getAbsolutePath();
     }
 
     public static String getPathForId(String id) {
         File endDir = new File(pathOrigin + pathEnd);
-        return generateOutputFile(endDir, id);
+        return generateOutputFile(endDir, id).getAbsolutePath();
     }
 
-    public static String generateOutputFile(File dir, String id) {
-        File finalDir = new File(dir, id + ".mp4");
-        return finalDir.getAbsolutePath();
+    public static String getFilenameForId(String id) {
+        return id + ".mp4";
+    }
+
+    public static void deleteTribe(String id) {
+        File endDir = new File(pathOrigin + pathEnd);
+        generateOutputFile(endDir, id).delete();
+    }
+
+    public static File generateOutputFile(File dir, String id) {
+        File finalDir = new File(dir, getFilenameForId(id));
+        return finalDir;
     }
 
     public static String generateIdForTribe() {
-        return UUID.randomUUID().toString();
+        return UUID.randomUUID().toString().replace("-", "");
     }
 }

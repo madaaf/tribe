@@ -93,4 +93,17 @@
         <item name="android:textColor">@android:color/white</item>
     </style>
 
+    <style name="Title">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="Title.1" parent="@style/Title">
+        <item name="customFont">Roboto-Regular.ttf</item>
+    </style>
+
+    <style name="Title.2" parent="@style/Title">
+        <item name="customFont">Roboto-Bold.ttf</item>
+    </style>
 </resources>

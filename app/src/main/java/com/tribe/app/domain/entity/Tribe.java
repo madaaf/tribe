@@ -13,12 +13,11 @@ import java.util.Date;
  */
 public class Tribe implements Serializable {
 
-    private final String id;
+    public Tribe() {
 
-    public Tribe(String id) {
-        this.id = id;
     }
 
+    private String id;
     private String localId;
     private User from;
     private String type;
@@ -79,12 +78,17 @@ public class Tribe implements Serializable {
     }
 
     public static Tribe createTribe(User user, Friendship friendship, @CameraWrapper.TribeMode String mode) {
-        Tribe tribe = new Tribe(FileUtils.generateIdForTribe());
+        Tribe tribe = new Tribe();
+        tribe.setLocalId(FileUtils.generateIdForTribe());
         tribe.setRecordedAt(new Date(System.currentTimeMillis()));
         tribe.setFrom(user);
         tribe.setTo(friendship);
         tribe.setType(mode);
         return tribe;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override
@@ -108,11 +112,11 @@ public class Tribe implements Serializable {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("***** User Details *****\n");
-        stringBuilder.append("id = " + id);
-        stringBuilder.append("localId = " + localId);
-        stringBuilder.append("recordedAt = " + recordedAt);
-        stringBuilder.append("*******************************");
+        stringBuilder.append("***** Tribe Details *****\n");
+        stringBuilder.append("\nid = " + id);
+        stringBuilder.append("\nlocalId = " + localId);
+        stringBuilder.append("\nrecordedAt = " + recordedAt);
+        stringBuilder.append("\n*******************************");
 
         return stringBuilder.toString();
     }

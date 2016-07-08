@@ -2,7 +2,7 @@
 <resources>
     <string name="user.infos">
         {
-            user(id: \"%1$s\") {
+            user {
                 ...UserInfos
 
                 friends {
@@ -44,6 +44,22 @@
             {
                 displayName
             }
+        }
+    </string>
+
+    <string name="tribe.send">
+        mutation {
+            newTribe(
+                tribe: {
+                    from: \"%1$s\",
+                    to: \"%2$s\",
+                    to_group: %3$s,
+                    type: \"%4$s\",
+                    recorded_at: \"%5$s\",
+                    lat: %6$s,
+                    lng: %7$s
+                }
+            ) { id, recorded_at }
         }
     </string>
 </resources>

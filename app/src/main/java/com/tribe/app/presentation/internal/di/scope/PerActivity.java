@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.internal.di;
+package com.tribe.app.presentation.internal.di.scope;
 
 import java.lang.annotation.Retention;
 

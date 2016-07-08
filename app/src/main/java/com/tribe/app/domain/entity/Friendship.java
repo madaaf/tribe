@@ -1,11 +1,12 @@
 package com.tribe.app.domain.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by tiago on 04/05/2016.
  */
-public class Friendship {
+public class Friendship implements Serializable {
 
     public static final String ID_EMPTY = "EMPTY";
 

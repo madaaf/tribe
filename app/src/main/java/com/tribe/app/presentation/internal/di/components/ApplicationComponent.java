@@ -2,9 +2,11 @@ package com.tribe.app.presentation.internal.di.components;
 
 import android.content.Context;
 
+import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
+import com.tribe.app.data.network.job.SendTribeJob;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.repository.tribe.CloudTribeDataRepository;
 import com.tribe.app.data.repository.tribe.DiskTribeDataRepository;
@@ -14,9 +16,9 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.text.ChatRepository;
-import com.tribe.app.presentation.internal.di.PerApplication;
 import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
 import com.tribe.app.presentation.internal.di.modules.NetModule;
+import com.tribe.app.presentation.internal.di.scope.PerApplication;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
@@ -56,6 +58,7 @@ public interface ApplicationComponent {
     void inject(TribePagerView tribePagerView);
     void inject(PlayerView playerView);
     void inject(TribeComponentView tribeComponentView);
+    void inject(SendTribeJob sendTribeJob);
 
     //Exposed to sub-graphs.
     Context context();
@@ -89,4 +92,6 @@ public interface ApplicationComponent {
     TribeCache tribeCache();
 
     LibVLC libVLC();
+
+    JobManager jobManager();
 }

@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.internal.di;
+package com.tribe.app.presentation.internal.di.scope;
 
 /**
  * Interface representing a contract for clients that contains a component for dependency injection.

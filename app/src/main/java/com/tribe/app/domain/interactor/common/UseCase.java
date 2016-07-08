@@ -18,6 +18,8 @@ package com.tribe.app.domain.interactor.common;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 
+import java.io.Serializable;
+
 import rx.Subscriber;
 import rx.Observable;
 import rx.Subscription;
@@ -32,7 +34,7 @@ import rx.subscriptions.Subscriptions;
  * By convention each UseCase implementation will return the result using a {@link rx.Subscriber}
  * that will execute its job in a background thread and will post the result in the UI thread.
  */
-public abstract class UseCase {
+public abstract class UseCase implements Serializable {
 
     private final ThreadExecutor threadExecutor;
     private final PostExecutionThread postExecutionThread;

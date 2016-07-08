@@ -1,6 +1,6 @@
 package com.tribe.app.presentation.internal.di.components;
 
-import com.tribe.app.presentation.internal.di.PerActivity;
+import com.tribe.app.presentation.internal.di.scope.PerActivity;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.internal.di.modules.ChatModule;
 import com.tribe.app.presentation.view.activity.ChatActivity;

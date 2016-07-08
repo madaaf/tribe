@@ -26,7 +26,6 @@ public class TribeMuxerWrapper {
 
     public TribeMuxerWrapper(String fileId) throws IOException {
         outputPath = FileUtils.generateFileEnd(fileId);
-        System.out.println("Output Path : " + outputPath);
         mediaMuxer = new MediaMuxer(outputPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
         encoderCount = startedCount = 0;
         isStarted = false;

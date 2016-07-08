@@ -1,12 +1,14 @@
 package com.tribe.app.domain.entity;
 
+import java.io.Serializable;
+
 /**
  * Created by tiago on 04/05/2016.
  *
  * Class that represents a Location in the domain layer.
  *
  */
-public class Location {
+public class Location implements Serializable {
 
     private double longitude;
     private double latitude;

@@ -122,8 +122,6 @@ public class CameraWrapper extends FrameLayout {
         imgVideo.setTranslationX(screenUtils.getWidth() / RATIO);
 
         setBackgroundResource(R.color.black_opacity_20);
-
-        tribeModePublishSubject.onNext(VIDEO);
     }
 
     public void initAudioRecorder() {
@@ -378,6 +376,7 @@ public class CameraWrapper extends FrameLayout {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(time -> {
+                    tribeModePublishSubject.onNext(VIDEO);
                     cameraView.startPreview();
                 });
         }

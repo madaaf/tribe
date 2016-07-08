@@ -49,6 +49,22 @@ public class TribeCacheImpl implements TribeCache {
     }
 
     @Override
+    public Observable<Void> delete(TribeRealm tribeRealm) {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(final Subscriber<? super Void> subscriber) {
+                Realm obsRealm = Realm.getDefaultInstance();
+                obsRealm.beginTransaction();
+                final TribeRealm result = obsRealm.where(TribeRealm.class).equalTo("id", tribeRealm.getId()).findFirst();
+                result.deleteFromRealm();
+                obsRealm.commitTransaction();
+                subscriber.onNext(null);
+                obsRealm.close();
+            }
+        });
+    }
+
+    @Override
     public Observable<List<TribeRealm>> tribes() {
         return Observable.create(new Observable.OnSubscribe<List<TribeRealm>>() {
             @Override
@@ -59,5 +75,18 @@ public class TribeCacheImpl implements TribeCache {
                 obsRealm.close();
             }
         });
+    }
+
+    @Override
+    public TribeRealm updateLocalWithServerRealm(TribeRealm local, TribeRealm server) {
+        Realm obsRealm = Realm.getDefaultInstance();
+        TribeRealm resultTribe;
+        obsRealm.beginTransaction();
+        final TribeRealm result = obsRealm.where(TribeRealm.class).equalTo("localId", local.getLocalId()).findFirst();
+        result.setId(server.getId());
+        resultTribe = obsRealm.copyFromRealm(result);
+        obsRealm.commitTransaction();
+        obsRealm.close();
+        return resultTribe;
     }
 }

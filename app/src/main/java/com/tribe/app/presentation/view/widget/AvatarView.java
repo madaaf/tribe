@@ -80,6 +80,7 @@ public class AvatarView extends RoundedCornerLayout {
     public void load(String url) {
         picasso.load(url)
                 .fit()
+                .noFade()
                 .centerCrop()
                 .into(imgAvatar);
         //imgAvatar.setImageResource(R.drawable.cage);

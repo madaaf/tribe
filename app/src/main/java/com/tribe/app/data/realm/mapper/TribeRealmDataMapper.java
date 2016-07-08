@@ -37,7 +37,9 @@ public class TribeRealmDataMapper {
         Tribe tribe = null;
 
         if (tribeRealm != null) {
-            tribe = new Tribe(tribeRealm.getId());
+            tribe = new Tribe();
+            tribe.setId(tribeRealm.getId());
+            tribe.setLocalId(tribeRealm.getLocalId());
             tribe.setTo(tribeRealm.getToGroup() != null ? groupRealmDataMapper.transform(tribeRealm.getToGroup()) : userRealmDataMapper.transform(tribeRealm.getToUser()));
             tribe.setType(tribeRealm.getType());
             tribe.setFrom(userRealmDataMapper.transform(tribeRealm.getFrom()));
@@ -60,6 +62,7 @@ public class TribeRealmDataMapper {
         if (tribe != null) {
             tribeRealm = new TribeRealm();
             tribeRealm.setId(tribe.getId());
+            tribeRealm.setLocalId(tribe.getLocalId());
 
             if (tribe.isToGroup()) {
                 tribeRealm.setToGroup(groupRealmDataMapper.transform((Group) tribe.getTo()));

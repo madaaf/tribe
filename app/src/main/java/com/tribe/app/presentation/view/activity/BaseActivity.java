@@ -1,11 +1,11 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
@@ -55,5 +55,9 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     protected ActivityModule getActivityModule() {
         return new ActivityModule(this);
+    }
+
+    protected User getCurrentUser() {
+        return ((AndroidApplication) getApplication()).getApplicationComponent().currentUser();
     }
 }

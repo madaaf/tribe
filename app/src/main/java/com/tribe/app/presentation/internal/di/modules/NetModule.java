@@ -16,13 +16,16 @@ import com.tribe.app.BuildConfig;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
+import com.tribe.app.data.network.deserializer.NewTribeDeserializer;
 import com.tribe.app.data.network.deserializer.TribeAccessTokenDeserializer;
 import com.tribe.app.data.network.deserializer.TribeUserDeserializer;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.presentation.internal.di.PerApplication;
+import com.tribe.app.presentation.internal.di.scope.PerApplication;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
 
@@ -62,6 +65,7 @@ public class NetModule {
                 })
                 .registerTypeAdapter(new TypeToken<UserRealm>() {}.getType(), new TribeUserDeserializer<>())
                 .registerTypeAdapter(AccessToken.class, new TribeAccessTokenDeserializer())
+                .registerTypeAdapter(TribeRealm.class, new NewTribeDeserializer<>())
                 .create();
     }
 
@@ -124,6 +128,10 @@ public class NetModule {
     LoginApi provideLoginApi(Gson gson, OkHttpClient okHttpClient, TribeAuthorizer tribeAuthorizer) {
         OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
+        httpClientBuilder
+                .connectTimeout(5, TimeUnit.MINUTES)
+                .readTimeout(5, TimeUnit.MINUTES);
+
         httpClientBuilder.addInterceptor(chain -> {
             Request original = chain.request();
 
@@ -170,11 +178,12 @@ public class NetModule {
     }
 
     static OkHttpClient.Builder createOkHttpClient(Context context) {
-        // Install an HTTP cache in the application cache directory.
         File cacheDir = new File(context.getCacheDir(), "http");
         Cache cache = new Cache(cacheDir, DISK_CACHE_SIZE);
 
         return new OkHttpClient.Builder()
-                .cache(cache);
+                .cache(cache)
+        .connectTimeout(60, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS);
     }
 }

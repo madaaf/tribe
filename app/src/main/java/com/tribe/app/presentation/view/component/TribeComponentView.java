@@ -13,8 +13,8 @@ import android.widget.Toast;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.internal.di.FloatDef;
-import com.tribe.app.presentation.internal.di.SpeedPlayback;
+import com.tribe.app.presentation.internal.di.scope.FloatDef;
+import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.VideoTextureView;
@@ -88,6 +88,12 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     @BindView(R.id.btnBackToTribe)
     View btnBackToTribe;
 
+    @BindView(R.id.txtWeather)
+    TextViewFont txtWeather;
+
+    @BindView(R.id.imgWeather)
+    ImageView imgWeather;
+
     // OBSERVABLES
     private Unbinder unbinder;
 
@@ -123,8 +129,6 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         unbinder = ButterKnife.bind(this);
         ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
 
-        txtSpeed.setText(getContext().getResources().getString(R.string.Tribe_Speed, speedPlayback.get()));
-
         try {
             mediaPlayer = new MediaPlayer(libVLC);
             playerListener = new PlayerListener();
@@ -140,6 +144,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
     public void startPlayer() {
         setMedia();
+        setTxtSpeed();
         if (surfaceTexture != null) prepareWithSurface();
     }
 
@@ -186,6 +191,8 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         txtName.setAlpha(alpha);
         txtSpeed.setAlpha(alpha);
         txtTime.setAlpha(alpha);
+        imgWeather.setAlpha(alpha);
+        txtWeather.setAlpha(alpha);
     }
 
     public void setSwipeUpAlpha(float alpha) {
@@ -214,10 +221,21 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
             else if (speedPlayback.get().equals(SPEED_LIGHTLY_FASTER)) newSpeed = SPEED_FAST;
             else newSpeed = SPEED_NORMAL;
 
-            txtSpeed.setText(getContext().getResources().getString(R.string.Tribe_Speed, newSpeed));
             speedPlayback.set(newSpeed);
+            setTxtSpeed();
             mediaPlayer.setRate(newSpeed);
         }
+    }
+
+    private void setTxtSpeed() {
+        txtSpeed.setText(getContext().getResources().getString(R.string.Tribe_Speed, fmt(speedPlayback.get())));
+    }
+
+    public static String fmt(double d) {
+        if (d == (long) d)
+            return String.format("%d", (long) d);
+        else
+            return String.format("%s", d);
     }
 
     @Override

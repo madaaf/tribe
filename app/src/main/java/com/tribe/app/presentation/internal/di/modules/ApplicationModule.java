@@ -13,6 +13,7 @@ import com.tribe.app.data.cache.TribeCacheImpl;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.cache.UserCacheImpl;
 import com.tribe.app.data.executor.JobExecutor;
+import com.tribe.app.data.network.job.BaseJob;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
@@ -25,6 +26,8 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.text.ChatRepository;
+import com.tribe.app.domain.interactor.tribe.DeleteTribe;
+import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.domain.interactor.tribe.TribeRepository;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.AndroidApplication;
@@ -36,8 +39,11 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 import org.videolan.libvlc.LibVLC;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.TimeZone;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -181,43 +187,73 @@ public class ApplicationModule {
         ArrayList<String> options = new ArrayList<>();
         options.add("--aout=opensles");
         options.add("--audio-time-stretch");
-        options.add("-vvv");
+        //options.add("-vvv");
         return new LibVLC(options);
+    }
+
+    @Provides
+    @Named("cloudSendTribe")
+    SendTribe provideCloudSendTribe(SendTribe sendTribeDisk) {
+        return sendTribeDisk;
+    }
+
+    @Provides
+    @Named("diskDeleteTribe")
+    DeleteTribe provideDiskDeleteTribe(DeleteTribe deleteTribeDisk) {
+        return deleteTribeDisk;
     }
 
     @Provides
     @Singleton
     JobManager provideJobManager() {
         Configuration.Builder builder = new Configuration.Builder(application)
-                .customLogger(new CustomLogger() {
+            .customLogger(new CustomLogger() {
+                private static final String TAG = "JOBS";
+                @Override
+                public boolean isDebugEnabled() {
+                    return true;
+                }
 
-                    private static final String TAG = "JOBS";
+                @Override
+                public void d(String text, Object... args) {
+                    Log.d(TAG, String.format(text, args));
+                }
 
-                    @Override
-                    public boolean isDebugEnabled() {
-                        return true;
-                    }
+                @Override
+                public void e(Throwable t, String text, Object... args) {
+                    Log.e(TAG, String.format(text, args), t);
+                }
 
-                    @Override
-                    public void d(String text, Object... args) {
-                        Log.d(TAG, String.format(text, args));
-                    }
+                @Override
+                public void e(String text, Object... args) {
+                    Log.e(TAG, String.format(text, args));
+                }
 
-                    @Override
-                    public void e(Throwable t, String text, Object... args) {
-                        Log.e(TAG, String.format(text, args), t);
-                    }
+                @Override
+                public void v(String text, Object... args) {
 
-                    @Override
-                    public void e(String text, Object... args) {
-                        Log.e(TAG, String.format(text, args));
-                    }
-                })
-                .minConsumerCount(1) // always keep at least one consumer alive
-                .maxConsumerCount(3) // up to 3 consumers at a time
-                .loadFactor(3) // 3 jobs per consumer
-                .consumerKeepAlive(120); // wait 2 minute
+                }
+            })
+            .minConsumerCount(1)
+            .maxConsumerCount(3)
+            .loadFactor(3)
+            .consumerKeepAlive(180)
+            .injector(job -> {
+                if (job instanceof BaseJob) {
+                    ((BaseJob) job).inject(application.getApplicationComponent());
+                }
+            });
 
         return new JobManager(builder.build());
+    }
+
+    // DATES
+    @Provides
+    @Singleton
+    @Named("utcSimpleDate")
+    SimpleDateFormat provideUTCSimpleDateFormat() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return sdf;
     }
 }

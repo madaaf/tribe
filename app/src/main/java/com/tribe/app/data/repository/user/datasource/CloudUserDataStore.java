@@ -73,7 +73,7 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<UserRealm> userInfos(String userId) {
-        return this.tribeApi.getUserInfos(context.getString(R.string.user_infos).replace("%1$s", accessToken.getUserId()))
+        return this.tribeApi.getUserInfos(context.getString(R.string.user_infos))
                 .doOnNext(saveToCacheUser);
     }
 

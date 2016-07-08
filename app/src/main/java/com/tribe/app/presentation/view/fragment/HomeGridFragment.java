@@ -16,6 +16,7 @@ import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.HomeView;
+import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
@@ -228,6 +229,21 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                     homeGridAdapter.updateItemWithTribe(friendship.getPosition(), currentTribe);
                 })
                 .subscribe(onRecordEnd));
+
+        subscriptions.add(homeGridAdapter.onClickTapToCancel()
+                .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
+                .subscribe(friendship -> {
+                    FileUtils.deleteTribe(currentTribe.getLocalId());
+                    homeGridPresenter.deleteTribe(currentTribe);
+                    currentTribe = null;
+                }));
+
+        subscriptions.add(homeGridAdapter.onNotCancel()
+                .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
+                .subscribe(friendship -> {
+                    homeGridPresenter.sendTribe(currentTribe);
+                    currentTribe = null;
+                }));
 
         if (homeView != null) homeView.initClicksOnChat(clickChatViewSubject);
         if (homeView != null) homeView.initOnRecordStart(onRecordStart);

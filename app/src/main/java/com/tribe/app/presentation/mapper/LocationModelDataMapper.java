@@ -2,7 +2,7 @@ package com.tribe.app.presentation.mapper;
 
 import com.tribe.app.data.realm.LocationRealm;
 import com.tribe.app.domain.entity.Location;
-import com.tribe.app.presentation.internal.di.PerActivity;
+import com.tribe.app.presentation.internal.di.scope.PerActivity;
 
 import javax.inject.Inject;
 

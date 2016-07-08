@@ -47,7 +47,7 @@
     <dimen name="tribe_icon_size_max">70dp</dimen>
 
     <!-- THRESHOLDS -->
-    <dimen name="threshold_end_tribe">125dp</dimen>
+    <dimen name="threshold_end_tribe">200dp</dimen>
 
     <!-- TRANSLATIONS -->
     <dimen name="transition_grid_pressed">45dp</dimen>

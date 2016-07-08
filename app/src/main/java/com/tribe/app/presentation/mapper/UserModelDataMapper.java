@@ -2,7 +2,7 @@ package com.tribe.app.presentation.mapper;
 
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.internal.di.PerActivity;
+import com.tribe.app.presentation.internal.di.scope.PerActivity;
 
 import java.util.ArrayList;
 import java.util.Collection;
