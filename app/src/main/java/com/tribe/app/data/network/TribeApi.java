@@ -3,6 +3,7 @@ package com.tribe.app.data.network;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
 
+import io.realm.RealmList;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.http.Field;
@@ -21,4 +22,8 @@ public interface TribeApi {
     @Multipart
     @POST("/graphql")
     Observable<TribeRealm> uploadTribe(@Part("query") RequestBody query, @Part MultipartBody.Part file);
+
+    @FormUrlEncoded
+    @POST("/graphql")
+    Observable<RealmList<TribeRealm>> tribes(@Field("query") String query);
 }

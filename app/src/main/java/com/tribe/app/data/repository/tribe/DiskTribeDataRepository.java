@@ -7,6 +7,8 @@ import com.tribe.app.data.repository.tribe.datasource.TribeDataStoreFactory;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.interactor.tribe.TribeRepository;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -37,7 +39,7 @@ public class DiskTribeDataRepository implements TribeRepository {
     @Override
     public Observable<Tribe> sendTribe(Tribe tribe) {
         final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
-        return tribeDataStore.saveTribe(tribeRealmDataMapper.transform(tribe))
+        return tribeDataStore.sendTribe(tribeRealmDataMapper.transform(tribe))
                 .map(tribeRealm -> tribeRealmDataMapper.transform(tribeRealm));
     }
 
@@ -45,5 +47,11 @@ public class DiskTribeDataRepository implements TribeRepository {
     public Observable<Void> deleteTribe(Tribe tribe) {
         final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
         return tribeDataStore.deleteTribe(tribeRealmDataMapper.transform(tribe));
+    }
+
+    @Override
+    public Observable<List<Tribe>> tribes() {
+        final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
+        return tribeDataStore.tribes().map(tribeRealmCollection -> tribeRealmDataMapper.transform(tribeRealmCollection));
     }
 }

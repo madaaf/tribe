@@ -4,9 +4,11 @@ package com.tribe.app.domain.interactor.tribe;
  * Created by tiago on 28/06/2016.
  */
 
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Tribe;
 
 import java.util.List;
+import java.util.Map;
 
 import rx.Observable;
 
@@ -30,8 +32,8 @@ public interface TribeRepository {
     Observable<Void> deleteTribe(final Tribe tribe);
 
     /**
-     * Get an {@link Observable} which will emit a {@link List<Tribe>} containing infos
-     * about the tribes received and sent.
+     * Get an {@link Observable} which will emit a {@link Map<Friendship, List<Tribe>>} containing infos
+     * about the tribes received and sent categorized by friendship.
      */
-    Observable<List<Tribe>> tribes();
+    Observable<Map<Friendship, List<Tribe>>> tribes();
 }

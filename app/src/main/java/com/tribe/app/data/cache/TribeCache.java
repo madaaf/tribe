@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.inject.Singleton;
 
+import io.realm.RealmList;
 import rx.Observable;
 
 /**
@@ -17,6 +18,7 @@ public interface TribeCache {
     public boolean isExpired();
     public boolean isCached(int messageId);
     public Observable<TribeRealm> put(TribeRealm tribeRealm);
+    public Observable<TribeRealm> put(RealmList<TribeRealm> tribeRealmList);
     public Observable<Void> delete(TribeRealm tribeRealm);
     public Observable<List<TribeRealm>> tribes();
     public TribeRealm updateLocalWithServerRealm(TribeRealm local, TribeRealm server);

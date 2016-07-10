@@ -3,6 +3,8 @@ package com.tribe.app.data.repository.tribe.datasource;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.realm.TribeRealm;
 
+import java.util.List;
+
 import rx.Observable;
 
 /**
@@ -20,17 +22,17 @@ public class DiskTribeDataStore implements TribeDataStore {
     }
 
     @Override
-    public Observable<TribeRealm> saveTribe(TribeRealm tribeRealm) {
-        return tribeCache.put(tribeRealm);
-    }
-
-    @Override
     public Observable<Void> deleteTribe(TribeRealm tribeRealm) {
         return tribeCache.delete(tribeRealm);
     }
 
     @Override
     public Observable<TribeRealm> sendTribe(TribeRealm tribeRealm) {
-        return null;
+        return tribeCache.put(tribeRealm);
+    }
+
+    @Override
+    public Observable<List<TribeRealm>> tribes() {
+        return tribeCache.tribes();
     }
 }

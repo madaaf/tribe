@@ -13,10 +13,12 @@ import com.tribe.app.presentation.utils.FileUtils;
 import java.io.File;
 import java.text.SimpleDateFormat;
 
+import io.realm.RealmList;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import rx.Observable;
+import rx.functions.Action1;
 
 /**
  * {@link TribeDataStore} implementation based on connections to the api (Cloud).
@@ -45,11 +47,6 @@ public class CloudTribeDataStore implements TribeDataStore {
     }
 
     @Override
-    public Observable<TribeRealm> saveTribe(TribeRealm tribeRealm) {
-        return null;
-    }
-
-    @Override
     public Observable<Void> deleteTribe(TribeRealm tribeRealm) {
         return null;
     }
@@ -71,11 +68,21 @@ public class CloudTribeDataStore implements TribeDataStore {
         RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
 
         File file = new File(FileUtils.getPathForId(tribeRealm.getLocalId()));
-            RequestBody requestFile = RequestBody.create(MediaType.parse("video/mp4"), file);
+        RequestBody requestFile = RequestBody.create(MediaType.parse("video/mp4"), file);
         MultipartBody.Part body = MultipartBody.Part.createFormData("tribe", file.getName(), requestFile);
 
-        return tribeApi.uploadTribe(query, body).map(tribeServer -> {
-            return tribeCache.updateLocalWithServerRealm(tribeRealm, tribeServer);
-        });
+        return tribeApi.uploadTribe(query, body).map(tribeServer -> tribeCache.updateLocalWithServerRealm(tribeRealm, tribeServer));
     }
+
+    @Override
+    public Observable<RealmList<TribeRealm>> tribes() {
+        return tribeApi.tribes(context.getString(R.string.tribe_infos))
+                .doOnNext(saveToCacheTribes);
+    }
+
+    private final Action1<RealmList<TribeRealm>> saveToCacheTribes = tribeRealmList -> {
+        if (tribeRealmList != null && tribeRealmList.size() > 0) {
+            CloudTribeDataStore.this.tribeCache.put(tribeRealmList);
+        }
+    };
 }

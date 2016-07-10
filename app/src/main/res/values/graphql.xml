@@ -62,4 +62,20 @@
             ) { id, recorded_at }
         }
     </string>
+
+    <string name="tribe.infos">
+        {
+            user {
+                tribes {
+                    id
+                    to
+                    to_group
+                    type url
+                    recorded_at
+                    lat
+                    lng
+                }
+            }
+        }
+    </string>
 </resources>

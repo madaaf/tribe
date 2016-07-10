@@ -11,12 +11,12 @@ import rx.Observable;
 /**
  * Created by tiago on 22/05/2016.
  */
-public class GetTribeList extends UseCase {
+public class GetCloudTribeList extends UseCase {
 
     private TribeRepository tribeRepository;
 
     @Inject
-    public GetTribeList(TribeRepository tribeRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+    public GetCloudTribeList(TribeRepository tribeRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
         super(threadExecutor, postExecutionThread);
         this.tribeRepository = tribeRepository;
     }

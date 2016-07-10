@@ -5,6 +5,10 @@ import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.entity.User;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -76,5 +80,24 @@ public class TribeRealmDataMapper {
         }
 
         return tribeRealm;
+    }
+
+    /**
+     * Transform a List of {@link TribeRealm} into a Collection of {@link Tribe}.
+     *
+     * @param tribeRealmCollection Object Collection to be transformed.
+     * @return {@link List<Tribe>} if valid {@link List<TribeRealm>} otherwise empty list.
+     */
+    public List<Tribe> transform(Collection<TribeRealm> tribeRealmCollection) {
+        List<Tribe> tribeList = new ArrayList<>();
+        Tribe tribe;
+        for (TribeRealm tribeRealm : tribeRealmCollection) {
+            tribe = transform(tribeRealm);
+            if (tribe != null) {
+                tribeList.add(tribe);
+            }
+        }
+
+        return tribeList;
     }
 }

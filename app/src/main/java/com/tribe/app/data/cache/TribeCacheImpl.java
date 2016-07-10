@@ -55,7 +55,7 @@ public class TribeCacheImpl implements TribeCache {
             public void call(final Subscriber<? super Void> subscriber) {
                 Realm obsRealm = Realm.getDefaultInstance();
                 obsRealm.beginTransaction();
-                final TribeRealm result = obsRealm.where(TribeRealm.class).equalTo("id", tribeRealm.getId()).findFirst();
+                final TribeRealm result = obsRealm.where(TribeRealm.class).equalTo("localId", tribeRealm.getLocalId()).findFirst();
                 result.deleteFromRealm();
                 obsRealm.commitTransaction();
                 subscriber.onNext(null);
