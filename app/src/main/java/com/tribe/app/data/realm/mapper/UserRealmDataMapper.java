@@ -1,6 +1,7 @@
 package com.tribe.app.data.realm.mapper;
 
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.data.realm.UserTribeRealm;
 import com.tribe.app.domain.entity.User;
 
 import java.util.ArrayList;
@@ -52,6 +53,30 @@ public class UserRealmDataMapper {
             if (userRealm.getGroups() != null) user.setGroupList(groupRealmDataMapper.transform(userRealm.getGroups()));
             if (userRealm.getFriends() != null) user.setFriendList(transform(userRealm.getFriends()));
             if (userRealm.getReported() != null) user.setReportedList(transform(userRealm.getReported()));
+        }
+
+        return user;
+    }
+
+    /**
+     * Transform a {@link com.tribe.app.data.realm.UserRealm} into an {@link com.tribe.app.domain.entity.User}.
+     *
+     * @param userRealm Object to be transformed.
+     * @return {@link com.tribe.app.domain.entity.User} if valid {@link com.tribe.app.data.realm.UserTribeRealm} otherwise null.
+     */
+    public User transformToFrom(UserTribeRealm userRealm) {
+        User user = null;
+        if (userRealm != null) {
+            user = new User(userRealm.getId());
+            user.setCreatedAt(userRealm.getCreatedAt());
+            user.setUpdatedAt(userRealm.getUpdatedAt());
+            user.setDisplayName(userRealm.getDisplayName());
+            user.setProfilePicture(userRealm.getProfilePicture());
+            user.setScore(userRealm.getScore());
+            user.setReal(userRealm.isReal());
+            user.setInvited(userRealm.isInvited());
+            if (userRealm.getLocation() != null) user.setLocation(locationRealmDataMapper.transform(userRealm.getLocation()));
+            user.setDisableSaveTribe(userRealm.isDisableSaveTribe());
         }
 
         return user;
@@ -124,5 +149,31 @@ public class UserRealmDataMapper {
         }
 
         return userRealmList;
+    }
+
+    /**
+     * Transform a {@link User} into an {@link UserRealm}.
+     *
+     * @param user Object to be transformed.
+     * @return {@link UserTribeRealm} if valid {@link User} otherwise null.
+     */
+    public UserTribeRealm transformFrom(User user) {
+        UserTribeRealm userRealm = null;
+
+        if (user != null) {
+            userRealm = new UserTribeRealm();
+            userRealm.setId(user.getId());
+            userRealm.setCreatedAt(user.getCreatedAt());
+            userRealm.setUpdatedAt(user.getUpdatedAt());
+            userRealm.setDisplayName(user.getDisplayName());
+            userRealm.setProfilePicture(user.getProfilePicture());
+            userRealm.setScore(user.getScore());
+            userRealm.setReal(user.isReal());
+            userRealm.setInvited(user.isInvited());
+            if (user.getLocation() != null) userRealm.setLocation(locationRealmDataMapper.transform(user.getLocation()));
+            user.setDisableSaveTribe(user.isDisableSaveTribe());
+        }
+
+        return userRealm;
     }
 }

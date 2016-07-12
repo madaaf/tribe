@@ -19,6 +19,7 @@ import com.tribe.app.domain.interactor.text.ChatRepository;
 import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
 import com.tribe.app.presentation.internal.di.modules.NetModule;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
+import com.tribe.app.presentation.service.TribeFirebaseInstanceIDService;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
@@ -59,6 +60,7 @@ public interface ApplicationComponent {
     void inject(PlayerView playerView);
     void inject(TribeComponentView tribeComponentView);
     void inject(SendTribeJob sendTribeJob);
+    void inject(TribeFirebaseInstanceIDService instanceIDService);
 
     //Exposed to sub-graphs.
     Context context();

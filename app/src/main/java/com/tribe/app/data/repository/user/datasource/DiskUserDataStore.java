@@ -2,6 +2,7 @@ package com.tribe.app.data.repository.user.datasource;
 
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.UserRealm;
 
@@ -38,5 +39,10 @@ public class DiskUserDataStore implements UserDataStore {
     @Override
     public Observable<UserRealm> userInfos(String userId) {
         return this.userCache.userInfos(userId);
+    }
+
+    @Override
+    public Observable<Installation> createOrUpdateInstall(String token) {
+        return null;
     }
 }

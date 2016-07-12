@@ -24,6 +24,7 @@ import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -97,7 +98,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         super.onViewCreated(view, savedInstanceState);
         this.homeGridPresenter.attachView(this);
         if (savedInstanceState == null) {
-            this.loadFriendList();
+            this.loadData();
         }
     }
 
@@ -157,6 +158,11 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         if (friendCollection != null) {
             this.homeGridAdapter.setItems(friendCollection);
         }
+    }
+
+    @Override
+    public void updateTribes(Map<Friendship, List<Tribe>> tribes) {
+
     }
 
     @Override
@@ -272,9 +278,9 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     }
 
     /**
-     * Loads all friends.
+     * Loads all friends / tribes.
      */
-    private void loadFriendList() {
+    private void loadData() {
         this.homeGridPresenter.onCreate();
     }
 }

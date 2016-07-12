@@ -1,8 +1,10 @@
 package com.tribe.app.data.repository.user.datasource;
 
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.User;
 
 import rx.Observable;
 
@@ -39,4 +41,11 @@ public interface UserDataStore {
      *
      */
     Observable<UserRealm> userInfos(final String userId);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link User}
+     * @param token the token of the user for which we get the info
+     *
+     */
+    Observable<Installation> createOrUpdateInstall(final String token);
 }

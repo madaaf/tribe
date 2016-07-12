@@ -24,6 +24,8 @@ public class Tribe implements Serializable {
     private Friendship to;
     private boolean toGroup;
     private Date recordedAt;
+    private double lat;
+    private double lng;
 
     public String getId() {
         return id;
@@ -75,6 +77,22 @@ public class Tribe implements Serializable {
 
     public void setRecordedAt(Date recordedAt) {
         this.recordedAt = recordedAt;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getLng() {
+        return lng;
+    }
+
+    public void setLng(double lng) {
+        this.lng = lng;
     }
 
     public static Tribe createTribe(User user, Friendship friendship, @CameraWrapper.TribeMode String mode) {

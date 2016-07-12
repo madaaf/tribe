@@ -68,6 +68,7 @@
             user {
                 tribes {
                     id
+                    from
                     to
                     to_group
                     type url
@@ -76,6 +77,43 @@
                     lng
                 }
             }
+        }
+    </string>
+
+    <string name="install.create">
+        mutation {
+            createInstall(install: %1$s) {
+                id
+            }
+        }
+    </string>
+
+    <string name="install.update">
+        mutation {
+            updateInstall(id: \"%1$s\", install: %2$s) {
+                id
+            }
+        }
+    </string>
+
+    <string name="install.remove">
+        mutation {
+            removeInstall(id: \"%1$s\")
+        }
+    </string>
+
+    <string name="install.base">
+        {
+            user_id : \"%1$s\",
+            token : \"%2$s\",
+            os_name : \"%3$s\",
+            os_version : \"%4$s\",
+            phone_manufacturer : \"%5$s\",
+            phone_model : \"%6$s\",
+            app_version : \"%7$s\",
+            app_identifier : \"%8$s\",
+            lang : \"%9$s\",
+            carrier : \"%10$s\"
         }
     </string>
 </resources>

@@ -1,6 +1,7 @@
 package com.tribe.app.data.repository.user;
 
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.user.datasource.UserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
@@ -49,5 +50,10 @@ public class DiskUserDataRepository implements UserRepository {
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
         return userDataStore.userInfos(userId)
                 .map(userRealm -> this.userRealmDataMapper.transform(userRealm));
+    }
+
+    @Override
+    public Observable<Installation> createOrUpdateInstall(String token) {
+        return null;
     }
 }

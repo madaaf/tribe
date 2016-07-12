@@ -16,17 +16,23 @@ import com.tribe.app.BuildConfig;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
+import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
 import com.tribe.app.data.network.deserializer.NewTribeDeserializer;
 import com.tribe.app.data.network.deserializer.TribeAccessTokenDeserializer;
 import com.tribe.app.data.network.deserializer.TribeUserDeserializer;
+import com.tribe.app.data.network.deserializer.UserTribeListDeserializer;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -50,7 +56,7 @@ public class NetModule {
 
     @Provides
     @PerApplication
-    Gson provideGson() {
+    Gson provideGson(@Named("utcSimpleDate") SimpleDateFormat utcSimpleDate) {
         return new GsonBuilder()
                 .setExclusionStrategies(new ExclusionStrategy() {
                     @Override
@@ -66,6 +72,8 @@ public class NetModule {
                 .registerTypeAdapter(new TypeToken<UserRealm>() {}.getType(), new TribeUserDeserializer<>())
                 .registerTypeAdapter(AccessToken.class, new TribeAccessTokenDeserializer())
                 .registerTypeAdapter(TribeRealm.class, new NewTribeDeserializer<>())
+                .registerTypeAdapter(new TypeToken<List<TribeRealm>>() {}.getType(), new UserTribeListDeserializer<>(utcSimpleDate))
+                .registerTypeAdapter(Installation.class, new NewInstallDeserializer<>())
                 .create();
     }
 

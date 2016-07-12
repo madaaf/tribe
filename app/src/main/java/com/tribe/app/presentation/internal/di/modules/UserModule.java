@@ -2,12 +2,15 @@ package com.tribe.app.presentation.internal.di.modules;
 
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
+import com.tribe.app.domain.interactor.tribe.GetCloudTribeList;
+import com.tribe.app.domain.interactor.tribe.GetDiskTribeList;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.GetRequestCode;
+import com.tribe.app.domain.interactor.user.SendToken;
 import com.tribe.app.presentation.internal.di.scope.PerActivity;
 
 import javax.inject.Named;
@@ -69,5 +72,26 @@ public class UserModule {
     @Named("diskDeleteTribe")
     DeleteTribe provideDiskDeleteTribe(DeleteTribe deleteTribeDisk) {
         return deleteTribeDisk;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("cloudGetTribes")
+    UseCase provideCloudGetTribes(GetCloudTribeList getCloudTribeList) {
+        return getCloudTribeList;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("diskGetTribes")
+    UseCase provideDiskGetTribes(GetDiskTribeList getDiskTribeList) {
+        return getDiskTribeList;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("sendToken")
+    SendToken provideSendToken(SendToken sendToken) {
+        return sendToken;
     }
 }

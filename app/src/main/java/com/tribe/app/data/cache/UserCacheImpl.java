@@ -3,6 +3,7 @@ package com.tribe.app.data.cache;
 import android.content.Context;
 
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.UserRealm;
 
 import javax.inject.Inject;
@@ -45,6 +46,15 @@ public class UserCacheImpl implements UserCache {
         realm.beginTransaction();
         realm.delete(AccessToken.class);
         realm.copyToRealm(accessToken);
+        realm.commitTransaction();
+        realm.close();
+    }
+
+    public void put(Installation installation) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        realm.delete(Installation.class);
+        realm.copyToRealm(installation);
         realm.commitTransaction();
         realm.close();
     }

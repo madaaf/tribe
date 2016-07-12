@@ -5,6 +5,7 @@ package com.tribe.app.domain.interactor.user;
  */
 
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.Installation;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.User;
 
@@ -46,4 +47,11 @@ public interface UserRepository {
      *
      */
     Observable<User> userInfos(final String userId);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link User}
+     * @param token the token of the user for which we get the info
+     *
+     */
+    Observable<Installation> createOrUpdateInstall(final String token);
 }

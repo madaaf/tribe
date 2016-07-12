@@ -12,8 +12,8 @@ import com.tribe.app.presentation.utils.FileUtils;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
-import io.realm.RealmList;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -55,8 +55,8 @@ public class CloudTribeDataStore implements TribeDataStore {
     public Observable<TribeRealm> sendTribe(TribeRealm tribeRealm) {
         String request = context.getString(R.string.tribe_send,
                 tribeRealm.getFrom().getId(),
-                tribeRealm.getToGroup() == null ? tribeRealm.getToUser().getId() : tribeRealm.getToGroup().getId(),
-                tribeRealm.getToGroup() != null,
+                tribeRealm.isToGroup() ?  tribeRealm.getGroup().getId() : tribeRealm.getUser().getId(),
+                tribeRealm.isToGroup(),
                 tribeRealm.getType(),
                 simpleDateFormat.format(tribeRealm.getRecordedAt()),
                 0.0,
@@ -75,12 +75,12 @@ public class CloudTribeDataStore implements TribeDataStore {
     }
 
     @Override
-    public Observable<RealmList<TribeRealm>> tribes() {
+    public Observable<List<TribeRealm>> tribes() {
         return tribeApi.tribes(context.getString(R.string.tribe_infos))
                 .doOnNext(saveToCacheTribes);
     }
 
-    private final Action1<RealmList<TribeRealm>> saveToCacheTribes = tribeRealmList -> {
+    private final Action1<List<TribeRealm>> saveToCacheTribes = tribeRealmList -> {
         if (tribeRealmList != null && tribeRealmList.size() > 0) {
             CloudTribeDataStore.this.tribeCache.put(tribeRealmList);
         }

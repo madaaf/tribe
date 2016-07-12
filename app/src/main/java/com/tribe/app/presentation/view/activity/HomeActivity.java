@@ -11,11 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
+import com.tribe.app.presentation.internal.di.scope.HasComponent;
+import com.tribe.app.presentation.mvp.presenter.HomePresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.HomeView;
 import com.tribe.app.presentation.view.fragment.FriendsGridFragment;
@@ -23,6 +25,8 @@ import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,6 +45,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     public static Intent getCallingIntent(Context context) {
         return new Intent(context, HomeActivity.class);
     }
+
+    @Inject
+    HomePresenter homePresenter;
 
     @BindView(android.R.id.content)
     ViewGroup rootView;
@@ -81,6 +88,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         initCamera();
         initDependencyInjector();
         initPresenter();
+        initRegistrationToken();
     }
 
     @Override
@@ -142,10 +150,15 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 .applicationComponent(getApplicationComponent())
                 .activityModule(getActivityModule())
                 .build();
+
+        DaggerUserComponent.builder()
+                .activityModule(getActivityModule())
+                .applicationComponent(getApplicationComponent())
+                .build().inject(this);
     }
 
     private void initPresenter() {
-
+        this.homePresenter.attachView(this);
     }
 
     @Override
@@ -195,6 +208,12 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 }
             }
         }));
+    }
+
+    private void initRegistrationToken() {
+        String token = FirebaseInstanceId.getInstance().getToken();
+
+        if (token != null) homePresenter.sendToken(token);
     }
 
     @Override

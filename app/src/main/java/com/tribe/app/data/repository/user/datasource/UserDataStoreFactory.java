@@ -6,6 +6,7 @@ import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.Installation;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -21,9 +22,11 @@ public class UserDataStoreFactory {
     private final TribeApi tribeApi;
     private final LoginApi loginApi;
     private final AccessToken accessToken;
+    private final Installation installation;
 
     @Inject
-    public UserDataStoreFactory(Context context, UserCache userCache, TribeApi tribeApi, LoginApi loginApi, AccessToken accessToken) {
+    public UserDataStoreFactory(Context context, UserCache userCache, TribeApi tribeApi,
+                                LoginApi loginApi, AccessToken accessToken, Installation installation) {
         if (context == null || userCache == null) {
             throw new IllegalArgumentException("Constructor parameters cannot be null!");
         }
@@ -33,6 +36,7 @@ public class UserDataStoreFactory {
         this.tribeApi = tribeApi;
         this.loginApi = loginApi;
         this.accessToken = accessToken;
+        this.installation = installation;
     }
 
     /**
@@ -44,6 +48,6 @@ public class UserDataStoreFactory {
      * Create {@link UserDataStore} to retrieve data from the Cloud.
      */
     public UserDataStore createCloudDataStore() {
-        return new CloudUserDataStore(this.userCache, this.tribeApi, loginApi, this.accessToken, this.context);
+        return new CloudUserDataStore(this.userCache, this.tribeApi, loginApi, this.accessToken, installation, this.context);
     }
 }

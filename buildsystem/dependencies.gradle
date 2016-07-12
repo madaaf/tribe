@@ -36,6 +36,7 @@ ext {
     libPhoneNumberVersion = '7.1.0'
     exoPlayerVersion = 'r1.5.9'
     vlcPlayerVersion = '1.9.8'
+    firebaseMessagingVersion = '9.2.0'
 
     //Testing
     robolectricVersion = '3.0'
@@ -77,7 +78,8 @@ ext {
             rxSharedPreferences     : "com.f2prateek.rx.preferences:rx-preferences:${rxSharedPreferencesVersion}",
             libPhoneNumber          : "com.googlecode.libphonenumber:libphonenumber:${libPhoneNumberVersion}",
             exoplayer               : "com.google.android.exoplayer:exoplayer:${exoPlayerVersion}",
-            vlcPlayer               : "de.mrmaffen:vlc-android-sdk:${vlcPlayerVersion}"
+            vlcPlayer               : "de.mrmaffen:vlc-android-sdk:${vlcPlayerVersion}",
+            firebaseMessaging       : "com.google.firebase:firebase-messaging:${firebaseMessagingVersion}"
     ]
 
     presentationTestDependencies = [

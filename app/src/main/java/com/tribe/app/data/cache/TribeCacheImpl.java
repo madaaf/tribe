@@ -49,6 +49,21 @@ public class TribeCacheImpl implements TribeCache {
     }
 
     @Override
+    public Observable<List<TribeRealm>> put(List<TribeRealm> tribeRealmList) {
+        return Observable.create(new Observable.OnSubscribe<List<TribeRealm>>() {
+            @Override
+            public void call(final Subscriber<? super List<TribeRealm>> subscriber) {
+                Realm obsRealm = Realm.getDefaultInstance();
+                obsRealm.beginTransaction();
+                List<TribeRealm> obj = obsRealm.copyToRealmOrUpdate(tribeRealmList);
+                obsRealm.commitTransaction();
+                subscriber.onNext((List<TribeRealm>) obsRealm.copyFromRealm(obj));
+                obsRealm.close();
+            }
+        });
+    }
+
+    @Override
     public Observable<Void> delete(TribeRealm tribeRealm) {
         return Observable.create(new Observable.OnSubscribe<Void>() {
             @Override

@@ -1,6 +1,10 @@
 package com.tribe.app.data.repository.user.datasource;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.telephony.TelephonyManager;
 
 import com.tribe.app.R;
 import com.tribe.app.data.cache.UserCache;
@@ -8,6 +12,7 @@ import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.UserRealm;
 
@@ -24,6 +29,7 @@ public class CloudUserDataStore implements UserDataStore {
     private final UserCache userCache;
     private final Context context;
     private final AccessToken accessToken;
+    private final Installation installation;
 
     /**
      * Construct a {@link UserDataStore} based on connections to the api (Cloud).
@@ -33,12 +39,14 @@ public class CloudUserDataStore implements UserDataStore {
      * @param context the context
      * @param accessToken the access token
      */
-    public CloudUserDataStore(UserCache userCache, TribeApi tribeApi, LoginApi loginApi, AccessToken accessToken, Context context) {
+    public CloudUserDataStore(UserCache userCache, TribeApi tribeApi, LoginApi loginApi,
+                              AccessToken accessToken, Installation installation, Context context) {
         this.userCache = userCache;
         this.tribeApi = tribeApi;
         this.loginApi = loginApi;
         this.context = context;
         this.accessToken = accessToken;
+        this.installation = installation;
     }
 
     @Override
@@ -74,6 +82,35 @@ public class CloudUserDataStore implements UserDataStore {
                 .doOnNext(saveToCacheUser);
     }
 
+    @Override
+    public Observable<Installation> createOrUpdateInstall(String token) {
+        TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
+        String operatorName = telephonyManager.getNetworkOperatorName();
+        PackageManager manager = context.getPackageManager();
+        PackageInfo info = null;
+        try {
+            info = manager.getPackageInfo(context.getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        String base = context.getString(R.string.install_base,
+                    accessToken.getUserId(),
+                    token,
+                    "android",
+                    Build.VERSION.RELEASE,
+                    Build.MANUFACTURER,
+                    Build.MODEL,
+                    info != null ? info.versionName : "UNKNOWN",
+                    context.getPackageName(),
+                    context.getResources().getConfiguration().locale.toString(),
+                    operatorName
+                );
+
+        String req = installation == null || installation.getId() == null ? context.getString(R.string.install_create, base) : context.getString(R.string.install_update, installation.getId(), base);
+        return this.tribeApi.createOrUpdateInstall(req).doOnNext(saveToCacheInstall);
+    }
+
     private final Action1<AccessToken> saveToCacheAccessToken = accessToken -> {
         if (accessToken != null && accessToken.getAccessToken() != null) {
             CloudUserDataStore.this.userCache.put(accessToken);
@@ -83,6 +120,12 @@ public class CloudUserDataStore implements UserDataStore {
     private final Action1<UserRealm> saveToCacheUser = userRealm -> {
         if (userRealm != null) {
             CloudUserDataStore.this.userCache.put(userRealm);
+        }
+    };
+
+    private final Action1<Installation> saveToCacheInstall = installRealm -> {
+        if (installRealm != null) {
+            CloudUserDataStore.this.userCache.put(installRealm);
         }
     };
 }

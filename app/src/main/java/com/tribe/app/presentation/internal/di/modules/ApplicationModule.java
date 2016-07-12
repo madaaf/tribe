@@ -15,6 +15,7 @@ import com.tribe.app.data.cache.UserCacheImpl;
 import com.tribe.app.data.executor.JobExecutor;
 import com.tribe.app.data.network.job.BaseJob;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.chat.ChatDataRepository;
@@ -151,6 +152,20 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
+    Installation provideInstallation() {
+        Installation installation = new Installation();
+
+        Realm realm = Realm.getDefaultInstance();
+        final RealmResults<Installation> results = realm.where(Installation.class).findAll();
+        if (results != null && results.size() > 0)
+            installation = realm.copyFromRealm(results.get(0));
+        realm.close();
+
+        return installation;
+    }
+
+    @Provides
+    @Singleton
     User provideCurrentUser(AccessToken accessToken, UserRealmDataMapper userRealmDataMapper) {
         Realm realm = Realm.getDefaultInstance();
         User user = new User("-1");
@@ -252,7 +267,7 @@ public class ApplicationModule {
     @Singleton
     @Named("utcSimpleDate")
     SimpleDateFormat provideUTCSimpleDateFormat() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         return sdf;
     }

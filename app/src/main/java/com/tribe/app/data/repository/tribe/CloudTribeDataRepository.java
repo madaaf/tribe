@@ -10,6 +10,7 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.interactor.tribe.TribeRepository;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,16 +65,22 @@ public class CloudTribeDataRepository implements TribeRepository {
         final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createCloudDataStore();
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
         return Observable.zip(tribeDataStore.tribes().map(collection -> tribeRealmDataMapper.transform(collection)),
-                userDataStore.userInfos(null).map(userRealm -> userRealmDataMapper.transform(userRealm)),
-                (tribes, user) -> {
-                    Map<Friendship, List<Tribe>> result = new HashMap();
-                    for (Friendship friendship : user.getFriendshipList()) {
-                        for (Tribe tribe : tribes) {
-                            //if (tribe.getFrom())
+            userDataStore.userInfos(null).map(userRealm -> userRealmDataMapper.transform(userRealm)),
+            (tribes, user) -> {
+                Map<Friendship, List<Tribe>> result = new HashMap();
+
+                for (Friendship friendship : user.getFriendshipList()) {
+                    List<Tribe> newTribes = new ArrayList<>();
+                    for (Tribe tribe : tribes) {
+                        if (tribe.getFrom().getId().equals(friendship.getId())) {
+                            newTribes.add(tribe);
                         }
                     }
 
-                    return result;
-                });
+                    friendship.setTribes(tribes);
+                }
+
+                return result;
+            });
     }
 }

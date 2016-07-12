@@ -2,6 +2,7 @@ package com.tribe.app.domain.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by tiago on 04/05/2016.
@@ -21,6 +22,7 @@ public class Friendship implements Serializable {
 
     private int position;
     private Tribe tribe;
+    private List<Tribe> tribes;
 
     public String getId() {
         return id;
@@ -60,5 +62,13 @@ public class Friendship implements Serializable {
 
     public Tribe getTribe() {
         return tribe;
+    }
+
+    public List<Tribe> getTribes() {
+        return tribes;
+    }
+
+    public void setTribes(List<Tribe> tribes) {
+        this.tribes = tribes;
     }
 }

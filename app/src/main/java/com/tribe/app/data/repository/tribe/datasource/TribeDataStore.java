@@ -4,7 +4,6 @@ import com.tribe.app.data.realm.TribeRealm;
 
 import java.util.List;
 
-import io.realm.RealmList;
 import rx.Observable;
 
 /**
@@ -30,5 +29,5 @@ public interface TribeDataStore {
      * Get an {@link Observable} which will emit a {@link List < Tribe >} containing infos
      * about the tribes received and sent.
      */
-    Observable<RealmList<TribeRealm>> tribes();
+    Observable<List<TribeRealm>> tribes();
 }

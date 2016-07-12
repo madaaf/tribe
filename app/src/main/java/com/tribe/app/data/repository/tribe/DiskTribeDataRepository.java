@@ -4,10 +4,12 @@ import com.tribe.app.data.realm.mapper.TribeRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.tribe.datasource.TribeDataStore;
 import com.tribe.app.data.repository.tribe.datasource.TribeDataStoreFactory;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.interactor.tribe.TribeRepository;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -50,8 +52,9 @@ public class DiskTribeDataRepository implements TribeRepository {
     }
 
     @Override
-    public Observable<List<Tribe>> tribes() {
-        final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
-        return tribeDataStore.tribes().map(tribeRealmCollection -> tribeRealmDataMapper.transform(tribeRealmCollection));
+    public Observable<Map<Friendship, List<Tribe>>> tribes() {
+        return null;
+        //final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
+        //return tribeDataStore.tribes().map(tribeRealmCollection -> tribeRealmDataMapper.transform(tribeRealmCollection));
     }
 }

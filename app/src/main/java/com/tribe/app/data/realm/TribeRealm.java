@@ -14,11 +14,15 @@ public class TribeRealm extends RealmObject {
     @PrimaryKey
     private String localId;
     private String id;
-    private UserRealm from;
+    private UserTribeRealm from;
     private String type;
-    private UserRealm toUser;
-    private GroupRealm toGroup;
-    private Date recordedAt;
+    private String url;
+    private UserRealm user;
+    private GroupRealm group;
+    private Date recorded_at;
+    private boolean to_group = false;
+    private double lat;
+    private double lng;
 
     public void setId(String id) {
         this.id = id;
@@ -36,11 +40,11 @@ public class TribeRealm extends RealmObject {
         this.localId = localId;
     }
 
-    public UserRealm getFrom() {
+    public UserTribeRealm getFrom() {
         return from;
     }
 
-    public void setFrom(UserRealm from) {
+    public void setFrom(UserTribeRealm from) {
         this.from = from;
     }
 
@@ -52,27 +56,59 @@ public class TribeRealm extends RealmObject {
         this.type = type;
     }
 
-    public UserRealm getToUser() {
-        return toUser;
+    public double getLat() {
+        return lat;
     }
 
-    public void setToUser(UserRealm toUser) {
-        this.toUser = toUser;
+    public void setLat(double lat) {
+        this.lat = lat;
     }
 
-    public GroupRealm getToGroup() {
-        return toGroup;
+    public double getLng() {
+        return lng;
     }
 
-    public void setToGroup(GroupRealm toGroup) {
-        this.toGroup = toGroup;
+    public void setLng(double lng) {
+        this.lng = lng;
+    }
+
+    public boolean isToGroup() {
+        return to_group;
+    }
+
+    public void setToGroup(boolean to_group) {
+        this.to_group = to_group;
     }
 
     public Date getRecordedAt() {
-        return recordedAt;
+        return recorded_at;
     }
 
-    public void setRecordedAt(Date recordedAt) {
-        this.recordedAt = recordedAt;
+    public void setRecordedAt(Date recorded_at) {
+        this.recorded_at = recorded_at;
+    }
+
+    public GroupRealm getGroup() {
+        return group;
+    }
+
+    public void setGroup(GroupRealm group) {
+        this.group = group;
+    }
+
+    public UserRealm getUser() {
+        return user;
+    }
+
+    public void setUser(UserRealm user) {
+        this.user = user;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

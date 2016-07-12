@@ -1,6 +1,7 @@
 package com.tribe.app.data.repository.user;
 
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.mapper.PinRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.user.datasource.UserDataStore;
@@ -63,5 +64,11 @@ public class CloudUserDataRepository implements UserRepository {
         final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
         return userDataStore.userInfos(userId)
                 .map(userRealm -> this.userRealmDataMapper.transform(userRealm));
+    }
+
+    @Override
+    public Observable<Installation> createOrUpdateInstall(String token) {
+        final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
+        return userDataStore.createOrUpdateInstall(token);
     }
 }
