@@ -11,9 +11,8 @@ import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.interactor.tribe.TribeRepository;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -61,26 +60,40 @@ public class CloudTribeDataRepository implements TribeRepository {
     }
 
     @Override
-    public Observable<Map<Friendship, List<Tribe>>> tribes() {
+    public Observable<List<Friendship>> tribes() {
         final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createCloudDataStore();
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
         return Observable.zip(tribeDataStore.tribes().map(collection -> tribeRealmDataMapper.transform(collection)),
             userDataStore.userInfos(null).map(userRealm -> userRealmDataMapper.transform(userRealm)),
             (tribes, user) -> {
-                Map<Friendship, List<Tribe>> result = new HashMap();
+                List<Friendship> result = user.getFriendshipList();
 
                 for (Friendship friendship : user.getFriendshipList()) {
                     List<Tribe> newTribes = new ArrayList<>();
+
                     for (Tribe tribe : tribes) {
-                        if (tribe.getFrom().getId().equals(friendship.getId())) {
+                        if (tribe.isToGroup() && tribe.getTo().getId().equals(friendship.getId())
+                            || !tribe.isToGroup() && tribe.getFrom().getId().equals(friendship.getId())) {
                             newTribes.add(tribe);
                         }
                     }
 
-                    friendship.setTribes(tribes);
+                    friendship.setTribes(newTribes);
                 }
 
+                Collections.sort(result, (lhs, rhs) -> {
+                    int res = Tribe.nullSafeComparator(lhs.getMostRecentTribe(), rhs.getMostRecentTribe());
+                    if (res != 0) {
+                        return res;
+                    }
+
+                    return Friendship.nullSafeComparator(lhs, rhs);
+                });
+
+                result.add(0, user);
+
                 return result;
-            });
+            }
+        );
     }
 }

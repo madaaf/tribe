@@ -90,6 +90,19 @@
         android:alpha="0"
         />
 
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtNbTribes"
+        android:layout_width="@dimen/notif_size"
+        android:layout_height="@dimen/notif_size"
+        android:layout_marginLeft="37.5dp"
+        android:layout_gravity="center"
+        android:scaleX="0"
+        android:scaleY="0"
+        android:background="@drawable/shape_oval_red"
+        android:gravity="center"
+        style="@style/Title.1"
+        />
+
     <ImageView
         android:id="@+id/imgCancel"
         android:layout_width="wrap_content"

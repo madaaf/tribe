@@ -42,6 +42,14 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
         userGridAdapterDelegate = new UserGridAdapterDelegate(context);
         delegatesManager.addDelegate(userGridAdapterDelegate);
         items = new ArrayList<>();
+
+        setHasStableIds(true);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        Friendship friendship = getItemAtPosition(position);
+        return friendship.hashCode();
     }
 
     @Override
@@ -106,6 +114,10 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
 
     public Observable<View> onRecordEnd() {
         return userGridAdapterDelegate.onRecordEnd();
+    }
+
+    public Observable<View> onOpenTribes() {
+        return userGridAdapterDelegate.onOpenTribes();
     }
 
     public Friendship getItemAtPosition(int position) {

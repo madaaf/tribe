@@ -271,4 +271,13 @@ public class ApplicationModule {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         return sdf;
     }
+
+    @Provides
+    @Singleton
+    @Named("utcSimpleDateFull")
+    SimpleDateFormat provideUTCFullSimpleDateFormat() {
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss 'GMT'Z '(UTC)'");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return sdf;
+    }
 }

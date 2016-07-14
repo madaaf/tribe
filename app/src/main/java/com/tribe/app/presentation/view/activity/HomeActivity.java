@@ -162,10 +162,16 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     }
 
     @Override
-    public void initClicksOnChat(Observable<Friendship> observable) {
+    public void initOpenTribes(Observable<Friendship> observable) {
         subscriptions.add(observable.subscribe(friend -> {
             HomeActivity.this.navigator.navigateToTribe(HomeActivity.this, friend.getPosition(), friend);
-            //HomeActivity.this.navigator.navigateToChat(HomeActivity.this, friend.getId());
+        }));
+    }
+
+    @Override
+    public void initClicksOnChat(Observable<Friendship> observable) {
+        subscriptions.add(observable.subscribe(friend -> {
+            HomeActivity.this.navigator.navigateToChat(HomeActivity.this, friend.getId());
         }));
     }
 

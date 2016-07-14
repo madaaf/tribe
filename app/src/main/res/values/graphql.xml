@@ -23,6 +23,8 @@
             id
             displayName
             profilePicture
+            created_at
+            updated_at
         }
     </string>
     <!-- installs {

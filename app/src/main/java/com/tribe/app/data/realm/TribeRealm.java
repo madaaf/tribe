@@ -17,7 +17,7 @@ public class TribeRealm extends RealmObject {
     private UserTribeRealm from;
     private String type;
     private String url;
-    private UserRealm user;
+    private UserTribeRealm user;
     private GroupRealm group;
     private Date recorded_at;
     private boolean to_group = false;
@@ -96,11 +96,11 @@ public class TribeRealm extends RealmObject {
         this.group = group;
     }
 
-    public UserRealm getUser() {
+    public UserTribeRealm getUser() {
         return user;
     }
 
-    public void setUser(UserRealm user) {
+    public void setUser(UserTribeRealm user) {
         this.user = user;
     }
 

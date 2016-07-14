@@ -12,10 +12,8 @@ public class User extends Friendship {
         super(id);
     }
 
-    private String displayName;
     private String username;
     private String phone;
-    private String profilePicture;
     private int score = 0;
     private String email;
     private boolean emailVerified;
@@ -28,22 +26,6 @@ public class User extends Friendship {
     private List<User> reportedList;
     private List<Group> groupList;
     private List<Friendship> friendshipList;
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
-    public String getProfilePicture() {
-        return profilePicture;
-    }
-
-    public void setProfilePicture(String profilePicture) {
-        this.profilePicture = profilePicture;
-    }
 
     public int getScore() {
         return score;
@@ -155,7 +137,6 @@ public class User extends Friendship {
 
     public List<Friendship> getFriendshipList() {
         friendshipList = new ArrayList<>();
-        friendshipList.add(this);
         if (friendList != null) friendshipList.addAll(friendList);
         //if (groupList != null) friendshipList.addAll(groupList);
         return friendshipList;

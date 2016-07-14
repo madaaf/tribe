@@ -26,10 +26,10 @@ import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Tribe;
-import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.PlayerView;
@@ -59,12 +59,13 @@ public class TileView extends SquareFrameLayout {
     private final float SPEED_INSIDE = 12.5f;
     private final float BOUNCINESS_OUTSIDE = 1f;
     private final float SPEED_OUTSIDE = 20f;
-    private final int LONG_PRESS = 200;
+    private final int LONG_PRESS = 150;
     private final int FADE_DURATION = 200;
     private final int SCALE_DURATION = 200;
     private final int END_RECORD_DELAY = 1000;
     private final float OVERSHOOT = 3f;
     private final float TAP_TO_CANCEL_SPRING_VALUE = 0.60f;
+    private final int ANIMATION_DELAY = 500;
 
     @BindView(R.id.txtName) public TextViewFont txtName;
     @Nullable @BindView(R.id.btnText) public ImageView btnText;
@@ -79,12 +80,14 @@ public class TileView extends SquareFrameLayout {
     @BindView(R.id.imgDone) public ImageView imgDone;
     @Nullable @BindView(R.id.viewPressedForeground) public View viewPressedForeground;
     @BindView(R.id.viewPlayer) public PlayerView playerView;
+    @Nullable @BindView(R.id.txtNbTribes) public TextViewFont txtNbTribes;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions;
     private Unbinder unbinder;
 
     // RX SUBSCRIPTIONS / SUBJECTS
+    private final PublishSubject<View> clickOpenTribes = PublishSubject.create();
     private final PublishSubject<View> clickChatView = PublishSubject.create();
     private final PublishSubject<View> clickMoreView = PublishSubject.create();
     private final PublishSubject<View> clickTapToCancel = PublishSubject.create();
@@ -220,11 +223,18 @@ public class TileView extends SquareFrameLayout {
                                 }
                             });
                 }
-            } else if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
+            } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                System.out.println("System.currentTimeMillis() - longDown : " + (System.currentTimeMillis() - longDown));
                 if ((System.currentTimeMillis() - longDown) >= LONG_PRESS && isDown) {
+                    System.out.println("Record end");
                     recordEnded.onNext(this);
+                } else if (isDown && (System.currentTimeMillis() - longDown) <= LONG_PRESS) {
+                    System.out.println("Click open tribes");
+                    clickOpenTribes.onNext(this);
                 }
 
+                isDown = false;
+            } else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
                 isDown = false;
             }
 
@@ -249,6 +259,10 @@ public class TileView extends SquareFrameLayout {
                 if (type == TYPE_GRID) {
                     btnText.setAlpha(alpha);
                     btnMore.setAlpha(alpha);
+
+                    if (type == TYPE_GRID) {
+                        txtNbTribes.setAlpha(alpha);
+                    }
                 }
             }
         });
@@ -360,9 +374,23 @@ public class TileView extends SquareFrameLayout {
         springAvatar.setEndValue(TAP_TO_CANCEL_SPRING_VALUE);
     }
 
-    public void setInfo(User user) {
-        txtName.setText(user.getDisplayName());
-        avatar.load(user.getProfilePicture());
+    public void setInfo(Friendship friendship) {
+        txtName.setText(friendship.getDisplayName());
+        avatar.load(friendship.getProfilePicture());
+
+        if (type == TYPE_GRID) {
+            if (friendship.getTribes() != null && friendship.getTribes().size() > 0) {
+                txtNbTribes.setText("" + friendship.getTribes().size());
+                if (txtNbTribes.getScaleX() == 0) {
+                    txtNbTribes.animate().scaleX(1).scaleY(1).setDuration(SCALE_DURATION).setStartDelay(ANIMATION_DELAY).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
+                }
+            } else {
+                txtNbTribes.setText("");
+                if (txtNbTribes.getScaleX() == 1) {
+                    txtNbTribes.animate().scaleX(0).scaleY(0).setDuration(SCALE_DURATION).setStartDelay(ANIMATION_DELAY).start();
+                }
+            }
+        }
     }
 
     public void setBackground(int position) {
@@ -421,6 +449,10 @@ public class TileView extends SquareFrameLayout {
         animation.start();
 
         setTag(R.id.progress_bar_animation, animation);
+    }
+
+    public Observable<View> onOpenTribes() {
+        return clickOpenTribes;
     }
 
     public Observable<View> onClickChat() {

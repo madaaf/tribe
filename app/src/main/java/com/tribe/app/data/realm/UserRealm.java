@@ -1,7 +1,6 @@
 package com.tribe.app.data.realm;
 
 import java.util.Date;
-import java.util.List;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -15,8 +14,8 @@ public class UserRealm extends RealmObject {
     @PrimaryKey
     private String id;
 
-    private Date createdAt;
-    private Date updatedAt;
+    private Date created_at;
+    private Date updated_at;
     private String displayName;
     private String username;
     private String phone;
@@ -43,19 +42,19 @@ public class UserRealm extends RealmObject {
     }
 
     public Date getCreatedAt() {
-        return createdAt;
+        return created_at;
     }
 
     public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
+        this.created_at = createdAt;
     }
 
     public Date getUpdatedAt() {
-        return updatedAt;
+        return updated_at;
     }
 
     public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
+        this.updated_at = updatedAt;
     }
 
     public String getDisplayName() {

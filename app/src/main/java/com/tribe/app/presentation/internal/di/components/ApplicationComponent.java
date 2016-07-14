@@ -6,6 +6,7 @@ import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
+import com.tribe.app.data.network.job.DownloadTribeJob;
 import com.tribe.app.data.network.job.SendTribeJob;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.repository.tribe.CloudTribeDataRepository;
@@ -60,6 +61,7 @@ public interface ApplicationComponent {
     void inject(PlayerView playerView);
     void inject(TribeComponentView tribeComponentView);
     void inject(SendTribeJob sendTribeJob);
+    void inject(DownloadTribeJob downloadTribeJob);
     void inject(TribeFirebaseInstanceIDService instanceIDService);
 
     //Exposed to sub-graphs.

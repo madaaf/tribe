@@ -45,6 +45,7 @@
     <dimen name="camera_stroke_width">8dp</dimen>
     <dimen name="tribe_icon_size">15dp</dimen>
     <dimen name="tribe_icon_size_max">70dp</dimen>
+    <dimen name="notif_size">27dp</dimen>
 
     <!-- THRESHOLDS -->
     <dimen name="threshold_end_tribe">200dp</dimen>

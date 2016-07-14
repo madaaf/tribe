@@ -44,13 +44,14 @@ public class TribeRealmDataMapper {
             tribe = new Tribe();
             tribe.setId(tribeRealm.getId());
             tribe.setLocalId(tribeRealm.getLocalId());
-            tribe.setTo(tribeRealm.getGroup() != null ? groupRealmDataMapper.transform(tribeRealm.getGroup()) : userRealmDataMapper.transform(tribeRealm.getUser()));
+            tribe.setTo(tribeRealm.getGroup() != null ? groupRealmDataMapper.transform(tribeRealm.getGroup()) : userRealmDataMapper.transformFromTribeUser(tribeRealm.getUser()));
             tribe.setType(tribeRealm.getType());
-            tribe.setFrom(userRealmDataMapper.transformToFrom(tribeRealm.getFrom()));
+            tribe.setFrom(userRealmDataMapper.transformFromTribeUser(tribeRealm.getFrom()));
             tribe.setRecordedAt(tribeRealm.getRecordedAt());
             tribe.setToGroup(tribeRealm.isToGroup());
             tribe.setLat(tribeRealm.getLat());
             tribe.setLng(tribeRealm.getLng());
+            tribe.setUrl(tribeRealm.getUrl());
         }
 
         return tribe;
@@ -73,14 +74,15 @@ public class TribeRealmDataMapper {
             if (tribe.isToGroup()) {
                 tribeRealm.setGroup(groupRealmDataMapper.transform((Group) tribe.getTo()));
             } else {
-                tribeRealm.setUser(userRealmDataMapper.transform((User) tribe.getTo()));
+                tribeRealm.setUser(userRealmDataMapper.transformToTribeUser((User) tribe.getTo()));
             }
 
             tribeRealm.setType(tribe.getType());
             tribeRealm.setRecordedAt(tribe.getRecordedAt());
-            tribeRealm.setFrom(userRealmDataMapper.transformFrom(tribe.getFrom()));
+            tribeRealm.setFrom(userRealmDataMapper.transformToTribeUser(tribe.getFrom()));
             tribeRealm.setLat(tribe.getLat());
             tribeRealm.setLng(tribe.getLng());
+            tribeRealm.setUrl(tribe.getUrl());
         }
 
         return tribeRealm;

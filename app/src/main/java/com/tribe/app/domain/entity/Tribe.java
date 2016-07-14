@@ -26,6 +26,7 @@ public class Tribe implements Serializable {
     private Date recordedAt;
     private double lat;
     private double lng;
+    private String url;
 
     public String getId() {
         return id;
@@ -109,6 +110,14 @@ public class Tribe implements Serializable {
         this.id = id;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -137,5 +146,17 @@ public class Tribe implements Serializable {
         stringBuilder.append("\n*******************************");
 
         return stringBuilder.toString();
+    }
+
+    public static int nullSafeComparator(final Tribe one, final Tribe two) {
+        if (one == null ^ two == null) {
+            return (one == null) ? 1 : -1;
+        }
+
+        if (one == null && two == null) {
+            return 0;
+        }
+
+        return one.getRecordedAt().compareTo(two.getRecordedAt());
     }
 }

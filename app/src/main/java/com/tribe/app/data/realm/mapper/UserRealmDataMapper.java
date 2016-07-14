@@ -64,7 +64,7 @@ public class UserRealmDataMapper {
      * @param userRealm Object to be transformed.
      * @return {@link com.tribe.app.domain.entity.User} if valid {@link com.tribe.app.data.realm.UserTribeRealm} otherwise null.
      */
-    public User transformToFrom(UserTribeRealm userRealm) {
+    public User transformFromTribeUser(UserTribeRealm userRealm) {
         User user = null;
         if (userRealm != null) {
             user = new User(userRealm.getId());
@@ -157,7 +157,7 @@ public class UserRealmDataMapper {
      * @param user Object to be transformed.
      * @return {@link UserTribeRealm} if valid {@link User} otherwise null.
      */
-    public UserTribeRealm transformFrom(User user) {
+    public UserTribeRealm transformToTribeUser(User user) {
         UserTribeRealm userRealm = null;
 
         if (user != null) {

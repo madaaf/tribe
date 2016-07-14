@@ -13,9 +13,11 @@ import com.jakewharton.byteunits.DecimalByteUnit;
 import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 import com.tribe.app.BuildConfig;
+import com.tribe.app.data.network.FileApi;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
+import com.tribe.app.data.network.deserializer.DateDeserializer;
 import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
 import com.tribe.app.data.network.deserializer.NewTribeDeserializer;
 import com.tribe.app.data.network.deserializer.TribeAccessTokenDeserializer;
@@ -29,6 +31,7 @@ import com.tribe.app.presentation.internal.di.scope.PerApplication;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -56,7 +59,7 @@ public class NetModule {
 
     @Provides
     @PerApplication
-    Gson provideGson(@Named("utcSimpleDate") SimpleDateFormat utcSimpleDate) {
+    Gson provideGson(@Named("utcSimpleDate") SimpleDateFormat utcSimpleDate, @Named("utcSimpleDateFull") SimpleDateFormat utcSimpleDateFull) {
         return new GsonBuilder()
                 .setExclusionStrategies(new ExclusionStrategy() {
                     @Override
@@ -74,6 +77,7 @@ public class NetModule {
                 .registerTypeAdapter(TribeRealm.class, new NewTribeDeserializer<>())
                 .registerTypeAdapter(new TypeToken<List<TribeRealm>>() {}.getType(), new UserTribeListDeserializer<>(utcSimpleDate))
                 .registerTypeAdapter(Installation.class, new NewInstallDeserializer<>())
+                .registerTypeAdapter(Date.class, new DateDeserializer(utcSimpleDateFull))
                 .create();
     }
 
@@ -129,6 +133,28 @@ public class NetModule {
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .callFactory(httpClientBuilder.build())
                 .build().create(TribeApi.class);
+    }
+
+    @Provides
+    @PerApplication
+    FileApi provideFileApi(OkHttpClient okHttpClient) {
+        OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
+
+        httpClientBuilder
+                .connectTimeout(5, TimeUnit.MINUTES)
+                .readTimeout(5, TimeUnit.MINUTES);
+
+        if (BuildConfig.DEBUG) {
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            httpClientBuilder.addInterceptor(loggingInterceptor);
+            httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+        }
+
+        return new Retrofit.Builder()
+            .baseUrl("http://api.tribe.pm")
+            .callFactory(httpClientBuilder.build())
+            .build().create(FileApi.class);
     }
 
     @Provides

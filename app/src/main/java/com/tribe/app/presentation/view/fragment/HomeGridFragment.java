@@ -24,7 +24,6 @@ import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -49,6 +48,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
 
     // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
+    private PublishSubject<Friendship> clickOpenTribes = PublishSubject.create();
     private PublishSubject<Friendship> clickChatViewSubject = PublishSubject.create();
     private PublishSubject<String> onRecordStart = PublishSubject.create();
     private PublishSubject<Friendship> onRecordEnd = PublishSubject.create();
@@ -161,8 +161,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     }
 
     @Override
-    public void updateTribes(Map<Friendship, List<Tribe>> tribes) {
-
+    public void updateTribes(List<Friendship> tribes) {
+        this.homeGridAdapter.setItems(tribes);
     }
 
     @Override
@@ -197,6 +197,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private void setupRecyclerView() {
         this.layoutManager = new HomeLayoutManager(context());
         this.recyclerViewFriends.setLayoutManager(layoutManager);
+        this.recyclerViewFriends.setItemAnimator(null);
         this.recyclerViewFriends.setAdapter(homeGridAdapter);
 
         Observable<Integer> scrollDetector = Observable.create(new Observable.OnSubscribe<Integer>() {
@@ -206,11 +207,16 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                     @Override
                     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                         super.onScrolled(recyclerView, dx, dy);
-                        subscriber.onNext(recyclerView.computeVerticalScrollOffset());
+                        int verticalScrollOffset = recyclerView.computeVerticalScrollOffset();
+                        subscriber.onNext(verticalScrollOffset);
                     }
                 });
             }
         });
+
+        subscriptions.add(homeGridAdapter.onOpenTribes()
+                .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
+                .subscribe(clickOpenTribes));
 
         subscriptions.add(homeGridAdapter.onClickChat()
             .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
@@ -225,6 +231,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         subscriptions.add(homeGridAdapter.onRecordStart()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .map(friendship -> homeGridPresenter.createTribe(currentUser, friendship, tribeMode))
+                .doOnNext(str -> recyclerViewFriends.requestDisallowInterceptTouchEvent(true))
                 .subscribe(onRecordStart));
 
         subscriptions.add(homeGridAdapter.onRecordEnd()
@@ -233,6 +240,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                     TileView tileView = (TileView) layoutManager.findViewByPosition(friendship.getPosition());
                     tileView.showTapToCancel(currentTribe);
                     homeGridAdapter.updateItemWithTribe(friendship.getPosition(), currentTribe);
+                    recyclerViewFriends.requestDisallowInterceptTouchEvent(false);
                 })
                 .subscribe(onRecordEnd));
 
@@ -251,6 +259,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                     currentTribe = null;
                 }));
 
+        if (homeView != null) homeView.initOpenTribes(clickOpenTribes);
         if (homeView != null) homeView.initClicksOnChat(clickChatViewSubject);
         if (homeView != null) homeView.initOnRecordStart(onRecordStart);
         if (homeView != null) homeView.initOnRecordEnd(onRecordEnd);

@@ -9,7 +9,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.TribeRealm;
-import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.UserTribeRealm;
 
 import java.lang.reflect.Type;
@@ -39,7 +38,7 @@ public class UserTribeListDeserializer<T> implements JsonDeserializer<T> {
 
         for (JsonElement obj : results) {
             TribeRealm tribeRealm = new TribeRealm();
-            UserRealm userRealm = null;
+            UserTribeRealm userTribeRealm = null;
             GroupRealm groupRealm = null;
             JsonObject json = obj.getAsJsonObject();
             tribeRealm.setId(json.get("id").getAsString());
@@ -50,9 +49,9 @@ public class UserTribeListDeserializer<T> implements JsonDeserializer<T> {
                 groupRealm.setId(json.get("id").getAsString());
                 tribeRealm.setGroup(groupRealm);
             } else {
-                userRealm = new UserRealm();
-                userRealm.setId(json.get("id").getAsString());
-                tribeRealm.setUser(userRealm);
+                userTribeRealm = new UserTribeRealm();
+                userTribeRealm.setId(json.get("id").getAsString());
+                tribeRealm.setUser(userTribeRealm);
             }
 
             UserTribeRealm from = new UserTribeRealm();

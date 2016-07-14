@@ -45,6 +45,16 @@ public class FileUtils {
         return generateOutputFile(endDir, id).getAbsolutePath();
     }
 
+    public static File getFileEnd(String id) {
+        File endDir = new File(pathOrigin + pathEnd);
+
+        if (!endDir.exists()) {
+            endDir.mkdirs();
+        }
+
+        return generateOutputFile(endDir, id);
+    }
+
     public static String getPathForId(String id) {
         File endDir = new File(pathOrigin + pathEnd);
         return generateOutputFile(endDir, id).getAbsolutePath();

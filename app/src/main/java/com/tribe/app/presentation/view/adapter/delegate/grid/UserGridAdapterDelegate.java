@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import com.fernandocejas.frodo.annotation.RxLogObservable;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.component.TileView;
@@ -31,6 +30,7 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
     private Context context;
 
     // RX SUBSCRIPTIONS / SUBJECTS
+    private final PublishSubject<View> clickOpenTribes = PublishSubject.create();
     private final PublishSubject<View> clickChatView = PublishSubject.create();
     private final PublishSubject<View> clickMoreView = PublishSubject.create();
     private final PublishSubject<View> clickTapToCancel = PublishSubject.create();
@@ -62,6 +62,7 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
         userGridViewHolder.viewTile.onClickMore().subscribe(clickMoreView);
         userGridViewHolder.viewTile.onTapToCancel().subscribe(clickTapToCancel);
         userGridViewHolder.viewTile.onNotCancel().subscribe(onNotCancel);
+        userGridViewHolder.viewTile.onOpenTribes().subscribe(clickOpenTribes);
 
         return userGridViewHolder;
     }
@@ -69,15 +70,19 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
     @Override
     public void onBindViewHolder(@NonNull List<Friendship> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         UserGridViewHolder vh = (UserGridViewHolder) holder;
-        User user = (User) items.get(position);
+        Friendship friendship = items.get(position);
 
-        if (user.getTribe() == null) {
-            vh.viewTile.setInfo(user);
+        if (friendship.getTribe() == null) {
+            vh.viewTile.setInfo(friendship);
             vh.viewTile.setBackground(position);
-            user.setPosition(position);
+            friendship.setPosition(position);
         } else {
-            vh.viewTile.showTapToCancel(user.getTribe());
+            vh.viewTile.showTapToCancel(friendship.getTribe());
         }
+    }
+
+    public Observable<View> onOpenTribes() {
+        return clickOpenTribes;
     }
 
     public Observable<View> onClickChat() {

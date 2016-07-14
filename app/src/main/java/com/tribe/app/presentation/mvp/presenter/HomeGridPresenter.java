@@ -1,8 +1,8 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
+import com.tribe.app.data.network.job.DownloadTribeJob;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.exception.DefaultErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
@@ -15,7 +15,6 @@ import com.tribe.app.presentation.mvp.view.SendTribeView;
 import com.tribe.app.presentation.mvp.view.View;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -88,12 +87,12 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         showViewLoading();
         FriendListSubscriber subscriber = new FriendListSubscriber();
         //diskUserInfosUsecase.execute(subscriber);
-        cloudUserInfosUsecase.execute(subscriber);
+        //cloudUserInfosUsecase.execute(subscriber);
     }
 
     public void loadTribeList() {
         TribeListSubscriber subscriber = new TribeListSubscriber();
-        //diskUserInfosUsecase.execute(subscriber);
+        diskGetTribeListUsecase.execute(subscriber);
         cloudGetTribeListUsecase.execute(subscriber);
     }
 
@@ -101,7 +100,8 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         this.homeGridView.renderFriendshipList(friendList);
     }
 
-    private void updateTribes(Map<Friendship, List<Tribe>> tribes) {
+    private void updateTribes(List<Friendship> tribes) {
+        jobManager.addJobInBackground(new DownloadTribeJob(tribes.get(1).getTribes().get(0)));
         this.homeGridView.updateTribes(tribes);
     }
 
@@ -124,11 +124,13 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
 
         @Override
         public void onNext(User user) {
-            showFriendCollectionInView(user.getFriendshipList());
+            List<Friendship> friendships = user.getFriendshipList();
+            friendships.add(0, user);
+            showFriendCollectionInView(friendships);
         }
     }
 
-    private final class TribeListSubscriber extends DefaultSubscriber<Map<Friendship, List<Tribe>>> {
+    private final class TribeListSubscriber extends DefaultSubscriber<List<Friendship>> {
 
         @Override
         public void onCompleted() {
@@ -141,7 +143,7 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         }
 
         @Override
-        public void onNext(Map<Friendship, List<Tribe>> tribes) {
+        public void onNext(List<Friendship> tribes) {
             updateTribes(tribes);
         }
     }

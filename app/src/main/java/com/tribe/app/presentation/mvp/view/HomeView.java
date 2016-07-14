@@ -6,6 +6,7 @@ import rx.Observable;
 
 public interface HomeView extends View {
 
+    void initOpenTribes(Observable<Friendship> observable);
     void initClicksOnChat(Observable<Friendship> observable);
     void initOnRecordStart(Observable<String> observable);
     void initOnRecordEnd(Observable<Friendship> observable);

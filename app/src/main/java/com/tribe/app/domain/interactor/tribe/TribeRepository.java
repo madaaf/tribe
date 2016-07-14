@@ -8,7 +8,6 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Tribe;
 
 import java.util.List;
-import java.util.Map;
 
 import rx.Observable;
 
@@ -32,8 +31,8 @@ public interface TribeRepository {
     Observable<Void> deleteTribe(final Tribe tribe);
 
     /**
-     * Get an {@link Observable} which will emit a {@link Map<Friendship, List<Tribe>>} containing infos
+     * Get an {@link Observable} which will emit a {@link List<Friendship>} containing infos
      * about the tribes received and sent categorized by friendship.
      */
-    Observable<Map<Friendship, List<Tribe>>> tribes();
+    Observable<List<Friendship>> tribes();
 }

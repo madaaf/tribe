@@ -21,8 +21,10 @@ public class Friendship implements Serializable {
     private Date updatedAt;
 
     private int position;
-    private Tribe tribe;
-    private List<Tribe> tribes;
+    protected Tribe tribe;
+    protected List<Tribe> tribes;
+    protected String profilePicture;
+    protected String displayName;
 
     public String getId() {
         return id;
@@ -70,5 +72,44 @@ public class Friendship implements Serializable {
 
     public void setTribes(List<Tribe> tribes) {
         this.tribes = tribes;
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public Tribe getMostRecentTribe() {
+        return tribes != null && tribes.size() > 0 ? tribes.get(tribes.size() - 1) : null;
+    }
+
+    public static int nullSafeComparator(final Friendship one, final Friendship two) {
+        if (one.getUpdatedAt() == null ^ two.getUpdatedAt() == null) {
+            return (one.getUpdatedAt() == null) ? -1 : 1;
+        }
+
+        if (one.getUpdatedAt() == null && two.getUpdatedAt() == null) {
+            return 0;
+        }
+
+        return one.getUpdatedAt().compareTo(two.getUpdatedAt());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (id != null ? id.hashCode() : 0);
+        return result;
     }
 }

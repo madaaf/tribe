@@ -3,6 +3,7 @@ package com.tribe.app.data.cache;
 import android.content.Context;
 
 import com.tribe.app.data.realm.TribeRealm;
+import com.tribe.app.domain.entity.User;
 
 import java.util.List;
 
@@ -19,10 +20,12 @@ import rx.Subscriber;
 public class TribeCacheImpl implements TribeCache {
 
     private Context context;
+    private User currentUser;
 
     @Inject
-    public TribeCacheImpl(Context context) {
+    public TribeCacheImpl(Context context, User currentUser) {
         this.context = context;
+        this.currentUser = currentUser;
     }
 
     public boolean isExpired() {
@@ -49,18 +52,12 @@ public class TribeCacheImpl implements TribeCache {
     }
 
     @Override
-    public Observable<List<TribeRealm>> put(List<TribeRealm> tribeRealmList) {
-        return Observable.create(new Observable.OnSubscribe<List<TribeRealm>>() {
-            @Override
-            public void call(final Subscriber<? super List<TribeRealm>> subscriber) {
-                Realm obsRealm = Realm.getDefaultInstance();
-                obsRealm.beginTransaction();
-                List<TribeRealm> obj = obsRealm.copyToRealmOrUpdate(tribeRealmList);
-                obsRealm.commitTransaction();
-                subscriber.onNext((List<TribeRealm>) obsRealm.copyFromRealm(obj));
-                obsRealm.close();
-            }
-        });
+    public void put(List<TribeRealm> tribeRealmList) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(tribeRealmList);
+        realm.commitTransaction();
+        realm.close();
     }
 
     @Override
@@ -85,7 +82,7 @@ public class TribeCacheImpl implements TribeCache {
             @Override
             public void call(final Subscriber<? super List<TribeRealm>> subscriber) {
                 Realm obsRealm = Realm.getDefaultInstance();
-                final RealmResults<TribeRealm> results = obsRealm.where(TribeRealm.class).findAll();
+                final RealmResults<TribeRealm> results = obsRealm.where(TribeRealm.class).notEqualTo("from.id", currentUser.getId()).findAll();
                 subscriber.onNext(obsRealm.copyFromRealm(results));
                 obsRealm.close();
             }
