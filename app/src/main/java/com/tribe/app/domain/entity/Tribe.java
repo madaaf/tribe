@@ -1,6 +1,7 @@
 package com.tribe.app.domain.entity;
 
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.MessageStatus;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 
 import java.io.Serializable;
@@ -27,6 +28,7 @@ public class Tribe implements Serializable {
     private double lat;
     private double lng;
     private String url;
+    private @MessageStatus.Status String messageStatus;
 
     public String getId() {
         return id;
@@ -96,16 +98,6 @@ public class Tribe implements Serializable {
         this.lng = lng;
     }
 
-    public static Tribe createTribe(User user, Friendship friendship, @CameraWrapper.TribeMode String mode) {
-        Tribe tribe = new Tribe();
-        tribe.setLocalId(FileUtils.generateIdForTribe());
-        tribe.setRecordedAt(new Date(System.currentTimeMillis()));
-        tribe.setFrom(user);
-        tribe.setTo(friendship);
-        tribe.setType(mode);
-        return tribe;
-    }
-
     public void setId(String id) {
         this.id = id;
     }
@@ -116,6 +108,25 @@ public class Tribe implements Serializable {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getMessageStatus() {
+        return messageStatus;
+    }
+
+    public void setMessageStatus(String messageStatus) {
+        this.messageStatus = messageStatus;
+    }
+
+    public static Tribe createTribe(User user, Friendship friendship, @CameraWrapper.TribeMode String mode) {
+        Tribe tribe = new Tribe();
+        tribe.setLocalId(FileUtils.generateIdForTribe());
+        tribe.setRecordedAt(new Date(System.currentTimeMillis()));
+        tribe.setFrom(user);
+        tribe.setTo(friendship);
+        tribe.setType(mode);
+        tribe.setMessageStatus(MessageStatus.STATUS_PENDING);
+        return tribe;
     }
 
     @Override

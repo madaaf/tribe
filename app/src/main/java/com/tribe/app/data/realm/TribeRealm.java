@@ -1,5 +1,7 @@
 package com.tribe.app.data.realm;
 
+import com.tribe.app.presentation.utils.MessageStatus;
+
 import java.util.Date;
 
 import io.realm.RealmObject;
@@ -23,6 +25,7 @@ public class TribeRealm extends RealmObject {
     private boolean to_group = false;
     private double lat;
     private double lng;
+    private @MessageStatus.Status String messageStatus;
 
     public void setId(String id) {
         this.id = id;
@@ -110,5 +113,13 @@ public class TribeRealm extends RealmObject {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getMessageStatus() {
+        return messageStatus;
+    }
+
+    public void setMessageStatus(String messageStatus) {
+        this.messageStatus = messageStatus;
     }
 }

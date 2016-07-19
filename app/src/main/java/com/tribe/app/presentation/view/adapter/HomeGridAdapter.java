@@ -19,6 +19,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by tiago on 18/05/2016.
@@ -31,6 +32,9 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
     private UserGridAdapterDelegate userGridAdapterDelegate;
 
     private List<Friendship> items;
+
+    // OBSERVABLES
+    private CompositeSubscription subscriptions = new CompositeSubscription();
 
     @Inject
     public HomeGridAdapter(Context context) {
@@ -68,23 +72,8 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
     }
 
     public void releaseSubscriptions() {
+        if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
         delegatesManager.releaseSubscriptions();
-    }
-
-    public void setItems(List<Friendship> items) {
-        this.items.clear();
-        this.items.addAll(items);
-
-        double minItems = Math.ceil(((float) screenUtils.getHeight() / (screenUtils.getWidth() >> 1)) * 2);
-        if (minItems % 2 != 0) minItems++;
-
-        if (this.items.size() < minItems) {
-            for (int i = this.items.size(); i < minItems; i++) {
-                this.items.add(new Friendship(Friendship.ID_EMPTY));
-            }
-        }
-
-        this.notifyDataSetChanged();
     }
 
     @Override
@@ -120,12 +109,32 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
         return userGridAdapterDelegate.onOpenTribes();
     }
 
+    public void setItems(List<Friendship> items) {
+        this.items.clear();
+        this.items.addAll(items);
+
+        double minItems = Math.ceil(((float) screenUtils.getHeight() / (screenUtils.getWidth() >> 1)) * 2);
+        if (minItems % 2 != 0) minItems++;
+
+        if (this.items.size() < minItems) {
+            for (int i = this.items.size(); i < minItems; i++) {
+                this.items.add(new Friendship(Friendship.ID_EMPTY));
+            }
+        }
+
+        this.notifyDataSetChanged();
+    }
+
     public Friendship getItemAtPosition(int position) {
         if (items.size() > 0 && position < items.size()) {
             return items.get(position);
         } else {
             return null;
         }
+    }
+
+    public List<Friendship> getItems() {
+        return items;
     }
 
     public void updateItemWithTribe(int position, Tribe tribe) {

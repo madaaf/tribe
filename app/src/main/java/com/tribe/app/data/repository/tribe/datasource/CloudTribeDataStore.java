@@ -9,6 +9,7 @@ import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.MessageStatus;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -63,21 +64,34 @@ public class CloudTribeDataStore implements TribeDataStore {
                 0.0
         );
 
-        System.out.println("REQUEST : " + request);
-
         RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
 
         File file = new File(FileUtils.getPathForId(tribeRealm.getLocalId()));
         RequestBody requestFile = RequestBody.create(MediaType.parse("video/mp4"), file);
         MultipartBody.Part body = MultipartBody.Part.createFormData("tribe", file.getName(), requestFile);
 
-        return tribeApi.uploadTribe(query, body).map(tribeServer -> tribeCache.updateLocalWithServerRealm(tribeRealm, tribeServer));
+        return tribeApi.uploadTribe(query, body).map(tribeServer -> {
+            tribeServer.setMessageStatus(MessageStatus.STATUS_SENT);
+            return tribeCache.updateLocalWithServerRealm(tribeRealm, tribeServer);
+        });
     }
 
     @Override
     public Observable<List<TribeRealm>> tribes() {
         return tribeApi.tribes(context.getString(R.string.tribe_infos))
+                .map(tribeRealmList -> {
+                    for (TribeRealm tribe : tribeRealmList) {
+                        tribe.setMessageStatus(MessageStatus.STATUS_RECEIVED);
+                    }
+
+                    return tribeRealmList;
+                })
                 .doOnNext(saveToCacheTribes);
+    }
+
+    @Override
+    public Observable<List<TribeRealm>> tribesPending() {
+        return null;
     }
 
     private final Action1<List<TribeRealm>> saveToCacheTribes = tribeRealmList -> {

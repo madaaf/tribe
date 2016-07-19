@@ -5,10 +5,15 @@ import android.util.Log;
 
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
+import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.network.FileApi;
+import com.tribe.app.data.network.exception.FileAlreadyExists;
+import com.tribe.app.data.realm.TribeRealm;
+import com.tribe.app.data.realm.mapper.TribeRealmDataMapper;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.MessageStatus;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -19,6 +24,9 @@ import java.io.OutputStream;
 import javax.inject.Inject;
 
 import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by tiago on 05/07/2016.
@@ -30,11 +38,17 @@ public class DownloadTribeJob extends BaseJob {
     @Inject
     FileApi fileApi;
 
+    @Inject
+    TribeCache tribeCache;
+
+    @Inject
+    TribeRealmDataMapper tribeRealmDataMapper;
+
     // VARIABLES
     private Tribe tribe;
 
     public DownloadTribeJob(Tribe tribe) {
-        super(new Params(Priority.MID).requireNetwork().groupBy(
+        super(new Params(Priority.HIGH).requireNetwork().groupBy(
                 (tribe.isToGroup() ? tribe.getTo().getId() : tribe.getFrom().getId())
         ).setSingleId(tribe.getId()));
 
@@ -43,48 +57,52 @@ public class DownloadTribeJob extends BaseJob {
 
     @Override
     public void onAdded() {
-
+        TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
+        tribeRealm.setMessageStatus(MessageStatus.STATUS_LOADING);
+        tribeCache.update(tribeRealm);
     }
 
     @Override
     public void onRun() throws Throwable {
-//        File file = FileUtils.getFileEnd(tribe.getId());
-//
-//        if (file.exists() && file.length() > 0) throw new Exception("Already downloading");
-//
-//        Call<ResponseBody> call = fileApi.downloadFileWithUrl(tribe.getUrl());
-//
-//        call.enqueue(new Callback<ResponseBody>() {
-//            @Override
-//            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-//                if (response.isSuccessful()) {
-//                    Log.d(TAG, "server contacted and has file");
-//
-//                    boolean writtenToDisk = writeResponseBodyToDisk(response.body());
-//
-//                    Log.d(TAG, "file download was a success? " + writtenToDisk);
-//                } else {
-//                    Log.d(TAG, "server contact failed");
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<ResponseBody> call, Throwable t) {
-//                Log.e(TAG, "error");
-//            }
-//        });
+        File file = FileUtils.getFileEnd(tribe.getId());
+
+        if (file.exists() && file.length() > 0) throw new FileAlreadyExists();
+
+        Call<ResponseBody> call = fileApi.downloadFileWithUrl(tribe.getUrl());
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    Log.d(TAG, "server contacted and has file");
+                    boolean writtenToDisk = writeResponseBodyToDisk(response.body());
+                    Log.d(TAG, "file download was a success? " + writtenToDisk);
+
+                    TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
+                    tribeRealm.setMessageStatus(MessageStatus.STATUS_READY);
+                    tribeCache.update(tribeRealm);
+                } else {
+                    Log.d(TAG, "server contact failed");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e(TAG, "error : " + t.getMessage());
+            }
+        });
     }
 
     @Override
     protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
-        System.out.println("Cancel Reason : " + cancelReason);
-        throwable.printStackTrace();
+        TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
+        tribeRealm.setMessageStatus(MessageStatus.STATUS_RECEIVED);
+        tribeCache.update(tribeRealm);
     }
 
     @Override
     protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount, int maxRunCount) {
-        System.out.println("Cancel Reason : " + throwable.getMessage());
-        return RetryConstraint.RETRY;
+        return null;
     }
 
     @Override

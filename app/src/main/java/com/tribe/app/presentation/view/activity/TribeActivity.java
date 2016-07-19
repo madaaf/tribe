@@ -13,7 +13,10 @@ import com.tribe.app.presentation.mvp.presenter.TribePresenter;
 import com.tribe.app.presentation.mvp.view.TribeView;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.component.TribePagerView;
+import com.tribe.app.presentation.view.utils.PaletteGrid;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -110,15 +113,15 @@ public class TribeActivity extends BaseActivity implements TribeView {
     }
 
     private void initTribePagerView() {
-//        List<Tribe> tribeList = new ArrayList<>();
-//        tribeList.add(new Tribe());
-//        tribeList.add(new Tribe());
-//        tribeList.add(new Tribe());
-//        tribeList.add(new Tribe());
-//        tribeList.add(new Tribe());
-//        viewTribePager.setItems(tribeList);
-//        viewTribePager.setBackgroundColor(PaletteGrid.get(position - 1));
-//        viewTribePager.initWithInfo(friendship);
+        List<Tribe> tribeList = new ArrayList<>();
+        tribeList.add(new Tribe());
+        tribeList.add(new Tribe());
+        tribeList.add(new Tribe());
+        tribeList.add(new Tribe());
+        tribeList.add(new Tribe());
+        viewTribePager.setItems(tribeList);
+        viewTribePager.setBackgroundColor(PaletteGrid.get(position - 1));
+        viewTribePager.initWithInfo(friendship);
     }
 
     private void initSubscriptions() {

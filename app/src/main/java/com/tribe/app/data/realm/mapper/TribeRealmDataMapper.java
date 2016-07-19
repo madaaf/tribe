@@ -52,6 +52,7 @@ public class TribeRealmDataMapper {
             tribe.setLat(tribeRealm.getLat());
             tribe.setLng(tribeRealm.getLng());
             tribe.setUrl(tribeRealm.getUrl());
+            tribe.setMessageStatus(tribeRealm.getMessageStatus());
         }
 
         return tribe;
@@ -83,6 +84,7 @@ public class TribeRealmDataMapper {
             tribeRealm.setLat(tribe.getLat());
             tribeRealm.setLng(tribe.getLng());
             tribeRealm.setUrl(tribe.getUrl());
+            tribeRealm.setMessageStatus(tribe.getMessageStatus());
         }
 
         return tribeRealm;

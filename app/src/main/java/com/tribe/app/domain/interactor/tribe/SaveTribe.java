@@ -3,8 +3,7 @@ package com.tribe.app.domain.interactor.tribe;
 import com.tribe.app.data.repository.tribe.DiskTribeDataRepository;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.executor.PostExecutionThread;
-import com.tribe.app.domain.executor.ThreadExecutor;
-import com.tribe.app.domain.interactor.common.UseCase;
+import com.tribe.app.domain.interactor.common.UseCaseDisk;
 
 import javax.inject.Inject;
 
@@ -13,14 +12,14 @@ import rx.Observable;
 /**
  * Created by tiago on 29/06/2016.
  */
-public class SaveTribe extends UseCase {
+public class SaveTribe extends UseCaseDisk {
 
     private Tribe tribe;
     private TribeRepository tribeRepository;
 
     @Inject
-    public SaveTribe(DiskTribeDataRepository tribeRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        super(threadExecutor, postExecutionThread);
+    public SaveTribe(DiskTribeDataRepository tribeRepository, PostExecutionThread postExecutionThread) {
+        super(postExecutionThread);
         this.tribeRepository = tribeRepository;
     }
 

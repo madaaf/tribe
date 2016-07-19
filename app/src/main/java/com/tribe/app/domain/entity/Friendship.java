@@ -1,6 +1,7 @@
 package com.tribe.app.domain.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class Friendship implements Serializable {
 
     private int position;
     protected Tribe tribe;
-    protected List<Tribe> tribes;
+    protected List<Tribe> tribes = new ArrayList<>();
     protected String profilePicture;
     protected String displayName;
 
@@ -71,7 +72,8 @@ public class Friendship implements Serializable {
     }
 
     public void setTribes(List<Tribe> tribes) {
-        this.tribes = tribes;
+        this.tribes.clear();
+        this.tribes.addAll(tribes);
     }
 
     public String getProfilePicture() {

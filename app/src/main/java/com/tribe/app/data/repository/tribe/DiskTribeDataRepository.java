@@ -4,14 +4,10 @@ import com.tribe.app.data.realm.mapper.TribeRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.tribe.datasource.TribeDataStore;
 import com.tribe.app.data.repository.tribe.datasource.TribeDataStoreFactory;
-import com.tribe.app.data.repository.user.datasource.UserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.interactor.tribe.TribeRepository;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -61,40 +57,14 @@ public class DiskTribeDataRepository implements TribeRepository {
     }
 
     @Override
-    public Observable<List<Friendship>> tribes() {
+    public Observable<List<Tribe>> tribes() {
         final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
-        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-        return Observable.zip(tribeDataStore.tribes().map(collection -> tribeRealmDataMapper.transform(collection)),
-                userDataStore.userInfos(null).map(userRealm -> userRealmDataMapper.transform(userRealm)),
-                (tribes, user) -> {
-                    List<Friendship> result = user.getFriendshipList();
+        return tribeDataStore.tribes().map(collection -> tribeRealmDataMapper.transform(collection));
+    }
 
-                    for (Friendship friendship : user.getFriendshipList()) {
-                        List<Tribe> newTribes = new ArrayList<>();
-
-                        for (Tribe tribe : tribes) {
-                            if (tribe.isToGroup() && tribe.getTo().getId().equals(friendship.getId())
-                                    || !tribe.isToGroup() && tribe.getFrom().getId().equals(friendship.getId())) {
-                                newTribes.add(tribe);
-                            }
-                        }
-
-                        friendship.setTribes(newTribes);
-                    }
-
-                    Collections.sort(result, (lhs, rhs) -> {
-                        int res = Tribe.nullSafeComparator(lhs.getMostRecentTribe(), rhs.getMostRecentTribe());
-                        if (res != 0) {
-                            return res;
-                        }
-
-                        return Friendship.nullSafeComparator(lhs, rhs);
-                    });
-
-                    result.add(0, user);
-
-                    return result;
-                }
-        );
+    @Override
+    public Observable<List<Tribe>> tribesPending() {
+        final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
+        return tribeDataStore.tribesPending().map(collection -> tribeRealmDataMapper.transform(collection));
     }
 }

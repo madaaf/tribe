@@ -4,7 +4,6 @@ package com.tribe.app.domain.interactor.tribe;
  * Created by tiago on 28/06/2016.
  */
 
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Tribe;
 
 import java.util.List;
@@ -31,8 +30,14 @@ public interface TribeRepository {
     Observable<Void> deleteTribe(final Tribe tribe);
 
     /**
-     * Get an {@link Observable} which will emit a {@link List<Friendship>} containing infos
-     * about the tribes received and sent categorized by friendship.
+     * Get an {@link Observable} which will emit a {@link List<Tribe>} containing infos
+     * about the tribes received and sent.
      */
-    Observable<List<Friendship>> tribes();
+    Observable<List<Tribe>> tribes();
+
+    /**
+     * Get an {@link Observable} which will emit a {@link List<Tribe>} containing infos
+     * about the tribes pending.
+     */
+    Observable<List<Tribe>> tribesPending();
 }

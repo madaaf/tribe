@@ -110,6 +110,7 @@ dependencies {
     compile presentationDependencies.libPhoneNumber
     compile presentationDependencies.vlcPlayer
     compile presentationDependencies.firebaseMessaging
+    compile presentationDependencies.circularProgressView
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker
@@ -122,6 +123,7 @@ dependencies {
     compile developmentDependencies.leakCanary
     compile developmentDependencies.stetho
     compile developmentDependencies.stethoOkHttp
+
 
     compile project(':AdapterDelegates')
 }

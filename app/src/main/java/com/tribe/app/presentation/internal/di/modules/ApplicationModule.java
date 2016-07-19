@@ -26,10 +26,13 @@ import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
+import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.text.ChatRepository;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
+import com.tribe.app.domain.interactor.tribe.GetCloudTribeList;
 import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.domain.interactor.tribe.TribeRepository;
+import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.UIThread;
@@ -138,44 +141,45 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    AccessToken provideAccessToken() {
+    AccessToken provideAccessToken(Realm realm) {
         AccessToken accessToken = new AccessToken();
 
-        Realm realm = Realm.getDefaultInstance();
         final RealmResults<AccessToken> results = realm.where(AccessToken.class).findAll();
         if (results != null && results.size() > 0)
             accessToken = realm.copyFromRealm(results.get(0));
-        realm.close();
 
         return accessToken;
     }
 
     @Provides
     @Singleton
-    Installation provideInstallation() {
+    Installation provideInstallation(Realm realm) {
         Installation installation = new Installation();
 
-        Realm realm = Realm.getDefaultInstance();
         final RealmResults<Installation> results = realm.where(Installation.class).findAll();
         if (results != null && results.size() > 0)
             installation = realm.copyFromRealm(results.get(0));
-        realm.close();
 
         return installation;
     }
 
     @Provides
     @Singleton
-    User provideCurrentUser(AccessToken accessToken, UserRealmDataMapper userRealmDataMapper) {
-        Realm realm = Realm.getDefaultInstance();
+    User provideCurrentUser(Realm realm, AccessToken accessToken, UserRealmDataMapper userRealmDataMapper) {
         User user = new User("-1");
 
         final UserRealm userRealm = realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
         if (userRealm != null)
             user = userRealmDataMapper.transform(realm.copyFromRealm(userRealm));
-        realm.close();
 
         return user;
+    }
+
+    @Provides
+    @Singleton
+    Realm provideRealm() {
+        Realm realm = Realm.getDefaultInstance();
+        return realm;
     }
 
     @Provides
@@ -216,6 +220,18 @@ public class ApplicationModule {
     @Named("diskDeleteTribe")
     DeleteTribe provideDiskDeleteTribe(DeleteTribe deleteTribeDisk) {
         return deleteTribeDisk;
+    }
+
+    @Provides
+    @Named("cloudGetTribes")
+    UseCase provideCloudGetTribes(GetCloudTribeList getCloudTribeList) {
+        return getCloudTribeList;
+    }
+
+    @Provides
+    @Named("cloudUserInfos")
+    UseCase provideCloudGetUserInfos(GetCloudUserInfos getCloudUserInfos) {
+        return getCloudUserInfos;
     }
 
     @Provides

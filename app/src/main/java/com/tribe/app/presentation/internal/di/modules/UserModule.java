@@ -1,13 +1,13 @@
 package com.tribe.app.presentation.internal.di.modules;
 
 import com.tribe.app.domain.interactor.common.UseCase;
+import com.tribe.app.domain.interactor.common.UseCaseDisk;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
-import com.tribe.app.domain.interactor.tribe.GetCloudTribeList;
 import com.tribe.app.domain.interactor.tribe.GetDiskTribeList;
+import com.tribe.app.domain.interactor.tribe.GetPendingTribeList;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
-import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.GetRequestCode;
 import com.tribe.app.domain.interactor.user.SendToken;
@@ -41,15 +41,8 @@ public class UserModule {
 
     @Provides
     @PerActivity
-    @Named("cloudUserInfos")
-    UseCase provideCloudGetUserInfos(GetCloudUserInfos getCloudUserInfos) {
-        return getCloudUserInfos;
-    }
-
-    @Provides
-    @PerActivity
     @Named("diskUserInfos")
-    UseCase provideDiskGetUserInfos(GetDiskUserInfos getDiskUserInfos) {
+    UseCaseDisk provideDiskGetUserInfos(GetDiskUserInfos getDiskUserInfos) {
         return getDiskUserInfos;
     }
 
@@ -76,15 +69,8 @@ public class UserModule {
 
     @Provides
     @PerActivity
-    @Named("cloudGetTribes")
-    UseCase provideCloudGetTribes(GetCloudTribeList getCloudTribeList) {
-        return getCloudTribeList;
-    }
-
-    @Provides
-    @PerActivity
     @Named("diskGetTribes")
-    UseCase provideDiskGetTribes(GetDiskTribeList getDiskTribeList) {
+    UseCaseDisk provideDiskGetTribes(GetDiskTribeList getDiskTribeList) {
         return getDiskTribeList;
     }
 
@@ -93,5 +79,12 @@ public class UserModule {
     @Named("sendToken")
     SendToken provideSendToken(SendToken sendToken) {
         return sendToken;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("diskGetPendingTribes")
+    UseCaseDisk provideGetPendingTribeList(GetPendingTribeList pendingTribeList) {
+        return pendingTribeList;
     }
 }

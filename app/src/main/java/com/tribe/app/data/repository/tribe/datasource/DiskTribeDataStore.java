@@ -35,4 +35,9 @@ public class DiskTribeDataStore implements TribeDataStore {
     public Observable<List<TribeRealm>> tribes() {
         return tribeCache.tribes();
     }
+
+    @Override
+    public Observable<List<TribeRealm>> tribesPending() {
+        return tribeCache.tribesPending();
+    }
 }

@@ -1,10 +1,8 @@
 package com.tribe.app.domain.interactor.user;
 
-import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
-import com.tribe.app.domain.executor.ThreadExecutor;
-import com.tribe.app.domain.interactor.common.UseCase;
+import com.tribe.app.domain.interactor.common.UseCaseDisk;
 
 import javax.inject.Inject;
 
@@ -13,14 +11,14 @@ import rx.Observable;
 /**
  * Created by tiago on 04/05/2016.
  */
-public class GetDiskUserInfos extends UseCase {
+public class GetDiskUserInfos extends UseCaseDisk {
 
     private String userId;
     private UserRepository userRepository;
 
     @Inject
-    public GetDiskUserInfos(DiskUserDataRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        super(threadExecutor, postExecutionThread);
+    public GetDiskUserInfos(DiskUserDataRepository userRepository, PostExecutionThread postExecutionThread) {
+        super(postExecutionThread);
         this.userRepository = userRepository;
     }
 

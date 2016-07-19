@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
+import com.tribe.app.data.network.job.SendTribeJob;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.entity.User;
@@ -8,7 +9,6 @@ import com.tribe.app.domain.exception.ErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
-import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.SendTribeView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
@@ -18,16 +18,15 @@ public abstract class SendTribePresenter implements Presenter {
     protected JobManager jobManager;
     protected SaveTribe diskSaveTribeUsecase;
     protected DeleteTribe diskDeleteTribeUsecase;
-    protected SendTribe cloudSendTribe;
+
+    private TribeCreateSubscriber tribeCreateSubscriber;
 
     public SendTribePresenter(JobManager jobManager,
                               SaveTribe diskSaveTribe,
-                              DeleteTribe diskDeleteTribe,
-                              SendTribe cloudSendTribe) {
+                              DeleteTribe diskDeleteTribe) {
         this.jobManager = jobManager;
         this.diskSaveTribeUsecase = diskSaveTribe;
         this.diskDeleteTribeUsecase = diskDeleteTribe;
-        this.cloudSendTribe = cloudSendTribe;
     }
 
     @Override
@@ -38,9 +37,13 @@ public abstract class SendTribePresenter implements Presenter {
 
     public String createTribe(User user, Friendship friendship, @CameraWrapper.TribeMode String tribeMode) {
         Tribe tribe = Tribe.createTribe(user, friendship, tribeMode);
-        TribeCreateSubscriber subscriber = new TribeCreateSubscriber();
+
+        if (tribeCreateSubscriber == null) {
+            tribeCreateSubscriber = new TribeCreateSubscriber();
+        }
+
         diskSaveTribeUsecase.setTribe(tribe);
-        diskSaveTribeUsecase.execute(subscriber);
+        diskSaveTribeUsecase.execute(tribeCreateSubscriber);
         return tribe.getLocalId();
     }
 
@@ -52,9 +55,7 @@ public abstract class SendTribePresenter implements Presenter {
     }
 
     public void sendTribe(Tribe tribe) {
-        TribeSendSubscriber subscriber = new TribeSendSubscriber();
-        cloudSendTribe.setTribe(tribe);
-        cloudSendTribe.execute(subscriber);
+        jobManager.addJobInBackground(new SendTribeJob(tribe));
     }
 
     private void setCurrentTribe(Tribe tribe) {
@@ -108,24 +109,6 @@ public abstract class SendTribePresenter implements Presenter {
         @Override
         public void onNext(Void aVoid) {
 
-        }
-    }
-
-    private final class TribeSendSubscriber extends DefaultSubscriber<Tribe> {
-
-        @Override
-        public void onCompleted() {
-
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-
-        @Override
-        public void onNext(Tribe tribe) {
-            System.out.println("AIE AIE AIE AIE : " + tribe);
         }
     }
 }

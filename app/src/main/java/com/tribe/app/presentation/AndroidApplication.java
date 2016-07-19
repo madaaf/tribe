@@ -27,6 +27,11 @@ public class AndroidApplication extends Application {
         this.initializeStetho();
     }
 
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+    }
+
     private void initializeInjector() {
         this.applicationComponent = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))

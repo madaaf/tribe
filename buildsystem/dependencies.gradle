@@ -27,6 +27,7 @@ ext {
     priorityJobQueueVersion = '2.0.0-beta1'
     pahoMQTT3Version = '1.0.2'
     stethoVersion = '1.3.1'
+    stethoRealmVersion = '0.9.0'
     rxBindingsVersion = '0.4.0'
     picassoVersion = '2.5.2'
     picassoDownloaderVersion = '1.0.2'
@@ -37,6 +38,7 @@ ext {
     exoPlayerVersion = 'r1.5.9'
     vlcPlayerVersion = '1.9.8'
     firebaseMessagingVersion = '9.2.0'
+    circularProgressViewVersion = '2.5.0'
 
     //Testing
     robolectricVersion = '3.0'
@@ -79,7 +81,8 @@ ext {
             libPhoneNumber          : "com.googlecode.libphonenumber:libphonenumber:${libPhoneNumberVersion}",
             exoplayer               : "com.google.android.exoplayer:exoplayer:${exoPlayerVersion}",
             vlcPlayer               : "de.mrmaffen:vlc-android-sdk:${vlcPlayerVersion}",
-            firebaseMessaging       : "com.google.firebase:firebase-messaging:${firebaseMessagingVersion}"
+            firebaseMessaging       : "com.google.firebase:firebase-messaging:${firebaseMessagingVersion}",
+            circularProgressView    : "com.github.rahatarmanahmed:circularprogressview:${circularProgressViewVersion}"
     ]
 
     presentationTestDependencies = [
@@ -95,6 +98,7 @@ ext {
     developmentDependencies = [
             leakCanary        : "com.squareup.leakcanary:leakcanary-android:${leakCanaryVersion}",
             stetho            : "com.facebook.stetho:stetho:${stethoVersion}",
-            stethoOkHttp      : "com.facebook.stetho:stetho-okhttp3:${stethoVersion}"
+            stethoOkHttp      : "com.facebook.stetho:stetho-okhttp3:${stethoVersion}",
+            stethoRealm       : "com.uphyca:stetho_realm:${stethoRealmVersion}"
     ]
 }

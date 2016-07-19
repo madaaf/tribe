@@ -12,6 +12,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.UIThread;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
@@ -23,6 +24,8 @@ import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -32,6 +35,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import rx.Observable;
 import rx.Subscriber;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -52,6 +56,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private PublishSubject<Friendship> clickChatViewSubject = PublishSubject.create();
     private PublishSubject<String> onRecordStart = PublishSubject.create();
     private PublishSubject<Friendship> onRecordEnd = PublishSubject.create();
+    private PublishSubject<Integer> onPendingTribes = PublishSubject.create();
+    private PublishSubject<List<Tribe>> onNewTribes = PublishSubject.create();
 
     // VARIABLES
     private HomeView homeView;
@@ -161,8 +167,67 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     }
 
     @Override
-    public void updateTribes(List<Friendship> tribes) {
-        this.homeGridAdapter.setItems(tribes);
+    public void updateTribes(List<Tribe> tribes) {
+        subscriptions.add(Observable.zip(
+            Observable.create(new Observable.OnSubscribe<List<Friendship>>() {
+                @Override
+                public void call(final Subscriber<? super List<Friendship>> subscriber) {
+                    subscriber.onNext(homeGridAdapter.getItems());
+                    subscriber.onCompleted();
+                }
+            }),
+            Observable.create(new Observable.OnSubscribe<List<Tribe>>() {
+                @Override
+                public void call(final Subscriber<? super List<Tribe>> subscriber) {
+                    subscriber.onNext(tribes);
+                    subscriber.onCompleted();
+                }
+            }), (friendships, obsTribes) -> {
+                List<Friendship> result = new ArrayList<>();
+                Friendship me = friendships.remove(0);
+
+                for (Friendship friendship : friendships) {
+                    List<Tribe> newTribes = new ArrayList<>();
+
+                    for (Tribe tribe : tribes) {
+                        if (tribe.isToGroup() && tribe.getTo().getId().equals(friendship.getId())
+                                || !tribe.isToGroup() && tribe.getFrom().getId().equals(friendship.getId())) {
+                            newTribes.add(tribe);
+                        }
+                    }
+
+                    friendship.setTribes(newTribes);
+                }
+
+                Collections.sort(friendships, (lhs, rhs) -> {
+                    int res = Tribe.nullSafeComparator(lhs.getMostRecentTribe(), rhs.getMostRecentTribe());
+                    if (res != 0) {
+                        return res;
+                    }
+
+                    return Friendship.nullSafeComparator(lhs, rhs);
+                });
+
+                result.addAll(friendships);
+                result.add(0, me);
+
+                return result;
+            }).observeOn(new UIThread().getScheduler())
+            .subscribeOn(Schedulers.computation())
+            .subscribe(friendshipList -> {
+                homeGridAdapter.setItems(friendshipList);
+            })
+        );
+    }
+
+    @Override
+    public void futureUpdateTribes(List<Tribe> tribes) {
+        onNewTribes.onNext(tribes);
+    }
+
+    @Override
+    public void updatePendingTribes(List<Tribe> pendingTribes) {
+        onPendingTribes.onNext(pendingTribes.size());
     }
 
     @Override
@@ -264,6 +329,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         if (homeView != null) homeView.initOnRecordStart(onRecordStart);
         if (homeView != null) homeView.initOnRecordEnd(onRecordEnd);
         if (homeView != null) homeView.initScrollOnGrid(scrollDetector);
+        if (homeView != null) homeView.initPendingTribes(onPendingTribes);
+        if (homeView != null) homeView.initNewTribes(onNewTribes);
     }
 
     private void setupBottomSheet() {

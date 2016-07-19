@@ -99,6 +99,7 @@ public class PhoneNumberView extends FrameLayout {
         this.phoneUtils = phoneUtils;
 
         RxTextView.textChanges(editTextPhoneNumber).map(CharSequence::toString)
+                .filter(s -> s != null && !s.isEmpty())
                 .doOnNext(s -> currentPhoneNumber = phoneUtils.formatMobileNumber(getPhoneNumberInput(), countryCode))
                 .map(s -> currentPhoneNumber != null)
                 .subscribe(phoneNumberValid);

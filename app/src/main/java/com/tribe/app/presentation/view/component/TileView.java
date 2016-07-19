@@ -59,6 +59,7 @@ public class TileView extends SquareFrameLayout {
     private final float SPEED_INSIDE = 12.5f;
     private final float BOUNCINESS_OUTSIDE = 1f;
     private final float SPEED_OUTSIDE = 20f;
+    private final float DIFF_DOWN = 20f;
     private final int LONG_PRESS = 150;
     private final int FADE_DURATION = 200;
     private final int SCALE_DURATION = 200;
@@ -107,11 +108,13 @@ public class TileView extends SquareFrameLayout {
     private int sizeAvatarInnerScaled;
     private int colorBlackOpacity20;
     private int diffSizeForScale;
+    private int diffDown;
 
     // VARIABLES
     private int type;
     private long longDown = 0L;
     private boolean isDown = false;
+    private float downX, downY, currentX, currentY;
     private Tribe currentTribe;
 
     public TileView(Context context) {
@@ -142,6 +145,10 @@ public class TileView extends SquareFrameLayout {
         timeTapToCancel = context.getResources().getInteger(R.integer.time_tap_to_cancel);
         colorBlackOpacity20 = context.getResources().getColor(R.color.black_opacity_20);
         diffSizeForScale = (int) (context.getResources().getDisplayMetrics().density * 0.5);
+        diffDown = (int) (context.getResources().getDisplayMetrics().density * DIFF_DOWN);
+
+        LayoutInflater.from(getContext()).inflate((type == TYPE_GRID ? R.layout.view_tile_grid : R.layout.view_tile_reply), this);
+        unbinder = ButterKnife.bind(this);
     }
 
     @Override
@@ -159,8 +166,6 @@ public class TileView extends SquareFrameLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        LayoutInflater.from(getContext()).inflate((type == TYPE_GRID ? R.layout.view_tile_grid : R.layout.view_tile_reply), this);
-        unbinder = ButterKnife.bind(this);
     }
 
     public void initWithParent(ViewGroup parent) {
@@ -202,12 +207,16 @@ public class TileView extends SquareFrameLayout {
                     return false;
                 } else {
                     longDown = System.currentTimeMillis();
+                    downX = currentX = event.getRawX();
+                    downY = currentY = event.getRawY();
                     isDown = true;
                     Observable.timer(LONG_PRESS, TimeUnit.MILLISECONDS)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(time -> {
-                                if ((System.currentTimeMillis() - longDown) >= LONG_PRESS && isDown) {
+                                if ((System.currentTimeMillis() - longDown) >= LONG_PRESS && isDown
+                                        && Math.abs(currentX - downX) < diffDown
+                                        && Math.abs(currentY - downY) < diffDown) {
                                     recordStarted.onNext(this);
 
                                     Spring springInside = (Spring) v.getTag(R.id.spring_inside);
@@ -223,13 +232,13 @@ public class TileView extends SquareFrameLayout {
                                 }
                             });
                 }
+            } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                currentX = event.getRawX();
+                currentY = event.getRawY();
             } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                System.out.println("System.currentTimeMillis() - longDown : " + (System.currentTimeMillis() - longDown));
                 if ((System.currentTimeMillis() - longDown) >= LONG_PRESS && isDown) {
-                    System.out.println("Record end");
                     recordEnded.onNext(this);
                 } else if (isDown && (System.currentTimeMillis() - longDown) <= LONG_PRESS) {
-                    System.out.println("Click open tribes");
                     clickOpenTribes.onNext(this);
                 }
 
@@ -375,19 +384,21 @@ public class TileView extends SquareFrameLayout {
     }
 
     public void setInfo(Friendship friendship) {
-        txtName.setText(friendship.getDisplayName());
-        avatar.load(friendship.getProfilePicture());
+        if (txtName != null) {
+            txtName.setText(friendship.getDisplayName());
+            avatar.load(friendship.getProfilePicture());
 
-        if (type == TYPE_GRID) {
-            if (friendship.getTribes() != null && friendship.getTribes().size() > 0) {
-                txtNbTribes.setText("" + friendship.getTribes().size());
-                if (txtNbTribes.getScaleX() == 0) {
-                    txtNbTribes.animate().scaleX(1).scaleY(1).setDuration(SCALE_DURATION).setStartDelay(ANIMATION_DELAY).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
-                }
-            } else {
-                txtNbTribes.setText("");
-                if (txtNbTribes.getScaleX() == 1) {
-                    txtNbTribes.animate().scaleX(0).scaleY(0).setDuration(SCALE_DURATION).setStartDelay(ANIMATION_DELAY).start();
+            if (type == TYPE_GRID) {
+                if (friendship.getTribes() != null && friendship.getTribes().size() > 0) {
+                    txtNbTribes.setText("" + friendship.getTribes().size());
+                    if (txtNbTribes.getScaleX() == 0) {
+                        txtNbTribes.animate().scaleX(1).scaleY(1).setDuration(SCALE_DURATION).setStartDelay(ANIMATION_DELAY).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
+                    }
+                } else {
+                    txtNbTribes.setText("");
+                    if (txtNbTribes.getScaleX() == 1) {
+                        txtNbTribes.animate().scaleX(0).scaleY(0).setDuration(SCALE_DURATION).setStartDelay(ANIMATION_DELAY).start();
+                    }
                 }
             }
         }

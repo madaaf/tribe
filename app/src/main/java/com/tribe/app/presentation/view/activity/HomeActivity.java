@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.view.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,11 +11,15 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
@@ -23,8 +29,13 @@ import com.tribe.app.presentation.mvp.view.HomeView;
 import com.tribe.app.presentation.view.fragment.FriendsGridFragment;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
+import com.tribe.app.presentation.view.widget.TextViewFont;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -32,11 +43,16 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class HomeActivity extends BaseActivity implements HasComponent<UserComponent>, HomeView {
 
     private static final int THRESHOLD_SCROLL = 12;
+    private static final int DURATION = 500;
+    private static final int DELAY_DISMISS_PENDING = 1000;
+    private static final float OVERSHOOT = 1f;
 
     public static final int FRIENDS_FRAGMENT_PAGE = 0;
     public static final int GRID_FRAGMENT_PAGE = 1;
@@ -61,8 +77,26 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @BindView(R.id.imgNavFriends)
     ImageView imgNavFriends;
 
-    @BindView(R.id.imgNavGroups)
-    ImageView imgNavGroups;
+    @BindView(R.id.layoutNavGrid)
+    ViewGroup layoutNavGrid;
+
+    @BindView(R.id.layoutNavNewTribes)
+    ViewGroup layoutNavNewTribes;
+
+    @BindView(R.id.txtNewTribes)
+    TextViewFont txtNewTribes;
+
+    @BindView(R.id.progressBarNewTribes)
+    CircularProgressView progressBarNewTribes;
+
+    @BindView(R.id.layoutNavPending)
+    ViewGroup layoutNavPending;
+
+    @BindView(R.id.txtPending)
+    TextViewFont txtPending;
+
+    @BindView(R.id.progressBar)
+    CircularProgressView progressBar;
 
     @BindView(R.id.imgNavBackToTop)
     ImageView imgNavBackToTop;
@@ -75,6 +109,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     // VARIABLES
     private HomeViewPagerAdapter homeViewPagerAdapter;
+    private List<Tribe> newTribes;
 
     // DIMEN
     private int sizeNavMax, sizeNavSmall, marginHorizontalSmall, translationBackToTop;
@@ -106,6 +141,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     protected void onDestroy() {
         if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+        homePresenter.onDestroy();
         super.onDestroy();
     }
 
@@ -200,10 +236,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
                     if (dy <= translationBackToTop) {
                         imgNavFriends.setTranslationY(dy);
-                        imgNavGroups.setTranslationY(dy);
+                        layoutNavGrid.setTranslationY(dy);
                         imgNavGrid.setTranslationY(dy);
                         imgNavFriends.setAlpha(1 - percent);
-                        imgNavGroups.setAlpha(1 - percent);
+                        layoutNavGrid.setAlpha(1 - percent);
                         imgNavGrid.setAlpha(1 - percent);
                         imgNavBackToTop.setTranslationY(translationBackToTop - dy);
                         imgNavBackToTop.setAlpha((float) dy / translationBackToTop);
@@ -212,6 +248,32 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                         imgNavBackToTop.setAlpha(1f);
                     }
                 }
+            }
+        }));
+    }
+
+    @Override
+    public void initNewTribes(Observable<List<Tribe>> observable) {
+        subscriptions.add(observable.subscribe(newTribes -> {
+            if (newTribes.size() > 0) {
+                txtNewTribes.setText("" + newTribes);
+                showLayoutNewTribes();
+            } else {
+                txtNewTribes.setText("");
+                hideLayoutNewTribes();
+            }
+        }));
+    }
+
+    @Override
+    public void initPendingTribes(Observable<Integer> observable) {
+        subscriptions.add(observable.subscribe(tribesPending -> {
+            if (tribesPending > 0) {
+                txtPending.setText("" + tribesPending);
+                showLayoutPending();
+            } else {
+                txtPending.setText("");
+                hideLayoutPending();
             }
         }));
     }
@@ -249,6 +311,21 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @OnClick(R.id.imgNavBackToTop)
     public void goBackToTop() {
         ((HomeGridView) homeViewPagerAdapter.getCurrentFragment()).scrollToTop();
+    }
+
+    @OnClick(R.id.layoutNavPending)
+    public void sendPendingMessages() {
+        AnimationUtils.replaceView(this, txtPending, progressBar, new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                subscriptions.add(Observable.timer(DELAY_DISMISS_PENDING, TimeUnit.MILLISECONDS)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(time -> {
+                            hideLayoutPending();
+                        }));
+            }
+        });
     }
 
     @Override
@@ -302,27 +379,38 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         public void transformPage(View page, float position) {
             int pagePosition = (int) page.getTag();
             int pageWidth = page.getWidth();
+            int marginLayoutNavPending = ((FrameLayout.LayoutParams) layoutNavPending.getLayoutParams()).rightMargin;
+
+            int widthPending = layoutNavPending.getTranslationY() == 0 ? layoutNavPending.getWidth() : 0;
 
             if (pagePosition == 1 && position > 0) {
                 cameraWrapper.setTranslationX(pageWidth * position);
 
-                float sizeImgNavFriends = sizeNavSmall + ((sizeNavMax - sizeNavSmall) * position);
-                float translationImgNavFriends = ((pageWidth >> 1) - marginHorizontalSmall - (imgNavFriends.getWidth() / 2)) * position;
-                layoutNav(imgNavFriends, sizeImgNavFriends, translationImgNavFriends);
+                float sizeLayoutNavPending = sizeNavSmall;
+                float translationLayoutNavPending = 0;
+                layoutNav(layoutNavPending, sizeLayoutNavPending, translationLayoutNavPending);
 
                 float sizeImgNavGrid = sizeNavMax - ((sizeNavMax - sizeNavSmall) * position);
-                float translationImgNavGrid = ((pageWidth >> 1) - (imgNavGrid.getWidth() / 2) - 2 * marginHorizontalSmall - imgNavGroups.getWidth()) * position;
+                float translationImgNavGrid = ((pageWidth >> 1) - (imgNavGrid.getWidth() / 2) - marginHorizontalSmall - widthPending - layoutNavGrid.getWidth()) * position;
                 layoutNav(imgNavGrid, sizeImgNavGrid, translationImgNavGrid);
+
+                float sizeImgNavFriends = sizeNavSmall + ((sizeNavMax - sizeNavSmall) * position);
+                float translationImgNavFriends = (pageWidth - imgNavFriends.getWidth() - widthPending - layoutNavGrid.getWidth() - imgNavGrid.getWidth() - 2 * marginHorizontalSmall) * position;
+                layoutNav(imgNavFriends, sizeImgNavFriends, translationImgNavFriends);
             } else if (pagePosition == 1 && position < 0) {
                 cameraWrapper.setTranslationX(pageWidth * position);
 
-                float sizeImgNavGroups = sizeNavSmall + ((sizeNavMax - sizeNavSmall) * -position);
-                float translationImgNavGroups = ((pageWidth >> 1) - marginHorizontalSmall - (imgNavGroups.getWidth() / 2)) * position;
-                layoutNav(imgNavGroups, sizeImgNavGroups, translationImgNavGroups);
-
                 float sizeImgNavGrid = sizeNavMax - ((sizeNavMax - sizeNavSmall) * -position);
-                float translationImgNavGrid = ((pageWidth >> 1) - (imgNavGrid.getWidth() / 2) - 2 * marginHorizontalSmall - imgNavFriends.getWidth()) * position;
+                float translationImgNavGrid = ((pageWidth >> 1) - (imgNavGrid.getWidth() / 2) - marginHorizontalSmall - imgNavFriends.getWidth()) * position;
                 layoutNav(imgNavGrid, sizeImgNavGrid, translationImgNavGrid);
+
+                float sizeLayoutNavPending = sizeNavSmall;
+                float translationLayoutNavPending = (pageWidth - widthPending - marginLayoutNavPending - imgNavFriends.getWidth() - imgNavGrid.getWidth() - marginHorizontalSmall) * position;
+                layoutNav(layoutNavPending, sizeLayoutNavPending, translationLayoutNavPending);
+
+                float sizeImgNavGroups = sizeNavSmall + ((sizeNavMax - sizeNavSmall) * -position);
+                float translationImgNavGroups = (pageWidth - imgNavFriends.getWidth() - widthPending - layoutNavGrid.getWidth() - imgNavGrid.getWidth() - 2 * marginHorizontalSmall) * position;
+                layoutNav(layoutNavGrid, sizeImgNavGroups, translationImgNavGroups);
             }
         }
 
@@ -333,6 +421,44 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             params.height = (int) size;
             v.setLayoutParams(params);
             v.invalidate();
+        }
+    }
+
+    // ANIMATIONS
+    private void hideLayoutPending() {
+        if (layoutNavPending.getTranslationY() == 0) {
+            layoutNavPending.animate().translationY(translationBackToTop).setDuration(DURATION).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
+        }
+    }
+
+    private void showLayoutPending() {
+        if (layoutNavPending.getTranslationY() > 0) {
+            layoutNavPending.animate().translationY(0).setDuration(DURATION).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
+        }
+    }
+
+    private void hideLayoutNewTribes() {
+        if (layoutNavNewTribes.getVisibility() == View.VISIBLE) {
+            layoutNavNewTribes.animate().alpha(0).setDuration(DURATION).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    layoutNavNewTribes.setVisibility(View.GONE);
+                    layoutNavNewTribes.setAlpha(1);
+                }
+            }).start();
+        }
+    }
+
+    private void showLayoutNewTribes() {
+        if (layoutNavNewTribes.getVisibility() == View.GONE) {
+            layoutNavGrid.animate().translationY(translationBackToTop).setDuration(DURATION).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    layoutNavGrid.animate().translationY(0).setDuration(DURATION)
+                            .setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
+                    layoutNavNewTribes.setVisibility(View.VISIBLE);
+                }
+            }).start();
         }
     }
 }

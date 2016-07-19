@@ -18,15 +18,53 @@
         android:layout_height="@dimen/nav_layout_height"
         android:layout_gravity="bottom">
 
-        <ImageView
-            android:id="@+id/imgNavGrid"
+        <FrameLayout
+            android:id="@+id/layoutNavGrid"
             android:layout_width="@dimen/nav_size_max"
             android:layout_height="@dimen/nav_size_max"
-            android:layout_gravity="center"
-            android:src="@drawable/picto_nav_grid"
-            android:scaleType="fitXY"
-            android:clickable="true"
-            />
+            android:layout_gravity="center">
+
+            <ImageView
+                android:id="@+id/imgNavGrid"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:src="@drawable/picto_nav_grid"
+                android:scaleType="fitXY"
+                android:clickable="true"
+                />
+
+            <FrameLayout
+                android:id="@+id/layoutNavNewTribes"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_home_new_tribes"
+                android:clipChildren="true"
+                android:clipToPadding="true"
+                android:visibility="gone">
+
+                <com.tribe.app.presentation.view.widget.TextViewFont
+                    android:id="@+id/txtNewTribes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    style="@style/Headline.White.1"
+                    />
+
+                <com.github.rahatarmanahmed.cpv.CircularProgressView
+                    android:id="@+id/progressBarNewTribes"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    app:cpv_thickness="1.5dp"
+                    app:cpv_indeterminate="true"
+                    app:cpv_color="@android:color/white"
+                    app:cpv_animAutostart="true"
+                    />
+            </FrameLayout>
+        </FrameLayout>
 
         <ImageView
             android:id="@+id/imgNavBackToTop"
@@ -48,6 +86,40 @@
             android:src="@drawable/picto_nav_friends"
             android:scaleType="fitXY"
             />
+
+        <FrameLayout
+            android:id="@+id/layoutNavPending"
+            android:layout_width="@dimen/nav_size_small"
+            android:layout_height="@dimen/nav_size_small"
+            android:layout_gravity="center_vertical|right"
+            android:layout_marginRight="60dp"
+            android:background="@drawable/bg_pending"
+            android:translationY="@dimen/transition_grid_back_to_top"
+            android:clipChildren="true"
+            android:clipToPadding="true"
+            android:paddingBottom="2dp">
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:id="@+id/txtPending"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                style="@style/Headline.White.1"
+                />
+
+            <com.github.rahatarmanahmed.cpv.CircularProgressView
+                android:id="@+id/progressBar"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:translationY="@dimen/transition_replace"
+                app:cpv_thickness="1.5dp"
+                app:cpv_indeterminate="true"
+                app:cpv_color="@android:color/white"
+                app:cpv_animAutostart="true"
+                />
+        </FrameLayout>
 
         <ImageView
             android:id="@+id/imgNavGroups"

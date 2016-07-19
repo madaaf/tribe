@@ -2,17 +2,20 @@ package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.DownloadTribeJob;
+import com.tribe.app.data.network.job.UpdateTribesJob;
+import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.exception.DefaultErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
-import com.tribe.app.domain.interactor.common.UseCase;
+import com.tribe.app.domain.interactor.common.UseCaseDisk;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
-import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.SendTribeView;
 import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.utils.MessageStatus;
 
 import java.util.List;
 
@@ -21,33 +24,39 @@ import javax.inject.Named;
 
 public class HomeGridPresenter extends SendTribePresenter implements Presenter {
 
-    private UseCase cloudUserInfosUsecase;
-    private UseCase diskUserInfosUsecase;
-    private UseCase cloudGetTribeListUsecase;
-    private UseCase diskGetTribeListUsecase;
-
+    // VIEW ATTACHED
     private HomeGridView homeGridView;
+
+    // USECASES
+    private UseCaseDisk diskUserInfosUsecase;
+    private UseCaseDisk diskGetTribeListUsecase;
+    private UseCaseDisk diskGetPendingTribeListUsecase;
+
+    // SUBSCRIBERS
+    private TribePendingListSubscriber tribePendingListSubscriber;
+
+    // VARIABLES
+    private boolean forceUpdate = true;
 
     @Inject
     public HomeGridPresenter(JobManager jobManager,
-                             @Named("cloudUserInfos") UseCase cloudUserInfos,
-                             @Named("diskUserInfos") UseCase diskUserInfos,
+                             @Named("diskUserInfos") UseCaseDisk diskUserInfos,
                              @Named("diskSaveTribe") SaveTribe diskSaveTribe,
                              @Named("diskDeleteTribe") DeleteTribe diskDeleteTribe,
-                             @Named("cloudSendTribe") SendTribe cloudSendTribe,
-                             @Named("cloudGetTribes") UseCase cloudGetTribeList,
-                             @Named("diskGetTribes") UseCase diskGetTribeList) {
-        super(jobManager, diskSaveTribe, diskDeleteTribe, cloudSendTribe);
-        this.cloudUserInfosUsecase = cloudUserInfos;
+                             @Named("diskGetTribes") UseCaseDisk diskGetTribeList,
+                             @Named("diskGetPendingTribes") UseCaseDisk diskGetPendingTribeList) {
+        super(jobManager, diskSaveTribe, diskDeleteTribe);
         this.diskUserInfosUsecase = diskUserInfos;
-        this.cloudGetTribeListUsecase = cloudGetTribeList;
         this.diskGetTribeListUsecase = diskGetTribeList;
+        this.diskGetPendingTribeListUsecase = diskGetPendingTribeList;
     }
 
     @Override
     public void onCreate() {
         loadFriendList();
-        loadTribeList();
+        loadPendingTribeList();
+        jobManager.addJobInBackground(new UpdateUserJob());
+        jobManager.addJobInBackground(new UpdateTribesJob());
     }
 
     @Override
@@ -74,7 +83,6 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         super.onDestroy();
         diskDeleteTribeUsecase.unsubscribe();
         diskSaveTribeUsecase.unsubscribe();
-        cloudGetTribeListUsecase.unsubscribe();
         diskGetTribeListUsecase.unsubscribe();
     }
 
@@ -86,23 +94,42 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
     public void loadFriendList() {
         showViewLoading();
         FriendListSubscriber subscriber = new FriendListSubscriber();
-        //diskUserInfosUsecase.execute(subscriber);
-        //cloudUserInfosUsecase.execute(subscriber);
+        diskUserInfosUsecase.execute(subscriber);
     }
 
     public void loadTribeList() {
         TribeListSubscriber subscriber = new TribeListSubscriber();
         diskGetTribeListUsecase.execute(subscriber);
-        cloudGetTribeListUsecase.execute(subscriber);
+    }
+
+    public void loadPendingTribeList() {
+        if (tribePendingListSubscriber == null) {
+            tribePendingListSubscriber = new TribePendingListSubscriber();
+        }
+
+        diskGetPendingTribeListUsecase.execute(tribePendingListSubscriber);
     }
 
     private void showFriendCollectionInView(List<Friendship> friendList) {
         this.homeGridView.renderFriendshipList(friendList);
     }
 
-    private void updateTribes(List<Friendship> tribes) {
-        jobManager.addJobInBackground(new DownloadTribeJob(tribes.get(1).getTribes().get(0)));
+    private void updateTribes(List<Tribe> tribes) {
+        for (Tribe tribe : tribes) {
+            if (tribe.getMessageStatus().equals(MessageStatus.STATUS_RECEIVED)) {
+                jobManager.addJobInBackground(new DownloadTribeJob(tribe));
+            }
+        }
+
         this.homeGridView.updateTribes(tribes);
+    }
+
+    private void futureUpdateTribes(List<Tribe> tribes) {
+        this.homeGridView.futureUpdateTribes(tribes);
+    }
+
+    private void updatePendingTribes(List<Tribe> tribes) {
+        this.homeGridView.updatePendingTribes(tribes);
     }
 
     @Override
@@ -127,10 +154,12 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
             List<Friendship> friendships = user.getFriendshipList();
             friendships.add(0, user);
             showFriendCollectionInView(friendships);
+
+            if (friendships.size() > 1) loadTribeList();
         }
     }
 
-    private final class TribeListSubscriber extends DefaultSubscriber<List<Friendship>> {
+    private final class TribeListSubscriber extends DefaultSubscriber<List<Tribe>> {
 
         @Override
         public void onCompleted() {
@@ -143,8 +172,32 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         }
 
         @Override
-        public void onNext(List<Friendship> tribes) {
-            updateTribes(tribes);
+        public void onNext(List<Tribe> tribes) {
+            if (forceUpdate) {
+                forceUpdate = false;
+                updateTribes(tribes);
+            } else {
+                futureUpdateTribes(tribes);
+            }
+        }
+    }
+
+    private final class TribePendingListSubscriber extends DefaultSubscriber<List<Tribe>> {
+
+        @Override
+        public void onCompleted() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            hideViewLoading();
+            showErrorMessage(new DefaultErrorBundle((Exception) e));
+        }
+
+        @Override
+        public void onNext(List<Tribe> tribes) {
+            System.out.println("PENDING TRIBES : " + tribes.size());
+            updatePendingTribes(tribes);
         }
     }
 }

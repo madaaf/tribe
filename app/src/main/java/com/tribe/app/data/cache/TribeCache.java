@@ -17,8 +17,10 @@ public interface TribeCache {
     public boolean isExpired();
     public boolean isCached(int messageId);
     public Observable<TribeRealm> put(TribeRealm tribeRealm);
+    public void update(TribeRealm tribeRealm);
     public void put(List<TribeRealm> tribeRealmList);
     public Observable<Void> delete(TribeRealm tribeReaList);
     public Observable<List<TribeRealm>> tribes();
+    public Observable<List<TribeRealm>> tribesPending();
     public TribeRealm updateLocalWithServerRealm(TribeRealm local, TribeRealm server);
 }

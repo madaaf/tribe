@@ -8,7 +8,9 @@ import java.util.List;
 public interface HomeGridView extends SendTribeView {
 
     void renderFriendshipList(List<Friendship> friendCollection);
-    void updateTribes(List<Friendship> tribes);
+    void updateTribes(List<Tribe> tribes);
+    void futureUpdateTribes(List<Tribe> tribes);
+    void updatePendingTribes(List<Tribe> pendingTribes);
     void scrollToTop();
     void setCurrentTribe(Tribe tribe);
     int getNbItems();
