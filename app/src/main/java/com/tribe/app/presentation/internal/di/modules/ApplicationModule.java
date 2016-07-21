@@ -247,7 +247,7 @@ public class ApplicationModule {
 
                 @Override
                 public void d(String text, Object... args) {
-                    Log.d(TAG, String.format(text, args));
+                    //Log.d(TAG, String.format(text, args));
                 }
 
                 @Override

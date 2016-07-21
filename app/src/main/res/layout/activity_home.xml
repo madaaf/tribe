@@ -40,6 +40,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:background="@drawable/bg_home_new_tribes"
+                android:clickable="true"
                 android:clipChildren="true"
                 android:clipToPadding="true"
                 android:visibility="gone">
@@ -58,6 +59,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_gravity="center"
+                    android:translationY="@dimen/transition_replace"
                     app:cpv_thickness="1.5dp"
                     app:cpv_indeterminate="true"
                     app:cpv_color="@android:color/white"

@@ -25,6 +25,7 @@ public class Tribe implements Serializable {
     private Friendship to;
     private boolean toGroup;
     private Date recordedAt;
+    private Date updatedAt;
     private double lat;
     private double lng;
     private String url;
@@ -110,12 +111,20 @@ public class Tribe implements Serializable {
         this.url = url;
     }
 
-    public String getMessageStatus() {
+    public @MessageStatus.Status String getMessageStatus() {
         return messageStatus;
     }
 
     public void setMessageStatus(String messageStatus) {
         this.messageStatus = messageStatus;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public static Tribe createTribe(User user, Friendship friendship, @CameraWrapper.TribeMode String mode) {
@@ -152,8 +161,8 @@ public class Tribe implements Serializable {
 
         stringBuilder.append("***** Tribe Details *****\n");
         stringBuilder.append("\nid = " + id);
-        stringBuilder.append("\nlocalId = " + localId);
-        stringBuilder.append("\nrecordedAt = " + recordedAt);
+        stringBuilder.append("\nfrom.id = " + from.getId());
+        stringBuilder.append("\nupdatedAt = " + updatedAt);
         stringBuilder.append("\n*******************************");
 
         return stringBuilder.toString();

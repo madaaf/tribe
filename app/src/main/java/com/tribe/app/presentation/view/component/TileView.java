@@ -29,6 +29,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.MessageStatus;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.widget.AvatarView;
@@ -36,6 +37,7 @@ import com.tribe.app.presentation.view.widget.PlayerView;
 import com.tribe.app.presentation.view.widget.SquareFrameLayout;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
@@ -116,6 +118,8 @@ public class TileView extends SquareFrameLayout {
     private boolean isDown = false;
     private float downX, downY, currentX, currentY;
     private Tribe currentTribe;
+    private boolean isRecording = false;
+    private boolean isTapToCancel = false;
 
     public TileView(Context context) {
         super(context);
@@ -152,18 +156,6 @@ public class TileView extends SquareFrameLayout {
     }
 
     @Override
-    protected void onDetachedFromWindow() {
-        unbinder.unbind();
-
-        if (subscriptions != null && subscriptions.hasSubscriptions()) {
-            subscriptions.unsubscribe();
-            subscriptions.clear();
-        }
-
-        super.onDetachedFromWindow();
-    }
-
-    @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
     }
@@ -196,8 +188,6 @@ public class TileView extends SquareFrameLayout {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 if (isDown) return false;
 
-                boolean isTapToCancel = false;
-
                 if (getTag(R.id.is_tap_to_cancel) != null)
                     isTapToCancel = (Boolean) getTag(R.id.is_tap_to_cancel);
 
@@ -218,6 +208,8 @@ public class TileView extends SquareFrameLayout {
                                         && Math.abs(currentX - downX) < diffDown
                                         && Math.abs(currentY - downY) < diffDown) {
                                     recordStarted.onNext(this);
+                                    isRecording = true;
+                                    isTapToCancel = false;
 
                                     Spring springInside = (Spring) v.getTag(R.id.spring_inside);
                                     springInside.setEndValue(1f);
@@ -238,6 +230,7 @@ public class TileView extends SquareFrameLayout {
             } else if (event.getAction() == MotionEvent.ACTION_UP) {
                 if ((System.currentTimeMillis() - longDown) >= LONG_PRESS && isDown) {
                     recordEnded.onNext(this);
+                    isRecording = false;
                 } else if (isDown && (System.currentTimeMillis() - longDown) <= LONG_PRESS) {
                     clickOpenTribes.onNext(this);
                 }
@@ -370,6 +363,7 @@ public class TileView extends SquareFrameLayout {
         springAvatar.setEndValue(0f);
 
         setTag(R.id.is_tap_to_cancel, false);
+        isTapToCancel = false;
 
         ((TransitionDrawable) ((LayerDrawable) viewForeground.getBackground()).getDrawable(0)).reverseTransition(FADE_DURATION);
     }
@@ -384,23 +378,24 @@ public class TileView extends SquareFrameLayout {
     }
 
     public void setInfo(Friendship friendship) {
-        if (txtName != null) {
-            txtName.setText(friendship.getDisplayName());
-            avatar.load(friendship.getProfilePicture());
+        txtName.setText(friendship.getDisplayName());
+        avatar.load(friendship.getProfilePicture());
 
-            if (type == TYPE_GRID) {
-                if (friendship.getTribes() != null && friendship.getTribes().size() > 0) {
-                    txtNbTribes.setText("" + friendship.getTribes().size());
-                    if (txtNbTribes.getScaleX() == 0) {
-                        txtNbTribes.animate().scaleX(1).scaleY(1).setDuration(SCALE_DURATION).setStartDelay(ANIMATION_DELAY).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
-                    }
-                } else {
-                    txtNbTribes.setText("");
-                    if (txtNbTribes.getScaleX() == 1) {
-                        txtNbTribes.animate().scaleX(0).scaleY(0).setDuration(SCALE_DURATION).setStartDelay(ANIMATION_DELAY).start();
-                    }
+        if (type == TYPE_GRID) {
+            if (friendship.getReceivedTribes() != null && friendship.getReceivedTribes().size() > 0) {
+                txtNbTribes.setText("" + friendship.getReceivedTribes().size());
+                if (txtNbTribes.getScaleX() == 0) {
+                    txtNbTribes.animate().scaleX(1).scaleY(1).setDuration(SCALE_DURATION).setStartDelay(ANIMATION_DELAY).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
+                }
+            } else {
+                txtNbTribes.setText("");
+                if (txtNbTribes.getScaleX() == 1) {
+                    txtNbTribes.animate().scaleX(0).scaleY(0).setDuration(SCALE_DURATION).setStartDelay(ANIMATION_DELAY).start();
                 }
             }
+
+            txtStatus.setText(computeStatus(friendship.getReceivedTribes(), friendship.getSentTribes()));
+            txtStatus.setCompoundDrawablesWithIntrinsicBounds(getContext().getResources().getDrawable(computeIconStatus(friendship.getReceivedTribes(), friendship.getSentTribes())), null, null, null);
         }
     }
 
@@ -431,6 +426,7 @@ public class TileView extends SquareFrameLayout {
         showSending();
 
         setTag(R.id.is_tap_to_cancel, true);
+        isTapToCancel = true;
 
         ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", 0, timeTapToCancel);
         animation.setDuration(timeTapToCancel);
@@ -462,6 +458,32 @@ public class TileView extends SquareFrameLayout {
         setTag(R.id.progress_bar_animation, animation);
     }
 
+    private String computeStatus(List<Tribe> received, List<Tribe> sent) {
+        Tribe endTribe = computeMostRecentTribe(received, sent);
+        if (endTribe == null) return MessageStatus.getStrRes(getContext(), MessageStatus.STATUS_NONE);
+        return MessageStatus.getStrRes(getContext(), endTribe.getMessageStatus());
+    }
+
+    private int computeIconStatus(List<Tribe> received, List<Tribe> sent) {
+        Tribe endTribe = computeMostRecentTribe(received, sent);
+        if (endTribe == null) return MessageStatus.getIconRes(MessageStatus.STATUS_NONE);
+        return MessageStatus.getIconRes(endTribe.getMessageStatus());
+    }
+
+    private Tribe computeMostRecentTribe(List<Tribe> received, List<Tribe> sent) {
+        Tribe recentReceived = received != null && received.size() > 0 ? received.get(0) : null;
+        Tribe recentSent = sent != null && sent.size() > 0 ? sent.get(0) : null;
+        Tribe endTribe = null;
+
+        if (recentReceived != null && recentSent != null) {
+            endTribe = recentSent.getUpdatedAt().after(recentReceived.getUpdatedAt()) ? recentSent : recentReceived;
+        } else {
+            endTribe = recentReceived != null ? recentReceived : recentSent;
+        }
+
+        return endTribe;
+    }
+
     public Observable<View> onOpenTribes() {
         return clickOpenTribes;
     }
@@ -488,5 +510,13 @@ public class TileView extends SquareFrameLayout {
 
     public Observable<View> onNotCancel() {
         return onNotCancel;
+    }
+
+    public boolean isRecording() {
+        return isRecording;
+    }
+
+    public boolean isTapToCancel() {
+        return isTapToCancel;
     }
 }

@@ -2,12 +2,20 @@ package com.tribe.app.data.repository.user;
 
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.mapper.TribeRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
+import com.tribe.app.data.repository.tribe.datasource.TribeDataStore;
+import com.tribe.app.data.repository.tribe.datasource.TribeDataStoreFactory;
 import com.tribe.app.data.repository.user.datasource.UserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Pin;
+import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -22,6 +30,8 @@ public class DiskUserDataRepository implements UserRepository {
 
     private final UserDataStoreFactory userDataStoreFactory;
     private final UserRealmDataMapper userRealmDataMapper;
+    private final TribeDataStoreFactory tribeDataStoreFactory;
+    private final TribeRealmDataMapper tribeRealmDataMapper;
 
     /**
      * Constructs a {@link UserRepository}.
@@ -31,9 +41,13 @@ public class DiskUserDataRepository implements UserRepository {
      */
     @Inject
     public DiskUserDataRepository(UserDataStoreFactory dataStoreFactory,
-                                  UserRealmDataMapper realmDataMapper) {
+                                  UserRealmDataMapper realmDataMapper,
+                                  TribeDataStoreFactory tribeDataStoreFactory,
+                                  TribeRealmDataMapper tribeRealmDataMapper) {
         this.userDataStoreFactory = dataStoreFactory;
         this.userRealmDataMapper = realmDataMapper;
+        this.tribeDataStoreFactory = tribeDataStoreFactory;
+        this.tribeRealmDataMapper = tribeRealmDataMapper;
     }
 
     @Override
@@ -47,9 +61,36 @@ public class DiskUserDataRepository implements UserRepository {
 
     @Override
     public Observable<User> userInfos(String userId) {
+        final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-        return userDataStore.userInfos(userId)
-                .map(userRealm -> this.userRealmDataMapper.transform(userRealm));
+        return Observable.zip(tribeDataStore.tribes().map(collection -> tribeRealmDataMapper.transform(collection)),
+                userDataStore.userInfos(null).map(userRealm -> userRealmDataMapper.transform(userRealm)),
+                (tribes, user) -> {
+                    List<Friendship> result = user.getFriendshipList();
+
+                    for (Friendship friendship : user.getFriendshipList()) {
+                        List<Tribe> receivedTribes = new ArrayList<>();
+                        List<Tribe> sentTribes = new ArrayList<>();
+
+                        for (Tribe tribe : tribes) {
+                            if (tribe.isToGroup() && tribe.getTo().getId().equals(friendship.getId())
+                                    || !tribe.isToGroup() && tribe.getFrom().getId().equals(friendship.getId())) {
+                                receivedTribes.add(tribe);
+                            } else if (tribe.getFrom().getId().equals(user.getId())
+                                    && tribe.getTo().getId().equals(friendship.getId())) {
+                                sentTribes.add(tribe);
+                            }
+                        }
+
+                        friendship.setReceivedTribes(receivedTribes);
+                        friendship.setSentTribes(sentTribes);
+                    }
+
+                    result.add(0, user);
+
+                    return user;
+                }
+        );
     }
 
     @Override

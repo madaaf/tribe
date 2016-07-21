@@ -23,7 +23,8 @@ public class Friendship implements Serializable {
 
     private int position;
     protected Tribe tribe;
-    protected List<Tribe> tribes = new ArrayList<>();
+    protected List<Tribe> receivedTribes = new ArrayList<>();
+    protected List<Tribe> sentTribes = new ArrayList<>();
     protected String profilePicture;
     protected String displayName;
 
@@ -67,13 +68,22 @@ public class Friendship implements Serializable {
         return tribe;
     }
 
-    public List<Tribe> getTribes() {
-        return tribes;
+    public List<Tribe> getReceivedTribes() {
+        return receivedTribes;
     }
 
-    public void setTribes(List<Tribe> tribes) {
-        this.tribes.clear();
-        this.tribes.addAll(tribes);
+    public void setReceivedTribes(List<Tribe> tribes) {
+        this.receivedTribes.clear();
+        this.receivedTribes.addAll(tribes);
+    }
+
+    public List<Tribe> getSentTribes() {
+        return sentTribes;
+    }
+
+    public void setSentTribes(List<Tribe> tribes) {
+        this.sentTribes.clear();
+        this.sentTribes.addAll(tribes);
     }
 
     public String getProfilePicture() {
@@ -93,7 +103,7 @@ public class Friendship implements Serializable {
     }
 
     public Tribe getMostRecentTribe() {
-        return tribes != null && tribes.size() > 0 ? tribes.get(tribes.size() - 1) : null;
+        return receivedTribes != null && receivedTribes.size() > 0 ? receivedTribes.get(receivedTribes.size() - 1) : null;
     }
 
     public static int nullSafeComparator(final Friendship one, final Friendship two) {
@@ -106,6 +116,19 @@ public class Friendship implements Serializable {
         }
 
         return one.getUpdatedAt().compareTo(two.getUpdatedAt());
+    }
+
+    public static Tribe getMostRecentTribe(List<Friendship> friendships) {
+        Tribe tribe = null;
+
+        for (Friendship friendship : friendships) {
+            if (tribe == null) tribe = friendship.getMostRecentTribe();
+            else if (friendship.getMostRecentTribe() != null) {
+                if (tribe.getRecordedAt().before(friendship.getMostRecentTribe().getRecordedAt())) tribe = friendship.getMostRecentTribe();
+            }
+        }
+
+        return tribe;
     }
 
     @Override

@@ -44,7 +44,7 @@
         android:layout_marginRight="60dp"
         android:drawableLeft="@drawable/picto_to_send"
         android:drawablePadding="8dp"
-        android:text="@string/tap.to.send"
+        android:text="@string/grid_friendship_status_default"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont

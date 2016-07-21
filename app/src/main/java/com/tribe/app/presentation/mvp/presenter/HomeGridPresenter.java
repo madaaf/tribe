@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
-import com.tribe.app.data.network.job.DownloadTribeJob;
 import com.tribe.app.data.network.job.UpdateTribesJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.domain.entity.Friendship;
@@ -117,7 +116,7 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
     private void updateTribes(List<Tribe> tribes) {
         for (Tribe tribe : tribes) {
             if (tribe.getMessageStatus().equals(MessageStatus.STATUS_RECEIVED)) {
-                jobManager.addJobInBackground(new DownloadTribeJob(tribe));
+                //jobManager.addJobInBackground(new DownloadTribeJob(tribe));
             }
         }
 
@@ -173,12 +172,7 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
 
         @Override
         public void onNext(List<Tribe> tribes) {
-            if (forceUpdate) {
-                forceUpdate = false;
-                updateTribes(tribes);
-            } else {
-                futureUpdateTribes(tribes);
-            }
+            updateTribes(tribes);
         }
     }
 
@@ -196,7 +190,6 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
 
         @Override
         public void onNext(List<Tribe> tribes) {
-            System.out.println("PENDING TRIBES : " + tribes.size());
             updatePendingTribes(tribes);
         }
     }

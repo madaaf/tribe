@@ -1,6 +1,7 @@
 package com.tribe.app.domain.entity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -139,6 +140,16 @@ public class User extends Friendship {
         friendshipList = new ArrayList<>();
         if (friendList != null) friendshipList.addAll(friendList);
         //if (groupList != null) friendshipList.addAll(groupList);
+
+        Collections.sort(friendshipList, (lhs, rhs) -> {
+            int res = Tribe.nullSafeComparator(lhs.getMostRecentTribe(), rhs.getMostRecentTribe());
+            if (res != 0) {
+                return res;
+            }
+
+            return Friendship.nullSafeComparator(lhs, rhs);
+        });
+
         return friendshipList;
     }
 }

@@ -25,7 +25,6 @@ import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -66,7 +65,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private BottomSheetDialog dialog;
     private User currentUser;
     private @CameraWrapper.TribeMode String tribeMode;
-    private Tribe currentTribe;
+    private Tribe currentTribe; // The tribe currently being recorded / sent
+    private Tribe mostRecentTribe;
 
     public HomeGridFragment() {
         setRetainInstance(true);
@@ -95,7 +95,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
 
         fragmentView.setTag(HomeActivity.GRID_FRAGMENT_PAGE);
 
-        setupRecyclerView();
+        init();
+        initRecyclerView();
         return fragmentView;
     }
 
@@ -162,6 +163,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     @Override
     public void renderFriendshipList(List<Friendship> friendCollection) {
         if (friendCollection != null) {
+            this.mostRecentTribe = Friendship.getMostRecentTribe(friendCollection);
             this.homeGridAdapter.setItems(friendCollection);
         }
     }
@@ -169,54 +171,53 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     @Override
     public void updateTribes(List<Tribe> tribes) {
         subscriptions.add(Observable.zip(
-            Observable.create(new Observable.OnSubscribe<List<Friendship>>() {
-                @Override
-                public void call(final Subscriber<? super List<Friendship>> subscriber) {
-                    subscriber.onNext(homeGridAdapter.getItems());
-                    subscriber.onCompleted();
-                }
-            }),
-            Observable.create(new Observable.OnSubscribe<List<Tribe>>() {
-                @Override
-                public void call(final Subscriber<? super List<Tribe>> subscriber) {
-                    subscriber.onNext(tribes);
-                    subscriber.onCompleted();
-                }
-            }), (friendships, obsTribes) -> {
-                List<Friendship> result = new ArrayList<>();
-                Friendship me = friendships.remove(0);
+                Observable.create(new Observable.OnSubscribe<List<Friendship>>() {
+                    @Override
+                    public void call(final Subscriber<? super List<Friendship>> subscriber) {
+                        subscriber.onNext(homeGridAdapter.getItems());
+                        subscriber.onCompleted();
+                    }
+                }),
+                Observable.create(new Observable.OnSubscribe<List<Tribe>>() {
+                    @Override
+                    public void call(final Subscriber<? super List<Tribe>> subscriber) {
+                        subscriber.onNext(tribes);
+                        subscriber.onCompleted();
+                    }
+                }), (friendships, obsTribes) -> {
+                    List<Tribe> nextTribes = new ArrayList<>(); // new tribes pending to update
 
-                for (Friendship friendship : friendships) {
-                    List<Tribe> newTribes = new ArrayList<>();
+                    for (Friendship friendship : friendships) {
+                        List<Tribe> receivedTribes = new ArrayList<>(); // tribes to update
+                        List<Tribe> tribesSent = new ArrayList<>();
 
-                    for (Tribe tribe : tribes) {
-                        if (tribe.isToGroup() && tribe.getTo().getId().equals(friendship.getId())
-                                || !tribe.isToGroup() && tribe.getFrom().getId().equals(friendship.getId())) {
-                            newTribes.add(tribe);
+                        for (Tribe tribe : tribes) {
+                            if (tribe.isToGroup() && tribe.getTo().getId().equals(friendship.getId())
+                                    || !tribe.isToGroup() && tribe.getFrom().getId().equals(friendship.getId())) {
+                                if (tribe.getRecordedAt().before(mostRecentTribe.getRecordedAt())) {
+                                    receivedTribes.add(tribe);
+                                } else {
+                                    nextTribes.add(tribe);
+                                }
+                            } else if (tribe.getFrom().equals(currentUser.getId())
+                                    && tribe.getTo().getId().equals(friendship.getId())) {
+                                tribesSent.add(tribe);
+                            }
                         }
+
+                        friendship.setReceivedTribes(receivedTribes);
+                        friendship.setSentTribes(receivedTribes);
                     }
 
-                    friendship.setTribes(newTribes);
-                }
+                    //onNewTribes.onNext(nextTribes);
 
-                Collections.sort(friendships, (lhs, rhs) -> {
-                    int res = Tribe.nullSafeComparator(lhs.getMostRecentTribe(), rhs.getMostRecentTribe());
-                    if (res != 0) {
-                        return res;
-                    }
-
-                    return Friendship.nullSafeComparator(lhs, rhs);
-                });
-
-                result.addAll(friendships);
-                result.add(0, me);
-
-                return result;
-            }).observeOn(new UIThread().getScheduler())
-            .subscribeOn(Schedulers.computation())
-            .subscribe(friendshipList -> {
-                homeGridAdapter.setItems(friendshipList);
-            })
+                    return obsTribes;
+                })
+                .subscribeOn(Schedulers.computation())
+                .observeOn(new UIThread().getScheduler())
+                .subscribe(friendshipList -> {
+                    homeGridAdapter.notifyDataSetChanged();
+                })
         );
     }
 
@@ -259,7 +260,10 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         this.tribeMode = tribeMode;
     }
 
-    private void setupRecyclerView() {
+    private void init() {
+    }
+
+    private void initRecyclerView() {
         this.layoutManager = new HomeLayoutManager(context());
         this.recyclerViewFriends.setLayoutManager(layoutManager);
         this.recyclerViewFriends.setItemAnimator(null);
@@ -312,6 +316,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         subscriptions.add(homeGridAdapter.onClickTapToCancel()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .subscribe(friendship -> {
+                    homeGridAdapter.updateItemWithTribe(friendship.getPosition(), null);
                     FileUtils.deleteTribe(currentTribe.getLocalId());
                     homeGridPresenter.deleteTribe(currentTribe);
                     currentTribe = null;
@@ -320,6 +325,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         subscriptions.add(homeGridAdapter.onNotCancel()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .subscribe(friendship -> {
+                    homeGridAdapter.updateItemWithTribe(friendship.getPosition(), null);
                     homeGridPresenter.sendTribe(currentTribe);
                     currentTribe = null;
                 }));

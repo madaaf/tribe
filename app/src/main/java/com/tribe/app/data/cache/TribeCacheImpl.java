@@ -6,6 +6,7 @@ import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.MessageStatus;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -47,6 +48,7 @@ public class TribeCacheImpl implements TribeCache {
         return Observable.create(new Observable.OnSubscribe<TribeRealm>() {
             @Override
             public void call(final Subscriber<? super TribeRealm> subscriber) {
+                tribeRealm.setUpdatedAt(new Date());
                 Realm obsRealm = Realm.getDefaultInstance();
                 obsRealm.beginTransaction();
                 TribeRealm obj = obsRealm.copyToRealmOrUpdate(tribeRealm);
@@ -59,6 +61,7 @@ public class TribeCacheImpl implements TribeCache {
 
     @Override
     public void update(TribeRealm tribeRealm) {
+        tribeRealm.setUpdatedAt(new Date());
         Realm obsRealm = Realm.getDefaultInstance();
         obsRealm.beginTransaction();
         obsRealm.copyToRealmOrUpdate(tribeRealm);
@@ -69,6 +72,10 @@ public class TribeCacheImpl implements TribeCache {
 
     @Override
     public void put(List<TribeRealm> tribeRealmList) {
+        for (TribeRealm tribeRealm : tribeRealmList) {
+            tribeRealm.setUpdatedAt(new Date());
+        }
+
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         realm.copyToRealmOrUpdate(tribeRealmList);
@@ -97,8 +104,16 @@ public class TribeCacheImpl implements TribeCache {
         return Observable.create(new Observable.OnSubscribe<List<TribeRealm>>() {
             @Override
             public void call(final Subscriber<? super List<TribeRealm>> subscriber) {
-                tribes = realm.where(TribeRealm.class).notEqualTo("from.id", currentUser.getId())
-                        .notEqualTo("messageStatus", MessageStatus.STATUS_OPENED).findAllSorted("recorded_at", Sort.DESCENDING);
+                tribes = realm.where(TribeRealm.class)
+                        .beginGroup()
+                        .notEqualTo("messageStatus", MessageStatus.STATUS_OPENED)
+                        .notEqualTo("from.id", currentUser.getId())
+                        .endGroup()
+                        .or()
+                        .beginGroup()
+                        .equalTo("from.id", currentUser.getId())
+                        .endGroup()
+                        .findAllSorted("recorded_at", Sort.DESCENDING);
                 tribes.removeChangeListeners();
                 tribes.addChangeListener(tribesUpdated -> subscriber.onNext(realm.copyFromRealm(tribesUpdated)));
                 subscriber.onNext(realm.copyFromRealm(tribes));

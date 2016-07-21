@@ -6,7 +6,6 @@
     <string name="exception_message_generic">Generic error message</string>
     <string name="exception_message_no_connection">No Internet connection</string>
 
-    <string name="tap.to.send">Tap &amp; hold!</string>
     <string name="Chat.Text.Hint">Type a message &#8320;</string>
     <string name="Login.PhoneNumber.Hint">Enter a phone number</string>
     <string name="Login.Code.Hint">Enter a code</string>
@@ -15,6 +14,13 @@
     <string name="Grid.Me.Points">Points</string>
     <string name="Grid.User.Sending">Sending...</string>
     <string name="Grid.User.Sent">Sent!</string>
+    <string name="grid_friendship_status_default">Tap &amp; hold!</string>
+    <string name="grid_friendship_status_sending">Sending</string>
+    <string name="grid_friendship_status_sent">Sent</string>
+    <string name="grid_friendship_status_opened">Opened</string>
+    <string name="grid_friendship_status_opened_plural">Opened</string>
+    <string name="grid_friendship_status_new_messages">Tap to view!</string>
+    <string name="grid_friendship_status_loading">Loading</string>
 
     <!-- TRIBE -->
     <string name="Tribe.Swipe.Down">Swipe down to dismiss</string>

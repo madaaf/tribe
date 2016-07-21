@@ -48,6 +48,7 @@ public class TribeRealmDataMapper {
             tribe.setType(tribeRealm.getType());
             tribe.setFrom(userRealmDataMapper.transformFromTribeUser(tribeRealm.getFrom()));
             tribe.setRecordedAt(tribeRealm.getRecordedAt());
+            tribe.setUpdatedAt(tribeRealm.getUpdatedAt());
             tribe.setToGroup(tribeRealm.isToGroup());
             tribe.setLat(tribeRealm.getLat());
             tribe.setLng(tribeRealm.getLng());
@@ -80,6 +81,7 @@ public class TribeRealmDataMapper {
 
             tribeRealm.setType(tribe.getType());
             tribeRealm.setRecordedAt(tribe.getRecordedAt());
+            tribeRealm.setUpdatedAt(tribe.getUpdatedAt());
             tribeRealm.setFrom(userRealmDataMapper.transformToTribeUser(tribe.getFrom()));
             tribeRealm.setLat(tribe.getLat());
             tribeRealm.setLng(tribe.getLng());

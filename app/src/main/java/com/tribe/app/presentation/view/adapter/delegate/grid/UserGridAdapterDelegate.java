@@ -72,12 +72,14 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
         UserGridViewHolder vh = (UserGridViewHolder) holder;
         Friendship friendship = items.get(position);
 
-        if (friendship.getTribe() == null) {
-            vh.viewTile.setInfo(friendship);
-            vh.viewTile.setBackground(position);
-            friendship.setPosition(position);
-        } else {
-            vh.viewTile.showTapToCancel(friendship.getTribe());
+        if (!vh.viewTile.isRecording() && !vh.viewTile.isTapToCancel()) {
+            if (friendship.getTribe() == null) {
+                vh.viewTile.setInfo(friendship);
+                vh.viewTile.setBackground(position);
+                friendship.setPosition(position);
+            } else {
+                vh.viewTile.showTapToCancel(friendship.getTribe());
+            }
         }
     }
 

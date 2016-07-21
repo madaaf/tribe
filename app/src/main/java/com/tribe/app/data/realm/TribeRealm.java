@@ -26,6 +26,7 @@ public class TribeRealm extends RealmObject {
     private double lat;
     private double lng;
     private @MessageStatus.Status String messageStatus;
+    private Date updatedAt;
 
     public void setId(String id) {
         this.id = id;
@@ -121,5 +122,13 @@ public class TribeRealm extends RealmObject {
 
     public void setMessageStatus(String messageStatus) {
         this.messageStatus = messageStatus;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

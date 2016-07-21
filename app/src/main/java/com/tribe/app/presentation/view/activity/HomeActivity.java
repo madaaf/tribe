@@ -52,6 +52,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private static final int THRESHOLD_SCROLL = 12;
     private static final int DURATION = 500;
     private static final int DELAY_DISMISS_PENDING = 1000;
+    private static final int DELAY_DISMISS_NEW_TRIBES = 1000;
     private static final float OVERSHOOT = 1f;
 
     public static final int FRIENDS_FRAGMENT_PAGE = 0;
@@ -323,6 +324,21 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                         .subscribeOn(Schedulers.io())
                         .subscribe(time -> {
                             hideLayoutPending();
+                        }));
+            }
+        });
+    }
+
+    @OnClick(R.id.layoutNavNewTribes)
+    public void updateGrid() {
+        AnimationUtils.replaceView(this, txtNewTribes, progressBarNewTribes, new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                subscriptions.add(Observable.timer(DELAY_DISMISS_NEW_TRIBES, TimeUnit.MILLISECONDS)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(time -> {
+                            hideLayoutNewTribes();
                         }));
             }
         });
