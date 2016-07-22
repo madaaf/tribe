@@ -22,5 +22,7 @@ public interface TribeCache {
     public Observable<Void> delete(TribeRealm tribeReaList);
     public Observable<List<TribeRealm>> tribes();
     public Observable<List<TribeRealm>> tribesPending();
+    public List<TribeRealm> tribesNotSent();
     public TribeRealm updateLocalWithServerRealm(TribeRealm local, TribeRealm server);
+    public void updateToError(List<TribeRealm> tribeRealmList);
 }

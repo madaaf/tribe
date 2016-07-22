@@ -13,6 +13,7 @@ import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
+import com.tribe.app.presentation.utils.MessageStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +72,7 @@ public class DiskUserDataRepository implements UserRepository {
                     for (Friendship friendship : user.getFriendshipList()) {
                         List<Tribe> receivedTribes = new ArrayList<>();
                         List<Tribe> sentTribes = new ArrayList<>();
+                        List<Tribe> errorTribes = new ArrayList<>();
 
                         for (Tribe tribe : tribes) {
                             if (tribe.isToGroup() && tribe.getTo().getId().equals(friendship.getId())
@@ -78,10 +80,12 @@ public class DiskUserDataRepository implements UserRepository {
                                 receivedTribes.add(tribe);
                             } else if (tribe.getFrom().getId().equals(user.getId())
                                     && tribe.getTo().getId().equals(friendship.getId())) {
-                                sentTribes.add(tribe);
+                                if (tribe.getMessageStatus().equals(MessageStatus.STATUS_ERROR)) errorTribes.add(tribe);
+                                else sentTribes.add(tribe);
                             }
                         }
 
+                        friendship.setErrorTribes(errorTribes);
                         friendship.setReceivedTribes(receivedTribes);
                         friendship.setSentTribes(sentTribes);
                     }

@@ -40,8 +40,6 @@ public class MessageStatus {
             res = ctx.getString(R.string.grid_friendship_status_loading);
         } else if (status.equals(STATUS_READY)) {
             res = ctx.getString(R.string.grid_friendship_status_new_messages);
-        } else if (status.equals(STATUS_ERROR)) {
-
         } else {
             res = ctx.getString(R.string.grid_friendship_status_default);
         }
@@ -65,7 +63,7 @@ public class MessageStatus {
         } else if (status.equals(STATUS_READY) || status.equals(STATUS_RECEIVED)) {
             res = R.drawable.picto_tap_to_view;
         } else if (status.equals(STATUS_ERROR)) {
-
+            res = R.drawable.picto_error_tribe;
         } else {
             res = R.drawable.picto_tap_to_view;
         }

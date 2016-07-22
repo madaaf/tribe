@@ -25,6 +25,7 @@ public class Friendship implements Serializable {
     protected Tribe tribe;
     protected List<Tribe> receivedTribes = new ArrayList<>();
     protected List<Tribe> sentTribes = new ArrayList<>();
+    protected List<Tribe> errorTribes = new ArrayList<>();
     protected String profilePicture;
     protected String displayName;
 
@@ -77,6 +78,15 @@ public class Friendship implements Serializable {
         this.receivedTribes.addAll(tribes);
     }
 
+    public List<Tribe> getErrorTribes() {
+        return errorTribes;
+    }
+
+    public void setErrorTribes(List<Tribe> tribes) {
+        this.errorTribes.clear();
+        this.errorTribes.addAll(tribes);
+    }
+
     public List<Tribe> getSentTribes() {
         return sentTribes;
     }
@@ -124,7 +134,7 @@ public class Friendship implements Serializable {
         for (Friendship friendship : friendships) {
             if (tribe == null) tribe = friendship.getMostRecentTribe();
             else if (friendship.getMostRecentTribe() != null) {
-                if (tribe.getRecordedAt().before(friendship.getMostRecentTribe().getRecordedAt())) tribe = friendship.getMostRecentTribe();
+                if (friendship.getMostRecentTribe().getRecordedAt().after(tribe.getRecordedAt())) tribe = friendship.getMostRecentTribe();
             }
         }
 

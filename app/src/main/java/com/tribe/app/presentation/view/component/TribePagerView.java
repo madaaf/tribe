@@ -25,7 +25,6 @@ import com.facebook.rebound.SpringSystem;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Tribe;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.view.adapter.pager.TribePagerAdapter;
@@ -350,7 +349,7 @@ public class TribePagerView extends FrameLayout {
     }
 
     public void initWithInfo(Friendship friendship) {
-        viewTile.setInfo((User) friendship);
+        viewTile.setInfo(friendship.getDisplayName(), friendship.getProfilePicture(), friendship.getReceivedTribes());
     }
 
     public void startRecording(String id) {

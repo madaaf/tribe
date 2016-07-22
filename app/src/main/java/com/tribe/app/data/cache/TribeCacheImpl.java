@@ -48,7 +48,6 @@ public class TribeCacheImpl implements TribeCache {
         return Observable.create(new Observable.OnSubscribe<TribeRealm>() {
             @Override
             public void call(final Subscriber<? super TribeRealm> subscriber) {
-                tribeRealm.setUpdatedAt(new Date());
                 Realm obsRealm = Realm.getDefaultInstance();
                 obsRealm.beginTransaction();
                 TribeRealm obj = obsRealm.copyToRealmOrUpdate(tribeRealm);
@@ -72,10 +71,6 @@ public class TribeCacheImpl implements TribeCache {
 
     @Override
     public void put(List<TribeRealm> tribeRealmList) {
-        for (TribeRealm tribeRealm : tribeRealmList) {
-            tribeRealm.setUpdatedAt(new Date());
-        }
-
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         realm.copyToRealmOrUpdate(tribeRealmList);
@@ -113,7 +108,7 @@ public class TribeCacheImpl implements TribeCache {
                         .beginGroup()
                         .equalTo("from.id", currentUser.getId())
                         .endGroup()
-                        .findAllSorted("recorded_at", Sort.DESCENDING);
+                        .findAllSorted("recorded_at", Sort.ASCENDING);
                 tribes.removeChangeListeners();
                 tribes.addChangeListener(tribesUpdated -> subscriber.onNext(realm.copyFromRealm(tribesUpdated)));
                 subscriber.onNext(realm.copyFromRealm(tribes));
@@ -127,12 +122,20 @@ public class TribeCacheImpl implements TribeCache {
             @Override
             public void call(final Subscriber<? super List<TribeRealm>> subscriber) {
                 pendingTribes = realm.where(TribeRealm.class).equalTo("from.id", currentUser.getId())
-                        .equalTo("messageStatus", MessageStatus.STATUS_ERROR).findAllSorted("recorded_at", Sort.DESCENDING);
+                        .equalTo("messageStatus", MessageStatus.STATUS_ERROR).findAllSorted("recorded_at", Sort.ASCENDING);
                 pendingTribes.removeChangeListeners();
                 pendingTribes.addChangeListener(tribesPending -> subscriber.onNext(realm.copyFromRealm(tribesPending)));
                 subscriber.onNext(realm.copyFromRealm(pendingTribes));
             }
         });
+    }
+
+    @Override
+    public List<TribeRealm> tribesNotSent() {
+        Realm otherRealm = Realm.getDefaultInstance();
+        RealmResults<TribeRealm> sentTribes = otherRealm.where(TribeRealm.class).equalTo("from.id", currentUser.getId())
+                .equalTo("messageStatus", MessageStatus.STATUS_PENDING).findAllSorted("recorded_at", Sort.ASCENDING);
+        return otherRealm.copyFromRealm(sentTribes);
     }
 
     @Override
@@ -146,5 +149,19 @@ public class TribeCacheImpl implements TribeCache {
         obsRealm.commitTransaction();
         obsRealm.close();
         return resultTribe;
+    }
+
+    @Override
+    public void updateToError(List<TribeRealm> tribeRealmList) {
+        for (TribeRealm tribeRealm : tribeRealmList) {
+            tribeRealm.setMessageStatus(MessageStatus.STATUS_ERROR);
+            tribeRealm.setUpdatedAt(new Date());
+        }
+
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(tribeRealmList);
+        realm.commitTransaction();
+        realm.close();
     }
 }

@@ -26,7 +26,6 @@ import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.MessageStatus;
@@ -377,13 +376,13 @@ public class TileView extends SquareFrameLayout {
         springAvatar.setEndValue(TAP_TO_CANCEL_SPRING_VALUE);
     }
 
-    public void setInfo(Friendship friendship) {
-        txtName.setText(friendship.getDisplayName());
-        avatar.load(friendship.getProfilePicture());
+    public void setInfo(String name, String urlAvatar, List<Tribe> receivedTribes) {
+        txtName.setText(name);
+        avatar.load(urlAvatar);
 
         if (type == TYPE_GRID) {
-            if (friendship.getReceivedTribes() != null && friendship.getReceivedTribes().size() > 0) {
-                txtNbTribes.setText("" + friendship.getReceivedTribes().size());
+            if (receivedTribes != null && receivedTribes.size() > 0) {
+                txtNbTribes.setText("" + receivedTribes.size());
                 if (txtNbTribes.getScaleX() == 0) {
                     txtNbTribes.animate().scaleX(1).scaleY(1).setDuration(SCALE_DURATION).setStartDelay(ANIMATION_DELAY).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
                 }
@@ -393,10 +392,15 @@ public class TileView extends SquareFrameLayout {
                     txtNbTribes.animate().scaleX(0).scaleY(0).setDuration(SCALE_DURATION).setStartDelay(ANIMATION_DELAY).start();
                 }
             }
-
-            txtStatus.setText(computeStatus(friendship.getReceivedTribes(), friendship.getSentTribes()));
-            txtStatus.setCompoundDrawablesWithIntrinsicBounds(getContext().getResources().getDrawable(computeIconStatus(friendship.getReceivedTribes(), friendship.getSentTribes())), null, null, null);
         }
+    }
+
+    public void setStatus(List<Tribe> receivedTribes, List<Tribe> sentTribes, List<Tribe> errorTribes) {
+        @MessageStatus.Status String ultimateMessageStatus = computeStatus(receivedTribes, sentTribes, errorTribes);
+
+        if (ultimateMessageStatus.equals(MessageStatus.STATUS_ERROR)) txtStatus.setText("" + errorTribes.size());
+        else txtStatus.setText(computeStrStatus(ultimateMessageStatus));
+        txtStatus.setCompoundDrawablesWithIntrinsicBounds(getContext().getResources().getDrawable(computeIconStatus(ultimateMessageStatus)), null, null, null);
     }
 
     public void setBackground(int position) {
@@ -458,30 +462,25 @@ public class TileView extends SquareFrameLayout {
         setTag(R.id.progress_bar_animation, animation);
     }
 
-    private String computeStatus(List<Tribe> received, List<Tribe> sent) {
-        Tribe endTribe = computeMostRecentTribe(received, sent);
-        if (endTribe == null) return MessageStatus.getStrRes(getContext(), MessageStatus.STATUS_NONE);
-        return MessageStatus.getStrRes(getContext(), endTribe.getMessageStatus());
+    private String computeStatus(List<Tribe> received, List<Tribe> sent, List<Tribe> error) {
+        Tribe endTribe = computeMostRecentTribe(received, sent, error);
+        if (endTribe == null) return MessageStatus.STATUS_NONE;
+        return endTribe.getMessageStatus();
     }
 
-    private int computeIconStatus(List<Tribe> received, List<Tribe> sent) {
-        Tribe endTribe = computeMostRecentTribe(received, sent);
-        if (endTribe == null) return MessageStatus.getIconRes(MessageStatus.STATUS_NONE);
-        return MessageStatus.getIconRes(endTribe.getMessageStatus());
+    private String computeStrStatus(@MessageStatus.Status String status) {
+        return MessageStatus.getStrRes(getContext(), status);
     }
 
-    private Tribe computeMostRecentTribe(List<Tribe> received, List<Tribe> sent) {
-        Tribe recentReceived = received != null && received.size() > 0 ? received.get(0) : null;
-        Tribe recentSent = sent != null && sent.size() > 0 ? sent.get(0) : null;
-        Tribe endTribe = null;
+    private int computeIconStatus(@MessageStatus.Status String status) {
+        return MessageStatus.getIconRes(status);
+    }
 
-        if (recentReceived != null && recentSent != null) {
-            endTribe = recentSent.getUpdatedAt().after(recentReceived.getUpdatedAt()) ? recentSent : recentReceived;
-        } else {
-            endTribe = recentReceived != null ? recentReceived : recentSent;
-        }
-
-        return endTribe;
+    private Tribe computeMostRecentTribe(List<Tribe> received, List<Tribe> sent, List<Tribe> error) {
+        Tribe recentReceived = received != null && received.size() > 0 ? received.get(received.size() - 1) : null;
+        Tribe recentSent = sent != null && sent.size() > 0 ? sent.get(sent.size() - 1) : null;
+        Tribe recentError = error != null && error.size() > 0 ? error.get(error.size() - 1) : null;
+        return Tribe.getMostRecentTribe(recentReceived, recentSent, recentError);
     }
 
     public Observable<View> onOpenTribes() {

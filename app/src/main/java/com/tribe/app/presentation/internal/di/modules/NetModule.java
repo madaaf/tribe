@@ -208,6 +208,7 @@ public class NetModule {
     Picasso providePicasso(Context context, OkHttpClient client) {
         return new Picasso.Builder(context)
                 .downloader(new OkHttp3Downloader(client))
+                .indicatorsEnabled(true)
                 .build();
     }
 

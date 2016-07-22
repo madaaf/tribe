@@ -5,7 +5,10 @@ import com.tribe.app.presentation.utils.MessageStatus;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by tiago on 22/05/2016.
@@ -178,5 +181,29 @@ public class Tribe implements Serializable {
         }
 
         return one.getRecordedAt().compareTo(two.getRecordedAt());
+    }
+
+    public static Tribe getMostRecentTribe(final Tribe ... tribes) {
+        List<Tribe> tribeList = Arrays.asList(tribes);
+
+        Collections.sort(tribeList, (one, two) -> {
+            if (one == null ^ two == null) {
+                return (one == null) ? -1 : 1;
+            }
+
+            if (one == null && two == null) return 0;
+
+            if (one.getUpdatedAt() == null ^ two.getUpdatedAt() == null) {
+                return (one.getUpdatedAt() == null) ? -1 : 1;
+            }
+
+            if (one.getUpdatedAt() == null && two.getUpdatedAt() == null) {
+                return one.getRecordedAt().before(two.getRecordedAt()) ? -1 : 1;
+            }
+
+            return one.getUpdatedAt().before(two.getUpdatedAt()) ? -1 : 1;
+        });
+
+        return tribeList.get(tribeList.size() - 1);
     }
 }

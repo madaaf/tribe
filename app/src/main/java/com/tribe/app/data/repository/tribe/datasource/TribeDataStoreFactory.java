@@ -2,6 +2,7 @@ package com.tribe.app.data.repository.tribe.datasource;
 
 import android.content.Context;
 
+import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.AccessToken;
@@ -25,7 +26,8 @@ public class TribeDataStoreFactory {
     private final SimpleDateFormat simpleDateFormat;
 
     @Inject
-    public TribeDataStoreFactory(Context context, TribeCache tribeCache, TribeApi tribeApi, AccessToken accessToken, @Named("utcSimpleDate") SimpleDateFormat simpleDateFormat) {
+    public TribeDataStoreFactory(Context context, TribeCache tribeCache, TribeApi tribeApi, AccessToken accessToken,
+                                 @Named("utcSimpleDate") SimpleDateFormat simpleDateFormat, JobManager jobManager) {
         if (context == null || tribeCache == null) {
             throw new IllegalArgumentException("Constructor parameters cannot be null!");
         }

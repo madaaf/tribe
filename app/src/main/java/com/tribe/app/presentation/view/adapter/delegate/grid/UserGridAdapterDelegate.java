@@ -74,13 +74,15 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
 
         if (!vh.viewTile.isRecording() && !vh.viewTile.isTapToCancel()) {
             if (friendship.getTribe() == null) {
-                vh.viewTile.setInfo(friendship);
+                vh.viewTile.setInfo(friendship.getDisplayName(), friendship.getProfilePicture(), friendship.getReceivedTribes());
                 vh.viewTile.setBackground(position);
                 friendship.setPosition(position);
             } else {
                 vh.viewTile.showTapToCancel(friendship.getTribe());
             }
         }
+
+        vh.viewTile.setStatus(friendship.getReceivedTribes(), friendship.getSentTribes(), friendship.getErrorTribes());
     }
 
     public Observable<View> onOpenTribes() {

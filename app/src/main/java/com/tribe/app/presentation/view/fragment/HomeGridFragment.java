@@ -18,6 +18,7 @@ import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.HomeView;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.MessageStatus;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
@@ -190,6 +191,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                     for (Friendship friendship : friendships) {
                         List<Tribe> receivedTribes = new ArrayList<>(); // tribes to update
                         List<Tribe> tribesSent = new ArrayList<>();
+                        List<Tribe> tribesError = new ArrayList<>();
 
                         for (Tribe tribe : tribes) {
                             if (tribe.isToGroup() && tribe.getTo().getId().equals(friendship.getId())
@@ -199,21 +201,23 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                                 } else {
                                     nextTribes.add(tribe);
                                 }
-                            } else if (tribe.getFrom().equals(currentUser.getId())
+                            } else if (tribe.getFrom().getId().equals(currentUser.getId())
                                     && tribe.getTo().getId().equals(friendship.getId())) {
-                                tribesSent.add(tribe);
+                                if (tribe.getMessageStatus().equals(MessageStatus.STATUS_ERROR)) tribesError.add(tribe);
+                                else tribesSent.add(tribe);
                             }
                         }
 
                         friendship.setReceivedTribes(receivedTribes);
-                        friendship.setSentTribes(receivedTribes);
+                        friendship.setSentTribes(tribesSent);
+                        friendship.setErrorTribes(tribesError);
                     }
 
                     //onNewTribes.onNext(nextTribes);
 
                     return obsTribes;
                 })
-                .subscribeOn(Schedulers.computation())
+                .subscribeOn(Schedulers.newThread())
                 .observeOn(new UIThread().getScheduler())
                 .subscribe(friendshipList -> {
                     homeGridAdapter.notifyDataSetChanged();

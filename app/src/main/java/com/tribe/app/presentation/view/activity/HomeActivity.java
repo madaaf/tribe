@@ -78,6 +78,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @BindView(R.id.imgNavFriends)
     ImageView imgNavFriends;
 
+    @BindView(R.id.imgNavGroups)
+    ImageView imgNavGroups;
+
     @BindView(R.id.layoutNavGrid)
     ViewGroup layoutNavGrid;
 
@@ -407,26 +410,26 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 layoutNav(layoutNavPending, sizeLayoutNavPending, translationLayoutNavPending);
 
                 float sizeImgNavGrid = sizeNavMax - ((sizeNavMax - sizeNavSmall) * position);
-                float translationImgNavGrid = ((pageWidth >> 1) - (imgNavGrid.getWidth() / 2) - marginHorizontalSmall - widthPending - layoutNavGrid.getWidth()) * position;
-                layoutNav(imgNavGrid, sizeImgNavGrid, translationImgNavGrid);
+                float translationImgNavGrid = ((pageWidth >> 1) - (layoutNavGrid.getWidth() / 2) - marginHorizontalSmall - widthPending - imgNavGroups.getWidth()) * position;
+                layoutNav(layoutNavGrid, sizeImgNavGrid, translationImgNavGrid);
 
                 float sizeImgNavFriends = sizeNavSmall + ((sizeNavMax - sizeNavSmall) * position);
-                float translationImgNavFriends = (pageWidth - imgNavFriends.getWidth() - widthPending - layoutNavGrid.getWidth() - imgNavGrid.getWidth() - 2 * marginHorizontalSmall) * position;
+                float translationImgNavFriends = (pageWidth - imgNavFriends.getWidth() - widthPending - layoutNavGrid.getWidth() - imgNavGroups.getWidth() - 2 * marginHorizontalSmall) * position;
                 layoutNav(imgNavFriends, sizeImgNavFriends, translationImgNavFriends);
             } else if (pagePosition == 1 && position < 0) {
                 cameraWrapper.setTranslationX(pageWidth * position);
 
                 float sizeImgNavGrid = sizeNavMax - ((sizeNavMax - sizeNavSmall) * -position);
-                float translationImgNavGrid = ((pageWidth >> 1) - (imgNavGrid.getWidth() / 2) - marginHorizontalSmall - imgNavFriends.getWidth()) * position;
-                layoutNav(imgNavGrid, sizeImgNavGrid, translationImgNavGrid);
+                float translationImgNavGrid = ((pageWidth >> 1) - (layoutNavGrid.getWidth() / 2) - marginHorizontalSmall - imgNavFriends.getWidth()) * position;
+                layoutNav(layoutNavGrid, sizeImgNavGrid, translationImgNavGrid);
 
                 float sizeLayoutNavPending = sizeNavSmall;
-                float translationLayoutNavPending = (pageWidth - widthPending - marginLayoutNavPending - imgNavFriends.getWidth() - imgNavGrid.getWidth() - marginHorizontalSmall) * position;
+                float translationLayoutNavPending = (pageWidth - widthPending - marginLayoutNavPending - imgNavFriends.getWidth() - layoutNavGrid.getWidth() - marginHorizontalSmall) * position;
                 layoutNav(layoutNavPending, sizeLayoutNavPending, translationLayoutNavPending);
 
                 float sizeImgNavGroups = sizeNavSmall + ((sizeNavMax - sizeNavSmall) * -position);
-                float translationImgNavGroups = (pageWidth - imgNavFriends.getWidth() - widthPending - layoutNavGrid.getWidth() - imgNavGrid.getWidth() - 2 * marginHorizontalSmall) * position;
-                layoutNav(layoutNavGrid, sizeImgNavGroups, translationImgNavGroups);
+                float translationImgNavGroups = (pageWidth - imgNavFriends.getWidth() - widthPending - layoutNavGrid.getWidth() - imgNavGroups.getWidth() - 2 * marginHorizontalSmall) * position;
+                layoutNav(imgNavGroups, sizeImgNavGroups, translationImgNavGroups);
             }
         }
 

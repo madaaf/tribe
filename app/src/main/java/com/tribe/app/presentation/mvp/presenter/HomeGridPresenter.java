@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
+import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateTribesJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.domain.entity.Friendship;
@@ -30,6 +31,7 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
     private UseCaseDisk diskUserInfosUsecase;
     private UseCaseDisk diskGetTribeListUsecase;
     private UseCaseDisk diskGetPendingTribeListUsecase;
+    private UseCaseDisk diskUpdateTribeListInError;
 
     // SUBSCRIBERS
     private TribePendingListSubscriber tribePendingListSubscriber;
@@ -52,6 +54,7 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
 
     @Override
     public void onCreate() {
+        jobManager.addJobInBackground(new UpdateTribesErrorStatusJob());
         loadFriendList();
         loadPendingTribeList();
         jobManager.addJobInBackground(new UpdateUserJob());
