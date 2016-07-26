@@ -15,14 +15,17 @@ import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.SendTribeView;
 import com.tribe.app.presentation.mvp.view.View;
-import com.tribe.app.presentation.utils.MessageStatus;
+import com.tribe.app.presentation.utils.FileUtils;
 
+import java.io.File;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 public class HomeGridPresenter extends SendTribePresenter implements Presenter {
+
+    private static final int PRELOAD_MAX = 5;
 
     // VIEW ATTACHED
     private HomeGridView homeGridView;
@@ -35,9 +38,6 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
 
     // SUBSCRIBERS
     private TribePendingListSubscriber tribePendingListSubscriber;
-
-    // VARIABLES
-    private boolean forceUpdate = true;
 
     @Inject
     public HomeGridPresenter(JobManager jobManager,
@@ -117,10 +117,18 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
     }
 
     private void updateTribes(List<Tribe> tribes) {
+        int countPreload = 0;
+
         for (Tribe tribe : tribes) {
-            if (tribe.getMessageStatus().equals(MessageStatus.STATUS_RECEIVED)) {
-                //jobManager.addJobInBackground(new DownloadTribeJob(tribe));
-            }
+            File file = FileUtils.getFileEnd(tribe.getId());
+
+//            if (tribe.getMessageStatus().equals(MessageStatus.STATUS_RECEIVED)
+//                    && (!file.exists() || file.length() == 0)) {
+//                countPreload++;
+//                jobManager.addJobInBackground(new DownloadTribeJob(tribe));
+//            }
+
+            //if (countPreload == PRELOAD_MAX) break;
         }
 
         this.homeGridView.updateTribes(tribes);

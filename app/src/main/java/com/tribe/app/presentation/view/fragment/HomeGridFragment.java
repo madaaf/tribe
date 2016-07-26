@@ -18,7 +18,7 @@ import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.HomeView;
 import com.tribe.app.presentation.utils.FileUtils;
-import com.tribe.app.presentation.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageStatus;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;

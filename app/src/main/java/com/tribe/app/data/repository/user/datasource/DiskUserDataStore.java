@@ -14,12 +14,16 @@ import rx.Observable;
 public class DiskUserDataStore implements UserDataStore {
 
     private final UserCache userCache;
+    private final AccessToken accessToken;
+
     /**
      * Construct a {@link UserDataStore} based on the database.
      * @param userCache A {@link UserCache} to retrieve the data.
+     * @param accessToken A {@link AccessToken} that contains the current user id.
      */
-    public DiskUserDataStore(UserCache userCache) {
+    public DiskUserDataStore(UserCache userCache, AccessToken accessToken) {
         this.userCache = userCache;
+        this.accessToken = accessToken;
     }
 
     @Override
@@ -38,7 +42,7 @@ public class DiskUserDataStore implements UserDataStore {
 
     @Override
     public Observable<UserRealm> userInfos(String userId) {
-        return this.userCache.userInfos(userId);
+        return this.userCache.userInfos(accessToken.getUserId());
     }
 
     @Override

@@ -13,6 +13,7 @@ import rx.Observable;
 public class DiskTribeDataStore implements TribeDataStore {
 
     private final TribeCache tribeCache;
+
     /**
      * Construct a {@link TribeDataStore} based on the database.
      * @param tribeCache A {@link TribeCache} to retrieve the data.

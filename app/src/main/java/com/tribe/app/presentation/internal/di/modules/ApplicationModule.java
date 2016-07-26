@@ -54,6 +54,7 @@ import dagger.Module;
 import dagger.Provides;
 import io.realm.Realm;
 import io.realm.RealmResults;
+import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 
 /**
  * Dagger module that provides objects which will live during the application lifecycle.
@@ -199,6 +200,10 @@ public class ApplicationModule {
     ScreenUtils provideScreenUtils(Context context) {
         return new ScreenUtils(context);
     }
+
+    @Provides
+    @Singleton
+    ReactiveLocationProvider provideReactiveLocationProvider(Context context) { return new ReactiveLocationProvider(context); }
 
     @Provides
     @Singleton

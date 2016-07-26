@@ -250,6 +250,13 @@ public class TribePagerView extends FrameLayout {
         cameraWrapper.onPause();
     }
 
+    public void onDestroy() {
+        if (currentView == null)
+            ((TribeComponentView) viewPager.findViewWithTag(viewPager.getCurrentItem())).releasePlayer();
+        else
+            currentView.releasePlayer();
+    }
+
     private void initViewPager() {
         viewPager.setAdapter(tribePagerAdapter);
         viewPager.setOffscreenPageLimit(5);

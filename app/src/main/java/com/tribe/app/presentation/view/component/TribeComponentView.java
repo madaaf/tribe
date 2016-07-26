@@ -1,7 +1,9 @@
 package com.tribe.app.presentation.view.component;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.SurfaceTexture;
+import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.TextureView;
@@ -12,10 +14,18 @@ import android.widget.Toast;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Location;
+import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.User;
+import com.tribe.app.domain.entity.Weather;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
 import com.tribe.app.presentation.internal.di.scope.FloatDef;
 import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
+import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
+import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.VideoTextureView;
 
@@ -23,6 +33,8 @@ import org.videolan.libvlc.IVLCVout;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
+
+import java.util.Date;
 
 import javax.inject.Inject;
 
@@ -43,14 +55,17 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     @FloatDef({SPEED_NORMAL, SPEED_LIGHTLY_FASTER, SPEED_FAST})
     public @interface SpeedPlaybackValues{}
 
+    @Inject User currentUser;
     @Inject LibVLC libVLC;
     @Inject @SpeedPlayback Preference<Float> speedPlayback;
+    @Inject @DistanceUnits Preference<String> distanceUnits;
+    @Inject @WeatherUnits Preference<String> weatherUnits;
 
     @BindView(R.id.viewTextureVideo)
     VideoTextureView viewTextureVideo;
 
-    @BindView(R.id.imgAvatar)
-    View imgAvatar;
+    @BindView(R.id.avatar)
+    AvatarView avatarView;
 
     @BindView(R.id.imgSave)
     ImageView imgSave;
@@ -103,6 +118,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     private MediaPlayer.EventListener playerListener;
     private int videoWidth, videoHeight;
     private SurfaceTexture surfaceTexture;
+    private Tribe tribe;
 
     public TribeComponentView(Context context) {
         super(context);
@@ -142,6 +158,34 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         super.onFinishInflate();
     }
 
+    public void setTribe(Tribe tribe) {
+        this.tribe = tribe;
+        txtName.setText(tribe.getFrom().getDisplayName());
+        avatarView.load(tribe.getFrom().getProfilePicture());
+        txtTime.setText(DateUtils.getRelativeTimeSpanString(tribe.getRecordedAt().getTime(), new Date().getTime(), DateUtils.SECOND_IN_MILLIS));
+
+        if (tribe.getLocation() != null && tribe.getLocation().hasLocation()) {
+            txtCity.setVisibility(View.VISIBLE);
+            txtDistance.setVisibility(View.VISIBLE);
+            txtWeather.setVisibility(View.VISIBLE);
+            viewSeparator.setVisibility(View.VISIBLE);
+            imgWeather.setVisibility(View.VISIBLE);
+
+            Location location = tribe.getLocation();
+            Weather weatherObj = tribe.getWeather();
+            txtCity.setText(location.getCity());
+            txtDistance.setText(currentUser.getLocation() != null ? currentUser.getLocation().distanceTo(getContext(), distanceUnits.get(), tribe.getLocation()) : getContext().getString(R.string.tribe_distance_enable));
+            txtWeather.setText((weatherUnits.get().equals(com.tribe.app.presentation.view.utils.Weather.CELSIUS) ? weatherObj.getTempC() : weatherObj.getTempF()) + "°");
+            imgWeather.setImageResource(getResources().getIdentifier("weather_" + weatherObj.getIcon(), "drawable", getContext().getPackageName()));
+        } else {
+            txtCity.setVisibility(View.GONE);
+            txtDistance.setVisibility(View.GONE);
+            txtWeather.setVisibility(View.GONE);
+            viewSeparator.setVisibility(View.GONE);
+            imgWeather.setVisibility(View.GONE);
+        }
+    }
+
     public void startPlayer() {
         setMedia();
         setTxtSpeed();
@@ -149,7 +193,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     }
 
     public void setMedia() {
-        Media media = new Media(libVLC, "/storage/emulated/0/Download/Tribe/Sent/c643528f-34cb-4449-ac0a-74ca6dd36142.mp4");
+        Media media = new Media(libVLC, FileUtils.getPathForId(tribe.getId()));
         mediaPlayer.setMedia(media);
     }
 
@@ -181,7 +225,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     }
 
     public void setIconsAlpha(float alpha) {
-        imgAvatar.setAlpha(alpha);
+        avatarView.setAlpha(alpha);
         imgSpeed.setAlpha(alpha);
         imgMore.setAlpha(alpha);
         imgSave.setAlpha(alpha);
@@ -227,6 +271,15 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         }
     }
 
+    @OnClick(R.id.txtDistance)
+    public void enableDistance(View view) {
+        if (currentUser.getLocation() == null || !currentUser.getLocation().hasLocation()) {
+            Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getContext().startActivity(intent);
+        }
+    }
+
     private void setTxtSpeed() {
         txtSpeed.setText(getContext().getResources().getString(R.string.Tribe_Speed, fmt(speedPlayback.get())));
     }
@@ -266,7 +319,9 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
         videoWidth = width;
         videoHeight = height;
-        viewTextureVideo.setVideoWidthHeight(width, height);
+
+        if (viewTextureVideo != null)
+            viewTextureVideo.setVideoWidthHeight(width, height);
     }
 
     @Override

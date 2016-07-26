@@ -13,7 +13,7 @@ import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
-import com.tribe.app.presentation.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageStatus;
 
 import javax.inject.Inject;
 import javax.inject.Named;

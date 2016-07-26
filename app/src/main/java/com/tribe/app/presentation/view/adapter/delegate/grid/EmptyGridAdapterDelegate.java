@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.fernandocejas.frodo.annotation.RxLogObservable;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
@@ -37,7 +36,6 @@ public class EmptyGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>
     }
 
     @NonNull
-    @RxLogObservable
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
         return new EmptyGridViewHolder(layoutInflater.inflate(R.layout.item_empty_grid, parent, false));

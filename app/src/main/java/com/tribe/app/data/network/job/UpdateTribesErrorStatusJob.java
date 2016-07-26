@@ -10,7 +10,7 @@ import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
-import com.tribe.app.presentation.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageStatus;
 
 import java.util.ArrayList;
 import java.util.List;

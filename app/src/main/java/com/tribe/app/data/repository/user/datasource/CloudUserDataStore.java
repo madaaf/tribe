@@ -13,9 +13,11 @@ import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.LocationRealm;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.UserRealm;
 
+import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 import rx.Observable;
 import rx.functions.Action1;
 
@@ -30,6 +32,7 @@ public class CloudUserDataStore implements UserDataStore {
     private final Context context;
     private final AccessToken accessToken;
     private final Installation installation;
+    private final ReactiveLocationProvider reactiveLocationProvider;
 
     /**
      * Construct a {@link UserDataStore} based on connections to the api (Cloud).
@@ -40,13 +43,15 @@ public class CloudUserDataStore implements UserDataStore {
      * @param accessToken the access token
      */
     public CloudUserDataStore(UserCache userCache, TribeApi tribeApi, LoginApi loginApi,
-                              AccessToken accessToken, Installation installation, Context context) {
+                              AccessToken accessToken, Installation installation,
+                              ReactiveLocationProvider reactiveLocationProvider, Context context) {
         this.userCache = userCache;
         this.tribeApi = tribeApi;
         this.loginApi = loginApi;
         this.context = context;
         this.accessToken = accessToken;
         this.installation = installation;
+        this.reactiveLocationProvider = reactiveLocationProvider;
     }
 
     @Override
@@ -85,8 +90,18 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<UserRealm> userInfos(String userId) {
-        return this.tribeApi.getUserInfos(context.getString(R.string.user_infos))
-                .doOnNext(saveToCacheUser);
+        return Observable.zip(this.tribeApi.getUserInfos(context.getString(R.string.user_infos)),
+                reactiveLocationProvider.getLastKnownLocation().defaultIfEmpty(null),
+                (userRealm, location) -> {
+                    if (location != null) {
+                        LocationRealm locationRealm = new LocationRealm();
+                        locationRealm.setLatitude(location.getLatitude());
+                        locationRealm.setLongitude(location.getLongitude());
+                        locationRealm.setHasLocation(true);
+                        userRealm.setLocation(locationRealm);
+                    }
+                    return userRealm;
+                }).doOnNext(saveToCacheUser);
     }
 
     @Override

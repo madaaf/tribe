@@ -1,13 +1,8 @@
 package com.tribe.app.data.repository.chat;
 
-import com.fernandocejas.frodo.annotation.RxLogObservable;
-import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.mapper.MessageRealmDataMapper;
 import com.tribe.app.data.repository.chat.datasource.ChatDataStore;
 import com.tribe.app.data.repository.chat.datasource.ChatDataStoreFactory;
-import com.tribe.app.data.repository.chat.datasource.DiskChatDataStore;
-import com.tribe.app.data.repository.chat.datasource.MQTTChatDataStore;
-import com.tribe.app.data.rxmqtt.impl.RxMqttMessage;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.interactor.text.ChatRepository;
 
@@ -19,8 +14,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import rx.Observable;
-import rx.functions.Func1;
-import rx.functions.Func2;
 
 /**
  * {@link ChatDataRepository} for retrieving user data.
@@ -49,7 +42,6 @@ public class ChatDataRepository implements ChatRepository {
         return chatDataStoreFactory.createMQTTStore().connectAndSubscribe(topic);
     }
 
-    @RxLogObservable
     @Override
     public Observable<List<Message>> subscribing(String topic) {
         ChatDataStore mqttChatDataStore = chatDataStoreFactory.createMQTTStore();

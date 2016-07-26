@@ -13,7 +13,7 @@ import com.tribe.app.data.realm.mapper.TribeRealmDataMapper;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.utils.FileUtils;
-import com.tribe.app.presentation.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageStatus;
 
 import java.io.File;
 import java.io.FileOutputStream;

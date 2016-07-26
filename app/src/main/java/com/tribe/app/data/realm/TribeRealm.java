@@ -1,6 +1,6 @@
 package com.tribe.app.data.realm;
 
-import com.tribe.app.presentation.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageStatus;
 
 import java.util.Date;
 
@@ -23,10 +23,10 @@ public class TribeRealm extends RealmObject {
     private GroupRealm group;
     private Date recorded_at;
     private boolean to_group = false;
-    private double lat;
-    private double lng;
     private @MessageStatus.Status String messageStatus;
     private Date updatedAt;
+    private WeatherRealm weatherRealm;
+    private LocationRealm locationRealm;
 
     public void setId(String id) {
         this.id = id;
@@ -58,22 +58,6 @@ public class TribeRealm extends RealmObject {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public double getLat() {
-        return lat;
-    }
-
-    public void setLat(double lat) {
-        this.lat = lat;
-    }
-
-    public double getLng() {
-        return lng;
-    }
-
-    public void setLng(double lng) {
-        this.lng = lng;
     }
 
     public boolean isToGroup() {
@@ -130,5 +114,39 @@ public class TribeRealm extends RealmObject {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public WeatherRealm getWeatherRealm() {
+        return weatherRealm;
+    }
+
+    public void setWeatherRealm(WeatherRealm weatherRealm) {
+        this.weatherRealm = weatherRealm;
+    }
+
+    public LocationRealm getLocationRealm() {
+        return locationRealm;
+    }
+
+    public void setLocationRealm(LocationRealm locationRealm) {
+        this.locationRealm = locationRealm;
+    }
+
+    public TribeRealm cloneTribeRealm(TribeRealm fromRealm) {
+        TribeRealm tribeRealm = new TribeRealm();
+        tribeRealm.setId(fromRealm.getId());
+        tribeRealm.setLocalId(fromRealm.getLocalId());
+        tribeRealm.setGroup(fromRealm.getGroup());
+        tribeRealm.setUser(fromRealm.getUser());
+        tribeRealm.setType(fromRealm.getType());
+        tribeRealm.setRecordedAt(fromRealm.getRecordedAt());
+        tribeRealm.setUpdatedAt(fromRealm.getUpdatedAt());
+        tribeRealm.setFrom(fromRealm.getFrom());
+        tribeRealm.setLocationRealm(fromRealm.getLocationRealm());
+        tribeRealm.setWeatherRealm(fromRealm.getWeatherRealm());
+        tribeRealm.setUrl(fromRealm.getUrl());
+        tribeRealm.setMessageStatus(fromRealm.getMessageStatus());
+
+        return tribeRealm;
     }
 }

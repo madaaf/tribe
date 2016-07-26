@@ -64,7 +64,7 @@ public class UserCacheImpl implements UserCache {
             @Override
             public void call(final Subscriber<? super UserRealm> subscriber) {
                 Realm obsRealm = Realm.getDefaultInstance();
-                final UserRealm results = obsRealm.where(UserRealm.class).findFirst();
+                final UserRealm results = obsRealm.where(UserRealm.class).equalTo("id", userId).findFirst();
                 //results.addChangeListener(element -> {
                 //    subscriber.onNext(obsRealm.copyFromRealm(results));
                 //});
@@ -72,5 +72,13 @@ public class UserCacheImpl implements UserCache {
                 obsRealm.close();
             }
         });
+    }
+
+    @Override
+    public UserRealm userInfosNoObs(String userId) {
+        Realm obsRealm = Realm.getDefaultInstance();
+        final UserRealm results = obsRealm.copyFromRealm(obsRealm.where(UserRealm.class).equalTo("id", userId).findFirst());
+        obsRealm.close();
+        return results;
     }
 }

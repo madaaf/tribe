@@ -2,10 +2,8 @@ package com.tribe.app.data.cache;
 
 import android.content.Context;
 
-import com.fernandocejas.frodo.annotation.RxLogObservable;
 import com.tribe.app.data.realm.MessageRealm;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -35,7 +33,6 @@ public class ChatCacheImpl implements ChatCache {
         return false;
     }
 
-    @RxLogObservable
     @Override
     public Observable<List<MessageRealm>> messages() {
         return Observable.create(new Observable.OnSubscribe<List<MessageRealm>>() {

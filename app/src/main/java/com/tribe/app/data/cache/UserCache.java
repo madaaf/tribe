@@ -20,4 +20,5 @@ public interface UserCache {
     public void put(AccessToken accessToken);
     public void put(Installation installation);
     public Observable<UserRealm> userInfos(String userId);
+    public UserRealm userInfosNoObs(String userId);
 }

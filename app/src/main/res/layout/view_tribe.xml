@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <com.tribe.app.presentation.view.widget.VideoTextureView
         android:id="@+id/viewTextureVideo"
@@ -33,13 +35,14 @@
         android:background="@null"
         >
 
-        <View
-            android:id="@+id/imgAvatar"
-            android:layout_height="@dimen/avatar_size_small"
+        <com.tribe.app.presentation.view.widget.AvatarView
+            android:id="@+id/avatar"
             android:layout_width="@dimen/avatar_size_small"
-            android:background="@android:color/white">
-
-        </View>
+            android:layout_height="@dimen/avatar_size_small"
+            android:layout_gravity="center"
+            android:background="@null"
+            app:border="false"
+            />
 
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtName"
@@ -47,9 +50,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/horizontal_margin_small"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@id/imgAvatar"
-            style="@style/Text.Tribe.Name"
-            android:text="Tiago Duarte"
+            android:layout_toRightOf="@id/avatar"
+            style="@style/Title.2.White"
             />
 
         <com.tribe.app.presentation.view.widget.TextViewFont
@@ -58,9 +60,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/horizontal_margin_small"
             android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@id/imgAvatar"
-            style="@style/Text.Tribe.Sub"
-            android:text="2 minutes ago"
+            android:layout_toRightOf="@id/avatar"
+            style="@style/Body.One.White40"
             />
 
     </RelativeLayout>
@@ -72,26 +73,34 @@
         android:background="@null"
         >
 
-        <ImageView
-            android:id="@+id/imgSpeed"
-            android:layout_width="@dimen/button_size"
-            android:layout_height="@dimen/button_size"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="3dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/picto_speed_regular"
-            android:background="@drawable/selectable_button_oval_light"
-            android:clickable="true"
-            />
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtSpeed"
+        <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="40dp"
-            android:layout_centerVertical="true"
-            style="@style/Title.1"
-            />
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            >
+
+            <ImageView
+                android:id="@+id/imgSpeed"
+                android:layout_width="@dimen/button_size"
+                android:layout_height="@dimen/button_size"
+                android:layout_marginLeft="3dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/picto_speed_regular"
+                android:background="@drawable/selectable_button_oval_light"
+                android:clickable="true"
+                />
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:id="@+id/txtSpeed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="40dp"
+                style="@style/Title.1"
+                android:text="1.5"
+                />
+        </FrameLayout>
 
         <ImageView
             android:id="@+id/imgMore"
@@ -149,9 +158,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="@dimen/vertical_margin_large"
+            android:layout_marginBottom="@dimen/vertical_margin"
             style="@style/Title.1"
-            android:text="Manhattan"
             />
 
         <com.tribe.app.presentation.view.widget.TextViewFont
@@ -159,32 +167,37 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            style="@style/Text.Tribe.Sub"
+            style="@style/Body.One.White40"
             android:text="12489 mi"
             />
 
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtWeather"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            style="@style/Text.Tribe.Weather"
-            android:text="28°"
-            />
+            android:orientation="horizontal"
+            >
 
-        <ImageView
-            android:id="@+id/imgWeather"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/txtWeather"
-            android:layout_marginRight="@dimen/horizontal_margin_small"
-            android:layout_alignParentBottom="true"
-            android:background="@null"
-            android:scaleType="centerInside"
-            android:src="@drawable/picto_weather_fake"
-            />
+            <ImageView
+                android:id="@+id/imgWeather"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/horizontal_margin_small"
+                android:background="@null"
+                android:scaleType="centerInside"
+                android:src="@drawable/weather_clear"
+                />
 
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:id="@+id/txtWeather"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Weather"
+                android:text="32°"
+                />
+        </LinearLayout>
     </RelativeLayout>
 
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -216,7 +229,7 @@
         android:layout_gravity="bottom"
         android:gravity="center"
         android:background="@drawable/selectable_button_light"
-        style="@style/Text.Tribe.Infos"
+        style="@style/Body.Two.White"
         android:text="@string/Tribe.Back"
         android:alpha="0"
         android:clickable="false"

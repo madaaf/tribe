@@ -1,7 +1,7 @@
 package com.tribe.app.domain.entity;
 
 import com.tribe.app.presentation.utils.FileUtils;
-import com.tribe.app.presentation.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageStatus;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 
 import java.io.Serializable;
@@ -29,10 +29,10 @@ public class Tribe implements Serializable {
     private boolean toGroup;
     private Date recordedAt;
     private Date updatedAt;
-    private double lat;
-    private double lng;
+    private Location location;
     private String url;
     private @MessageStatus.Status String messageStatus;
+    private Weather weather;
 
     public String getId() {
         return id;
@@ -86,20 +86,12 @@ public class Tribe implements Serializable {
         this.recordedAt = recordedAt;
     }
 
-    public double getLat() {
-        return lat;
+    public Location getLocation() {
+        return location;
     }
 
-    public void setLat(double lat) {
-        this.lat = lat;
-    }
-
-    public double getLng() {
-        return lng;
-    }
-
-    public void setLng(double lng) {
-        this.lng = lng;
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     public void setId(String id) {
@@ -128,6 +120,14 @@ public class Tribe implements Serializable {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Weather getWeather() {
+        return weather;
+    }
+
+    public void setWeather(Weather weather) {
+        this.weather = weather;
     }
 
     public static Tribe createTribe(User user, Friendship friendship, @CameraWrapper.TribeMode String mode) {

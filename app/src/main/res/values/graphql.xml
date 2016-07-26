@@ -77,6 +77,14 @@
                     recorded_at
                     lat
                     lng
+                    weather {
+                        temp_f
+                        temp_c
+                        icon
+                    }
+                    location {
+                        city
+                    }
                 }
             }
         }

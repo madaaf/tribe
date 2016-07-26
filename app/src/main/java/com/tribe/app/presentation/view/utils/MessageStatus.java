@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.utils;
+package com.tribe.app.presentation.view.utils;
 
 import android.content.Context;
 import android.support.annotation.StringDef;

@@ -15,8 +15,6 @@ import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -90,6 +88,8 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
     @Override
     protected void onDestroy() {
+        viewTribePager.onDestroy();
+
         if (unbinder != null) unbinder.unbind();
 
         if (subscriptions != null && subscriptions.hasSubscriptions()) {
@@ -113,13 +113,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
     }
 
     private void initTribePagerView() {
-        List<Tribe> tribeList = new ArrayList<>();
-        tribeList.add(new Tribe());
-        tribeList.add(new Tribe());
-        tribeList.add(new Tribe());
-        tribeList.add(new Tribe());
-        tribeList.add(new Tribe());
-        viewTribePager.setItems(tribeList);
+        viewTribePager.setItems(friendship.getReceivedTribes());
         viewTribePager.setBackgroundColor(PaletteGrid.get(position - 1));
         viewTribePager.initWithInfo(friendship);
     }

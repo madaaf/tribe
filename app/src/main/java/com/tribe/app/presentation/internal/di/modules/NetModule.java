@@ -88,6 +88,13 @@ public class NetModule {
     }
 
     @Provides
+    @Named("picassoOkHttp")
+    @PerApplication
+    OkHttpClient provideOkHttpClientPicasso(Context context) {
+        return createOkHttpClient(context).build();
+    }
+
+    @Provides
     @PerApplication
     TribeAuthorizer provideTribeAuthorizer(AccessToken accessToken) {
         return new TribeAuthorizer(BuildConfig.TRIBE_PUBLIC_KEY, BuildConfig.TRIBE_PRIVATE_KEY, accessToken);
@@ -121,9 +128,9 @@ public class NetModule {
         });
 
         if (BuildConfig.DEBUG) {
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-            httpClientBuilder.addInterceptor(loggingInterceptor);
+            //HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+            //loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            //httpClientBuilder.addInterceptor(loggingInterceptor);
             httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
         }
 
@@ -205,10 +212,10 @@ public class NetModule {
 
     @Provides
     @Singleton
-    Picasso providePicasso(Context context, OkHttpClient client) {
+    Picasso providePicasso(Context context, @Named("picassoOkHttp") OkHttpClient client) {
         return new Picasso.Builder(context)
                 .downloader(new OkHttp3Downloader(client))
-                .indicatorsEnabled(true)
+                .indicatorsEnabled(false)
                 .build();
     }
 

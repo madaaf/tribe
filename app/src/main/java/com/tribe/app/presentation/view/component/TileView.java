@@ -28,7 +28,7 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.presentation.utils.FileUtils;
-import com.tribe.app.presentation.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageStatus;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.widget.AvatarView;
@@ -398,9 +398,12 @@ public class TileView extends SquareFrameLayout {
     public void setStatus(List<Tribe> receivedTribes, List<Tribe> sentTribes, List<Tribe> errorTribes) {
         @MessageStatus.Status String ultimateMessageStatus = computeStatus(receivedTribes, sentTribes, errorTribes);
 
-        if (ultimateMessageStatus.equals(MessageStatus.STATUS_ERROR)) txtStatus.setText("" + errorTribes.size());
-        else txtStatus.setText(computeStrStatus(ultimateMessageStatus));
-        txtStatus.setCompoundDrawablesWithIntrinsicBounds(getContext().getResources().getDrawable(computeIconStatus(ultimateMessageStatus)), null, null, null);
+        if (ultimateMessageStatus != null) {
+            if (ultimateMessageStatus.equals(MessageStatus.STATUS_ERROR))
+                txtStatus.setText("" + errorTribes.size());
+            else txtStatus.setText(computeStrStatus(ultimateMessageStatus));
+            txtStatus.setCompoundDrawablesWithIntrinsicBounds(getContext().getResources().getDrawable(computeIconStatus(ultimateMessageStatus)), null, null, null);
+        }
     }
 
     public void setBackground(int position) {

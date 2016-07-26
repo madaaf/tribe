@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageStatus;
 
 import java.util.Date;
 import java.util.List;
@@ -48,6 +48,7 @@ public class TribeCacheImpl implements TribeCache {
         return Observable.create(new Observable.OnSubscribe<TribeRealm>() {
             @Override
             public void call(final Subscriber<? super TribeRealm> subscriber) {
+                tribeRealm.setUpdatedAt(new Date());
                 Realm obsRealm = Realm.getDefaultInstance();
                 obsRealm.beginTransaction();
                 TribeRealm obj = obsRealm.copyToRealmOrUpdate(tribeRealm);

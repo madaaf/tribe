@@ -58,6 +58,32 @@ public class UserRealmDataMapper {
         return user;
     }
 
+
+    /**
+     * Transform a {@link com.tribe.app.data.realm.UserRealm} into an {@link UserTribeRealm}.
+     *
+     * @param userRealm Object to be transformed.
+     * @return {@link UserTribeRealm} if valid {@link com.tribe.app.data.realm.UserRealm} otherwise null.
+     */
+    public UserTribeRealm transformToUserTribe(UserRealm userRealm) {
+        UserTribeRealm user = null;
+        if (userRealm != null) {
+            user = new UserTribeRealm();
+            user.setId(userRealm.getId());
+            user.setCreatedAt(userRealm.getCreatedAt());
+            user.setUpdatedAt(userRealm.getUpdatedAt());
+            user.setDisplayName(userRealm.getDisplayName());
+            user.setProfilePicture(userRealm.getProfilePicture());
+            user.setScore(userRealm.getScore());
+            user.setReal(userRealm.isReal());
+            user.setInvited(userRealm.isInvited());
+            if (userRealm.getLocation() != null) user.setLocation(userRealm.getLocation());
+            user.setDisableSaveTribe(userRealm.isDisableSaveTribe());
+        }
+
+        return user;
+    }
+
     /**
      * Transform a {@link com.tribe.app.data.realm.UserRealm} into an {@link com.tribe.app.domain.entity.User}.
      *

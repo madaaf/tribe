@@ -9,6 +9,8 @@ public class LocationRealm extends RealmObject {
 
     private double longitude;
     private double latitude;
+    private String city;
+    private boolean hasLocation;
 
     public LocationRealm() {
 
@@ -33,5 +35,21 @@ public class LocationRealm extends RealmObject {
 
     public void setLatitude(double latitude) {
         this.latitude = latitude;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public boolean hasLocation() {
+        return hasLocation;
+    }
+
+    public void setHasLocation(boolean hasLocation) {
+        this.hasLocation = hasLocation;
     }
 }

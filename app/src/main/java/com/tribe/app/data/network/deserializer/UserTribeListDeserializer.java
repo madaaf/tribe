@@ -8,8 +8,10 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.tribe.app.data.realm.GroupRealm;
+import com.tribe.app.data.realm.LocationRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserTribeRealm;
+import com.tribe.app.data.realm.WeatherRealm;
 
 import java.lang.reflect.Type;
 import java.text.ParseException;
@@ -44,28 +46,49 @@ public class UserTribeListDeserializer<T> implements JsonDeserializer<T> {
             tribeRealm.setId(json.get("id").getAsString());
             tribeRealm.setLocalId(json.get("id").getAsString());
 
-            if (json.get("to_group").getAsBoolean()) {
+            boolean toGroup = json.get("to_group").getAsBoolean();
+
+            if (toGroup) {
                 groupRealm = new GroupRealm();
-                groupRealm.setId(json.get("id").getAsString());
+                groupRealm.setId(json.get("to").getAsString());
                 tribeRealm.setGroup(groupRealm);
             } else {
                 userTribeRealm = new UserTribeRealm();
-                userTribeRealm.setId(json.get("id").getAsString());
+                userTribeRealm.setId(json.get("to").getAsString());
                 tribeRealm.setUser(userTribeRealm);
             }
+
+            tribeRealm.setToGroup(toGroup);
 
             UserTribeRealm from = new UserTribeRealm();
             from.setId(json.get("from").getAsString());
             tribeRealm.setFrom(from);
-            tribeRealm.setLat(json.get("lat") instanceof JsonNull ? 0.0D : json.get("lat").getAsDouble());
-            tribeRealm.setLng(json.get("lng") instanceof JsonNull ? 0.0D : json.get("lng").getAsDouble());
+
+            LocationRealm locationRealm = new LocationRealm();
+            locationRealm.setLatitude(json.get("lat") instanceof JsonNull ? 0.0D : json.get("lat").getAsDouble());
+            locationRealm.setLongitude(json.get("lng") instanceof JsonNull ? 0.0D : json.get("lng").getAsDouble());
+            locationRealm.setCity(!(json.get("location") instanceof JsonNull) ? json.getAsJsonObject("location").get("city").getAsString() : null);
+            locationRealm.setHasLocation(!(json.get("lat") instanceof JsonNull));
+            tribeRealm.setLocationRealm(locationRealm);
+
             tribeRealm.setType(json.get("type").getAsString());
             tribeRealm.setUrl(json.get("url").getAsString());
+
+            if (!(json.get("weather") instanceof JsonNull)) {
+                JsonObject weather = json.get("weather").getAsJsonObject();
+                WeatherRealm weatherRealm = new WeatherRealm();
+                weatherRealm.setIcon(weather.get("icon").getAsString());
+                weatherRealm.setTempC(weather.get("temp_c").getAsInt());
+                weatherRealm.setTempF(weather.get("temp_f").getAsInt());
+                tribeRealm.setWeatherRealm(weatherRealm);
+            }
+
             try {
                 tribeRealm.setRecordedAt(utcSimpleDate.parse(json.get("recorded_at").getAsString()));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+
             tribes.add(tribeRealm);
         }
 

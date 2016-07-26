@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -30,6 +31,9 @@ public class AvatarView extends RoundedCornerLayout {
     @BindView(R.id.imgAvatar)
     ImageView imgAvatar;
 
+    // VARIABLES
+    private boolean hasBorder = true;
+
     public AvatarView(Context context) {
         this(context, null);
         init(context, null);
@@ -46,7 +50,11 @@ public class AvatarView extends RoundedCornerLayout {
         ButterKnife.bind(this);
         ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
 
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AvatarView);
+        hasBorder = a.getBoolean(R.styleable.AvatarView_border, false);
+
         setWillNotDraw(false);
+        a.recycle();
     }
 
     @Override
@@ -58,7 +66,7 @@ public class AvatarView extends RoundedCornerLayout {
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
 
-        float borderWidth = 1f;
+        float borderWidth = hasBorder ? 1f : 1f;
 
         DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
         borderWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, borderWidth, metrics);
@@ -83,6 +91,5 @@ public class AvatarView extends RoundedCornerLayout {
                 .noFade()
                 .centerCrop()
                 .into(imgAvatar);
-        //imgAvatar.setImageResource(R.drawable.cage);
     }
 }

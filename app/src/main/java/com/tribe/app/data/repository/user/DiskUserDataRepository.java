@@ -13,7 +13,7 @@ import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
-import com.tribe.app.presentation.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageStatus;
 
 import java.util.ArrayList;
 import java.util.List;

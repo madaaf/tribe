@@ -4,11 +4,8 @@
         <attr name="customFont" format="string" />
     </declare-styleable>
 
-    <declare-styleable name="CircularImageView">
+    <declare-styleable name="AvatarView">
         <attr name="border" format="boolean"></attr>
-        <attr name="border_color" format="color"></attr>
-        <attr name="border_width" format="dimension"></attr>
-        <attr name="shadow" format="boolean"></attr>
     </declare-styleable>
 
     <declare-styleable name="RoundedCornerLayout">

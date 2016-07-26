@@ -36,7 +36,7 @@ public abstract class MediaEncoder implements Runnable {
     protected MediaCodec mediaCodec;
     protected final WeakReference<TribeMuxerWrapper> weakMuxer;
     protected MediaCodec.BufferInfo bufferInfo;
-    private long prevOutputPTSUs = 0;
+    private int totalSize    = 0;
 
     public MediaEncoder(final TribeMuxerWrapper muxer) {
         if (muxer == null) throw new NullPointerException("TribeMuxerWrapper is null");
@@ -227,7 +227,7 @@ public abstract class MediaEncoder implements Runnable {
         if (mediaCodec == null) return;
 
         ByteBuffer[] encoderOutputBuffers = mediaCodec.getOutputBuffers();
-        int encoderStatus, count = 0;
+        int encoderStatus;
         final TribeMuxerWrapper muxer = weakMuxer.get();
 
         if (muxer == null) {
@@ -235,13 +235,11 @@ public abstract class MediaEncoder implements Runnable {
             return;
         }
 
-        LOOP:
         while (isRecording) {
-            encoderStatus = mediaCodec.dequeueOutputBuffer(bufferInfo, TIMEOUT_USEC);
+            encoderStatus = mediaCodec.dequeueOutputBuffer(bufferInfo, 0);
             if (encoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
                 if (!isEOS) {
-                    if (++count > 5)
-                        break LOOP;
+                    break;
                 }
             } else if (encoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
                 if (DEBUG) Log.v(TAG, "INFO_OUTPUT_BUFFERS_CHANGED");
@@ -268,7 +266,7 @@ public abstract class MediaEncoder implements Runnable {
                             try {
                                 muxer.wait(100);
                             } catch (final InterruptedException e) {
-                                break LOOP;
+                                e.printStackTrace();
                             }
                     }
                 }
@@ -294,22 +292,28 @@ public abstract class MediaEncoder implements Runnable {
 
                 if (bufferInfo.size != 0) {
                     // encoded data is ready, clear waiting counter
-                    count = 0;
                     if (!muxerStarted) {
                         // muxer is not ready...this will prrograming failure.
                         throw new RuntimeException("drain:muxer hasn't started");
                     }
-                    // write encoded data to muxer(need to adjust presentationTimeUs.
-                    bufferInfo.presentationTimeUs = getPTSUs();
-                    muxer.writeSampleData(trackIndex, encodedData, bufferInfo);
-                    prevOutputPTSUs = bufferInfo.presentationTimeUs;
+
+                    encodedData.position(bufferInfo.offset);
+                    encodedData.limit(bufferInfo.offset + bufferInfo.size);
+
+                    boolean calc_time = true; //TODO: DEBUG
+                    if (calc_time) {
+                        long t0 = System.currentTimeMillis();
+                        muxer.writeSampleData(trackIndex, encodedData, bufferInfo);
+                        totalSize += bufferInfo.size;
+                        long dt = System.currentTimeMillis() - t0;
+                        if (dt>50) Log.e("DEBUG", String.format("XXX: dt=%d, size=%.2f",dt,(float) totalSize/1024/1024));
+                    } else {
+                        muxer.writeSampleData(trackIndex, encodedData, bufferInfo);
+                    }
                 }
 
-                // return buffer to encoder
                 mediaCodec.releaseOutputBuffer(encoderStatus, false);
-
                 if ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-                    // when EOS come.
                     isRecording = false;
                     break;
                 }
@@ -318,12 +322,7 @@ public abstract class MediaEncoder implements Runnable {
     }
 
     protected long getPTSUs() {
-        long result = System.nanoTime() / 1000L;
-
-        if (result < prevOutputPTSUs)
-            result = (prevOutputPTSUs - result) + result;
-
-        return result;
+        return System.nanoTime();
     }
 
     public Observable<MediaEncoder> onPrepared() {

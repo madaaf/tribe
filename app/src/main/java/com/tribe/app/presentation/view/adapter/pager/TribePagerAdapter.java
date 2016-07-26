@@ -38,7 +38,11 @@ public class TribePagerAdapter extends PagerAdapter {
 
         TribeComponentView tribeComponentView = (TribeComponentView) itemView.findViewById(R.id.viewTribe);
         tribeComponentView.setTag(position);
-        if (position == currentPosition) tribeComponentView.startPlayer();
+        tribeComponentView.setTribe(tribeList.get(position));
+
+        if (position == currentPosition) {
+            tribeComponentView.startPlayer();
+        }
 
         itemView.setTag(R.id.tag_tribe, position);
 

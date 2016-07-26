@@ -8,8 +8,9 @@ import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.TribeRealm;
+import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.presentation.utils.FileUtils;
-import com.tribe.app.presentation.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageStatus;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -28,23 +29,29 @@ public class CloudTribeDataStore implements TribeDataStore {
 
     private final TribeApi tribeApi;
     private final TribeCache tribeCache;
+    private final UserCache userCache;
     private final Context context;
     private final AccessToken accessToken;
     private final SimpleDateFormat simpleDateFormat;
+    private final UserRealmDataMapper userRealmDataMapper;
 
     /**
      * Construct a {@link TribeDataStore} based on connections to the api (Cloud).
-     * @param tribeCache A {@link UserCache} to cache data retrieved from the api.
+     * @param tribeCache A {@link TribeCache} to cache data retrieved from the api.
+     * @param userCache A {@link UserCache} to cache / retrieve data from the api.
      * @param tribeApi an implementation of the api
      * @param context the context
      * @param accessToken the access token
      */
-    public CloudTribeDataStore(TribeCache tribeCache, TribeApi tribeApi, AccessToken accessToken, Context context, SimpleDateFormat simpleDateFormat) {
+    public CloudTribeDataStore(TribeCache tribeCache, UserCache userCache, TribeApi tribeApi, AccessToken accessToken,
+                               Context context, SimpleDateFormat simpleDateFormat, UserRealmDataMapper userRealmDataMapper) {
         this.tribeCache = tribeCache;
+        this.userCache = userCache;
         this.tribeApi = tribeApi;
         this.context = context;
         this.accessToken = accessToken;
         this.simpleDateFormat = simpleDateFormat;
+        this.userRealmDataMapper = userRealmDataMapper;
     }
 
     @Override
@@ -80,8 +87,8 @@ public class CloudTribeDataStore implements TribeDataStore {
     public Observable<List<TribeRealm>> tribes() {
         return tribeApi.tribes(context.getString(R.string.tribe_infos))
                 .map(tribeRealmList -> {
-                    for (TribeRealm tribe : tribeRealmList) {
-                        tribe.setMessageStatus(MessageStatus.STATUS_RECEIVED);
+                    for (TribeRealm tribeRealm : tribeRealmList) {
+                        tribeRealm.setFrom(userRealmDataMapper.transformToUserTribe(userCache.userInfosNoObs(tribeRealm.getFrom().getId())));
                     }
 
                     return tribeRealmList;

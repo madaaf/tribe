@@ -21,14 +21,17 @@ public class TribeRealmDataMapper {
     LocationRealmDataMapper locationRealmDataMapper;
     GroupRealmDataMapper groupRealmDataMapper;
     UserRealmDataMapper userRealmDataMapper;
+    WeatherRealmDataMapper weatherRealmDataMapper;
 
     @Inject
     public TribeRealmDataMapper(LocationRealmDataMapper locationRealmDataMapper,
                                 GroupRealmDataMapper groupRealmDataMapper,
-                                UserRealmDataMapper userRealmDataMapper) {
+                                UserRealmDataMapper userRealmDataMapper,
+                                WeatherRealmDataMapper weatherRealmDataMapper) {
         this.locationRealmDataMapper = locationRealmDataMapper;
         this.groupRealmDataMapper = groupRealmDataMapper;
         this.userRealmDataMapper = userRealmDataMapper;
+        this.weatherRealmDataMapper = weatherRealmDataMapper;
     }
 
     /**
@@ -44,16 +47,16 @@ public class TribeRealmDataMapper {
             tribe = new Tribe();
             tribe.setId(tribeRealm.getId());
             tribe.setLocalId(tribeRealm.getLocalId());
-            tribe.setTo(tribeRealm.getGroup() != null ? groupRealmDataMapper.transform(tribeRealm.getGroup()) : userRealmDataMapper.transformFromTribeUser(tribeRealm.getUser()));
+            tribe.setTo(tribeRealm.isToGroup() ? groupRealmDataMapper.transform(tribeRealm.getGroup()) : userRealmDataMapper.transformFromTribeUser(tribeRealm.getUser()));
             tribe.setType(tribeRealm.getType());
             tribe.setFrom(userRealmDataMapper.transformFromTribeUser(tribeRealm.getFrom()));
             tribe.setRecordedAt(tribeRealm.getRecordedAt());
             tribe.setUpdatedAt(tribeRealm.getUpdatedAt());
             tribe.setToGroup(tribeRealm.isToGroup());
-            tribe.setLat(tribeRealm.getLat());
-            tribe.setLng(tribeRealm.getLng());
+            tribe.setLocation(locationRealmDataMapper.transform(tribeRealm.getLocationRealm()));
             tribe.setUrl(tribeRealm.getUrl());
             tribe.setMessageStatus(tribeRealm.getMessageStatus());
+            tribe.setWeather(weatherRealmDataMapper.transform(tribeRealm.getWeatherRealm()));
         }
 
         return tribe;
@@ -83,10 +86,10 @@ public class TribeRealmDataMapper {
             tribeRealm.setRecordedAt(tribe.getRecordedAt());
             tribeRealm.setUpdatedAt(tribe.getUpdatedAt());
             tribeRealm.setFrom(userRealmDataMapper.transformToTribeUser(tribe.getFrom()));
-            tribeRealm.setLat(tribe.getLat());
-            tribeRealm.setLng(tribe.getLng());
+            tribeRealm.setLocationRealm(locationRealmDataMapper.transform(tribe.getLocation()));
             tribeRealm.setUrl(tribe.getUrl());
             tribeRealm.setMessageStatus(tribe.getMessageStatus());
+            tribeRealm.setWeatherRealm(weatherRealmDataMapper.transform(tribe.getWeather()));
         }
 
         return tribeRealm;

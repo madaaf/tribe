@@ -93,7 +93,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="60dp"
             android:layout_marginTop="28dp"
-            style="@style/Text.Tribe.Name"
+            style="@style/Title.2.White"
             android:text="@string/Tribe.Snooze.Snooze"
             />
         
@@ -123,7 +123,7 @@
                 android:layout_marginLeft="@dimen/horizontal_margin_small"
                 android:layout_alignTop="@id/imgLater"
                 android:layout_toRightOf="@id/imgLater"
-                style="@style/Text.Tribe.Name"
+                style="@style/Title.2.White"
                 android:text="@string/Tribe.Snooze.Later"
                 />
 
@@ -155,7 +155,7 @@
                 android:layout_marginLeft="@dimen/horizontal_margin_small"
                 android:layout_alignTop="@id/imgTomorrow"
                 android:layout_toRightOf="@id/imgTomorrow"
-                style="@style/Text.Tribe.Name"
+                style="@style/Title.2.White"
                 android:text="@string/Tribe.Snooze.Tomorrow"
                 />
 
@@ -188,7 +188,7 @@
                 android:layout_marginLeft="@dimen/horizontal_margin_small"
                 android:layout_alignTop="@id/imgWeekend"
                 android:layout_toRightOf="@id/imgWeekend"
-                style="@style/Text.Tribe.Name"
+                style="@style/Title.2.White"
                 android:text="@string/Tribe.Snooze.Weekend"
                 />
 
@@ -220,7 +220,7 @@
                 android:layout_marginLeft="@dimen/horizontal_margin_small"
                 android:layout_alignTop="@id/imgWeek"
                 android:layout_toRightOf="@id/imgWeek"
-                style="@style/Text.Tribe.Name"
+                style="@style/Title.2.White"
                 android:text="@string/Tribe.Snooze.Next"
                 />
 

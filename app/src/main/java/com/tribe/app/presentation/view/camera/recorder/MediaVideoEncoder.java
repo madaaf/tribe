@@ -3,21 +3,21 @@ package com.tribe.app.presentation.view.camera.recorder;
 import android.content.Context;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
+import android.media.MediaCodecList;
 import android.media.MediaFormat;
-import android.support.design.BuildConfig;
 import android.util.Log;
 
 import com.tribe.app.R;
 
 public class MediaVideoEncoder extends MediaEncoder {
 
-    private static final boolean DEBUG = BuildConfig.DEBUG;
+    private static final boolean DEBUG = true;
     private static final String TAG = "MediaVideoEncoder";
 
     // CONFIGURATION
-    private static final String MIME_TYPE = "video/avc";
+    private static final String MIME_TYPE = MediaFormat.MIMETYPE_VIDEO_AVC;
     private static final int FRAME_RATE = 15;
-    private static final int FRAME_INTERVAL = 5;
+    private static final int FRAME_INTERVAL = 10;
     private static final int BITRATE = 500000;
 
     // VARIABLES
@@ -50,6 +50,14 @@ public class MediaVideoEncoder extends MediaEncoder {
             format.setInteger(MediaFormat.KEY_BIT_RATE, BITRATE);
             format.setInteger(MediaFormat.KEY_FRAME_RATE, FRAME_RATE);
             format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, FRAME_INTERVAL);
+
+            final MediaCodecInfo videoCodecInfo = selectVideoCodec(MIME_TYPE);
+
+            if (videoCodecInfo == null) {
+                throw new IllegalArgumentException("Unable to find an appropriate codec for " + MIME_TYPE);
+            }
+
+            if (DEBUG) Log.i(TAG, "selected codec: " + videoCodecInfo.getName());
 
             mediaCodec = MediaCodec.createEncoderByType(MIME_TYPE);
             mediaCodec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
@@ -113,4 +121,87 @@ public class MediaVideoEncoder extends MediaEncoder {
         isEOS = true;
     }
 
+    /**
+     * select the first codec that match a specific MIME type
+     * @param mimeType
+     * @return null if no codec matched
+     */
+    @SuppressWarnings("deprecation")
+    protected static final MediaCodecInfo selectVideoCodec(final String mimeType) {
+        if (DEBUG) Log.v(TAG, "selectVideoCodec:");
+
+        // get the list of available codecs
+        final int numCodecs = MediaCodecList.getCodecCount();
+        for (int i = 0; i < numCodecs; i++) {
+            final MediaCodecInfo codecInfo = MediaCodecList.getCodecInfoAt(i);
+
+            if (!codecInfo.isEncoder()) {	// skipp decoder
+                continue;
+            }
+            // select first codec that match a specific MIME type and color format
+            final String[] types = codecInfo.getSupportedTypes();
+            for (int j = 0; j < types.length; j++) {
+                if (types[j].equalsIgnoreCase(mimeType)) {
+                    if (DEBUG) Log.i(TAG, "codec:" + codecInfo.getName() + ",MIME=" + types[j]);
+                    final int format = selectColorFormat(codecInfo, mimeType);
+                    if (format > 0) {
+                        return codecInfo;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * select color format available on specific codec and we can use.
+     * @return 0 if no colorFormat is matched
+     */
+    protected static final int selectColorFormat(final MediaCodecInfo codecInfo, final String mimeType) {
+        if (DEBUG) Log.i(TAG, "selectColorFormat: ");
+        int result = 0;
+        final MediaCodecInfo.CodecCapabilities caps;
+        try {
+            Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+            caps = codecInfo.getCapabilitiesForType(mimeType);
+        } finally {
+            Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
+        }
+        int colorFormat;
+        for (int i = 0; i < caps.colorFormats.length; i++) {
+            colorFormat = caps.colorFormats[i];
+            if (isRecognizedVideoFormat(colorFormat)) {
+                if (result == 0)
+                    result = colorFormat;
+                break;
+            }
+        }
+        if (result == 0)
+            Log.e(TAG, "couldn't find a good color format for " + codecInfo.getName() + " / " + mimeType);
+        return result;
+    }
+
+    /**
+     * color formats that we can use in this class
+     */
+    protected static int[] recognizedFormats;
+    static {
+        recognizedFormats = new int[] {
+//        	MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar,
+//        	MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar,
+//        	MediaCodecInfo.CodecCapabilities.COLOR_QCOM_FormatYUV420SemiPlanar,
+                MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface,
+        };
+    }
+
+    protected static final boolean isRecognizedVideoFormat(final int colorFormat) {
+        if (DEBUG) Log.i(TAG, "isRecognizedViewoFormat:colorFormat=" + colorFormat);
+        final int n = recognizedFormats != null ? recognizedFormats.length : 0;
+        for (int i = 0; i < n; i++) {
+            if (recognizedFormats[i] == colorFormat) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
