@@ -88,8 +88,6 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
     @Override
     protected void onDestroy() {
-        viewTribePager.onDestroy();
-
         if (unbinder != null) unbinder.unbind();
 
         if (subscriptions != null && subscriptions.hasSubscriptions()) {
@@ -146,6 +144,14 @@ public class TribeActivity extends BaseActivity implements TribeView {
                 .subscribe(friendship -> {
                     tribePresenter.sendTribe(currentTribe);
                     currentTribe = null;
+                }));
+
+        subscriptions.add(viewTribePager.onClickEnableLocation()
+                .subscribe(view -> {
+                    Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    finish();
                 }));
     }
 

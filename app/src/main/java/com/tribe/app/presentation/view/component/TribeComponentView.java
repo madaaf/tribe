@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.view.component;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.SurfaceTexture;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
@@ -42,6 +41,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 10/06/2016.
@@ -111,9 +112,12 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
     // OBSERVABLES
     private Unbinder unbinder;
+    private final PublishSubject<View> clickEnableLocation = PublishSubject.create();
 
     // PLAYER
     private boolean isPaused = false;
+    private boolean isReadyToPlay = false;
+    private boolean shouldAutoPlay = false;
     private MediaPlayer mediaPlayer = null;
     private MediaPlayer.EventListener playerListener;
     private int videoWidth, videoHeight;
@@ -200,14 +204,24 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     public void releasePlayer() {
         if (mediaPlayer == null) return;
 
+        isReadyToPlay = false;
         mediaPlayer.stop();
         final IVLCVout vout = mediaPlayer.getVLCVout();
         vout.removeCallback(this);
         vout.detachViews();
     }
 
+    public void play() {
+        shouldAutoPlay = true;
+
+        if (isReadyToPlay) {
+            isPaused = false;
+            mediaPlayer.play();
+        }
+    }
+
     public void pausePlayer() {
-        if (mediaPlayer != null && mediaPlayer.isPlaying() && !isPaused) {
+        if (mediaPlayer != null && !isPaused) {
             isPaused = true;
             mediaPlayer.pause();
         }
@@ -257,8 +271,12 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         AnimationUtils.fadeOut(btnBackToTribe, duration);
     }
 
+    public Observable<View> onClickEnableLocation() {
+        return clickEnableLocation;
+    }
+
     @OnClick(R.id.imgSpeed)
-    public void changeSpeed(View view) {
+    void changeSpeed(View view) {
         if (mediaPlayer.isPlaying()) {
             Float newSpeed;
             if (speedPlayback.get().equals(SPEED_NORMAL)) newSpeed = SPEED_LIGHTLY_FASTER;
@@ -272,11 +290,9 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     }
 
     @OnClick(R.id.txtDistance)
-    public void enableDistance(View view) {
+    void enableDistance(View view) {
         if (currentUser.getLocation() == null || !currentUser.getLocation().hasLocation()) {
-            Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            getContext().startActivity(intent);
+            clickEnableLocation.onNext(this);
         }
     }
 
@@ -341,12 +357,21 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     }
 
     private void prepareWithSurface() {
-        if (mediaPlayer.getMedia() != null) {
+        if (mediaPlayer != null && isPaused()) {
+            mediaPlayer.play();
+        } else if (mediaPlayer.getMedia() != null) {
             final IVLCVout vout = mediaPlayer.getVLCVout();
             vout.setVideoSurface(surfaceTexture);
             vout.addCallback(this);
             vout.attachViews();
-            mediaPlayer.play();
+            isReadyToPlay = true;
+
+            if (shouldAutoPlay) {
+                play();
+            } else {
+                //play();
+                //pausePlayer();
+            }
         }
     }
 

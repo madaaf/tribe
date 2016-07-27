@@ -15,6 +15,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Observable;
+import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
+
 /**
  * Created by tiago on 15/06/2016.
  */
@@ -25,11 +29,16 @@ public class TribePagerAdapter extends PagerAdapter {
     private List<Tribe> tribeList;
     private int currentPosition;
 
+    // OBSERVABLES
+    private CompositeSubscription subscriptions;
+    private final PublishSubject<View> clickEnableLocation = PublishSubject.create();
+
     @Inject
     public TribePagerAdapter(Context context) {
         this.context = context;
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.tribeList = new ArrayList<>();
+        this.subscriptions = new CompositeSubscription();
     }
 
     @Override
@@ -39,9 +48,11 @@ public class TribePagerAdapter extends PagerAdapter {
         TribeComponentView tribeComponentView = (TribeComponentView) itemView.findViewById(R.id.viewTribe);
         tribeComponentView.setTag(position);
         tribeComponentView.setTribe(tribeList.get(position));
+        tribeComponentView.onClickEnableLocation().subscribe(clickEnableLocation);
+        tribeComponentView.startPlayer();
 
         if (position == currentPosition) {
-            tribeComponentView.startPlayer();
+            tribeComponentView.play();
         }
 
         itemView.setTag(R.id.tag_tribe, position);
@@ -83,11 +94,19 @@ public class TribePagerAdapter extends PagerAdapter {
         this.currentPosition = currentPosition;
     }
 
-    public void releaseTribe(int position, TribeComponentView tribeComponentView) {
+    public void releaseTribe(TribeComponentView tribeComponentView) {
         tribeComponentView.releasePlayer();
     }
 
-    public void startTribe(int position, TribeComponentView tribeComponentView) {
-        tribeComponentView.startPlayer();
+    public void startTribe(TribeComponentView tribeComponentView) {
+        tribeComponentView.play();
+    }
+
+    public void onDestroy() {
+        if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+    }
+
+    public Observable<View> onClickEnableLocation() {
+        return clickEnableLocation;
     }
 }

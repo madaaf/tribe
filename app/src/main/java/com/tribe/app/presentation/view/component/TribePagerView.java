@@ -182,6 +182,7 @@ public class TribePagerView extends FrameLayout {
     private final PublishSubject<View> onNotCancel = PublishSubject.create();
     private final PublishSubject<View> recordStarted = PublishSubject.create();
     private final PublishSubject<View> recordEnded = PublishSubject.create();
+    private final PublishSubject<View> clickEnableLocation = PublishSubject.create();
 
 
     public TribePagerView(Context context) {
@@ -217,6 +218,13 @@ public class TribePagerView extends FrameLayout {
         springAlphaSwipeUp.addListener(springAlphaSwipeUpListener);
         springAlphaSwipeDown.addListener(springAlphaSwipeDownListener);
 
+        if (currentView == null)
+            ((TribeComponentView) viewPager.findViewWithTag(viewPager.getCurrentItem())).releasePlayer();
+        else
+            currentView.releasePlayer();
+
+        tribePagerAdapter.onDestroy();
+
         unbinder.unbind();
 
         if (subscriptions != null && subscriptions.hasSubscriptions()) {
@@ -248,13 +256,11 @@ public class TribePagerView extends FrameLayout {
 
     public void onPause() {
         cameraWrapper.onPause();
-    }
 
-    public void onDestroy() {
         if (currentView == null)
-            ((TribeComponentView) viewPager.findViewWithTag(viewPager.getCurrentItem())).releasePlayer();
+            ((TribeComponentView) viewPager.findViewWithTag(viewPager.getCurrentItem())).pausePlayer();
         else
-            currentView.releasePlayer();
+            currentView.pausePlayer();
     }
 
     private void initViewPager() {
@@ -267,16 +273,20 @@ public class TribePagerView extends FrameLayout {
 
             public void onPageScrollStateChanged(int state) {}
 
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
 
             public void onPageSelected(int currentPosition) {
                 tribePagerAdapter.setCurrentPosition(currentPosition);
                 currentView = (TribeComponentView) viewPager.findViewWithTag(currentPosition);
-                tribePagerAdapter.releaseTribe(currentPosition, (TribeComponentView) viewPager.findViewWithTag(previousPosition));
-                tribePagerAdapter.startTribe(currentPosition, currentView);
+                tribePagerAdapter.releaseTribe((TribeComponentView) viewPager.findViewWithTag(previousPosition));
+                tribePagerAdapter.startTribe(currentView);
                 previousPosition = currentPosition;
             }
         });
+
+        subscriptions.add(tribePagerAdapter.onClickEnableLocation().subscribe(clickEnableLocation));
     }
 
     private void initUI() {
@@ -1072,5 +1082,9 @@ public class TribePagerView extends FrameLayout {
 
     public Observable<Void> onDismissVertical() {
         return onDismissVertical;
+    }
+
+    public Observable<View> onClickEnableLocation() {
+        return clickEnableLocation;
     }
 }
