@@ -48,6 +48,21 @@
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtStatusError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Caption.White.1"
+        android:layout_gravity="bottom|left"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="60dp"
+        android:background="@drawable/shape_rounded_grid_error"
+        android:drawableLeft="@drawable/picto_error_tribe"
+        android:drawablePadding="4dp"
+        android:padding="5dp"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtSending"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

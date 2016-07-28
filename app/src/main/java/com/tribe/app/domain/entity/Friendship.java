@@ -1,5 +1,10 @@
 package com.tribe.app.domain.entity;
 
+import android.content.Context;
+
+import com.tribe.app.R;
+import com.tribe.app.presentation.view.utils.MessageStatus;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -67,6 +72,16 @@ public class Friendship implements Serializable {
 
     public Tribe getTribe() {
         return tribe;
+    }
+
+    public boolean hasLoadedTribes() {
+        if (!(receivedTribes != null && receivedTribes.size() > 0)) return false;
+
+        for (Tribe tribe : receivedTribes) {
+            if (tribe.getMessageStatus() != null && tribe.getMessageStatus().equals(MessageStatus.STATUS_READY)) return true;
+        }
+
+        return false;
     }
 
     public List<Tribe> getReceivedTribes() {
@@ -139,6 +154,13 @@ public class Friendship implements Serializable {
         }
 
         return tribe;
+    }
+
+    public List<PendingType> createPendingTribeItems(Context context) {
+        List<PendingType> pendingList = new ArrayList<>();
+        pendingList.add(new PendingType(context.getString(R.string.grid_unsent_tribes_action_resend, errorTribes.size()), PendingType.RESEND));
+        pendingList.add(new PendingType(context.getString(R.string.grid_unsent_tribes_action_delete, errorTribes.size()), PendingType.DELETE));
+        return pendingList;
     }
 
     @Override

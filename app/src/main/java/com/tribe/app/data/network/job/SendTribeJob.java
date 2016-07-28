@@ -81,7 +81,6 @@ public class SendTribeJob extends BaseJob {
 
         @Override
         public void onError(Throwable e) {
-            System.out.println("TRIBE ERROR");
             TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
             tribeRealm.setMessageStatus(MessageStatus.STATUS_ERROR);
             tribeCache.update(tribeRealm);
@@ -89,7 +88,6 @@ public class SendTribeJob extends BaseJob {
 
         @Override
         public void onNext(Tribe tribe) {
-            System.out.println("TRIBE ON NEXT");
             TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
             tribeRealm.setMessageStatus(MessageStatus.STATUS_SENT);
             tribeCache.update(tribeRealm);

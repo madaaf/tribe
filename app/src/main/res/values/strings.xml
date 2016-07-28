@@ -35,4 +35,8 @@
     <string name="Tribe.Speed">%1$sx</string>
     <string name="tribe_distance_nearby">Nearby</string>
     <string name="tribe_distance_enable">Tap to enable "Distance"</string>
+    <string name="grid_unsent_tribes_action_resend">Resend (%1$d)</string>
+    <string name="grid_unsent_tribes_action_delete">Delete (%1$d)</string>
+    <string name="grid_unsent_tribes_action_resend_all">Resend all</string>
+    <string name="grid_unsent_tribes_action_delete_all">Delete all</string>
 </resources>

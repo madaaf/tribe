@@ -754,7 +754,7 @@ public class TribePagerView extends FrameLayout {
             if (isAttachedToWindow()) {
                 float value = (float) spring.getCurrentValue();
 
-                if (currentView == null) currentView = (TribeComponentView) viewPager.findViewWithTag(viewPager.getCurrentItem());
+                computeCurrentView();
                 currentView.setSwipeDownAlpha(value);
             }
         }

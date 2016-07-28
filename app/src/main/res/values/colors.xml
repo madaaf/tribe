@@ -62,4 +62,5 @@
 
     <!-- ORANGES -->
     <color name="orange">#FD6E02</color>
+    <color name="orange_error">#FF6D00</color>
 </resources>

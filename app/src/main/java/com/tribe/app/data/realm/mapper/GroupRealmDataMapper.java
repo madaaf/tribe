@@ -69,8 +69,9 @@ public class GroupRealmDataMapper {
         GroupRealm groupRealm = null;
         if (group != null) {
             groupRealm = new GroupRealm();
-            groupRealm.setCreatedAt(groupRealm.getCreatedAt());
-            groupRealm.setUpdatedAt(groupRealm.getUpdatedAt());
+            groupRealm.setId(group.getId());
+            groupRealm.setCreatedAt(group.getCreatedAt());
+            groupRealm.setUpdatedAt(group.getUpdatedAt());
         }
 
         return groupRealm;

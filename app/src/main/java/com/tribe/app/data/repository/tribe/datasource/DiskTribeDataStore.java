@@ -4,6 +4,7 @@ import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.realm.TribeRealm;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 
@@ -34,11 +35,11 @@ public class DiskTribeDataStore implements TribeDataStore {
 
     @Override
     public Observable<List<TribeRealm>> tribes() {
-        return tribeCache.tribes();
+        return tribeCache.tribes().debounce(500, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public Observable<List<TribeRealm>> tribesPending() {
-        return tribeCache.tribesPending();
+        return tribeCache.tribesPending().debounce(500, TimeUnit.MILLISECONDS);
     }
 }

@@ -205,10 +205,17 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         if (mediaPlayer == null) return;
 
         isReadyToPlay = false;
-        mediaPlayer.stop();
-        final IVLCVout vout = mediaPlayer.getVLCVout();
-        vout.removeCallback(this);
-        vout.detachViews();
+        new Thread(() -> {
+            try {
+                mediaPlayer.stop();
+                final IVLCVout vout = mediaPlayer.getVLCVout();
+                vout.removeCallback(TribeComponentView.this);
+                vout.detachViews();
+                mediaPlayer.release();
+            } catch (IllegalStateException ex) {
+                ex.printStackTrace();
+            }
+        }).start();
     }
 
     public void play() {
@@ -389,7 +396,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
                     mediaPlayer.play();
                     break;
                 case MediaPlayer.Event.Vout:
-                    mediaPlayer.setRate(speedPlayback.get());
+                    if (mediaPlayer.getRate() != speedPlayback.get()) mediaPlayer.setRate(speedPlayback.get());
                 case MediaPlayer.Event.Playing:
                 case MediaPlayer.Event.Paused:
                 case MediaPlayer.Event.Stopped:

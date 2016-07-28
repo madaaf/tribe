@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.PendingType;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.UIThread;
@@ -17,12 +19,12 @@ import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.HomeView;
-import com.tribe.app.presentation.utils.FileUtils;
-import com.tribe.app.presentation.view.utils.MessageStatus;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
+import com.tribe.app.presentation.view.adapter.PendingTribeSheetAdapter;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 import com.tribe.app.presentation.view.component.TileView;
+import com.tribe.app.presentation.view.utils.MessageStatus;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 
 import java.util.ArrayList;
@@ -68,6 +70,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private @CameraWrapper.TribeMode String tribeMode;
     private Tribe currentTribe; // The tribe currently being recorded / sent
     private Tribe mostRecentTribe;
+    private BottomSheetDialog bottomSheetPendingTribeDialog;
+    private PendingTribeSheetAdapter pendingTribeSheetAdapter;
 
     public HomeGridFragment() {
         setRetainInstance(true);
@@ -289,6 +293,15 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
 
         subscriptions.add(homeGridAdapter.onOpenTribes()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
+                .filter(friendship -> {
+                    boolean filter = friendship.getReceivedTribes() != null
+                            && friendship.getReceivedTribes().size() > 0
+                            && friendship.hasLoadedTribes();
+
+                    if (!filter) homeGridPresenter.loadTribes(friendship);
+
+                    return filter;
+                })
                 .subscribe(clickOpenTribes));
 
         subscriptions.add(homeGridAdapter.onClickChat()
@@ -299,6 +312,12 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .subscribe(friendship -> {
                     setupBottomSheet();
+                }));
+
+        subscriptions.add(homeGridAdapter.onClickErrorTribes()
+                .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
+                .subscribe(friendship -> {
+                    setupBottomSheetPendingTribes(friendship);
                 }));
 
         subscriptions.add(homeGridAdapter.onRecordStart()
@@ -321,7 +340,6 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .subscribe(friendship -> {
                     homeGridAdapter.updateItemWithTribe(friendship.getPosition(), null);
-                    FileUtils.deleteTribe(currentTribe.getLocalId());
                     homeGridPresenter.deleteTribe(currentTribe);
                     currentTribe = null;
                 }));
@@ -357,6 +375,48 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private boolean dismissDialog() {
         if (dialog != null && dialog.isShowing()) {
             dialog.dismiss();
+            return true;
+        }
+
+        return false;
+    }
+
+    private void setupBottomSheetPendingTribes(Friendship friendship) {
+        if (dismissDialogSheetPendingTribes()) {
+            return;
+        }
+
+        View view = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_user_pending, null);
+
+        final RecyclerView recyclerViewPending = (RecyclerView) view.findViewById(R.id.recyclerViewPendingTribes);
+        recyclerViewPending.setHasFixedSize(true);
+        recyclerViewPending.setLayoutManager(new LinearLayoutManager(getActivity()));
+        final PendingTribeSheetAdapter adapterPending = new PendingTribeSheetAdapter(context(), friendship.createPendingTribeItems(getActivity()));
+        recyclerViewPending.setAdapter(adapterPending);
+        subscriptions.add(adapterPending.clickPendingTribeItem()
+                .map(pendingTribeView -> {
+                    return adapterPending.getItemAtPosition(1);
+                })
+                .subscribe(pendingType -> {
+                    if (pendingType.getPendingType().equals(PendingType.DELETE)) {
+                        homeGridPresenter.deleteTribe(friendship.getErrorTribes().toArray(new Tribe[friendship.getErrorTribes().size()]));
+                    } else {
+                        homeGridPresenter.sendTribe(friendship.getErrorTribes().toArray(new Tribe[friendship.getErrorTribes().size()]));
+                    }
+                }));
+
+        bottomSheetPendingTribeDialog = new BottomSheetDialog(getContext());
+        bottomSheetPendingTribeDialog.setContentView(view);
+        bottomSheetPendingTribeDialog.show();
+        bottomSheetPendingTribeDialog.setOnDismissListener(dialog -> {
+            adapterPending.releaseSubscriptions();
+            bottomSheetPendingTribeDialog = null;
+        });
+    }
+
+    private boolean dismissDialogSheetPendingTribes() {
+        if (bottomSheetPendingTribeDialog != null && dialog.isShowing()) {
+            bottomSheetPendingTribeDialog.dismiss();
             return true;
         }
 

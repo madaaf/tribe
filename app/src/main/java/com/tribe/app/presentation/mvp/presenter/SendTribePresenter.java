@@ -11,6 +11,7 @@ import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.SendTribeView;
+import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 
 public abstract class SendTribePresenter implements Presenter {
@@ -20,6 +21,7 @@ public abstract class SendTribePresenter implements Presenter {
     protected DeleteTribe diskDeleteTribeUsecase;
 
     private TribeCreateSubscriber tribeCreateSubscriber;
+    private TribeDeleteSubscriber tribeDeleteSubscriber;
 
     public SendTribePresenter(JobManager jobManager,
                               SaveTribe diskSaveTribe,
@@ -47,15 +49,22 @@ public abstract class SendTribePresenter implements Presenter {
         return tribe.getLocalId();
     }
 
-    public String deleteTribe(Tribe tribe) {
-        TribeDeleteSubscriber subscriber = new TribeDeleteSubscriber();
-        diskDeleteTribeUsecase.setTribe(tribe);
-        diskDeleteTribeUsecase.execute(subscriber);
-        return tribe.getLocalId();
+    public void deleteTribe(Tribe ... tribeList) {
+        for (Tribe tribe : tribeList) {
+            FileUtils.deleteTribe(tribe.getLocalId());
+
+            if (tribeDeleteSubscriber == null) {
+                tribeDeleteSubscriber = new TribeDeleteSubscriber();
+            }
+
+            diskDeleteTribeUsecase.setTribe(tribe);
+            diskDeleteTribeUsecase.execute(tribeDeleteSubscriber);
+        }
     }
 
-    public void sendTribe(Tribe tribe) {
-        jobManager.addJobInBackground(new SendTribeJob(tribe));
+    public void sendTribe(Tribe ... tribeList) {
+        for (Tribe tribe : tribeList)
+            jobManager.addJobInBackground(new SendTribeJob(tribe));
     }
 
     private void setCurrentTribe(Tribe tribe) {

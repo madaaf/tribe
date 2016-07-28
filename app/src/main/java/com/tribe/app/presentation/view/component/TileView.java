@@ -73,6 +73,7 @@ public class TileView extends SquareFrameLayout {
     @Nullable @BindView(R.id.btnText) public ImageView btnText;
     @Nullable @BindView(R.id.btnMore) public ImageView btnMore;
     @BindView(R.id.txtStatus) public TextViewFont txtStatus;
+    @Nullable @BindView(R.id.txtStatusError) public TextViewFont txtStatusError;
     @BindView(R.id.txtSending) public TextViewFont txtSending;
     @BindView(R.id.viewShadow) public View viewShadow;
     @BindView(R.id.avatar) public AvatarView avatar;
@@ -89,6 +90,7 @@ public class TileView extends SquareFrameLayout {
     private Unbinder unbinder;
 
     // RX SUBSCRIPTIONS / SUBJECTS
+    private final PublishSubject<View> clickErrorTribes = PublishSubject.create();
     private final PublishSubject<View> clickOpenTribes = PublishSubject.create();
     private final PublishSubject<View> clickChatView = PublishSubject.create();
     private final PublishSubject<View> clickMoreView = PublishSubject.create();
@@ -163,6 +165,7 @@ public class TileView extends SquareFrameLayout {
         if (type == TYPE_GRID) {
             prepareTouchesChat(parent);
             prepareTouchesMore(parent);
+            prepareTouchesErrorTribe(parent);
         }
 
         prepareTouchesTile();
@@ -180,6 +183,13 @@ public class TileView extends SquareFrameLayout {
                 .takeUntil(RxView.detaches(parent))
                 .map(aVoid -> this)
                 .subscribe(clickMoreView));
+    }
+
+    private void prepareTouchesErrorTribe(ViewGroup parent) {
+        subscriptions.add(RxView.clicks(txtStatusError)
+                .takeUntil(RxView.detaches(parent))
+                .map(aVoid -> this)
+                .subscribe(clickErrorTribes));
     }
 
     private void prepareTouchesTile() {
@@ -260,6 +270,7 @@ public class TileView extends SquareFrameLayout {
                 if (type == TYPE_GRID) {
                     btnText.setAlpha(alpha);
                     btnMore.setAlpha(alpha);
+                    txtStatusError.setAlpha(alpha);
 
                     if (type == TYPE_GRID) {
                         txtNbTribes.setAlpha(alpha);
@@ -398,10 +409,14 @@ public class TileView extends SquareFrameLayout {
     public void setStatus(List<Tribe> receivedTribes, List<Tribe> sentTribes, List<Tribe> errorTribes) {
         @MessageStatus.Status String ultimateMessageStatus = computeStatus(receivedTribes, sentTribes, errorTribes);
 
-        if (ultimateMessageStatus != null) {
-            if (ultimateMessageStatus.equals(MessageStatus.STATUS_ERROR))
-                txtStatus.setText("" + errorTribes.size());
-            else txtStatus.setText(computeStrStatus(ultimateMessageStatus));
+        if (ultimateMessageStatus.equals(MessageStatus.STATUS_ERROR)) {
+            txtStatus.setVisibility(View.GONE);
+            txtStatusError.setVisibility(View.VISIBLE);
+            txtStatusError.setText("" + errorTribes.size());
+        }  else {
+            txtStatusError.setVisibility(View.GONE);
+            txtStatus.setVisibility(View.VISIBLE);
+            txtStatus.setText(computeStrStatus(ultimateMessageStatus));
             txtStatus.setCompoundDrawablesWithIntrinsicBounds(getContext().getResources().getDrawable(computeIconStatus(ultimateMessageStatus)), null, null, null);
         }
     }
@@ -468,6 +483,7 @@ public class TileView extends SquareFrameLayout {
     private String computeStatus(List<Tribe> received, List<Tribe> sent, List<Tribe> error) {
         Tribe endTribe = computeMostRecentTribe(received, sent, error);
         if (endTribe == null) return MessageStatus.STATUS_NONE;
+        else if (endTribe != null && endTribe.getMessageStatus() == null) return MessageStatus.STATUS_RECEIVED;
         return endTribe.getMessageStatus();
     }
 
@@ -484,6 +500,10 @@ public class TileView extends SquareFrameLayout {
         Tribe recentSent = sent != null && sent.size() > 0 ? sent.get(sent.size() - 1) : null;
         Tribe recentError = error != null && error.size() > 0 ? error.get(error.size() - 1) : null;
         return Tribe.getMostRecentTribe(recentReceived, recentSent, recentError);
+    }
+
+    public Observable<View> onClickErrorTribes() {
+        return clickErrorTribes;
     }
 
     public Observable<View> onOpenTribes() {

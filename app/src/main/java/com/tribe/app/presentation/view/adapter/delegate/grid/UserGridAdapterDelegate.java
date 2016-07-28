@@ -37,6 +37,7 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
     private final PublishSubject<View> onNotCancel = PublishSubject.create();
     private final PublishSubject<View> recordStarted = PublishSubject.create();
     private final PublishSubject<View> recordEnded = PublishSubject.create();
+    private final PublishSubject<View> clickErrorTribes = PublishSubject.create();
 
     public UserGridAdapterDelegate(Context context) {
         this.context = context;
@@ -63,6 +64,7 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
         userGridViewHolder.viewTile.onTapToCancel().subscribe(clickTapToCancel);
         userGridViewHolder.viewTile.onNotCancel().subscribe(onNotCancel);
         userGridViewHolder.viewTile.onOpenTribes().subscribe(clickOpenTribes);
+        userGridViewHolder.viewTile.onClickErrorTribes().subscribe(clickErrorTribes);
 
         return userGridViewHolder;
     }
@@ -111,6 +113,10 @@ public class UserGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>>
 
     public Observable<View> onNotCancel() {
         return onNotCancel;
+    }
+
+    public Observable<View> onClickErrorTribes() {
+        return clickErrorTribes;
     }
 
     static class UserGridViewHolder extends RecyclerView.ViewHolder {

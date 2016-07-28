@@ -102,4 +102,12 @@ public class VideoTextureView extends TextureView {
             setTransform(txform);
         }
     }
+
+    public float getVideoHeight() {
+        return videoHeight;
+    }
+
+    public float getVideoWidth() {
+        return videoWidth;
+    }
 }

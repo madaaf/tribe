@@ -13,7 +13,7 @@
         android:id="@+id/viewGradient"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@drawable/bg_gradient_tribe_bottom"
+        android:background="@drawable/bg_gradient_camera_bottom"
         android:layout_gravity="bottom"
         />
 
@@ -21,7 +21,7 @@
         android:id="@+id/viewGradientTop"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@drawable/bg_gradient_tribe_top"
+        android:background="@drawable/bg_gradient_camera_top"
         android:layout_gravity="top"
         />
 

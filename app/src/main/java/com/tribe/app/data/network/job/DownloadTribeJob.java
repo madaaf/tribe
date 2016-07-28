@@ -95,8 +95,10 @@ public class DownloadTribeJob extends BaseJob {
 
     @Override
     protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
+        File file = FileUtils.getFileEnd(tribe.getId());
+
         TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
-        tribeRealm.setMessageStatus(MessageStatus.STATUS_RECEIVED);
+        tribeRealm.setMessageStatus(file.exists() && file.length() > 0 ? MessageStatus.STATUS_READY : MessageStatus.STATUS_RECEIVED);
         tribeCache.update(tribeRealm);
     }
 

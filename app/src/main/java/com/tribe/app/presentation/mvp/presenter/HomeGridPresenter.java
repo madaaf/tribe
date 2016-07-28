@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
+import com.tribe.app.data.network.job.DownloadTribeJob;
 import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateTribesJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
@@ -16,6 +17,7 @@ import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.SendTribeView;
 import com.tribe.app.presentation.mvp.view.View;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.view.utils.MessageStatus;
 
 import java.io.File;
 import java.util.List;
@@ -34,7 +36,6 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
     private UseCaseDisk diskUserInfosUsecase;
     private UseCaseDisk diskGetTribeListUsecase;
     private UseCaseDisk diskGetPendingTribeListUsecase;
-    private UseCaseDisk diskUpdateTribeListInError;
 
     // SUBSCRIBERS
     private TribePendingListSubscriber tribePendingListSubscriber;
@@ -122,13 +123,13 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         for (Tribe tribe : tribes) {
             File file = FileUtils.getFileEnd(tribe.getId());
 
-//            if (tribe.getMessageStatus().equals(MessageStatus.STATUS_RECEIVED)
-//                    && (!file.exists() || file.length() == 0)) {
-//                countPreload++;
-//                jobManager.addJobInBackground(new DownloadTribeJob(tribe));
-//            }
+            if ((tribe.getMessageStatus() == null || tribe.getMessageStatus().equals(MessageStatus.STATUS_RECEIVED))
+                    && (!file.exists() || file.length() == 0)) {
+                countPreload++;
+                jobManager.addJobInBackground(new DownloadTribeJob(tribe));
+            }
 
-            //if (countPreload == PRELOAD_MAX) break;
+            if (countPreload == PRELOAD_MAX) break;
         }
 
         this.homeGridView.updateTribes(tribes);
@@ -140,6 +141,19 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
 
     private void updatePendingTribes(List<Tribe> tribes) {
         this.homeGridView.updatePendingTribes(tribes);
+    }
+
+    public void loadTribes(Friendship friendship) {
+        int countPreload = 0;
+
+        for (Tribe tribe : friendship.getReceivedTribes()) {
+            if ((tribe.getMessageStatus() == null || tribe.getMessageStatus().equals(MessageStatus.STATUS_RECEIVED))) {
+                countPreload++;
+                jobManager.addJobInBackground(new DownloadTribeJob(tribe));
+            }
+
+            if (countPreload == PRELOAD_MAX) break;
+        }
     }
 
     @Override

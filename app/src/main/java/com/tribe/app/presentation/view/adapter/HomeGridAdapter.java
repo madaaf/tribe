@@ -109,6 +109,8 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
         return userGridAdapterDelegate.onOpenTribes();
     }
 
+    public Observable<View> onClickErrorTribes() { return userGridAdapterDelegate.onClickErrorTribes(); }
+
     public void setItems(List<Friendship> items) {
         this.items.clear();
         this.items.addAll(items);
