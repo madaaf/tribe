@@ -15,5 +15,6 @@ public interface HomeView extends View {
     void initOnRecordEnd(Observable<Friendship> observable);
     void initScrollOnGrid(Observable<Integer> observable);
     void initPendingTribes(Observable<Integer> observable);
+    void initPendingTribeItemSelected(Observable<List<Tribe>> observable);
     void initNewTribes(Observable<List<Tribe>> observable);
 }

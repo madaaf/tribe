@@ -90,8 +90,9 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<UserRealm> userInfos(String userId) {
+//        return this.tribeApi.getUserInfos(context.getString(R.string.user_infos)).doOnNext(saveToCacheUser);
         return Observable.zip(this.tribeApi.getUserInfos(context.getString(R.string.user_infos)),
-                reactiveLocationProvider.getLastKnownLocation().defaultIfEmpty(null),
+                reactiveLocationProvider.getLastKnownLocation().onErrorReturn(throwable -> null).defaultIfEmpty(null),
                 (userRealm, location) -> {
                     if (location != null) {
                         LocationRealm locationRealm = new LocationRealm();
@@ -100,6 +101,7 @@ public class CloudUserDataStore implements UserDataStore {
                         locationRealm.setHasLocation(true);
                         userRealm.setLocation(locationRealm);
                     }
+
                     return userRealm;
                 }).doOnNext(saveToCacheUser);
     }

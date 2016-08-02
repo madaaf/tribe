@@ -82,6 +82,7 @@ public class TribeRealmDataMapper {
                 tribeRealm.setUser(userRealmDataMapper.transformToTribeUser((User) tribe.getTo()));
             }
 
+            tribeRealm.setToGroup(tribe.isToGroup());
             tribeRealm.setType(tribe.getType());
             tribeRealm.setRecordedAt(tribe.getRecordedAt());
             tribeRealm.setUpdatedAt(tribe.getUpdatedAt());

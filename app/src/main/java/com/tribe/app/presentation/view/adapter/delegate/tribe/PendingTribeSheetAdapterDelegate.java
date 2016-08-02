@@ -42,11 +42,11 @@ public class PendingTribeSheetAdapterDelegate extends RxAdapterDelegate<List<Pen
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
-        RecyclerView.ViewHolder vh = new PendingTribeSheetViewHolder(layoutInflater.inflate(R.layout.item_sheet_pending_tribe, parent, false));
+        PendingTribeSheetViewHolder vh = new PendingTribeSheetViewHolder(layoutInflater.inflate(R.layout.item_sheet_pending_tribe, parent, false));
 
-        subscriptions.add(RxView.clicks(vh.itemView)
+        subscriptions.add(RxView.clicks(vh.txtView)
                 .takeUntil(RxView.detaches(parent))
-                .map(country -> vh.itemView)
+                .map(view -> vh.txtView)
                 .subscribe(clickPendingTribeItem));
 
         return vh;
@@ -58,6 +58,7 @@ public class PendingTribeSheetAdapterDelegate extends RxAdapterDelegate<List<Pen
         PendingType pendingType = items.get(position);
 
         vh.txtView.setText(pendingType.getLabel());
+        vh.txtView.setTag(R.id.tag_position, position);
     }
 
     public Observable<View> clickPendingTribeItem() {

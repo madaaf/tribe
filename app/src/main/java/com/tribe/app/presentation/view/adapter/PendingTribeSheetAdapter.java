@@ -38,6 +38,12 @@ public class PendingTribeSheetAdapter extends RecyclerView.Adapter {
     }
 
     @Override
+    public long getItemId(int position) {
+        PendingType pendingType = getItemAtPosition(position);
+        return pendingType.hashCode();
+    }
+
+    @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return delegatesManager.onCreateViewHolder(parent, viewType);
     }

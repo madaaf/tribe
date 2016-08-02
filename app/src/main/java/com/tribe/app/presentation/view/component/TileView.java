@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.OvershootInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
@@ -24,6 +25,7 @@ import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Tribe;
@@ -84,6 +86,8 @@ public class TileView extends SquareFrameLayout {
     @Nullable @BindView(R.id.viewPressedForeground) public View viewPressedForeground;
     @BindView(R.id.viewPlayer) public PlayerView playerView;
     @Nullable @BindView(R.id.txtNbTribes) public TextViewFont txtNbTribes;
+    @Nullable @BindView(R.id.layoutNbTribes) public FrameLayout layoutNbTribes;
+    @Nullable @BindView(R.id.circularProgressView) public CircularProgressView circularProgressView;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions;
@@ -394,13 +398,13 @@ public class TileView extends SquareFrameLayout {
         if (type == TYPE_GRID) {
             if (receivedTribes != null && receivedTribes.size() > 0) {
                 txtNbTribes.setText("" + receivedTribes.size());
-                if (txtNbTribes.getScaleX() == 0) {
-                    txtNbTribes.animate().scaleX(1).scaleY(1).setDuration(SCALE_DURATION).setStartDelay(ANIMATION_DELAY).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
+                if (layoutNbTribes.getScaleX() == 0) {
+                    layoutNbTribes.animate().scaleX(1).scaleY(1).setDuration(SCALE_DURATION).setStartDelay(ANIMATION_DELAY).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
                 }
             } else {
                 txtNbTribes.setText("");
-                if (txtNbTribes.getScaleX() == 1) {
-                    txtNbTribes.animate().scaleX(0).scaleY(0).setDuration(SCALE_DURATION).setStartDelay(ANIMATION_DELAY).start();
+                if (layoutNbTribes.getScaleX() == 1) {
+                    layoutNbTribes.animate().scaleX(0).scaleY(0).setDuration(SCALE_DURATION).setStartDelay(ANIMATION_DELAY).start();
                 }
             }
         }
@@ -409,15 +413,23 @@ public class TileView extends SquareFrameLayout {
     public void setStatus(List<Tribe> receivedTribes, List<Tribe> sentTribes, List<Tribe> errorTribes) {
         @MessageStatus.Status String ultimateMessageStatus = computeStatus(receivedTribes, sentTribes, errorTribes);
 
-        if (ultimateMessageStatus.equals(MessageStatus.STATUS_ERROR)) {
+        if (ultimateMessageStatus != null && ultimateMessageStatus.equals(MessageStatus.STATUS_ERROR)) {
             txtStatus.setVisibility(View.GONE);
             txtStatusError.setVisibility(View.VISIBLE);
             txtStatusError.setText("" + errorTribes.size());
-        }  else {
+        } else {
             txtStatusError.setVisibility(View.GONE);
             txtStatus.setVisibility(View.VISIBLE);
             txtStatus.setText(computeStrStatus(ultimateMessageStatus));
             txtStatus.setCompoundDrawablesWithIntrinsicBounds(getContext().getResources().getDrawable(computeIconStatus(ultimateMessageStatus)), null, null, null);
+        }
+
+        if (ultimateMessageStatus.equals(MessageStatus.STATUS_LOADING) && circularProgressView.getVisibility() == View.GONE) {
+            txtNbTribes.setVisibility(View.GONE);
+            circularProgressView.setVisibility(View.VISIBLE);
+        } else if (circularProgressView.getVisibility() == View.VISIBLE) {
+            txtNbTribes.setVisibility(View.VISIBLE);
+            circularProgressView.setVisibility(View.GONE);
         }
     }
 

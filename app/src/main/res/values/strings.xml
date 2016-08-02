@@ -37,6 +37,8 @@
     <string name="tribe_distance_enable">Tap to enable "Distance"</string>
     <string name="grid_unsent_tribes_action_resend">Resend (%1$d)</string>
     <string name="grid_unsent_tribes_action_delete">Delete (%1$d)</string>
+    <string name="grid_unsent_tribes_action_resend_name">Resend %1$s (%2$d)</string>
+    <string name="grid_unsent_tribes_action_delete_name">Delete %1$s (%2$d)</string>
     <string name="grid_unsent_tribes_action_resend_all">Resend all</string>
     <string name="grid_unsent_tribes_action_delete_all">Delete all</string>
 </resources>

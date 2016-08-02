@@ -59,6 +59,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private PublishSubject<String> onRecordStart = PublishSubject.create();
     private PublishSubject<Friendship> onRecordEnd = PublishSubject.create();
     private PublishSubject<Integer> onPendingTribes = PublishSubject.create();
+    private PublishSubject<List<Tribe>> onPendingTribesSelected = PublishSubject.create();
     private PublishSubject<List<Tribe>> onNewTribes = PublishSubject.create();
 
     // VARIABLES
@@ -71,6 +72,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private Tribe currentTribe; // The tribe currently being recorded / sent
     private Tribe mostRecentTribe;
     private BottomSheetDialog bottomSheetPendingTribeDialog;
+    private RecyclerView recyclerViewPending;
     private PendingTribeSheetAdapter pendingTribeSheetAdapter;
 
     public HomeGridFragment() {
@@ -200,7 +202,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                         for (Tribe tribe : tribes) {
                             if (tribe.isToGroup() && tribe.getTo().getId().equals(friendship.getId())
                                     || !tribe.isToGroup() && tribe.getFrom().getId().equals(friendship.getId())) {
-                                if (tribe.getRecordedAt().before(mostRecentTribe.getRecordedAt())) {
+                                if (tribe.getRecordedAt().equals(mostRecentTribe.getRecordedAt()) || tribe.getRecordedAt().before(mostRecentTribe.getRecordedAt())) {
                                     receivedTribes.add(tribe);
                                 } else {
                                     nextTribes.add(tribe);
@@ -217,7 +219,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                         friendship.setErrorTribes(tribesError);
                     }
 
-                    //onNewTribes.onNext(nextTribes);
+                    //onNewTribes.observeOn(UIThread.get)onNext(nextTribes);
 
                     return obsTribes;
                 })
@@ -262,6 +264,11 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     @Override
     public void setCurrentTribe(Tribe currentTribe) {
         this.currentTribe = currentTribe;
+    }
+
+    @Override
+    public void showPendingTribesMenu() {
+        setupBottomSheetPendingTribes(homeGridAdapter.getItems().toArray(new Friendship[homeGridAdapter.getItems().size()]));
     }
 
     public void setTribeMode(String tribeMode) {
@@ -358,6 +365,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         if (homeView != null) homeView.initOnRecordEnd(onRecordEnd);
         if (homeView != null) homeView.initScrollOnGrid(scrollDetector);
         if (homeView != null) homeView.initPendingTribes(onPendingTribes);
+        if (homeView != null) homeView.initPendingTribeItemSelected(onPendingTribesSelected);
         if (homeView != null) homeView.initNewTribes(onNewTribes);
     }
 
@@ -381,41 +389,54 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         return false;
     }
 
-    private void setupBottomSheetPendingTribes(Friendship friendship) {
+    private void setupBottomSheetPendingTribes(Friendship ... friendshipList) {
         if (dismissDialogSheetPendingTribes()) {
             return;
         }
 
-        View view = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_user_pending, null);
+        List<PendingType> pendingTypes = new ArrayList<>();
 
-        final RecyclerView recyclerViewPending = (RecyclerView) view.findViewById(R.id.recyclerViewPendingTribes);
+        for (Friendship friendship : friendshipList) {
+            if (friendship.getErrorTribes() != null && friendship.getErrorTribes().size() > 0)
+                pendingTypes.addAll(friendship.createPendingTribeItems(getContext(), friendshipList.length > 1));
+        }
+
+        prepareBottomSheetPendingWithList(pendingTypes, friendshipList.length > 1);
+    }
+
+    private void prepareBottomSheetPendingWithList(List<PendingType> items, boolean isGlobal) {
+        View view = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_user_pending, null);
+        recyclerViewPending = (RecyclerView) view.findViewById(R.id.recyclerViewPendingTribes);
         recyclerViewPending.setHasFixedSize(true);
         recyclerViewPending.setLayoutManager(new LinearLayoutManager(getActivity()));
-        final PendingTribeSheetAdapter adapterPending = new PendingTribeSheetAdapter(context(), friendship.createPendingTribeItems(getActivity()));
-        recyclerViewPending.setAdapter(adapterPending);
-        subscriptions.add(adapterPending.clickPendingTribeItem()
-                .map(pendingTribeView -> {
-                    return adapterPending.getItemAtPosition(1);
-                })
+        pendingTribeSheetAdapter = new PendingTribeSheetAdapter(context(), items);
+        pendingTribeSheetAdapter.setHasStableIds(true);
+        recyclerViewPending.setAdapter(pendingTribeSheetAdapter);
+        subscriptions.add(pendingTribeSheetAdapter.clickPendingTribeItem()
+                .map(pendingTribeView -> pendingTribeSheetAdapter.getItemAtPosition((Integer) pendingTribeView.getTag(R.id.tag_position)))
                 .subscribe(pendingType -> {
+                    if (isGlobal) onPendingTribesSelected.onNext(pendingType.getPending());
+
                     if (pendingType.getPendingType().equals(PendingType.DELETE)) {
-                        homeGridPresenter.deleteTribe(friendship.getErrorTribes().toArray(new Tribe[friendship.getErrorTribes().size()]));
+                        homeGridPresenter.deleteTribe(pendingType.getPending().toArray(new Tribe[pendingType.getPending().size()]));
                     } else {
-                        homeGridPresenter.sendTribe(friendship.getErrorTribes().toArray(new Tribe[friendship.getErrorTribes().size()]));
+                        homeGridPresenter.sendTribe(pendingType.getPending().toArray(new Tribe[pendingType.getPending().size()]));
                     }
+
+                    dismissDialogSheetPendingTribes();
                 }));
 
         bottomSheetPendingTribeDialog = new BottomSheetDialog(getContext());
         bottomSheetPendingTribeDialog.setContentView(view);
         bottomSheetPendingTribeDialog.show();
         bottomSheetPendingTribeDialog.setOnDismissListener(dialog -> {
-            adapterPending.releaseSubscriptions();
+            pendingTribeSheetAdapter.releaseSubscriptions();
             bottomSheetPendingTribeDialog = null;
         });
     }
 
     private boolean dismissDialogSheetPendingTribes() {
-        if (bottomSheetPendingTribeDialog != null && dialog.isShowing()) {
+        if (bottomSheetPendingTribeDialog != null && bottomSheetPendingTribeDialog.isShowing()) {
             bottomSheetPendingTribeDialog.dismiss();
             return true;
         }

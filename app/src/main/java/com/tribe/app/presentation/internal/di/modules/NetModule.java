@@ -128,9 +128,9 @@ public class NetModule {
         });
 
         if (BuildConfig.DEBUG) {
-            //HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            //loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-            //httpClientBuilder.addInterceptor(loggingInterceptor);
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            httpClientBuilder.addInterceptor(loggingInterceptor);
             httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
         }
 

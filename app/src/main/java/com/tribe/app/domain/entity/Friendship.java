@@ -156,10 +156,14 @@ public class Friendship implements Serializable {
         return tribe;
     }
 
-    public List<PendingType> createPendingTribeItems(Context context) {
+    public List<PendingType> createPendingTribeItems(Context context, boolean withName) {
         List<PendingType> pendingList = new ArrayList<>();
-        pendingList.add(new PendingType(context.getString(R.string.grid_unsent_tribes_action_resend, errorTribes.size()), PendingType.RESEND));
-        pendingList.add(new PendingType(context.getString(R.string.grid_unsent_tribes_action_delete, errorTribes.size()), PendingType.DELETE));
+        pendingList.add(new PendingType(errorTribes,
+                withName ? context.getString(R.string.grid_unsent_tribes_action_resend_name, displayName, errorTribes.size()) : context.getString(R.string.grid_unsent_tribes_action_resend, errorTribes.size()),
+                PendingType.RESEND));
+        pendingList.add(new PendingType(errorTribes,
+                withName ? context.getString(R.string.grid_unsent_tribes_action_delete_name, displayName, errorTribes.size()) : context.getString(R.string.grid_unsent_tribes_action_delete, errorTribes.size())
+                , PendingType.DELETE));
         return pendingList;
     }
 

@@ -47,7 +47,9 @@ public class SendTribeJob extends BaseJob {
 
     @Override
     public void onAdded() {
-
+        TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
+        tribeRealm.setMessageStatus(MessageStatus.STATUS_PENDING);
+        tribeCache.update(tribeRealm);
     }
 
     @Override

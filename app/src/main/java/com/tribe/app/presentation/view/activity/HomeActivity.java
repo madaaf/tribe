@@ -24,7 +24,6 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.mvp.presenter.HomePresenter;
-import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.HomeView;
 import com.tribe.app.presentation.view.fragment.FriendsGridFragment;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
@@ -114,6 +113,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     // VARIABLES
     private HomeViewPagerAdapter homeViewPagerAdapter;
     private List<Tribe> newTribes;
+    private int pendingTribeCount;
 
     // DIMEN
     private int sizeNavMax, sizeNavSmall, marginHorizontalSmall, translationBackToTop;
@@ -169,9 +169,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         );
 
         subscriptions.add(cameraWrapper.tribeMode().subscribe(mode -> {
-            if (homeViewPagerAdapter.getCurrentFragment() != null && homeViewPagerAdapter.getCurrentFragment() instanceof HomeGridFragment) {
-                HomeGridFragment fragment = (HomeGridFragment) homeViewPagerAdapter.getCurrentFragment();
-                fragment.setTribeMode(mode);
+            if (homeViewPagerAdapter.getHomeGridFragment() != null) {
+                homeViewPagerAdapter.getHomeGridFragment().setTribeMode(mode);
             }
         }));
     }
@@ -232,10 +231,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     public void initScrollOnGrid(Observable<Integer> observable) {
         subscriptions.add(observable.subscribe(dy -> {
-            if (homeViewPagerAdapter.getCurrentFragment() != null && homeViewPagerAdapter.getCurrentFragment() instanceof HomeGridFragment) {
-                HomeGridFragment fragment = (HomeGridFragment) homeViewPagerAdapter.getCurrentFragment();
-
-                if (fragment.getNbItems() > THRESHOLD_SCROLL) {
+            if (homeViewPagerAdapter.getHomeGridFragment() != null) {
+                if (homeViewPagerAdapter.getHomeGridFragment().getNbItems() > THRESHOLD_SCROLL) {
                     float percent = (float) dy / translationBackToTop;
 
                     if (dy <= translationBackToTop) {
@@ -272,13 +269,16 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     public void initPendingTribes(Observable<Integer> observable) {
         subscriptions.add(observable.subscribe(tribesPending -> {
-            if (tribesPending > 0) {
-                txtPending.setText("" + tribesPending);
-                showLayoutPending();
-            } else {
-                txtPending.setText("");
-                hideLayoutPending();
-            }
+            pendingTribeCount = tribesPending;
+            updatePendingTribeCount();
+        }));
+    }
+
+    @Override
+    public void initPendingTribeItemSelected(Observable<List<Tribe>> observable) {
+        subscriptions.add(observable.subscribe(tribeList -> {
+            pendingTribeCount -= tribeList.size();
+            updatePendingTribeCount();
         }));
     }
 
@@ -286,6 +286,16 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         String token = FirebaseInstanceId.getInstance().getToken();
 
         if (token != null) homePresenter.sendToken(token);
+    }
+
+    private void updatePendingTribeCount() {
+        if (pendingTribeCount > 0) {
+            txtPending.setText("" + pendingTribeCount);
+            showLayoutPending();
+        } else {
+            txtPending.setText("");
+            hideLayoutPending();
+        }
     }
 
     @Override
@@ -314,22 +324,12 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @OnClick(R.id.imgNavBackToTop)
     public void goBackToTop() {
-        ((HomeGridView) homeViewPagerAdapter.getCurrentFragment()).scrollToTop();
+        homeViewPagerAdapter.getHomeGridFragment().scrollToTop();
     }
 
     @OnClick(R.id.layoutNavPending)
     public void sendPendingMessages() {
-        AnimationUtils.replaceView(this, txtPending, progressBar, new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                subscriptions.add(Observable.timer(DELAY_DISMISS_PENDING, TimeUnit.MILLISECONDS)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeOn(Schedulers.io())
-                        .subscribe(time -> {
-                            hideLayoutPending();
-                        }));
-            }
-        });
+        homeViewPagerAdapter.getHomeGridFragment().showPendingTribesMenu();
     }
 
     @OnClick(R.id.layoutNavNewTribes)
@@ -355,7 +355,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     public class HomeViewPagerAdapter extends FragmentStatePagerAdapter {
 
         public String[] pagers = new String[] {"Discover", "Home", "Media"};
-        public Fragment currentFragment;
+        public HomeGridFragment homeGridFragment;
+        public FriendsGridFragment friendsGridFragment;
+        public GroupsGridFragment groupsGridFragment;
 
         public HomeViewPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
@@ -379,16 +381,25 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         }
 
         @Override
-        public void setPrimaryItem(ViewGroup container, int position, Object object) {
-            if (currentFragment != object) {
-                currentFragment = (Fragment) object;
+        public Object instantiateItem(ViewGroup container, int position) {
+            Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
+            // save the appropriate reference depending on position
+            switch (position) {
+                case 0:
+                    friendsGridFragment = (FriendsGridFragment) createdFragment;
+                    break;
+                case 1:
+                    homeGridFragment = (HomeGridFragment) createdFragment;
+                    break;
+                case 2:
+                    groupsGridFragment = (GroupsGridFragment) createdFragment;
             }
 
-            super.setPrimaryItem(container, position, object);
+            return createdFragment;
         }
 
-        public Fragment getCurrentFragment() {
-            return currentFragment;
+        public HomeGridFragment getHomeGridFragment() {
+            return homeGridFragment;
         }
     }
 

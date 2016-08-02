@@ -74,7 +74,18 @@ public class TribeCacheImpl implements TribeCache {
     public void put(List<TribeRealm> tribeRealmList) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        realm.copyToRealmOrUpdate(tribeRealmList);
+
+        for (TribeRealm tribeRealm : tribeRealmList) {
+            TribeRealm toEdit = realm.where(TribeRealm.class)
+                    .equalTo("id", tribeRealm.getId()).findFirst();
+
+            if (toEdit != null && (toEdit.getGroup() != null || toEdit.getUser() != null)) {
+                // TODO UPDATE SEEN STATUS ?
+            } else {
+                realm.copyToRealmOrUpdate(tribeRealm);
+            }
+        }
+
         realm.commitTransaction();
         realm.close();
     }

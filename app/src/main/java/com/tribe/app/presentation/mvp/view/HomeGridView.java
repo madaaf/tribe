@@ -11,6 +11,7 @@ public interface HomeGridView extends SendTribeView {
     void updateTribes(List<Tribe> tribes);
     void futureUpdateTribes(List<Tribe> tribes);
     void updatePendingTribes(List<Tribe> pendingTribes);
+    void showPendingTribesMenu();
     void scrollToTop();
     void setCurrentTribe(Tribe tribe);
     int getNbItems();
