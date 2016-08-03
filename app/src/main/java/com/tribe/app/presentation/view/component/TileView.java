@@ -30,8 +30,8 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.presentation.utils.FileUtils;
-import com.tribe.app.presentation.view.utils.MessageStatus;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.MessageStatus;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.PlayerView;
@@ -45,6 +45,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -91,6 +92,7 @@ public class TileView extends SquareFrameLayout {
 
     // OBSERVABLES
     private CompositeSubscription subscriptions;
+    private Subscription subscriptionVideoStarted;
     private Unbinder unbinder;
 
     // RX SUBSCRIPTIONS / SUBJECTS
@@ -275,10 +277,7 @@ public class TileView extends SquareFrameLayout {
                     btnText.setAlpha(alpha);
                     btnMore.setAlpha(alpha);
                     txtStatusError.setAlpha(alpha);
-
-                    if (type == TYPE_GRID) {
-                        txtNbTribes.setAlpha(alpha);
-                    }
+                    layoutNbTribes.setAlpha(alpha);
                 }
             }
         });
@@ -320,10 +319,8 @@ public class TileView extends SquareFrameLayout {
                 super.onSpringAtRest(spring);
 
                 if (currentTribe != null && spring.getCurrentValue() == TAP_TO_CANCEL_SPRING_VALUE) {
-                    playerView.showPlayer();
+                    playerView.play();
                 }
-
-                if (spring.getCurrentValue() == 0f) playerView.releasePlayer();
             }
         });
 
@@ -386,14 +383,17 @@ public class TileView extends SquareFrameLayout {
         txtSending.setText(R.string.Grid_User_Sending);
 
         AnimationUtils.fadeIn(txtSending, 0);
-
-        Spring springAvatar = (Spring) getTag(R.id.spring_avatar);
-        springAvatar.setEndValue(TAP_TO_CANCEL_SPRING_VALUE);
     }
 
     public void setInfo(String name, String urlAvatar, List<Tribe> receivedTribes) {
         txtName.setText(name);
-        avatar.load(urlAvatar);
+
+        // WE DON'T LOAD THE AVATAR AGAIN IF THE URL IS THE SAME
+        String previousAvatar = (String) avatar.getTag(R.id.profile_picture);
+        if (previousAvatar == null || !previousAvatar.equals(urlAvatar)) {
+            avatar.setTag(R.id.profile_picture, urlAvatar);
+            avatar.load(urlAvatar);
+        }
 
         if (type == TYPE_GRID) {
             if (receivedTribes != null && receivedTribes.size() > 0) {
@@ -441,6 +441,12 @@ public class TileView extends SquareFrameLayout {
         avatar.animate().scaleX(scale).scaleY(scale).setDuration(duration).setStartDelay(delay).setInterpolator(interpolator).start();
     }
 
+//    public void preparePlayer(String localId) {
+//        if (localId != null) {
+//            playerView.createPlayer(FileUtils.getPathForId(localId));
+//        }
+//    }
+
     public void showTapToCancel(Tribe tribe) {
         currentTribe = tribe;
 
@@ -448,48 +454,55 @@ public class TileView extends SquareFrameLayout {
             playerView.createPlayer(FileUtils.getPathForId(currentTribe.getLocalId()));
         }
 
-        AnimationUtils.fadeIn(viewForeground, 0);
-        ((TransitionDrawable) ((LayerDrawable) viewForeground.getBackground()).getDrawable(0)).startTransition(FADE_DURATION);
-        AnimationUtils.scaleUp(imgCancel, SCALE_DURATION, new OvershootInterpolator(OVERSHOOT));
-
         if (type == TYPE_GRID) {
             Spring springOutside = (Spring) getTag(R.id.spring_outside);
             springOutside.setEndValue(0f);
         }
 
-        showSending();
+        Spring springAvatar = (Spring) getTag(R.id.spring_avatar);
+        springAvatar.setEndValue(TAP_TO_CANCEL_SPRING_VALUE);
 
         setTag(R.id.is_tap_to_cancel, true);
         isTapToCancel = true;
 
-        ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", 0, timeTapToCancel);
-        animation.setDuration(timeTapToCancel);
-        animation.setInterpolator(new DecelerateInterpolator());
-        animation.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                AnimationUtils.scaleDown(imgCancel, SCALE_DURATION);
-                AnimationUtils.scaleUp(imgDone, SCALE_DURATION, SCALE_DURATION, new OvershootInterpolator(OVERSHOOT));
+        subscriptionVideoStarted = playerView.videoStarted()
+                .subscribe(view -> {
+                    subscriptionVideoStarted.unsubscribe();
+                    AnimationUtils.fadeIn(viewForeground, 0);
+                    ((TransitionDrawable) ((LayerDrawable) viewForeground.getBackground()).getDrawable(0)).startTransition(FADE_DURATION);
+                    AnimationUtils.scaleUp(imgCancel, SCALE_DURATION, new OvershootInterpolator(OVERSHOOT));
 
-                txtSending.setText(R.string.Grid_User_Sent);
+                    showSending();
 
-                Observable.timer(END_RECORD_DELAY, TimeUnit.MILLISECONDS)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(time -> {
-                            onNotCancel.onNext(TileView.this);
-                            resetViewAfterTapToCancel(true);
-                        });
-            }
+                    ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", 0, timeTapToCancel);
+                    animation.setDuration(timeTapToCancel);
+                    animation.setInterpolator(new DecelerateInterpolator());
+                    animation.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            AnimationUtils.scaleDown(imgCancel, SCALE_DURATION);
+                            AnimationUtils.scaleUp(imgDone, SCALE_DURATION, SCALE_DURATION, new OvershootInterpolator(OVERSHOOT));
 
-            @Override
-            public void onAnimationCancel(Animator animation) {
-                animation.removeAllListeners();
-            }
-        });
-        animation.start();
+                            txtSending.setText(R.string.Grid_User_Sent);
 
-        setTag(R.id.progress_bar_animation, animation);
+                            Observable.timer(END_RECORD_DELAY, TimeUnit.MILLISECONDS)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(time -> {
+                                        onNotCancel.onNext(TileView.this);
+                                        resetViewAfterTapToCancel(true);
+                                    });
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+                            animation.removeAllListeners();
+                        }
+                    });
+                    animation.start();
+
+                    setTag(R.id.progress_bar_animation, animation);
+                });
     }
 
     private String computeStatus(List<Tribe> received, List<Tribe> sent, List<Tribe> error) {

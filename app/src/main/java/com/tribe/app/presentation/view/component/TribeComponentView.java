@@ -25,6 +25,7 @@ import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.widget.AvatarView;
+import com.tribe.app.presentation.view.widget.ScalableTextureView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.VideoTextureView;
 
@@ -62,8 +63,8 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     @Inject @DistanceUnits Preference<String> distanceUnits;
     @Inject @WeatherUnits Preference<String> weatherUnits;
 
-    @BindView(R.id.viewTextureVideo)
-    VideoTextureView viewTextureVideo;
+    @BindView(R.id.videoTextureView)
+    VideoTextureView videoTextureView;
 
     @BindView(R.id.avatar)
     AvatarView avatarView;
@@ -158,7 +159,8 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
             Toast.makeText(getContext(), "Error creating player!", Toast.LENGTH_LONG).show();
         }
 
-        viewTextureVideo.setSurfaceTextureListener(this);
+        videoTextureView.setScaleType(ScalableTextureView.ScaleType.CENTER_CROP_FILL);
+        videoTextureView.setSurfaceTextureListener(this);
         super.onFinishInflate();
     }
 
@@ -343,8 +345,11 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         videoWidth = width;
         videoHeight = height;
 
-        if (viewTextureVideo != null)
-            viewTextureVideo.setVideoWidthHeight(width, height);
+        if (videoTextureView != null && videoTextureView.getContentHeight() != height) {
+            videoTextureView.setContentWidth(width);
+            videoTextureView.setContentHeight(height);
+            videoTextureView.updateTextureViewSize();
+        }
     }
 
     @Override
@@ -396,8 +401,15 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
                     mediaPlayer.play();
                     break;
                 case MediaPlayer.Event.Vout:
-                    if (mediaPlayer.getRate() != speedPlayback.get()) mediaPlayer.setRate(speedPlayback.get());
+                    if (mediaPlayer != null) {
+                        System.out.println("Time : " + mediaPlayer.getPosition());
+                        if (mediaPlayer.getRate() != speedPlayback.get())
+                            mediaPlayer.setRate(speedPlayback.get());
+                    }
+                    break;
                 case MediaPlayer.Event.Playing:
+                    System.out.println("Playing");
+                    break;
                 case MediaPlayer.Event.Paused:
                 case MediaPlayer.Event.Stopped:
                 default:

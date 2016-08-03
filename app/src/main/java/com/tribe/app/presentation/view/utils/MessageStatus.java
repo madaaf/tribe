@@ -10,15 +10,15 @@ import com.tribe.app.R;
  */
 public class MessageStatus {
 
-    public static final String STATUS_PENDING = "pending";
-    public static final String STATUS_SENT = "sent";
-    public static final String STATUS_OPENED = "opened";
-    public static final String STATUS_DELIVERED = "delivered";
-    public static final String STATUS_RECEIVED = "received";
-    public static final String STATUS_LOADING = "loading";
-    public static final String STATUS_READY = "ready";
-    public static final String STATUS_ERROR = "error";
-    public static final String STATUS_NONE = "none";
+    public static final String STATUS_PENDING = "pending"; // BEING SENT
+    public static final String STATUS_SENT = "sent"; // SUCCESSFULLY SENT
+    public static final String STATUS_OPENED = "opened"; // OPENED BY THE RECEIVER(S)
+    public static final String STATUS_DELIVERED = "delivered"; // NOT USED FOR NOW
+    public static final String STATUS_RECEIVED = "received"; // TRIBE RECEIVED -> NOT DOWNLOADED
+    public static final String STATUS_LOADING = "loading"; // TRIBE BEING DOWNLOADED
+    public static final String STATUS_READY = "ready"; // TRIBE IS READY FOR CONSUMPTION (LOADED)
+    public static final String STATUS_ERROR = "error"; // TRIBE IS IN ERROR AFTER SENDING ATTEMPT
+    public static final String STATUS_NONE = "none"; // NO STATUS
 
     @StringDef({STATUS_PENDING, STATUS_SENT, STATUS_OPENED, STATUS_DELIVERED, STATUS_RECEIVED, STATUS_LOADING, STATUS_READY, STATUS_ERROR, STATUS_NONE})
     public @interface Status{}

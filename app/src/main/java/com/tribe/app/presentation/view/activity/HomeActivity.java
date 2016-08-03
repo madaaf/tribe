@@ -218,6 +218,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     public void initOnRecordStart(Observable<String> observable) {
         subscriptions.add(observable.subscribe(id -> {
             cameraWrapper.onStartRecord(id);
+//            Observable.timer(DURATION, TimeUnit.MILLISECONDS)
+//                    .subscribe(time -> homeViewPagerAdapter.getHomeGridFragment().prepareTapToCancel(id));
         }));
     }
 

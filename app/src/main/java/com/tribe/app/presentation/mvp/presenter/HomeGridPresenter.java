@@ -123,7 +123,9 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         for (Tribe tribe : tribes) {
             File file = FileUtils.getFileEnd(tribe.getId());
 
-            if ((tribe.getMessageStatus() == null || tribe.getMessageStatus().equals(MessageStatus.STATUS_RECEIVED))
+            // WE ADD THE READY STATUS IN CASE THE VIDEO FILE WAS DELETED
+            if ((tribe.getMessageStatus() == null || tribe.getMessageStatus().equals(MessageStatus.STATUS_RECEIVED)
+                    || tribe.getMessageStatus().equals(MessageStatus.STATUS_READY))
                     && (!file.exists() || file.length() == 0)) {
                 countPreload++;
                 jobManager.addJobInBackground(new DownloadTribeJob(tribe));

@@ -88,6 +88,7 @@ dependencies {
     compile presentationDependencies.butterKnife
     compile presentationDependencies.appCompat
     compile presentationDependencies.designSupport
+    compile presentationDependencies.cardDesign
     compile presentationDependencies.rxJava
     compile presentationDependencies.rxAndroid
     compile presentationDependencies.retrofit

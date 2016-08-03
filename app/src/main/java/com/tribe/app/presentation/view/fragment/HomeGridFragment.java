@@ -69,6 +69,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private BottomSheetDialog dialog;
     private User currentUser;
     private @CameraWrapper.TribeMode String tribeMode;
+    private Friendship currentFriendship; // The friendship for the tribe currently being recorded
     private Tribe currentTribe; // The tribe currently being recorded / sent
     private Tribe mostRecentTribe;
     private BottomSheetDialog bottomSheetPendingTribeDialog;
@@ -275,6 +276,13 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         this.tribeMode = tribeMode;
     }
 
+//    public void prepareTapToCancel(String localId) {
+//        if (currentFriendship != null) {
+//            TileView tileView = (TileView) layoutManager.findViewByPosition(currentFriendship.getPosition());
+//            tileView.preparePlayer(localId);
+//        }
+//    }
+
     private void init() {
     }
 
@@ -329,7 +337,13 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
 
         subscriptions.add(homeGridAdapter.onRecordStart()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
-                .map(friendship -> homeGridPresenter.createTribe(currentUser, friendship, tribeMode))
+                .map(friendship -> {
+                    String tribeId = homeGridPresenter.createTribe(currentUser, friendship, tribeMode);
+                    currentFriendship = friendship;
+                    homeGridAdapter.updateItemWithTribe(friendship.getPosition(), currentTribe);
+                    recyclerViewFriends.requestDisallowInterceptTouchEvent(false);
+                    return tribeId;
+                })
                 .doOnNext(str -> recyclerViewFriends.requestDisallowInterceptTouchEvent(true))
                 .subscribe(onRecordStart));
 
@@ -348,6 +362,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                 .subscribe(friendship -> {
                     homeGridAdapter.updateItemWithTribe(friendship.getPosition(), null);
                     homeGridPresenter.deleteTribe(currentTribe);
+                    currentFriendship = null;
                     currentTribe = null;
                 }));
 
@@ -356,6 +371,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                 .subscribe(friendship -> {
                     homeGridAdapter.updateItemWithTribe(friendship.getPosition(), null);
                     homeGridPresenter.sendTribe(currentTribe);
+                    currentFriendship = null;
                     currentTribe = null;
                 }));
 

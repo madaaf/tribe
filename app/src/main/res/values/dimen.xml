@@ -30,7 +30,8 @@
     <dimen name="avatar_size">75dp</dimen>
     <dimen name="avatar_size_with_shadow">82dp</dimen>
     <dimen name="avatar_size_scaled">110dp</dimen>
-    <dimen name="avatar_size_intermediate">96dp</dimen>
+    <dimen name="avatar_size_intermediate">96dp</dimen> <!-- CHANGE AVATAR_SIZE_INTERMEDIATE_HALF ACCORDINGLY -->
+    <dimen name="avatar_size_intermediate_half">48dp</dimen>
     <dimen name="avatar_size_inner">74dp</dimen>
     <dimen name="avatar_size_inner_scaled">109dp</dimen>
     <dimen name="avatar_size_inner_intermediate">84dp</dimen>
