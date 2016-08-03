@@ -9,6 +9,7 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.GroupGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -30,6 +31,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
 
     protected RxAdapterDelegatesManager delegatesManager;
     private UserGridAdapterDelegate userGridAdapterDelegate;
+    private GroupGridAdapterDelegate groupGridAdapterDelegate;
 
     private List<Friendship> items;
 
@@ -45,6 +47,10 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
 
         userGridAdapterDelegate = new UserGridAdapterDelegate(context);
         delegatesManager.addDelegate(userGridAdapterDelegate);
+
+        groupGridAdapterDelegate = new GroupGridAdapterDelegate(context);
+        delegatesManager.addDelegate(groupGridAdapterDelegate);
+
         items = new ArrayList<>();
 
         setHasStableIds(true);
@@ -82,34 +88,36 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
     }
 
     public Observable<View> onClickChat() {
-        return userGridAdapterDelegate.onClickChat();
+        return Observable.merge(userGridAdapterDelegate.onClickChat(), groupGridAdapterDelegate.onClickChat());
     }
 
     public Observable<View> onClickMore() {
-        return userGridAdapterDelegate.onClickMore();
+        return Observable.merge(userGridAdapterDelegate.onClickMore(), groupGridAdapterDelegate.onClickMore());
     }
 
     public Observable<View> onRecordStart() {
-        return userGridAdapterDelegate.onRecordStart();
+        return Observable.merge(userGridAdapterDelegate.onRecordStart(), groupGridAdapterDelegate.onRecordStart());
     }
 
     public Observable<View> onClickTapToCancel() {
-        return userGridAdapterDelegate.onClickTapToCancel();
+        return Observable.merge(userGridAdapterDelegate.onClickTapToCancel(), groupGridAdapterDelegate.onClickTapToCancel());
     }
 
     public Observable<View> onNotCancel() {
-        return userGridAdapterDelegate.onNotCancel();
+        return Observable.merge(userGridAdapterDelegate.onNotCancel(), groupGridAdapterDelegate.onNotCancel());
     }
 
     public Observable<View> onRecordEnd() {
-        return userGridAdapterDelegate.onRecordEnd();
+        return Observable.merge(userGridAdapterDelegate.onRecordEnd(), groupGridAdapterDelegate.onRecordEnd());
     }
 
     public Observable<View> onOpenTribes() {
-        return userGridAdapterDelegate.onOpenTribes();
+        return Observable.merge(userGridAdapterDelegate.onOpenTribes(), groupGridAdapterDelegate.onOpenTribes());
     }
 
-    public Observable<View> onClickErrorTribes() { return userGridAdapterDelegate.onClickErrorTribes(); }
+    public Observable<View> onClickErrorTribes() {
+        return Observable.merge(userGridAdapterDelegate.onClickErrorTribes(), groupGridAdapterDelegate.onClickErrorTribes());
+    }
 
     public void setItems(List<Friendship> items) {
         this.items.clear();

@@ -173,16 +173,21 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         if (tribe.getLocation() != null && tribe.getLocation().hasLocation()) {
             txtCity.setVisibility(View.VISIBLE);
             txtDistance.setVisibility(View.VISIBLE);
-            txtWeather.setVisibility(View.VISIBLE);
             viewSeparator.setVisibility(View.VISIBLE);
-            imgWeather.setVisibility(View.VISIBLE);
 
             Location location = tribe.getLocation();
             Weather weatherObj = tribe.getWeather();
             txtCity.setText(location.getCity());
             txtDistance.setText(currentUser.getLocation() != null ? currentUser.getLocation().distanceTo(getContext(), distanceUnits.get(), tribe.getLocation()) : getContext().getString(R.string.tribe_distance_enable));
-            txtWeather.setText((weatherUnits.get().equals(com.tribe.app.presentation.view.utils.Weather.CELSIUS) ? weatherObj.getTempC() : weatherObj.getTempF()) + "°");
-            imgWeather.setImageResource(getResources().getIdentifier("weather_" + weatherObj.getIcon(), "drawable", getContext().getPackageName()));
+            if (tribe.getWeather() != null) {
+                txtWeather.setVisibility(View.VISIBLE);
+                imgWeather.setVisibility(View.VISIBLE);
+                txtWeather.setText((weatherUnits.get().equals(com.tribe.app.presentation.view.utils.Weather.CELSIUS) ? weatherObj.getTempC() : weatherObj.getTempF()) + "°");
+                imgWeather.setImageResource(getResources().getIdentifier("weather_" + weatherObj.getIcon(), "drawable", getContext().getPackageName()));
+            } else {
+                txtWeather.setVisibility(View.GONE);
+                imgWeather.setVisibility(View.GONE);
+            }
         } else {
             txtCity.setVisibility(View.GONE);
             txtDistance.setVisibility(View.GONE);
@@ -401,10 +406,8 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
                     mediaPlayer.play();
                     break;
                 case MediaPlayer.Event.Vout:
-                    if (mediaPlayer != null) {
-                        System.out.println("Time : " + mediaPlayer.getPosition());
-                        if (mediaPlayer.getRate() != speedPlayback.get())
-                            mediaPlayer.setRate(speedPlayback.get());
+                    if (mediaPlayer != null && mediaPlayer.getRate() != speedPlayback.get()) {
+                        mediaPlayer.setRate(speedPlayback.get());
                     }
                     break;
                 case MediaPlayer.Event.Playing:

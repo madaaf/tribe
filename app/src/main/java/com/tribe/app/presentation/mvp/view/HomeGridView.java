@@ -14,5 +14,6 @@ public interface HomeGridView extends SendTribeView {
     void showPendingTribesMenu();
     void scrollToTop();
     void setCurrentTribe(Tribe tribe);
+    void reload();
     int getNbItems();
 }

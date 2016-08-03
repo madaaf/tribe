@@ -1,6 +1,4 @@
 <resources>
-    <string name="app_name">Tribe2</string>
-
     <string name="Common.Next">Next</string>
 
     <string name="exception_message_generic">Generic error message</string>

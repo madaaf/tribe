@@ -24,15 +24,38 @@
             android:layout_height="@dimen/nav_size_max"
             android:layout_gravity="center">
 
-            <ImageView
-                android:id="@+id/imgNavGrid"
+            <FrameLayout
+                android:id="@+id/layoutNavGridMain"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:src="@drawable/picto_nav_grid"
-                android:scaleType="fitXY"
+                android:background="@drawable/bg_nav_grid"
                 android:clickable="true"
-                />
+                android:clipChildren="true"
+                android:clipToPadding="true">
+
+                <ImageView
+                    android:id="@+id/imgNavGrid"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_margin="9dp"
+                    android:src="@drawable/picto_grid"
+                    android:scaleType="centerInside"
+                    />
+
+                <com.github.rahatarmanahmed.cpv.CircularProgressView
+                    android:id="@+id/progressBarReload"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    app:cpv_thickness="1.5dp"
+                    app:cpv_indeterminate="true"
+                    app:cpv_color="@android:color/black"
+                    app:cpv_animAutostart="true"
+                    android:visibility="gone"
+                    />
+            </FrameLayout>
 
             <FrameLayout
                 android:id="@+id/layoutNavNewTribes"

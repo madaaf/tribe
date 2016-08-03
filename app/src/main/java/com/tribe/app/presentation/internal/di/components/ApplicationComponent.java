@@ -26,8 +26,8 @@ import com.tribe.app.presentation.internal.di.scope.PerApplication;
 import com.tribe.app.presentation.service.TribeFirebaseInstanceIDService;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
+import com.tribe.app.presentation.view.adapter.delegate.grid.FriendshipGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate;
 import com.tribe.app.presentation.view.camera.view.VisualizerView;
 import com.tribe.app.presentation.view.component.TribeComponentView;
 import com.tribe.app.presentation.view.component.TribePagerView;
@@ -56,7 +56,7 @@ public interface ApplicationComponent {
     void inject(BaseActivity baseActivity);
     void inject(LauncherActivity launcherActivity);
     void inject(MeGridAdapterDelegate meGridAdapterDelegate);
-    void inject(UserGridAdapterDelegate userGridAdapterDelegate);
+    void inject(FriendshipGridAdapterDelegate friendshipGridAdapterDelegate);
     void inject(AvatarView avatarView);
     void inject(CameraWrapper cameraWrapper);
     void inject(VisualizerView visualizerView);

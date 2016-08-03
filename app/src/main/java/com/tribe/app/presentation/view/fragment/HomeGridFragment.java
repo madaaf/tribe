@@ -203,7 +203,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                         for (Tribe tribe : tribes) {
                             if (tribe.isToGroup() && tribe.getTo().getId().equals(friendship.getId())
                                     || !tribe.isToGroup() && tribe.getFrom().getId().equals(friendship.getId())) {
-                                if (tribe.getRecordedAt().equals(mostRecentTribe.getRecordedAt()) || tribe.getRecordedAt().before(mostRecentTribe.getRecordedAt())) {
+                                if (mostRecentTribe == null || tribe.getRecordedAt().equals(mostRecentTribe.getRecordedAt()) || tribe.getRecordedAt().before(mostRecentTribe.getRecordedAt())) {
                                     receivedTribes.add(tribe);
                                 } else {
                                     nextTribes.add(tribe);
@@ -265,6 +265,11 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     @Override
     public void setCurrentTribe(Tribe currentTribe) {
         this.currentTribe = currentTribe;
+    }
+
+    @Override
+    public void reload() {
+        homeGridPresenter.reload();
     }
 
     @Override

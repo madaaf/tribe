@@ -36,6 +36,37 @@
           "status": 2
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:832053934243:android:696139aa4f914954",
+        "android_client_info": {
+          "package_name": "com.tribe.app.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "832053934243-sjiqiuejh4cce38o2uie7lrci4cc52ir.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeyfI_3cBEuUt0-y0Vb68X-MxKSJZbYtE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
     }
   ],
   "configuration_version": "1"

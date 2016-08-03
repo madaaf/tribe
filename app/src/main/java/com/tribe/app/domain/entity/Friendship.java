@@ -23,10 +23,10 @@ public class Friendship implements Serializable {
         this.id = id;
     }
 
-    private Date createdAt;
-    private Date updatedAt;
+    protected Date createdAt;
+    protected Date updatedAt;
 
-    private int position;
+    protected int position;
     protected Tribe tribe;
     protected List<Tribe> receivedTribes = new ArrayList<>();
     protected List<Tribe> sentTribes = new ArrayList<>();

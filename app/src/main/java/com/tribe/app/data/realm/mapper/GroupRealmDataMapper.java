@@ -32,6 +32,8 @@ public class GroupRealmDataMapper {
         Group group = null;
         if (groupRealm != null) {
             group = new Group(groupRealm.getId());
+            group.setDisplayName(groupRealm.getName());
+            group.setProfilePicture(groupRealm.getPicture());
             group.setCreatedAt(groupRealm.getCreatedAt());
             group.setUpdatedAt(groupRealm.getUpdatedAt());
         }

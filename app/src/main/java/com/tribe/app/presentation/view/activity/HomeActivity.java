@@ -92,6 +92,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @BindView(R.id.progressBarNewTribes)
     CircularProgressView progressBarNewTribes;
 
+    @BindView(R.id.progressBarReload)
+    CircularProgressView progressBarReload;
+
     @BindView(R.id.layoutNavPending)
     ViewGroup layoutNavPending;
 
@@ -218,8 +221,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     public void initOnRecordStart(Observable<String> observable) {
         subscriptions.add(observable.subscribe(id -> {
             cameraWrapper.onStartRecord(id);
-//            Observable.timer(DURATION, TimeUnit.MILLISECONDS)
-//                    .subscribe(time -> homeViewPagerAdapter.getHomeGridFragment().prepareTapToCancel(id));
         }));
     }
 
@@ -314,11 +315,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         viewPager.setCurrentItem(GROUPS_FRAGMENT_PAGE, true);
     }
 
-    @OnClick(R.id.imgNavGrid)
-    public void goToGrid() {
-        viewPager.setCurrentItem(GRID_FRAGMENT_PAGE, true);
-    }
-
     @OnClick(R.id.imgNavFriends)
     public void goToFriends() {
         viewPager.setCurrentItem(FRIENDS_FRAGMENT_PAGE, true);
@@ -347,6 +343,24 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                         }));
             }
         });
+    }
+
+    @OnClick(R.id.layoutNavGridMain)
+    public void reloadGrid() {
+        if (viewPager.getCurrentItem() == GRID_FRAGMENT_PAGE) {
+            imgNavGrid.setVisibility(View.GONE);
+            progressBarReload.setVisibility(View.VISIBLE);
+            homeViewPagerAdapter.getHomeGridFragment().reload();
+            subscriptions.add(Observable.timer(DELAY_DISMISS_NEW_TRIBES, TimeUnit.MILLISECONDS)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(time -> {
+                        imgNavGrid.setVisibility(View.VISIBLE);
+                        progressBarReload.setVisibility(View.GONE);
+                    }));
+        } else {
+            viewPager.setCurrentItem(GRID_FRAGMENT_PAGE, true);
+        }
     }
 
     @Override
@@ -385,7 +399,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
-            // save the appropriate reference depending on position
+            // Save the appropriate reference depending on position
             switch (position) {
                 case 0:
                     friendsGridFragment = (FriendsGridFragment) createdFragment;

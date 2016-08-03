@@ -58,8 +58,7 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         jobManager.addJobInBackground(new UpdateTribesErrorStatusJob());
         loadFriendList();
         loadPendingTribeList();
-        jobManager.addJobInBackground(new UpdateUserJob());
-        jobManager.addJobInBackground(new UpdateTribesJob());
+        reload();
     }
 
     @Override
@@ -92,6 +91,11 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
     @Override
     public void attachView(View v) {
         homeGridView = (HomeGridView) v;
+    }
+
+    public void reload() {
+        jobManager.addJobInBackground(new UpdateUserJob());
+        jobManager.addJobInBackground(new UpdateTribesJob());
     }
 
     public void loadFriendList() {

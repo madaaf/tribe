@@ -139,7 +139,7 @@ public class User extends Friendship {
     public List<Friendship> getFriendshipList() {
         friendshipList = new ArrayList<>();
         if (friendList != null) friendshipList.addAll(friendList);
-        //if (groupList != null) friendshipList.addAll(groupList);
+        if (groupList != null) friendshipList.addAll(groupList);
 
         Collections.sort(friendshipList, (lhs, rhs) -> {
             int res = Tribe.nullSafeComparator(lhs.getMostRecentTribe(), rhs.getMostRecentTribe());

@@ -136,6 +136,7 @@ public class Tribe implements Serializable {
         tribe.setRecordedAt(new Date(System.currentTimeMillis()));
         tribe.setFrom(user);
         tribe.setTo(friendship);
+        tribe.setToGroup(friendship instanceof Group);
         tribe.setType(mode);
         tribe.setMessageStatus(MessageStatus.STATUS_PENDING);
         return tribe;

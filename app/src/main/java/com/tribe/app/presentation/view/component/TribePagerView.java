@@ -301,7 +301,7 @@ public class TribePagerView extends FrameLayout {
         springAlphaSwipeDown = springSystem.createSpring();
 
         springLeft.setSpringConfig(ORIGAMI_SPRING_CONFIG);
-        springRight.setSpringConfig(ORIGAMI_SPRING_BOUNCE_CONFIG);
+        springRight.setSpringConfig(ORIGAMI_SPRING_CONFIG);
         springTop.setSpringConfig(ORIGAMI_SPRING_CONFIG);
         springBottom.setSpringConfig(ORIGAMI_SPRING_CONFIG);
         springAlpha.setSpringConfig(ORIGAMI_SPRING_CONFIG);

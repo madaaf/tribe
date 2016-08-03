@@ -36,6 +36,8 @@ android {
 
         buildConfigField "String", "TRIBE_PUBLIC_KEY", "\"${tribe_public_key}\""
         buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key}\""
+
+        resValue "string", "app_name", "Tribe"
     }
 
     compileOptions {
@@ -73,6 +75,15 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
+            testCoverageEnabled = "true"
+            applicationIdSuffix = ".debug"
+            resValue "string", "app_name", "Tribe DEBUG"
+        }
+
+        beta {
+            signingConfig signingConfigs.debug
+            applicationIdSuffix = ".beta"
+            resValue "string", "app_name", "Tribe BETA"
         }
     }
 }
@@ -125,7 +136,6 @@ dependencies {
     compile developmentDependencies.leakCanary
     compile developmentDependencies.stetho
     compile developmentDependencies.stethoOkHttp
-
 
     compile project(':AdapterDelegates')
 }
