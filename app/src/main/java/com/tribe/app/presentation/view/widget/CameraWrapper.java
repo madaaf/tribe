@@ -15,11 +15,10 @@ import android.widget.FrameLayout;
 
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.recording.AudioRecorder;
 import com.tribe.app.presentation.view.camera.shader.fx.GlLutShader;
 import com.tribe.app.presentation.view.camera.view.CameraView;
 import com.tribe.app.presentation.view.camera.view.GlPreview;
-import com.tribe.app.presentation.view.camera.view.VisualizerView;
+import com.tribe.app.presentation.view.camera.view.PictoVisualizerView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -68,12 +67,12 @@ public class CameraWrapper extends FrameLayout {
     View imgVideo;
 
     @BindView(R.id.visualizerView)
-    VisualizerView visualizerView;
+    PictoVisualizerView visualizerView;
 
     // VARIABLES
     private GlPreview preview;
     private double aspectRatio;
-    private AudioRecorder audioRecorder;
+    //private AudioRecorder audioRecorder;
     private boolean isAudioMode;
     private PathView pathView;
 
@@ -125,13 +124,13 @@ public class CameraWrapper extends FrameLayout {
     }
 
     public void initAudioRecorder() {
-        audioRecorder = new AudioRecorder();
-        audioRecorder.link(visualizerView);
+        //audioRecorder = new AudioRecorder();
+        //audioRecorder.link(visualizerView);
     }
 
     public void onPause() {
         pauseCamera();
-        if (audioRecorder.isRecording()) audioRecorder.stopRecording();
+        //if (audioRecorder.isRecording()) audioRecorder.stopRecording();
     }
 
     public void onResume() {
@@ -141,10 +140,11 @@ public class CameraWrapper extends FrameLayout {
     public void onStartRecord(String fileId) {
         if (isAudioMode) {
             hideIcons();
-            audioRecorder.startRecording();
+            //audioRecorder.startRecording();
+            preview.startRecording(fileId, visualizerView);
             visualizerView.startRecording();
         } else {
-            preview.startRecording(fileId);
+            preview.startRecording(fileId, null);
         }
 
         addPathView();
@@ -153,12 +153,11 @@ public class CameraWrapper extends FrameLayout {
     public void onEndRecord(String friendId) {
         if (isAudioMode) {
             showIcons();
-            audioRecorder.stopRecording();
+            //audioRecorder.stopRecording();
             visualizerView.stopRecording();
-        } else {
-            preview.stopRecording(friendId);
         }
 
+        preview.stopRecording();
         removePathView();
     }
 
@@ -291,6 +290,13 @@ public class CameraWrapper extends FrameLayout {
                 .translationY(-((getHeight() >> 1) - marginVerticalIcons - (imgSound.getHeight() >> 1)))
                 .setDuration(DURATION_ICONS)
                 .setInterpolator(new DecelerateInterpolator())
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        imgSound.setVisibility(View.GONE);
+                        visualizerView.activate();
+                    }
+                })
                 .start();
 
         imgFlash.animate()
@@ -307,8 +313,6 @@ public class CameraWrapper extends FrameLayout {
                 .setStartDelay(DELAY)
                 .setListener(null)
                 .start();
-
-        visualizerView.activate();
     }
 
     @OnClick(R.id.imgVideo)
@@ -317,6 +321,7 @@ public class CameraWrapper extends FrameLayout {
         tribeModePublishSubject.onNext(VIDEO);
         visualizerView.deactivate();
 
+        imgSound.setVisibility(View.VISIBLE);
         imgSound.setEnabled(true);
         imgSound.animate()
                 .translationX(0)
@@ -324,6 +329,12 @@ public class CameraWrapper extends FrameLayout {
                 .setDuration(DURATION_ICONS)
                 .setStartDelay(DELAY)
                 .setInterpolator(new DecelerateInterpolator())
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        visualizerView.deactivate();
+                    }
+                })
                 .start();
 
         imgFlash.animate()
@@ -360,6 +371,7 @@ public class CameraWrapper extends FrameLayout {
         if (cameraView != null) {
             cameraView.stopPreview();
             cameraView.removeAllViews();
+            preview.stopRecording();
             preview = null;
         }
     }

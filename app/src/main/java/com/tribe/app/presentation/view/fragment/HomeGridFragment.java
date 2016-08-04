@@ -268,11 +268,6 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     }
 
     @Override
-    public void reload() {
-        homeGridPresenter.reload();
-    }
-
-    @Override
     public void showPendingTribesMenu() {
         setupBottomSheetPendingTribes(homeGridAdapter.getItems().toArray(new Friendship[homeGridAdapter.getItems().size()]));
     }
@@ -356,7 +351,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .doOnNext(friendship -> {
                     TileView tileView = (TileView) layoutManager.findViewByPosition(friendship.getPosition());
-                    tileView.showTapToCancel(currentTribe);
+                    tileView.showTapToCancel(currentTribe, tribeMode);
                     homeGridAdapter.updateItemWithTribe(friendship.getPosition(), currentTribe);
                     recyclerViewFriends.requestDisallowInterceptTouchEvent(false);
                 })

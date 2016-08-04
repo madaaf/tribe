@@ -36,4 +36,10 @@ public interface TribeDataStore {
      * about the tribes pending.
      */
     Observable<List<TribeRealm>> tribesPending();
+
+    /**
+     * Get an {@link Observable} which will emit a {@link List < Tribe >} containing infos
+     * about the tribes pending.
+     */
+    Observable<List<TribeRealm>> setTribesHasSeen(List<TribeRealm> tribeRealmList);
 }

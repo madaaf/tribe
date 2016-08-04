@@ -8,6 +8,7 @@ import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.TribeRealm;
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.utils.MessageStatus;
@@ -94,6 +95,49 @@ public class CloudTribeDataStore implements TribeDataStore {
                     return tribeRealmList;
                 })
                 .doOnNext(saveToCacheTribes);
+
+//        return tribeApi.tribes(context.getString(R.string.tribe_infos))
+//                .flatMap(new Func1<List<TribeRealm>, Observable<List<TribeRealm>>>() {
+//                    @Override
+//                    public Observable<List<TribeRealm>> call(List<TribeRealm> messages) {
+//                        return Observable.from(messages).flatMap(new Func1<TribeRealm, Observable<TribeRealm>>() {
+//                            @Override
+//                            public Observable<TribeRealm> call(TribeRealm tribeRealm) {
+//                                return userCache.userInfos(tribeRealm.getFrom().getId())
+//                                        .onErrorResumeNext(
+//                                                tribeApi.getUserInfos(
+//                                                        context.getString(R.string.user_infos_tribe, tribeRealm.getFrom().getId())
+//                                                ).doOnNext(saveToCacheUser)
+//                                        ).map(userRealm -> {
+//                                            TribeRealm tribeRealmClone = tribeRealm.cloneTribeRealm(tribeRealm);
+//                                            tribeRealmClone.setFrom(userRealmDataMapper.transformToUserTribe(userRealm));
+//                                            System.out.println("Tribe : " + tribeRealmClone.getId());
+//                                            return tribeRealmClone;
+//                                        });
+//                            }
+//                        }).reduce(new ArrayList<TribeRealm>(), (list, s) -> {
+//                            list.add(s);
+//                            return list;
+//                        });
+//                    }
+//                }).doOnNext(saveToCacheTribes);
+
+
+//    return tribeApi.tribes(context.getString(R.string.tribe_infos))
+//        .flatMapIterable(tribes -> tribes)
+//                .flatMap(tribeRealm -> userCache.userInfos(tribeRealm.getFrom().getId())
+//                        .onErrorResumeNext(
+//                                this.tribeApi.getUserInfos(
+//                                        context.getString(R.string.user_infos_tribe, tribeRealm.getFrom().getId())
+//                                ).doOnNext(saveToCacheUser)
+//                        )
+//                        .map(userRealm -> {
+//                            TribeRealm tribeRealmClone = tribeRealm.cloneTribeRealm(tribeRealm);
+//                            tribeRealmClone.setFrom(userRealmDataMapper.transformToUserTribe(userRealm));
+//                            return tribeRealmClone;
+//                        }).doOnError(throwable -> System.out.println("ERROR 1")).doOnEach(notification -> System.out.println("LOL EACH 1")).doOnCompleted(() -> System.out.println("Completed 1"))
+//                        .toList().doOnError(throwable -> System.out.println("ERROR")).doOnEach(notification -> System.out.println("LOL EACH")).doOnCompleted(() -> System.out.println("Completed"))
+//                ).doOnError(throwable -> System.out.println("ERROR 2")).doOnEach(notification -> System.out.println("LOL EACH 2")).doOnCompleted(() -> System.out.println("Completed 2")).doOnNext(saveToCacheTribes);
     }
 
     @Override
@@ -101,9 +145,20 @@ public class CloudTribeDataStore implements TribeDataStore {
         return null;
     }
 
+    @Override
+    public Observable<List<TribeRealm>> setTribesHasSeen(List<TribeRealm> tribeRealmList) {
+        return null;
+    }
+
     private final Action1<List<TribeRealm>> saveToCacheTribes = tribeRealmList -> {
         if (tribeRealmList != null && tribeRealmList.size() > 0) {
             CloudTribeDataStore.this.tribeCache.put(tribeRealmList);
+        }
+    };
+
+    private final Action1<UserRealm> saveToCacheUser = userRealm -> {
+        if (userRealm != null) {
+            CloudTribeDataStore.this.userCache.put(userRealm);
         }
     };
 }

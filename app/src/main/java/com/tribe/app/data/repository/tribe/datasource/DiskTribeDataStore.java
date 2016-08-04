@@ -42,4 +42,9 @@ public class DiskTribeDataStore implements TribeDataStore {
     public Observable<List<TribeRealm>> tribesPending() {
         return tribeCache.tribesPending().debounce(500, TimeUnit.MILLISECONDS);
     }
+
+    @Override
+    public Observable<List<TribeRealm>> setTribesHasSeen(List<TribeRealm> tribeRealmList) {
+        return null;
+    }
 }

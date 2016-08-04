@@ -12,6 +12,8 @@ import android.support.design.BuildConfig;
 import android.util.Log;
 
 import com.tribe.app.R;
+import com.tribe.app.presentation.recording.RealDoubleFFT;
+import com.tribe.app.presentation.view.camera.interfaces.AudioVisualizerCallback;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -29,13 +31,17 @@ public class MediaAudioEncoder extends MediaEncoder {
 
     // VARIABLES
     private AudioThread audioThread = null;
+    private RealDoubleFFT transformer;
+    private AudioVisualizerCallback visualizerView = null;
+
 
     // RESOURCES
     private int timeRecord;
 
-    public MediaAudioEncoder(Context context, final TribeMuxerWrapper muxer) {
+    public MediaAudioEncoder(Context context, final TribeMuxerWrapper muxer, final AudioVisualizerCallback visualizerCallback) {
         super(muxer);
-        timeRecord = context.getResources().getInteger(R.integer.time_record);
+        this.timeRecord = context.getResources().getInteger(R.integer.time_record);
+        this.visualizerView = visualizerCallback;
     }
 
     @Override
@@ -116,6 +122,8 @@ public class MediaAudioEncoder extends MediaEncoder {
                 int buffer_size = SAMPLES_PER_FRAME * FRAMES_PER_BUFFER;
                 if (buffer_size < min_buffer_size)
                     buffer_size = ((min_buffer_size / SAMPLES_PER_FRAME) + 1) * SAMPLES_PER_FRAME * 2;
+                double[] toTransform = new double[SAMPLES_PER_FRAME];
+                transformer = new RealDoubleFFT(SAMPLES_PER_FRAME);
 
                 AudioRecord audioRecord = null;
                 for (final int source : AUDIO_SOURCES) {
@@ -148,6 +156,16 @@ public class MediaAudioEncoder extends MediaEncoder {
                                         buf.flip();
                                         encode(buf, readBytes, getPTSUs());
                                         frameAvailableSoon();
+                                    }
+
+                                    for (int i = 0; i < SAMPLES_PER_FRAME && i < readBytes; i++) {
+                                        toTransform[i] = (double) buf.get(i) / 32768.0;
+                                    }
+
+                                    transformer.ft(toTransform);
+
+                                    if (visualizerView != null) {
+                                        visualizerView.receive(toTransform);
                                     }
                                 }
 
@@ -201,4 +219,7 @@ public class MediaAudioEncoder extends MediaEncoder {
         return result;
     }
 
+    public void setVisualizerView(AudioVisualizerCallback visualizerView) {
+        this.visualizerView = visualizerView;
+    }
 }

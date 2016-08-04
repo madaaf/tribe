@@ -28,7 +28,7 @@ import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.adapter.delegate.grid.FriendshipGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
-import com.tribe.app.presentation.view.camera.view.VisualizerView;
+import com.tribe.app.presentation.view.camera.view.HistogramVisualizerView;
 import com.tribe.app.presentation.view.component.TribeComponentView;
 import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
@@ -59,7 +59,7 @@ public interface ApplicationComponent {
     void inject(FriendshipGridAdapterDelegate friendshipGridAdapterDelegate);
     void inject(AvatarView avatarView);
     void inject(CameraWrapper cameraWrapper);
-    void inject(VisualizerView visualizerView);
+    void inject(HistogramVisualizerView visualizerView);
     void inject(PathView pathView);
     void inject(TribePagerView tribePagerView);
     void inject(PlayerView playerView);

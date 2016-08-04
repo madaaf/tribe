@@ -25,7 +25,6 @@ public class UpdateTribesJob extends BaseJob {
     @Named("cloudGetTribes")
     UseCase cloudGetTribes;
 
-
     public UpdateTribesJob() {
         super(new Params(Priority.HIGH).requireNetwork().singleInstanceBy(TAG).groupBy(TAG));
     }
@@ -71,6 +70,7 @@ public class UpdateTribesJob extends BaseJob {
         }
 
         @Override
-        public void onNext(List<Tribe> tribes) {}
+        public void onNext(List<Tribe> tribes) {
+        }
     }
 }

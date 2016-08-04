@@ -73,7 +73,7 @@ public abstract class FriendshipGridAdapterDelegate extends RxAdapterDelegate<Li
                 vh.viewTile.setBackground(position);
                 friendship.setPosition(position);
             } else {
-                vh.viewTile.showTapToCancel(friendship.getTribe());
+                vh.viewTile.showTapToCancel(friendship.getTribe(), vh.viewTile.getCurrentTribeMode());
             }
         }
 

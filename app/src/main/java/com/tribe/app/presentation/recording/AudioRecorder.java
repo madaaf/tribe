@@ -5,7 +5,7 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
 
-import com.tribe.app.presentation.view.camera.view.VisualizerView;
+import com.tribe.app.presentation.view.camera.interfaces.AudioVisualizerCallback;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -29,12 +29,12 @@ public class AudioRecorder {
 
     private Timer timer;
 
-    private VisualizerView visualizerView = null;
+    private AudioVisualizerCallback visualizerView = null;
 
     public AudioRecorder() {
     }
 
-    public void link(VisualizerView visualizerView) {
+    public void link(AudioVisualizerCallback visualizerView) {
         this.visualizerView = visualizerView;
     }
 

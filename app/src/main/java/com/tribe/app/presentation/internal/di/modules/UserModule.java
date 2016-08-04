@@ -8,6 +8,7 @@ import com.tribe.app.domain.interactor.tribe.GetPendingTribeList;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
+import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.GetRequestCode;
 import com.tribe.app.domain.interactor.user.SendToken;
@@ -37,6 +38,13 @@ public class UserModule {
     @PerActivity
     UseCase provideDoLoginWithUsernameUseCase(DoLoginWithPhoneNumber doLoginWithPhoneNumber) {
         return doLoginWithPhoneNumber;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("cloudUserInfos")
+    UseCase provideCloudGetUserInfos(GetCloudUserInfos getCloudUserInfos) {
+        return getCloudUserInfos;
     }
 
     @Provides

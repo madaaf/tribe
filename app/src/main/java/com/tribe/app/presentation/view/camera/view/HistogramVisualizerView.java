@@ -13,6 +13,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.LinearLayout;
 
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.camera.interfaces.AudioVisualizerCallback;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ import javax.inject.Inject;
  *
  * Created by tiago on 2016/06/13.
  */
-public class VisualizerView extends LinearLayout {
+public class HistogramVisualizerView extends LinearLayout implements AudioVisualizerCallback {
 
     private static final int NB_COLUMNS = 6;
 
@@ -47,7 +48,7 @@ public class VisualizerView extends LinearLayout {
     private Handler handler;
     private long lastSamplingTimestamp;
 
-    public VisualizerView(Context context, AttributeSet attrs) {
+    public HistogramVisualizerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
     }
@@ -84,6 +85,7 @@ public class VisualizerView extends LinearLayout {
         setWillNotDraw(false);
     }
 
+    @Override
     public void receive(final double[]... toTransform) {
         if (System.currentTimeMillis() - lastSamplingTimestamp > SAMPLING_DURATION) {
             handler.post(() -> {
@@ -144,6 +146,7 @@ public class VisualizerView extends LinearLayout {
         vaArray[viewColumnList.indexOf(bar)] = va;
     }
 
+    @Override
     public void activate() {
         Random r = new Random();
         for (int i = 0; i < viewColumnList.size(); i++) {
@@ -154,14 +157,17 @@ public class VisualizerView extends LinearLayout {
         animate().alpha(0.2f).setInterpolator(new DecelerateInterpolator()).setDuration(DURATION_SHORT).start();
     }
 
+    @Override
     public void startRecording() {
         animate().alpha(1f).setInterpolator(new DecelerateInterpolator()).setDuration(DURATION_SHORT).start();
     }
 
+    @Override
     public void stopRecording() {
         activate();
     }
 
+    @Override
     public void deactivate() {
         for (int i = 0; i < viewColumnList.size(); i++) {
             layoutBar(viewColumnList.get(i), null, 0, false, i);

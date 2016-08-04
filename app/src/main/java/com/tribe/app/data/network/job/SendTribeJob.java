@@ -21,7 +21,7 @@ import javax.inject.Named;
 /**
  * Created by tiago on 05/07/2016.
  */
-public class SendTribeJob extends BaseJob {
+public class  SendTribeJob extends BaseJob {
 
     @Inject
     @Named("cloudSendTribe")
@@ -79,6 +79,7 @@ public class SendTribeJob extends BaseJob {
         @Override
         public void onCompleted() {
             cloudSendTribe.unsubscribe();
+
         }
 
         @Override

@@ -18,6 +18,7 @@ import com.tribe.app.presentation.view.camera.gles.GlPreviewTextureFactory;
 import com.tribe.app.presentation.view.camera.gles.PixelBuffer;
 import com.tribe.app.presentation.view.camera.gles.Texture;
 import com.tribe.app.presentation.view.camera.helper.CameraHelper;
+import com.tribe.app.presentation.view.camera.interfaces.AudioVisualizerCallback;
 import com.tribe.app.presentation.view.camera.interfaces.CameraStateListener;
 import com.tribe.app.presentation.view.camera.interfaces.CaptureCallback;
 import com.tribe.app.presentation.view.camera.interfaces.Preview;
@@ -188,12 +189,13 @@ public class GlPreview extends GLSurfaceView implements Preview, Camera.PictureC
     }
 
     @Override
-    public void startRecording(String fileId) {
+    public void startRecording(String fileId, AudioVisualizerCallback visualizerCallback) {
         if (muxerWrapper == null) {
             try {
                 muxerWrapper = new TribeMuxerWrapper(fileId);
-                mediaVideoEncoder = new MediaVideoEncoder(getContext(), muxerWrapper);
-                new MediaAudioEncoder(getContext(), muxerWrapper);
+                if (visualizerCallback == null)
+                    mediaVideoEncoder = new MediaVideoEncoder(getContext(), muxerWrapper);
+                new MediaAudioEncoder(getContext(), muxerWrapper, visualizerCallback);
                 queueEvent(() -> renderer.setMediaVideoEncoder(mediaVideoEncoder));
                 muxerWrapper.prepare(getContext(), getWidth(), getHeight());
                 muxerWrapper.startRecording();
@@ -204,7 +206,7 @@ public class GlPreview extends GLSurfaceView implements Preview, Camera.PictureC
     }
 
     @Override
-    public void stopRecording(String friendId) {
+    public void stopRecording() {
         if (muxerWrapper != null) {
             muxerWrapper.stopRecording();
             muxerWrapper = null;

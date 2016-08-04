@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
 
     <com.tribe.app.presentation.view.camera.view.CameraView
         android:id="@+id/cameraView"
@@ -25,13 +28,16 @@
         android:layout_gravity="top"
         />
 
-    <com.tribe.app.presentation.view.camera.view.VisualizerView
+    <com.tribe.app.presentation.view.camera.view.PictoVisualizerView
         android:id="@+id/visualizerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/camera_stroke_width">
+        android:visibility="gone"
+        android:gravity="center"
+        android:padding="@dimen/camera_stroke_width"
+        app:picto="@drawable/picto_sound_big">
 
-    </com.tribe.app.presentation.view.camera.view.VisualizerView>
+    </com.tribe.app.presentation.view.camera.view.PictoVisualizerView>
 
     <View
         android:id="@+id/viewCameraForeground"
@@ -42,8 +48,8 @@
 
     <ImageView
         android:id="@+id/imgSound"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/camera_icons_start"
+        android:layout_height="@dimen/camera_icons_start"
         android:layout_gravity="bottom|left"
         android:layout_marginLeft="@dimen/horizontal_margin"
         android:layout_marginBottom="@dimen/vertical_margin"
@@ -55,8 +61,8 @@
 
     <ImageView
         android:id="@+id/imgFlash"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/camera_icons_start"
+        android:layout_height="@dimen/camera_icons_start"
         android:layout_gravity="bottom|right"
         android:layout_marginRight="@dimen/horizontal_margin"
         android:layout_marginBottom="@dimen/vertical_margin"
@@ -68,8 +74,8 @@
 
     <ImageView
         android:id="@+id/imgVideo"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/camera_icons_start"
+        android:layout_height="@dimen/camera_icons_start"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="@dimen/vertical_margin"
         android:background="@drawable/selectable_button_oval"

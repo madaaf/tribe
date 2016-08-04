@@ -378,7 +378,7 @@ public class TribePagerView extends FrameLayout {
     }
 
     public void showTapToCancel(Tribe tribe) {
-        viewTile.showTapToCancel(tribe);
+        viewTile.showTapToCancel(tribe, tribeMode);
     }
 
     /////////////////////

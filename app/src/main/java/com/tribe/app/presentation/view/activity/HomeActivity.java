@@ -241,10 +241,12 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                     if (dy <= translationBackToTop) {
                         imgNavFriends.setTranslationY(dy);
                         layoutNavGrid.setTranslationY(dy);
-                        imgNavGrid.setTranslationY(dy);
+                        imgNavGroups.setTranslationY(dy);
+                        //layoutNavPending.setTranslationY(dy);
                         imgNavFriends.setAlpha(1 - percent);
                         layoutNavGrid.setAlpha(1 - percent);
-                        imgNavGrid.setAlpha(1 - percent);
+                        imgNavGroups.setAlpha(1 - percent);
+                        //layoutNavPending.setAlpha(1 - percent);
                         imgNavBackToTop.setTranslationY(translationBackToTop - dy);
                         imgNavBackToTop.setAlpha((float) dy / translationBackToTop);
                     } else if (imgNavBackToTop.getTranslationY() != 0) {
@@ -348,16 +350,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @OnClick(R.id.layoutNavGridMain)
     public void reloadGrid() {
         if (viewPager.getCurrentItem() == GRID_FRAGMENT_PAGE) {
-            imgNavGrid.setVisibility(View.GONE);
-            progressBarReload.setVisibility(View.VISIBLE);
-            homeViewPagerAdapter.getHomeGridFragment().reload();
-            subscriptions.add(Observable.timer(DELAY_DISMISS_NEW_TRIBES, TimeUnit.MILLISECONDS)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(Schedulers.io())
-                    .subscribe(time -> {
-                        imgNavGrid.setVisibility(View.VISIBLE);
-                        progressBarReload.setVisibility(View.GONE);
-                    }));
+            homePresenter.reloadData();
         } else {
             viewPager.setCurrentItem(GRID_FRAGMENT_PAGE, true);
         }
@@ -366,6 +359,38 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     public UserComponent getComponent() {
         return userComponent;
+    }
+
+    @Override
+    public void showLoading() {
+        imgNavGrid.setVisibility(View.GONE);
+        progressBarReload.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideLoading() {
+        imgNavGrid.setVisibility(View.VISIBLE);
+        progressBarReload.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showRetry() {
+
+    }
+
+    @Override
+    public void hideRetry() {
+
+    }
+
+    @Override
+    public void showError(String message) {
+
+    }
+
+    @Override
+    public Context context() {
+        return null;
     }
 
     public class HomeViewPagerAdapter extends FragmentStatePagerAdapter {

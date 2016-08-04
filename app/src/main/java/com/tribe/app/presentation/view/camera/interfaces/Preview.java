@@ -18,7 +18,7 @@ public interface Preview {
 
     void takePicture(CaptureCallback callback, boolean autoFocus);
 
-    void startRecording(String friendId);
+    void startRecording(String friendId, AudioVisualizerCallback visualizerCallback);
 
-    void stopRecording(String friendId);
+    void stopRecording();
 }

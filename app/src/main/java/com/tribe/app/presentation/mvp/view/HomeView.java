@@ -7,7 +7,7 @@ import java.util.List;
 
 import rx.Observable;
 
-public interface HomeView extends View {
+public interface HomeView extends LoadDataView {
 
     void initOpenTribes(Observable<Friendship> observable);
     void initClicksOnChat(Observable<Friendship> observable);

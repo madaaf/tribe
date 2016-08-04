@@ -18,4 +18,8 @@
             <enum name="tile" value="1" />
         </attr>
     </declare-styleable>
+
+    <declare-styleable name="PictoVisualizerView">
+        <attr name="picto" format="integer"></attr>
+    </declare-styleable>
 </resources>

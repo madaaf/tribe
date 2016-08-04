@@ -13,6 +13,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.tribe.app.presentation.view.camera.helper.CameraHelper;
+import com.tribe.app.presentation.view.camera.interfaces.AudioVisualizerCallback;
 import com.tribe.app.presentation.view.camera.interfaces.CameraStateListener;
 import com.tribe.app.presentation.view.camera.interfaces.CaptureCallback;
 import com.tribe.app.presentation.view.camera.interfaces.Preview;
@@ -101,12 +102,12 @@ public class DefaultPreview extends SurfaceView implements Preview, Camera.Pictu
     }
 
     @Override
-    public void startRecording(String friendId) {
+    public void startRecording(String friendId, AudioVisualizerCallback visualizerCallback) {
 
     }
 
     @Override
-    public void stopRecording(String friendId) {
+    public void stopRecording() {
 
     }
 

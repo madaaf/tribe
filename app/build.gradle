@@ -21,7 +21,9 @@ android {
 
     dexOptions {
         maxProcessCount 2
-        javaMaxHeapSize "2g"
+        incremental = true;
+        preDexLibraries = false
+        javaMaxHeapSize "4g"
     }
 
     defaultConfig {

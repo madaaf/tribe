@@ -31,6 +31,22 @@
             updated_at
         }
     </string>
+
+    <string name="user.infos.tribe">
+        {
+            user(id: \"%1$s\") {
+                ...UserInfos
+            }
+        }
+
+        fragment UserInfos on User {
+            id
+            displayName
+            profilePicture
+            created_at
+            updated_at
+        }
+    </string>
     <!-- installs {
         gcm_id
         user {
