@@ -75,8 +75,8 @@ public class DiskUserDataRepository implements UserRepository {
                         List<Tribe> errorTribes = new ArrayList<>();
 
                         for (Tribe tribe : tribes) {
-                            if (tribe.isToGroup() && tribe.getTo().getId().equals(friendship.getId())
-                                    || !tribe.isToGroup() && tribe.getFrom().getId().equals(friendship.getId())) {
+                            if (!tribe.getFrom().getId().equals(user.getId()) && (tribe.isToGroup() && tribe.getTo().getId().equals(friendship.getId()))
+                                    || (!tribe.isToGroup() && tribe.getFrom().getId().equals(friendship.getId()))) {
                                 receivedTribes.add(tribe);
                             } else if (tribe.getFrom().getId().equals(user.getId())
                                     && tribe.getTo().getId().equals(friendship.getId())) {

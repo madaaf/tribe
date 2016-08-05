@@ -119,8 +119,12 @@ public class TribeActivity extends BaseActivity implements TribeView {
     private void initSubscriptions() {
         subscriptions = new CompositeSubscription();
 
-        subscriptions.add(viewTribePager.onDismissHorizontal().delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
-        subscriptions.add(viewTribePager.onDismissVertical().delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
+        subscriptions.add(viewTribePager.onDismissHorizontal().doOnNext(aVoid -> {
+            tribePresenter.markTribeListAsRead(friendship, viewTribePager.getTribeListSeens());
+        }).delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
+        subscriptions.add(viewTribePager.onDismissVertical().doOnNext(aVoid -> {
+            tribePresenter.markTribeListAsRead(friendship, viewTribePager.getTribeListSeens());
+        }).delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
 
         subscriptions.add(viewTribePager.onRecordStart()
                 .map(view -> tribePresenter.createTribe(currentUser, friendship, viewTribePager.getTribeMode()))

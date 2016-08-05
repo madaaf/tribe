@@ -39,4 +39,5 @@
     <string name="grid_unsent_tribes_action_delete_name">Delete %1$s (%2$d)</string>
     <string name="grid_unsent_tribes_action_resend_all">Resend all</string>
     <string name="grid_unsent_tribes_action_delete_all">Delete all</string>
+    <string name="grid_more_clear_all_messages">Clear all messages</string>
 </resources>

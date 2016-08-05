@@ -2,6 +2,7 @@ package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.DownloadTribeJob;
+import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
 import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateTribesJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
@@ -12,6 +13,7 @@ import com.tribe.app.domain.exception.DefaultErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
+import com.tribe.app.domain.interactor.tribe.DiskMarkTribeListAsRead;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.SendTribeView;
@@ -36,6 +38,7 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
     private UseCaseDisk diskUserInfosUsecase;
     private UseCaseDisk diskGetTribeListUsecase;
     private UseCaseDisk diskGetPendingTribeListUsecase;
+    private DiskMarkTribeListAsRead diskMarkTribeListAsRead;
 
     // SUBSCRIBERS
     private TribePendingListSubscriber tribePendingListSubscriber;
@@ -46,11 +49,13 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
                              @Named("diskSaveTribe") SaveTribe diskSaveTribe,
                              @Named("diskDeleteTribe") DeleteTribe diskDeleteTribe,
                              @Named("diskGetTribes") UseCaseDisk diskGetTribeList,
-                             @Named("diskGetPendingTribes") UseCaseDisk diskGetPendingTribeList) {
+                             @Named("diskGetPendingTribes") UseCaseDisk diskGetPendingTribeList,
+                             @Named("diskMarkTribeListAsRead") DiskMarkTribeListAsRead diskMarkTribeListAsRead) {
         super(jobManager, diskSaveTribe, diskDeleteTribe);
         this.diskUserInfosUsecase = diskUserInfos;
         this.diskGetTribeListUsecase = diskGetTribeList;
         this.diskGetPendingTribeListUsecase = diskGetPendingTribeList;
+        this.diskMarkTribeListAsRead = diskMarkTribeListAsRead;
     }
 
     @Override
@@ -156,6 +161,12 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
 
             if (countPreload == PRELOAD_MAX) break;
         }
+    }
+
+    public void markTribeListAsRead(Friendship friendship) {
+        diskMarkTribeListAsRead.setTribeList(friendship.getReceivedTribes());
+        diskMarkTribeListAsRead.execute(new DefaultSubscriber<>());
+        jobManager.addJobInBackground(new MarkTribeListAsReadJob(friendship, friendship.getReceivedTribes()));
     }
 
     @Override

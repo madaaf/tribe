@@ -5,8 +5,18 @@
             user {
                 ...UserInfos
 
-                friends {
-                    ...UserInfos
+                friendships {
+                    id
+                    tag
+                    blocked
+                    category
+                    friend {
+                        ...UserInfos
+                    }
+                }
+
+                messages {
+                  content
                 }
 
                 groups {
@@ -15,10 +25,6 @@
                     picture
                     created_at
                     updated_at
-                }
-
-                reported {
-                    ...UserInfos
                 }
             }
         }
@@ -107,7 +113,24 @@
                     }
                 }
             }
+
+            tribes (ids: [%1$s]) {
+                id
+
+                recipients {
+                    to
+                    is_seen
+                }
+            }
         }
+    </string>
+
+    <string name="tribe.markAsSeen">
+        mutation { %1$s }
+    </string>
+
+    <string name="tribe.markAsSeen.item">
+        %1$s: markTribeAsSeen(id: \"%2$s\")
     </string>
 
     <string name="install.create">

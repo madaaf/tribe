@@ -405,12 +405,12 @@ public class TileView extends SquareFrameLayout {
             if (receivedTribes != null && receivedTribes.size() > 0) {
                 txtNbTribes.setText("" + receivedTribes.size());
                 if (layoutNbTribes.getScaleX() == 0) {
-                    layoutNbTribes.animate().scaleX(1).scaleY(1).setDuration(SCALE_DURATION).setStartDelay(ANIMATION_DELAY).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
+                    layoutNbTribes.animate().scaleX(1).scaleY(1).setDuration(0).setStartDelay(0).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
                 }
             } else {
                 txtNbTribes.setText("");
                 if (layoutNbTribes.getScaleX() == 1) {
-                    layoutNbTribes.animate().scaleX(0).scaleY(0).setDuration(SCALE_DURATION).setStartDelay(ANIMATION_DELAY).start();
+                    layoutNbTribes.animate().scaleX(0).scaleY(0).setDuration(0).start();
                 }
             }
         }

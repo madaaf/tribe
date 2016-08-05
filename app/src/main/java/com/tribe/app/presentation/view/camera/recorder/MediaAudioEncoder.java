@@ -154,7 +154,7 @@ public class MediaAudioEncoder extends MediaEncoder {
                                         // set audio data to encoder
                                         buf.position(readBytes);
                                         buf.flip();
-                                        encode(buf, readBytes, getPTSUs());
+                                        encode(buf, readBytes, getPTSUs() / 1000L);
                                         frameAvailableSoon();
                                     }
 

@@ -114,4 +114,23 @@ public class TribeRealmDataMapper {
 
         return tribeList;
     }
+
+    /**
+     * Transform a List of {@link Tribe} into a Collection of {@link TribeRealm}.
+     *
+     * @param tribeCollection Object Collection to be transformed.
+     * @return {@link List<Tribe>} if valid {@link List<TribeRealm>} otherwise empty list.
+     */
+    public List<TribeRealm> transform(List<Tribe> tribeCollection) {
+        List<TribeRealm> tribeList = new ArrayList<>();
+        TribeRealm tribeRealm;
+        for (Tribe tribe : tribeCollection) {
+            tribeRealm = transform(tribe);
+            if (tribe != null) {
+                tribeList.add(tribeRealm);
+            }
+        }
+
+        return tribeList;
+    }
 }

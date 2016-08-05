@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.PendingType;
+import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
@@ -23,53 +23,53 @@ import rx.subjects.PublishSubject;
 /**
  * Created by tiago on 18/05/2016.
  */
-public class PendingTribeSheetAdapterDelegate extends RxAdapterDelegate<List<PendingType>> {
+public class LabelSheetAdapterDelegate extends RxAdapterDelegate<List<LabelType>> {
 
     protected LayoutInflater layoutInflater;
 
     // RX SUBSCRIPTIONS / SUBJECTS
-    private final PublishSubject<View> clickPendingTribeItem = PublishSubject.create();
+    private final PublishSubject<View> clickLabelItem = PublishSubject.create();
 
-    public PendingTribeSheetAdapterDelegate(Context context) {
+    public LabelSheetAdapterDelegate(Context context) {
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
-    public boolean isForViewType(@NonNull List<PendingType> items, int position) {
+    public boolean isForViewType(@NonNull List<LabelType> items, int position) {
         return true;
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
-        PendingTribeSheetViewHolder vh = new PendingTribeSheetViewHolder(layoutInflater.inflate(R.layout.item_sheet_pending_tribe, parent, false));
+        LabelSheetViewHolder vh = new LabelSheetViewHolder(layoutInflater.inflate(R.layout.item_sheet_pending_tribe, parent, false));
 
         subscriptions.add(RxView.clicks(vh.txtView)
                 .takeUntil(RxView.detaches(parent))
                 .map(view -> vh.txtView)
-                .subscribe(clickPendingTribeItem));
+                .subscribe(clickLabelItem));
 
         return vh;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull List<PendingType> items, int position, @NonNull RecyclerView.ViewHolder holder) {
-        PendingTribeSheetViewHolder vh = (PendingTribeSheetViewHolder) holder;
-        PendingType pendingType = items.get(position);
+    public void onBindViewHolder(@NonNull List<LabelType> items, int position, @NonNull RecyclerView.ViewHolder holder) {
+        LabelSheetViewHolder vh = (LabelSheetViewHolder) holder;
+        LabelType labelType = items.get(position);
 
-        vh.txtView.setText(pendingType.getLabel());
+        vh.txtView.setText(labelType.getLabel());
         vh.txtView.setTag(R.id.tag_position, position);
     }
 
-    public Observable<View> clickPendingTribeItem() {
-        return clickPendingTribeItem;
+    public Observable<View> clickLabelItem() {
+        return clickLabelItem;
     }
 
-    static class PendingTribeSheetViewHolder extends RecyclerView.ViewHolder {
+    static class LabelSheetViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.txtView) public TextViewFont txtView;
 
-        public PendingTribeSheetViewHolder(View itemView) {
+        public LabelSheetViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }

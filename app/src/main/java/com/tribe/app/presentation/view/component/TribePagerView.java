@@ -34,6 +34,7 @@ import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -147,6 +148,7 @@ public class TribePagerView extends FrameLayout {
     private int currentOffsetLeft;
     private int currentOffsetBottom;
     private List<Tribe> tribeList;
+    private List<Tribe> tribeListSeens;
     private TribeComponentView currentView;
     private boolean inSnoozeMode = false;
     private boolean inReplyMode = false;
@@ -244,6 +246,8 @@ public class TribePagerView extends FrameLayout {
         applicationComponent.inject(this);
         screenUtils = applicationComponent.screenUtils();
 
+        tribeListSeens = new ArrayList<>();
+
         initViewPager();
         initDimen();
         initCamera();
@@ -278,6 +282,7 @@ public class TribePagerView extends FrameLayout {
             }
 
             public void onPageSelected(int currentPosition) {
+                tribeListSeens.add(tribeList.get(currentPosition));
                 tribePagerAdapter.setCurrentPosition(currentPosition);
                 currentView = (TribeComponentView) viewPager.findViewWithTag(currentPosition);
                 tribePagerAdapter.releaseTribe((TribeComponentView) viewPager.findViewWithTag(previousPosition));
@@ -358,6 +363,7 @@ public class TribePagerView extends FrameLayout {
 
     public void setItems(List<Tribe> items) {
         this.tribeList = items;
+        tribeListSeens.add(tribeList.get(0));
         this.tribePagerAdapter.setItems(items);
     }
 
@@ -1055,6 +1061,10 @@ public class TribePagerView extends FrameLayout {
         } else {
             springRight.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
         }
+    }
+
+    public List<Tribe> getTribeListSeens() {
+        return tribeListSeens;
     }
 
     //////////////////////

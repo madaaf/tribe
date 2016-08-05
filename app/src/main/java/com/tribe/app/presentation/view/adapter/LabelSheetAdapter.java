@@ -5,8 +5,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.tribe.app.domain.entity.PendingType;
-import com.tribe.app.presentation.view.adapter.delegate.tribe.PendingTribeSheetAdapterDelegate;
+import com.tribe.app.domain.entity.LabelType;
+import com.tribe.app.presentation.view.adapter.delegate.tribe.LabelSheetAdapterDelegate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,18 +18,18 @@ import rx.Observable;
 /**
  * Created by tiago on 18/05/2016.
  */
-public class PendingTribeSheetAdapter extends RecyclerView.Adapter {
+public class LabelSheetAdapter extends RecyclerView.Adapter {
 
-    private RxAdapterDelegatesManager<List<PendingType>> delegatesManager;
-    private List<PendingType> items;
-    private PendingTribeSheetAdapterDelegate pendingTribeSheetAdapterDelegate;
+    private RxAdapterDelegatesManager<List<LabelType>> delegatesManager;
+    private List<LabelType> items;
+    private LabelSheetAdapterDelegate labelSheetAdapterDelegate;
 
     @Inject
-    public PendingTribeSheetAdapter(Context context, List<PendingType> pendingTypeList) {
+    public LabelSheetAdapter(Context context, List<LabelType> labelTypeList) {
         delegatesManager = new RxAdapterDelegatesManager<>();
-        pendingTribeSheetAdapterDelegate = new PendingTribeSheetAdapterDelegate(context);
-        delegatesManager.addDelegate(pendingTribeSheetAdapterDelegate);
-        items = new ArrayList<>(pendingTypeList);
+        labelSheetAdapterDelegate = new LabelSheetAdapterDelegate(context);
+        delegatesManager.addDelegate(labelSheetAdapterDelegate);
+        items = new ArrayList<>(labelTypeList);
     }
 
     @Override
@@ -39,8 +39,8 @@ public class PendingTribeSheetAdapter extends RecyclerView.Adapter {
 
     @Override
     public long getItemId(int position) {
-        PendingType pendingType = getItemAtPosition(position);
-        return pendingType.hashCode();
+        LabelType labelType = getItemAtPosition(position);
+        return labelType.hashCode();
     }
 
     @Override
@@ -58,7 +58,7 @@ public class PendingTribeSheetAdapter extends RecyclerView.Adapter {
         return items.size();
     }
 
-    public PendingType getItemAtPosition(int position) {
+    public LabelType getItemAtPosition(int position) {
         if (items.size() > 0 && position < items.size()) {
             return items.get(position);
         } else {
@@ -70,13 +70,13 @@ public class PendingTribeSheetAdapter extends RecyclerView.Adapter {
         delegatesManager.releaseSubscriptions();
     }
 
-    public void setItems(List<PendingType> stringList) {
+    public void setItems(List<LabelType> labelTypeList) {
         items.clear();
-        items.addAll(stringList);
+        items.addAll(labelTypeList);
         notifyDataSetChanged();
     }
 
-    public Observable<View> clickPendingTribeItem() {
-        return pendingTribeSheetAdapterDelegate.clickPendingTribeItem();
+    public Observable<View> clickLabelItem() {
+        return labelSheetAdapterDelegate.clickLabelItem();
     }
 }

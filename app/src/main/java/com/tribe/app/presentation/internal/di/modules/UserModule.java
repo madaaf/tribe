@@ -3,6 +3,7 @@ package com.tribe.app.presentation.internal.di.modules;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
+import com.tribe.app.domain.interactor.tribe.DiskMarkTribeListAsRead;
 import com.tribe.app.domain.interactor.tribe.GetDiskTribeList;
 import com.tribe.app.domain.interactor.tribe.GetPendingTribeList;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
@@ -94,5 +95,11 @@ public class UserModule {
     @Named("diskGetPendingTribes")
     UseCaseDisk provideGetPendingTribeList(GetPendingTribeList pendingTribeList) {
         return pendingTribeList;
+    }
+
+    @Provides
+    @Named("diskMarkTribeListAsRead")
+    DiskMarkTribeListAsRead diskMarkTribeListAsRead(DiskMarkTribeListAsRead diskMarkTribeListAsRead) {
+        return diskMarkTribeListAsRead;
     }
 }

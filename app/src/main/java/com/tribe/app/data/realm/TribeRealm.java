@@ -4,6 +4,7 @@ import com.tribe.app.presentation.view.utils.MessageStatus;
 
 import java.util.Date;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -27,6 +28,7 @@ public class TribeRealm extends RealmObject {
     private Date updatedAt;
     private WeatherRealm weatherRealm;
     private LocationRealm locationRealm;
+    private RealmList<RecipientRealm> recipientList;
 
     public void setId(String id) {
         this.id = id;
@@ -132,6 +134,14 @@ public class TribeRealm extends RealmObject {
         this.locationRealm = locationRealm;
     }
 
+    public void setRecipientList(RealmList<RecipientRealm> recipientList) {
+        this.recipientList = recipientList;
+    }
+
+    public RealmList<RecipientRealm> getRecipientList() {
+        return recipientList;
+    }
+
     public TribeRealm cloneTribeRealm(TribeRealm fromRealm) {
         TribeRealm tribeRealm = new TribeRealm();
         tribeRealm.setId(fromRealm.getId());
@@ -146,6 +156,7 @@ public class TribeRealm extends RealmObject {
         tribeRealm.setWeatherRealm(fromRealm.getWeatherRealm());
         tribeRealm.setUrl(fromRealm.getUrl());
         tribeRealm.setMessageStatus(fromRealm.getMessageStatus());
+        tribeRealm.setRecipientList(fromRealm.getRecipientList());
 
         return tribeRealm;
     }

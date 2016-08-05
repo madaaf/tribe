@@ -17,7 +17,7 @@ public abstract class MediaEncoder implements Runnable {
     private static final boolean DEBUG = BuildConfig.DEBUG;
     private static final String TAG = "MediaEncoder";
 
-    protected static final int TIMEOUT_USEC = 20000;
+    protected static final int TIMEOUT_USEC = 10000;
     protected static final int MSG_FRAME_AVAILABLE = 1;
     protected static final int MSG_STOP_RECORDING = 2;
 
@@ -36,7 +36,6 @@ public abstract class MediaEncoder implements Runnable {
     protected MediaCodec mediaCodec;
     protected final WeakReference<TribeMuxerWrapper> weakMuxer;
     protected MediaCodec.BufferInfo bufferInfo;
-    private int totalSize    = 0;
 
     public MediaEncoder(final TribeMuxerWrapper muxer) {
         if (muxer == null) throw new NullPointerException("TribeMuxerWrapper is null");
@@ -182,7 +181,7 @@ public abstract class MediaEncoder implements Runnable {
 
     protected void signalEndOfInputStream() {
         if (DEBUG) Log.d(TAG, "sending EOS to encoder");
-        encode(null, 0, getPTSUs());
+        encode(null, 0, getPTSUs() / 1000);
     }
 
     /**
@@ -299,17 +298,7 @@ public abstract class MediaEncoder implements Runnable {
 
                     encodedData.position(bufferInfo.offset);
                     encodedData.limit(bufferInfo.offset + bufferInfo.size);
-
-                    boolean calc_time = true; //TODO: DEBUG
-                    if (calc_time) {
-                        long t0 = System.currentTimeMillis();
-                        muxer.writeSampleData(trackIndex, encodedData, bufferInfo);
-                        totalSize += bufferInfo.size;
-                        long dt = System.currentTimeMillis() - t0;
-                        if (dt>50) Log.e("DEBUG", String.format("XXX: dt=%d, size=%.2f",dt,(float) totalSize/1024/1024));
-                    } else {
-                        muxer.writeSampleData(trackIndex, encodedData, bufferInfo);
-                    }
+					muxer.writeSampleData(trackIndex, encodedData, bufferInfo);
                 }
 
                 mediaCodec.releaseOutputBuffer(encoderStatus, false);

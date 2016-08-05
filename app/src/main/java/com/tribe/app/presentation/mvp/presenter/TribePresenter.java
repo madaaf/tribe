@@ -1,26 +1,36 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
+import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
+import com.tribe.app.domain.interactor.tribe.DiskMarkTribeListAsRead;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.presentation.mvp.view.SendTribeView;
 import com.tribe.app.presentation.mvp.view.TribeView;
 import com.tribe.app.presentation.mvp.view.View;
+
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 public class TribePresenter extends SendTribePresenter implements Presenter {
 
-    private Tribe tribe;
     private TribeView tribeView;
+
+    // OBSERVABLES
+    private DiskMarkTribeListAsRead diskMarkTribeListAsRead;
 
     @Inject
     public TribePresenter(JobManager jobManager,
                           @Named("diskSaveTribe") SaveTribe diskSaveTribe,
-                          @Named("diskDeleteTribe") DeleteTribe diskDeleteTribe) {
+                          @Named("diskDeleteTribe") DeleteTribe diskDeleteTribe,
+                          @Named("diskMarkTribeListAsRead") DiskMarkTribeListAsRead diskMarkTribeListAsRead) {
         super(jobManager, diskSaveTribe, diskDeleteTribe);
+        this.diskMarkTribeListAsRead = diskMarkTribeListAsRead;
     }
 
     @Override
@@ -61,4 +71,11 @@ public class TribePresenter extends SendTribePresenter implements Presenter {
     protected SendTribeView getView() {
         return tribeView;
     }
+
+    public void markTribeListAsRead(Friendship friendship, List<Tribe> tribeList) {
+        diskMarkTribeListAsRead.setTribeList(tribeList);
+        diskMarkTribeListAsRead.execute(new DefaultSubscriber<>());
+        jobManager.addJobInBackground(new MarkTribeListAsReadJob(friendship, tribeList));
+    }
 }
+

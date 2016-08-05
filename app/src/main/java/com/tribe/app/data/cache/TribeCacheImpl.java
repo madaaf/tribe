@@ -79,9 +79,10 @@ public class TribeCacheImpl implements TribeCache {
             TribeRealm toEdit = realm.where(TribeRealm.class)
                     .equalTo("id", tribeRealm.getId()).findFirst();
 
-            if (toEdit != null && (toEdit.getGroup() != null || toEdit.getUser() != null)) {
-                // TODO UPDATE SEEN STATUS ?
-            } else {
+            if (toEdit != null && (toEdit.getGroup() != null || toEdit.getUser() != null) && tribeRealm.getMessageStatus() != null) {
+                toEdit.setMessageStatus(tribeRealm.getMessageStatus());
+                toEdit.setUpdatedAt(new Date());
+            } else if (toEdit == null) {
                 realm.copyToRealmOrUpdate(tribeRealm);
             }
         }
@@ -147,6 +148,14 @@ public class TribeCacheImpl implements TribeCache {
         Realm otherRealm = Realm.getDefaultInstance();
         RealmResults<TribeRealm> sentTribes = otherRealm.where(TribeRealm.class).equalTo("from.id", currentUser.getId())
                 .equalTo("messageStatus", MessageStatus.STATUS_PENDING).findAllSorted("recorded_at", Sort.ASCENDING);
+        return otherRealm.copyFromRealm(sentTribes);
+    }
+
+    @Override
+    public List<TribeRealm> tribesSent() {
+        Realm otherRealm = Realm.getDefaultInstance();
+        RealmResults<TribeRealm> sentTribes = otherRealm.where(TribeRealm.class).equalTo("from.id", currentUser.getId())
+                .notEqualTo("messageStatus", MessageStatus.STATUS_OPENED).findAllSorted("recorded_at", Sort.ASCENDING);
         return otherRealm.copyFromRealm(sentTribes);
     }
 

@@ -86,7 +86,13 @@ public class CloudTribeDataStore implements TribeDataStore {
 
     @Override
     public Observable<List<TribeRealm>> tribes() {
-        return tribeApi.tribes(context.getString(R.string.tribe_infos))
+        StringBuffer ids = new StringBuffer();
+
+        for (TribeRealm tribeRealm : tribeCache.tribesSent()) {
+            ids.append("\"" + tribeRealm.getId() + "\",");
+        }
+
+        return tribeApi.tribes(context.getString(R.string.tribe_infos, ids))
                 .map(tribeRealmList -> {
                     for (TribeRealm tribeRealm : tribeRealmList) {
                         tribeRealm.setFrom(userRealmDataMapper.transformToUserTribe(userCache.userInfosNoObs(tribeRealm.getFrom().getId())));
@@ -146,8 +152,18 @@ public class CloudTribeDataStore implements TribeDataStore {
     }
 
     @Override
-    public Observable<List<TribeRealm>> setTribesHasSeen(List<TribeRealm> tribeRealmList) {
-        return null;
+    public Observable<List<TribeRealm>> markTribeListAsRead(List<TribeRealm> tribeRealmList) {
+        StringBuffer buffer = new StringBuffer();
+
+        int count = 0;
+        for (TribeRealm tribeRealm : tribeRealmList) {
+            FileUtils.deleteTribe(tribeRealm.getId());
+            buffer.append(context.getString(R.string.tribe_markAsSeen_item, "tribe" + tribeRealm.getId(), tribeRealm.getId()) + (count < tribeRealmList.size() - 1 ? "," : ""));
+            count++;
+        }
+
+        String req = context.getString(R.string.tribe_markAsSeen, buffer.toString());
+        return this.tribeApi.markTribeListAsSeen(req);
     }
 
     private final Action1<List<TribeRealm>> saveToCacheTribes = tribeRealmList -> {

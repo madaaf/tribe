@@ -28,6 +28,7 @@ import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.text.ChatRepository;
+import com.tribe.app.domain.interactor.tribe.CloudMarkTribeListAsRead;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.GetCloudTribeList;
 import com.tribe.app.domain.interactor.tribe.SendTribe;
@@ -237,6 +238,12 @@ public class ApplicationModule {
     @Named("cloudUserInfos")
     UseCase provideCloudGetUserInfos(GetCloudUserInfos getCloudUserInfos) {
         return getCloudUserInfos;
+    }
+
+    @Provides
+    @Named("cloudMarkTribeListAsRead")
+    CloudMarkTribeListAsRead cloudMarkTribeListAsRead(CloudMarkTribeListAsRead cloudMarkTribeListAsRead) {
+        return cloudMarkTribeListAsRead;
     }
 
     @Provides

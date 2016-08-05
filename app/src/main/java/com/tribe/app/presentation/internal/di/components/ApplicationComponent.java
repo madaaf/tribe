@@ -7,6 +7,7 @@ import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.job.DownloadTribeJob;
+import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
 import com.tribe.app.data.network.job.SendTribeJob;
 import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateTribesJob;
@@ -70,6 +71,7 @@ public interface ApplicationComponent {
     void inject(UpdateUserJob updateUserJob);
     void inject(UpdateTribesJob updateTribesJob);
     void inject(UpdateTribesErrorStatusJob updateTribesErrorStatusJob);
+    void inject(MarkTribeListAsReadJob markTribeListAsReadJob);
 
     //Exposed to sub-graphs.
     Context context();

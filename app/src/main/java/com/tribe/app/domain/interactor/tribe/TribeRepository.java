@@ -40,4 +40,11 @@ public interface TribeRepository {
      * about the tribes pending.
      */
     Observable<List<Tribe>> tribesPending();
+
+    /**
+     * Get an {@link Observable} which will emit a {@link Tribe} containing info about the tribe.
+     *
+     * @param tribeList the Tribe List to put as seen
+     */
+    Observable<List<Tribe>> markTribeListAsRead(final List<Tribe> tribeList);
 }

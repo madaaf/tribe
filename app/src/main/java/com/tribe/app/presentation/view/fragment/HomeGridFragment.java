@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.LabelType;
+import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.entity.PendingType;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.entity.User;
@@ -21,7 +23,7 @@ import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.HomeView;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
-import com.tribe.app.presentation.view.adapter.PendingTribeSheetAdapter;
+import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.MessageStatus;
@@ -66,7 +68,9 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private HomeView homeView;
     private Unbinder unbinder;
     private HomeLayoutManager layoutManager;
-    private BottomSheetDialog dialog;
+    private BottomSheetDialog dialogMore;
+    private RecyclerView recyclerViewMore;
+    private LabelSheetAdapter moreSheetAdapter;
     private User currentUser;
     private @CameraWrapper.TribeMode String tribeMode;
     private Friendship currentFriendship; // The friendship for the tribe currently being recorded
@@ -74,7 +78,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private Tribe mostRecentTribe;
     private BottomSheetDialog bottomSheetPendingTribeDialog;
     private RecyclerView recyclerViewPending;
-    private PendingTribeSheetAdapter pendingTribeSheetAdapter;
+    private LabelSheetAdapter labelSheetAdapter;
 
     public HomeGridFragment() {
         setRetainInstance(true);
@@ -201,8 +205,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                         List<Tribe> tribesError = new ArrayList<>();
 
                         for (Tribe tribe : tribes) {
-                            if (tribe.isToGroup() && tribe.getTo().getId().equals(friendship.getId())
-                                    || !tribe.isToGroup() && tribe.getFrom().getId().equals(friendship.getId())) {
+                            if (!tribe.getFrom().getId().equals(currentUser.getId()) && (tribe.isToGroup() && tribe.getTo().getId().equals(friendship.getId()))
+                                    || (!tribe.isToGroup() && tribe.getFrom().getId().equals(friendship.getId()))) {
                                 if (mostRecentTribe == null || tribe.getRecordedAt().equals(mostRecentTribe.getRecordedAt()) || tribe.getRecordedAt().before(mostRecentTribe.getRecordedAt())) {
                                     receivedTribes.add(tribe);
                                 } else {
@@ -326,7 +330,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         subscriptions.add(homeGridAdapter.onClickMore()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .subscribe(friendship -> {
-                    setupBottomSheet();
+                    setupBottomSheetMore(friendship);
                 }));
 
         subscriptions.add(homeGridAdapter.onClickErrorTribes()
@@ -385,24 +389,52 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         if (homeView != null) homeView.initNewTribes(onNewTribes);
     }
 
-    private void setupBottomSheet() {
-        if (dismissDialog()) {
+    private void setupBottomSheetMore(Friendship friendship) {
+        if (dismissDialogSheetMore()) {
             return;
         }
 
-        View view = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_user, null);
-        dialog = new BottomSheetDialog(getContext());
-        dialog.setContentView(view);
-        dialog.show();
+        List<LabelType> moreTypes = new ArrayList<>();
+        moreTypes.add(new MoreType(getString(R.string.grid_more_clear_all_messages), MoreType.CLEAR_MESSAGES));
+
+        prepareBottomSheetMore(friendship, moreTypes);
     }
 
-    private boolean dismissDialog() {
-        if (dialog != null && dialog.isShowing()) {
-            dialog.dismiss();
+    private boolean dismissDialogSheetMore() {
+        if (dialogMore != null && dialogMore.isShowing()) {
+            dialogMore.dismiss();
             return true;
         }
 
         return false;
+    }
+
+    private void prepareBottomSheetMore(Friendship friendship, List<LabelType> items) {
+        View view = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_user_more, null);
+        recyclerViewMore = (RecyclerView) view.findViewById(R.id.recyclerViewMore);
+        recyclerViewMore.setHasFixedSize(true);
+        recyclerViewMore.setLayoutManager(new LinearLayoutManager(getActivity()));
+        moreSheetAdapter = new LabelSheetAdapter(context(), items);
+        moreSheetAdapter.setHasStableIds(true);
+        recyclerViewMore.setAdapter(moreSheetAdapter);
+        subscriptions.add(moreSheetAdapter.clickLabelItem()
+                .map(labelView -> moreSheetAdapter.getItemAtPosition((Integer) labelView.getTag(R.id.tag_position)))
+                .subscribe(labelType -> {
+                    MoreType moreType = (MoreType) labelType;
+                    if (moreType.getMoreType().equals(MoreType.CLEAR_MESSAGES)) {
+                        homeGridPresenter.markTribeListAsRead(friendship);
+                    }
+
+                    dismissDialogSheetMore();
+                }));
+
+        dialogMore = new BottomSheetDialog(getContext());
+        dialogMore.setContentView(view);
+        dialogMore.show();
+        dialogMore.setOnDismissListener(dialog -> {
+            moreSheetAdapter.releaseSubscriptions();
+            dialogMore = null;
+        });
     }
 
     private void setupBottomSheetPendingTribes(Friendship ... friendshipList) {
@@ -410,7 +442,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
             return;
         }
 
-        List<PendingType> pendingTypes = new ArrayList<>();
+        List<LabelType> pendingTypes = new ArrayList<>();
 
         for (Friendship friendship : friendshipList) {
             if (friendship.getErrorTribes() != null && friendship.getErrorTribes().size() > 0)
@@ -420,17 +452,19 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         prepareBottomSheetPendingWithList(pendingTypes, friendshipList.length > 1);
     }
 
-    private void prepareBottomSheetPendingWithList(List<PendingType> items, boolean isGlobal) {
+    private void prepareBottomSheetPendingWithList(List<LabelType> items, boolean isGlobal) {
         View view = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_user_pending, null);
         recyclerViewPending = (RecyclerView) view.findViewById(R.id.recyclerViewPendingTribes);
         recyclerViewPending.setHasFixedSize(true);
         recyclerViewPending.setLayoutManager(new LinearLayoutManager(getActivity()));
-        pendingTribeSheetAdapter = new PendingTribeSheetAdapter(context(), items);
-        pendingTribeSheetAdapter.setHasStableIds(true);
-        recyclerViewPending.setAdapter(pendingTribeSheetAdapter);
-        subscriptions.add(pendingTribeSheetAdapter.clickPendingTribeItem()
-                .map(pendingTribeView -> pendingTribeSheetAdapter.getItemAtPosition((Integer) pendingTribeView.getTag(R.id.tag_position)))
-                .subscribe(pendingType -> {
+        labelSheetAdapter = new LabelSheetAdapter(context(), items);
+        labelSheetAdapter.setHasStableIds(true);
+        recyclerViewPending.setAdapter(labelSheetAdapter);
+        subscriptions.add(labelSheetAdapter.clickLabelItem()
+                .map(pendingTribeView -> labelSheetAdapter.getItemAtPosition((Integer) pendingTribeView.getTag(R.id.tag_position)))
+                .subscribe(labelType -> {
+                    PendingType pendingType = (PendingType) labelType;
+
                     if (isGlobal) onPendingTribesSelected.onNext(pendingType.getPending());
 
                     if (pendingType.getPendingType().equals(PendingType.DELETE)) {
@@ -446,7 +480,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         bottomSheetPendingTribeDialog.setContentView(view);
         bottomSheetPendingTribeDialog.show();
         bottomSheetPendingTribeDialog.setOnDismissListener(dialog -> {
-            pendingTribeSheetAdapter.releaseSubscriptions();
+            labelSheetAdapter.releaseSubscriptions();
             bottomSheetPendingTribeDialog = null;
         });
     }

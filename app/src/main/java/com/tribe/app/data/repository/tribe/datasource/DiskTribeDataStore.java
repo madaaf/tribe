@@ -2,6 +2,7 @@ package com.tribe.app.data.repository.tribe.datasource;
 
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.realm.TribeRealm;
+import com.tribe.app.presentation.view.utils.MessageStatus;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -44,7 +45,13 @@ public class DiskTribeDataStore implements TribeDataStore {
     }
 
     @Override
-    public Observable<List<TribeRealm>> setTribesHasSeen(List<TribeRealm> tribeRealmList) {
-        return null;
+    public Observable<List<TribeRealm>> markTribeListAsRead(List<TribeRealm> tribeRealmList) {
+        for (TribeRealm tribeRealm : tribeRealmList) {
+            tribeRealm.setMessageStatus(MessageStatus.STATUS_OPENED);
+        }
+
+        tribeCache.put(tribeRealmList);
+
+        return Observable.just(tribeRealmList);
     }
 }
