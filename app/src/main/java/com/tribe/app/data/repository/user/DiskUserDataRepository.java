@@ -10,6 +10,7 @@ import com.tribe.app.data.repository.user.datasource.UserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Pin;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
@@ -67,30 +68,35 @@ public class DiskUserDataRepository implements UserRepository {
         return Observable.zip(tribeDataStore.tribes().map(collection -> tribeRealmDataMapper.transform(collection)),
                 userDataStore.userInfos(null).map(userRealm -> userRealmDataMapper.transform(userRealm)),
                 (tribes, user) -> {
-                    List<Friendship> result = user.getFriendshipList();
+                    List<Recipient> result = user.getFriendshipList();
 
-                    for (Friendship friendship : user.getFriendshipList()) {
+                    for (Recipient recipient : result) {
                         List<Tribe> receivedTribes = new ArrayList<>();
                         List<Tribe> sentTribes = new ArrayList<>();
                         List<Tribe> errorTribes = new ArrayList<>();
 
                         for (Tribe tribe : tribes) {
-                            if (!tribe.getFrom().getId().equals(user.getId()) && (tribe.isToGroup() && tribe.getTo().getId().equals(friendship.getId()))
-                                    || (!tribe.isToGroup() && tribe.getFrom().getId().equals(friendship.getId()))) {
-                                receivedTribes.add(tribe);
-                            } else if (tribe.getFrom().getId().equals(user.getId())
-                                    && tribe.getTo().getId().equals(friendship.getId())) {
-                                if (tribe.getMessageStatus().equals(MessageStatus.STATUS_ERROR)) errorTribes.add(tribe);
-                                else sentTribes.add(tribe);
+                            if (tribe.getFrom() != null) {
+                                if (!tribe.getFrom().getId().equals(user.getId()) && (tribe.isToGroup() && tribe.getTo().getId().equals(recipient.getId()))
+                                        || (!tribe.isToGroup() && tribe.getFrom().getId().equals(recipient.getId()))) {
+                                    receivedTribes.add(tribe);
+                                } else if (tribe.getFrom().getId().equals(user.getId())
+                                        && tribe.getTo().getId().equals(recipient.getId())) {
+                                    if (tribe.getMessageStatus().equals(MessageStatus.STATUS_ERROR))
+                                        errorTribes.add(tribe);
+                                    else sentTribes.add(tribe);
+                                }
                             }
                         }
 
-                        friendship.setErrorTribes(errorTribes);
-                        friendship.setReceivedTribes(receivedTribes);
-                        friendship.setSentTribes(sentTribes);
+                        recipient.setErrorTribes(errorTribes);
+                        recipient.setReceivedTribes(receivedTribes);
+                        recipient.setSentTribes(sentTribes);
                     }
 
-                    result.add(0, user);
+                    Friendship friendship = new Friendship(user.getId());
+                    friendship.setFriend(user);
+                    result.add(0, friendship);
 
                     return user;
                 }

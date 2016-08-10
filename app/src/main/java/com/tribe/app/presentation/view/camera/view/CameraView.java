@@ -314,8 +314,10 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 
     public void stopPreview() {
         synchronized (this) {
-            cameraHelper.stopPreview();
-            preview.stopPreview();
+            if (preview != null) {
+                cameraHelper.stopPreview();
+                preview.stopPreview();
+            }
         }
     }
 

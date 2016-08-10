@@ -1,6 +1,9 @@
 package com.tribe.app.presentation.mvp.presenter;
 
-import com.tribe.app.data.rxmqtt.impl.RxMqttMessage;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.provider.MediaStore;
+
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.text.ConnectAndSubscribeMQTT;
@@ -9,15 +12,19 @@ import com.tribe.app.domain.interactor.text.SubscribingMQTT;
 import com.tribe.app.domain.interactor.text.UnsubscribeMQTT;
 import com.tribe.app.presentation.mvp.view.MessageView;
 import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class ChatPresenter implements Presenter {
 
@@ -43,7 +50,7 @@ public class ChatPresenter implements Presenter {
 
     @Override
     public void onCreate() {
-        // Unused
+
     }
 
     @Override
@@ -75,6 +82,40 @@ public class ChatPresenter implements Presenter {
     @Override
     public void attachView(View v) {
         messageView = (MessageView) v;
+    }
+
+    public void loadThumbnail(int radius) {
+        Observable.create(new Observable.OnSubscribe<Bitmap>() {
+            @Override
+            public void call(final Subscriber<? super Bitmap> subscriber) {
+                final String[] columns = { MediaStore.Images.Media.DATA,
+                        MediaStore.Images.Media._ID };
+                final String orderBy = MediaStore.Images.Media.DATE_ADDED + " DESC limit 1";
+
+                Cursor imageCursor = messageView.context().getContentResolver().query(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, null,
+                        null, orderBy);
+
+                int image_column_index = imageCursor
+                        .getColumnIndex(MediaStore.Images.Media._ID);
+
+                imageCursor.moveToPosition(0);
+                int id = imageCursor.getInt(image_column_index);
+                Bitmap thumbnail = MediaStore.Images.Thumbnails.getThumbnail(
+                        messageView.context().getApplicationContext().getContentResolver(), id,
+                        MediaStore.Images.Thumbnails.MICRO_KIND, null);
+
+                imageCursor.close();
+
+                RoundedCornersTransformation roundedCornersTransformation = new RoundedCornersTransformation(radius, 0, RoundedCornersTransformation.CornerType.ALL);
+                subscriber.onNext(roundedCornersTransformation.transform(thumbnail));
+                subscriber.onCompleted();
+            }
+        }).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(bitmap -> {
+                    messageView.showGalleryImage(bitmap);
+                });
     }
 
     public void subscribe(String id) {

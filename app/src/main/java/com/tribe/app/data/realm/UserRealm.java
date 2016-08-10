@@ -28,7 +28,7 @@ public class UserRealm extends RealmObject {
     private LocationRealm location;
     private boolean disableSaveTribe;
     private boolean hideUsername;
-    private RealmList<UserRealm> friends;
+    private RealmList<FriendshipRealm> friendships;
     private RealmList<UserRealm> reported;
     private RealmList<GroupRealm> groups;
 
@@ -153,12 +153,12 @@ public class UserRealm extends RealmObject {
         this.hideUsername = hideUsername;
     }
 
-    public RealmList<UserRealm> getFriends() {
-        return friends;
+    public RealmList<FriendshipRealm> getFriendships() {
+        return friendships;
     }
 
-    public void setFriends(RealmList<UserRealm> friends) {
-        this.friends = friends;
+    public void setFriendships(RealmList<FriendshipRealm> friendships) {
+        this.friendships = friendships;
     }
 
     public RealmList<UserRealm> getReported() {

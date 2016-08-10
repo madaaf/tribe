@@ -24,6 +24,7 @@ import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -255,7 +256,7 @@ public class TribePagerView extends FrameLayout {
     }
 
     public void onResume() {
-        cameraWrapper.onResume();
+        cameraWrapper.onResume(false);
     }
 
     public void onPause() {
@@ -371,16 +372,16 @@ public class TribePagerView extends FrameLayout {
         return tribeMode;
     }
 
-    public void initWithInfo(Friendship friendship) {
-        viewTile.setInfo(friendship.getDisplayName(), friendship.getProfilePicture(), friendship.getReceivedTribes());
+    public void initWithInfo(Recipient recipient) {
+        viewTile.setInfo(recipient.getDisplayName(), recipient.getProfilePicture(), recipient.getReceivedTribes());
     }
 
     public void startRecording(String id) {
         cameraWrapper.onStartRecord(id);
     }
 
-    public void stopRecording(String id) {
-        cameraWrapper.onEndRecord(id);
+    public void stopRecording() {
+        cameraWrapper.onEndRecord();
     }
 
     public void showTapToCancel(Tribe tribe) {

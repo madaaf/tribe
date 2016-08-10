@@ -34,7 +34,7 @@ public class PictoVisualizerView extends LinearLayout implements AudioVisualizer
     ScreenUtils screenUtils;
 
     // Dimens
-    private int startSize, endSize;
+    private int startSize, endSize, iconsPadding;
 
     // Variables
     private ImageView imageView;
@@ -50,8 +50,9 @@ public class PictoVisualizerView extends LinearLayout implements AudioVisualizer
     }
 
     private void init(Context context, AttributeSet attrs) {
-        startSize = getContext().getResources().getDimensionPixelSize(R.dimen.camera_icons_start);
-        endSize = getContext().getResources().getDimensionPixelSize(R.dimen.camera_icons_end);
+        startSize = getContext().getResources().getDimensionPixelSize(R.dimen.icons_start);
+        endSize = getContext().getResources().getDimensionPixelSize(R.dimen.icons_end);
+        iconsPadding = getContext().getResources().getDimensionPixelSize(R.dimen.icons_padding);
 
         imageView = new ImageView(getContext());
         //imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -59,6 +60,7 @@ public class PictoVisualizerView extends LinearLayout implements AudioVisualizer
                 new LinearLayout.LayoutParams(startSize,
                         startSize);
         vp.gravity = Gravity.CENTER;
+        imageView.setPadding(iconsPadding, iconsPadding, iconsPadding, iconsPadding);
         imageView.setLayoutParams(vp);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.PictoVisualizerView);

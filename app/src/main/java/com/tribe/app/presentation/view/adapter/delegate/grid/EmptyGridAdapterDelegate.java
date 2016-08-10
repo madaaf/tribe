@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 
@@ -20,7 +20,7 @@ import butterknife.ButterKnife;
 /**
  * Created by tiago on 18/05/2016.
  */
-public class EmptyGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
+public class EmptyGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>> {
 
     private LayoutInflater layoutInflater;
     private Context context;
@@ -31,8 +31,8 @@ public class EmptyGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>
     }
 
     @Override
-    public boolean isForViewType(@NonNull List<Friendship> items, int position) {
-        return items.get(position).getId().equals(Friendship.ID_EMPTY);
+    public boolean isForViewType(@NonNull List<Recipient> items, int position) {
+        return items.get(position).getId().equals(Recipient.ID_EMPTY);
     }
 
     @NonNull
@@ -42,11 +42,10 @@ public class EmptyGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>
     }
 
     @Override
-    public void onBindViewHolder(@NonNull List<Friendship> items, int position, @NonNull RecyclerView.ViewHolder holder) {
+    public void onBindViewHolder(@NonNull List<Recipient> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         EmptyGridViewHolder vh = (EmptyGridViewHolder) holder;
         vh.layoutContent.setBackgroundColor(PaletteGrid.get(position - 1));
     }
-
 
     static class EmptyGridViewHolder extends RecyclerView.ViewHolder {
 

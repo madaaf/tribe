@@ -2,6 +2,7 @@ package com.tribe.app.data.realm;
 
 import java.util.Date;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -17,6 +18,7 @@ public class GroupRealm extends RealmObject {
     private String picture;
     private Date created_at;
     private Date updated_at;
+    private RealmList<UserRealm> members;
 
     public String getId() {
         return id;
@@ -56,5 +58,13 @@ public class GroupRealm extends RealmObject {
 
     public void setUpdatedAt(Date updated_at) {
         this.updated_at = updated_at;
+    }
+
+    public RealmList<UserRealm> getMembers() {
+        return members;
+    }
+
+    public void setMembers(RealmList<UserRealm> members) {
+        this.members = members;
     }
 }

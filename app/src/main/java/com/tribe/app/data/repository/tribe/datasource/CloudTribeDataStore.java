@@ -64,7 +64,7 @@ public class CloudTribeDataStore implements TribeDataStore {
     public Observable<TribeRealm> sendTribe(TribeRealm tribeRealm) {
         String request = context.getString(R.string.tribe_send,
                 tribeRealm.getFrom().getId(),
-                tribeRealm.isToGroup() ?  tribeRealm.getGroup().getId() : tribeRealm.getUser().getId(),
+                tribeRealm.isToGroup() ?  tribeRealm.getGroup().getId() : tribeRealm.getFriendshipRealm().getId(),
                 tribeRealm.isToGroup(),
                 tribeRealm.getType(),
                 simpleDateFormat.format(tribeRealm.getRecordedAt()),
@@ -94,9 +94,10 @@ public class CloudTribeDataStore implements TribeDataStore {
 
         return tribeApi.tribes(context.getString(R.string.tribe_infos, ids))
                 .map(tribeRealmList -> {
-                    for (TribeRealm tribeRealm : tribeRealmList) {
-                        tribeRealm.setFrom(userRealmDataMapper.transformToUserTribe(userCache.userInfosNoObs(tribeRealm.getFrom().getId())));
-                    }
+                    //for (TribeRealm tribeRealm : tribeRealmList) {
+                        //if (tribeRealm.getFrom() != null)
+                        //    tribeRealm.setFrom(userCache.userInfosNoObs(tribeRealm.getFrom().getId()));
+                    //}
 
                     return tribeRealmList;
                 })

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import com.hannesdorfmann.adapterdelegates2.AdapterDelegate;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
@@ -26,7 +27,7 @@ import butterknife.ButterKnife;
 /**
  * Created by tiago on 18/05/2016.
  */
-public class MeGridAdapterDelegate implements AdapterDelegate<List<Friendship>> {
+public class MeGridAdapterDelegate implements AdapterDelegate<List<Recipient>> {
 
     protected LayoutInflater layoutInflater;
     @Inject PaletteGrid paletteGrid;
@@ -37,7 +38,7 @@ public class MeGridAdapterDelegate implements AdapterDelegate<List<Friendship>> 
     }
 
     @Override
-    public boolean isForViewType(@NonNull List<Friendship> items, int position) {
+    public boolean isForViewType(@NonNull List<Recipient> items, int position) {
         return (position == 0);
     }
 
@@ -48,9 +49,9 @@ public class MeGridAdapterDelegate implements AdapterDelegate<List<Friendship>> 
     }
 
     @Override
-    public void onBindViewHolder(@NonNull List<Friendship> items, int position, @NonNull RecyclerView.ViewHolder holder) {
+    public void onBindViewHolder(@NonNull List<Recipient> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         MeGridViewHolder vh = (MeGridViewHolder) holder;
-        User me = (User) items.get(position);
+        User me = ((Friendship) items.get(position)).getFriend();
 
         vh.txtName.setText(me.getDisplayName());
         vh.avatar.load(me.getProfilePicture());

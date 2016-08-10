@@ -42,6 +42,7 @@ ext {
     circularProgressViewVersion = '2.5.0'
     rxLocationVersion = '0.9@aar'
     googlePlayLocationVersion = '9.2.0'
+    rxPermissionsVersion = '0.7.0@aar'
 
     //Testing
     robolectricVersion = '3.0'
@@ -88,7 +89,8 @@ ext {
             firebaseMessaging       : "com.google.firebase:firebase-messaging:${firebaseMessagingVersion}",
             circularProgressView    : "com.github.rahatarmanahmed:circularprogressview:${circularProgressViewVersion}",
             rxLocation              : "pl.charmas.android:android-reactive-location:${rxLocationVersion}",
-            googlePlayLocation      : "com.google.android.gms:play-services-location:${googlePlayLocationVersion}"
+            googlePlayLocation      : "com.google.android.gms:play-services-location:${googlePlayLocationVersion}",
+            rxPermissions           : "com.tbruyelle.rxpermissions:rxpermissions:${rxPermissionsVersion}"
     ]
 
     presentationTestDependencies = [

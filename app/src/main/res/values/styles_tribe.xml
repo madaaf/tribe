@@ -17,6 +17,10 @@
         <item name="android:textColor">@android:color/black</item>
     </style>
 
+    <style name="Body.One.Black40" parent="@style/Body.One">
+        <item name="android:textColor">@color/black.opacity.40</item>
+    </style>
+
     <style name="Body.One.White" parent="@style/Body.One">
         <item name="android:textColor">@android:color/white</item>
     </style>
@@ -25,8 +29,16 @@
         <item name="android:textColor">@color/white.opacity.40</item>
     </style>
 
+    <style name="Body.Two.Blue" parent="@style/Body.Two">
+        <item name="android:textColor">@color/blue.text</item>
+    </style>
+
     <style name="Body.Two.Black" parent="@style/Body.Two">
         <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="Body.Two.Black40" parent="@style/Body.Two">
+        <item name="android:textColor">@color/black.opacity.40</item>
     </style>
 
     <style name="Body.Two.White" parent="@style/Body.Two">
@@ -49,6 +61,10 @@
         <item name="android:textColor">@color/white.opacity.40</item>
     </style>
 
+    <style name="Caption.Black.40">
+        <item name="android:textColor">@color/black.opacity.40</item>
+    </style>
+
     <style name="Caption.White.1">
         <item name="android:textColor">@android:color/white</item>
     </style>
@@ -67,12 +83,20 @@
         <item name="customFont">Roboto-Bold.ttf</item>
     </style>
 
-    <style name="Title.2.White" parent="@style/Title">
+    <style name="Title.2.White" parent="@style/Title.2">
         <item name="android:textColor">@android:color/white</item>
     </style>
 
-    <style name="Title.1.Black" parent="@style/Title">
+    <style name="Title.1.Black" parent="@style/Title.1">
         <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="Title.1.Black40" parent="@style/Title.1">
+        <item name="android:textColor">@color/black.opacity.40</item>
+    </style>
+
+    <style name="Title.1.Facebook" parent="@style/Title.1">
+        <item name="android:textColor">@color/blue.facebook</item>
     </style>
 
     <style name="Headline">
@@ -92,6 +116,13 @@
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">30sp</item>
         <item name="android:singleLine">true</item>
+        <item name="customFont">Roboto-Regular.ttf</item>
+    </style>
+
+    <style name="Emoji">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">65sp</item>
+        <item name="android:singleLine">false</item>
         <item name="customFont">Roboto-Regular.ttf</item>
     </style>
 </resources>

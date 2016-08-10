@@ -3,6 +3,7 @@ package com.tribe.app.data.cache;
 import android.content.Context;
 
 import com.tribe.app.data.realm.TribeRealm;
+import com.tribe.app.data.realm.TribeRecipientRealm;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.utils.MessageStatus;
 
@@ -12,6 +13,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
@@ -51,7 +53,13 @@ public class TribeCacheImpl implements TribeCache {
                 tribeRealm.setUpdatedAt(new Date());
                 Realm obsRealm = Realm.getDefaultInstance();
                 obsRealm.beginTransaction();
-                TribeRealm obj = obsRealm.copyToRealmOrUpdate(tribeRealm);
+
+                TribeRealm obj = obsRealm.where(TribeRealm.class).equalTo("id", tribeRealm.getLocalId()).findFirst();
+                if (obj != null)
+                    obj.setMessageStatus(tribeRealm.getMessageStatus());
+                else
+                    obj = obsRealm.copyToRealmOrUpdate(tribeRealm);
+
                 obsRealm.commitTransaction();
                 subscriber.onNext(obsRealm.copyFromRealm(obj));
                 obsRealm.close();
@@ -64,7 +72,13 @@ public class TribeCacheImpl implements TribeCache {
         tribeRealm.setUpdatedAt(new Date());
         Realm obsRealm = Realm.getDefaultInstance();
         obsRealm.beginTransaction();
-        obsRealm.copyToRealmOrUpdate(tribeRealm);
+
+        TribeRealm obj = obsRealm.where(TribeRealm.class).equalTo("id", tribeRealm.getId()).findFirst();
+        if (obj != null)
+            obj.setMessageStatus(tribeRealm.getMessageStatus());
+        else
+            obsRealm.copyToRealmOrUpdate(tribeRealm);
+
         obsRealm.commitTransaction();
         obsRealm.close();
     }
@@ -79,9 +93,40 @@ public class TribeCacheImpl implements TribeCache {
             TribeRealm toEdit = realm.where(TribeRealm.class)
                     .equalTo("id", tribeRealm.getId()).findFirst();
 
-            if (toEdit != null && (toEdit.getGroup() != null || toEdit.getUser() != null) && tribeRealm.getMessageStatus() != null) {
-                toEdit.setMessageStatus(tribeRealm.getMessageStatus());
-                toEdit.setUpdatedAt(new Date());
+            if (toEdit != null) {
+                toEdit = realm.copyFromRealm(toEdit);
+
+                boolean shouldUpdate = false;
+
+                if (tribeRealm.getMessageStatus() != null) {
+                    toEdit.setMessageStatus(tribeRealm.getMessageStatus());
+                    shouldUpdate = true;
+                }
+
+                if (tribeRealm.getRecipientList() != null && tribeRealm.getRecipientList().size() > 0) {
+                    toEdit.setRecipientList(tribeRealm.getRecipientList());
+                    shouldUpdate = true;
+                }
+
+                if (tribeRealm.getFrom() != null && toEdit.getFrom() == null) {
+                    toEdit.setFrom(tribeRealm.getFrom());
+                    shouldUpdate = true;
+                }
+
+                if (tribeRealm.getFriendshipRealm() != null && toEdit.getFriendshipRealm() == null) {
+                    toEdit.setFriendshipRealm(tribeRealm.getFriendshipRealm());
+                    shouldUpdate = true;
+                }
+
+                if (tribeRealm.getGroup() != null && toEdit.getGroup() == null) {
+                    toEdit.setGroup(tribeRealm.getGroup());
+                    shouldUpdate = true;
+                }
+
+                if (shouldUpdate) {
+                    toEdit.setUpdatedAt(new Date());
+                    realm.copyToRealmOrUpdate(toEdit);
+                }
             } else if (toEdit == null) {
                 realm.copyToRealmOrUpdate(tribeRealm);
             }
@@ -89,6 +134,27 @@ public class TribeCacheImpl implements TribeCache {
 
         realm.commitTransaction();
         realm.close();
+    }
+
+    @Override
+    public RealmList<TribeRecipientRealm> createTribeRecipientRealm(List<TribeRecipientRealm> tribeRecipientRealmList) {
+        Realm realmObs = Realm.getDefaultInstance();
+        realmObs.beginTransaction();
+
+        for (TribeRecipientRealm tribeRecipientRealm : tribeRecipientRealmList) {
+            TribeRecipientRealm realmRecipient = realmObs.where(TribeRecipientRealm.class).equalTo("id", tribeRecipientRealm.getId()).findFirst();
+            if (realmRecipient != null)
+                realmObs.where(TribeRecipientRealm.class).equalTo("id", tribeRecipientRealm.getId()).findFirst().deleteFromRealm();
+        }
+
+        List<TribeRecipientRealm> tribeRecipientRealmManaged = realmObs.copyFromRealm(realmObs.copyToRealmOrUpdate(tribeRecipientRealmList));
+        realmObs.commitTransaction();
+        realmObs.close();
+
+        RealmList<TribeRecipientRealm> results = new RealmList<>();
+        results.addAll(tribeRecipientRealmManaged);
+
+        return results;
     }
 
     @Override
@@ -123,7 +189,9 @@ public class TribeCacheImpl implements TribeCache {
                         .endGroup()
                         .findAllSorted("recorded_at", Sort.ASCENDING);
                 tribes.removeChangeListeners();
-                tribes.addChangeListener(tribesUpdated -> subscriber.onNext(realm.copyFromRealm(tribesUpdated)));
+                tribes.addChangeListener(tribesUpdated -> {
+                    subscriber.onNext(realm.copyFromRealm(tribesUpdated));
+                });
                 subscriber.onNext(realm.copyFromRealm(tribes));
             }
         });
@@ -174,15 +242,16 @@ public class TribeCacheImpl implements TribeCache {
 
     @Override
     public void updateToError(List<TribeRealm> tribeRealmList) {
+        Realm realmObs = Realm.getDefaultInstance();
+        realmObs.beginTransaction();
+
         for (TribeRealm tribeRealm : tribeRealmList) {
-            tribeRealm.setMessageStatus(MessageStatus.STATUS_ERROR);
-            tribeRealm.setUpdatedAt(new Date());
+            TribeRealm dbTribeRealm = realmObs.where(TribeRealm.class).equalTo("id", tribeRealm.getId()).findFirst();
+            if (dbTribeRealm != null)
+                dbTribeRealm.setMessageStatus(MessageStatus.STATUS_ERROR);
         }
 
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.copyToRealmOrUpdate(tribeRealmList);
-        realm.commitTransaction();
-        realm.close();
+        realmObs.commitTransaction();
+        realmObs.close();
     }
 }

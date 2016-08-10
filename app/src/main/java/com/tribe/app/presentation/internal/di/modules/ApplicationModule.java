@@ -44,6 +44,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 import org.videolan.libvlc.LibVLC;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.TimeZone;
@@ -307,5 +308,19 @@ public class ApplicationModule {
         SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss 'GMT'Z '(UTC)'");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         return sdf;
+    }
+
+    @Provides
+    @Singleton
+    @Named("simpleDateHoursMinutes")
+    SimpleDateFormat provideSimpleDateHoursMinutes() {
+        return new SimpleDateFormat("hh:mm a");
+    }
+
+    @Provides
+    @Singleton
+    @Named("fullLetteredDate")
+    DateFormat provideFullLetteredDate(Context context) {
+        return DateFormat.getDateInstance(DateFormat.LONG, context.getResources().getConfiguration().locale);
     }
 }

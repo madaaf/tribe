@@ -7,12 +7,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.tribe.app.data.realm.GroupRealm;
+import com.tribe.app.data.cache.TribeCache;
+import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.realm.LocationRealm;
-import com.tribe.app.data.realm.RecipientRealm;
 import com.tribe.app.data.realm.TribeRealm;
-import com.tribe.app.data.realm.UserTribeRealm;
+import com.tribe.app.data.realm.TribeRecipientRealm;
 import com.tribe.app.data.realm.WeatherRealm;
+import com.tribe.app.domain.entity.User;
 
 import java.lang.reflect.Type;
 import java.text.ParseException;
@@ -20,17 +21,18 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
-import io.realm.RealmList;
-
 public class UserTribeListDeserializer<T> implements JsonDeserializer<T> {
 
     private SimpleDateFormat utcSimpleDate;
+    private User currentUser;
+    private UserCache userCache;
+    private TribeCache tribeCache;
 
-    @Inject
-    public UserTribeListDeserializer(SimpleDateFormat utcSimpleDate) {
+    public UserTribeListDeserializer(SimpleDateFormat utcSimpleDate, UserCache userCache, TribeCache tribeCache, User currentUser) {
         this.utcSimpleDate = utcSimpleDate;
+        this.userCache = userCache;
+        this.tribeCache = tribeCache;
+        this.currentUser = currentUser;
     }
 
     @Override
@@ -44,7 +46,8 @@ public class UserTribeListDeserializer<T> implements JsonDeserializer<T> {
 
         for (JsonElement obj : results) {
             TribeRealm tribeRealm = parseTribe(obj);
-            tribes.add(tribeRealm);
+            if (tribeRealm.getFrom() != null && ((tribeRealm.isToGroup() && tribeRealm.getGroup() != null) || !tribeRealm.isToGroup()))
+                tribes.add(tribeRealm);
         }
 
         for (JsonElement obj : resultsTribesSent) {
@@ -52,19 +55,18 @@ public class UserTribeListDeserializer<T> implements JsonDeserializer<T> {
             JsonObject json = obj.getAsJsonObject();
             tribeRealm.setId(json.get("id").getAsString());
 
-            RealmList<RecipientRealm> recipientRealmList = new RealmList<>();
+            List<TribeRecipientRealm> tribeRecipientRealmList = new ArrayList<>();
 
             for (JsonElement recipient : json.getAsJsonArray("recipients")) {
                 JsonObject jsonRecipient = recipient.getAsJsonObject();
-                RecipientRealm recipientRealm = new RecipientRealm();
-                UserTribeRealm userTribeRealm = new UserTribeRealm();
-                userTribeRealm.setId(jsonRecipient.get("to").getAsString());
-                recipientRealm.setTo(userTribeRealm);
-                recipientRealm.setIsSeen(jsonRecipient.get("is_seen").getAsBoolean());
-                recipientRealmList.add(recipientRealm);
+                TribeRecipientRealm tribeRecipientRealm = new TribeRecipientRealm();
+                tribeRecipientRealm.setId(tribeRealm.getId() + jsonRecipient.get("to").getAsString());
+                tribeRecipientRealm.setTo(jsonRecipient.get("to").getAsString());
+                tribeRecipientRealm.setIsSeen(jsonRecipient.get("is_seen").getAsBoolean());
+                tribeRecipientRealmList.add(tribeRecipientRealm);
             }
 
-            tribeRealm.setRecipientList(recipientRealmList);
+            tribeRealm.setRecipientList(tribeCache.createTribeRecipientRealm(tribeRecipientRealmList));
             tribes.add(tribeRealm);
         }
 
@@ -73,8 +75,6 @@ public class UserTribeListDeserializer<T> implements JsonDeserializer<T> {
 
     private TribeRealm parseTribe(JsonElement obj) {
         TribeRealm tribeRealm = new TribeRealm();
-        UserTribeRealm userTribeRealm = null;
-        GroupRealm groupRealm = null;
         JsonObject json = obj.getAsJsonObject();
         tribeRealm.setId(json.get("id").getAsString());
         tribeRealm.setLocalId(json.get("id").getAsString());
@@ -82,20 +82,16 @@ public class UserTribeListDeserializer<T> implements JsonDeserializer<T> {
         boolean toGroup = json.get("to_group").getAsBoolean();
 
         if (toGroup) {
-            groupRealm = new GroupRealm();
-            groupRealm.setId(json.get("to").getAsString());
-            tribeRealm.setGroup(groupRealm);
+            tribeRealm.setGroup(userCache.groupInfos(json.get("to").getAsString()));
         } else {
-            userTribeRealm = new UserTribeRealm();
-            userTribeRealm.setId(json.get("to").getAsString());
-            tribeRealm.setUser(userTribeRealm);
+            if (!currentUser.getId().equals(json.get("to").getAsString())) {
+                tribeRealm.setFriendshipRealm(userCache.friendshipForUserId(json.get("to").getAsString()));
+            }
         }
 
         tribeRealm.setToGroup(toGroup);
 
-        UserTribeRealm from = new UserTribeRealm();
-        from.setId(json.get("from").getAsString());
-        tribeRealm.setFrom(from);
+        tribeRealm.setFrom(userCache.userInfosNoObs(json.get("from").getAsString()));
 
         LocationRealm locationRealm = new LocationRealm();
         locationRealm.setLatitude(json.get("lat") instanceof JsonNull ? 0.0D : json.get("lat").getAsDouble());

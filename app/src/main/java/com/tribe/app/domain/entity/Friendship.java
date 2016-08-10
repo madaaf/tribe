@@ -1,176 +1,66 @@
 package com.tribe.app.domain.entity;
 
-import android.content.Context;
-
-import com.tribe.app.R;
-import com.tribe.app.presentation.view.utils.MessageStatus;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 /**
- * Created by tiago on 04/05/2016.
+ * Created by tiago on 05/08/2016.
  */
-public class Friendship implements Serializable {
-
-    public static final String ID_EMPTY = "EMPTY";
+public class Friendship extends Recipient {
 
     private String id;
+    private String tag;
+    private boolean blocked;
+    private String category;
+    private User friend;
 
     public Friendship(String id) {
         this.id = id;
     }
 
-    protected Date createdAt;
-    protected Date updatedAt;
-
-    protected int position;
-    protected Tribe tribe;
-    protected List<Tribe> receivedTribes = new ArrayList<>();
-    protected List<Tribe> sentTribes = new ArrayList<>();
-    protected List<Tribe> errorTribes = new ArrayList<>();
-    protected String profilePicture;
-    protected String displayName;
-
-    public String getId() {
-        return id;
+    public String getTag() {
+        return tag;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
+    public boolean isBlocked() {
+        return blocked;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
     }
 
-    public Date getUpdatedAt() {
-        return updatedAt;
+    public String getCategory() {
+        return category;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
-    public void setPosition(int position) {
-        this.position = position;
+    public User getFriend() {
+        return friend;
     }
 
-    public int getPosition() {
-        return position;
-    }
-
-    public void setTribe(Tribe tribe) {
-        this.tribe = tribe;
-    }
-
-    public Tribe getTribe() {
-        return tribe;
-    }
-
-    public boolean hasLoadedTribes() {
-        if (!(receivedTribes != null && receivedTribes.size() > 0)) return false;
-
-        for (Tribe tribe : receivedTribes) {
-            if (tribe.getMessageStatus() != null && tribe.getMessageStatus().equals(MessageStatus.STATUS_READY)) return true;
-        }
-
-        return false;
-    }
-
-    public List<Tribe> getReceivedTribes() {
-        return receivedTribes;
-    }
-
-    public void setReceivedTribes(List<Tribe> tribes) {
-        this.receivedTribes.clear();
-        this.receivedTribes.addAll(tribes);
-    }
-
-    public List<Tribe> getErrorTribes() {
-        return errorTribes;
-    }
-
-    public void setErrorTribes(List<Tribe> tribes) {
-        this.errorTribes.clear();
-        this.errorTribes.addAll(tribes);
-    }
-
-    public List<Tribe> getSentTribes() {
-        return sentTribes;
-    }
-
-    public void setSentTribes(List<Tribe> tribes) {
-        this.sentTribes.clear();
-        this.sentTribes.addAll(tribes);
-    }
-
-    public String getProfilePicture() {
-        return profilePicture;
-    }
-
-    public void setProfilePicture(String profilePicture) {
-        this.profilePicture = profilePicture;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
-    public Tribe getMostRecentTribe() {
-        return receivedTribes != null && receivedTribes.size() > 0 ? receivedTribes.get(receivedTribes.size() - 1) : null;
-    }
-
-    public static int nullSafeComparator(final Friendship one, final Friendship two) {
-        if (one.getUpdatedAt() == null ^ two.getUpdatedAt() == null) {
-            return (one.getUpdatedAt() == null) ? -1 : 1;
-        }
-
-        if (one.getUpdatedAt() == null && two.getUpdatedAt() == null) {
-            return 0;
-        }
-
-        return one.getUpdatedAt().compareTo(two.getUpdatedAt());
-    }
-
-    public static Tribe getMostRecentTribe(List<Friendship> friendships) {
-        Tribe tribe = null;
-
-        for (Friendship friendship : friendships) {
-            if (tribe == null) tribe = friendship.getMostRecentTribe();
-            else if (friendship.getMostRecentTribe() != null) {
-                if (friendship.getMostRecentTribe().getRecordedAt().after(tribe.getRecordedAt())) tribe = friendship.getMostRecentTribe();
-            }
-        }
-
-        return tribe;
-    }
-
-    public List<PendingType> createPendingTribeItems(Context context, boolean withName) {
-        List<PendingType> pendingList = new ArrayList<>();
-        pendingList.add(new PendingType(errorTribes,
-                withName ? context.getString(R.string.grid_unsent_tribes_action_resend_name, displayName, errorTribes.size()) : context.getString(R.string.grid_unsent_tribes_action_resend, errorTribes.size()),
-                PendingType.RESEND));
-        pendingList.add(new PendingType(errorTribes,
-                withName ? context.getString(R.string.grid_unsent_tribes_action_delete_name, displayName, errorTribes.size()) : context.getString(R.string.grid_unsent_tribes_action_delete, errorTribes.size())
-                , PendingType.DELETE));
-        return pendingList;
+    public void setFriend(User friend) {
+        this.friend = friend;
     }
 
     @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (id != null ? id.hashCode() : 0);
-        return result;
+    public String getDisplayName() {
+        return friend.getDisplayName();
+    }
+
+    @Override
+    public String getProfilePicture() {
+        return friend.getProfilePicture();
+    }
+
+    @Override
+    public String getId() {
+        if (id.equals(Recipient.ID_EMPTY)) return id;
+
+        return friend.getId();
     }
 }

@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyGridAdapterDelegate;
@@ -33,7 +34,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
     private UserGridAdapterDelegate userGridAdapterDelegate;
     private GroupGridAdapterDelegate groupGridAdapterDelegate;
 
-    private List<Friendship> items;
+    private List<Recipient> items;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -58,8 +59,8 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
 
     @Override
     public long getItemId(int position) {
-        Friendship friendship = getItemAtPosition(position);
-        return friendship.hashCode();
+        Recipient recipient = getItemAtPosition(position);
+        return recipient.hashCode();
     }
 
     @Override
@@ -119,7 +120,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
         return Observable.merge(userGridAdapterDelegate.onClickErrorTribes(), groupGridAdapterDelegate.onClickErrorTribes());
     }
 
-    public void setItems(List<Friendship> items) {
+    public void setItems(List<Recipient> items) {
         this.items.clear();
         this.items.addAll(items);
 
@@ -128,14 +129,14 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
 
         if (this.items.size() < minItems) {
             for (int i = this.items.size(); i < minItems; i++) {
-                this.items.add(new Friendship(Friendship.ID_EMPTY));
+                this.items.add(new Friendship(Recipient.ID_EMPTY));
             }
         }
 
         this.notifyDataSetChanged();
     }
 
-    public Friendship getItemAtPosition(int position) {
+    public Recipient getItemAtPosition(int position) {
         if (items.size() > 0 && position < items.size()) {
             return items.get(position);
         } else {
@@ -143,7 +144,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public List<Friendship> getItems() {
+    public List<Recipient> getItems() {
         return items;
     }
 

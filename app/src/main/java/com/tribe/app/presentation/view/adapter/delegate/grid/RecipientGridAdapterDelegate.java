@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.component.TileView;
@@ -23,7 +23,7 @@ import rx.subjects.PublishSubject;
 /**
  * Created by tiago on 18/05/2016.
  */
-public abstract class FriendshipGridAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
+public abstract class RecipientGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>> {
 
     protected LayoutInflater layoutInflater;
     protected Context context;
@@ -38,7 +38,7 @@ public abstract class FriendshipGridAdapterDelegate extends RxAdapterDelegate<Li
     protected final PublishSubject<View> recordEnded = PublishSubject.create();
     protected final PublishSubject<View> clickErrorTribes = PublishSubject.create();
 
-    public FriendshipGridAdapterDelegate(Context context) {
+    public RecipientGridAdapterDelegate(Context context) {
         this.context = context;
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
@@ -47,37 +47,37 @@ public abstract class FriendshipGridAdapterDelegate extends RxAdapterDelegate<Li
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
-        FriendshipGridViewHolder friendshipGridViewHolder = new FriendshipGridViewHolder(layoutInflater.inflate(getLayoutId(), parent, false));
+        RecipientGridViewHolder recipientGridViewHolder = new RecipientGridViewHolder(layoutInflater.inflate(getLayoutId(), parent, false));
 
-        friendshipGridViewHolder.viewTile.initWithParent(parent);
-        friendshipGridViewHolder.viewTile.onRecordStart().subscribe(recordStarted);
-        friendshipGridViewHolder.viewTile.onRecordEnd().subscribe(recordEnded);
-        friendshipGridViewHolder.viewTile.onClickChat().subscribe(clickChatView);
-        friendshipGridViewHolder.viewTile.onClickMore().subscribe(clickMoreView);
-        friendshipGridViewHolder.viewTile.onTapToCancel().subscribe(clickTapToCancel);
-        friendshipGridViewHolder.viewTile.onNotCancel().subscribe(onNotCancel);
-        friendshipGridViewHolder.viewTile.onOpenTribes().subscribe(clickOpenTribes);
-        friendshipGridViewHolder.viewTile.onClickErrorTribes().subscribe(clickErrorTribes);
+        recipientGridViewHolder.viewTile.initWithParent(parent);
+        recipientGridViewHolder.viewTile.onRecordStart().subscribe(recordStarted);
+        recipientGridViewHolder.viewTile.onRecordEnd().subscribe(recordEnded);
+        recipientGridViewHolder.viewTile.onClickChat().subscribe(clickChatView);
+        recipientGridViewHolder.viewTile.onClickMore().subscribe(clickMoreView);
+        recipientGridViewHolder.viewTile.onTapToCancel().subscribe(clickTapToCancel);
+        recipientGridViewHolder.viewTile.onNotCancel().subscribe(onNotCancel);
+        recipientGridViewHolder.viewTile.onOpenTribes().subscribe(clickOpenTribes);
+        recipientGridViewHolder.viewTile.onClickErrorTribes().subscribe(clickErrorTribes);
 
-        return friendshipGridViewHolder;
+        return recipientGridViewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull List<Friendship> items, int position, @NonNull RecyclerView.ViewHolder holder) {
-        FriendshipGridViewHolder vh = (FriendshipGridViewHolder) holder;
-        Friendship friendship = items.get(position);
+    public void onBindViewHolder(@NonNull List<Recipient> items, int position, @NonNull RecyclerView.ViewHolder holder) {
+        RecipientGridViewHolder vh = (RecipientGridViewHolder) holder;
+        Recipient recipient = items.get(position);
 
         if (!vh.viewTile.isRecording() && !vh.viewTile.isTapToCancel()) {
-            if (friendship.getTribe() == null) {
-                vh.viewTile.setInfo(friendship.getDisplayName(), friendship.getProfilePicture(), friendship.getReceivedTribes());
+            if (recipient.getTribe() == null) {
+                vh.viewTile.setInfo(recipient.getDisplayName(), recipient.getProfilePicture(), recipient.getReceivedTribes());
                 vh.viewTile.setBackground(position);
-                friendship.setPosition(position);
+                recipient.setPosition(position);
             } else {
-                vh.viewTile.showTapToCancel(friendship.getTribe(), vh.viewTile.getCurrentTribeMode());
+                vh.viewTile.showTapToCancel(recipient.getTribe(), vh.viewTile.getCurrentTribeMode());
             }
         }
 
-        vh.viewTile.setStatus(friendship.getReceivedTribes(), friendship.getSentTribes(), friendship.getErrorTribes());
+        vh.viewTile.setStatus(recipient.getReceivedTribes(), recipient.getSentTribes(), recipient.getErrorTribes());
     }
 
     public Observable<View> onOpenTribes() {
@@ -114,11 +114,11 @@ public abstract class FriendshipGridAdapterDelegate extends RxAdapterDelegate<Li
 
     protected abstract int getLayoutId();
 
-    static class FriendshipGridViewHolder extends RecyclerView.ViewHolder {
+    static class RecipientGridViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.viewTile) public TileView viewTile;
 
-        public FriendshipGridViewHolder(View itemView) {
+        public RecipientGridViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }

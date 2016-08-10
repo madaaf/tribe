@@ -9,7 +9,10 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewAnimationUtils;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 
@@ -66,13 +69,15 @@ public class CameraWrapper extends FrameLayout {
     @BindView(R.id.imgVideo)
     View imgVideo;
 
+    @BindView(R.id.layoutCameraPermissions)
+    ViewGroup layoutCameraPermissions;
+
     @BindView(R.id.visualizerView)
     PictoVisualizerView visualizerView;
 
     // VARIABLES
     private GlPreview preview;
     private double aspectRatio;
-    //private AudioRecorder audioRecorder;
     private boolean isAudioMode;
     private PathView pathView;
 
@@ -84,13 +89,13 @@ public class CameraWrapper extends FrameLayout {
 
     // OBSERVABLES
     private PublishSubject<String> tribeModePublishSubject = PublishSubject.create();
+    private PublishSubject<Void> permissionsPublishSubject = PublishSubject.create();
 
     public CameraWrapper(Context context, AttributeSet attrs) {
         super(context, attrs);
         ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
 
         initUI();
-        initAudioRecorder();
     }
 
     public void initDimens(int marginTopInit, int marginLeftInit, int marginBottomInit) {
@@ -123,24 +128,40 @@ public class CameraWrapper extends FrameLayout {
         setBackgroundResource(R.color.black_opacity_20);
     }
 
-    public void initAudioRecorder() {
-        //audioRecorder = new AudioRecorder();
-        //audioRecorder.link(visualizerView);
-    }
-
     public void onPause() {
         pauseCamera();
-        //if (audioRecorder.isRecording()) audioRecorder.stopRecording();
     }
 
-    public void onResume() {
-        resumeCamera();
+    public void onResume(boolean animate) {
+        if (animate) {
+            int cx = getWidth();
+            int cy = getHeight();
+
+            // get the final radius for the clipping circle
+            int dx = Math.max(cx, getWidth() - cx);
+            int dy = Math.max(cy, getHeight() - cy);
+            float finalRadius = (float) Math.hypot(dx, dy);
+
+            Animator animator =
+                    ViewAnimationUtils.createCircularReveal(layoutCameraPermissions, cx, cy, finalRadius, 0);
+            animator.setInterpolator(new AccelerateDecelerateInterpolator());
+            animator.setDuration(DURATION);
+            animator.start();
+        } else {
+            layoutCameraPermissions.setVisibility(View.GONE);
+        }
+
+        if (preview == null)
+            resumeCamera();
+    }
+
+    public void showPermissions() {
+        layoutCameraPermissions.setVisibility(View.VISIBLE);
     }
 
     public void onStartRecord(String fileId) {
         if (isAudioMode) {
             hideIcons();
-            //audioRecorder.startRecording();
             preview.startRecording(fileId, visualizerView);
             visualizerView.startRecording();
         } else {
@@ -150,10 +171,9 @@ public class CameraWrapper extends FrameLayout {
         addPathView();
     }
 
-    public void onEndRecord(String friendId) {
+    public void onEndRecord() {
         if (isAudioMode) {
             showIcons();
-            //audioRecorder.stopRecording();
             visualizerView.stopRecording();
         }
 
@@ -363,12 +383,21 @@ public class CameraWrapper extends FrameLayout {
                 .start();
     }
 
+    @OnClick(R.id.layoutCameraPermissions)
+    public void askForPermissions() {
+        permissionsPublishSubject.onNext(null);
+    }
+
     public Observable<String> tribeMode() {
         return tribeModePublishSubject;
     }
 
+    public Observable<Void> cameraPermissions() {
+        return permissionsPublishSubject;
+    }
+
     private void pauseCamera() {
-        if (cameraView != null) {
+        if (cameraView != null && preview != null) {
             cameraView.stopPreview();
             cameraView.removeAllViews();
             preview.stopRecording();
@@ -377,7 +406,7 @@ public class CameraWrapper extends FrameLayout {
     }
 
     private void resumeCamera() {
-        if (cameraView != null ) {
+        if (cameraView != null) {
             preview = new GlPreview(getContext());
             preview.setShader(new GlLutShader(getContext().getResources(), R.drawable.video_filter_blue));
             preview.setZOrderOnTop(false);

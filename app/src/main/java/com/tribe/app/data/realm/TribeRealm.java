@@ -13,14 +13,13 @@ import io.realm.annotations.PrimaryKey;
  */
 public class TribeRealm extends RealmObject {
 
-
     @PrimaryKey
     private String localId;
     private String id;
-    private UserTribeRealm from;
+    private UserRealm from;
     private String type;
     private String url;
-    private UserTribeRealm user;
+    private FriendshipRealm friendshipRealm;
     private GroupRealm group;
     private Date recorded_at;
     private boolean to_group = false;
@@ -28,7 +27,7 @@ public class TribeRealm extends RealmObject {
     private Date updatedAt;
     private WeatherRealm weatherRealm;
     private LocationRealm locationRealm;
-    private RealmList<RecipientRealm> recipientList;
+    private RealmList<TribeRecipientRealm> recipientList;
 
     public void setId(String id) {
         this.id = id;
@@ -46,11 +45,11 @@ public class TribeRealm extends RealmObject {
         this.localId = localId;
     }
 
-    public UserTribeRealm getFrom() {
+    public UserRealm getFrom() {
         return from;
     }
 
-    public void setFrom(UserTribeRealm from) {
+    public void setFrom(UserRealm from) {
         this.from = from;
     }
 
@@ -86,12 +85,12 @@ public class TribeRealm extends RealmObject {
         this.group = group;
     }
 
-    public UserTribeRealm getUser() {
-        return user;
+    public FriendshipRealm getFriendshipRealm() {
+        return friendshipRealm;
     }
 
-    public void setUser(UserTribeRealm user) {
-        this.user = user;
+    public void setFriendshipRealm(FriendshipRealm friendshipRealm) {
+        this.friendshipRealm = friendshipRealm;
     }
 
     public String getUrl() {
@@ -134,11 +133,11 @@ public class TribeRealm extends RealmObject {
         this.locationRealm = locationRealm;
     }
 
-    public void setRecipientList(RealmList<RecipientRealm> recipientList) {
+    public void setRecipientList(RealmList<TribeRecipientRealm> recipientList) {
         this.recipientList = recipientList;
     }
 
-    public RealmList<RecipientRealm> getRecipientList() {
+    public RealmList<TribeRecipientRealm> getRecipientList() {
         return recipientList;
     }
 
@@ -147,7 +146,7 @@ public class TribeRealm extends RealmObject {
         tribeRealm.setId(fromRealm.getId());
         tribeRealm.setLocalId(fromRealm.getLocalId());
         tribeRealm.setGroup(fromRealm.getGroup());
-        tribeRealm.setUser(fromRealm.getUser());
+        tribeRealm.setFriendshipRealm(fromRealm.getFriendshipRealm());
         tribeRealm.setType(fromRealm.getType());
         tribeRealm.setRecordedAt(fromRealm.getRecordedAt());
         tribeRealm.setUpdatedAt(fromRealm.getUpdatedAt());

@@ -3,6 +3,8 @@ package com.tribe.app.data.cache;
 import android.content.Context;
 
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.UserRealm;
 
@@ -18,10 +20,13 @@ import rx.Subscriber;
 public class UserCacheImpl implements UserCache {
 
     private Context context;
+    private Realm realm;
+    private UserRealm results;
 
     @Inject
-    public UserCacheImpl(Context context) {
+    public UserCacheImpl(Context context, Realm realm) {
         this.context = context;
+        this.realm = realm;
     }
 
     public boolean isExpired() {
@@ -58,18 +63,21 @@ public class UserCacheImpl implements UserCache {
         realm.close();
     }
 
+    // ALWAYS CALLED ON MAIN THREAD
     @Override
     public Observable<UserRealm> userInfos(String userId) {
         return Observable.create(new Observable.OnSubscribe<UserRealm>() {
             @Override
             public void call(final Subscriber<? super UserRealm> subscriber) {
-                Realm obsRealm = Realm.getDefaultInstance();
-                final UserRealm results = obsRealm.where(UserRealm.class).equalTo("id", userId).findFirst();
+                results = realm.where(UserRealm.class).equalTo("id", userId).findFirst();
                 //results.addChangeListener(element -> {
-                //    subscriber.onNext(obsRealm.copyFromRealm(results));
+                //    if (results != null) {
+                //        subscriber.onNext(realm.copyFromRealm(results));
+                //    }
                 //});
-                subscriber.onNext(obsRealm.copyFromRealm(results));
-                obsRealm.close();
+
+                if (results != null)
+                    subscriber.onNext(realm.copyFromRealm(results));
             }
         });
     }
@@ -77,8 +85,28 @@ public class UserCacheImpl implements UserCache {
     @Override
     public UserRealm userInfosNoObs(String userId) {
         Realm obsRealm = Realm.getDefaultInstance();
-        final UserRealm results = obsRealm.copyFromRealm(obsRealm.where(UserRealm.class).equalTo("id", userId).findFirst());
+        UserRealm userRealm = obsRealm.where(UserRealm.class).equalTo("id", userId).findFirst();
+        final UserRealm results = userRealm == null ? null : obsRealm.copyFromRealm(userRealm);
         obsRealm.close();
         return results;
+    }
+
+    @Override
+    public GroupRealm groupInfos(String groupId) {
+        Realm obsRealm = Realm.getDefaultInstance();
+        GroupRealm groupRealm = obsRealm.where(GroupRealm.class).equalTo("id", groupId).findFirst();
+        final GroupRealm results = groupRealm == null ? null : obsRealm.copyFromRealm(groupRealm);
+        obsRealm.close();
+        return results;
+    }
+
+    @Override
+    public FriendshipRealm friendshipForUserId(String userId) {
+        Realm otherRealm = Realm.getDefaultInstance();
+        FriendshipRealm friendshipRealm = otherRealm.where(FriendshipRealm.class).equalTo("friend.id", userId).findFirst();
+        if (friendshipRealm != null)
+            return otherRealm.copyFromRealm(friendshipRealm);
+        else
+            return null;
     }
 }

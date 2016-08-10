@@ -1,18 +1,26 @@
 package com.tribe.app.domain.entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by tiago on 04/05/2016.
  */
-public class User extends Friendship {
+public class User implements Serializable {
+
+    private String id;
 
     public User(String id) {
-        super(id);
+        this.id = id;
     }
 
+    private String profilePicture;
+    private String displayName;
+    private Date created_at;
+    private Date updated_at;
     private String username;
     private String phone;
     private int score = 0;
@@ -23,10 +31,10 @@ public class User extends Friendship {
     private Location location;
     private boolean disableSaveTribe;
     private boolean hideUsername;
-    private List<User> friendList;
+    private List<Friendship> friendships;
     private List<User> reportedList;
     private List<Group> groupList;
-    private List<Friendship> friendshipList;
+    private List<Recipient> friendshipList;
 
     public int getScore() {
         return score;
@@ -112,14 +120,6 @@ public class User extends Friendship {
         this.hideUsername = hideUsername;
     }
 
-    public List<User> getFriendList() {
-        return friendList;
-    }
-
-    public void setFriendList(List<User> friendList) {
-        this.friendList = friendList;
-    }
-
     public List<User> getReportedList() {
         return reportedList;
     }
@@ -136,9 +136,57 @@ public class User extends Friendship {
         this.groupList = groupList;
     }
 
-    public List<Friendship> getFriendshipList() {
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public Date getCreatedAt() {
+        return created_at;
+    }
+
+    public void setCreatedAt(Date created_at) {
+        this.created_at = created_at;
+    }
+
+    public Date getUpdatedAt() {
+        return updated_at;
+    }
+
+    public void setUpdatedAt(Date updated_at) {
+        this.updated_at = updated_at;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setFriendships(List<Friendship> friendships) {
+        this.friendships = friendships;
+    }
+
+    public List<Friendship> getFriendships() {
+        return friendships;
+    }
+
+    public List<Recipient> getFriendshipList() {
         friendshipList = new ArrayList<>();
-        if (friendList != null) friendshipList.addAll(friendList);
+        if (friendships != null) friendshipList.addAll(friendships);
         if (groupList != null) friendshipList.addAll(groupList);
 
         Collections.sort(friendshipList, (lhs, rhs) -> {
@@ -147,9 +195,19 @@ public class User extends Friendship {
                 return res;
             }
 
-            return Friendship.nullSafeComparator(lhs, rhs);
+            return Recipient.nullSafeComparator(lhs, rhs);
         });
 
         return friendshipList;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+
+        User that = (User) o;
+
+        return id != null ? id.equals(that.id) : that.id == null;
     }
 }

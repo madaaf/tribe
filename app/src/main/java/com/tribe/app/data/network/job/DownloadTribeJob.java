@@ -7,7 +7,6 @@ import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.network.FileApi;
-import com.tribe.app.data.network.exception.FileAlreadyExists;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.mapper.TribeRealmDataMapper;
 import com.tribe.app.domain.entity.Tribe;
@@ -66,7 +65,7 @@ public class DownloadTribeJob extends BaseJob {
     public void onRun() throws Throwable {
         File file = FileUtils.getFileEnd(tribe.getId());
 
-        if (file.exists() && file.length() > 0) throw new FileAlreadyExists();
+        //if (file.exists() && file.length() > 0) throw new FileAlreadyExists();
 
         Call<ResponseBody> call = fileApi.downloadFileWithUrl(tribe.getUrl());
 

@@ -1,10 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="Common.Next">Next</string>
 
     <string name="exception_message_generic">Generic error message</string>
     <string name="exception_message_no_connection">No Internet connection</string>
 
-    <string name="Chat.Text.Hint">Type a message &#8320;</string>
     <string name="Login.PhoneNumber.Hint">Enter a phone number</string>
     <string name="Login.Code.Hint">Enter a code</string>
 
@@ -40,4 +40,28 @@
     <string name="grid_unsent_tribes_action_resend_all">Resend all</string>
     <string name="grid_unsent_tribes_action_delete_all">Delete all</string>
     <string name="grid_more_clear_all_messages">Clear all messages</string>
+
+    <!-- PERMISSIONS -->
+    <string name="permission_camera_enable_button_title">Enable\ncamera</string>
+
+    <!-- POINTS -->
+
+    <!-- CHAT -->
+    <string name="chat_tutorial_content">This is where you can chat when you can\'t speak or to share an address, a phone number, a handle, etc..</string>
+    <string name="chat_tutorial_statuses_title">Message status</string>
+    <string name="chat_status_sending">Sending</string>
+    <string name="chat_status_sent">Sent</string>
+    <string name="chat_status_read_partly">Read by a part of the recipients</string>
+    <string name="chat_status_read">Read by everyone</string>
+    <string name="chat_status_error">No network</string>
+    <string name="chat_caption_photo">Image from camera roll</string>
+    <string name="chat_caption_video">Video from camera roll</string>
+    <string name="chat_text_placeholder">Message&#8230;</string>
+    <string name="chat_date_today">Today</string>
+    <string name="chat_author_you">You</string>
+    <string name="chat_erase_conversation_title">Erase this conversation</string>
+    <string name="chat_erase_conversation_message">Are you sure ?</string>
+    <string name="chat_is_typing">is typing</string>
+    <string name="chat_are_typing">are typing</string>
+    <string name="chat_and">and</string>
 </resources>

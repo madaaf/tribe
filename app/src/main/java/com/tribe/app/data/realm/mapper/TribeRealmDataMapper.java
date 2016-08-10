@@ -1,9 +1,9 @@
 package com.tribe.app.data.realm.mapper;
 
 import com.tribe.app.data.realm.TribeRealm;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Tribe;
-import com.tribe.app.domain.entity.User;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,6 +22,7 @@ public class TribeRealmDataMapper {
     GroupRealmDataMapper groupRealmDataMapper;
     UserRealmDataMapper userRealmDataMapper;
     WeatherRealmDataMapper weatherRealmDataMapper;
+    FriendshipRealmDataMapper friendshipRealmDataMapper;
 
     @Inject
     public TribeRealmDataMapper(LocationRealmDataMapper locationRealmDataMapper,
@@ -32,6 +33,7 @@ public class TribeRealmDataMapper {
         this.groupRealmDataMapper = groupRealmDataMapper;
         this.userRealmDataMapper = userRealmDataMapper;
         this.weatherRealmDataMapper = weatherRealmDataMapper;
+        this.friendshipRealmDataMapper = new FriendshipRealmDataMapper(userRealmDataMapper);
     }
 
     /**
@@ -47,9 +49,9 @@ public class TribeRealmDataMapper {
             tribe = new Tribe();
             tribe.setId(tribeRealm.getId());
             tribe.setLocalId(tribeRealm.getLocalId());
-            tribe.setTo(tribeRealm.isToGroup() ? groupRealmDataMapper.transform(tribeRealm.getGroup()) : userRealmDataMapper.transformFromTribeUser(tribeRealm.getUser()));
+            tribe.setTo(tribeRealm.isToGroup() ? groupRealmDataMapper.transform(tribeRealm.getGroup()) : friendshipRealmDataMapper.transform(tribeRealm.getFriendshipRealm()));
             tribe.setType(tribeRealm.getType());
-            tribe.setFrom(userRealmDataMapper.transformFromTribeUser(tribeRealm.getFrom()));
+            tribe.setFrom(userRealmDataMapper.transform(tribeRealm.getFrom()));
             tribe.setRecordedAt(tribeRealm.getRecordedAt());
             tribe.setUpdatedAt(tribeRealm.getUpdatedAt());
             tribe.setToGroup(tribeRealm.isToGroup());
@@ -79,14 +81,14 @@ public class TribeRealmDataMapper {
             if (tribe.isToGroup()) {
                 tribeRealm.setGroup(groupRealmDataMapper.transform((Group) tribe.getTo()));
             } else {
-                tribeRealm.setUser(userRealmDataMapper.transformToTribeUser((User) tribe.getTo()));
+                tribeRealm.setFriendshipRealm(friendshipRealmDataMapper.transform((Friendship) tribe.getTo()));
             }
 
             tribeRealm.setToGroup(tribe.isToGroup());
             tribeRealm.setType(tribe.getType());
             tribeRealm.setRecordedAt(tribe.getRecordedAt());
             tribeRealm.setUpdatedAt(tribe.getUpdatedAt());
-            tribeRealm.setFrom(userRealmDataMapper.transformToTribeUser(tribe.getFrom()));
+            tribeRealm.setFrom(userRealmDataMapper.transform(tribe.getFrom()));
             tribeRealm.setLocationRealm(locationRealmDataMapper.transform(tribe.getLocation()));
             tribeRealm.setUrl(tribe.getUrl());
             tribeRealm.setMessageStatus(tribe.getMessageStatus());

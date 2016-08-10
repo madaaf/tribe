@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import com.hannesdorfmann.adapterdelegates2.AdapterDelegate;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Message;
-import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
@@ -21,38 +21,41 @@ import butterknife.ButterKnife;
 /**
  * Created by tiago on 18/05/2016.
  */
-public class UserMessageAdapterDelegate implements AdapterDelegate<List<Message>> {
+public class TutorialMessageAdapterDelegate implements AdapterDelegate<List<Message>> {
 
-    private LayoutInflater layoutInflater;
+    protected LayoutInflater layoutInflater;
 
-    public UserMessageAdapterDelegate(Context context) {
-        this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    public TutorialMessageAdapterDelegate(LayoutInflater inflater, Context context) {
+        this.layoutInflater = inflater;
     }
 
     @Override
     public boolean isForViewType(@NonNull List<Message> items, int position) {
-        return true;
+        //if (position == 0) return true;
+        //else
+            return false;
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
-        return new UserTextViewHolder(layoutInflater.inflate(R.layout.item_user_text, parent, false));
+        return new TutorialMessageViewHolder(layoutInflater.inflate(R.layout.item_chat_tutorial, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull List<Message> items, int position, @NonNull RecyclerView.ViewHolder holder) {
-        UserTextViewHolder vh = (UserTextViewHolder) holder;
-        Message message = (Message) items.get(position);
+        TutorialMessageViewHolder vh = (TutorialMessageViewHolder) holder;
+        Message message = items.get(position);
 
-        vh.txtMessage.setText(message.getText());
+        vh.txtName.setText(message.getTo().getDisplayName());
     }
 
-    static class UserTextViewHolder extends RecyclerView.ViewHolder {
+    static class TutorialMessageViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.txtMessage) public TextViewFont txtMessage;
+        @BindView(R.id.txtName) public TextViewFont txtName;
+        @BindView(R.id.avatar) public AvatarView avatarView;
 
-        public UserTextViewHolder(View itemView) {
+        public TutorialMessageViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }

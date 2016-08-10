@@ -7,10 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.hannesdorfmann.adapterdelegates2.AdapterDelegate;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Message;
-import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
@@ -21,12 +20,12 @@ import butterknife.ButterKnife;
 /**
  * Created by tiago on 18/05/2016.
  */
-public class MeMessageAdapterDelegate implements AdapterDelegate<List<Message>> {
+public class MeMessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
 
     protected LayoutInflater layoutInflater;
 
-    public MeMessageAdapterDelegate(Context context) {
-        this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    public MeMessageAdapterDelegate(LayoutInflater inflater, Context context) {
+        this.layoutInflater = inflater;
     }
 
     @Override

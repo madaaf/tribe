@@ -30,7 +30,7 @@ public class CloudUserDataStore implements UserDataStore {
     private final LoginApi loginApi;
     private final UserCache userCache;
     private final Context context;
-    private final AccessToken accessToken;
+    private AccessToken accessToken = null;
     private final Installation installation;
     private final ReactiveLocationProvider reactiveLocationProvider;
 
@@ -137,6 +137,15 @@ public class CloudUserDataStore implements UserDataStore {
 
     private final Action1<AccessToken> saveToCacheAccessToken = accessToken -> {
         if (accessToken != null && accessToken.getAccessToken() != null) {
+            if (this.accessToken == null) {
+                this.accessToken = new AccessToken();
+            }
+
+            this.accessToken.setAccessToken(accessToken.getAccessToken());
+            this.accessToken.setRefreshToken(accessToken.getRefreshToken());
+            this.accessToken.setTokenType(accessToken.getTokenType());
+            this.accessToken.setUserId(accessToken.getUserId());
+
             CloudUserDataStore.this.userCache.put(accessToken);
         }
     };

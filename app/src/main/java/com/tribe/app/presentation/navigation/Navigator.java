@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.view.activity.ChatActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
@@ -65,12 +65,13 @@ public class Navigator {
     /**
      * Goes to the text chat screen.
      *
-     * @param context A Context needed to open the destiny activity.
+     * @param activity An activity needed to open the destiny activity.
      */
-    public void navigateToChat(Context context, String id) {
-        if (context != null) {
-            Intent intent = ChatActivity.getCallingIntent(context, id);
-            context.startActivity(intent);
+    public void navigateToChat(Activity activity, Recipient recipient) {
+        if (activity != null) {
+            Intent intent = ChatActivity.getCallingIntent(activity, recipient);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
         }
     }
 
@@ -79,11 +80,11 @@ public class Navigator {
      *
      * @param activity An activity needed to open the destiny activity.
      * @param position position of the friendship in the grid
-     * @param friendship a friendship (user / group) to open the tribes
+     * @param recipient a recipient (friendship with user / group) to open the tribes
      */
-    public void navigateToTribe(Activity activity, int position, Friendship friendship) {
+    public void navigateToTribe(Activity activity, int position, Recipient recipient) {
         if (activity != null) {
-            Intent intent = TribeActivity.getCallingIntent(activity, position, friendship);
+            Intent intent = TribeActivity.getCallingIntent(activity, position, recipient);
             activity.startActivity(intent);
             activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
         }

@@ -126,6 +126,7 @@ dependencies {
     compile presentationDependencies.circularProgressView
     compile presentationDependencies.rxLocation
     compile presentationDependencies.googlePlayLocation
+    compile presentationDependencies.rxPermissions
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker

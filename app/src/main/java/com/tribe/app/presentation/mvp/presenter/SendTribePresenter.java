@@ -2,7 +2,7 @@ package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.SendTribeJob;
-import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.exception.ErrorBundle;
@@ -37,8 +37,8 @@ public abstract class SendTribePresenter implements Presenter {
         diskSaveTribeUsecase.unsubscribe();
     }
 
-    public String createTribe(User user, Friendship friendship, @CameraWrapper.TribeMode String tribeMode) {
-        Tribe tribe = Tribe.createTribe(user, friendship, tribeMode);
+    public String createTribe(User user, Recipient recipient, @CameraWrapper.TribeMode String tribeMode) {
+        Tribe tribe = Tribe.createTribe(user, recipient, tribeMode);
 
         if (tribeCreateSubscriber == null) {
             tribeCreateSubscriber = new TribeCreateSubscriber();

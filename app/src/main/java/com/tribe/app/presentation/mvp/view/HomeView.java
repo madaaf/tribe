@@ -1,6 +1,6 @@
 package com.tribe.app.presentation.mvp.view;
 
-import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Tribe;
 
 import java.util.List;
@@ -9,10 +9,10 @@ import rx.Observable;
 
 public interface HomeView extends LoadDataView {
 
-    void initOpenTribes(Observable<Friendship> observable);
-    void initClicksOnChat(Observable<Friendship> observable);
+    void initOpenTribes(Observable<Recipient> observable);
+    void initClicksOnChat(Observable<Recipient> observable);
     void initOnRecordStart(Observable<String> observable);
-    void initOnRecordEnd(Observable<Friendship> observable);
+    void initOnRecordEnd(Observable<Recipient> observable);
     void initScrollOnGrid(Observable<Integer> observable);
     void initPendingTribes(Observable<Integer> observable);
     void initPendingTribeItemSelected(Observable<List<Tribe>> observable);

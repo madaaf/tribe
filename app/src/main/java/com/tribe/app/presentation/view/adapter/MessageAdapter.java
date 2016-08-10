@@ -2,32 +2,47 @@ package com.tribe.app.presentation.view.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.hannesdorfmann.adapterdelegates2.AdapterDelegatesManager;
 import com.tribe.app.domain.entity.Message;
+import com.tribe.app.presentation.view.adapter.delegate.text.EmojiMessageAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.text.LinkMessageAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.text.MeMessageAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.text.UserMessageAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.text.OtherHeaderMessageAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.text.RegularMessageAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.text.TodayHeaderMessageAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.text.TutorialMessageAdapterDelegate;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.subscriptions.CompositeSubscription;
+
 /**
  * Created by tiago on 18/05/2016.
  */
 public class MessageAdapter extends RecyclerView.Adapter {
 
-    private AdapterDelegatesManager<List<Message>> delegatesManager;
+    private RxAdapterDelegatesManager<List<Message>> delegatesManager;
     private List<Message> items;
     private Message oldestMessage;
 
+    // OBSERVABLES
+    private CompositeSubscription subscriptions = new CompositeSubscription();
+
     @Inject
-    public MessageAdapter(Context context) {
-        delegatesManager = new AdapterDelegatesManager<>();
-        delegatesManager.addDelegate(new MeMessageAdapterDelegate(context));
-        delegatesManager.addDelegate(new UserMessageAdapterDelegate(context));
+    public MessageAdapter(LayoutInflater inflater, Context context) {
+        delegatesManager = new RxAdapterDelegatesManager<>();
+        delegatesManager.addDelegate(new TutorialMessageAdapterDelegate(inflater, context));
+        delegatesManager.addDelegate(new MeMessageAdapterDelegate(inflater, context));
+        delegatesManager.addDelegate(new RegularMessageAdapterDelegate(inflater, context));
+        delegatesManager.addDelegate(new EmojiMessageAdapterDelegate(inflater, context));
+        delegatesManager.addDelegate(new LinkMessageAdapterDelegate(inflater, context));
+        delegatesManager.addDelegate(new TodayHeaderMessageAdapterDelegate(inflater, context));
+        delegatesManager.addDelegate(new OtherHeaderMessageAdapterDelegate(inflater, context));
         items = new ArrayList<>();
 
         setHasStableIds(true);
@@ -62,6 +77,11 @@ public class MessageAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    public void releaseSubscriptions() {
+        if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+        delegatesManager.releaseSubscriptions();
     }
 
     public void setItems(List<Message> messageList) {

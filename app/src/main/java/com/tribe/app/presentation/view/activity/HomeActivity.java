@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.activity;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -17,8 +18,9 @@ import android.widget.ImageView;
 
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
@@ -47,6 +49,9 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class HomeActivity extends BaseActivity implements HasComponent<UserComponent>, HomeView {
+
+    private static final String[] PERMISSIONS_CAMERA = new String[]{ Manifest.permission.CAMERA,
+            Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE };
 
     private static final int THRESHOLD_SCROLL = 12;
     private static final int DURATION = 500;
@@ -136,12 +141,24 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     protected void onResume() {
         super.onResume();
-        cameraWrapper.onResume();
+
+        subscriptions.add(Observable.from(PERMISSIONS_CAMERA).map(permission -> RxPermissions.getInstance(HomeActivity.this).isGranted(permission)).toList()
+            .subscribe(grantedList -> {
+                boolean areAllGranted = true;
+
+                for (Boolean granted : grantedList) {
+                    if (!granted) areAllGranted = false;
+                }
+
+                if (areAllGranted) cameraWrapper.onResume(false);
+                else cameraWrapper.showPermissions();
+            }));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+
         cameraWrapper.onPause();
     }
 
@@ -176,6 +193,15 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 homeViewPagerAdapter.getHomeGridFragment().setTribeMode(mode);
             }
         }));
+
+        subscriptions.add(cameraWrapper.cameraPermissions().subscribe(aVoid -> {
+            RxPermissions.getInstance(this)
+                    .request(PERMISSIONS_CAMERA)
+                    .subscribe(granted -> {
+                        if (granted) cameraWrapper.onResume(true);
+                        else cameraWrapper.showPermissions();
+                    });
+        }));
     }
 
     private void initViewPager() {
@@ -204,16 +230,16 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     }
 
     @Override
-    public void initOpenTribes(Observable<Friendship> observable) {
+    public void initOpenTribes(Observable<Recipient> observable) {
         subscriptions.add(observable.subscribe(friend -> {
             HomeActivity.this.navigator.navigateToTribe(HomeActivity.this, friend.getPosition(), friend);
         }));
     }
 
     @Override
-    public void initClicksOnChat(Observable<Friendship> observable) {
+    public void initClicksOnChat(Observable<Recipient> observable) {
         subscriptions.add(observable.subscribe(friend -> {
-            HomeActivity.this.navigator.navigateToChat(HomeActivity.this, friend.getId());
+            HomeActivity.this.navigator.navigateToChat(HomeActivity.this, friend);
         }));
     }
 
@@ -225,9 +251,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     }
 
     @Override
-    public void initOnRecordEnd(Observable<Friendship> observable) {
+    public void initOnRecordEnd(Observable<Recipient> observable) {
         subscriptions.add(observable.subscribe(friend -> {
-            cameraWrapper.onEndRecord(friend.getId());
+            cameraWrapper.onEndRecord();
         }));
     }
 

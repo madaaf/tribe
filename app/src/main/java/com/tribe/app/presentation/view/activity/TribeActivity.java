@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerTribeComponent;
@@ -26,13 +26,13 @@ import rx.subscriptions.CompositeSubscription;
 
 public class TribeActivity extends BaseActivity implements TribeView {
 
-    public static final String FRIENDSHIP = "FRIENDSHIP";
+    public static final String RECIPIENT = "RECIPIENT";
     public static final String POSITION = "POSITION";
 
-    public static Intent getCallingIntent(Context context, int position, Friendship friendship) {
+    public static Intent getCallingIntent(Context context, int position, Recipient recipient) {
         Intent intent = new Intent(context, TribeActivity.class);
         intent.putExtra(POSITION, position);
-        intent.putExtra(FRIENDSHIP, friendship);
+        intent.putExtra(RECIPIENT, recipient);
         return intent;
     }
 
@@ -43,7 +43,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
     TribePagerView viewTribePager;
 
     // VARIABLES
-    private Friendship friendship;
+    private Recipient recipient;
     private int position;
     private User currentUser;
     private Tribe currentTribe;
@@ -99,7 +99,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
     }
 
     private void initParams() {
-        friendship = (Friendship) getIntent().getSerializableExtra(FRIENDSHIP);
+        recipient = (Recipient) getIntent().getSerializableExtra(RECIPIENT);
         position = getIntent().getIntExtra(POSITION, 0);
         currentUser = getCurrentUser();
     }
@@ -111,30 +111,30 @@ public class TribeActivity extends BaseActivity implements TribeView {
     }
 
     private void initTribePagerView() {
-        viewTribePager.setItems(friendship.getReceivedTribes());
+        viewTribePager.setItems(recipient.getReceivedTribes());
         viewTribePager.setBackgroundColor(PaletteGrid.get(position - 1));
-        viewTribePager.initWithInfo(friendship);
+        viewTribePager.initWithInfo(recipient);
     }
 
     private void initSubscriptions() {
         subscriptions = new CompositeSubscription();
 
         subscriptions.add(viewTribePager.onDismissHorizontal().doOnNext(aVoid -> {
-            tribePresenter.markTribeListAsRead(friendship, viewTribePager.getTribeListSeens());
+            tribePresenter.markTribeListAsRead(recipient, viewTribePager.getTribeListSeens());
         }).delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
+
         subscriptions.add(viewTribePager.onDismissVertical().doOnNext(aVoid -> {
-            tribePresenter.markTribeListAsRead(friendship, viewTribePager.getTribeListSeens());
+            tribePresenter.markTribeListAsRead(recipient, viewTribePager.getTribeListSeens());
         }).delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
 
         subscriptions.add(viewTribePager.onRecordStart()
-                .map(view -> tribePresenter.createTribe(currentUser, friendship, viewTribePager.getTribeMode()))
+                .map(view -> tribePresenter.createTribe(currentUser, recipient, viewTribePager.getTribeMode()))
                 .subscribe(id -> viewTribePager.startRecording(id)));
 
         subscriptions.add(viewTribePager.onRecordEnd()
                 .subscribe(view -> {
-                    viewTribePager.stopRecording(currentTribe.getLocalId());
+                    viewTribePager.stopRecording();
                     viewTribePager.showTapToCancel(currentTribe);
-
                 }));
 
         subscriptions.add(viewTribePager.onClickTapToCancel()
@@ -175,7 +175,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
     @Override
     public void setCurrentTribe(Tribe tribe) {
         currentTribe = tribe;
-        friendship.setTribe(tribe);
+        recipient.setTribe(tribe);
     }
 
     @Override
@@ -206,5 +206,11 @@ public class TribeActivity extends BaseActivity implements TribeView {
     @Override
     public Context context() {
         return this;
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
     }
 }

@@ -13,6 +13,8 @@ import com.jakewharton.byteunits.DecimalByteUnit;
 import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 import com.tribe.app.BuildConfig;
+import com.tribe.app.data.cache.TribeCache;
+import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.FileApi;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
@@ -27,6 +29,7 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
 
 import java.io.File;
@@ -59,7 +62,11 @@ public class NetModule {
 
     @Provides
     @PerApplication
-    Gson provideGson(@Named("utcSimpleDate") SimpleDateFormat utcSimpleDate, @Named("utcSimpleDateFull") SimpleDateFormat utcSimpleDateFull) {
+    Gson provideGson(@Named("utcSimpleDate") SimpleDateFormat utcSimpleDate,
+                     @Named("utcSimpleDateFull") SimpleDateFormat utcSimpleDateFull,
+                     UserCache userCache,
+                     TribeCache tribeCache,
+                     User currentUser) {
         return new GsonBuilder()
                 .setExclusionStrategies(new ExclusionStrategy() {
                     @Override
@@ -75,7 +82,7 @@ public class NetModule {
                 .registerTypeAdapter(new TypeToken<UserRealm>() {}.getType(), new TribeUserDeserializer<>())
                 .registerTypeAdapter(AccessToken.class, new TribeAccessTokenDeserializer())
                 .registerTypeAdapter(TribeRealm.class, new NewTribeDeserializer<>())
-                .registerTypeAdapter(new TypeToken<List<TribeRealm>>() {}.getType(), new UserTribeListDeserializer<>(utcSimpleDate))
+                .registerTypeAdapter(new TypeToken<List<TribeRealm>>() {}.getType(), new UserTribeListDeserializer<>(utcSimpleDate, userCache, tribeCache, currentUser))
                 .registerTypeAdapter(Installation.class, new NewInstallDeserializer<>())
                 .registerTypeAdapter(Date.class, new DateDeserializer(utcSimpleDateFull))
                 .create();

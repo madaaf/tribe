@@ -10,10 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.entity.PendingType;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.UIThread;
@@ -44,7 +44,7 @@ import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
- * Fragment that shows a list of Friendships.
+ * Fragment that shows a list of Recipients.
  */
 public class HomeGridFragment extends BaseFragment implements HomeGridView {
 
@@ -56,10 +56,10 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
 
     // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
-    private PublishSubject<Friendship> clickOpenTribes = PublishSubject.create();
-    private PublishSubject<Friendship> clickChatViewSubject = PublishSubject.create();
+    private PublishSubject<Recipient> clickOpenTribes = PublishSubject.create();
+    private PublishSubject<Recipient> clickChatViewSubject = PublishSubject.create();
     private PublishSubject<String> onRecordStart = PublishSubject.create();
-    private PublishSubject<Friendship> onRecordEnd = PublishSubject.create();
+    private PublishSubject<Recipient> onRecordEnd = PublishSubject.create();
     private PublishSubject<Integer> onPendingTribes = PublishSubject.create();
     private PublishSubject<List<Tribe>> onPendingTribesSelected = PublishSubject.create();
     private PublishSubject<List<Tribe>> onNewTribes = PublishSubject.create();
@@ -73,7 +73,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private LabelSheetAdapter moreSheetAdapter;
     private User currentUser;
     private @CameraWrapper.TribeMode String tribeMode;
-    private Friendship currentFriendship; // The friendship for the tribe currently being recorded
+    private Recipient currentRecipient; // The recipient for the tribe currently being recorded
     private Tribe currentTribe; // The tribe currently being recorded / sent
     private Tribe mostRecentTribe;
     private BottomSheetDialog bottomSheetPendingTribeDialog;
@@ -173,19 +173,19 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     }
 
     @Override
-    public void renderFriendshipList(List<Friendship> friendCollection) {
-        if (friendCollection != null) {
-            this.mostRecentTribe = Friendship.getMostRecentTribe(friendCollection);
-            this.homeGridAdapter.setItems(friendCollection);
+    public void renderRecipientList(List<Recipient> recipientList) {
+        if (recipientList != null) {
+            this.mostRecentTribe = Recipient.getMostRecentTribe(recipientList);
+            this.homeGridAdapter.setItems(recipientList);
         }
     }
 
     @Override
     public void updateTribes(List<Tribe> tribes) {
         subscriptions.add(Observable.zip(
-                Observable.create(new Observable.OnSubscribe<List<Friendship>>() {
+                Observable.create(new Observable.OnSubscribe<List<Recipient>>() {
                     @Override
-                    public void call(final Subscriber<? super List<Friendship>> subscriber) {
+                    public void call(final Subscriber<? super List<Recipient>> subscriber) {
                         subscriber.onNext(homeGridAdapter.getItems());
                         subscriber.onCompleted();
                     }
@@ -196,32 +196,35 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                         subscriber.onNext(tribes);
                         subscriber.onCompleted();
                     }
-                }), (friendships, obsTribes) -> {
+                }), (recipientList, obsTribes) -> {
                     List<Tribe> nextTribes = new ArrayList<>(); // new tribes pending to update
 
-                    for (Friendship friendship : friendships) {
+                    for (Recipient recipient : recipientList) {
                         List<Tribe> receivedTribes = new ArrayList<>(); // tribes to update
                         List<Tribe> tribesSent = new ArrayList<>();
                         List<Tribe> tribesError = new ArrayList<>();
 
                         for (Tribe tribe : tribes) {
-                            if (!tribe.getFrom().getId().equals(currentUser.getId()) && (tribe.isToGroup() && tribe.getTo().getId().equals(friendship.getId()))
-                                    || (!tribe.isToGroup() && tribe.getFrom().getId().equals(friendship.getId()))) {
-                                if (mostRecentTribe == null || tribe.getRecordedAt().equals(mostRecentTribe.getRecordedAt()) || tribe.getRecordedAt().before(mostRecentTribe.getRecordedAt())) {
-                                    receivedTribes.add(tribe);
-                                } else {
-                                    nextTribes.add(tribe);
+                            if (tribe.getFrom() != null) {
+                                if (!tribe.getFrom().getId().equals(currentUser.getId()) && (tribe.isToGroup() && tribe.getTo().getId().equals(recipient.getId()))
+                                        || (!tribe.isToGroup() && tribe.getFrom().getId().equals(recipient.getId()))) {
+                                    if (mostRecentTribe == null || tribe.getRecordedAt().equals(mostRecentTribe.getRecordedAt()) || tribe.getRecordedAt().before(mostRecentTribe.getRecordedAt())) {
+                                        receivedTribes.add(tribe);
+                                    } else {
+                                        nextTribes.add(tribe);
+                                    }
+                                } else if (tribe.getFrom().getId().equals(currentUser.getId())
+                                        && tribe.getTo().getId().equals(recipient.getId())) {
+                                    if (tribe.getMessageStatus().equals(MessageStatus.STATUS_ERROR))
+                                        tribesError.add(tribe);
+                                    else tribesSent.add(tribe);
                                 }
-                            } else if (tribe.getFrom().getId().equals(currentUser.getId())
-                                    && tribe.getTo().getId().equals(friendship.getId())) {
-                                if (tribe.getMessageStatus().equals(MessageStatus.STATUS_ERROR)) tribesError.add(tribe);
-                                else tribesSent.add(tribe);
                             }
                         }
 
-                        friendship.setReceivedTribes(receivedTribes);
-                        friendship.setSentTribes(tribesSent);
-                        friendship.setErrorTribes(tribesError);
+                        recipient.setReceivedTribes(receivedTribes);
+                        recipient.setSentTribes(tribesSent);
+                        recipient.setErrorTribes(tribesError);
                     }
 
                     //onNewTribes.observeOn(UIThread.get)onNext(nextTribes);
@@ -230,7 +233,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                 })
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(new UIThread().getScheduler())
-                .subscribe(friendshipList -> {
+                .subscribe(recipientList -> {
                     homeGridAdapter.notifyDataSetChanged();
                 })
         );
@@ -273,7 +276,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
 
     @Override
     public void showPendingTribesMenu() {
-        setupBottomSheetPendingTribes(homeGridAdapter.getItems().toArray(new Friendship[homeGridAdapter.getItems().size()]));
+        setupBottomSheetPendingTribes(homeGridAdapter.getItems().toArray(new Recipient[homeGridAdapter.getItems().size()]));
     }
 
     public void setTribeMode(String tribeMode) {
@@ -281,8 +284,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     }
 
 //    public void prepareTapToCancel(String localId) {
-//        if (currentFriendship != null) {
-//            TileView tileView = (TileView) layoutManager.findViewByPosition(currentFriendship.getPosition());
+//        if (currentRecipient != null) {
+//            TileView tileView = (TileView) layoutManager.findViewByPosition(currentRecipient.getPosition());
 //            tileView.preparePlayer(localId);
 //        }
 //    }
@@ -312,12 +315,12 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
 
         subscriptions.add(homeGridAdapter.onOpenTribes()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
-                .filter(friendship -> {
-                    boolean filter = friendship.getReceivedTribes() != null
-                            && friendship.getReceivedTribes().size() > 0
-                            && friendship.hasLoadedTribes();
+                .filter(recipient -> {
+                    boolean filter = recipient.getReceivedTribes() != null
+                            && recipient.getReceivedTribes().size() > 0
+                            && recipient.hasLoadedTribes();
 
-                    if (!filter) homeGridPresenter.loadTribes(friendship);
+                    if (!filter) homeGridPresenter.downloadTribes(recipient.getReceivedTribes());
 
                     return filter;
                 })
@@ -329,22 +332,22 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
 
         subscriptions.add(homeGridAdapter.onClickMore()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
-                .subscribe(friendship -> {
-                    setupBottomSheetMore(friendship);
+                .subscribe(recipient -> {
+                    setupBottomSheetMore(recipient);
                 }));
 
         subscriptions.add(homeGridAdapter.onClickErrorTribes()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
-                .subscribe(friendship -> {
-                    setupBottomSheetPendingTribes(friendship);
+                .subscribe(recipient -> {
+                    setupBottomSheetPendingTribes(recipient);
                 }));
 
         subscriptions.add(homeGridAdapter.onRecordStart()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
-                .map(friendship -> {
-                    String tribeId = homeGridPresenter.createTribe(currentUser, friendship, tribeMode);
-                    currentFriendship = friendship;
-                    homeGridAdapter.updateItemWithTribe(friendship.getPosition(), currentTribe);
+                .map(recipient -> {
+                    String tribeId = homeGridPresenter.createTribe(currentUser, recipient, tribeMode);
+                    currentRecipient = recipient;
+                    homeGridAdapter.updateItemWithTribe(recipient.getPosition(), currentTribe);
                     recyclerViewFriends.requestDisallowInterceptTouchEvent(false);
                     return tribeId;
                 })
@@ -353,29 +356,29 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
 
         subscriptions.add(homeGridAdapter.onRecordEnd()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
-                .doOnNext(friendship -> {
-                    TileView tileView = (TileView) layoutManager.findViewByPosition(friendship.getPosition());
+                .doOnNext(recipient -> {
+                    TileView tileView = (TileView) layoutManager.findViewByPosition(recipient.getPosition());
                     tileView.showTapToCancel(currentTribe, tribeMode);
-                    homeGridAdapter.updateItemWithTribe(friendship.getPosition(), currentTribe);
+                    homeGridAdapter.updateItemWithTribe(recipient.getPosition(), currentTribe);
                     recyclerViewFriends.requestDisallowInterceptTouchEvent(false);
                 })
                 .subscribe(onRecordEnd));
 
         subscriptions.add(homeGridAdapter.onClickTapToCancel()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
-                .subscribe(friendship -> {
-                    homeGridAdapter.updateItemWithTribe(friendship.getPosition(), null);
+                .subscribe(recipient -> {
+                    homeGridAdapter.updateItemWithTribe(recipient.getPosition(), null);
                     homeGridPresenter.deleteTribe(currentTribe);
-                    currentFriendship = null;
+                    currentRecipient = null;
                     currentTribe = null;
                 }));
 
         subscriptions.add(homeGridAdapter.onNotCancel()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
-                .subscribe(friendship -> {
-                    homeGridAdapter.updateItemWithTribe(friendship.getPosition(), null);
+                .subscribe(recipient -> {
+                    homeGridAdapter.updateItemWithTribe(recipient.getPosition(), null);
                     homeGridPresenter.sendTribe(currentTribe);
-                    currentFriendship = null;
+                    currentRecipient = null;
                     currentTribe = null;
                 }));
 
@@ -389,7 +392,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         if (homeView != null) homeView.initNewTribes(onNewTribes);
     }
 
-    private void setupBottomSheetMore(Friendship friendship) {
+    private void setupBottomSheetMore(Recipient recipient) {
         if (dismissDialogSheetMore()) {
             return;
         }
@@ -397,7 +400,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         List<LabelType> moreTypes = new ArrayList<>();
         moreTypes.add(new MoreType(getString(R.string.grid_more_clear_all_messages), MoreType.CLEAR_MESSAGES));
 
-        prepareBottomSheetMore(friendship, moreTypes);
+        prepareBottomSheetMore(recipient, moreTypes);
     }
 
     private boolean dismissDialogSheetMore() {
@@ -409,7 +412,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         return false;
     }
 
-    private void prepareBottomSheetMore(Friendship friendship, List<LabelType> items) {
+    private void prepareBottomSheetMore(Recipient recipient, List<LabelType> items) {
         View view = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_user_more, null);
         recyclerViewMore = (RecyclerView) view.findViewById(R.id.recyclerViewMore);
         recyclerViewMore.setHasFixedSize(true);
@@ -422,7 +425,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                 .subscribe(labelType -> {
                     MoreType moreType = (MoreType) labelType;
                     if (moreType.getMoreType().equals(MoreType.CLEAR_MESSAGES)) {
-                        homeGridPresenter.markTribeListAsRead(friendship);
+                        homeGridPresenter.markTribeListAsRead(recipient);
                     }
 
                     dismissDialogSheetMore();
@@ -437,19 +440,19 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         });
     }
 
-    private void setupBottomSheetPendingTribes(Friendship ... friendshipList) {
+    private void setupBottomSheetPendingTribes(Recipient ... recipientList) {
         if (dismissDialogSheetPendingTribes()) {
             return;
         }
 
         List<LabelType> pendingTypes = new ArrayList<>();
 
-        for (Friendship friendship : friendshipList) {
-            if (friendship.getErrorTribes() != null && friendship.getErrorTribes().size() > 0)
-                pendingTypes.addAll(friendship.createPendingTribeItems(getContext(), friendshipList.length > 1));
+        for (Recipient recipient : recipientList) {
+            if (recipient.getErrorTribes() != null && recipient.getErrorTribes().size() > 0)
+                pendingTypes.addAll(recipient.createPendingTribeItems(getContext(), recipientList.length > 1));
         }
 
-        prepareBottomSheetPendingWithList(pendingTypes, friendshipList.length > 1);
+        prepareBottomSheetPendingWithList(pendingTypes, recipientList.length > 1);
     }
 
     private void prepareBottomSheetPendingWithList(List<LabelType> items, boolean isGlobal) {

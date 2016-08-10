@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
-import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.tribe.CloudMarkTribeListAsRead;
@@ -28,8 +28,8 @@ public class MarkTribeListAsReadJob extends BaseJob {
     // VARIABLES
     private List<Tribe> tribeList;
 
-    public MarkTribeListAsReadJob(Friendship friendship, List<Tribe> tribeList) {
-        super(new Params(Priority.MID).requireNetwork().persist().groupBy(friendship.getId()));
+    public MarkTribeListAsReadJob(Recipient recipient, List<Tribe> tribeList) {
+        super(new Params(Priority.MID).requireNetwork().persist().groupBy(recipient.getId()));
         this.tribeList = tribeList;
     }
 

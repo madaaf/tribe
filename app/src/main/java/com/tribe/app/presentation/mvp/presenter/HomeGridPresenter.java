@@ -7,6 +7,7 @@ import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateTribesJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Tribe;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.exception.DefaultErrorBundle;
@@ -18,10 +19,8 @@ import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.SendTribeView;
 import com.tribe.app.presentation.mvp.view.View;
-import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.utils.MessageStatus;
 
-import java.io.File;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -61,7 +60,6 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
     @Override
     public void onCreate() {
         jobManager.addJobInBackground(new UpdateTribesErrorStatusJob());
-        jobManager.addJobInBackground(new UpdateTribesJob());
         jobManager.addJobInBackground(new UpdateUserJob());
         loadFriendList();
         loadPendingTribeList();
@@ -106,6 +104,8 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
     }
 
     public void loadTribeList() {
+        jobManager.addJobInBackground(new UpdateTribesJob());
+
         TribeListSubscriber subscriber = new TribeListSubscriber();
         diskGetTribeListUsecase.execute(subscriber);
     }
@@ -118,27 +118,12 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         diskGetPendingTribeListUsecase.execute(tribePendingListSubscriber);
     }
 
-    private void showFriendCollectionInView(List<Friendship> friendList) {
-        this.homeGridView.renderFriendshipList(friendList);
+    private void showFriendCollectionInView(List<Recipient> recipientList) {
+        this.homeGridView.renderRecipientList(recipientList);
     }
 
     private void updateTribes(List<Tribe> tribes) {
-        int countPreload = 0;
-
-        for (Tribe tribe : tribes) {
-            File file = FileUtils.getFileEnd(tribe.getId());
-
-            // WE ADD THE READY STATUS IN CASE THE VIDEO FILE WAS DELETED
-            if ((tribe.getMessageStatus() == null || tribe.getMessageStatus().equals(MessageStatus.STATUS_RECEIVED)
-                    || tribe.getMessageStatus().equals(MessageStatus.STATUS_READY))
-                    && (!file.exists() || file.length() == 0)) {
-                countPreload++;
-                jobManager.addJobInBackground(new DownloadTribeJob(tribe));
-            }
-
-            if (countPreload == PRELOAD_MAX) break;
-        }
-
+        downloadTribes(tribes);
         this.homeGridView.updateTribes(tribes);
     }
 
@@ -150,11 +135,12 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         this.homeGridView.updatePendingTribes(tribes);
     }
 
-    public void loadTribes(Friendship friendship) {
+    public void downloadTribes(List<Tribe> tribes) {
         int countPreload = 0;
 
-        for (Tribe tribe : friendship.getReceivedTribes()) {
-            if ((tribe.getMessageStatus() == null || tribe.getMessageStatus().equals(MessageStatus.STATUS_RECEIVED))) {
+        for (Tribe tribe : tribes) {
+            // WE ADD THE READY STATUS IN CASE THE VIDEO FILE WAS DELETED
+            if ((tribe.getMessageStatus() == null || tribe.getMessageStatus().equals(MessageStatus.STATUS_RECEIVED)) && tribe.getFrom() != null) {
                 countPreload++;
                 jobManager.addJobInBackground(new DownloadTribeJob(tribe));
             }
@@ -163,10 +149,10 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         }
     }
 
-    public void markTribeListAsRead(Friendship friendship) {
-        diskMarkTribeListAsRead.setTribeList(friendship.getReceivedTribes());
+    public void markTribeListAsRead(Recipient recipient) {
+        diskMarkTribeListAsRead.setTribeList(recipient.getReceivedTribes());
         diskMarkTribeListAsRead.execute(new DefaultSubscriber<>());
-        jobManager.addJobInBackground(new MarkTribeListAsReadJob(friendship, friendship.getReceivedTribes()));
+        jobManager.addJobInBackground(new MarkTribeListAsReadJob(recipient, recipient.getReceivedTribes()));
     }
 
     @Override
@@ -188,11 +174,13 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
 
         @Override
         public void onNext(User user) {
-            List<Friendship> friendships = user.getFriendshipList();
-            friendships.add(0, user);
-            showFriendCollectionInView(friendships);
+            List<Recipient> recipients = user.getFriendshipList();
+            Friendship recipient = new Friendship(user.getId());
+            recipient.setFriend(user);
+            recipients.add(0, recipient);
+            showFriendCollectionInView(recipients);
 
-            if (friendships.size() > 1) loadTribeList();
+            if (recipients.size() > 1) loadTribeList();
         }
     }
 

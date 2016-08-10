@@ -25,7 +25,7 @@ public class Tribe implements Serializable {
     private String localId;
     private User from;
     private String type;
-    private Friendship to;
+    private Recipient to;
     private boolean toGroup;
     private Date recordedAt;
     private Date updatedAt;
@@ -62,11 +62,11 @@ public class Tribe implements Serializable {
         this.type = type;
     }
 
-    public Friendship getTo() {
+    public Recipient getTo() {
         return to;
     }
 
-    public void setTo(Friendship to) {
+    public void setTo(Recipient to) {
         this.to = to;
     }
 
@@ -130,13 +130,13 @@ public class Tribe implements Serializable {
         this.weather = weather;
     }
 
-    public static Tribe createTribe(User user, Friendship friendship, @CameraWrapper.TribeMode String mode) {
+    public static Tribe createTribe(User user, Recipient recipient, @CameraWrapper.TribeMode String mode) {
         Tribe tribe = new Tribe();
         tribe.setLocalId(FileUtils.generateIdForTribe());
         tribe.setRecordedAt(new Date(System.currentTimeMillis()));
         tribe.setFrom(user);
-        tribe.setTo(friendship);
-        tribe.setToGroup(friendship instanceof Group);
+        tribe.setTo(recipient);
+        tribe.setToGroup(recipient instanceof Group);
         tribe.setType(mode);
         tribe.setMessageStatus(MessageStatus.STATUS_PENDING);
         return tribe;

@@ -27,7 +27,7 @@ import com.tribe.app.presentation.internal.di.scope.PerApplication;
 import com.tribe.app.presentation.service.TribeFirebaseInstanceIDService;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
-import com.tribe.app.presentation.view.adapter.delegate.grid.FriendshipGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
 import com.tribe.app.presentation.view.camera.view.HistogramVisualizerView;
 import com.tribe.app.presentation.view.component.TribeComponentView;
@@ -41,6 +41,10 @@ import com.tribe.app.presentation.view.widget.PlayerView;
 
 import org.videolan.libvlc.LibVLC;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Component;
@@ -57,7 +61,7 @@ public interface ApplicationComponent {
     void inject(BaseActivity baseActivity);
     void inject(LauncherActivity launcherActivity);
     void inject(MeGridAdapterDelegate meGridAdapterDelegate);
-    void inject(FriendshipGridAdapterDelegate friendshipGridAdapterDelegate);
+    void inject(RecipientGridAdapterDelegate recipientGridAdapterDelegate);
     void inject(AvatarView avatarView);
     void inject(CameraWrapper cameraWrapper);
     void inject(HistogramVisualizerView visualizerView);
@@ -109,4 +113,8 @@ public interface ApplicationComponent {
     JobManager jobManager();
 
     Realm realm();
+
+    @Named("simpleDateHoursMinutes") SimpleDateFormat simpleDateHoursMinutes();
+
+    @Named("fullLetteredDate") DateFormat fullLetteredDate();
 }
