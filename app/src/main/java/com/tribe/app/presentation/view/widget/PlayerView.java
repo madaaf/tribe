@@ -208,7 +208,8 @@ public class PlayerView extends FrameLayout implements IVLCVout.Callback, Textur
                 case MediaPlayer.Event.EndReached:
                     break;
                 case MediaPlayer.Event.Vout:
-                    mediaPlayer.setVolume(0);
+                    if (mediaPlayer != null && mediaPlayer.getVLCVout() != null)
+                        mediaPlayer.setVolume(0);
 
                     if (!hasSentStarted) {
                         videoStarted.onNext(PlayerView.this);

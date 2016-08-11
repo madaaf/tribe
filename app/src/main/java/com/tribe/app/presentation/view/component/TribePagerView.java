@@ -25,7 +25,7 @@ import com.facebook.rebound.SpringSystem;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.view.adapter.pager.TribePagerAdapter;
@@ -148,8 +148,8 @@ public class TribePagerView extends FrameLayout {
     private int currentOffsetTop;
     private int currentOffsetLeft;
     private int currentOffsetBottom;
-    private List<Tribe> tribeList;
-    private List<Tribe> tribeListSeens;
+    private List<TribeMessage> tribeList;
+    private List<TribeMessage> tribeListSeens;
     private TribeComponentView currentView;
     private boolean inSnoozeMode = false;
     private boolean inReplyMode = false;
@@ -362,7 +362,7 @@ public class TribePagerView extends FrameLayout {
         subscriptions.add(cameraWrapper.tribeMode().subscribe(mode -> tribeMode = mode));
     }
 
-    public void setItems(List<Tribe> items) {
+    public void setItems(List<TribeMessage> items) {
         this.tribeList = items;
         tribeListSeens.add(tribeList.get(0));
         this.tribePagerAdapter.setItems(items);
@@ -384,7 +384,7 @@ public class TribePagerView extends FrameLayout {
         cameraWrapper.onEndRecord();
     }
 
-    public void showTapToCancel(Tribe tribe) {
+    public void showTapToCancel(TribeMessage tribe) {
         viewTile.showTapToCancel(tribe, tribeMode);
     }
 
@@ -1064,7 +1064,7 @@ public class TribePagerView extends FrameLayout {
         }
     }
 
-    public List<Tribe> getTribeListSeens() {
+    public List<TribeMessage> getTribeListSeens() {
         return tribeListSeens;
     }
 

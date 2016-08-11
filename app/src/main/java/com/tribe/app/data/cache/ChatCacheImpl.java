@@ -2,7 +2,7 @@ package com.tribe.app.data.cache;
 
 import android.content.Context;
 
-import com.tribe.app.data.realm.MessageRealm;
+import com.tribe.app.data.realm.ChatRealm;
 
 import java.util.List;
 
@@ -34,12 +34,12 @@ public class ChatCacheImpl implements ChatCache {
     }
 
     @Override
-    public Observable<List<MessageRealm>> messages() {
-        return Observable.create(new Observable.OnSubscribe<List<MessageRealm>>() {
+    public Observable<List<ChatRealm>> messages() {
+        return Observable.create(new Observable.OnSubscribe<List<ChatRealm>>() {
             @Override
-            public void call(final Subscriber<? super List<MessageRealm>> subscriber) {
+            public void call(final Subscriber<? super List<ChatRealm>> subscriber) {
                 Realm obsRealm = Realm.getDefaultInstance();
-                final RealmResults<MessageRealm> results = obsRealm.where(MessageRealm.class).findAll();
+                final RealmResults<ChatRealm> results = obsRealm.where(ChatRealm.class).findAll();
                 subscriber.onNext(obsRealm.copyFromRealm(results));
                 obsRealm.close();
             }
@@ -47,7 +47,7 @@ public class ChatCacheImpl implements ChatCache {
     }
 
     @Override
-    public void put(List<MessageRealm> messageListRealm) {
+    public void put(List<ChatRealm> messageListRealm) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         realm.copyToRealmOrUpdate(messageListRealm);
@@ -56,10 +56,10 @@ public class ChatCacheImpl implements ChatCache {
     }
 
     @Override
-    public void put(MessageRealm messageRealm) {
+    public void put(ChatRealm chatRealm) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        realm.copyToRealmOrUpdate(messageRealm);
+        realm.copyToRealmOrUpdate(chatRealm);
         realm.commitTransaction();
         realm.close();
     }

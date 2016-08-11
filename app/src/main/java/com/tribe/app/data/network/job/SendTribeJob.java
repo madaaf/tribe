@@ -8,7 +8,7 @@ import com.birbit.android.jobqueue.RetryConstraint;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.mapper.TribeRealmDataMapper;
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.SendTribe;
@@ -38,9 +38,9 @@ public class  SendTribeJob extends BaseJob {
     TribeRealmDataMapper tribeRealmDataMapper;
 
     // VARIABLES
-    private Tribe tribe;
+    private TribeMessage tribe;
 
-    public SendTribeJob(Tribe tribe) {
+    public SendTribeJob(TribeMessage tribe) {
         super(new Params(Priority.HIGH).groupBy(tribe.getTo().getId()));
         this.tribe = tribe;
     }
@@ -74,7 +74,7 @@ public class  SendTribeJob extends BaseJob {
         appComponent.inject(this);
     }
 
-    private final class TribeSendSubscriber extends DefaultSubscriber<Tribe> {
+    private final class TribeSendSubscriber extends DefaultSubscriber<TribeMessage> {
 
         @Override
         public void onCompleted() {
@@ -90,7 +90,7 @@ public class  SendTribeJob extends BaseJob {
         }
 
         @Override
-        public void onNext(Tribe tribe) {
+        public void onNext(TribeMessage tribe) {
             TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
             tribeRealm.setMessageStatus(MessageStatus.STATUS_SENT);
             tribeCache.update(tribeRealm);

@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Message;
+import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
@@ -23,7 +23,7 @@ import butterknife.ButterKnife;
 /**
  * Created by tiago on 18/05/2016.
  */
-public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
+public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<ChatMessage>> {
 
     // VARIABLES
     protected User currentUser;
@@ -43,9 +43,9 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
     }
 
     @Override
-    public boolean isForViewType(@NonNull List<Message> items, int position) {
-        Message message = items.get(position);
-        return !message.isHeader();
+    public boolean isForViewType(@NonNull List<ChatMessage> items, int position) {
+        ChatMessage chatMessage = items.get(position);
+        return !chatMessage.isHeader();
     }
 
     @NonNull
@@ -55,28 +55,28 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
     }
 
     @Override
-    public void onBindViewHolder(@NonNull List<Message> items, int position, @NonNull RecyclerView.ViewHolder holder) {
+    public void onBindViewHolder(@NonNull List<ChatMessage> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         BaseTextViewHolder vh = (BaseTextViewHolder) holder;
-        Message message = items.get(position);
+        ChatMessage chatMessage = items.get(position);
 
-        if (!message.isShouldDisplayTime() && !message.isOtherPerson()) {
+        if (!chatMessage.isShouldDisplayTime() && !chatMessage.isOtherPerson()) {
            vh.layoutInfos.setVisibility(View.GONE);
         } else {
-            if (message.isOtherPerson()) {
+            if (chatMessage.isOtherPerson()) {
                 vh.txtName.setVisibility(View.VISIBLE);
-                vh.txtName.setText(message.getFrom().getDisplayName());
+                vh.txtName.setText(chatMessage.getFrom().getDisplayName());
             } else {
                 vh.txtName.setVisibility(View.GONE);
             }
 
-            vh.txtTime.setText(simpleDateFormat.format(message.getRecordedAt()));
+            vh.txtTime.setText(simpleDateFormat.format(chatMessage.getRecordedAt()));
         }
 
-        if (message.isFirstOfSection() || message.isLastOfSection()) {
+        if (chatMessage.isFirstOfSection() || chatMessage.isLastOfSection() || chatMessage.isOtherPerson()) {
             vh.itemView.setPadding(vh.itemView.getPaddingLeft(),
-                    message.isFirstOfSection() ? marginVerticalSmall : marginVerticalXSmall,
+                    (chatMessage.isFirstOfSection() || chatMessage.isOtherPerson()) ? marginVerticalSmall : marginVerticalXSmall,
                     vh.itemView.getPaddingRight(),
-                    message.isLastOfSection() ? marginVerticalSmall : 0);
+                    chatMessage.isLastOfSection() ? marginVerticalSmall : 0);
         } else {
             vh.itemView.setPadding(vh.itemView.getPaddingLeft(), marginVerticalXSmall, vh.itemView.getPaddingRight(), 0);
         }

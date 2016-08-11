@@ -2,7 +2,6 @@
 <resources>
     <style name="Body">
         <item name="android:textSize">13sp</item>
-        <item name="android:singleLine">true</item>
     </style>
 
     <style name="Body.One" parent="Body">
@@ -47,7 +46,6 @@
 
     <style name="Caption">
         <item name="android:textSize">11sp</item>
-        <item name="android:singleLine">true</item>
         <item name="customFont">Roboto-Regular.ttf</item>
     </style>
 
@@ -72,7 +70,6 @@
     <style name="Title">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">15sp</item>
-        <item name="android:singleLine">true</item>
     </style>
 
     <style name="Title.1" parent="@style/Title">
@@ -101,7 +98,6 @@
 
     <style name="Headline">
         <item name="android:textSize">19sp</item>
-        <item name="android:singleLine">true</item>
     </style>
 
     <style name="Headline.White" parent="@style/Headline">

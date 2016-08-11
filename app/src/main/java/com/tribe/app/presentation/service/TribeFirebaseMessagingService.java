@@ -15,7 +15,7 @@ public class TribeFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Log.d(TAG, "From: " + remoteMessage.getFrom());
-        Log.d(TAG, "Notification Message Body: " + remoteMessage.getNotification().getBody());
+        Log.d(TAG, "Notification ChatMessage Body: " + remoteMessage.getNotification().getBody());
         //((AndroidApplication) getApplication()).getApplicationComponent().jobManager().addJobInBackground(new UpdateTribesJob());
     }
 }

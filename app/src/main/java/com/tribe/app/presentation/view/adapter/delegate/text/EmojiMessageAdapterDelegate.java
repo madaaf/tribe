@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Message;
+import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
@@ -26,19 +26,19 @@ public class EmojiMessageAdapterDelegate extends BaseMessageAdapterDelegate {
     }
 
     @Override
-    public boolean isForViewType(@NonNull List<Message> items, int position) {
-        Message message = items.get(position);
-        return message.isOnlyEmoji();
+    public boolean isForViewType(@NonNull List<ChatMessage> items, int position) {
+        ChatMessage chatMessage = items.get(position);
+        return chatMessage.isOnlyEmoji();
     }
 
     @Override
-    public void onBindViewHolder(@NonNull List<Message> items, int position, @NonNull RecyclerView.ViewHolder holder) {
+    public void onBindViewHolder(@NonNull List<ChatMessage> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         super.onBindViewHolder(items, position, holder);
 
-        Message message = items.get(position);
+        ChatMessage chatMessage = items.get(position);
 
         EmojiTextViewHolder vh = (EmojiTextViewHolder) holder;
-        vh.txtMessage.setText(message.getText());
+        vh.txtMessage.setText(chatMessage.getContent());
     }
 
     @Override

@@ -1,18 +1,18 @@
 package com.tribe.app.presentation.mvp.view;
 
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.TribeMessage;
 
 import java.util.List;
 
 public interface HomeGridView extends SendTribeView {
 
     void renderRecipientList(List<Recipient> recipientCollection);
-    void updateTribes(List<Tribe> tribes);
-    void futureUpdateTribes(List<Tribe> tribes);
-    void updatePendingTribes(List<Tribe> pendingTribes);
+    void updateTribes(List<TribeMessage> tribes);
+    void futureUpdateTribes(List<TribeMessage> tribes);
+    void updatePendingTribes(List<TribeMessage> pendingTribes);
     void showPendingTribesMenu();
     void scrollToTop();
-    void setCurrentTribe(Tribe tribe);
+    void setCurrentTribe(TribeMessage tribe);
     int getNbItems();
 }

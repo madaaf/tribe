@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 
 import com.hannesdorfmann.adapterdelegates2.AdapterDelegate;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Message;
+import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
@@ -21,7 +21,7 @@ import butterknife.ButterKnife;
 /**
  * Created by tiago on 18/05/2016.
  */
-public class TutorialMessageAdapterDelegate implements AdapterDelegate<List<Message>> {
+public class TutorialMessageAdapterDelegate implements AdapterDelegate<List<ChatMessage>> {
 
     protected LayoutInflater layoutInflater;
 
@@ -30,7 +30,7 @@ public class TutorialMessageAdapterDelegate implements AdapterDelegate<List<Mess
     }
 
     @Override
-    public boolean isForViewType(@NonNull List<Message> items, int position) {
+    public boolean isForViewType(@NonNull List<ChatMessage> items, int position) {
         //if (position == 0) return true;
         //else
             return false;
@@ -43,11 +43,11 @@ public class TutorialMessageAdapterDelegate implements AdapterDelegate<List<Mess
     }
 
     @Override
-    public void onBindViewHolder(@NonNull List<Message> items, int position, @NonNull RecyclerView.ViewHolder holder) {
+    public void onBindViewHolder(@NonNull List<ChatMessage> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         TutorialMessageViewHolder vh = (TutorialMessageViewHolder) holder;
-        Message message = items.get(position);
+        ChatMessage chatMessage = items.get(position);
 
-        vh.txtName.setText(message.getTo().getDisplayName());
+        vh.txtName.setText(chatMessage.getTo().getDisplayName());
     }
 
     static class TutorialMessageViewHolder extends RecyclerView.ViewHolder {

@@ -3,7 +3,7 @@ package com.tribe.app.presentation.mvp.presenter;
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.SendTribeJob;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.exception.ErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
@@ -38,7 +38,7 @@ public abstract class SendTribePresenter implements Presenter {
     }
 
     public String createTribe(User user, Recipient recipient, @CameraWrapper.TribeMode String tribeMode) {
-        Tribe tribe = Tribe.createTribe(user, recipient, tribeMode);
+        TribeMessage tribe = TribeMessage.createTribe(user, recipient, tribeMode);
 
         if (tribeCreateSubscriber == null) {
             tribeCreateSubscriber = new TribeCreateSubscriber();
@@ -49,8 +49,8 @@ public abstract class SendTribePresenter implements Presenter {
         return tribe.getLocalId();
     }
 
-    public void deleteTribe(Tribe ... tribeList) {
-        for (Tribe tribe : tribeList) {
+    public void deleteTribe(TribeMessage... tribeList) {
+        for (TribeMessage tribe : tribeList) {
             FileUtils.deleteTribe(tribe.getLocalId());
 
             if (tribeDeleteSubscriber == null) {
@@ -62,12 +62,12 @@ public abstract class SendTribePresenter implements Presenter {
         }
     }
 
-    public void sendTribe(Tribe ... tribeList) {
-        for (Tribe tribe : tribeList)
+    public void sendTribe(TribeMessage... tribeList) {
+        for (TribeMessage tribe : tribeList)
             jobManager.addJobInBackground(new SendTribeJob(tribe));
     }
 
-    private void setCurrentTribe(Tribe tribe) {
+    private void setCurrentTribe(TribeMessage tribe) {
         this.getView().setCurrentTribe(tribe);
     }
 
@@ -87,7 +87,7 @@ public abstract class SendTribePresenter implements Presenter {
 
     protected abstract SendTribeView getView();
 
-    protected final class TribeCreateSubscriber extends DefaultSubscriber<Tribe> {
+    protected final class TribeCreateSubscriber extends DefaultSubscriber<TribeMessage> {
 
         @Override
         public void onCompleted() {
@@ -95,11 +95,11 @@ public abstract class SendTribePresenter implements Presenter {
 
         @Override
         public void onError(Throwable e) {
-
+            e.printStackTrace();
         }
 
         @Override
-        public void onNext(Tribe tribe) {
+        public void onNext(TribeMessage tribe) {
             setCurrentTribe(tribe);
         }
     }

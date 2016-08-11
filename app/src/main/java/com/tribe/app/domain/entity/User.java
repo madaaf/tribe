@@ -190,7 +190,7 @@ public class User implements Serializable {
         if (groupList != null) friendshipList.addAll(groupList);
 
         Collections.sort(friendshipList, (lhs, rhs) -> {
-            int res = Tribe.nullSafeComparator(lhs.getMostRecentTribe(), rhs.getMostRecentTribe());
+            int res = TribeMessage.nullSafeComparator(lhs.getMostRecentTribe(), rhs.getMostRecentTribe());
             if (res != 0) {
                 return res;
             }

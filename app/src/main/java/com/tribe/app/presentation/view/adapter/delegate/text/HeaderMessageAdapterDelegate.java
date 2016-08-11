@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Message;
+import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
@@ -23,7 +23,7 @@ import butterknife.ButterKnife;
 /**
  * Created by tiago on 08/09/2016.
  */
-public abstract class HeaderMessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
+public abstract class HeaderMessageAdapterDelegate extends RxAdapterDelegate<List<ChatMessage>> {
 
     // VARIABLES
     private DateFormat dateFormat;
@@ -46,13 +46,13 @@ public abstract class HeaderMessageAdapterDelegate extends RxAdapterDelegate<Lis
     }
 
     @Override
-    public void onBindViewHolder(@NonNull List<Message> items, int position, @NonNull RecyclerView.ViewHolder holder) {
+    public void onBindViewHolder(@NonNull List<ChatMessage> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         HeaderTextViewHolder vh = (HeaderTextViewHolder) holder;
-        Message message = items.get(position);
+        ChatMessage chatMessage = items.get(position);
 
-        String dateFormatted = dateFormat.format(message.getRecordedAt());
+        String dateFormatted = dateFormat.format(chatMessage.getRecordedAt());
         dateFormatted = dateFormatted.substring(0, 1).toUpperCase() + dateFormatted.substring(1);
-        vh.txtMessage.setText(message.isToday() ? todayStr + " - " + dateFormatted : dateFormatted);
+        vh.txtMessage.setText(chatMessage.isToday() ? todayStr + " - " + dateFormatted : dateFormatted);
     }
 
     protected abstract int getLayoutId();

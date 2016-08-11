@@ -2,16 +2,13 @@ package com.tribe.app.data.repository.chat.datasource;
 
 import com.fernandocejas.frodo.annotation.RxLogObservable;
 import com.tribe.app.data.cache.ChatCache;
-import com.tribe.app.data.realm.MessageRealm;
-import com.tribe.app.data.realm.mapper.MQTTMessageDataMapper;
-import com.tribe.app.data.rxmqtt.interfaces.IRxMqttClient;
+import com.tribe.app.data.realm.ChatRealm;
 
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 
 import java.util.List;
 
 import rx.Observable;
-import rx.functions.Action1;
 
 /**
  * {@link ChatDataStore} implementation based on the local database.
@@ -46,7 +43,7 @@ public class DiskChatDataStore implements ChatDataStore {
 
     @RxLogObservable
     @Override
-    public Observable<List<MessageRealm>> messages(String topic) {
+    public Observable<List<ChatRealm>> messages(String topic) {
         return chatCache.messages();
     }
 }

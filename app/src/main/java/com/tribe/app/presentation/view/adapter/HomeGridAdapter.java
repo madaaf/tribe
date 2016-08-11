@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.GroupGridAdapterDelegate;
@@ -148,7 +148,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
         return items;
     }
 
-    public void updateItemWithTribe(int position, Tribe tribe) {
+    public void updateItemWithTribe(int position, TribeMessage tribe) {
         items.get(position).setTribe(tribe);
     }
 }

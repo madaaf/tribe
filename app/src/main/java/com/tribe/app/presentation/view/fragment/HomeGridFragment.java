@@ -14,7 +14,7 @@ import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.entity.PendingType;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.UIThread;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
@@ -61,8 +61,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private PublishSubject<String> onRecordStart = PublishSubject.create();
     private PublishSubject<Recipient> onRecordEnd = PublishSubject.create();
     private PublishSubject<Integer> onPendingTribes = PublishSubject.create();
-    private PublishSubject<List<Tribe>> onPendingTribesSelected = PublishSubject.create();
-    private PublishSubject<List<Tribe>> onNewTribes = PublishSubject.create();
+    private PublishSubject<List<TribeMessage>> onPendingTribesSelected = PublishSubject.create();
+    private PublishSubject<List<TribeMessage>> onNewTribes = PublishSubject.create();
 
     // VARIABLES
     private HomeView homeView;
@@ -74,8 +74,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private User currentUser;
     private @CameraWrapper.TribeMode String tribeMode;
     private Recipient currentRecipient; // The recipient for the tribe currently being recorded
-    private Tribe currentTribe; // The tribe currently being recorded / sent
-    private Tribe mostRecentTribe;
+    private TribeMessage currentTribe; // The tribe currently being recorded / sent
+    private TribeMessage mostRecentTribe;
     private BottomSheetDialog bottomSheetPendingTribeDialog;
     private RecyclerView recyclerViewPending;
     private LabelSheetAdapter labelSheetAdapter;
@@ -181,7 +181,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     }
 
     @Override
-    public void updateTribes(List<Tribe> tribes) {
+    public void updateTribes(List<TribeMessage> tribes) {
         subscriptions.add(Observable.zip(
                 Observable.create(new Observable.OnSubscribe<List<Recipient>>() {
                     @Override
@@ -190,21 +190,21 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                         subscriber.onCompleted();
                     }
                 }),
-                Observable.create(new Observable.OnSubscribe<List<Tribe>>() {
+                Observable.create(new Observable.OnSubscribe<List<TribeMessage>>() {
                     @Override
-                    public void call(final Subscriber<? super List<Tribe>> subscriber) {
+                    public void call(final Subscriber<? super List<TribeMessage>> subscriber) {
                         subscriber.onNext(tribes);
                         subscriber.onCompleted();
                     }
                 }), (recipientList, obsTribes) -> {
-                    List<Tribe> nextTribes = new ArrayList<>(); // new tribes pending to update
+                    List<TribeMessage> nextTribes = new ArrayList<>(); // new tribes pending to update
 
                     for (Recipient recipient : recipientList) {
-                        List<Tribe> receivedTribes = new ArrayList<>(); // tribes to update
-                        List<Tribe> tribesSent = new ArrayList<>();
-                        List<Tribe> tribesError = new ArrayList<>();
+                        List<TribeMessage> receivedTribes = new ArrayList<>(); // tribes to update
+                        List<TribeMessage> tribesSent = new ArrayList<>();
+                        List<TribeMessage> tribesError = new ArrayList<>();
 
-                        for (Tribe tribe : tribes) {
+                        for (TribeMessage tribe : tribes) {
                             if (tribe.getFrom() != null) {
                                 if (!tribe.getFrom().getId().equals(currentUser.getId()) && (tribe.isToGroup() && tribe.getTo().getId().equals(recipient.getId()))
                                         || (!tribe.isToGroup() && tribe.getFrom().getId().equals(recipient.getId()))) {
@@ -240,12 +240,12 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     }
 
     @Override
-    public void futureUpdateTribes(List<Tribe> tribes) {
+    public void futureUpdateTribes(List<TribeMessage> tribes) {
         onNewTribes.onNext(tribes);
     }
 
     @Override
-    public void updatePendingTribes(List<Tribe> pendingTribes) {
+    public void updatePendingTribes(List<TribeMessage> pendingTribes) {
         onPendingTribes.onNext(pendingTribes.size());
     }
 
@@ -270,7 +270,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     }
 
     @Override
-    public void setCurrentTribe(Tribe currentTribe) {
+    public void setCurrentTribe(TribeMessage currentTribe) {
         this.currentTribe = currentTribe;
     }
 
@@ -471,9 +471,9 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                     if (isGlobal) onPendingTribesSelected.onNext(pendingType.getPending());
 
                     if (pendingType.getPendingType().equals(PendingType.DELETE)) {
-                        homeGridPresenter.deleteTribe(pendingType.getPending().toArray(new Tribe[pendingType.getPending().size()]));
+                        homeGridPresenter.deleteTribe(pendingType.getPending().toArray(new TribeMessage[pendingType.getPending().size()]));
                     } else {
-                        homeGridPresenter.sendTribe(pendingType.getPending().toArray(new Tribe[pendingType.getPending().size()]));
+                        homeGridPresenter.sendTribe(pendingType.getPending().toArray(new TribeMessage[pendingType.getPending().size()]));
                     }
 
                     dismissDialogSheetPendingTribes();

@@ -4,7 +4,7 @@ import android.support.annotation.Nullable;
 
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -57,7 +57,7 @@ public class UpdateTribesJob extends BaseJob {
         appComponent.inject(this);
     }
 
-    private final class TribeListSubscriber extends DefaultSubscriber<List<Tribe>> {
+    private final class TribeListSubscriber extends DefaultSubscriber<List<TribeMessage>> {
 
         @Override
         public void onCompleted() {
@@ -70,7 +70,7 @@ public class UpdateTribesJob extends BaseJob {
         }
 
         @Override
-        public void onNext(List<Tribe> tribes) {
+        public void onNext(List<TribeMessage> tribes) {
         }
     }
 }

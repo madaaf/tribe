@@ -1,7 +1,6 @@
 package com.tribe.app.data.repository.chat.datasource;
 
-import com.tribe.app.data.realm.MessageRealm;
-import com.tribe.app.data.rxmqtt.impl.RxMqttMessage;
+import com.tribe.app.data.realm.ChatRealm;
 
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 
@@ -32,9 +31,9 @@ public interface ChatDataStore {
     Observable<IMqttToken> unsubscribe(final String topic);
 
     /**
-     * Get an {@link Observable} which will emit a {@link List<MessageRealm>}.
+     * Get an {@link Observable} which will emit a {@link List< ChatRealm >}.
      *
      * @param topic to get the messages from.
      */
-    Observable<List<MessageRealm>> messages(final String topic);
+    Observable<List<ChatRealm>> messages(final String topic);
 }

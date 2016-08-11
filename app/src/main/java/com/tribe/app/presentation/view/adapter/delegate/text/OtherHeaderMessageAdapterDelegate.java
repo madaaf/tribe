@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Message;
+import com.tribe.app.domain.entity.ChatMessage;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ public class OtherHeaderMessageAdapterDelegate extends HeaderMessageAdapterDeleg
     }
 
     @Override
-    public boolean isForViewType(@NonNull List<Message> items, int position) {
+    public boolean isForViewType(@NonNull List<ChatMessage> items, int position) {
         return items.get(position).isHeader() && !items.get(position).isToday();
     }
 

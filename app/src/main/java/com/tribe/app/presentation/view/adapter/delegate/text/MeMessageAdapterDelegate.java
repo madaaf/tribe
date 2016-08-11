@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Message;
+import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
@@ -20,7 +20,7 @@ import butterknife.ButterKnife;
 /**
  * Created by tiago on 18/05/2016.
  */
-public class MeMessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
+public class MeMessageAdapterDelegate extends RxAdapterDelegate<List<ChatMessage>> {
 
     protected LayoutInflater layoutInflater;
 
@@ -29,7 +29,7 @@ public class MeMessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
     }
 
     @Override
-    public boolean isForViewType(@NonNull List<Message> items, int position) {
+    public boolean isForViewType(@NonNull List<ChatMessage> items, int position) {
         return false;
     }
 
@@ -40,11 +40,11 @@ public class MeMessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull List<Message> items, int position, @NonNull RecyclerView.ViewHolder holder) {
+    public void onBindViewHolder(@NonNull List<ChatMessage> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         MeTextViewHolder vh = (MeTextViewHolder) holder;
-        Message message = (Message) items.get(position);
+        ChatMessage chatMessage = items.get(position);
 
-        vh.txtMessage.setText(message.getText());
+        vh.txtMessage.setText(chatMessage.getContent());
     }
 
     static class MeTextViewHolder extends RecyclerView.ViewHolder {

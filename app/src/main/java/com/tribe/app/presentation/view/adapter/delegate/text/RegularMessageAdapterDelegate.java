@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Message;
+import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
@@ -26,19 +26,19 @@ public class RegularMessageAdapterDelegate extends BaseMessageAdapterDelegate {
     }
 
     @Override
-    public boolean isForViewType(@NonNull List<Message> items, int position) {
-        Message message = items.get(position);
-        return !message.isHeader() && !message.isOnlyEmoji() && !message.isLink();
+    public boolean isForViewType(@NonNull List<ChatMessage> items, int position) {
+        ChatMessage chatMessage = items.get(position);
+        return !chatMessage.isHeader() && chatMessage.getType().equals(ChatMessage.TEXT) && !chatMessage.isOnlyEmoji() && !chatMessage.isLink();
     }
 
     @Override
-    public void onBindViewHolder(@NonNull List<Message> items, int position, @NonNull RecyclerView.ViewHolder holder) {
+    public void onBindViewHolder(@NonNull List<ChatMessage> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         super.onBindViewHolder(items, position, holder);
 
-        Message message = items.get(position);
+        ChatMessage chatMessage = items.get(position);
 
         RegularViewHolder vh = (RegularViewHolder) holder;
-        vh.txtMessage.setText(message.getText());
+        vh.txtMessage.setText(chatMessage.getContent());
     }
 
     @Override

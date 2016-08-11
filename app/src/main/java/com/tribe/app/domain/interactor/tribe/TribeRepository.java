@@ -4,47 +4,47 @@ package com.tribe.app.domain.interactor.tribe;
  * Created by tiago on 28/06/2016.
  */
 
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.TribeMessage;
 
 import java.util.List;
 
 import rx.Observable;
 
 /**
- * Interface that represents a Repository for getting {@link Tribe} related data.
+ * Interface that represents a Repository for getting {@link TribeMessage} related data.
  */
 public interface TribeRepository {
 
     /**
-     * Get an {@link Observable} which will emit a {@link Tribe} containing info about the tribe.
+     * Get an {@link Observable} which will emit a {@link TribeMessage} containing info about the tribe.
      *
-     * @param tribe the Tribe to save
+     * @param tribe the TribeMessage to save
      */
-    Observable<Tribe> sendTribe(final Tribe tribe);
+    Observable<TribeMessage> sendTribe(final TribeMessage tribe);
 
     /**
      * Get an {@link Observable} which will delete a tribe.
      *
-     * @param tribe the Tribe to delete
+     * @param tribe the TribeMessage to delete
      */
-    Observable<Void> deleteTribe(final Tribe tribe);
+    Observable<Void> deleteTribe(final TribeMessage tribe);
 
     /**
-     * Get an {@link Observable} which will emit a {@link List<Tribe>} containing infos
+     * Get an {@link Observable} which will emit a {@link List< TribeMessage >} containing infos
      * about the tribes received and sent.
      */
-    Observable<List<Tribe>> tribes();
+    Observable<List<TribeMessage>> tribes();
 
     /**
-     * Get an {@link Observable} which will emit a {@link List<Tribe>} containing infos
+     * Get an {@link Observable} which will emit a {@link List< TribeMessage >} containing infos
      * about the tribes pending.
      */
-    Observable<List<Tribe>> tribesPending();
+    Observable<List<TribeMessage>> tribesPending();
 
     /**
-     * Get an {@link Observable} which will emit a {@link Tribe} containing info about the tribe.
+     * Get an {@link Observable} which will emit a {@link TribeMessage} containing info about the tribe.
      *
-     * @param tribeList the Tribe List to put as seen
+     * @param tribeList the TribeMessage List to put as seen
      */
-    Observable<List<Tribe>> markTribeListAsRead(final List<Tribe> tribeList);
+    Observable<List<TribeMessage>> markTribeListAsRead(final List<TribeMessage> tribeList);
 }

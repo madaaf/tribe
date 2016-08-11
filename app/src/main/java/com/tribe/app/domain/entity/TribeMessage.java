@@ -4,7 +4,6 @@ import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.utils.MessageStatus;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -13,25 +12,16 @@ import java.util.List;
 /**
  * Created by tiago on 22/05/2016.
  *
- * Class that represents a Tribe in the domain layer.
+ * Class that represents a TribeMessage in the domain layer.
  */
-public class Tribe implements Serializable {
+public class TribeMessage extends Message {
 
-    public Tribe() {
+    public TribeMessage() {
 
     }
 
-    private String id;
-    private String localId;
-    private User from;
-    private String type;
-    private Recipient to;
-    private boolean toGroup;
-    private Date recordedAt;
-    private Date updatedAt;
+    private @CameraWrapper.TribeMode String type;
     private Location location;
-    private String url;
-    private @MessageStatus.Status String messageStatus;
     private Weather weather;
 
     public String getId() {
@@ -98,14 +88,6 @@ public class Tribe implements Serializable {
         this.id = id;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     public @MessageStatus.Status String getMessageStatus() {
         return messageStatus;
     }
@@ -130,8 +112,8 @@ public class Tribe implements Serializable {
         this.weather = weather;
     }
 
-    public static Tribe createTribe(User user, Recipient recipient, @CameraWrapper.TribeMode String mode) {
-        Tribe tribe = new Tribe();
+    public static TribeMessage createTribe(User user, Recipient recipient, @CameraWrapper.TribeMode String mode) {
+        TribeMessage tribe = new TribeMessage();
         tribe.setLocalId(FileUtils.generateIdForTribe());
         tribe.setRecordedAt(new Date(System.currentTimeMillis()));
         tribe.setFrom(user);
@@ -147,7 +129,7 @@ public class Tribe implements Serializable {
         if (this == o) return true;
         if (o == null) return false;
 
-        Tribe that = (Tribe) o;
+        TribeMessage that = (TribeMessage) o;
 
         return localId != null ? localId.equals(that.localId) : that.localId == null;
     }
@@ -163,7 +145,7 @@ public class Tribe implements Serializable {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("***** Tribe Details *****\n");
+        stringBuilder.append("***** TribeMessage Details *****\n");
         stringBuilder.append("\nid = " + id);
         stringBuilder.append("\nfrom.id = " + from.getId());
         stringBuilder.append("\nupdatedAt = " + updatedAt);
@@ -172,7 +154,7 @@ public class Tribe implements Serializable {
         return stringBuilder.toString();
     }
 
-    public static int nullSafeComparator(final Tribe one, final Tribe two) {
+    public static int nullSafeComparator(final TribeMessage one, final TribeMessage two) {
         if (one == null ^ two == null) {
             return (one == null) ? 1 : -1;
         }
@@ -184,8 +166,8 @@ public class Tribe implements Serializable {
         return one.getRecordedAt().compareTo(two.getRecordedAt());
     }
 
-    public static Tribe getMostRecentTribe(final Tribe ... tribes) {
-        List<Tribe> tribeList = Arrays.asList(tribes);
+    public static TribeMessage getMostRecentTribe(final TribeMessage... tribes) {
+        List<TribeMessage> tribeList = Arrays.asList(tribes);
 
         Collections.sort(tribeList, (one, two) -> {
             if (one == null ^ two == null) {

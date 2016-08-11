@@ -4,7 +4,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.provider.MediaStore;
 
-import com.tribe.app.domain.entity.Message;
+import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.text.ConnectAndSubscribeMQTT;
 import com.tribe.app.domain.interactor.text.DisconnectMQTT;
@@ -152,7 +152,7 @@ public class ChatPresenter implements Presenter {
         }
     }
 
-    private final class ListenSubscribingMQTTSubscriber extends DefaultSubscriber<List<Message>> {
+    private final class ListenSubscribingMQTTSubscriber extends DefaultSubscriber<List<ChatMessage>> {
 
         @Override
         public void onCompleted() {
@@ -165,8 +165,8 @@ public class ChatPresenter implements Presenter {
         }
 
         @Override
-        public void onNext(List<Message> messageList) {
-            messageView.renderMessageList(messageList);
+        public void onNext(List<ChatMessage> chatMessageList) {
+            messageView.renderMessageList(chatMessageList);
         }
     }
 

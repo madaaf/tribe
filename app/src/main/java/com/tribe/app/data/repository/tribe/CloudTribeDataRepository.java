@@ -5,7 +5,7 @@ import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.tribe.datasource.TribeDataStore;
 import com.tribe.app.data.repository.tribe.datasource.TribeDataStoreFactory;
 import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.interactor.tribe.TribeRepository;
 
 import java.util.List;
@@ -44,19 +44,19 @@ public class CloudTribeDataRepository implements TribeRepository {
     }
 
     @Override
-    public Observable<Tribe> sendTribe(Tribe tribe) {
+    public Observable<TribeMessage> sendTribe(TribeMessage tribe) {
         final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createCloudDataStore();
         return tribeDataStore.sendTribe(tribeRealmDataMapper.transform(tribe))
                 .map(tribeRealm -> tribeRealmDataMapper.transform(tribeRealm));
     }
 
     @Override
-    public Observable<Void> deleteTribe(Tribe tribe) {
+    public Observable<Void> deleteTribe(TribeMessage tribe) {
         return null;
     }
 
     @Override
-    public Observable<List<Tribe>> tribes() {
+    public Observable<List<TribeMessage>> tribes() {
         final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createCloudDataStore();
         return tribeDataStore.tribes().map(collection -> {
             return tribeRealmDataMapper.transform(collection);
@@ -64,13 +64,13 @@ public class CloudTribeDataRepository implements TribeRepository {
     }
 
     @Override
-    public Observable<List<Tribe>> tribesPending() {
+    public Observable<List<TribeMessage>> tribesPending() {
         final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createCloudDataStore();
         return tribeDataStore.tribes().map(collection -> tribeRealmDataMapper.transform(collection));
     }
 
     @Override
-    public Observable<List<Tribe>> markTribeListAsRead(final List<Tribe> tribeList) {
+    public Observable<List<TribeMessage>> markTribeListAsRead(final List<TribeMessage> tribeList) {
         final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createCloudDataStore();
         return tribeDataStore.markTribeListAsRead(tribeRealmDataMapper.transform(tribeList))
                 .map(collection -> tribeRealmDataMapper.transform(collection));

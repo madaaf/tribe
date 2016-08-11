@@ -1,7 +1,7 @@
 package com.tribe.app.domain.interactor.tribe;
 
 import com.tribe.app.data.repository.tribe.DiskTribeDataRepository;
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
@@ -17,7 +17,7 @@ import rx.Observable;
  */
 public class DiskMarkTribeListAsRead extends UseCaseDisk {
 
-    private List<Tribe> tribeList;
+    private List<TribeMessage> tribeList;
     private TribeRepository tribeRepository;
 
     @Inject
@@ -26,7 +26,7 @@ public class DiskMarkTribeListAsRead extends UseCaseDisk {
         this.tribeRepository = tribeRepository;
     }
 
-    public void setTribeList(List<Tribe> tribeList) {
+    public void setTribeList(List<TribeMessage> tribeList) {
         this.tribeList = tribeList;
     }
 

@@ -9,7 +9,7 @@ import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.network.FileApi;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.mapper.TribeRealmDataMapper;
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.utils.MessageStatus;
@@ -44,9 +44,9 @@ public class DownloadTribeJob extends BaseJob {
     TribeRealmDataMapper tribeRealmDataMapper;
 
     // VARIABLES
-    private Tribe tribe;
+    private TribeMessage tribe;
 
-    public DownloadTribeJob(Tribe tribe) {
+    public DownloadTribeJob(TribeMessage tribe) {
         super(new Params(Priority.HIGH).requireNetwork().groupBy(
                 (tribe.isToGroup() ? tribe.getTo().getId() : tribe.getFrom().getId())
         ).setSingleId(tribe.getId()));
@@ -67,7 +67,7 @@ public class DownloadTribeJob extends BaseJob {
 
         //if (file.exists() && file.length() > 0) throw new FileAlreadyExists();
 
-        Call<ResponseBody> call = fileApi.downloadFileWithUrl(tribe.getUrl());
+        Call<ResponseBody> call = fileApi.downloadFileWithUrl(tribe.getContent());
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override

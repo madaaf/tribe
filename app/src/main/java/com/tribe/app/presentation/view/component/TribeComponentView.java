@@ -14,7 +14,7 @@ import android.widget.Toast;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Location;
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.entity.Weather;
 import com.tribe.app.presentation.AndroidApplication;
@@ -123,7 +123,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     private MediaPlayer.EventListener playerListener;
     private int videoWidth, videoHeight;
     private SurfaceTexture surfaceTexture;
-    private Tribe tribe;
+    private TribeMessage tribe;
 
     public TribeComponentView(Context context) {
         super(context);
@@ -164,7 +164,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         super.onFinishInflate();
     }
 
-    public void setTribe(Tribe tribe) {
+    public void setTribe(TribeMessage tribe) {
         this.tribe = tribe;
         txtName.setText(tribe.getFrom().getDisplayName());
         avatarView.load(tribe.getFrom().getProfilePicture());

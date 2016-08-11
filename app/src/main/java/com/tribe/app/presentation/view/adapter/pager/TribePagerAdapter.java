@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.view.component.TribeComponentView;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class TribePagerAdapter extends PagerAdapter {
 
     private Context context;
     private LayoutInflater layoutInflater;
-    private List<Tribe> tribeList;
+    private List<TribeMessage> tribeList;
     private int currentPosition;
 
     // OBSERVABLES
@@ -85,7 +85,7 @@ public class TribePagerAdapter extends PagerAdapter {
         return POSITION_NONE;
     }
 
-    public void setItems(List<Tribe> tribeList) {
+    public void setItems(List<TribeMessage> tribeList) {
         this.tribeList.addAll(tribeList);
         notifyDataSetChanged();
     }

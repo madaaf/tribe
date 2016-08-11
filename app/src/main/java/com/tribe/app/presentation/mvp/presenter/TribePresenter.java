@@ -3,7 +3,7 @@ package com.tribe.app.presentation.mvp.presenter;
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.DiskMarkTribeListAsRead;
@@ -72,7 +72,7 @@ public class TribePresenter extends SendTribePresenter implements Presenter {
         return tribeView;
     }
 
-    public void markTribeListAsRead(Recipient recipient, List<Tribe> tribeList) {
+    public void markTribeListAsRead(Recipient recipient, List<TribeMessage> tribeList) {
         diskMarkTribeListAsRead.setTribeList(tribeList);
         diskMarkTribeListAsRead.execute(new DefaultSubscriber<>());
         jobManager.addJobInBackground(new MarkTribeListAsReadJob(recipient, tribeList));

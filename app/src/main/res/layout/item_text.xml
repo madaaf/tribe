@@ -13,7 +13,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2.5dp"
-        android:layout_marginStart="55dp"
+        android:layout_marginStart="@dimen/horizontal_left_margin_chat"
+        android:layout_marginEnd="@dimen/horizontal_margin_xlarge"
         style="@style/Title.1.Black"
         />
 

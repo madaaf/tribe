@@ -1,6 +1,6 @@
 package com.tribe.app.data.cache;
 
-import com.tribe.app.data.realm.MessageRealm;
+import com.tribe.app.data.realm.ChatRealm;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ public interface ChatCache {
 
     public boolean isExpired();
     public boolean isCached(int messageId);
-    public void put(MessageRealm messageRealm);
-    public void put(List<MessageRealm> messageListRealm);
-    public Observable<List<MessageRealm>> messages();
+    public void put(ChatRealm chatRealm);
+    public void put(List<ChatRealm> messageListRealm);
+    public Observable<List<ChatRealm>> messages();
 }

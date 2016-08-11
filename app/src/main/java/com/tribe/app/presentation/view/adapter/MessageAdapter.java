@@ -3,13 +3,16 @@ package com.tribe.app.presentation.view.adapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
-import com.tribe.app.domain.entity.Message;
+import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.presentation.view.adapter.delegate.text.EmojiMessageAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.text.LinkMessageAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.text.MeMessageAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.text.OtherHeaderMessageAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.text.PhotoMessageAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.text.RegularMessageAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.text.TodayHeaderMessageAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.text.TutorialMessageAdapterDelegate;
@@ -19,6 +22,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -26,9 +30,12 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class MessageAdapter extends RecyclerView.Adapter {
 
-    private RxAdapterDelegatesManager<List<Message>> delegatesManager;
-    private List<Message> items;
-    private Message oldestMessage;
+    private RxAdapterDelegatesManager<List<ChatMessage>> delegatesManager;
+    private List<ChatMessage> items;
+    private ChatMessage oldestChatMessage;
+
+    // DELEGATES
+    private PhotoMessageAdapterDelegate photoMessageAdapterDelegate;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -43,6 +50,10 @@ public class MessageAdapter extends RecyclerView.Adapter {
         delegatesManager.addDelegate(new LinkMessageAdapterDelegate(inflater, context));
         delegatesManager.addDelegate(new TodayHeaderMessageAdapterDelegate(inflater, context));
         delegatesManager.addDelegate(new OtherHeaderMessageAdapterDelegate(inflater, context));
+
+        photoMessageAdapterDelegate = new PhotoMessageAdapterDelegate(inflater, context);
+        delegatesManager.addDelegate(photoMessageAdapterDelegate);
+
         items = new ArrayList<>();
 
         setHasStableIds(true);
@@ -55,12 +66,12 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
     @Override
     public long getItemId(int position) {
-        Message message = getMessage(position);
+        ChatMessage chatMessage = getMessage(position);
 
-        if (message.getLocalId() == null) {
-            return message.hashCode();
+        if (chatMessage.getLocalId() == null) {
+            return chatMessage.hashCode();
         } else {
-            return message.getLocalId().hashCode() * 31 + message.getText().hashCode();
+            return chatMessage.getLocalId().hashCode() * 31 + chatMessage.getContent().hashCode();
         }
     }
 
@@ -84,34 +95,38 @@ public class MessageAdapter extends RecyclerView.Adapter {
         delegatesManager.releaseSubscriptions();
     }
 
-    public void setItems(List<Message> messageList) {
+    public void setItems(List<ChatMessage> chatMessageList) {
         if (!items.isEmpty()) {
-            oldestMessage = items.get(0);
+            oldestChatMessage = items.get(0);
         }
 
         items.clear();
-        items.addAll(messageList);
+        items.addAll(chatMessageList);
         notifyDataSetChanged();
     }
 
-    public void addItem(Message message) {
+    public void addItem(ChatMessage chatMessage) {
         if (!items.isEmpty()) {
-            oldestMessage = items.get(items.size() - 1);
+            oldestChatMessage = items.get(items.size() - 1);
         }
 
-        items.add(message);
+        items.add(chatMessage);
         notifyDataSetChanged();
     }
 
-    public Message getMessage(int position) {
+    public ChatMessage getMessage(int position) {
         return items.get(position);
     }
 
-    public Message getOldestMessage() {
-        return oldestMessage;
+    public ChatMessage getOldestChatMessage() {
+        return oldestChatMessage;
     }
 
-    public int getIndexOfMessage(Message message) {
-        return items.indexOf(message);
+    public int getIndexOfMessage(ChatMessage chatMessage) {
+        return items.indexOf(chatMessage);
+    }
+
+    public Observable<ImageView> clickPhoto() {
+        return photoMessageAdapterDelegate.clickPhoto();
     }
 }

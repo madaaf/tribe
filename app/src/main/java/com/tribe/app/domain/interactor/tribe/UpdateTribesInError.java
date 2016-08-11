@@ -1,7 +1,7 @@
 package com.tribe.app.domain.interactor.tribe;
 
 import com.tribe.app.data.repository.tribe.DiskTribeDataRepository;
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
 
@@ -14,7 +14,7 @@ import rx.Observable;
  */
 public class UpdateTribesInError extends UseCaseDisk {
 
-    private Tribe tribe;
+    private TribeMessage tribe;
     private TribeRepository tribeRepository;
 
     @Inject
@@ -23,7 +23,7 @@ public class UpdateTribesInError extends UseCaseDisk {
         this.tribeRepository = tribeRepository;
     }
 
-    public void setTribe(Tribe tribe) {
+    public void setTribe(TribeMessage tribe) {
         this.tribe = tribe;
     }
 

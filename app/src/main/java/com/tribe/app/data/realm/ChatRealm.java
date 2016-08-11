@@ -1,5 +1,6 @@
 package com.tribe.app.data.realm;
 
+import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.presentation.view.utils.MessageStatus;
 
 import java.util.Date;
@@ -11,16 +12,15 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by tiago on 29/06/2016.
  */
-public class MessageRealm extends RealmObject {
+public class ChatRealm extends RealmObject {
 
     @PrimaryKey
     private String localId;
 
     private String id;
-    private String text;
+    private String content;
     private UserRealm from;
-    private String type;
-    private String url;
+    private @ChatMessage.ChatType String type;
     private FriendshipRealm friendshipRealm;
     private GroupRealm group;
     private Date recorded_at;
@@ -93,14 +93,6 @@ public class MessageRealm extends RealmObject {
         this.friendshipRealm = friendshipRealm;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     public String getMessageStatus() {
         return messageStatus;
     }
@@ -125,27 +117,25 @@ public class MessageRealm extends RealmObject {
         return recipientList;
     }
 
-
-    public String getText() {
-        return text;
+    public String getContent() {
+        return content;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public MessageRealm cloneMessageRealm(MessageRealm fromRealm) {
-        MessageRealm tribeRealm = new MessageRealm();
+    public ChatRealm cloneMessageRealm(ChatRealm fromRealm) {
+        ChatRealm tribeRealm = new ChatRealm();
         tribeRealm.setId(fromRealm.getId());
         tribeRealm.setLocalId(fromRealm.getLocalId());
-        tribeRealm.setText(fromRealm.getText());
+        tribeRealm.setContent(fromRealm.getContent());
         tribeRealm.setGroup(fromRealm.getGroup());
         tribeRealm.setFriendshipRealm(fromRealm.getFriendshipRealm());
         tribeRealm.setType(fromRealm.getType());
         tribeRealm.setRecordedAt(fromRealm.getRecordedAt());
         tribeRealm.setUpdatedAt(fromRealm.getUpdatedAt());
         tribeRealm.setFrom(fromRealm.getFrom());
-        tribeRealm.setUrl(fromRealm.getUrl());
         tribeRealm.setMessageStatus(fromRealm.getMessageStatus());
         tribeRealm.setRecipientList(fromRealm.getRecipientList());
 

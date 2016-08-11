@@ -3,7 +3,7 @@ package com.tribe.app.data.realm.mapper;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.TribeMessage;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,16 +37,16 @@ public class TribeRealmDataMapper {
     }
 
     /**
-     * Transform a {@link com.tribe.app.data.realm.TribeRealm} into an {@link com.tribe.app.domain.entity.Tribe}.
+     * Transform a {@link com.tribe.app.data.realm.TribeRealm} into an {@link TribeMessage}.
      *
      * @param tribeRealm Object to be transformed.
-     * @return {@link com.tribe.app.domain.entity.Tribe} if valid {@link com.tribe.app.data.realm.TribeRealm} otherwise null.
+     * @return {@link TribeMessage} if valid {@link com.tribe.app.data.realm.TribeRealm} otherwise null.
      */
-    public Tribe transform(TribeRealm tribeRealm) {
-        Tribe tribe = null;
+    public TribeMessage transform(TribeRealm tribeRealm) {
+        TribeMessage tribe = null;
 
         if (tribeRealm != null) {
-            tribe = new Tribe();
+            tribe = new TribeMessage();
             tribe.setId(tribeRealm.getId());
             tribe.setLocalId(tribeRealm.getLocalId());
             tribe.setTo(tribeRealm.isToGroup() ? groupRealmDataMapper.transform(tribeRealm.getGroup()) : friendshipRealmDataMapper.transform(tribeRealm.getFriendshipRealm()));
@@ -56,7 +56,7 @@ public class TribeRealmDataMapper {
             tribe.setUpdatedAt(tribeRealm.getUpdatedAt());
             tribe.setToGroup(tribeRealm.isToGroup());
             tribe.setLocation(locationRealmDataMapper.transform(tribeRealm.getLocationRealm()));
-            tribe.setUrl(tribeRealm.getUrl());
+            tribe.setContent(tribeRealm.getUrl());
             tribe.setMessageStatus(tribeRealm.getMessageStatus());
             tribe.setWeather(weatherRealmDataMapper.transform(tribeRealm.getWeatherRealm()));
         }
@@ -65,12 +65,12 @@ public class TribeRealmDataMapper {
     }
 
     /**
-     * Transform a {@link Tribe} into an {@link TribeRealm}.
+     * Transform a {@link TribeMessage} into an {@link TribeRealm}.
      *
      * @param tribe Object to be transformed.
-     * @return {@link TribeRealm} if valid {@link Tribe} otherwise null.
+     * @return {@link TribeRealm} if valid {@link TribeMessage} otherwise null.
      */
-    public TribeRealm transform(Tribe tribe) {
+    public TribeRealm transform(TribeMessage tribe) {
         TribeRealm tribeRealm = null;
 
         if (tribe != null) {
@@ -90,7 +90,7 @@ public class TribeRealmDataMapper {
             tribeRealm.setUpdatedAt(tribe.getUpdatedAt());
             tribeRealm.setFrom(userRealmDataMapper.transform(tribe.getFrom()));
             tribeRealm.setLocationRealm(locationRealmDataMapper.transform(tribe.getLocation()));
-            tribeRealm.setUrl(tribe.getUrl());
+            tribeRealm.setUrl(tribe.getContent());
             tribeRealm.setMessageStatus(tribe.getMessageStatus());
             tribeRealm.setWeatherRealm(weatherRealmDataMapper.transform(tribe.getWeather()));
         }
@@ -99,14 +99,14 @@ public class TribeRealmDataMapper {
     }
 
     /**
-     * Transform a List of {@link TribeRealm} into a Collection of {@link Tribe}.
+     * Transform a List of {@link TribeRealm} into a Collection of {@link TribeMessage}.
      *
      * @param tribeRealmCollection Object Collection to be transformed.
-     * @return {@link List<Tribe>} if valid {@link List<TribeRealm>} otherwise empty list.
+     * @return {@link List< TribeMessage >} if valid {@link List<TribeRealm>} otherwise empty list.
      */
-    public List<Tribe> transform(Collection<TribeRealm> tribeRealmCollection) {
-        List<Tribe> tribeList = new ArrayList<>();
-        Tribe tribe;
+    public List<TribeMessage> transform(Collection<TribeRealm> tribeRealmCollection) {
+        List<TribeMessage> tribeList = new ArrayList<>();
+        TribeMessage tribe;
         for (TribeRealm tribeRealm : tribeRealmCollection) {
             tribe = transform(tribeRealm);
             if (tribe != null) {
@@ -118,15 +118,15 @@ public class TribeRealmDataMapper {
     }
 
     /**
-     * Transform a List of {@link Tribe} into a Collection of {@link TribeRealm}.
+     * Transform a List of {@link TribeMessage} into a Collection of {@link TribeRealm}.
      *
      * @param tribeCollection Object Collection to be transformed.
-     * @return {@link List<Tribe>} if valid {@link List<TribeRealm>} otherwise empty list.
+     * @return {@link List< TribeMessage >} if valid {@link List<TribeRealm>} otherwise empty list.
      */
-    public List<TribeRealm> transform(List<Tribe> tribeCollection) {
+    public List<TribeRealm> transform(List<TribeMessage> tribeCollection) {
         List<TribeRealm> tribeList = new ArrayList<>();
         TribeRealm tribeRealm;
-        for (Tribe tribe : tribeCollection) {
+        for (TribeMessage tribe : tribeCollection) {
             tribeRealm = transform(tribe);
             if (tribe != null) {
                 tribeList.add(tribeRealm);

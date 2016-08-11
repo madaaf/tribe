@@ -11,9 +11,9 @@ import java.util.UUID;
 public class FileUtils {
 
     private static File pathOrigin = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-    private static String pathAudio = "/Tribe/Audio";
-    private static String pathVideo = "/Tribe/Video";
-    private static String pathEnd = "/Tribe/Sent";
+    private static String pathAudio = "/TribeMessage/Audio";
+    private static String pathVideo = "/TribeMessage/Video";
+    private static String pathEnd = "/TribeMessage/Sent";
 
     public static String generateFileForAudio(String id) {
         File audioDir = new File(pathOrigin + pathAudio);

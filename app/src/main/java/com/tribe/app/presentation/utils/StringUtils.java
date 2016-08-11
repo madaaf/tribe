@@ -1,8 +1,12 @@
 package com.tribe.app.presentation.utils;
 
+import android.util.Patterns;
+
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,5 +51,17 @@ public class StringUtils {
         }
 
         return true;
+    }
+
+    public static String[] extractLinks(String text) {
+        List<String> links = new ArrayList<String>();
+        Matcher m = Patterns.WEB_URL.matcher(text);
+
+        while (m.find()) {
+            String url = m.group();
+            links.add(url);
+        }
+
+        return links.toArray(new String[links.size()]);
     }
 }

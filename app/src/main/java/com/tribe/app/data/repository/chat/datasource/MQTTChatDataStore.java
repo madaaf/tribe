@@ -2,7 +2,7 @@ package com.tribe.app.data.repository.chat.datasource;
 
 import com.fernandocejas.frodo.annotation.RxLogObservable;
 import com.tribe.app.data.cache.ChatCache;
-import com.tribe.app.data.realm.MessageRealm;
+import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.mapper.MQTTMessageDataMapper;
 import com.tribe.app.data.rxmqtt.interfaces.IRxMqttClient;
 
@@ -22,7 +22,7 @@ public class MQTTChatDataStore implements ChatDataStore {
     private final ChatCache chatCache;
     private final MQTTMessageDataMapper mqttMessageDataMapper;
 
-    private final Action1<List<MessageRealm>> saveToCacheAction = messageListRealm -> {
+    private final Action1<List<ChatRealm>> saveToCacheAction = messageListRealm -> {
         if (messageListRealm != null) {
             MQTTChatDataStore.this.chatCache.put(messageListRealm);
         }
@@ -58,7 +58,7 @@ public class MQTTChatDataStore implements ChatDataStore {
 
     @RxLogObservable
     @Override
-    public Observable<List<MessageRealm>> messages(String topic) {
+    public Observable<List<ChatRealm>> messages(String topic) {
         return mqttClient.subscribing(topic)
                 .map(rxMqttMessage -> mqttMessageDataMapper.transform(rxMqttMessage))
                 .doOnNext(saveToCacheAction);

@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerTribeComponent;
 import com.tribe.app.presentation.mvp.presenter.TribePresenter;
@@ -46,7 +46,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
     private Recipient recipient;
     private int position;
     private User currentUser;
-    private Tribe currentTribe;
+    private TribeMessage currentTribe;
 
     // BINDERS / SUBSCRIPTIONS
     private Unbinder unbinder;
@@ -173,7 +173,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
     }
 
     @Override
-    public void setCurrentTribe(Tribe tribe) {
+    public void setCurrentTribe(TribeMessage tribe) {
         currentTribe = tribe;
         recipient.setTribe(tribe);
     }

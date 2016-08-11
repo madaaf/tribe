@@ -21,7 +21,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
@@ -120,7 +120,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     // VARIABLES
     private HomeViewPagerAdapter homeViewPagerAdapter;
-    private List<Tribe> newTribes;
+    private List<TribeMessage> newTribes;
     private int pendingTribeCount;
 
     // DIMEN
@@ -285,7 +285,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     }
 
     @Override
-    public void initNewTribes(Observable<List<Tribe>> observable) {
+    public void initNewTribes(Observable<List<TribeMessage>> observable) {
         subscriptions.add(observable.subscribe(newTribes -> {
             if (newTribes.size() > 0) {
                 txtNewTribes.setText("" + newTribes);
@@ -306,7 +306,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     }
 
     @Override
-    public void initPendingTribeItemSelected(Observable<List<Tribe>> observable) {
+    public void initPendingTribeItemSelected(Observable<List<TribeMessage>> observable) {
         subscriptions.add(observable.subscribe(tribeList -> {
             pendingTribeCount -= tribeList.size();
             updatePendingTribeCount();

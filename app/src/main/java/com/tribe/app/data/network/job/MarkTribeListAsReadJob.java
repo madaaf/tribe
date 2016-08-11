@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.tribe.CloudMarkTribeListAsRead;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -26,9 +26,9 @@ public class MarkTribeListAsReadJob extends BaseJob {
     CloudMarkTribeListAsRead cloudMarkTribeListAsRead;
 
     // VARIABLES
-    private List<Tribe> tribeList;
+    private List<TribeMessage> tribeList;
 
-    public MarkTribeListAsReadJob(Recipient recipient, List<Tribe> tribeList) {
+    public MarkTribeListAsReadJob(Recipient recipient, List<TribeMessage> tribeList) {
         super(new Params(Priority.MID).requireNetwork().persist().groupBy(recipient.getId()));
         this.tribeList = tribeList;
     }
@@ -60,7 +60,7 @@ public class MarkTribeListAsReadJob extends BaseJob {
         appComponent.inject(this);
     }
 
-    private final class MarkTribeListAsReadSubscriber extends DefaultSubscriber<List<Tribe>> {
+    private final class MarkTribeListAsReadSubscriber extends DefaultSubscriber<List<TribeMessage>> {
 
         @Override
         public void onCompleted() {
@@ -74,7 +74,7 @@ public class MarkTribeListAsReadJob extends BaseJob {
         }
 
         @Override
-        public void onNext(List<Tribe> tribeList) {
+        public void onNext(List<TribeMessage> tribeList) {
 
         }
     }

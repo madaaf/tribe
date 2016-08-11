@@ -28,7 +28,7 @@ import com.facebook.rebound.SpringSystem;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.MessageStatus;
@@ -125,7 +125,7 @@ public class TileView extends SquareFrameLayout {
     private long longDown = 0L;
     private boolean isDown = false;
     private float downX, downY, currentX, currentY;
-    private Tribe currentTribe;
+    private TribeMessage currentTribe;
     private @CameraWrapper.TribeMode String currentTribeMode;
     private boolean isRecording = false;
     private boolean isTapToCancel = false;
@@ -391,7 +391,7 @@ public class TileView extends SquareFrameLayout {
         AnimationUtils.fadeIn(txtSending, 0);
     }
 
-    public void setInfo(String name, String urlAvatar, List<Tribe> receivedTribes) {
+    public void setInfo(String name, String urlAvatar, List<TribeMessage> receivedTribes) {
         txtName.setText(name);
 
         // WE DON'T LOAD THE AVATAR AGAIN IF THE URL IS THE SAME
@@ -416,7 +416,7 @@ public class TileView extends SquareFrameLayout {
         }
     }
 
-    public void setStatus(List<Tribe> receivedTribes, List<Tribe> sentTribes, List<Tribe> errorTribes) {
+    public void setStatus(List<TribeMessage> receivedTribes, List<TribeMessage> sentTribes, List<TribeMessage> errorTribes) {
         @MessageStatus.Status String ultimateMessageStatus = computeStatus(receivedTribes, sentTribes, errorTribes);
 
         if (ultimateMessageStatus != null && ultimateMessageStatus.equals(MessageStatus.STATUS_ERROR)) {
@@ -453,7 +453,7 @@ public class TileView extends SquareFrameLayout {
 //        }
 //    }
 
-    public void showTapToCancel(Tribe tribe, @CameraWrapper.TribeMode String tribeMode) {
+    public void showTapToCancel(TribeMessage tribe, @CameraWrapper.TribeMode String tribeMode) {
         currentTribe = tribe;
         currentTribeMode = tribeMode;
 
@@ -518,8 +518,8 @@ public class TileView extends SquareFrameLayout {
         setTag(R.id.progress_bar_animation, animation);
     }
 
-    private String computeStatus(List<Tribe> received, List<Tribe> sent, List<Tribe> error) {
-        Tribe endTribe = computeMostRecentTribe(received, sent, error);
+    private String computeStatus(List<TribeMessage> received, List<TribeMessage> sent, List<TribeMessage> error) {
+        TribeMessage endTribe = computeMostRecentTribe(received, sent, error);
         if (endTribe == null) return MessageStatus.STATUS_NONE;
         else if (endTribe != null && endTribe.getMessageStatus() == null) return MessageStatus.STATUS_RECEIVED;
         return endTribe.getMessageStatus();
@@ -533,11 +533,11 @@ public class TileView extends SquareFrameLayout {
         return MessageStatus.getIconRes(status);
     }
 
-    private Tribe computeMostRecentTribe(List<Tribe> received, List<Tribe> sent, List<Tribe> error) {
-        Tribe recentReceived = received != null && received.size() > 0 ? received.get(received.size() - 1) : null;
-        Tribe recentSent = sent != null && sent.size() > 0 ? sent.get(sent.size() - 1) : null;
-        Tribe recentError = error != null && error.size() > 0 ? error.get(error.size() - 1) : null;
-        return Tribe.getMostRecentTribe(recentReceived, recentSent, recentError);
+    private TribeMessage computeMostRecentTribe(List<TribeMessage> received, List<TribeMessage> sent, List<TribeMessage> error) {
+        TribeMessage recentReceived = received != null && received.size() > 0 ? received.get(received.size() - 1) : null;
+        TribeMessage recentSent = sent != null && sent.size() > 0 ? sent.get(sent.size() - 1) : null;
+        TribeMessage recentError = error != null && error.size() > 0 ? error.get(error.size() - 1) : null;
+        return TribeMessage.getMostRecentTribe(recentReceived, recentSent, recentError);
     }
 
     public Observable<View> onClickErrorTribes() {

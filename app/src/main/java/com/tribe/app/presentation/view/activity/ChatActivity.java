@@ -6,10 +6,13 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.internal.di.components.DaggerChatComponent;
 import com.tribe.app.presentation.mvp.presenter.ChatPresenter;
@@ -44,6 +47,9 @@ public class ChatActivity extends BaseActivity implements MessageView {
 
     @Inject ChatPresenter chatPresenter;
 
+    @BindView(R.id.layoutContent)
+    ViewGroup viewContent;
+
     @BindView(R.id.recyclerViewText)
     RecyclerView recyclerViewText;
 
@@ -74,8 +80,8 @@ public class ChatActivity extends BaseActivity implements MessageView {
         initParams();
         initResources();
         initDependencyInjector();
-        initRecyclerView();
         initSubscriptions();
+        initRecyclerView();
         initInfos();
     }
 
@@ -116,74 +122,100 @@ public class ChatActivity extends BaseActivity implements MessageView {
         messageAdapter = new MessageAdapter(LayoutInflater.from(this), this);
         recyclerViewText.setAdapter(messageAdapter);
 
-        List<Message> messageList = new ArrayList<>();
+        subscriptions.add(messageAdapter
+                .clickPhoto()
+                .subscribe(imageViewFrom -> {
+                    int [] location = new int[2];
+                    imageViewFrom.getLocationOnScreen();
+
+                    ImageView imageView = new ImageView(this);
+                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(imageViewFrom.getWidth(), imageViewFrom.getHeight());
+                    params.
+                    imageView.setLayoutParams(params);
+                    imageView.setImageDrawable(imageViewFrom.getDrawable());
+                    viewContent.addView(imageView);
+                })
+        );
+
+        List<ChatMessage> chatMessageList = new ArrayList<>();
 
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, -5);
 
         Friendship friendship = (Friendship) recipient;
 
-        Message message = new Message();
-        message.setId(UUID.randomUUID().toString());
-        message.setFrom(getCurrentUser());
-        message.setText("Hey ça roule ou quoi batard ?");
-        message.setRecordedAt(calendar.getTime());
-        message.setTo(recipient);
-        messageList.add(message);
-
-        calendar.add(Calendar.DATE, 2);
-
-        Message message2 = new Message();
-        message2.setId(UUID.randomUUID().toString());
-        message2.setFrom(getCurrentUser());
-        message2.setText("LOLs");
-        message2.setRecordedAt(calendar.getTime());
-        message2.setTo(recipient);
-        messageList.add(message2);
-
-        //calendar.add(Calendar.MINUTE, 3);
-
-//        Message message3 = new Message();
+//        ChatMessage message = new ChatMessage();
+//        message.setId(UUID.randomUUID().toString());
+//        message.setFrom(getCurrentUser());
+//        message.setText("Hey ça roule ou quoi batard ?");
+//        message.setRecordedAt(calendar.getTime());
+//        message.setTo(recipient);
+//        chatMessageList.add(message);
+//
+//        calendar.add(Calendar.DATE, 2);
+//
+//        ChatMessage message2 = new ChatMessage();
+//        message2.setId(UUID.randomUUID().toString());
+//        message2.setFrom(getCurrentUser());
+//        message2.setText("LOLs");
+//        message2.setRecordedAt(calendar.getTime());
+//        message2.setTo(recipient);
+//        chatMessageList.add(message2);
+//
+//        calendar.add(Calendar.MINUTE, 3);
+//
+//        ChatMessage message3 = new ChatMessage();
 //        message3.setId(UUID.randomUUID().toString());
 //        message3.setFrom(getCurrentUser());
 //        message3.setText("MDR");
 //        message3.setRecordedAt(calendar.getTime());
 //        message3.setTo(recipient);
-//        messageList.add(message3);
+//        chatMessageList.add(message3);
 //
-//        Message message4 = new Message();
+//        ChatMessage message4 = new ChatMessage();
 //        message4.setId(UUID.randomUUID().toString());
 //        message4.setFrom(friendship.getFriend());
 //        message4.setText("Ha ha ha ha j'avoue t'as trop réson");
 //        message4.setRecordedAt(new Date());
 //        message4.setTo(recipient);
-//        messageList.add(message4);
+//        chatMessageList.add(message4);
 //
-//        Message message5 = new Message();
+//        ChatMessage message5 = new ChatMessage();
 //        message5.setId(UUID.randomUUID().toString());
 //        message5.setFrom(friendship.getFriend());
 //        message5.setText("\uD83D\uDE00" + "\uD83D\uDE00" + "\uD83D\uDE00" + "\uD83D\uDE00");
 //        message5.setRecordedAt(new Date());
 //        message5.setTo(recipient);
-//        messageList.add(message5);
+//        chatMessageList.add(message5);
+
+//        ChatMessage chatMessage6 = new ChatMessage();
+//        chatMessage6.setId(UUID.randomUUID().toString());
+//        chatMessage6.setFrom(friendship.getFriend());
+//        chatMessage6.setContent("\uD83D\uDC8C" + "love ya");
+//        chatMessage6.setRecordedAt(new Date());
+//        chatMessage6.setTo(recipient);
+//        chatMessage6.setType(ChatMessage.TEXT);
+//        chatMessageList.add(chatMessage6);
 //
-//        Message message6 = new Message();
-//        message6.setId(UUID.randomUUID().toString());
-//        message6.setFrom(friendship.getFriend());
-//        message6.setText("\uD83D\uDC8C" + "love ya");
-//        message6.setRecordedAt(new Date());
-//        message6.setTo(recipient);
-//        messageList.add(message6);
+//        ChatMessage chatMessage7 = new ChatMessage();
+//        chatMessage7.setId(UUID.randomUUID().toString());
+//        chatMessage7.setFrom(getCurrentUser());
+//        chatMessage7.setContent("Hey ça va ? Tu connais : http://www.google.fr ? Ca défonce !");
+//        chatMessage7.setRecordedAt(new Date());
+//        chatMessage7.setTo(recipient);
+//        chatMessage7.setType(ChatMessage.TEXT);
+//        chatMessageList.add(chatMessage7);
 
-        Message message7 = new Message();
-        message7.setId(UUID.randomUUID().toString());
-        message7.setFrom(friendship.getFriend());
-        message7.setText("http://www.google.fr");
-        message7.setRecordedAt(new Date());
-        message7.setTo(recipient);
-        messageList.add(message7);
+        ChatMessage chatMessage8 = new ChatMessage();
+        chatMessage8.setId(UUID.randomUUID().toString());
+        chatMessage8.setFrom(getCurrentUser());
+        chatMessage8.setContent("http://vignette3.wikia.nocookie.net/miamivice/images/e/e2/Stevebuscemi.jpg/revision/latest?cb=20100913014130");
+        chatMessage8.setRecordedAt(new Date());
+        chatMessage8.setTo(recipient);
+        chatMessage8.setType(ChatMessage.PHOTO);
+        chatMessageList.add(chatMessage8);
 
-        renderMessageList(Message.computeMessageList(messageList));
+        renderMessageList(ChatMessage.computeMessageList(chatMessageList));
     }
 
     private void initResources() {
@@ -220,13 +252,13 @@ public class ChatActivity extends BaseActivity implements MessageView {
     }
 
     @Override
-    public void renderMessageList(List<Message> messageList) {
-        final boolean addedToTop = !messageList.isEmpty() && !messageList.get(0).equals(messageAdapter.getOldestMessage());
+    public void renderMessageList(List<ChatMessage> chatMessageList) {
+        final boolean addedToTop = !chatMessageList.isEmpty() && !chatMessageList.get(0).equals(messageAdapter.getOldestChatMessage());
         final boolean scrollToEndAfterUpdate = isLastItemDisplayed();
         final int lastVisiblePosition = messageLayoutManager.findLastCompletelyVisibleItemPosition();
-        final Message lastVisible = lastVisiblePosition != -1 && messageAdapter.getItemCount() > 0 ? messageAdapter.getMessage(lastVisiblePosition) : null;
+        final ChatMessage lastVisible = lastVisiblePosition != -1 && messageAdapter.getItemCount() > 0 ? messageAdapter.getMessage(lastVisiblePosition) : null;
 
-        messageAdapter.setItems(messageList);
+        messageAdapter.setItems(chatMessageList);
 
         if (scrollToEndAfterUpdate) {
             recyclerViewText.scrollToPosition(messageAdapter.getItemCount() - 1);
@@ -239,13 +271,13 @@ public class ChatActivity extends BaseActivity implements MessageView {
     }
 
     @Override
-    public void renderMessage(Message message) {
-        final boolean addedToTop = message != null && !message.equals(messageAdapter.getOldestMessage());
+    public void renderMessage(ChatMessage chatMessage) {
+        final boolean addedToTop = chatMessage != null && !chatMessage.equals(messageAdapter.getOldestChatMessage());
         final boolean scrollToEndAfterUpdate = isLastItemDisplayed();
         final int lastVisiblePosition = messageLayoutManager.findLastCompletelyVisibleItemPosition();
-        final Message lastVisible = lastVisiblePosition != -1 && messageAdapter.getItemCount() > 0 ? messageAdapter.getMessage(lastVisiblePosition) : null;
+        final ChatMessage lastVisible = lastVisiblePosition != -1 && messageAdapter.getItemCount() > 0 ? messageAdapter.getMessage(lastVisiblePosition) : null;
 
-        messageAdapter.addItem(message);
+        messageAdapter.addItem(chatMessage);
 
         if (scrollToEndAfterUpdate) {
             recyclerViewText.scrollToPosition(messageAdapter.getItemCount() - 1);

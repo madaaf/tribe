@@ -1,7 +1,7 @@
 package com.tribe.app.domain.interactor.tribe;
 
 import com.tribe.app.data.repository.tribe.CloudTribeDataRepository;
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
@@ -15,7 +15,7 @@ import rx.Observable;
  */
 public class SendTribe extends UseCase {
 
-    private Tribe tribe;
+    private TribeMessage tribe;
     private TribeRepository tribeRepository;
 
     @Inject
@@ -24,7 +24,7 @@ public class SendTribe extends UseCase {
         this.tribeRepository = tribeRepository;
     }
 
-    public void setTribe(Tribe tribe) {
+    public void setTribe(TribeMessage tribe) {
         this.tribe = tribe;
     }
 

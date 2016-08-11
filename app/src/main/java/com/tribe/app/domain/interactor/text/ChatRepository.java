@@ -4,7 +4,7 @@ package com.tribe.app.domain.interactor.text;
  * Created by tiago on 04/05/2016.
  */
 
-import com.tribe.app.domain.entity.Message;
+import com.tribe.app.domain.entity.ChatMessage;
 
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 
@@ -29,7 +29,7 @@ public interface ChatRepository {
      *
      * @param topic observing the incoming messages.
      */
-    Observable<List<Message>> subscribing(final String topic);
+    Observable<List<ChatMessage>> subscribing(final String topic);
 
     /**
      * Get an {@link Observable} which will emit a {@link IMqttToken}.

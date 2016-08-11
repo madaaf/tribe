@@ -21,10 +21,10 @@ public abstract class Recipient implements Serializable {
     protected Date updated_at;
 
     protected int position;
-    protected Tribe tribe;
-    protected List<Tribe> receivedTribes = new ArrayList<>();
-    protected List<Tribe> sentTribes = new ArrayList<>();
-    protected List<Tribe> errorTribes = new ArrayList<>();
+    protected TribeMessage tribe;
+    protected List<TribeMessage> receivedTribes = new ArrayList<>();
+    protected List<TribeMessage> sentTribes = new ArrayList<>();
+    protected List<TribeMessage> errorTribes = new ArrayList<>();
 
     public Date getCreatedAt() {
         return created_at;
@@ -50,52 +50,52 @@ public abstract class Recipient implements Serializable {
         return position;
     }
 
-    public void setTribe(Tribe tribe) {
+    public void setTribe(TribeMessage tribe) {
         this.tribe = tribe;
     }
 
-    public Tribe getTribe() {
+    public TribeMessage getTribe() {
         return tribe;
     }
 
     public boolean hasLoadedTribes() {
         if (!(receivedTribes != null && receivedTribes.size() > 0)) return false;
 
-        for (Tribe tribe : receivedTribes) {
+        for (TribeMessage tribe : receivedTribes) {
             if (tribe.getMessageStatus() != null && tribe.getMessageStatus().equals(MessageStatus.STATUS_READY)) return true;
         }
 
         return false;
     }
 
-    public List<Tribe> getReceivedTribes() {
+    public List<TribeMessage> getReceivedTribes() {
         return receivedTribes;
     }
 
-    public void setReceivedTribes(List<Tribe> tribes) {
+    public void setReceivedTribes(List<TribeMessage> tribes) {
         this.receivedTribes.clear();
         this.receivedTribes.addAll(tribes);
     }
 
-    public List<Tribe> getErrorTribes() {
+    public List<TribeMessage> getErrorTribes() {
         return errorTribes;
     }
 
-    public void setErrorTribes(List<Tribe> tribes) {
+    public void setErrorTribes(List<TribeMessage> tribes) {
         this.errorTribes.clear();
         this.errorTribes.addAll(tribes);
     }
 
-    public List<Tribe> getSentTribes() {
+    public List<TribeMessage> getSentTribes() {
         return sentTribes;
     }
 
-    public void setSentTribes(List<Tribe> tribes) {
+    public void setSentTribes(List<TribeMessage> tribes) {
         this.sentTribes.clear();
         this.sentTribes.addAll(tribes);
     }
 
-    public Tribe getMostRecentTribe() {
+    public TribeMessage getMostRecentTribe() {
         return receivedTribes != null && receivedTribes.size() > 0 ? receivedTribes.get(receivedTribes.size() - 1) : null;
     }
 
@@ -111,8 +111,8 @@ public abstract class Recipient implements Serializable {
         return one.getUpdatedAt().compareTo(two.getUpdatedAt());
     }
 
-    public static Tribe getMostRecentTribe(List<Recipient> recipientList) {
-        Tribe tribe = null;
+    public static TribeMessage getMostRecentTribe(List<Recipient> recipientList) {
+        TribeMessage tribe = null;
 
         for (Recipient recipient : recipientList) {
             if (tribe == null) tribe = recipient.getMostRecentTribe();

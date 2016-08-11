@@ -11,7 +11,7 @@ import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.view.utils.MessageStatus;
@@ -71,11 +71,11 @@ public class DiskUserDataRepository implements UserRepository {
                     List<Recipient> result = user.getFriendshipList();
 
                     for (Recipient recipient : result) {
-                        List<Tribe> receivedTribes = new ArrayList<>();
-                        List<Tribe> sentTribes = new ArrayList<>();
-                        List<Tribe> errorTribes = new ArrayList<>();
+                        List<TribeMessage> receivedTribes = new ArrayList<>();
+                        List<TribeMessage> sentTribes = new ArrayList<>();
+                        List<TribeMessage> errorTribes = new ArrayList<>();
 
-                        for (Tribe tribe : tribes) {
+                        for (TribeMessage tribe : tribes) {
                             if (tribe.getFrom() != null) {
                                 if (!tribe.getFrom().getId().equals(user.getId()) && (tribe.isToGroup() && tribe.getTo().getId().equals(recipient.getId()))
                                         || (!tribe.isToGroup() && tribe.getFrom().getId().equals(recipient.getId()))) {

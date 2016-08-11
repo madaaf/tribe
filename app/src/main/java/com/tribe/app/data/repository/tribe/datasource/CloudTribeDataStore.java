@@ -118,7 +118,7 @@ public class CloudTribeDataStore implements TribeDataStore {
 //                                        ).map(userRealm -> {
 //                                            TribeRealm tribeRealmClone = tribeRealm.cloneTribeRealm(tribeRealm);
 //                                            tribeRealmClone.setFrom(userRealmDataMapper.transformToUserTribe(userRealm));
-//                                            System.out.println("Tribe : " + tribeRealmClone.getId());
+//                                            System.out.println("TribeMessage : " + tribeRealmClone.getId());
 //                                            return tribeRealmClone;
 //                                        });
 //                            }

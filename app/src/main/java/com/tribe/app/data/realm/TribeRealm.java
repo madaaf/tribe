@@ -1,6 +1,7 @@
 package com.tribe.app.data.realm;
 
 import com.tribe.app.presentation.view.utils.MessageStatus;
+import com.tribe.app.presentation.view.widget.CameraWrapper;
 
 import java.util.Date;
 
@@ -17,7 +18,7 @@ public class TribeRealm extends RealmObject {
     private String localId;
     private String id;
     private UserRealm from;
-    private String type;
+    private @CameraWrapper.TribeMode String type;
     private String url;
     private FriendshipRealm friendshipRealm;
     private GroupRealm group;

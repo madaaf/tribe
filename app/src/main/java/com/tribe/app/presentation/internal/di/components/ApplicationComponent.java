@@ -3,6 +3,7 @@ package com.tribe.app.presentation.internal.di.components;
 import android.content.Context;
 
 import com.birbit.android.jobqueue.JobManager;
+import com.squareup.picasso.Picasso;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
@@ -27,8 +28,9 @@ import com.tribe.app.presentation.internal.di.scope.PerApplication;
 import com.tribe.app.presentation.service.TribeFirebaseInstanceIDService;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
-import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.text.PhotoMessageAdapterDelegate;
 import com.tribe.app.presentation.view.camera.view.HistogramVisualizerView;
 import com.tribe.app.presentation.view.component.TribeComponentView;
 import com.tribe.app.presentation.view.component.TribePagerView;
@@ -76,6 +78,7 @@ public interface ApplicationComponent {
     void inject(UpdateTribesJob updateTribesJob);
     void inject(UpdateTribesErrorStatusJob updateTribesErrorStatusJob);
     void inject(MarkTribeListAsReadJob markTribeListAsReadJob);
+    void inject(PhotoMessageAdapterDelegate photoMessageAdapterDelegate);
 
     //Exposed to sub-graphs.
     Context context();
@@ -113,6 +116,8 @@ public interface ApplicationComponent {
     JobManager jobManager();
 
     Realm realm();
+
+    Picasso picasso();
 
     @Named("simpleDateHoursMinutes") SimpleDateFormat simpleDateHoursMinutes();
 

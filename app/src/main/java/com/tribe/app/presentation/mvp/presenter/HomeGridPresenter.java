@@ -8,7 +8,7 @@ import com.tribe.app.data.network.job.UpdateTribesJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.Tribe;
+import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.exception.DefaultErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
@@ -122,23 +122,23 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         this.homeGridView.renderRecipientList(recipientList);
     }
 
-    private void updateTribes(List<Tribe> tribes) {
+    private void updateTribes(List<TribeMessage> tribes) {
         downloadTribes(tribes);
         this.homeGridView.updateTribes(tribes);
     }
 
-    private void futureUpdateTribes(List<Tribe> tribes) {
+    private void futureUpdateTribes(List<TribeMessage> tribes) {
         this.homeGridView.futureUpdateTribes(tribes);
     }
 
-    private void updatePendingTribes(List<Tribe> tribes) {
+    private void updatePendingTribes(List<TribeMessage> tribes) {
         this.homeGridView.updatePendingTribes(tribes);
     }
 
-    public void downloadTribes(List<Tribe> tribes) {
+    public void downloadTribes(List<TribeMessage> tribes) {
         int countPreload = 0;
 
-        for (Tribe tribe : tribes) {
+        for (TribeMessage tribe : tribes) {
             // WE ADD THE READY STATUS IN CASE THE VIDEO FILE WAS DELETED
             if ((tribe.getMessageStatus() == null || tribe.getMessageStatus().equals(MessageStatus.STATUS_RECEIVED)) && tribe.getFrom() != null) {
                 countPreload++;
@@ -184,7 +184,7 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         }
     }
 
-    private final class TribeListSubscriber extends DefaultSubscriber<List<Tribe>> {
+    private final class TribeListSubscriber extends DefaultSubscriber<List<TribeMessage>> {
 
         @Override
         public void onCompleted() {
@@ -197,12 +197,12 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         }
 
         @Override
-        public void onNext(List<Tribe> tribes) {
+        public void onNext(List<TribeMessage> tribes) {
             updateTribes(tribes);
         }
     }
 
-    private final class TribePendingListSubscriber extends DefaultSubscriber<List<Tribe>> {
+    private final class TribePendingListSubscriber extends DefaultSubscriber<List<TribeMessage>> {
 
         @Override
         public void onCompleted() {
@@ -215,7 +215,7 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         }
 
         @Override
-        public void onNext(List<Tribe> tribes) {
+        public void onNext(List<TribeMessage> tribes) {
             updatePendingTribes(tribes);
         }
     }
