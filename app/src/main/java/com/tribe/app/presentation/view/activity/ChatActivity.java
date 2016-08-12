@@ -46,7 +46,7 @@ import rx.subscriptions.CompositeSubscription;
 public class ChatActivity extends BaseActivity implements MessageView {
 
     public static final int DURATION = 300;
-    public static final float OVERSHOOT = 3f;
+    public static final float OVERSHOOT = 2.5f;
 
     public static final String RECIPIENT = "RECIPIENT";
 

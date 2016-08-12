@@ -222,8 +222,10 @@ public class TribeCacheImpl implements TribeCache {
     @Override
     public List<TribeRealm> tribesSent() {
         Realm otherRealm = Realm.getDefaultInstance();
-        RealmResults<TribeRealm> sentTribes = otherRealm.where(TribeRealm.class).equalTo("from.id", currentUser.getId())
-                .notEqualTo("messageStatus", MessageStatus.STATUS_OPENED).findAllSorted("recorded_at", Sort.ASCENDING);
+        RealmResults<TribeRealm> sentTribes = otherRealm.where(TribeRealm.class)
+                .equalTo("from.id", currentUser.getId())
+                .equalTo("messageStatus", MessageStatus.STATUS_SENT)
+                .findAllSorted("recorded_at", Sort.ASCENDING);
         return otherRealm.copyFromRealm(sentTribes);
     }
 

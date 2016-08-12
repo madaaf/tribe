@@ -11,6 +11,7 @@ import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.MessageStatus;
 
 import java.io.File;
@@ -88,11 +89,13 @@ public class CloudTribeDataStore implements TribeDataStore {
     public Observable<List<TribeRealm>> tribes() {
         StringBuffer ids = new StringBuffer();
 
+        int count = 0;
         for (TribeRealm tribeRealm : tribeCache.tribesSent()) {
-            ids.append("\"" + tribeRealm.getId() + "\",");
+            ids.append((count > 0 ? "," : "") +"\"" + tribeRealm.getId() + "\"");
+            count++;
         }
 
-        String req = context.getString(R.string.tribe_infos, ""); //!StringUtils.isEmpty(ids.toString()) ? context.getString(R.string.tribe_sent_infos, ids) :
+        String req = context.getString(R.string.tribe_infos, !StringUtils.isEmpty(ids.toString()) ? context.getString(R.string.tribe_sent_infos, ids) : "");
 
         return tribeApi.tribes(req)
                 .doOnNext(saveToCacheTribes);

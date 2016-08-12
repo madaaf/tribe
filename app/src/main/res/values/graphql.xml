@@ -15,10 +15,6 @@
                     }
                 }
 
-                messages {
-                  content
-                }
-
                 groups {
                     id
                     name
