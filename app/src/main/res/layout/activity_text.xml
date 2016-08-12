@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutMaster"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/grey.background"
+    android:background="@null"
     android:orientation="vertical"
     >
 
     <FrameLayout
+        android:id="@+id/layoutBar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/chat_bar_height"
         android:gravity="center_vertical"
@@ -55,8 +57,9 @@
     <FrameLayout
         android:id="@+id/layoutContent"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/grey.background">
 
         <View
             android:id="@+id/viewShadowTop"
@@ -87,6 +90,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="@dimen/chat_bar_height"
+        android:background="@android:color/white"
         />
 
 </LinearLayout>

@@ -50,24 +50,26 @@ public class UserTribeListDeserializer<T> implements JsonDeserializer<T> {
                 tribes.add(tribeRealm);
         }
 
-        for (JsonElement obj : resultsTribesSent) {
-            TribeRealm tribeRealm = new TribeRealm();
-            JsonObject json = obj.getAsJsonObject();
-            tribeRealm.setId(json.get("id").getAsString());
+        if (resultsTribesSent != null) {
+            for (JsonElement obj : resultsTribesSent) {
+                TribeRealm tribeRealm = new TribeRealm();
+                JsonObject json = obj.getAsJsonObject();
+                tribeRealm.setId(json.get("id").getAsString());
 
-            List<TribeRecipientRealm> tribeRecipientRealmList = new ArrayList<>();
+                List<TribeRecipientRealm> tribeRecipientRealmList = new ArrayList<>();
 
-            for (JsonElement recipient : json.getAsJsonArray("recipients")) {
-                JsonObject jsonRecipient = recipient.getAsJsonObject();
-                TribeRecipientRealm tribeRecipientRealm = new TribeRecipientRealm();
-                tribeRecipientRealm.setId(tribeRealm.getId() + jsonRecipient.get("to").getAsString());
-                tribeRecipientRealm.setTo(jsonRecipient.get("to").getAsString());
-                tribeRecipientRealm.setIsSeen(jsonRecipient.get("is_seen").getAsBoolean());
-                tribeRecipientRealmList.add(tribeRecipientRealm);
+                for (JsonElement recipient : json.getAsJsonArray("recipients")) {
+                    JsonObject jsonRecipient = recipient.getAsJsonObject();
+                    TribeRecipientRealm tribeRecipientRealm = new TribeRecipientRealm();
+                    tribeRecipientRealm.setId(tribeRealm.getId() + jsonRecipient.get("to").getAsString());
+                    tribeRecipientRealm.setTo(jsonRecipient.get("to").getAsString());
+                    tribeRecipientRealm.setIsSeen(jsonRecipient.get("is_seen").getAsBoolean());
+                    tribeRecipientRealmList.add(tribeRecipientRealm);
+                }
+
+                tribeRealm.setRecipientList(tribeCache.createTribeRecipientRealm(tribeRecipientRealmList));
+                tribes.add(tribeRealm);
             }
-
-            tribeRealm.setRecipientList(tribeCache.createTribeRecipientRealm(tribeRecipientRealmList));
-            tribes.add(tribeRealm);
         }
 
         return (T) tribes;

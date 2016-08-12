@@ -341,7 +341,7 @@ public class TribePagerView extends FrameLayout {
     }
 
     private void initDimen() {
-        thresholdEnd = getContext().getResources().getDimensionPixelSize(R.dimen.threshold_end_tribe);
+        thresholdEnd = getContext().getResources().getDimensionPixelSize(R.dimen.threshold_dismiss);
         thresholdAlphaEnd = thresholdEnd >> 1;
         backToMessageHeight = getContext().getResources().getDimensionPixelSize(R.dimen.back_to_message_height);
         snoozeModeWidth = getContext().getResources().getDimensionPixelSize(R.dimen.snooze_mode_width);

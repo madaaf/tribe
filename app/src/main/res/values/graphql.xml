@@ -114,13 +114,17 @@
                 }
             }
 
-            tribes (ids: [%1$s]) {
-                id
+            %1$s
+        }
+    </string>
 
-                recipients {
-                    to
-                    is_seen
-                }
+    <string name="tribe.sent.infos">
+        tribes (ids: [%1$s]) {
+            id
+
+            recipients {
+                to
+                is_seen
             }
         }
     </string>

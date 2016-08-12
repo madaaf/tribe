@@ -62,7 +62,7 @@
     <dimen name="icons_end">50dp</dimen>
 
     <!-- THRESHOLDS -->
-    <dimen name="threshold_end_tribe">100dp</dimen>
+    <dimen name="threshold_dismiss">100dp</dimen>
 
     <!-- TRANSLATIONS -->
     <dimen name="transition_grid_pressed">45dp</dimen>

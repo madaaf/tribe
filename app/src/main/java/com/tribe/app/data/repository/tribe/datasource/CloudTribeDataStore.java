@@ -92,15 +92,9 @@ public class CloudTribeDataStore implements TribeDataStore {
             ids.append("\"" + tribeRealm.getId() + "\",");
         }
 
-        return tribeApi.tribes(context.getString(R.string.tribe_infos, ids))
-                .map(tribeRealmList -> {
-                    //for (TribeRealm tribeRealm : tribeRealmList) {
-                        //if (tribeRealm.getFrom() != null)
-                        //    tribeRealm.setFrom(userCache.userInfosNoObs(tribeRealm.getFrom().getId()));
-                    //}
+        String req = context.getString(R.string.tribe_infos, ""); //!StringUtils.isEmpty(ids.toString()) ? context.getString(R.string.tribe_sent_infos, ids) :
 
-                    return tribeRealmList;
-                })
+        return tribeApi.tribes(req)
                 .doOnNext(saveToCacheTribes);
 
 //        return tribeApi.tribes(context.getString(R.string.tribe_infos))

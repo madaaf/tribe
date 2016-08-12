@@ -34,6 +34,8 @@ public class ChatMessage extends Message {
     }
 
     private @ChatType String type;
+    private int widthImage;
+    private int heightImage;
 
     private boolean isHeader;
     private boolean isToday;
