@@ -139,6 +139,7 @@ public class PlayerView extends FrameLayout implements IVLCVout.Callback, Textur
                 vout.removeCallback(PlayerView.this);
                 vout.detachViews();
                 mediaPlayer.release();
+                mediaPlayer = null;
             } catch (IllegalStateException ex) {
                 ex.printStackTrace();
             }
@@ -208,8 +209,10 @@ public class PlayerView extends FrameLayout implements IVLCVout.Callback, Textur
                 case MediaPlayer.Event.EndReached:
                     break;
                 case MediaPlayer.Event.Vout:
-                    if (mediaPlayer != null && mediaPlayer.getVLCVout() != null)
+                    if (mediaPlayer != null && mediaPlayer.getVLCVout() != null) {
+                        mediaPlayer.setAudioDelay(5000);
                         mediaPlayer.setVolume(0);
+                    }
 
                     if (!hasSentStarted) {
                         videoStarted.onNext(PlayerView.this);

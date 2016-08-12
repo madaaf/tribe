@@ -42,4 +42,11 @@ public interface ChatRepository {
      * @param topic observing the incoming messages.
      */
     Observable<IMqttToken> unsubscribe(final String topic);
+
+//    /**
+//     * Get an {@link Observable} which will emit a {@link com.tribe.app.data.rxmqtt.impl.RxMqttMessage}.
+//     *
+//     * @param to the
+//     */
+//    Observable<IMqttToken> chatMessages(final String to);
 }

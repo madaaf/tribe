@@ -16,10 +16,10 @@ import javax.inject.Singleton;
 import rx.Observable;
 
 /**
- * {@link ChatDataRepository} for retrieving user data.
+ * {@link CloudChatDataRepository} for retrieving user data.
  */
 @Singleton
-public class ChatDataRepository implements ChatRepository {
+public class CloudChatDataRepository implements ChatRepository {
 
     private final ChatDataStoreFactory chatDataStoreFactory;
     private final ChatRealmDataMapper chatRealmDataMapper;
@@ -31,8 +31,8 @@ public class ChatDataRepository implements ChatRepository {
      * @param realmDataMapper {@link ChatRealmDataMapper}.
      */
     @Inject
-    public ChatDataRepository(ChatDataStoreFactory dataStoreFactory,
-                              ChatRealmDataMapper realmDataMapper) {
+    public CloudChatDataRepository(ChatDataStoreFactory dataStoreFactory,
+                                   ChatRealmDataMapper realmDataMapper) {
         this.chatDataStoreFactory = dataStoreFactory;
         this.chatRealmDataMapper = realmDataMapper;
     }

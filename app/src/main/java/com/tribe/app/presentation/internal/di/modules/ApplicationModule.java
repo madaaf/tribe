@@ -18,7 +18,7 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
-import com.tribe.app.data.repository.chat.ChatDataRepository;
+import com.tribe.app.data.repository.chat.CloudChatDataRepository;
 import com.tribe.app.data.repository.tribe.CloudTribeDataRepository;
 import com.tribe.app.data.repository.tribe.DiskTribeDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
@@ -108,7 +108,7 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    ChatRepository provideTextRepository(ChatDataRepository textDataRepository) {
+    ChatRepository provideTextRepository(CloudChatDataRepository textDataRepository) {
         return textDataRepository;
     }
 

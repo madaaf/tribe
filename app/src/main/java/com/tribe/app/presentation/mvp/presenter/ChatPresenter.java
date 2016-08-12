@@ -32,13 +32,15 @@ public class ChatPresenter implements Presenter {
     private final SubscribingMQTT subscribingMQTT;
     private final DisconnectMQTT disconnectMQTT;
     private final UnsubscribeMQTT unsubscribeMQTT;
+    //private final UseCaseDisk diskGetChatMessages;
 
     private MessageView messageView;
 
     private String friendId;
 
     @Inject
-    public ChatPresenter(@Named("connectAndSubscribe") ConnectAndSubscribeMQTT connectAndSubscribeMQTT,
+    public ChatPresenter(
+                         @Named("connectAndSubscribe") ConnectAndSubscribeMQTT connectAndSubscribeMQTT,
                          @Named("subscribing") SubscribingMQTT subscribingMQTT,
                          @Named("disconnect") DisconnectMQTT disconnectMQTT,
                          @Named("unsubscribe") UnsubscribeMQTT unsubscribeMQTT) {
@@ -46,6 +48,8 @@ public class ChatPresenter implements Presenter {
         this.subscribingMQTT = subscribingMQTT;
         this.unsubscribeMQTT = unsubscribeMQTT;
         this.disconnectMQTT = disconnectMQTT;
+//        this.diskGetChatMessages = diskGetChatMessages;
+//        @Named("diskGetChatMessages") UseCaseDisk diskGetChatMessages,
     }
 
     @Override

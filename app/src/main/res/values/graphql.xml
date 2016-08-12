@@ -108,6 +108,15 @@
                         city
                     }
                 }
+
+                unSeenMessages {
+                    id
+                    from
+                    to
+                    to_group
+                    content
+                    recorded_at
+                }
             }
 
             %1$s
