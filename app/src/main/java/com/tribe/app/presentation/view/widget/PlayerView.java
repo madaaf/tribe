@@ -2,9 +2,11 @@ package com.tribe.app.presentation.view.widget;
 
 import android.content.Context;
 import android.graphics.SurfaceTexture;
+import android.media.MediaPlayer;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +16,9 @@ import android.widget.Toast;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 
-import org.videolan.libvlc.IVLCVout;
-import org.videolan.libvlc.LibVLC;
-import org.videolan.libvlc.Media;
-import org.videolan.libvlc.MediaPlayer;
-
-import javax.inject.Inject;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,9 +29,8 @@ import rx.subjects.PublishSubject;
 /**
  * Created by tiago on 17/02/2016.
  */
-public class PlayerView extends FrameLayout implements IVLCVout.Callback, TextureView.SurfaceTextureListener {
-
-    @Inject LibVLC libVLC;
+public class PlayerView extends FrameLayout implements TextureView.SurfaceTextureListener,
+        MediaPlayer.OnVideoSizeChangedListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener {
 
     @BindView(R.id.textureViewLayout)
     CardView textureViewLayout;
@@ -43,7 +41,6 @@ public class PlayerView extends FrameLayout implements IVLCVout.Callback, Textur
     private MediaPlayer mediaPlayer = null;
     private int videoWidth;
     private int videoHeight;
-    private MediaPlayer.EventListener playerListener;
     private SurfaceTexture surfaceTexture;
     private boolean hasSentStarted = false;
 
@@ -73,37 +70,6 @@ public class PlayerView extends FrameLayout implements IVLCVout.Callback, Textur
         super.onAttachedToWindow();
     }
 
-    @Override
-    public void onNewLayout(IVLCVout vlcVout, int width, int height, int visibleWidth, int visibleHeight, int sarNum, int sarDen) {
-        if (width * height == 0)
-            return;
-
-        videoWidth = width;
-        videoHeight = height;
-
-        if (videoTextureView != null && videoTextureView.getContentHeight() != height) {
-            videoTextureView.setContentWidth(width);
-            videoTextureView.setContentHeight(height);
-            videoTextureView.updateTextureViewSize();
-        }
-    }
-
-    @Override
-    public void onSurfacesCreated(IVLCVout vlcVout) {
-
-    }
-
-    @Override
-    public void onSurfacesDestroyed(IVLCVout vlcVout) {
-
-    }
-
-    @Override
-    public void onHardwareAccelerationError(IVLCVout vlcVout) {
-        this.releasePlayer();
-        Toast.makeText(getContext(), "Error with hardware acceleration", Toast.LENGTH_LONG).show();
-    }
-
     public void createPlayer(String pathToVideo) {
         videoTextureView = new VideoTextureView(getContext());
         CardView.LayoutParams params = new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -115,14 +81,19 @@ public class PlayerView extends FrameLayout implements IVLCVout.Callback, Textur
         hasSentStarted = false;
 
         try {
-            System.out.println("HEY CREATE PLAYER");
-            mediaPlayer = new MediaPlayer(libVLC);
-            playerListener = new PlayerListener();
-            mediaPlayer.setEventListener(playerListener);
+            if (mediaPlayer != null) {
+                mediaPlayer.reset();
+                mediaPlayer.stop();
+                mediaPlayer.release();
+                mediaPlayer = null;
+            }
 
-            //RandomAccessFile raf = new RandomAccessFile(pathToVideo, "r");
-            Media m = new Media(libVLC, pathToVideo);
-            mediaPlayer.setMedia(m);
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setOnVideoSizeChangedListener(this);
+            mediaPlayer.setOnPreparedListener(this);
+            mediaPlayer.setOnErrorListener(this);
+            mediaPlayer.setVolume(0, 0);
+            mediaPlayer.setLooping(true);
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(getContext(), "Error creating player!", Toast.LENGTH_LONG).show();
@@ -134,12 +105,12 @@ public class PlayerView extends FrameLayout implements IVLCVout.Callback, Textur
 
         new Thread(() -> {
             try {
-                mediaPlayer.stop();
-                final IVLCVout vout = mediaPlayer.getVLCVout();
-                vout.removeCallback(PlayerView.this);
-                vout.detachViews();
-                mediaPlayer.release();
-                mediaPlayer = null;
+                if (mediaPlayer != null) {
+                    mediaPlayer.reset();
+                    mediaPlayer.stop();
+                    mediaPlayer.release();
+                    mediaPlayer = null;
+                }
             } catch (IllegalStateException ex) {
                 ex.printStackTrace();
             }
@@ -157,23 +128,65 @@ public class PlayerView extends FrameLayout implements IVLCVout.Callback, Textur
     }
 
     public void play() {
-        mediaPlayer.play();
+        //mediaPlayer.start();
     }
 
     private void prepareWithSurface() {
-        final IVLCVout vout = mediaPlayer.getVLCVout();
-        vout.setVideoSurface(surfaceTexture);
-        vout.addCallback(this);
-        vout.attachViews();
+        Surface s = new Surface(surfaceTexture);
+        mediaPlayer.setSurface(s);
+
+        try {
+            RandomAccessFile raf = new RandomAccessFile(pathToVideo, "r");
+            mediaPlayer.setDataSource(raf.getFD(), 0, raf.length());
+            mediaPlayer.prepareAsync();
+        } catch (IllegalStateException ex) {
+            try {
+                mediaPlayer.reset();
+                RandomAccessFile raf = new RandomAccessFile(pathToVideo, "r");
+                mediaPlayer.setDataSource(raf.getFD());
+                mediaPlayer.prepareAsync();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Override
+    public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
+        if (width * height == 0)
+            return;
+
+        videoWidth = width;
+        videoHeight = height;
+
+        if (videoTextureView != null && videoTextureView.getContentHeight() != height) {
+            videoTextureView.setContentWidth(width);
+            videoTextureView.setContentHeight(height);
+            videoTextureView.updateTextureViewSize();
+        }
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+        mediaPlayer.start();
+        videoStarted.onNext(this);
+    }
+
+    @Override
+    public boolean onError(MediaPlayer mp, int what, int extra) {
+        return false;
     }
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         surfaceTexture = surface;
 
-        System.out.println("HEY SURFACE AVAILABLE");
         if (mediaPlayer != null) {
-            System.out.println("HEY SURFACE + PLAYER");
             prepareWithSurface();
         }
     }
@@ -195,36 +208,5 @@ public class PlayerView extends FrameLayout implements IVLCVout.Callback, Textur
 
     public Observable<View> videoStarted() {
         return videoStarted;
-    }
-
-    private class PlayerListener implements MediaPlayer.EventListener {
-
-        public PlayerListener() {
-
-        }
-
-        @Override
-        public void onEvent(MediaPlayer.Event event) {
-            switch(event.type) {
-                case MediaPlayer.Event.EndReached:
-                    break;
-                case MediaPlayer.Event.Vout:
-                    if (mediaPlayer != null && mediaPlayer.getVLCVout() != null) {
-                        mediaPlayer.setAudioDelay(5000);
-                        mediaPlayer.setVolume(0);
-                    }
-
-                    if (!hasSentStarted) {
-                        videoStarted.onNext(PlayerView.this);
-                        hasSentStarted = true;
-                    }
-                    break;
-                case MediaPlayer.Event.Playing:
-                case MediaPlayer.Event.Paused:
-                case MediaPlayer.Event.Stopped:
-                default:
-                    break;
-            }
-        }
     }
 }
