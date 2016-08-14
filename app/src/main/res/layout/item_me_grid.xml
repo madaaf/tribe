@@ -42,7 +42,7 @@
             android:id="@+id/txtPoints"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/Text.Grid.Me.Points"
+            style="@style/Title.2.Points"
             />
 
         <com.tribe.app.presentation.view.widget.TextViewFont
@@ -51,19 +51,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
             android:text="@string/Grid.Me.Points"
-            style="@style/Text.Grid.Me.Label"
+            style="@style/Body.Two.Points"
             />
     </LinearLayout>
-
-    <View
-        android:id="@+id/viewShadow"
-        android:layout_height="@dimen/avatar_size_small_with_shadow"
-        android:layout_width="@dimen/avatar_size_small_with_shadow"
-        android:layout_marginTop="18dp"
-        android:layout_marginLeft="3dp"
-        android:layout_alignLeft="@id/imgPoints"
-        android:background="@drawable/shadow_circle"
-        />
 
     <com.tribe.app.presentation.view.widget.AvatarView
         android:id="@+id/avatar"
@@ -96,7 +86,7 @@
         android:layout_marginTop="@dimen/vertical_margin"
         android:layout_marginRight="@dimen/horizontal_margin_small"
         android:gravity="center_vertical"
-        style="@style/Text.Grid.Me.Name"
+        style="@style/Title.2.Black"
         />
 
 </com.tribe.app.presentation.view.widget.SquareRelativeLayout>
