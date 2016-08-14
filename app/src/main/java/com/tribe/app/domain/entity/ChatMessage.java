@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class ChatMessage extends Message {
 
-    public static int MINUTE = 60 * 1000; // IN MS
+    public static int MINUTE = 65 * 1000; // IN MS (WE GIVE A MARGIN OF 500 MS)
 
     @StringDef({VIDEO, TEXT, PHOTO})
     public @interface ChatType {}
@@ -185,12 +185,13 @@ public class ChatMessage extends Message {
     public static ChatMessage createMessage(User user, Recipient recipient, String content) {
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setContent(content);
-        chatMessage.setLocalId(FileUtils.generateIdForTribe());
+        chatMessage.setLocalId(FileUtils.generateIdForMessage());
         chatMessage.setRecordedAt(new Date(System.currentTimeMillis()));
         chatMessage.setFrom(user);
         chatMessage.setTo(recipient);
         chatMessage.setToGroup(recipient instanceof Group);
         chatMessage.setMessageStatus(MessageStatus.STATUS_PENDING);
+        chatMessage.setType(ChatMessage.TEXT);
         return chatMessage;
     }
 
@@ -230,87 +231,8 @@ public class ChatMessage extends Message {
         int count = 0;
 
         for (ChatMessage chatMessage : chatMessageList) {
-            boolean shouldAddMessage = true;
-
-            if (previousChatMessage != null) {
-                chatMessage.isOtherPerson = !previousChatMessage.getFrom().equals(chatMessage.getFrom());
-
-                if (chatMessage.getRecordedAt().getTime() - previousChatMessage.getRecordedAt().getTime() > MINUTE) {
-                    Calendar cal1 = Calendar.getInstance();
-                    Calendar cal2 = Calendar.getInstance();
-                    cal1.setTime(previousChatMessage.getRecordedAt());
-                    cal2.setTime(chatMessage.getRecordedAt());
-                    chatMessage.isFirstOfSection = !(cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-                            cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR));
-                    previousChatMessage.isLastOfSection = chatMessage.isFirstOfSection;
-
-                    if (chatMessage.isFirstOfSection)
-                        chatMessage.isOtherPerson = true; // WE FORCE SHOWING THE USER IF'S THE FIRST MESSAGE OF THE SECTION
-                } else {
-                    chatMessage.shouldDisplayTime = false;
-                    chatMessage.isFirstOfSection = false;
-                }
-            } else {
-                chatMessage.isFirstOfSection = true;
-                chatMessage.isOtherPerson = true;
-                chatMessage.shouldDisplayTime = true;
-            }
-
-            if (chatMessage.isFirstOfSection) {
-                ChatMessage header = new ChatMessage();
-                header.setRecordedAt(chatMessage.getRecordedAt());
-                header.isHeader = true;
-
-                // COMPUTING IF THE DATE IS TODAY'S DATE
-                Calendar cal1 = Calendar.getInstance();
-                Calendar cal2 = Calendar.getInstance();
-                cal2.setTime(header.getRecordedAt());
-                header.isToday = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-                        cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
-                result.add(header);
-            }
-
+            computeMessage(result, previousChatMessage, chatMessage);
             count++;
-
-            if (chatMessage.getType().equals(TEXT)) {
-                chatMessage.isOnlyEmoji = StringUtils.isOnlyEmoji(chatMessage.content);
-
-                if (!chatMessage.isOnlyEmoji) {
-                    String[] urls = StringUtils.extractLinks(chatMessage.content);
-
-                    if (urls.length > 0) {
-                        shouldAddMessage = false;
-
-                        String text = chatMessage.content;
-
-                        for (String url : urls) {
-                            String str = text.substring(0, text.indexOf(url));
-                            text = text.substring(text.indexOf(url) + url.length());
-
-                            if (!StringUtils.isEmpty(str)) {
-                                ChatMessage chatMessageCopy = cloneMessage(chatMessage, true);
-                                chatMessageCopy.content = str;
-                                result.add(chatMessageCopy);
-                            }
-
-                            ChatMessage chatMessageCopy = cloneMessage(chatMessage, StringUtils.isEmpty(str));
-                            chatMessageCopy.content = url;
-                            chatMessageCopy.isLink = true;
-                            result.add(chatMessageCopy);
-                        }
-
-                        if (!StringUtils.isEmpty(text)) {
-                            ChatMessage chatMessageCopy = cloneMessage(chatMessage, false);
-                            chatMessageCopy.content = text;
-                            result.add(chatMessageCopy);
-                        }
-                    }
-                }
-            }
-
-            if (shouldAddMessage) {
-                result.add(chatMessage);
-            }
 
             previousChatMessage = result.get(result.size() - 1);
 
@@ -318,6 +240,89 @@ public class ChatMessage extends Message {
         }
 
         return result;
+    }
+
+    public static void computeMessage(List<ChatMessage> result, ChatMessage previousChatMessage, ChatMessage chatMessage) {
+        boolean shouldAddMessage = true;
+
+        if (previousChatMessage != null) {
+            chatMessage.isOtherPerson = !previousChatMessage.getFrom().equals(chatMessage.getFrom());
+
+            if (chatMessage.getRecordedAt().getTime() - previousChatMessage.getRecordedAt().getTime() > MINUTE) {
+                Calendar cal1 = Calendar.getInstance();
+                Calendar cal2 = Calendar.getInstance();
+                cal1.setTime(previousChatMessage.getRecordedAt());
+                cal2.setTime(chatMessage.getRecordedAt());
+                chatMessage.isFirstOfSection = !(cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                        cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR));
+                previousChatMessage.isLastOfSection = chatMessage.isFirstOfSection;
+
+                if (chatMessage.isFirstOfSection)
+                    chatMessage.isOtherPerson = true; // WE FORCE SHOWING THE USER IF'S THE FIRST MESSAGE OF THE SECTION
+            } else {
+                chatMessage.shouldDisplayTime = false;
+                chatMessage.isFirstOfSection = false;
+            }
+        } else {
+            chatMessage.isFirstOfSection = true;
+            chatMessage.isOtherPerson = true;
+            chatMessage.shouldDisplayTime = true;
+        }
+
+        if (chatMessage.isFirstOfSection) {
+            ChatMessage header = new ChatMessage();
+            header.setRecordedAt(chatMessage.recordedAt);
+            header.setLocalId("header_" + chatMessage.recordedAt.getTime());
+            header.isHeader = true;
+
+            // COMPUTING IF THE DATE IS TODAY'S DATE
+            Calendar cal1 = Calendar.getInstance();
+            Calendar cal2 = Calendar.getInstance();
+            cal2.setTime(header.getRecordedAt());
+            header.isToday = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                    cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+            result.add(header);
+        }
+
+        if (chatMessage.getType().equals(TEXT)) {
+            chatMessage.isOnlyEmoji = StringUtils.isOnlyEmoji(chatMessage.content);
+
+            if (!chatMessage.isOnlyEmoji) {
+                String[] urls = StringUtils.extractLinks(chatMessage.content);
+
+                if (urls.length > 0) {
+                    shouldAddMessage = false;
+
+                    String text = chatMessage.content;
+
+                    for (String url : urls) {
+                        String str = text.substring(0, text.indexOf(url));
+                        text = text.substring(text.indexOf(url) + url.length());
+
+                        if (!StringUtils.isEmpty(str)) {
+                            ChatMessage chatMessageCopy = cloneMessage(chatMessage, true);
+                            chatMessageCopy.content = str;
+                            result.add(chatMessageCopy);
+                        }
+
+                        ChatMessage chatMessageCopy = cloneMessage(chatMessage, StringUtils.isEmpty(str));
+                        chatMessageCopy.content = url;
+                        chatMessageCopy.isLink = true;
+                        result.add(chatMessageCopy);
+                    }
+
+                    if (!StringUtils.isEmpty(text)) {
+                        ChatMessage chatMessageCopy = cloneMessage(chatMessage, false);
+                        chatMessageCopy.content = text;
+                        result.add(chatMessageCopy);
+                    }
+                }
+            }
+        }
+
+        if (shouldAddMessage) {
+            result.add(chatMessage);
+        }
     }
 
     public static ChatMessage cloneMessage(ChatMessage chatMessageFrom, boolean shouldKeepState) {

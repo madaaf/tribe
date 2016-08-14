@@ -31,9 +31,16 @@ public interface ChatDataStore {
     Observable<IMqttToken> unsubscribe(final String topic);
 
     /**
-     * Get an {@link Observable} which will emit a {@link List< ChatRealm >}.
+     * Get an {@link Observable} which will emit a {@link com.tribe.app.data.rxmqtt.impl.RxMqttMessage}.
      *
-     * @param topic to get the messages from.
+     * @param friendshipId the friendshipId for which to get the messages for
      */
-    Observable<List<ChatRealm>> messages(final String topic);
+    Observable<List<ChatRealm>> messages(final String friendshipId);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link ChatRealm} containing info about the tribe.
+     *
+     * @param chatRealm the ChatRealm to save
+     */
+    Observable<ChatRealm> sendMessage(final ChatRealm chatRealm);
 }

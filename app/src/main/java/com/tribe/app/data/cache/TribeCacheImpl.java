@@ -54,7 +54,7 @@ public class TribeCacheImpl implements TribeCache {
                 Realm obsRealm = Realm.getDefaultInstance();
                 obsRealm.beginTransaction();
 
-                TribeRealm obj = obsRealm.where(TribeRealm.class).equalTo("id", tribeRealm.getLocalId()).findFirst();
+                TribeRealm obj = obsRealm.where(TribeRealm.class).equalTo("localId", tribeRealm.getLocalId()).findFirst();
                 if (obj != null)
                     obj.setMessageStatus(tribeRealm.getMessageStatus());
                 else
@@ -73,7 +73,7 @@ public class TribeCacheImpl implements TribeCache {
         Realm obsRealm = Realm.getDefaultInstance();
         obsRealm.beginTransaction();
 
-        TribeRealm obj = obsRealm.where(TribeRealm.class).equalTo("id", tribeRealm.getId()).findFirst();
+        TribeRealm obj = obsRealm.where(TribeRealm.class).equalTo("localId", tribeRealm.getId()).findFirst();
         if (obj != null)
             obj.setMessageStatus(tribeRealm.getMessageStatus());
         else
@@ -248,7 +248,7 @@ public class TribeCacheImpl implements TribeCache {
         realmObs.beginTransaction();
 
         for (TribeRealm tribeRealm : tribeRealmList) {
-            TribeRealm dbTribeRealm = realmObs.where(TribeRealm.class).equalTo("id", tribeRealm.getId()).findFirst();
+            TribeRealm dbTribeRealm = realmObs.where(TribeRealm.class).equalTo("localId", tribeRealm.getId()).findFirst();
             if (dbTribeRealm != null)
                 dbTribeRealm.setMessageStatus(MessageStatus.STATUS_ERROR);
         }

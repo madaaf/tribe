@@ -1,5 +1,6 @@
 package com.tribe.app.domain.interactor.text;
 
+import com.tribe.app.data.repository.chat.CloudChatDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
@@ -13,11 +14,11 @@ import rx.Observable;
  */
 public class ConnectAndSubscribeMQTT extends UseCase {
 
-    private ChatRepository chatRepository;
+    private CloudChatDataRepository chatRepository;
     private String topic;
 
     @Inject
-    public ConnectAndSubscribeMQTT(ChatRepository chatRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+    public ConnectAndSubscribeMQTT(CloudChatDataRepository chatRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
         super(threadExecutor, postExecutionThread);
         this.chatRepository = chatRepository;
     }

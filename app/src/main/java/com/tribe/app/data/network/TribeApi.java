@@ -1,6 +1,7 @@
 package com.tribe.app.data.network;
 
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
 
@@ -27,7 +28,7 @@ public interface TribeApi {
 
     @FormUrlEncoded
     @POST("/graphql")
-    Observable<List<TribeRealm>> tribes(@Field("query") String query);
+    Observable<List<MessageRealmInterface>> messages(@Field("query") String query);
 
     @FormUrlEncoded
     @POST("/graphql")

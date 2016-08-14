@@ -1,5 +1,6 @@
 package com.tribe.app.data.repository.tribe;
 
+import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.realm.mapper.TribeRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.tribe.datasource.TribeDataStore;
@@ -25,6 +26,7 @@ public class DiskTribeDataRepository implements TribeRepository {
     private final TribeDataStoreFactory tribeDataStoreFactory;
     private final TribeRealmDataMapper tribeRealmDataMapper;
     private final UserRealmDataMapper userRealmDataMapper;
+    private final JobManager jobManager;
 
     /**
      * Constructs a {@link TribeRepository}.
@@ -33,10 +35,12 @@ public class DiskTribeDataRepository implements TribeRepository {
      * @param tribeRealmDataMapper {@link UserRealmDataMapper}.
      */
     @Inject
-    public DiskTribeDataRepository(UserDataStoreFactory userDataStoreFactory,
+    public DiskTribeDataRepository(JobManager jobManager,
+                                   UserDataStoreFactory userDataStoreFactory,
                                    TribeDataStoreFactory tribeDataStoreFactory,
                                    TribeRealmDataMapper tribeRealmDataMapper,
                                    UserRealmDataMapper userRealmDataMapper) {
+        this.jobManager = jobManager;
         this.userDataStoreFactory = userDataStoreFactory;
         this.tribeDataStoreFactory = tribeDataStoreFactory;
         this.tribeRealmDataMapper = tribeRealmDataMapper;

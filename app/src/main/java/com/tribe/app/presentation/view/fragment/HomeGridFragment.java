@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.entity.PendingType;
@@ -76,6 +77,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private Recipient currentRecipient; // The recipient for the tribe currently being recorded
     private TribeMessage currentTribe; // The tribe currently being recorded / sent
     private TribeMessage mostRecentTribe;
+    private List<TribeMessage> pendingTribes;
     private BottomSheetDialog bottomSheetPendingTribeDialog;
     private RecyclerView recyclerViewPending;
     private LabelSheetAdapter labelSheetAdapter;
@@ -246,6 +248,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
 
     @Override
     public void updatePendingTribes(List<TribeMessage> pendingTribes) {
+        this.pendingTribes = pendingTribes;
         onPendingTribes.onNext(pendingTribes.size());
     }
 
@@ -399,6 +402,10 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
 
         List<LabelType> moreTypes = new ArrayList<>();
         moreTypes.add(new MoreType(getString(R.string.grid_more_clear_all_messages), MoreType.CLEAR_MESSAGES));
+        if (recipient instanceof Friendship) {
+            moreTypes.add(new MoreType(getString(R.string.grid_more_hide), MoreType.HIDE));
+            moreTypes.add(new MoreType(getString(R.string.grid_more_block_hide), MoreType.BLOCK_HIDE));
+        }
 
         prepareBottomSheetMore(recipient, moreTypes);
     }
@@ -451,6 +458,14 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
             if (recipient.getErrorTribes() != null && recipient.getErrorTribes().size() > 0)
                 pendingTypes.addAll(recipient.createPendingTribeItems(getContext(), recipientList.length > 1));
         }
+
+        pendingTypes.add(new PendingType(pendingTribes,
+                getString(R.string.grid_unsent_tribes_action_resend_all),
+                PendingType.RESEND));
+
+        pendingTypes.add(new PendingType(pendingTribes,
+                getString(R.string.grid_unsent_tribes_action_delete_all),
+                PendingType.DELETE));
 
         prepareBottomSheetPendingWithList(pendingTypes, recipientList.length > 1);
     }

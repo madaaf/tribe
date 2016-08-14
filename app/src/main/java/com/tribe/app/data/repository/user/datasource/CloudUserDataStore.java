@@ -7,15 +7,24 @@ import android.os.Build;
 import android.telephony.TelephonyManager;
 
 import com.tribe.app.R;
+import com.tribe.app.data.cache.ChatCache;
+import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.LocationRealm;
+import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
+import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.presentation.utils.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 import rx.Observable;
@@ -29,6 +38,8 @@ public class CloudUserDataStore implements UserDataStore {
     private final TribeApi tribeApi;
     private final LoginApi loginApi;
     private final UserCache userCache;
+    private final TribeCache tribeCache;
+    private final ChatCache chatCache;
     private final Context context;
     private AccessToken accessToken = null;
     private final Installation installation;
@@ -42,10 +53,13 @@ public class CloudUserDataStore implements UserDataStore {
      * @param context the context
      * @param accessToken the access token
      */
-    public CloudUserDataStore(UserCache userCache, TribeApi tribeApi, LoginApi loginApi,
+    public CloudUserDataStore(UserCache userCache, TribeCache tribeCache, ChatCache chatCache,
+                              TribeApi tribeApi, LoginApi loginApi,
                               AccessToken accessToken, Installation installation,
                               ReactiveLocationProvider reactiveLocationProvider, Context context) {
         this.userCache = userCache;
+        this.tribeCache = tribeCache;
+        this.chatCache = chatCache;
         this.tribeApi = tribeApi;
         this.loginApi = loginApi;
         this.context = context;
@@ -135,6 +149,21 @@ public class CloudUserDataStore implements UserDataStore {
         return this.tribeApi.createOrUpdateInstall(req).doOnNext(saveToCacheInstall);
     }
 
+    @Override
+    public Observable<List<MessageRealmInterface>> messages() {
+        StringBuffer ids = new StringBuffer();
+
+        int count = 0;
+        for (TribeRealm tribeRealm : tribeCache.tribesSent()) {
+            ids.append((count > 0 ? "," : "") +"\"" + tribeRealm.getId() + "\"");
+            count++;
+        }
+
+        String req = context.getString(R.string.messages_infos, !StringUtils.isEmpty(ids.toString()) ? context.getString(R.string.tribe_sent_infos, ids) : "");
+
+        return tribeApi.messages(req).doOnNext(saveToCacheMessages);
+    }
+
     private final Action1<AccessToken> saveToCacheAccessToken = accessToken -> {
         if (accessToken != null && accessToken.getAccessToken() != null) {
             if (this.accessToken == null) {
@@ -159,6 +188,21 @@ public class CloudUserDataStore implements UserDataStore {
     private final Action1<Installation> saveToCacheInstall = installRealm -> {
         if (installRealm != null) {
             CloudUserDataStore.this.userCache.put(installRealm);
+        }
+    };
+
+    private final Action1<List<MessageRealmInterface>> saveToCacheMessages = messageRealmList -> {
+        if (messageRealmList != null && messageRealmList.size() > 0) {
+            List<TribeRealm> tribeRealmList = new ArrayList<>();
+            List<ChatRealm> chatRealmList = new ArrayList<>();
+
+            for (MessageRealmInterface message : messageRealmList) {
+                if (message instanceof TribeRealm) tribeRealmList.add((TribeRealm) message);
+                else if (message instanceof ChatRealm) chatRealmList.add((ChatRealm) message);
+            }
+
+            CloudUserDataStore.this.tribeCache.put(tribeRealmList);
+            CloudUserDataStore.this.chatCache.put(chatRealmList);
         }
     };
 }

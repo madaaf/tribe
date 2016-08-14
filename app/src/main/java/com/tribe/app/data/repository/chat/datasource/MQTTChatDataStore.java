@@ -63,4 +63,9 @@ public class MQTTChatDataStore implements ChatDataStore {
                 .map(rxMqttMessage -> mqttMessageDataMapper.transform(rxMqttMessage))
                 .doOnNext(saveToCacheAction);
     }
+
+    @Override
+    public Observable<ChatRealm> sendMessage(ChatRealm chatRealm) {
+        return null;
+    }
 }

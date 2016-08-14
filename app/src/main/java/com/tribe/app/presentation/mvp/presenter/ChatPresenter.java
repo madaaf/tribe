@@ -5,9 +5,13 @@ import android.graphics.Bitmap;
 import android.provider.MediaStore;
 
 import com.tribe.app.domain.entity.ChatMessage;
+import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.text.ConnectAndSubscribeMQTT;
 import com.tribe.app.domain.interactor.text.DisconnectMQTT;
+import com.tribe.app.domain.interactor.text.GetDiskChatMessageList;
+import com.tribe.app.domain.interactor.text.SaveChat;
 import com.tribe.app.domain.interactor.text.SubscribingMQTT;
 import com.tribe.app.domain.interactor.text.UnsubscribeMQTT;
 import com.tribe.app.presentation.mvp.view.MessageView;
@@ -32,14 +36,16 @@ public class ChatPresenter implements Presenter {
     private final SubscribingMQTT subscribingMQTT;
     private final DisconnectMQTT disconnectMQTT;
     private final UnsubscribeMQTT unsubscribeMQTT;
-    //private final UseCaseDisk diskGetChatMessages;
+    private final GetDiskChatMessageList diskGetChatMessages;
+    private final SaveChat saveChat;
 
     private MessageView messageView;
 
     private String friendId;
 
     @Inject
-    public ChatPresenter(
+    public ChatPresenter(@Named("diskGetChatMessages") GetDiskChatMessageList diskGetChatMessages,
+                         @Named("saveChat") SaveChat saveChat,
                          @Named("connectAndSubscribe") ConnectAndSubscribeMQTT connectAndSubscribeMQTT,
                          @Named("subscribing") SubscribingMQTT subscribingMQTT,
                          @Named("disconnect") DisconnectMQTT disconnectMQTT,
@@ -48,8 +54,8 @@ public class ChatPresenter implements Presenter {
         this.subscribingMQTT = subscribingMQTT;
         this.unsubscribeMQTT = unsubscribeMQTT;
         this.disconnectMQTT = disconnectMQTT;
-//        this.diskGetChatMessages = diskGetChatMessages;
-//        @Named("diskGetChatMessages") UseCaseDisk diskGetChatMessages,
+        this.diskGetChatMessages = diskGetChatMessages;
+        this.saveChat = saveChat;
     }
 
     @Override
@@ -68,7 +74,7 @@ public class ChatPresenter implements Presenter {
 
     @Override
     public void onStop() {
-        disconnectMQTT.execute(new DisconnectMQTTSubscriber());
+        //disconnectMQTT.execute(new DisconnectMQTTSubscriber());
     }
 
     @Override
@@ -78,14 +84,20 @@ public class ChatPresenter implements Presenter {
 
     @Override
     public void onDestroy() {
-        connectAndSubscribeMQTT.unsubscribe();
-        subscribingMQTT.unsubscribe();
-        disconnectMQTT.unsubscribe();
+//        connectAndSubscribeMQTT.unsubscribe();
+//        subscribingMQTT.unsubscribe();
+//        disconnectMQTT.unsubscribe();
+        diskGetChatMessages.unsubscribe();
     }
 
     @Override
     public void attachView(View v) {
         messageView = (MessageView) v;
+    }
+
+    public void loadChatMessages(String friendshipId) {
+        diskGetChatMessages.setFriendshipId(friendshipId);
+        diskGetChatMessages.execute(new ChatMessageListSubscriber());
     }
 
     public void loadThumbnail(int radius) {
@@ -103,16 +115,22 @@ public class ChatPresenter implements Presenter {
                 int image_column_index = imageCursor
                         .getColumnIndex(MediaStore.Images.Media._ID);
 
-                imageCursor.moveToPosition(0);
-                int id = imageCursor.getInt(image_column_index);
-                Bitmap thumbnail = MediaStore.Images.Thumbnails.getThumbnail(
-                        messageView.context().getApplicationContext().getContentResolver(), id,
-                        MediaStore.Images.Thumbnails.MICRO_KIND, null);
+                Bitmap thumbnail = null;
+
+                if (imageCursor != null && imageCursor.moveToFirst()) {
+                    int id = imageCursor.getInt(image_column_index);
+                    thumbnail = MediaStore.Images.Thumbnails.getThumbnail(
+                            messageView.context().getApplicationContext().getContentResolver(), id,
+                            MediaStore.Images.Thumbnails.MICRO_KIND, null);
+                }
 
                 imageCursor.close();
 
-                RoundedCornersTransformation roundedCornersTransformation = new RoundedCornersTransformation(radius, 0, RoundedCornersTransformation.CornerType.ALL);
-                subscriber.onNext(roundedCornersTransformation.transform(thumbnail));
+                if (thumbnail != null) {
+                    RoundedCornersTransformation roundedCornersTransformation = new RoundedCornersTransformation(radius, 0, RoundedCornersTransformation.CornerType.ALL);
+                    subscriber.onNext(roundedCornersTransformation.transform(thumbnail));
+                }
+
                 subscriber.onCompleted();
             }
         }).subscribeOn(Schedulers.newThread())
@@ -128,8 +146,10 @@ public class ChatPresenter implements Presenter {
         connectAndSubscribeMQTT.execute(new ConnectAndSubscribeMQTTSubscriber());
     }
 
-    public void sendMessage(String str) {
-        System.out.println("HEY : " + str);
+    public void sendMessage(User currentUser, Recipient recipient, String str) {
+        ChatMessage chatMessage = ChatMessage.createMessage(currentUser, recipient, str);
+        saveChat.setChatMessage(chatMessage);
+        saveChat.execute(new SaveChatSubscriber());
     }
 
     public void sendTypingEvent() {
@@ -169,7 +189,7 @@ public class ChatPresenter implements Presenter {
         }
 
         @Override
-        public void onNext(List<ChatMessage> chatMessageList) {
+        public void onNext(List<com.tribe.app.domain.entity.ChatMessage> chatMessageList) {
             messageView.renderMessageList(chatMessageList);
         }
     }
@@ -189,6 +209,40 @@ public class ChatPresenter implements Presenter {
         @Override
         public void onNext(IMqttToken token) {
             System.out.println("ON NEXT DISCONNECT");
+        }
+    }
+
+    private final class ChatMessageListSubscriber extends DefaultSubscriber<List<ChatMessage>> {
+        @Override
+        public void onCompleted() {
+            super.onCompleted();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(List<ChatMessage> chatMessageList) {
+            messageView.renderMessageList(chatMessageList);
+        }
+    }
+
+    private final class SaveChatSubscriber extends DefaultSubscriber<ChatMessage> {
+        @Override
+        public void onCompleted() {
+            super.onCompleted();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(ChatMessage chatMessage) {
+            System.out.println("Chat Message saved ! : " + chatMessage.getLocalId());
         }
     }
 }

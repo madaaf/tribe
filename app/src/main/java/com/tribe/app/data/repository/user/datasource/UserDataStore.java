@@ -2,9 +2,12 @@ package com.tribe.app.data.repository.user.datasource;
 
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
+
+import java.util.List;
 
 import rx.Observable;
 
@@ -48,4 +51,10 @@ public interface UserDataStore {
      *
      */
     Observable<Installation> createOrUpdateInstall(final String token);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link List <MessageRealmInterface>} containing infos
+     * about the messages received and sent.
+     */
+    Observable<List<MessageRealmInterface>> messages();
 }

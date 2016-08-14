@@ -2,6 +2,8 @@ package com.tribe.app.data.repository.user.datasource;
 
 import android.content.Context;
 
+import com.tribe.app.data.cache.ChatCache;
+import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
@@ -21,6 +23,8 @@ public class UserDataStoreFactory {
 
     private final Context context;
     private final UserCache userCache;
+    private final TribeCache tribeCache;
+    private final ChatCache chatCache;
     private final TribeApi tribeApi;
     private final LoginApi loginApi;
     private final AccessToken accessToken;
@@ -28,15 +32,18 @@ public class UserDataStoreFactory {
     private final ReactiveLocationProvider reactiveLocationProvider;
 
     @Inject
-    public UserDataStoreFactory(Context context, UserCache userCache, TribeApi tribeApi,
-                                LoginApi loginApi, AccessToken accessToken, Installation installation,
-                                ReactiveLocationProvider reactiveLocationProvider) {
+    public UserDataStoreFactory(Context context, UserCache userCache,
+                                TribeCache tribeCache, ChatCache chatCache,
+                                TribeApi tribeApi, LoginApi loginApi, AccessToken accessToken,
+                                Installation installation, ReactiveLocationProvider reactiveLocationProvider) {
         if (context == null || userCache == null) {
             throw new IllegalArgumentException("Constructor parameters cannot be null!");
         }
 
         this.context = context.getApplicationContext();
         this.userCache = userCache;
+        this.tribeCache = tribeCache;
+        this.chatCache = chatCache;
         this.tribeApi = tribeApi;
         this.loginApi = loginApi;
         this.accessToken = accessToken;
@@ -53,7 +60,7 @@ public class UserDataStoreFactory {
      * Create {@link UserDataStore} to retrieve data from the Cloud.
      */
     public UserDataStore createCloudDataStore() {
-        return new CloudUserDataStore(this.userCache, this.tribeApi, this.loginApi,
+        return new CloudUserDataStore(this.userCache, this.tribeCache, this.chatCache, this.tribeApi, this.loginApi,
                 this.accessToken, this.installation, this.reactiveLocationProvider, this.context);
     }
 }

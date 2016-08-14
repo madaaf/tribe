@@ -3,7 +3,6 @@ package com.tribe.app.presentation.view.adapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -71,7 +70,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
         if (chatMessage.getLocalId() == null) {
             return chatMessage.hashCode();
         } else {
-            return chatMessage.getLocalId().hashCode() * 31 + chatMessage.getContent().hashCode();
+            return chatMessage.getLocalId().hashCode() * 31;
         }
     }
 
@@ -103,6 +102,10 @@ public class MessageAdapter extends RecyclerView.Adapter {
         items.clear();
         items.addAll(chatMessageList);
         notifyDataSetChanged();
+    }
+
+    public List<ChatMessage> getItems() {
+        return items;
     }
 
     public void addItem(ChatMessage chatMessage) {

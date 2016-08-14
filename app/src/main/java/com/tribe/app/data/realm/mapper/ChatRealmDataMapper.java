@@ -65,7 +65,7 @@ public class ChatRealmDataMapper {
     public ChatRealm transform(ChatMessage chatMessage) {
         ChatRealm chatRealm = null;
 
-        if (chatRealm != null) {
+        if (chatMessage != null) {
             chatRealm = new ChatRealm();
             chatRealm.setId(chatMessage.getId());
             chatRealm.setLocalId(chatMessage.getLocalId());

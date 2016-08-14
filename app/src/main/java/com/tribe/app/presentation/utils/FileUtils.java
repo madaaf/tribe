@@ -74,7 +74,7 @@ public class FileUtils {
         return finalDir;
     }
 
-    public static String generateIdForTribe() {
+    public static String generateIdForMessage() {
         return UUID.randomUUID().toString().replace("-", "");
     }
 }

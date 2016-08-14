@@ -24,9 +24,10 @@ import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
 import com.tribe.app.data.network.deserializer.NewTribeDeserializer;
 import com.tribe.app.data.network.deserializer.TribeAccessTokenDeserializer;
 import com.tribe.app.data.network.deserializer.TribeUserDeserializer;
-import com.tribe.app.data.network.deserializer.UserTribeListDeserializer;
+import com.tribe.app.data.network.deserializer.UserMessageListDeserializer;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
@@ -82,7 +83,7 @@ public class NetModule {
                 .registerTypeAdapter(new TypeToken<UserRealm>() {}.getType(), new TribeUserDeserializer<>())
                 .registerTypeAdapter(AccessToken.class, new TribeAccessTokenDeserializer())
                 .registerTypeAdapter(TribeRealm.class, new NewTribeDeserializer<>())
-                .registerTypeAdapter(new TypeToken<List<TribeRealm>>() {}.getType(), new UserTribeListDeserializer<>(utcSimpleDate, userCache, tribeCache, currentUser))
+                .registerTypeAdapter(new TypeToken<List<MessageRealmInterface>>() {}.getType(), new UserMessageListDeserializer<>(utcSimpleDate, userCache, tribeCache, currentUser))
                 .registerTypeAdapter(Installation.class, new NewInstallDeserializer<>())
                 .registerTypeAdapter(Date.class, new DateDeserializer(utcSimpleDateFull))
                 .create();

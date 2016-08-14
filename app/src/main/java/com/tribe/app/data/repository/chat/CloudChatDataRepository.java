@@ -68,4 +68,14 @@ public class CloudChatDataRepository implements ChatRepository {
     public Observable<IMqttToken> unsubscribe(String topic) {
         return chatDataStoreFactory.createMQTTStore().unsubscribe(topic);
     }
+
+    @Override
+    public Observable<List<ChatMessage>> messages(String friendshipId) {
+        return null;
+    }
+
+    @Override
+    public Observable<ChatMessage> sendMessage(ChatMessage chatMessage) {
+        return null;
+    }
 }

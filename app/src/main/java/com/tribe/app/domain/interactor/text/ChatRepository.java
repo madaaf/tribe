@@ -43,10 +43,17 @@ public interface ChatRepository {
      */
     Observable<IMqttToken> unsubscribe(final String topic);
 
-//    /**
-//     * Get an {@link Observable} which will emit a {@link com.tribe.app.data.rxmqtt.impl.RxMqttMessage}.
-//     *
-//     * @param to the
-//     */
-//    Observable<IMqttToken> chatMessages(final String to);
+    /**
+     * Get an {@link Observable} which will emit a {@link com.tribe.app.data.rxmqtt.impl.RxMqttMessage}.
+     *
+     * @param friendshipId the friendshipId for which to get the messages for
+     */
+    Observable<List<ChatMessage>> messages(final String friendshipId);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link ChatMessage} containing info about the tribe.
+     *
+     * @param chatMessage the ChatMessage to save
+     */
+    Observable<ChatMessage> sendMessage(final ChatMessage chatMessage);
 }

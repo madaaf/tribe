@@ -9,13 +9,14 @@ import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
-import com.tribe.app.presentation.view.widget.EditTextFont;
+import com.tribe.app.presentation.view.widget.ActionEditText;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,7 +30,7 @@ import rx.subjects.PublishSubject;
 public class ChatInputView extends FrameLayout {
 
     @BindView(R.id.editTextMessage)
-    EditTextFont editTextMessage;
+    ActionEditText editTextMessage;
 
     @BindView(R.id.btnPhotoPicker)
     ViewGroup btnPhotoPicker;
@@ -100,6 +101,11 @@ public class ChatInputView extends FrameLayout {
                 }).doOnNext(s ->
                     lastOnTypingNotification = SystemClock.elapsedRealtime())
                 .subscribe(textChangeEventSubject);
+
+        RxTextView.editorActions(editTextMessage).filter(action -> action.equals(EditorInfo.IME_ACTION_SEND))
+                .map(action -> editTextMessage.getText().toString())
+                .doOnNext(s -> clearText())
+                .subscribe(sendClickEventSubject);
     }
 
     public Observable<String> textChanges() {

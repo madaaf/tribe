@@ -87,7 +87,7 @@
         }
     </string>
 
-    <string name="tribe.infos">
+    <string name="messages.infos">
         {
             user {
                 tribes {
@@ -114,6 +114,7 @@
                     from
                     to
                     to_group
+                    type
                     content
                     recorded_at
                 }

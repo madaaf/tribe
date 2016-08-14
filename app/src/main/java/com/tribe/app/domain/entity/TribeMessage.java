@@ -114,7 +114,7 @@ public class TribeMessage extends Message {
 
     public static TribeMessage createTribe(User user, Recipient recipient, @CameraWrapper.TribeMode String mode) {
         TribeMessage tribe = new TribeMessage();
-        tribe.setLocalId(FileUtils.generateIdForTribe());
+        tribe.setLocalId(FileUtils.generateIdForMessage());
         tribe.setRecordedAt(new Date(System.currentTimeMillis()));
         tribe.setFrom(user);
         tribe.setTo(recipient);

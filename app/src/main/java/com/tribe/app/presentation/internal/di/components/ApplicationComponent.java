@@ -4,16 +4,19 @@ import android.content.Context;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.squareup.picasso.Picasso;
+import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.job.DownloadTribeJob;
 import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
 import com.tribe.app.data.network.job.SendTribeJob;
+import com.tribe.app.data.network.job.UpdateMessagesJob;
 import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
-import com.tribe.app.data.network.job.UpdateTribesJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.repository.chat.CloudChatDataRepository;
+import com.tribe.app.data.repository.chat.DiskChatDataRepository;
 import com.tribe.app.data.repository.tribe.CloudTribeDataRepository;
 import com.tribe.app.data.repository.tribe.DiskTribeDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
@@ -21,7 +24,6 @@ import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
-import com.tribe.app.domain.interactor.text.ChatRepository;
 import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
 import com.tribe.app.presentation.internal.di.modules.NetModule;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
@@ -75,7 +77,7 @@ public interface ApplicationComponent {
     void inject(DownloadTribeJob downloadTribeJob);
     void inject(TribeFirebaseInstanceIDService instanceIDService);
     void inject(UpdateUserJob updateUserJob);
-    void inject(UpdateTribesJob updateTribesJob);
+    void inject(UpdateMessagesJob updateMessagesJob);
     void inject(UpdateTribesErrorStatusJob updateTribesErrorStatusJob);
     void inject(MarkTribeListAsReadJob markTribeListAsReadJob);
     void inject(PhotoMessageAdapterDelegate photoMessageAdapterDelegate);
@@ -91,9 +93,13 @@ public interface ApplicationComponent {
 
     DiskUserDataRepository diskUserRepository();
 
-    UserCache userCache();
+    CloudTribeDataRepository cloudTribeRepository();
 
-    ChatRepository textRepository();
+    DiskTribeDataRepository diskTribeRepository();
+
+    CloudChatDataRepository cloudChatRepository();
+
+    DiskChatDataRepository diskChatRepository();
 
     TribeAuthorizer tribeAuthorizer();
 
@@ -105,11 +111,11 @@ public interface ApplicationComponent {
 
     User currentUser();
 
-    CloudTribeDataRepository cloudTribeRepository();
-
-    DiskTribeDataRepository diskTribeRepository();
-
     TribeCache tribeCache();
+
+    UserCache userCache();
+
+    ChatCache chatCache();
 
     LibVLC libVLC();
 

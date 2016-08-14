@@ -7,12 +7,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.inject.Singleton;
+
 import io.realm.RealmList;
 
 /**
  * Mapper class used to transform {@link FriendshipRealm} (in the data layer) to {@link Friendship} in the
  * domain layer.
  */
+@Singleton
 public class FriendshipRealmDataMapper {
 
     private UserRealmDataMapper userRealmDataMapper;

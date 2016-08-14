@@ -1,6 +1,7 @@
 package com.tribe.app.domain.interactor.text;
 
 import com.tribe.app.data.repository.chat.DiskChatDataRepository;
+import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
 
@@ -11,23 +12,23 @@ import rx.Observable;
 /**
  * Created by tiago on 22/05/2016.
  */
-public class GetDiskChatMessageList extends UseCaseDisk {
+public class SaveChat extends UseCaseDisk {
 
     private ChatRepository chatDataRepository;
-    private String friendshipId;
+    private ChatMessage chatMessage;
 
     @Inject
-    public GetDiskChatMessageList(DiskChatDataRepository chatDataRepository, PostExecutionThread postExecutionThread) {
+    public SaveChat(DiskChatDataRepository chatDataRepository, PostExecutionThread postExecutionThread) {
         super(postExecutionThread);
         this.chatDataRepository = chatDataRepository;
     }
 
-    public void setFriendshipId(String friendshipId) {
-        this.friendshipId = friendshipId;
+    public void setChatMessage(ChatMessage chatMessage) {
+        this.chatMessage = chatMessage;
     }
 
     @Override
     protected Observable buildUseCaseObservable() {
-        return chatDataRepository.messages(friendshipId);
+        return chatDataRepository.sendMessage(chatMessage);
     }
 }

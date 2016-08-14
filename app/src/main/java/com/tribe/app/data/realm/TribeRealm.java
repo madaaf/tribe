@@ -12,10 +12,11 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by tiago on 29/06/2016.
  */
-public class TribeRealm extends RealmObject {
+public class TribeRealm extends RealmObject implements MessageRealmInterface {
 
     @PrimaryKey
     private String localId;
+
     private String id;
     private UserRealm from;
     private @CameraWrapper.TribeMode String type;

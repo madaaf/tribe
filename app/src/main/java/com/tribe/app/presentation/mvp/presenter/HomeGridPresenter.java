@@ -4,7 +4,7 @@ import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.DownloadTribeJob;
 import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
 import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
-import com.tribe.app.data.network.job.UpdateTribesJob;
+import com.tribe.app.data.network.job.UpdateMessagesJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
@@ -104,7 +104,7 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
     }
 
     public void loadTribeList() {
-        jobManager.addJobInBackground(new UpdateTribesJob());
+        jobManager.addJobInBackground(new UpdateMessagesJob());
 
         TribeListSubscriber subscriber = new TribeListSubscriber();
         diskGetTribeListUsecase.execute(subscriber);
@@ -131,8 +131,8 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         this.homeGridView.futureUpdateTribes(tribes);
     }
 
-    private void updatePendingTribes(List<TribeMessage> tribes) {
-        this.homeGridView.updatePendingTribes(tribes);
+    private void updatePendingTribes(List<TribeMessage> pendingTribes) {
+        this.homeGridView.updatePendingTribes(pendingTribes);
     }
 
     public void downloadTribes(List<TribeMessage> tribes) {

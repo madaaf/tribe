@@ -17,15 +17,15 @@ import javax.inject.Named;
 /**
  * Created by tiago on 15/07/2016.
  */
-public class UpdateTribesJob extends BaseJob {
+public class UpdateMessagesJob extends BaseJob {
 
-    private static final String TAG = "UpdateTribesJob";
+    private static final String TAG = "UpdateMessagesJob";
 
     @Inject
-    @Named("cloudGetTribes")
-    UseCase cloudGetTribes;
+    @Named("cloudGetMessages")
+    UseCase cloudGetMessages;
 
-    public UpdateTribesJob() {
+    public UpdateMessagesJob() {
         super(new Params(Priority.HIGH).requireNetwork().singleInstanceBy(TAG).groupBy(TAG));
     }
 
@@ -36,7 +36,7 @@ public class UpdateTribesJob extends BaseJob {
 
     @Override
     public void onRun() throws Throwable {
-        cloudGetTribes.execute(new TribeListSubscriber());
+        cloudGetMessages.execute(new TribeListSubscriber());
     }
 
     @Override
@@ -61,7 +61,7 @@ public class UpdateTribesJob extends BaseJob {
 
         @Override
         public void onCompleted() {
-            cloudGetTribes.unsubscribe();
+            cloudGetMessages.unsubscribe();
         }
 
         @Override

@@ -6,8 +6,11 @@ package com.tribe.app.domain.interactor.user;
 
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.User;
+
+import java.util.List;
 
 import rx.Observable;
 
@@ -54,4 +57,10 @@ public interface UserRepository {
      *
      */
     Observable<Installation> createOrUpdateInstall(final String token);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link List <Message>} containing infos
+     * about the tribes received and sent.
+     */
+    Observable<List<Message>> messages();
 }

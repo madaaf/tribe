@@ -3,8 +3,11 @@ package com.tribe.app.data.repository.user.datasource;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.UserRealm;
+
+import java.util.List;
 
 import rx.Observable;
 
@@ -47,6 +50,15 @@ public class DiskUserDataStore implements UserDataStore {
 
     @Override
     public Observable<Installation> createOrUpdateInstall(String token) {
+        return null;
+    }
+
+    /***
+     * NOT USED
+     * @return
+     */
+    @Override
+    public Observable<List<MessageRealmInterface>> messages() {
         return null;
     }
 }

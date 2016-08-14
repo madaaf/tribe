@@ -40,6 +40,8 @@
     <string name="grid_unsent_tribes_action_resend_all">Resend all</string>
     <string name="grid_unsent_tribes_action_delete_all">Delete all</string>
     <string name="grid_more_clear_all_messages">Clear all messages</string>
+    <string name="grid_more_block_hide">Block &amp; hide</string>
+    <string name="grid_more_hide">Hide</string>
 
     <!-- PERMISSIONS -->
     <string name="permission_camera_enable_button_title">Enable\ncamera</string>

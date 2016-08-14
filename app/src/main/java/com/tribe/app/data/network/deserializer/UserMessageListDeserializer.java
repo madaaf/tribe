@@ -9,7 +9,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
+import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.LocationRealm;
+import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.TribeRecipientRealm;
 import com.tribe.app.data.realm.WeatherRealm;
@@ -21,14 +23,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserTribeListDeserializer<T> implements JsonDeserializer<T> {
+public class UserMessageListDeserializer<T> implements JsonDeserializer<T> {
 
     private SimpleDateFormat utcSimpleDate;
     private User currentUser;
     private UserCache userCache;
     private TribeCache tribeCache;
 
-    public UserTribeListDeserializer(SimpleDateFormat utcSimpleDate, UserCache userCache, TribeCache tribeCache, User currentUser) {
+    public UserMessageListDeserializer(SimpleDateFormat utcSimpleDate, UserCache userCache, TribeCache tribeCache, User currentUser) {
         this.utcSimpleDate = utcSimpleDate;
         this.userCache = userCache;
         this.tribeCache = tribeCache;
@@ -39,15 +41,23 @@ public class UserTribeListDeserializer<T> implements JsonDeserializer<T> {
     public T deserialize(JsonElement je, Type typeOfT,
                                JsonDeserializationContext context) throws JsonParseException {
 
-        JsonArray results = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("user").getAsJsonArray("tribes");
+        JsonObject user = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("user");
+        JsonArray resultsTribes = user.getAsJsonArray("tribes");
+        JsonArray resultsChatMessages = user.getAsJsonArray("unSeenMessages");
         JsonArray resultsTribesSent = je.getAsJsonObject().getAsJsonObject("data").getAsJsonArray("tribes");
 
-        List<TribeRealm> tribes = new ArrayList<>();
+        List<MessageRealmInterface> messages = new ArrayList<>();
 
-        for (JsonElement obj : results) {
+        for (JsonElement obj : resultsTribes) {
             TribeRealm tribeRealm = parseTribe(obj);
             if (tribeRealm.getFrom() != null && ((tribeRealm.isToGroup() && tribeRealm.getGroup() != null) || !tribeRealm.isToGroup()))
-                tribes.add(tribeRealm);
+                messages.add(tribeRealm);
+        }
+
+        for (JsonElement obj : resultsChatMessages) {
+            ChatRealm chatRealm = parseChat(obj);
+            if (chatRealm.getFrom() != null && ((chatRealm.isToGroup() && chatRealm.getGroup() != null) || !chatRealm.isToGroup()))
+                messages.add(chatRealm);
         }
 
         if (resultsTribesSent != null) {
@@ -68,11 +78,11 @@ public class UserTribeListDeserializer<T> implements JsonDeserializer<T> {
                 }
 
                 tribeRealm.setRecipientList(tribeCache.createTribeRecipientRealm(tribeRecipientRealmList));
-                tribes.add(tribeRealm);
+                messages.add(tribeRealm);
             }
         }
 
-        return (T) tribes;
+        return (T) messages;
     }
 
     private TribeRealm parseTribe(JsonElement obj) {
@@ -121,5 +131,35 @@ public class UserTribeListDeserializer<T> implements JsonDeserializer<T> {
         }
 
         return tribeRealm;
+    }
+
+    private ChatRealm parseChat(JsonElement obj) {
+        ChatRealm chatRealm = new ChatRealm();
+        JsonObject json = obj.getAsJsonObject();
+        chatRealm.setId(json.get("id").getAsString());
+        chatRealm.setLocalId(json.get("id").getAsString());
+
+        boolean toGroup = json.get("to_group").getAsBoolean();
+
+        if (toGroup) {
+            chatRealm.setGroup(userCache.groupInfos(json.get("to").getAsString()));
+        } else {
+            if (!currentUser.getId().equals(json.get("to").getAsString())) {
+                chatRealm.setFriendshipRealm(userCache.friendshipForUserId(json.get("to").getAsString()));
+            }
+        }
+
+        chatRealm.setToGroup(toGroup);
+        chatRealm.setFrom(userCache.userInfosNoObs(json.get("from").getAsString()));
+        chatRealm.setType(json.get("type").getAsString());
+        chatRealm.setContent(json.get("content").getAsString());
+
+        try {
+            chatRealm.setRecordedAt(utcSimpleDate.parse(json.get("recorded_at").getAsString()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return chatRealm;
     }
 }

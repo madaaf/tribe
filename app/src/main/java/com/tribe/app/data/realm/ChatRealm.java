@@ -12,7 +12,7 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by tiago on 29/06/2016.
  */
-public class ChatRealm extends RealmObject {
+public class ChatRealm extends RealmObject implements MessageRealmInterface {
 
     @PrimaryKey
     private String localId;
@@ -24,6 +24,7 @@ public class ChatRealm extends RealmObject {
     private FriendshipRealm friendshipRealm;
     private GroupRealm group;
     private Date recorded_at;
+    private Date created_at;
     private boolean to_group = false;
     private @MessageStatus.Status String messageStatus;
     private Date updatedAt;
@@ -123,6 +124,14 @@ public class ChatRealm extends RealmObject {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public Date getCreatedAt() {
+        return created_at;
+    }
+
+    public void setCreated_at(Date createdAt) {
+        this.created_at = createdAt;
     }
 
     public ChatRealm cloneMessageRealm(ChatRealm fromRealm) {

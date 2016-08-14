@@ -2,6 +2,8 @@ package com.tribe.app.presentation.internal.di.modules;
 
 import com.tribe.app.domain.interactor.text.ConnectAndSubscribeMQTT;
 import com.tribe.app.domain.interactor.text.DisconnectMQTT;
+import com.tribe.app.domain.interactor.text.GetDiskChatMessageList;
+import com.tribe.app.domain.interactor.text.SaveChat;
 import com.tribe.app.domain.interactor.text.SubscribingMQTT;
 import com.tribe.app.domain.interactor.text.UnsubscribeMQTT;
 import com.tribe.app.presentation.internal.di.scope.PerActivity;
@@ -46,5 +48,19 @@ public class ChatModule {
     @Named("unsubscribe")
     UnsubscribeMQTT provideUnsubscribeMQTTUseCase(UnsubscribeMQTT unsubscribeMQTT) {
         return unsubscribeMQTT;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("diskGetChatMessages")
+    GetDiskChatMessageList provideGetDiskChatMessageList(GetDiskChatMessageList getDiskChatMessageList) {
+        return getDiskChatMessageList;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("saveChat")
+    SaveChat provideSaveChat(SaveChat saveChat) {
+        return saveChat;
     }
 }

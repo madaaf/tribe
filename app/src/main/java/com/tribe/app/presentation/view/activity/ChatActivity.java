@@ -19,7 +19,6 @@ import android.widget.ImageView;
 
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.ChatMessage;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.internal.di.components.DaggerChatComponent;
 import com.tribe.app.presentation.mvp.presenter.ChatPresenter;
@@ -31,10 +30,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -96,6 +92,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
     // LAYOUT VARIABLES
     private MessageLayoutManager messageLayoutManager;
     private MessageAdapter messageAdapter;
+    private List<ChatMessage> chatMessageList;
     private ImageView recyclerViewImageView;
     private ImageView imageViewClicked;
     private int widthImageViewClicked;
@@ -151,6 +148,8 @@ public class ChatActivity extends BaseActivity implements MessageView {
         recyclerViewText.setLayoutManager(messageLayoutManager);
         messageAdapter = new MessageAdapter(LayoutInflater.from(this), this);
         recyclerViewText.setAdapter(messageAdapter);
+
+        //recyclerViewText.getItemAnimator().setChangeDuration(0);
 
         subscriptions.add(messageAdapter
                 .clickPhoto()
@@ -232,90 +231,90 @@ public class ChatActivity extends BaseActivity implements MessageView {
                 })
         );
 
-        List<ChatMessage> chatMessageList = new ArrayList<>();
+//        List<ChatMessage> chatMessageList = new ArrayList<>();
+//
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.add(Calendar.DATE, -5);
+//
+//        Friendship friendship = (Friendship) recipient;
+//
+//        ChatMessage message = new ChatMessage();
+//        message.setId(UUID.randomUUID().toString());
+//        message.setFrom(getCurrentUser());
+//        message.setContent("Hey ça roule ou quoi batard ?");
+//        message.setRecordedAt(calendar.getTime());
+//        message.setTo(recipient);
+//        message.setType(ChatMessage.TEXT);
+//        chatMessageList.add(message);
+//
+//        calendar.add(Calendar.DATE, 2);
+//
+//        ChatMessage message2 = new ChatMessage();
+//        message2.setId(UUID.randomUUID().toString());
+//        message2.setFrom(getCurrentUser());
+//        message2.setContent("LOLs");
+//        message2.setRecordedAt(calendar.getTime());
+//        message2.setTo(recipient);
+//        message2.setType(ChatMessage.TEXT);
+//        chatMessageList.add(message2);
+//
+//        calendar.add(Calendar.MINUTE, 3);
+//
+//        ChatMessage message3 = new ChatMessage();
+//        message3.setId(UUID.randomUUID().toString());
+//        message3.setFrom(getCurrentUser());
+//        message3.setContent("MDR");
+//        message3.setRecordedAt(calendar.getTime());
+//        message3.setTo(recipient);
+//        message3.setType(ChatMessage.TEXT);
+//        chatMessageList.add(message3);
+//
+//        ChatMessage message4 = new ChatMessage();
+//        message4.setId(UUID.randomUUID().toString());
+//        message4.setFrom(friendship.getFriend());
+//        message4.setContent("Ha ha ha ha j'avoue t'as trop réson");
+//        message4.setRecordedAt(new Date());
+//        message4.setTo(recipient);
+//        message4.setType(ChatMessage.TEXT);
+//        chatMessageList.add(message4);
+//
+//        ChatMessage message5 = new ChatMessage();
+//        message5.setId(UUID.randomUUID().toString());
+//        message5.setFrom(friendship.getFriend());
+//        message5.setContent("\uD83D\uDE00" + "\uD83D\uDE00" + "\uD83D\uDE00" + "\uD83D\uDE00");
+//        message5.setRecordedAt(new Date());
+//        message5.setTo(recipient);
+//        message5.setType(ChatMessage.TEXT);
+//        chatMessageList.add(message5);
+//
+//        ChatMessage chatMessage6 = new ChatMessage();
+//        chatMessage6.setId(UUID.randomUUID().toString());
+//        chatMessage6.setFrom(friendship.getFriend());
+//        chatMessage6.setContent("\uD83D\uDC8C" + "love ya");
+//        chatMessage6.setRecordedAt(new Date());
+//        chatMessage6.setTo(recipient);
+//        chatMessage6.setType(ChatMessage.TEXT);
+//        chatMessageList.add(chatMessage6);
+//
+//        ChatMessage chatMessage7 = new ChatMessage();
+//        chatMessage7.setId(UUID.randomUUID().toString());
+//        chatMessage7.setFrom(getCurrentUser());
+//        chatMessage7.setContent("Hey ça va ? Tu connais : http://www.google.fr ? Ca défonce !");
+//        chatMessage7.setRecordedAt(new Date());
+//        chatMessage7.setTo(recipient);
+//        chatMessage7.setType(ChatMessage.TEXT);
+//        chatMessageList.add(chatMessage7);
+//
+//        ChatMessage chatMessage8 = new ChatMessage();
+//        chatMessage8.setId(UUID.randomUUID().toString());
+//        chatMessage8.setFrom(getCurrentUser());
+//        chatMessage8.setContent("http://vignette3.wikia.nocookie.net/miamivice/images/e/e2/Stevebuscemi.jpg/revision/latest?cb=20100913014130");
+//        chatMessage8.setRecordedAt(new Date());
+//        chatMessage8.setTo(recipient);
+//        chatMessage8.setType(ChatMessage.PHOTO);
+//        chatMessageList.add(chatMessage8);
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, -5);
-
-        Friendship friendship = (Friendship) recipient;
-
-        ChatMessage message = new ChatMessage();
-        message.setId(UUID.randomUUID().toString());
-        message.setFrom(getCurrentUser());
-        message.setContent("Hey ça roule ou quoi batard ?");
-        message.setRecordedAt(calendar.getTime());
-        message.setTo(recipient);
-        message.setType(ChatMessage.TEXT);
-        chatMessageList.add(message);
-
-        calendar.add(Calendar.DATE, 2);
-
-        ChatMessage message2 = new ChatMessage();
-        message2.setId(UUID.randomUUID().toString());
-        message2.setFrom(getCurrentUser());
-        message2.setContent("LOLs");
-        message2.setRecordedAt(calendar.getTime());
-        message2.setTo(recipient);
-        message2.setType(ChatMessage.TEXT);
-        chatMessageList.add(message2);
-
-        calendar.add(Calendar.MINUTE, 3);
-
-        ChatMessage message3 = new ChatMessage();
-        message3.setId(UUID.randomUUID().toString());
-        message3.setFrom(getCurrentUser());
-        message3.setContent("MDR");
-        message3.setRecordedAt(calendar.getTime());
-        message3.setTo(recipient);
-        message3.setType(ChatMessage.TEXT);
-        chatMessageList.add(message3);
-
-        ChatMessage message4 = new ChatMessage();
-        message4.setId(UUID.randomUUID().toString());
-        message4.setFrom(friendship.getFriend());
-        message4.setContent("Ha ha ha ha j'avoue t'as trop réson");
-        message4.setRecordedAt(new Date());
-        message4.setTo(recipient);
-        message4.setType(ChatMessage.TEXT);
-        chatMessageList.add(message4);
-
-        ChatMessage message5 = new ChatMessage();
-        message5.setId(UUID.randomUUID().toString());
-        message5.setFrom(friendship.getFriend());
-        message5.setContent("\uD83D\uDE00" + "\uD83D\uDE00" + "\uD83D\uDE00" + "\uD83D\uDE00");
-        message5.setRecordedAt(new Date());
-        message5.setTo(recipient);
-        message5.setType(ChatMessage.TEXT);
-        chatMessageList.add(message5);
-
-        ChatMessage chatMessage6 = new ChatMessage();
-        chatMessage6.setId(UUID.randomUUID().toString());
-        chatMessage6.setFrom(friendship.getFriend());
-        chatMessage6.setContent("\uD83D\uDC8C" + "love ya");
-        chatMessage6.setRecordedAt(new Date());
-        chatMessage6.setTo(recipient);
-        chatMessage6.setType(ChatMessage.TEXT);
-        chatMessageList.add(chatMessage6);
-
-        ChatMessage chatMessage7 = new ChatMessage();
-        chatMessage7.setId(UUID.randomUUID().toString());
-        chatMessage7.setFrom(getCurrentUser());
-        chatMessage7.setContent("Hey ça va ? Tu connais : http://www.google.fr ? Ca défonce !");
-        chatMessage7.setRecordedAt(new Date());
-        chatMessage7.setTo(recipient);
-        chatMessage7.setType(ChatMessage.TEXT);
-        chatMessageList.add(chatMessage7);
-
-        ChatMessage chatMessage8 = new ChatMessage();
-        chatMessage8.setId(UUID.randomUUID().toString());
-        chatMessage8.setFrom(getCurrentUser());
-        chatMessage8.setContent("http://vignette3.wikia.nocookie.net/miamivice/images/e/e2/Stevebuscemi.jpg/revision/latest?cb=20100913014130");
-        chatMessage8.setRecordedAt(new Date());
-        chatMessage8.setTo(recipient);
-        chatMessage8.setType(ChatMessage.PHOTO);
-        chatMessageList.add(chatMessage8);
-
-        renderMessageList(ChatMessage.computeMessageList(chatMessageList));
+        //renderMessageList(ChatMessage.computeMessageList(chatMessageList));
     }
 
     private void initResources() {
@@ -336,7 +335,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
 
     private void initSubscriptions() {
         subscriptions = new CompositeSubscription();
-        subscriptions.add(chatInputView.sendClick().subscribe(s -> chatPresenter.sendMessage(s)));
+        subscriptions.add(chatInputView.sendClick().subscribe(s -> chatPresenter.sendMessage(getCurrentUser(), recipient, s)));
         subscriptions.add(chatInputView.textChanges().subscribe(s -> chatPresenter.sendTypingEvent()));
     }
 
@@ -351,6 +350,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
     private void initPresenter() {
         chatPresenter.onStart();
         chatPresenter.attachView(this);
+        chatPresenter.loadChatMessages(recipient.getId());
         chatPresenter.loadThumbnail(radiusGalleryImg);
     }
 
@@ -360,12 +360,15 @@ public class ChatActivity extends BaseActivity implements MessageView {
 
     @Override
     public void renderMessageList(List<ChatMessage> chatMessageList) {
-        final boolean addedToTop = !chatMessageList.isEmpty() && !chatMessageList.get(0).equals(messageAdapter.getOldestChatMessage());
+        this.chatMessageList = new ArrayList<>(chatMessageList);
+        List<ChatMessage> result = ChatMessage.computeMessageList(chatMessageList);
+
+        final boolean addedToTop = !result.isEmpty() && !result.get(0).equals(messageAdapter.getOldestChatMessage());
         final boolean scrollToEndAfterUpdate = isLastItemDisplayed();
         final int lastVisiblePosition = messageLayoutManager.findLastCompletelyVisibleItemPosition();
         final ChatMessage lastVisible = lastVisiblePosition != -1 && messageAdapter.getItemCount() > 0 ? messageAdapter.getMessage(lastVisiblePosition) : null;
 
-        messageAdapter.setItems(chatMessageList);
+        messageAdapter.setItems(result);
 
         if (scrollToEndAfterUpdate) {
             recyclerViewText.scrollToPosition(messageAdapter.getItemCount() - 1);
@@ -384,7 +387,9 @@ public class ChatActivity extends BaseActivity implements MessageView {
         final int lastVisiblePosition = messageLayoutManager.findLastCompletelyVisibleItemPosition();
         final ChatMessage lastVisible = lastVisiblePosition != -1 && messageAdapter.getItemCount() > 0 ? messageAdapter.getMessage(lastVisiblePosition) : null;
 
-        messageAdapter.addItem(chatMessage);
+        List<ChatMessage> result = ChatMessage.computeMessageList(chatMessageList);
+        result.add(chatMessage);
+        messageAdapter.setItems(result);
 
         if (scrollToEndAfterUpdate) {
             recyclerViewText.scrollToPosition(messageAdapter.getItemCount() - 1);
@@ -566,7 +571,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
     @Override
     public void onBackPressed() {
         if (layoutContent.getAlpha() == 0f) snapImageBack();
-        super.onBackPressed();
+        else super.onBackPressed();
     }
 
     @Override

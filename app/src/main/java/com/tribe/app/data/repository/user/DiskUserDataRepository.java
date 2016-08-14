@@ -9,6 +9,7 @@ import com.tribe.app.data.repository.tribe.datasource.TribeDataStoreFactory;
 import com.tribe.app.data.repository.user.datasource.UserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
@@ -105,6 +106,15 @@ public class DiskUserDataRepository implements UserRepository {
 
     @Override
     public Observable<Installation> createOrUpdateInstall(String token) {
+        return null;
+    }
+
+    /***
+     * NOT USED
+     * @return
+     */
+    @Override
+    public Observable<List<Message>> messages() {
         return null;
     }
 }

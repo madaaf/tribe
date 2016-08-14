@@ -3,7 +3,6 @@ package com.tribe.app.domain.interactor.tribe;
 import com.tribe.app.data.repository.tribe.DiskTribeDataRepository;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.executor.PostExecutionThread;
-import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
 
 import java.util.List;
@@ -21,7 +20,7 @@ public class DiskMarkTribeListAsRead extends UseCaseDisk {
     private TribeRepository tribeRepository;
 
     @Inject
-    public DiskMarkTribeListAsRead(DiskTribeDataRepository tribeRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+    public DiskMarkTribeListAsRead(DiskTribeDataRepository tribeRepository, PostExecutionThread postExecutionThread) {
         super(postExecutionThread);
         this.tribeRepository = tribeRepository;
     }

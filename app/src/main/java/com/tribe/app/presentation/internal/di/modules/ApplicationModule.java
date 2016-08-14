@@ -19,6 +19,7 @@ import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.chat.CloudChatDataRepository;
+import com.tribe.app.data.repository.chat.DiskChatDataRepository;
 import com.tribe.app.data.repository.tribe.CloudTribeDataRepository;
 import com.tribe.app.data.repository.tribe.DiskTribeDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
@@ -28,11 +29,12 @@ import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.text.ChatRepository;
+import com.tribe.app.domain.interactor.text.GetDiskChatMessageList;
 import com.tribe.app.domain.interactor.tribe.CloudMarkTribeListAsRead;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
-import com.tribe.app.domain.interactor.tribe.GetCloudTribeList;
 import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.domain.interactor.tribe.TribeRepository;
+import com.tribe.app.domain.interactor.user.GetCloudMessageList;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.AndroidApplication;
@@ -138,6 +140,18 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
+    ChatRepository provideDiskChatRepository(DiskChatDataRepository chatDataRepository) {
+        return chatDataRepository;
+    }
+
+    @Provides
+    @Singleton
+    ChatRepository provideCloudChatRepository(CloudChatDataRepository chatDataRepository) {
+        return chatDataRepository;
+    }
+
+    @Provides
+    @Singleton
     Navigator provideNavigator() {
         return new Navigator();
     }
@@ -230,9 +244,9 @@ public class ApplicationModule {
     }
 
     @Provides
-    @Named("cloudGetTribes")
-    UseCase provideCloudGetTribes(GetCloudTribeList getCloudTribeList) {
-        return getCloudTribeList;
+    @Named("cloudGetMessages")
+    UseCase provideCloudGetMessages(GetCloudMessageList getCloudMessageList) {
+        return getCloudMessageList;
     }
 
     @Provides
@@ -245,6 +259,12 @@ public class ApplicationModule {
     @Named("cloudMarkTribeListAsRead")
     CloudMarkTribeListAsRead cloudMarkTribeListAsRead(CloudMarkTribeListAsRead cloudMarkTribeListAsRead) {
         return cloudMarkTribeListAsRead;
+    }
+
+    @Provides
+    @Named("diskGetChatMessages")
+    GetDiskChatMessageList provideGetDiskChatMessageList(GetDiskChatMessageList getDiskChatMessageList) {
+        return getDiskChatMessageList;
     }
 
     @Provides
