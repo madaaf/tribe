@@ -109,9 +109,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @BindView(R.id.progressBar)
     CircularProgressView progressBar;
 
-    @BindView(R.id.imgNavBackToTop)
-    ImageView imgNavBackToTop;
-
     @BindView(R.id.cameraWrapper)
     CameraWrapper cameraWrapper;
 
@@ -260,27 +257,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     public void initScrollOnGrid(Observable<Integer> observable) {
         subscriptions.add(observable.subscribe(dy -> {
-            if (homeViewPagerAdapter.getHomeGridFragment() != null) {
-                if (homeViewPagerAdapter.getHomeGridFragment().getNbItems() > THRESHOLD_SCROLL) {
-                    float percent = (float) dy / translationBackToTop;
 
-                    if (dy <= translationBackToTop) {
-                        imgNavFriends.setTranslationY(dy);
-                        layoutNavGrid.setTranslationY(dy);
-                        imgNavGroups.setTranslationY(dy);
-                        //layoutNavPending.setTranslationY(dy);
-                        imgNavFriends.setAlpha(1 - percent);
-                        layoutNavGrid.setAlpha(1 - percent);
-                        imgNavGroups.setAlpha(1 - percent);
-                        //layoutNavPending.setAlpha(1 - percent);
-                        imgNavBackToTop.setTranslationY(translationBackToTop - dy);
-                        imgNavBackToTop.setAlpha((float) dy / translationBackToTop);
-                    } else if (imgNavBackToTop.getTranslationY() != 0) {
-                        imgNavBackToTop.setTranslationY(0);
-                        imgNavBackToTop.setAlpha(1f);
-                    }
-                }
-            }
         }));
     }
 
@@ -348,11 +325,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         viewPager.setCurrentItem(FRIENDS_FRAGMENT_PAGE, true);
     }
 
-    @OnClick(R.id.imgNavBackToTop)
-    public void goBackToTop() {
-        homeViewPagerAdapter.getHomeGridFragment().scrollToTop();
-    }
-
     @OnClick(R.id.layoutNavPending)
     public void sendPendingMessages() {
         homeViewPagerAdapter.getHomeGridFragment().showPendingTribesMenu();
@@ -377,6 +349,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     public void reloadGrid() {
         if (viewPager.getCurrentItem() == GRID_FRAGMENT_PAGE) {
             homePresenter.reloadData();
+            homeViewPagerAdapter.getHomeGridFragment().scrollToTop();
         } else {
             viewPager.setCurrentItem(GRID_FRAGMENT_PAGE, true);
         }
