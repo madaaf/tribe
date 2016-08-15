@@ -59,7 +59,7 @@
     <dimen name="tribe_icon_size_max">70dp</dimen>
     <dimen name="notif_size">27dp</dimen>
     <dimen name="icons_start">30dp</dimen>
-    <dimen name="icons_end">50dp</dimen>
+    <dimen name="icons_end">60dp</dimen>
 
     <!-- THRESHOLDS -->
     <dimen name="threshold_dismiss">100dp</dimen>

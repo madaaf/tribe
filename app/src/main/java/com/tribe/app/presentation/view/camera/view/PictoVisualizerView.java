@@ -24,7 +24,7 @@ import javax.inject.Inject;
  */
 public class PictoVisualizerView extends LinearLayout implements AudioVisualizerCallback {
 
-    private static final int THRESHOLD = 5;
+    private static final int THRESHOLD = 1;
     private static final int DURATION_ULTRA_SHORT = 100;
     private static final int DURATION_SHORT = 200;
     private static final int DURATION_LONG = 250;
@@ -85,8 +85,8 @@ public class PictoVisualizerView extends LinearLayout implements AudioVisualizer
                     if (value > max) max = value;
                 }
 
-                if (Math.abs(lastValue - max) > THRESHOLD) {
-                    layoutImage(endSize + max * 10, true);
+                if (Math.abs(lastValue - max) >= THRESHOLD) {
+                    layoutImage(endSize + max * 30, true);
                     lastValue = max;
                 }
             });
