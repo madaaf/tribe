@@ -8,6 +8,7 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.os.Build;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
@@ -426,6 +428,14 @@ public class TileView extends SquareFrameLayout {
         } else {
             txtStatusError.setVisibility(View.GONE);
             txtStatus.setVisibility(View.VISIBLE);
+
+            if (ultimateMessageStatus != null & (ultimateMessageStatus.equals(MessageStatus.STATUS_SENT) || ultimateMessageStatus.equals(MessageStatus.STATUS_DELIVERED)
+                    || ultimateMessageStatus.equals(MessageStatus.STATUS_OPENED) || ultimateMessageStatus.equals(MessageStatus.STATUS_PENDING))) {
+                setTextAppearence(txtStatus, R.style.Caption_White_1);
+            } else {
+                setTextAppearence(txtStatus, R.style.Caption_Black_40);
+            }
+
             txtStatus.setText(computeStrStatus(ultimateMessageStatus));
             txtStatus.setCompoundDrawablesWithIntrinsicBounds(getContext().getResources().getDrawable(computeIconStatus(ultimateMessageStatus)), null, null, null);
         }
@@ -534,6 +544,14 @@ public class TileView extends SquareFrameLayout {
         TribeMessage recentSent = sent != null && sent.size() > 0 ? sent.get(sent.size() - 1) : null;
         TribeMessage recentError = error != null && error.size() > 0 ? error.get(error.size() - 1) : null;
         return TribeMessage.getMostRecentTribe(recentReceived, recentSent, recentError);
+    }
+
+    private void setTextAppearence(TextView textView, int resId) {
+        if (Build.VERSION.SDK_INT < 23) {
+            textView.setTextAppearance(getContext(), resId);
+        } else {
+            textView.setTextAppearance(resId);
+        }
     }
 
     public Observable<View> onClickErrorTribes() {
