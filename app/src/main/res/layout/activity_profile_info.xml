@@ -8,17 +8,21 @@
         android:layout_width="match_parent"
         android:layout_height="81dp"
         android:layout_gravity="top|center_horizontal"
-
-        android:background="@android:color/white"
+        android:background="@drawable/shape_rect_profile_info_background_w_border"
         android:text="Hi there! Set yourself up."
-        android:textColor="@android:color/black"/>
+        android:textColor="@android:color/black"
+        android:textSize="22sp"
+        android:gravity="center"/>
 
     <ImageView
         android:layout_width="65dp"
-        android:layout_height="65dp"
+        android:layout_height="95dp"
         android:layout_gravity="top|start"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="101dp"/>
+        android:scaleType="fitCenter"
+        
+        android:layout_marginTop="101dp"
+        android:src="@drawable/picto_profile_pic_placeholder"
+        android:background="@android:color/white"/>
 
 
     

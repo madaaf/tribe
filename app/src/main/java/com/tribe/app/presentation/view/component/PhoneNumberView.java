@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.component;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.provider.ContactsContract;
 import android.telephony.PhoneNumberUtils;
 import android.util.AttributeSet;
@@ -32,8 +33,8 @@ public class PhoneNumberView extends FrameLayout {
     @BindView(R.id.editTextPhoneNumber)
     EditTextFont editTextPhoneNumber;
 
-    @BindView(R.id.txtCountryCode)
-    ImageView txtCountryCode;
+    @BindView(R.id.imgCountryCode)
+    ImageView imgCountryCode;
 
     @BindView(R.id.imageViewNextIcon)
     ImageView imageViewNextIcon;
@@ -42,6 +43,7 @@ public class PhoneNumberView extends FrameLayout {
     private PhoneUtils phoneUtils;
     private String countryCode = "US";
     private String currentPhoneNumber;
+    private Context context;
 
     // OBSERVABLES
 
@@ -51,14 +53,17 @@ public class PhoneNumberView extends FrameLayout {
 
     public PhoneNumberView(Context context) {
         super(context);
+        this.context = context;
     }
 
     public PhoneNumberView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.context = context;
     }
 
     public PhoneNumberView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        this.context = context;
     }
 
     @Override
@@ -74,7 +79,7 @@ public class PhoneNumberView extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.view_phone_number, this);
         unbinder = ButterKnife.bind(this);
 
-        RxView.clicks(txtCountryCode)
+        RxView.clicks(imgCountryCode)
                 .subscribe(countryClickEventSubject);
 
 
@@ -84,6 +89,14 @@ public class PhoneNumberView extends FrameLayout {
         countryCode = codeCountry;
         String countryName = (new Locale("", codeCountry).getDisplayCountry()).toUpperCase();
         String countryCode = "+" + phoneUtils.getCountryCodeForRegion(codeCountry);
+        try {
+            Drawable countryFlagImg = context.getDrawable(R.drawable.class.getField("picto_flag_" + codeCountry.toLowerCase()).getInt(null));
+            imgCountryCode.setImageDrawable(countryFlagImg);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
 //        txtCountryCode.setText(countryName + " (" + countryCode + ")");
 //        txtCountryCode.setText(countryCode);
     }
