@@ -1,13 +1,17 @@
 package com.tribe.app.presentation.view.adapter.delegate.country;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.jakewharton.rxbinding.view.RxView;
+import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Country;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
@@ -30,8 +34,11 @@ public class CountryAdapterDelegate extends RxAdapterDelegate<List<Country>> {
     // RX SUBSCRIPTIONS / SUBJECTS
     private final PublishSubject<View> clickCountryItem = PublishSubject.create();
 
+    Context context;
+
     public CountryAdapterDelegate(Context context) {
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.context = context;
     }
 
     @Override
@@ -58,6 +65,17 @@ public class CountryAdapterDelegate extends RxAdapterDelegate<List<Country>> {
         Country country = items.get(position);
 
         vh.txtName.setText(country.name);
+
+//            vh.imageCountryFlag.setImageDrawable(context.getDrawable(context.getResources().getIdentifier("picto_flag_" + country.code, "drawable", context.getPackageName())));
+        try {
+            vh.imageCountryFlag.setImageDrawable(context.getDrawable(R.drawable.class.getField("picto_flag_" + country.code.toLowerCase()).getInt(null)));
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     public Observable<View> clickCountryItem() {
@@ -67,6 +85,7 @@ public class CountryAdapterDelegate extends RxAdapterDelegate<List<Country>> {
     static class CountryViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.txtName) public TextViewFont txtName;
+        @BindView(R.id.imageCountryFlag) public ImageView imageCountryFlag;
 
         public CountryViewHolder(View itemView) {
             super(itemView);

@@ -146,7 +146,7 @@ public class IntroVideoView extends FrameLayout implements TextureView.SurfaceTe
             mediaPlayer.prepareAsync();
         } catch (IllegalStateException ex) {
             try {
-                mediaPlayer.setDataSource(pathToVideo);
+                mediaPlayer.setDataSource(getContext(), Uri.parse(pathToVideo));
                 mediaPlayer.prepareAsync();
             } catch (IOException e) {
                 e.printStackTrace();
