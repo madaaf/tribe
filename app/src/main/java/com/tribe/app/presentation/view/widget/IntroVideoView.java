@@ -107,22 +107,19 @@ public class IntroVideoView extends FrameLayout implements TextureView.SurfaceTe
 
     public void releasePlayer() {
         if (mediaPlayer == null) return;
-
-        new Thread(() -> {
-            try {
-                if (mediaPlayer != null) {
-                    mediaPlayer.reset();
-                    mediaPlayer.stop();
-                    mediaPlayer.release();
-                    mediaPlayer = null;
-                }
-            } catch (IllegalStateException ex) {
-                ex.printStackTrace();
-            }
-        }).start();
-
-        videoHeight = 0;
-        videoWidth = 0;
+        mediaPlayer.release();
+//        new Thread(() -> {
+//            try {
+//                if (mediaPlayer != null) {
+//                    mediaPlayer.reset();
+//                    mediaPlayer.stop();
+//                    mediaPlayer.release();
+//                    mediaPlayer = null;
+//                }
+//            } catch (IllegalStateException ex) {
+//                ex.printStackTrace();
+//            }
+//        }).start();
     }
 
     public void hideVideo() {
@@ -138,14 +135,14 @@ public class IntroVideoView extends FrameLayout implements TextureView.SurfaceTe
 
     private void prepareWithSurface() {
         Surface s = new Surface(surfaceTexture);
-        mediaPlayer.setSurface(s);
 
         try {
-
+            mediaPlayer.setSurface(s);
             mediaPlayer.setDataSource(getContext(), Uri.parse(pathToVideo));
             mediaPlayer.prepareAsync();
         } catch (IllegalStateException ex) {
             try {
+                mediaPlayer.reset();
                 mediaPlayer.setDataSource(getContext(), Uri.parse(pathToVideo));
                 mediaPlayer.prepareAsync();
             } catch (IOException e) {

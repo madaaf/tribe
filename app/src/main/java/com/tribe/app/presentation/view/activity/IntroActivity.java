@@ -80,7 +80,9 @@ public class IntroActivity extends BaseActivity implements IntroView {
         initCodeView();
         initPresenter();
         initPlayerView();
+
     }
+
 
     @Override
     protected void onDestroy() {

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/grey.background.profile_info"
+    >
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:layout_width="match_parent"
+        android:layout_height="81dp"
+        android:layout_gravity="top|center_horizontal"
+
+        android:background="@android:color/white"
+        android:text="Hi there! Set yourself up."
+        android:textColor="@android:color/black"/>
+
+    <ImageView
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:layout_gravity="top|start"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="101dp"/>
+
+
+    
+</FrameLayout>

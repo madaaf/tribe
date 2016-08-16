@@ -38,6 +38,7 @@
     <color name="grey.action.tint">#98aab4</color>
     <color name="grey.permissions">#93AAB5</color>
     <color name="grey.background">#FBFDFD</color>
+    <color name="grey.background.profile_info">#F7F7F7</color>
 
     <!-- BLUE -->
     <color name="blue.text">#02ADF2</color>

@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.text.Editable;
+import android.text.TextWatcher;
 
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Country;
@@ -13,11 +16,15 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.view.adapter.CountryPhoneNumberAdapter;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
+import com.tribe.app.presentation.view.widget.EditTextFont;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+
+
 
 import javax.inject.Inject;
 
@@ -41,8 +48,14 @@ public class CountryActivity extends BaseActivity {
     @BindView(R.id.recyclerViewCountry)
     RecyclerView recyclerViewCountry;
 
+    @BindView(R.id.countrySearchView)
+    EditTextFont countrySearchView;
+
     private PhoneUtils phoneUtils;
     private LinearLayoutManager linearLayoutManager;
+
+    private List<Country> listCountry;
+    private List<Country> listCountryCopy;
 
     private Unbinder unbinder;
     private Subscription subscription;
@@ -52,10 +65,11 @@ public class CountryActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         phoneUtils = getApplicationComponent().phoneUtils();
-
         initUI();
+        initSearchView();
         initDependencyInjector();
         initCountryList();
+
     }
 
     @Override
@@ -71,8 +85,8 @@ public class CountryActivity extends BaseActivity {
     }
 
     public void initCountryList() {
-        List<String> listCodeCountry = new LinkedList<>(phoneUtils.getSupportedRegions());
-        LinkedList<Country> listCountry = new LinkedList<>();
+        List<String> listCodeCountry = new ArrayList<>(phoneUtils.getSupportedRegions());
+        listCountry = new ArrayList<>();
 
         for (String countryCode : listCodeCountry) {
             String countryName = (new Locale("", countryCode).getDisplayCountry());
@@ -80,7 +94,8 @@ public class CountryActivity extends BaseActivity {
         }
 
         Collections.sort(listCountry);
-
+        listCountryCopy = new ArrayList<>();
+        listCountryCopy.addAll(listCountry);
         countryAdapter.setItems(listCountry);
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerViewCountry.setLayoutManager(linearLayoutManager);
@@ -95,11 +110,49 @@ public class CountryActivity extends BaseActivity {
         });
     }
 
+    private void initSearchView() {
+        countrySearchView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filter(s.toString());
+            }
+        });
+    }
+
     private void initDependencyInjector() {
         DaggerUserComponent.builder()
                 .applicationComponent(getApplicationComponent())
                 .activityModule(getActivityModule())
                 .build()
                 .inject(this);
+    }
+
+
+    private void filter(String text) {
+        if(text.isEmpty()){
+            listCountry.clear();
+            listCountry.addAll(listCountryCopy);
+        } else{
+            ArrayList<Country> result = new ArrayList<>();
+            text = text.toLowerCase();
+            for(Country item: listCountryCopy){
+                if(item.name.toLowerCase().contains(text) || item.name.toLowerCase().contains(text)){
+                    result.add(item);
+                }
+            }
+            listCountry.clear();
+            listCountry.addAll(result);
+        }
+        countryAdapter.setItems(listCountry);
     }
 }

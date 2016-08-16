@@ -4,17 +4,20 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.jakewharton.rxbinding.view.RxView;
 import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Country;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
+import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
@@ -34,7 +37,7 @@ public class CountryAdapterDelegate extends RxAdapterDelegate<List<Country>> {
     // RX SUBSCRIPTIONS / SUBJECTS
     private final PublishSubject<View> clickCountryItem = PublishSubject.create();
 
-    Context context;
+    private Context context;
 
     public CountryAdapterDelegate(Context context) {
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -61,18 +64,21 @@ public class CountryAdapterDelegate extends RxAdapterDelegate<List<Country>> {
 
     @Override
     public void onBindViewHolder(@NonNull List<Country> items, int position, @NonNull RecyclerView.ViewHolder holder) {
+
+        PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
+
         CountryViewHolder vh = (CountryViewHolder) holder;
         Country country = items.get(position);
+        String countryName = country.name + " (+" + phoneNumberUtil.getCountryCodeForRegion(country.code) + ")";
+        vh.txtName.setText(countryName);
 
-        vh.txtName.setText(country.name);
-
-//            vh.imageCountryFlag.setImageDrawable(context.getDrawable(context.getResources().getIdentifier("picto_flag_" + country.code, "drawable", context.getPackageName())));
         try {
             vh.imageCountryFlag.setImageDrawable(context.getDrawable(R.drawable.class.getField("picto_flag_" + country.code.toLowerCase()).getInt(null)));
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
+            Log.e("country", country.name);
         }
 
 
