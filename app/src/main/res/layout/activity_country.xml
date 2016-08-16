@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    android:orientation="vertical"
     >
 
+
+    <SearchView
+        android:id="@+id/countrySearchView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+         />
+
     <android.support.v7.widget.RecyclerView
+        android:layout_below="@id/countrySearchView"
         android:id="@+id/recyclerViewCountry"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -15,4 +23,4 @@
         android:dividerHeight="0.5dp"
         android:listSelector="@null" />
 
-</LinearLayout>
+</RelativeLayout>

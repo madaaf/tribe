@@ -3,10 +3,14 @@ package com.tribe.app.presentation.view.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.widget.MediaController;
+import android.widget.VideoView;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
@@ -20,6 +24,8 @@ import com.tribe.app.presentation.view.component.CodeView;
 import com.tribe.app.presentation.view.component.PhoneNumberView;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
+import com.tribe.app.presentation.view.widget.IntroVideoView;
+import com.tribe.app.presentation.view.widget.PlayerView;
 
 import javax.inject.Inject;
 
@@ -49,8 +55,11 @@ public class IntroActivity extends BaseActivity implements IntroView {
     @BindView(R.id.viewCode)
     CodeView viewCode;
 
-    @BindView(R.id.btnNext)
-    View btnNext;
+    @BindView(R.id.videoViewIntro)
+    IntroVideoView videoViewIntro;
+//
+//    @BindView(R.id.btnNext)
+//    View btnNext;
 
     private IntroViewPagerAdapter introViewPagerAdapter;
 
@@ -70,6 +79,7 @@ public class IntroActivity extends BaseActivity implements IntroView {
         initPhoneNumberView();
         initCodeView();
         initPresenter();
+        initPlayerView();
     }
 
     @Override
@@ -97,9 +107,9 @@ public class IntroActivity extends BaseActivity implements IntroView {
         setContentView(R.layout.activity_intro);
         unbinder = ButterKnife.bind(this);
 
-        btnNext.setEnabled(false);
+//        btnNext.setEnabled(false);
 
-        subscriptions.add(RxView.clicks(btnNext).subscribe(aVoid -> {
+        subscriptions.add(RxView.clicks(viewPhoneNumber.getImageViewNextIcon()).subscribe(aVoid -> {
             if (viewPager.getCurrentItem() == PAGE_PHONE_NUMBER) introPresenter.requestCode(phoneNumber);
             else introPresenter.login(phoneNumber, code, pin.getPinId());
         }));
@@ -126,7 +136,7 @@ public class IntroActivity extends BaseActivity implements IntroView {
         viewPhoneNumber.setPhoneUtils(getApplicationComponent().phoneUtils());
         subscriptions.add(viewPhoneNumber.phoneNumberValid().subscribe(isValid -> {
             this.phoneNumber = viewPhoneNumber.getPhoneNumberFormatted();
-            btnNext.setEnabled(isValid);
+//            btnNext.setEnabled(isValid);
         }));
         subscriptions.add(viewPhoneNumber.countryClick().subscribe(aVoid -> navigator.navigateToCountries(this)));
     }
@@ -134,7 +144,7 @@ public class IntroActivity extends BaseActivity implements IntroView {
     private void initCodeView() {
         subscriptions.add(viewCode.codeValid().subscribe(isValid -> {
             this.code = viewCode.getCode();
-            btnNext.setEnabled(isValid);
+//            btnNext.setEnabled(isValid);
         }));
     }
 
@@ -142,12 +152,17 @@ public class IntroActivity extends BaseActivity implements IntroView {
         introPresenter.attachView(this);
     }
 
+    private void initPlayerView() {
+        videoViewIntro.createPlayer("android.resource://" + getPackageName() +"/"+R.raw.onboarding_video);
+    }
+
     @Override
     public void goToCode(Pin pin) {
         this.pin = pin;
-        btnNext.setEnabled(false);
+//        btnNext.setEnabled(false);
         viewPager.setCurrentItem(PAGE_CODE, true);
     }
+
 
     @Override
     public void goToHome(AccessToken token) {

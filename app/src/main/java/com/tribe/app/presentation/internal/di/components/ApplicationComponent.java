@@ -40,6 +40,7 @@ import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
+import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.PathView;
 import com.tribe.app.presentation.view.widget.PlayerView;
 
@@ -81,6 +82,7 @@ public interface ApplicationComponent {
     void inject(UpdateTribesErrorStatusJob updateTribesErrorStatusJob);
     void inject(MarkTribeListAsReadJob markTribeListAsReadJob);
     void inject(PhotoMessageAdapterDelegate photoMessageAdapterDelegate);
+    void inject(IntroVideoView introVideoView);
 
     //Exposed to sub-graphs.
     Context context();
@@ -128,4 +130,6 @@ public interface ApplicationComponent {
     @Named("simpleDateHoursMinutes") SimpleDateFormat simpleDateHoursMinutes();
 
     @Named("fullLetteredDate") DateFormat fullLetteredDate();
+
+
 }

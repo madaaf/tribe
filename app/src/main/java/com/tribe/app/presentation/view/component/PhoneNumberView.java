@@ -1,9 +1,12 @@
 package com.tribe.app.presentation.view.component;
 
 import android.content.Context;
+import android.provider.ContactsContract;
+import android.telephony.PhoneNumberUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
@@ -18,6 +21,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import rx.Observable;
+import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 
 /**
@@ -29,11 +33,14 @@ public class PhoneNumberView extends FrameLayout {
     EditTextFont editTextPhoneNumber;
 
     @BindView(R.id.txtCountryCode)
-    TextViewFont txtCountryCode;
+    ImageView txtCountryCode;
+
+    @BindView(R.id.imageViewNextIcon)
+    ImageView imageViewNextIcon;
 
     // VARIABLES
     private PhoneUtils phoneUtils;
-    private String countryCode = "FR";
+    private String countryCode = "US";
     private String currentPhoneNumber;
 
     // OBSERVABLES
@@ -69,14 +76,20 @@ public class PhoneNumberView extends FrameLayout {
 
         RxView.clicks(txtCountryCode)
                 .subscribe(countryClickEventSubject);
+
+
     }
 
     public void initWithCodeCountry(String codeCountry) {
         countryCode = codeCountry;
         String countryName = (new Locale("", codeCountry).getDisplayCountry()).toUpperCase();
         String countryCode = "+" + phoneUtils.getCountryCodeForRegion(codeCountry);
-        txtCountryCode.setText(countryName + " (" + countryCode + ")");
-        txtCountryCode.setText(countryCode);
+//        txtCountryCode.setText(countryName + " (" + countryCode + ")");
+//        txtCountryCode.setText(countryCode);
+    }
+
+    public ImageView getImageViewNextIcon() {
+        return  this.imageViewNextIcon;
     }
 
     public Observable<Boolean> phoneNumberValid() {
@@ -98,9 +111,16 @@ public class PhoneNumberView extends FrameLayout {
     public void setPhoneUtils(PhoneUtils phoneUtils) {
         this.phoneUtils = phoneUtils;
 
-        RxTextView.textChanges(editTextPhoneNumber).map(CharSequence::toString)
-                .filter(s -> s != null && !s.isEmpty())
-                .doOnNext(s -> currentPhoneNumber = phoneUtils.formatMobileNumber(getPhoneNumberInput(), countryCode))
+        RxTextView.textChanges(editTextPhoneNumber).map((charSequence) -> charSequence.toString())
+                .filter(s -> {
+                    return s != null && !s.isEmpty();
+                })
+                .doOnNext(new Action1<String>() {
+                    @Override
+                    public void call(String s) {
+                        currentPhoneNumber = phoneUtils.formatMobileNumber(PhoneNumberView.this.getPhoneNumberInput(), countryCode);
+                    }
+                })
                 .map(s -> currentPhoneNumber != null)
                 .subscribe(phoneNumberValid);
 

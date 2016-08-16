@@ -3,32 +3,45 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@null">
+    android:layout_height="60dp"
+    android:background="@color/white.opacity.100"
+    android:layout_gravity="bottom">
 
-    <com.tribe.app.presentation.view.widget.EditTextFont
-        android:id="@+id/editTextPhoneNumber"
-        android:background="@null"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="@dimen/horizontal_margin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:hint="@string/Login.PhoneNumber.Hint"
-        style="@style/Text.Message.Input"
-        android:inputType="phone"
-        />
+        <ImageView
+            android:id="@+id/txtCountryCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|bottom"
+            android:layout_marginStart="15dp"
+            android:layout_marginBottom="21dp"
+            android:gravity="center"
+            android:clickable="true"
+            android:src="@drawable/picto_us_flag"/>
+        <com.tribe.app.presentation.view.widget.EditTextFont
+            android:id="@+id/editTextPhoneNumber"
+            android:textColor="@android:color/black"
+            android:background="@null"
+            android:layout_width="130dp"
+            android:layout_height="22dp"
+            android:layout_marginStart="55dp"
+            android:layout_marginEnd="55dp"
+            android:layout_marginBottom="20dp"
+            android:layout_gravity="bottom|center"
+            android:hint="@string/Login.PhoneNumber.Hint"
+            style="@style/Text.Message.Input"
+            android:inputType="phone"
+            />
+        <ImageView
+            android:id="@+id/imageViewNextIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/picto_next_icon"
+            android:layout_gravity="end|bottom"
+            android:layout_marginBottom="21dp"
+            android:layout_marginEnd="20dp"
+            />
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtCountryCode"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="50dp"
-        android:gravity="center"
-        android:background="@color/white.opacity.40"
-        android:text="+1"
-        android:clickable="true"
-        />
+
+
 
 </FrameLayout>
