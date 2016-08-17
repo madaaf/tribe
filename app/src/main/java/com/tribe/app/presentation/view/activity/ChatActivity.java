@@ -405,6 +405,16 @@ public class ChatActivity extends BaseActivity implements MessageView {
         this.chatMessageList = new ArrayList<>(chatMessageList);
         List<ChatMessage> result = ChatMessage.computeMessageList(chatMessageList);
 
+        if (avatarsMap.size() > 0) {
+            for (ChatMessage message : result) {
+                for (Section section : avatarsMap.values()) {
+                    if (message.getBeginOfSection() == section.getBegin()) {
+                        section.setEnd(message.getEndOfSection());
+                    }
+                }
+            }
+        }
+
         final boolean addedToTop = !result.isEmpty() && !result.get(0).equals(messageAdapter.getOldestChatMessage());
         final boolean scrollToEndAfterUpdate = isLastItemDisplayed();
         final int lastVisiblePosition = messageLayoutManager.findLastCompletelyVisibleItemPosition();
