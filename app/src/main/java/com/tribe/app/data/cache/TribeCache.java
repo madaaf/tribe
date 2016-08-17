@@ -22,7 +22,7 @@ public interface TribeCache {
     public void update(TribeRealm tribeRealm);
     public void put(List<TribeRealm> tribeRealmList);
     public RealmList<TribeRecipientRealm> createTribeRecipientRealm(List<TribeRecipientRealm> tribeRecipientRealm);
-    public Observable<Void> delete(TribeRealm tribeReaList);
+    public Observable<Void> delete(TribeRealm tribeRealm);
     public Observable<List<TribeRealm>> tribes();
     public Observable<List<TribeRealm>> tribesPending();
     public List<TribeRealm> tribesNotSent();

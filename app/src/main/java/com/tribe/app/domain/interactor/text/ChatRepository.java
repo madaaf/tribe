@@ -56,4 +56,11 @@ public interface ChatRepository {
      * @param chatMessage the ChatMessage to save
      */
     Observable<ChatMessage> sendMessage(final ChatMessage chatMessage);
+
+    /**
+     * Get an {@link Observable} which will delete a tribe.
+     *
+     * @param chatMessage the ChatMessage to delete
+     */
+    Observable<Void> deleteMessage(final ChatMessage chatMessage);
 }

@@ -152,12 +152,6 @@ public class CloudTribeDataStore implements TribeDataStore {
         return this.tribeApi.markTribeListAsSeen(req);
     }
 
-    private final Action1<List<TribeRealm>> saveToCacheTribes = tribeRealmList -> {
-        if (tribeRealmList != null && tribeRealmList.size() > 0) {
-            CloudTribeDataStore.this.tribeCache.put(tribeRealmList);
-        }
-    };
-
     private final Action1<UserRealm> saveToCacheUser = userRealm -> {
         if (userRealm != null) {
             CloudTribeDataStore.this.userCache.put(userRealm);

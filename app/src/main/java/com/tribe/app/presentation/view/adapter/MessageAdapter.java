@@ -66,12 +66,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
     @Override
     public long getItemId(int position) {
         ChatMessage chatMessage = getMessage(position);
-
-        if (chatMessage.getLocalId() == null) {
-            return chatMessage.hashCode();
-        } else {
-            return chatMessage.getLocalId().hashCode() * 31;
-        }
+        return chatMessage.hashCode();
     }
 
     @Override

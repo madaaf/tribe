@@ -156,6 +156,7 @@ public class UserMessageListDeserializer<T> implements JsonDeserializer<T> {
 
         try {
             chatRealm.setRecordedAt(utcSimpleDate.parse(json.get("recorded_at").getAsString()));
+            chatRealm.setCreatedAt(utcSimpleDate.parse(json.get("created_at").getAsString()));
         } catch (ParseException e) {
             e.printStackTrace();
         }

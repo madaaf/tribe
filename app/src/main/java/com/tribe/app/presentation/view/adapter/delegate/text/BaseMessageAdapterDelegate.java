@@ -59,9 +59,13 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
         BaseTextViewHolder vh = (BaseTextViewHolder) holder;
         ChatMessage chatMessage = items.get(position);
 
+        holder.itemView.setTag(R.id.chat_id, chatMessage.getId());
+
         if (!chatMessage.isShouldDisplayTime() && !chatMessage.isOtherPerson()) {
            vh.layoutInfos.setVisibility(View.GONE);
         } else {
+            vh.layoutInfos.setVisibility(View.VISIBLE);
+
             if (chatMessage.isOtherPerson()) {
                 vh.txtName.setVisibility(View.VISIBLE);
                 vh.txtName.setText(chatMessage.getFrom().getDisplayName());

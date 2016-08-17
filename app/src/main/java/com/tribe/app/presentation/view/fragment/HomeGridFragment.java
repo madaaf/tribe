@@ -371,7 +371,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .subscribe(recipient -> {
                     homeGridAdapter.updateItemWithTribe(recipient.getPosition(), null);
-                    homeGridPresenter.deleteTribe(currentTribe);
+                    homeGridPresenter.deleteTribe(recipient.getTribe());
                     currentRecipient = null;
                     currentTribe = null;
                 }));
@@ -379,8 +379,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         subscriptions.add(homeGridAdapter.onNotCancel()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .subscribe(recipient -> {
+                    homeGridPresenter.sendTribe(recipient.getTribe());
                     homeGridAdapter.updateItemWithTribe(recipient.getPosition(), null);
-                    homeGridPresenter.sendTribe(currentTribe);
                     currentRecipient = null;
                     currentTribe = null;
                 }));

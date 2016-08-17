@@ -1,5 +1,7 @@
 package com.tribe.app.data.repository.chat;
 
+import android.content.Context;
+
 import com.tribe.app.data.realm.mapper.ChatRealmDataMapper;
 import com.tribe.app.data.repository.chat.datasource.ChatDataStore;
 import com.tribe.app.data.repository.chat.datasource.ChatDataStoreFactory;
@@ -31,7 +33,7 @@ public class CloudChatDataRepository implements ChatRepository {
      * @param realmDataMapper {@link ChatRealmDataMapper}.
      */
     @Inject
-    public CloudChatDataRepository(ChatDataStoreFactory dataStoreFactory,
+    public CloudChatDataRepository(Context context, ChatDataStoreFactory dataStoreFactory,
                                    ChatRealmDataMapper realmDataMapper) {
         this.chatDataStoreFactory = dataStoreFactory;
         this.chatRealmDataMapper = realmDataMapper;
@@ -76,6 +78,13 @@ public class CloudChatDataRepository implements ChatRepository {
 
     @Override
     public Observable<ChatMessage> sendMessage(ChatMessage chatMessage) {
+        ChatDataStore cloudDataStore = chatDataStoreFactory.createCloudChatStore();
+        return cloudDataStore.sendMessage(chatRealmDataMapper.transform(chatMessage))
+                .map(chatRealm -> chatRealmDataMapper.transform(chatRealm));
+    }
+
+    @Override
+    public Observable<Void> deleteMessage(ChatMessage chatMessage) {
         return null;
     }
 }

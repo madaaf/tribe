@@ -17,32 +17,43 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.jakewharton.rxbinding.view.RxView;
+import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.Section;
 import com.tribe.app.presentation.internal.di.components.DaggerChatComponent;
 import com.tribe.app.presentation.mvp.presenter.ChatPresenter;
 import com.tribe.app.presentation.mvp.view.MessageView;
 import com.tribe.app.presentation.view.adapter.MessageAdapter;
 import com.tribe.app.presentation.view.adapter.manager.MessageLayoutManager;
 import com.tribe.app.presentation.view.component.ChatInputView;
+import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class ChatActivity extends BaseActivity implements MessageView {
 
     public static final int DURATION = 300;
-    public static final float OVERSHOOT = 2f;
+    public static final float OVERSHOOT = 1.2f;
+    public static final int ERROR_MARGIN = 5;
 
     public static final String RECIPIENT = "RECIPIENT";
 
@@ -54,6 +65,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
 
     @Inject ChatPresenter chatPresenter;
     @Inject ScreenUtils screenUtils;
+    @Inject Picasso picasso;
 
     @BindView(android.R.id.content)
     ViewGroup rootView;
@@ -80,16 +92,20 @@ public class ChatActivity extends BaseActivity implements MessageView {
     private Recipient recipient;
 
     // RESOURCES
+    private int marginHorizontalLeftSmall;
     private int radiusGalleryImg;
     private int chatBarHeight;
     private int statusBarHeight;
     private int dismissMove;
+    private int avatarSize;
+    private int marginOfPositionError;
 
     // BINDERS / SUBSCRIPTIONS
     private Unbinder unbinder;
     private CompositeSubscription subscriptions;
 
     // LAYOUT VARIABLES
+    private boolean isRecyclerViewLayedOut = false;
     private MessageLayoutManager messageLayoutManager;
     private MessageAdapter messageAdapter;
     private List<ChatMessage> chatMessageList;
@@ -99,14 +115,15 @@ public class ChatActivity extends BaseActivity implements MessageView {
     private int heightImageViewClicked;
     private int marginLeftImageViewClicked;
     private int marginTopImageViewClicked;
+    private Map<String, Section> avatarsMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initUi();
         initParams();
-        initResources();
         initDependencyInjector();
+        initResources();
         initSubscriptions();
         initRecyclerView();
         initInfos();
@@ -148,8 +165,26 @@ public class ChatActivity extends BaseActivity implements MessageView {
         recyclerViewText.setLayoutManager(messageLayoutManager);
         messageAdapter = new MessageAdapter(LayoutInflater.from(this), this);
         recyclerViewText.setAdapter(messageAdapter);
+        recyclerViewText.setHasFixedSize(true);
 
-        //recyclerViewText.getItemAnimator().setChangeDuration(0);
+        recyclerViewText.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                recyclerViewText.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
+
+        avatarsMap = new HashMap<>();
+
+        subscriptions.add(messageLayoutManager.itemsDoneLayoutCallback().subscribe(integer -> {
+            updateAvatars();
+        }));
+
+        subscriptions.add(
+            RxView.scrollChangeEvents(recyclerViewText)
+                .subscribe(viewScrollChangeEvent -> {
+                    updateAvatars();
+                }));
 
         subscriptions.add(messageAdapter
                 .clickPhoto()
@@ -321,6 +356,10 @@ public class ChatActivity extends BaseActivity implements MessageView {
         radiusGalleryImg = getResources().getDimensionPixelSize(R.dimen.radius_gallery_img);
         chatBarHeight = getResources().getDimensionPixelSize(R.dimen.chat_bar_height);
         dismissMove = getResources().getDimensionPixelOffset(R.dimen.threshold_dismiss);
+        avatarSize = getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
+        marginHorizontalLeftSmall = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
+        marginOfPositionError = screenUtils.dpToPx(ERROR_MARGIN);
+
         statusBarHeight = 0;
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
@@ -335,7 +374,10 @@ public class ChatActivity extends BaseActivity implements MessageView {
 
     private void initSubscriptions() {
         subscriptions = new CompositeSubscription();
-        subscriptions.add(chatInputView.sendClick().subscribe(s -> chatPresenter.sendMessage(getCurrentUser(), recipient, s)));
+        subscriptions.add(chatInputView.sendClick().subscribe(s -> {
+            ChatMessage chatMessage = ChatMessage.createMessage(getCurrentUser(), recipient, s);
+            chatPresenter.sendMessage(chatMessage);
+        }));
         subscriptions.add(chatInputView.textChanges().subscribe(s -> chatPresenter.sendTypingEvent()));
     }
 
@@ -566,6 +608,78 @@ public class ChatActivity extends BaseActivity implements MessageView {
         });
 
         animatorAlpha.start();
+    }
+
+    private void updateAvatars() {
+        int firstVisibleItem = messageLayoutManager.findFirstVisibleItemPosition();
+        int lastVisibleItem = messageLayoutManager.findLastVisibleItemPosition();
+
+        List<String> toRemove = new ArrayList<String>();
+
+        for (String sectionId : avatarsMap.keySet()) {
+            Section section = avatarsMap.get(sectionId);
+            View vBegin = messageLayoutManager.findViewByPosition(section.getBegin());
+            View vEnd = messageLayoutManager.findViewByPosition(section.getEnd());
+
+            if (lastVisibleItem < section.getBegin() || firstVisibleItem > section.getEnd())
+                toRemove.add(sectionId);
+            else {
+                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) section.getImageView().getLayoutParams();
+                params.topMargin = Math.max(
+                        vBegin != null ? vBegin.getTop() + vBegin.getPaddingTop() : Integer.MIN_VALUE,
+                        Math.min(vEnd != null ? vEnd.getTop() + vEnd.getHeight() - avatarSize - vEnd.getPaddingBottom() : Integer.MAX_VALUE,
+                                layoutContent.getHeight() - avatarSize - marginHorizontalLeftSmall));
+                section.getImageView().requestLayout();
+            }
+        }
+
+        for (String id : toRemove) {
+//                            Section section = avatarsMap.remove(id);
+//                            layoutContent.removeView(section.getImageView());
+//                            layoutContent.requestLayout();
+//                            section.setImageView(null);
+//                            section = null;
+            Observable.just(avatarsMap.remove(id))
+                    .delay(0, TimeUnit.MILLISECONDS)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(section1 -> {
+                        layoutContent.removeView(section1.getImageView());
+                        layoutContent.requestLayout();
+                        section1.setImageView(null);
+                        section1 = null;
+                    });
+        }
+
+        if (messageLayoutManager.findFirstVisibleItemPosition() != -1) {
+            for (int i = firstVisibleItem; i <= lastVisibleItem; i++) {
+                ChatMessage chatMessage = messageAdapter.getMessage(i);
+                View vEnd = messageLayoutManager.findViewByPosition(chatMessage.getEndOfSection());
+                View vBegin = messageLayoutManager.findViewByPosition(chatMessage.getBeginOfSection());
+
+                if ((chatMessage.isLastOfPerson() || chatMessage.isOtherPerson()) && !avatarsMap.containsKey(chatMessage.getSectionId())) {
+                    int topMargin = Math.max(
+                            vBegin != null ? vBegin.getTop() + vBegin.getPaddingTop() : Integer.MIN_VALUE,
+                            Math.min(vEnd != null ? vEnd.getTop() + vEnd.getHeight() - avatarSize - vEnd.getPaddingBottom() : Integer.MAX_VALUE,
+                                    layoutContent.getHeight() - avatarSize - marginHorizontalLeftSmall));
+
+                    ImageView avatar = new ImageView(this);
+                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(avatarSize, avatarSize);
+                    params.leftMargin = marginHorizontalLeftSmall;
+                    params.topMargin = topMargin;
+                    avatar.setLayoutParams(params);
+
+                    picasso.load(chatMessage.getFrom().getProfilePicture())
+                            .fit()
+                            .transform(new RoundedCornersTransformation(avatarSize >> 1, 0, RoundedCornersTransformation.CornerType.ALL))
+                            .into(avatar);
+
+                    layoutContent.addView(avatar);
+                    layoutContent.requestLayout();
+                    avatarsMap.put(chatMessage.getSectionId(), new Section(chatMessage.getBeginOfSection(), chatMessage.getEndOfSection(), avatar));
+                }
+            }
+        }
     }
 
     @Override

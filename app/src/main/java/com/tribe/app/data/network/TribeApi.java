@@ -1,5 +1,6 @@
 package com.tribe.app.data.network;
 
+import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.TribeRealm;
@@ -37,4 +38,8 @@ public interface TribeApi {
     @FormUrlEncoded
     @POST("/graphql")
     Observable<List<TribeRealm>> markTribeListAsSeen(@Field("query") String query);
+
+    @FormUrlEncoded
+    @POST("/graphql")
+    Observable<ChatRealm> sendChat(@Field("query") String query);
 }

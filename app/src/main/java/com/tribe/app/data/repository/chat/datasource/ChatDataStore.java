@@ -43,4 +43,11 @@ public interface ChatDataStore {
      * @param chatRealm the ChatRealm to save
      */
     Observable<ChatRealm> sendMessage(final ChatRealm chatRealm);
+
+    /**
+     * Get an {@link Observable} which will delete a tribe.
+     *
+     * @param chatRealm the ChatMessage to delete
+     */
+    Observable<Void> deleteMessage(final ChatRealm chatRealm);
 }

@@ -87,6 +87,21 @@
         }
     </string>
 
+    <string name="chat.send">
+        mutation {
+            newMessage(
+                message: {
+                    from: \"%1$s\",
+                    to: \"%2$s\",
+                    to_group: %3$s,
+                    type: \"%4$s\",
+                    recorded_at: \"%5$s\",
+                    content : \"%6$s\"
+                }
+            ) { id, recorded_at }
+        }
+    </string>
+
     <string name="messages.infos">
         {
             user {
@@ -117,6 +132,7 @@
                     type
                     content
                     recorded_at
+                    created_at
                 }
             }
 

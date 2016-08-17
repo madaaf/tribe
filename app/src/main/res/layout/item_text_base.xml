@@ -4,7 +4,7 @@
     android:id="@+id/layoutInfos"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="55dp"
+    android:layout_marginLeft="@dimen/horizontal_left_margin_chat"
     android:orientation="horizontal">
 
     <com.tribe.app.presentation.view.widget.TextViewFont

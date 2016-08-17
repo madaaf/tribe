@@ -149,4 +149,50 @@ public class ChatCacheImpl implements ChatCache {
             }
         });
     }
+
+    @Override
+    public void update(ChatRealm chatRealm) {
+        chatRealm.setUpdatedAt(new Date());
+        Realm obsRealm = Realm.getDefaultInstance();
+        obsRealm.beginTransaction();
+
+        ChatRealm obj = obsRealm.where(ChatRealm.class).equalTo("localId", chatRealm.getId()).findFirst();
+        if (obj != null)
+            obj.setMessageStatus(chatRealm.getMessageStatus());
+        else
+            obsRealm.copyToRealmOrUpdate(chatRealm);
+
+        obsRealm.commitTransaction();
+        obsRealm.close();
+    }
+
+    @Override
+    public Observable<Void> delete(ChatRealm chatRealm) {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(final Subscriber<? super Void> subscriber) {
+                Realm obsRealm = Realm.getDefaultInstance();
+                obsRealm.beginTransaction();
+                final ChatRealm result = obsRealm.where(ChatRealm.class).equalTo("localId", chatRealm.getLocalId()).findFirst();
+                result.deleteFromRealm();
+                obsRealm.commitTransaction();
+                subscriber.onNext(null);
+                obsRealm.close();
+            }
+        });
+    }
+
+    @Override
+    public ChatRealm updateLocalWithServerRealm(ChatRealm local, ChatRealm server) {
+        Realm obsRealm = Realm.getDefaultInstance();
+        ChatRealm resultChat;
+        obsRealm.beginTransaction();
+        final ChatRealm result = obsRealm.where(ChatRealm.class).equalTo("localId", local.getLocalId()).findFirst();
+        result.setId(server.getId());
+        resultChat = obsRealm.copyFromRealm(result);
+        obsRealm.commitTransaction();
+        obsRealm.close();
+        return resultChat;
+    }
+
 }

@@ -4,9 +4,9 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.provider.MediaStore;
 
+import com.birbit.android.jobqueue.JobManager;
+import com.tribe.app.data.network.job.SendChatJob;
 import com.tribe.app.domain.entity.ChatMessage;
-import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.text.ConnectAndSubscribeMQTT;
 import com.tribe.app.domain.interactor.text.DisconnectMQTT;
@@ -32,6 +32,7 @@ import rx.schedulers.Schedulers;
 
 public class ChatPresenter implements Presenter {
 
+    private final JobManager jobManager;
     private final ConnectAndSubscribeMQTT connectAndSubscribeMQTT;
     private final SubscribingMQTT subscribingMQTT;
     private final DisconnectMQTT disconnectMQTT;
@@ -44,12 +45,14 @@ public class ChatPresenter implements Presenter {
     private String friendId;
 
     @Inject
-    public ChatPresenter(@Named("diskGetChatMessages") GetDiskChatMessageList diskGetChatMessages,
+    public ChatPresenter(JobManager jobManager,
+                         @Named("diskGetChatMessages") GetDiskChatMessageList diskGetChatMessages,
                          @Named("saveChat") SaveChat saveChat,
                          @Named("connectAndSubscribe") ConnectAndSubscribeMQTT connectAndSubscribeMQTT,
                          @Named("subscribing") SubscribingMQTT subscribingMQTT,
                          @Named("disconnect") DisconnectMQTT disconnectMQTT,
                          @Named("unsubscribe") UnsubscribeMQTT unsubscribeMQTT) {
+        this.jobManager = jobManager;
         this.connectAndSubscribeMQTT = connectAndSubscribeMQTT;
         this.subscribingMQTT = subscribingMQTT;
         this.unsubscribeMQTT = unsubscribeMQTT;
@@ -146,10 +149,9 @@ public class ChatPresenter implements Presenter {
         connectAndSubscribeMQTT.execute(new ConnectAndSubscribeMQTTSubscriber());
     }
 
-    public void sendMessage(User currentUser, Recipient recipient, String str) {
-        ChatMessage chatMessage = ChatMessage.createMessage(currentUser, recipient, str);
-        saveChat.setChatMessage(chatMessage);
-        saveChat.execute(new SaveChatSubscriber());
+    public void sendMessage(ChatMessage... messageList) {
+        for (ChatMessage chatMessage : messageList)
+            jobManager.addJobInBackground(new SendChatJob(chatMessage));
     }
 
     public void sendTypingEvent() {

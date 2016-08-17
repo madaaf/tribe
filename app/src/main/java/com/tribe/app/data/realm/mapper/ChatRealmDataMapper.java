@@ -48,6 +48,7 @@ public class ChatRealmDataMapper {
             chatMessage.setType(chatRealm.getType());
             chatMessage.setFrom(userRealmDataMapper.transform(chatRealm.getFrom()));
             chatMessage.setRecordedAt(chatRealm.getRecordedAt());
+            chatMessage.setCreatedAt(chatRealm.getCreatedAt());
             chatMessage.setUpdatedAt(chatRealm.getUpdatedAt());
             chatMessage.setToGroup(chatRealm.isToGroup());
             chatMessage.setMessageStatus(chatRealm.getMessageStatus());
@@ -80,6 +81,7 @@ public class ChatRealmDataMapper {
             chatRealm.setType(chatMessage.getType());
             chatRealm.setFrom(userRealmDataMapper.transform(chatMessage.getFrom()));
             chatRealm.setRecordedAt(chatMessage.getRecordedAt());
+            chatRealm.setCreatedAt(chatMessage.getCreatedAt());
             chatRealm.setUpdatedAt(chatMessage.getUpdatedAt());
             chatRealm.setToGroup(chatMessage.isToGroup());
             chatRealm.setMessageStatus(chatMessage.getMessageStatus());

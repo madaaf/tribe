@@ -21,7 +21,7 @@
     <dimen name="vertical_margin_xlarge">30dp</dimen>
     <dimen name="vertical_margin_proximity">5dp</dimen>
     <dimen name="vertical_margin_reply_tile">50dp</dimen>
-    <dimen name="horizontal_left_margin_chat">55dp</dimen>
+    <dimen name="horizontal_left_margin_chat">71dp</dimen>
 
     <!-- PADDING -->
     <dimen name="icons_padding">3.75dp</dimen>

@@ -8,4 +8,5 @@
     <item type="id" name="tag_tribe" />
     <item type="id" name="tag_position" />
     <item type="id" name="profile_picture" />
+    <item type="id" name="chat_id" />
 </resources>

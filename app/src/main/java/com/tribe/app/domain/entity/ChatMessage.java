@@ -1,6 +1,7 @@
 package com.tribe.app.domain.entity;
 
 import android.support.annotation.StringDef;
+import android.support.v4.util.Pair;
 
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -41,10 +42,14 @@ public class ChatMessage extends Message {
     private boolean isToday;
     private boolean shouldDisplayTime = true;
     private boolean isLastOfSection = false;
+    private boolean isLastOfPerson = false;
     private boolean isFirstOfSection = true;
     private boolean isOtherPerson = false;
     private boolean isOnlyEmoji = false;
     private boolean isLink = false;
+    private int beginOfSection; // position of the beginning of the section
+    private int endOfSection; // position of the end of the section
+    private String sectionId;
 
     public String getId() {
         return id;
@@ -182,11 +187,32 @@ public class ChatMessage extends Message {
         isLink = link;
     }
 
+    public boolean isLastOfPerson() {
+        return isLastOfPerson;
+    }
+
+    public void setLastOfPerson(boolean lastOfPerson) {
+        isLastOfPerson = lastOfPerson;
+    }
+
+    public int getBeginOfSection() {
+        return beginOfSection;
+    }
+
+    public int getEndOfSection() {
+        return endOfSection;
+    }
+
+    public String getSectionId() {
+        return sectionId;
+    }
+
     public static ChatMessage createMessage(User user, Recipient recipient, String content) {
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setContent(content);
         chatMessage.setLocalId(FileUtils.generateIdForMessage());
         chatMessage.setRecordedAt(new Date(System.currentTimeMillis()));
+        chatMessage.setCreatedAt(chatMessage.getRecordedAt());
         chatMessage.setFrom(user);
         chatMessage.setTo(recipient);
         chatMessage.setToGroup(recipient instanceof Group);
@@ -207,9 +233,7 @@ public class ChatMessage extends Message {
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (localId != null ? localId.hashCode() : 0);
-        return result;
+        return localId.hashCode();
     }
 
     @Override
@@ -229,14 +253,40 @@ public class ChatMessage extends Message {
         List<ChatMessage> result = new ArrayList<>();
         ChatMessage previousChatMessage = null;
         int count = 0;
+        Pair<Integer, ChatMessage> currentBeginAvatarSection = new Pair<>(-1, null);
 
         for (ChatMessage chatMessage : chatMessageList) {
             computeMessage(result, previousChatMessage, chatMessage);
+            if (previousChatMessage != null && previousChatMessage.isLastOfPerson) {
+                int endOfSection = result.get(result.size() - 2).isHeader ? result.size() - 3 : result.size() - 2;
+                previousChatMessage.beginOfSection = currentBeginAvatarSection.first;
+                previousChatMessage.endOfSection = endOfSection;
+                String sectionId = currentBeginAvatarSection.second.localId + previousChatMessage.localId;
+                previousChatMessage.sectionId = sectionId;
+                currentBeginAvatarSection.second.endOfSection = endOfSection;
+                currentBeginAvatarSection.second.sectionId = sectionId;
+            }
+
+            if (chatMessage.isOtherPerson) {
+                chatMessage.beginOfSection = result.size() - 1;
+                currentBeginAvatarSection = new Pair<>(result.size() - 1, chatMessage);
+            }
+
             count++;
 
             previousChatMessage = result.get(result.size() - 1);
 
-            if (count == chatMessageList.size()) previousChatMessage.isLastOfSection = true;
+            if (count == chatMessageList.size()) {
+                int endOfSection = result.size() - 1;
+                previousChatMessage.isLastOfSection = true;
+                previousChatMessage.isLastOfPerson = true;
+                previousChatMessage.beginOfSection = currentBeginAvatarSection.first;
+                previousChatMessage.endOfSection = endOfSection;
+                String sectionId = currentBeginAvatarSection.second.localId + previousChatMessage.localId;
+                previousChatMessage.sectionId = sectionId;
+                currentBeginAvatarSection.second.endOfSection = endOfSection;
+                currentBeginAvatarSection.second.sectionId = sectionId;
+            }
         }
 
         return result;
@@ -247,6 +297,7 @@ public class ChatMessage extends Message {
 
         if (previousChatMessage != null) {
             chatMessage.isOtherPerson = !previousChatMessage.getFrom().equals(chatMessage.getFrom());
+            previousChatMessage.isLastOfPerson = chatMessage.isOtherPerson;
 
             if (chatMessage.getRecordedAt().getTime() - previousChatMessage.getRecordedAt().getTime() > MINUTE) {
                 Calendar cal1 = Calendar.getInstance();
@@ -257,8 +308,10 @@ public class ChatMessage extends Message {
                         cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR));
                 previousChatMessage.isLastOfSection = chatMessage.isFirstOfSection;
 
-                if (chatMessage.isFirstOfSection)
-                    chatMessage.isOtherPerson = true; // WE FORCE SHOWING THE USER IF'S THE FIRST MESSAGE OF THE SECTION
+                if (chatMessage.isFirstOfSection) {
+                    chatMessage.isOtherPerson = true; //
+                    previousChatMessage.isLastOfPerson = chatMessage.isOtherPerson;
+                }// WE FORCE SHOWING THE USER IF IT'S THE FIRST MESSAGE OF THE SECTION
             } else {
                 chatMessage.shouldDisplayTime = false;
                 chatMessage.isFirstOfSection = false;

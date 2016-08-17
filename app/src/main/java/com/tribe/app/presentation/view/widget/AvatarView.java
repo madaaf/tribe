@@ -66,23 +66,25 @@ public class AvatarView extends RoundedCornerLayout {
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
 
-        float borderWidth = hasBorder ? 1f : 1f;
+        if (hasBorder) {
+            float borderWidth = 1f;
 
-        DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
-        borderWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, borderWidth, metrics);
+            DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
+            borderWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, borderWidth, metrics);
 
-        Paint paintBorder = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paintBorder.setAntiAlias(true);
-        paintBorder.setColor(Color.WHITE);
-        paintBorder.setStyle(Paint.Style.STROKE);
-        paintBorder.setAntiAlias(true);
-        paintBorder.setStrokeWidth(borderWidth);
+            Paint paintBorder = new Paint(Paint.ANTI_ALIAS_FLAG);
+            paintBorder.setAntiAlias(true);
+            paintBorder.setColor(Color.WHITE);
+            paintBorder.setStyle(Paint.Style.STROKE);
+            paintBorder.setAntiAlias(true);
+            paintBorder.setStrokeWidth(borderWidth);
 
-        float viewWidth = getWidth() - ((int) borderWidth * 2);
-        float circleCenter = viewWidth / 2;
+            float viewWidth = getWidth() - ((int) borderWidth * 2);
+            float circleCenter = viewWidth / 2;
 
-        canvas.drawCircle(circleCenter + borderWidth, circleCenter + borderWidth,
-                circleCenter + borderWidth, paintBorder);
+            canvas.drawCircle(circleCenter + borderWidth, circleCenter + borderWidth,
+                    circleCenter, paintBorder);
+        }
     }
 
     public void load(String url) {
@@ -91,5 +93,9 @@ public class AvatarView extends RoundedCornerLayout {
                 .noFade()
                 .centerCrop()
                 .into(imgAvatar);
+    }
+
+    public void setHasBorder(boolean hasBorder) {
+        this.hasBorder = hasBorder;
     }
 }

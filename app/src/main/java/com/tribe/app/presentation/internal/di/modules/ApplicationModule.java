@@ -29,7 +29,9 @@ import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.text.ChatRepository;
+import com.tribe.app.domain.interactor.text.DeleteChat;
 import com.tribe.app.domain.interactor.text.GetDiskChatMessageList;
+import com.tribe.app.domain.interactor.text.SendChat;
 import com.tribe.app.domain.interactor.tribe.CloudMarkTribeListAsRead;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.SendTribe;
@@ -247,6 +249,18 @@ public class ApplicationModule {
     @Named("cloudGetMessages")
     UseCase provideCloudGetMessages(GetCloudMessageList getCloudMessageList) {
         return getCloudMessageList;
+    }
+
+    @Provides
+    @Named("cloudSendChat")
+    SendChat provideCloudSendChat(SendChat sendChatDisk) {
+        return sendChatDisk;
+    }
+
+    @Provides
+    @Named("diskDeleteChat")
+    DeleteChat provideDiskDeleteChat(DeleteChat deleteChatDisk) {
+        return deleteChatDisk;
     }
 
     @Provides

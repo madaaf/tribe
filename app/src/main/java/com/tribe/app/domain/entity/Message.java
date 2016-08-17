@@ -26,6 +26,7 @@ public abstract class Message implements Serializable {
     protected Recipient to;
     protected boolean toGroup;
     protected Date recordedAt;
+    protected Date createdAt;
     protected Date updatedAt;
     protected @MessageStatus.Status String messageStatus;
 
@@ -71,6 +72,14 @@ public abstract class Message implements Serializable {
 
     public void setRecordedAt(Date recordedAt) {
         this.recordedAt = recordedAt;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 
     public void setId(String id) {

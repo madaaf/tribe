@@ -83,7 +83,6 @@ public class TribeCacheImpl implements TribeCache {
         obsRealm.close();
     }
 
-
     @Override
     public void put(List<TribeRealm> tribeRealmList) {
         Realm realm = Realm.getDefaultInstance();
