@@ -10,13 +10,13 @@ public class Pin {
     private String ncStatus;
     private String smsStatus;
 
-    public String getPinId() {
-        return pinId;
-    }
-
-    public void setPinId(String pinId) {
-        this.pinId = pinId;
-    }
+//    public String getPinId() {
+////        return pinId;
+////    }
+//
+//    public void setPinId(String pinId) {
+//        this.pinId = pinId;
+//    }
 
     public String getTo() {
         return to;

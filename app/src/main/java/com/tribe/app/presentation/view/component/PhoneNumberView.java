@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
@@ -38,6 +39,9 @@ public class PhoneNumberView extends FrameLayout {
 
     @BindView(R.id.imageViewNextIcon)
     ImageView imageViewNextIcon;
+
+    @BindView(R.id.circularProgressViewPhoneNumber)
+    CircularProgressView circularProgressViewPhoneNumber;
 
     // VARIABLES
     private PhoneUtils phoneUtils;
@@ -139,4 +143,31 @@ public class PhoneNumberView extends FrameLayout {
 
         initWithCodeCountry(countryCode);
     }
+
+    public void setNextEnabled(boolean enabled) {
+        if (enabled) {
+            imageViewNextIcon.setImageDrawable(context.getDrawable(R.drawable.picto_next_icon_black));
+            imageViewNextIcon.setClickable(true);
+        } else {
+            imageViewNextIcon.setImageDrawable(context.getDrawable(R.drawable.picto_next_icon));
+            imageViewNextIcon.setClickable(false);
+        }
+    }
+
+    public void setNextVisible(boolean visible) {
+        if (visible) {
+            imageViewNextIcon.setVisibility(VISIBLE);
+        } else {
+            imageViewNextIcon.setVisibility(INVISIBLE);
+        }
+    }
+
+    public void progressViewVisible(boolean visible) {
+        if (visible) {
+            circularProgressViewPhoneNumber.setVisibility(VISIBLE);
+        } else {
+            circularProgressViewPhoneNumber.setVisibility(INVISIBLE);
+        }
+    }
+
 }

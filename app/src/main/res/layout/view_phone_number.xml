@@ -40,6 +40,18 @@
             android:layout_marginBottom="21dp"
             android:layout_marginEnd="20dp"
             />
+        <com.github.rahatarmanahmed.cpv.CircularProgressView
+            android:id="@+id/circularProgressViewPhoneNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_marginBottom="21dp"
+            android:layout_marginEnd="20dp"
+            android:visibility="invisible"
+            app:cpv_animAutostart="true"
+            app:cpv_indeterminate="true"
+            app:cpv_color="@android:color/black"
+            />
 
 
 

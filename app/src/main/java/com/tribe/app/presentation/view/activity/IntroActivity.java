@@ -12,10 +12,12 @@ import android.view.View;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
+import com.google.android.gms.common.data.DataBufferObserver;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.Pin;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.IntroPresenter;
 import com.tribe.app.presentation.mvp.view.IntroView;
@@ -26,12 +28,16 @@ import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.PlayerView;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.Observable;
+import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
 public class IntroActivity extends BaseActivity implements IntroView {
@@ -57,9 +63,10 @@ public class IntroActivity extends BaseActivity implements IntroView {
 
     @BindView(R.id.videoViewIntro)
     IntroVideoView videoViewIntro;
-//
-//    @BindView(R.id.btnNext)
-//    View btnNext;
+
+    // TODO: add to strings.xml
+    @BindView(R.id.txtIntroMessage)
+    TextViewFont txtIntroMessage;
 
     private IntroViewPagerAdapter introViewPagerAdapter;
 
@@ -77,7 +84,6 @@ public class IntroActivity extends BaseActivity implements IntroView {
         initDependencyInjector();
         initViewPager();
         initPhoneNumberView();
-        initCodeView();
         initPresenter();
         initPlayerView();
 
@@ -109,11 +115,22 @@ public class IntroActivity extends BaseActivity implements IntroView {
         setContentView(R.layout.activity_intro);
         unbinder = ButterKnife.bind(this);
 
-//        btnNext.setEnabled(false);
+        viewPhoneNumber.setNextEnabled(false);
 
         subscriptions.add(RxView.clicks(viewPhoneNumber.getImageViewNextIcon()).subscribe(aVoid -> {
-            if (viewPager.getCurrentItem() == PAGE_PHONE_NUMBER) introPresenter.requestCode(phoneNumber);
-            else introPresenter.login(phoneNumber, code, pin.getPinId());
+            introPresenter.requestCode(phoneNumber);
+        }));
+
+        subscriptions.add(RxView.clicks(viewCode.getBackIcon()).subscribe(aVoid -> {
+            viewPager.setCurrentItem(PAGE_PHONE_NUMBER, true);
+        }));
+
+        subscriptions.add(viewCode.codeValid().subscribe(isValid -> {
+            if (isValid) {
+//                this.code = viewCode.getCode();
+//                introPresenter.login(phoneNumber, code, pin.getPinId());
+                introPresenter.login("", "", "");
+            }
         }));
     }
 
@@ -132,22 +149,16 @@ public class IntroActivity extends BaseActivity implements IntroView {
         viewPager.setCurrentItem(PAGE_PHONE_NUMBER);
         viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_NONE);
         viewPager.setPageTransformer(false, new IntroPageTransformer());
+        viewPager.setSwipeable(false);
     }
 
     private void initPhoneNumberView() {
         viewPhoneNumber.setPhoneUtils(getApplicationComponent().phoneUtils());
         subscriptions.add(viewPhoneNumber.phoneNumberValid().subscribe(isValid -> {
             this.phoneNumber = viewPhoneNumber.getPhoneNumberFormatted();
-//            btnNext.setEnabled(isValid);
+            viewPhoneNumber.setNextEnabled(isValid);
         }));
         subscriptions.add(viewPhoneNumber.countryClick().subscribe(aVoid -> navigator.navigateToCountries(this)));
-    }
-
-    private void initCodeView() {
-        subscriptions.add(viewCode.codeValid().subscribe(isValid -> {
-            this.code = viewCode.getCode();
-//            btnNext.setEnabled(isValid);
-        }));
     }
 
     private void initPresenter() {
@@ -159,25 +170,41 @@ public class IntroActivity extends BaseActivity implements IntroView {
     }
 
     @Override
-    public void goToCode(Pin pin) {
-        this.pin = pin;
-//        btnNext.setEnabled(false);
+    public void goToCode() {
+//        this.pin = pin;
+        viewPhoneNumber.setNextEnabled(false);
+        //TODO: add to strings.xml and add animation
+        txtIntroMessage.setText("We just texted you a code to verify it.");
         viewPager.setCurrentItem(PAGE_CODE, true);
     }
 
 
     @Override
-    public void goToHome(AccessToken token) {
+    public void goToHome() {
         navigator.navigateToHome(context());
     }
 
     @Override
-    public void showLoading() {
+    public void goToProfileInfo() {
+        navigator.navigateToProfileInfo(context());
+    }
 
+    @Override
+    public void showLoading() {
+        if (viewPager.getCurrentItem() == PAGE_PHONE_NUMBER) {
+            viewPhoneNumber.setNextVisible(false);
+            viewPhoneNumber.progressViewVisible(true);
+        } else {
+            viewCode.progressViewVisible(true);
+        }
     }
 
     @Override
     public void hideLoading() {
+        viewPhoneNumber.progressViewVisible(false);
+        viewPhoneNumber.setNextVisible(true);
+        viewPhoneNumber.setNextEnabled(true);
+        viewCode.progressViewVisible(false);
 
     }
 

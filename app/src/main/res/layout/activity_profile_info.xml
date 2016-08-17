@@ -15,14 +15,65 @@
         android:gravity="center"/>
 
     <ImageView
-        android:layout_width="65dp"
-        android:layout_height="95dp"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
         android:layout_gravity="top|start"
         android:scaleType="fitCenter"
-        
-        android:layout_marginTop="101dp"
+        android:layout_marginTop="86dp"
         android:src="@drawable/picto_profile_pic_placeholder"
-        android:background="@android:color/white"/>
+        android:background="@drawable/shape_rect_profile_info_background_w_border"/>
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtProfileInfoOpenCameraRoll"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="top|start"
+        android:layout_marginTop="86dp"
+        android:layout_marginStart="96dp"
+        android:gravity="center"
+        android:background="@drawable/shape_rect_profile_info_background_w_border"
+        android:text="@string/profile_info_open_camera_roll"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtProfileInfoTakeASelfie"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="top|start"
+        android:layout_marginTop="134dp"
+        android:layout_marginStart="96dp"
+        android:gravity="center"
+        android:background="@drawable/shape_rect_profile_info_background_w_border"
+        android:text="@string/profile_inifo_take_a_selfie"
+        />
+    
+    <com.tribe.app.presentation.view.widget.EditTextFont
+        android:id="@+id/editDisplayName"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginTop="186dp"
+        android:layout_gravity="top|start"
+        android:background="@drawable/shape_rect_profile_info_background_w_border"
+        android:hint="@string/profile_info_display_name"/>
+
+    <com.tribe.app.presentation.view.widget.EditTextFont
+        android:id="@+id/editUsername"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginTop="254dp"
+        android:layout_gravity="top|start"
+        android:background="@drawable/shape_rect_profile_info_background_w_border"
+        android:hint="@string/profile_info_username"/>
+    
+    <ImageView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/picto_next_icon"
+        android:scaleType="fitCenter"
+        android:background="@android:color/white"
+        android:layout_gravity="bottom|end"/>
+
+
 
 
     

@@ -67,4 +67,8 @@
     <string name="chat_are_typing">are typing</string>
     <string name="chat_and">and</string>
     <string name="title_activity_profile_info">ProfileInfoActivity</string>
+    <string name="profile_info_open_camera_roll">Open camera roll</string>
+    <string name="profile_inifo_take_a_selfie">Take a selfie</string>
+    <string name="profile_info_display_name">Display name</string>
+    <string name="profile_info_username">Username</string>
 </resources>

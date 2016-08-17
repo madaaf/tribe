@@ -161,9 +161,9 @@ public class ApplicationModule {
     AccessToken provideAccessToken(Realm realm) {
         AccessToken accessToken = new AccessToken();
 
-        final RealmResults<AccessToken> results = realm.where(AccessToken.class).findAll();
-        if (results != null && results.size() > 0)
-            accessToken = realm.copyFromRealm(results.get(0));
+//        final RealmResults<AccessToken> results = realm.where(AccessToken.class).findAll();
+//        if (results != null && results.size() > 0)
+//            accessToken = realm.copyFromRealm(results.get(0));
 
         return accessToken;
     }
