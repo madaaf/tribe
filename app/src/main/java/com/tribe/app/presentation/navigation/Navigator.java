@@ -10,7 +10,6 @@ import com.tribe.app.presentation.view.activity.ChatActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.IntroActivity;
-import com.tribe.app.presentation.view.activity.ProfileInfoActivity;
 import com.tribe.app.presentation.view.activity.TribeActivity;
 
 import javax.inject.Inject;
@@ -58,10 +57,10 @@ public class Navigator {
      */
 
     public void navigateToProfileInfo(Context context) {
-        if (context != null) {
-            Intent intent = ProfileInfoActivity.getCallingIntent(context);
-            context.startActivity(intent);
-        }
+//        if (context != null) {
+//            Intent intent = ProfileInfoActivity.getCallingIntent(context);
+//            context.startActivity(intent);
+//        }
     }
 
     /**

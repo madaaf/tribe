@@ -72,11 +72,6 @@
             </intent-filter>
         </service>
 
-        <activity
-            android:name=".presentation.view.activity.ProfileInfoActivity"
-            android:label="@string/title_activity_profile_info"
-            android:theme="@style/AppTheme">
-        </activity>
     </application>
 
 </manifest>

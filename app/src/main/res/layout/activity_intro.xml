@@ -5,69 +5,10 @@
     android:background="@null"
     >
 
-    <com.tribe.app.presentation.view.widget.IntroVideoView
-        android:layout_height="match_parent"
-        android:layout_width="wrap_content"
-        android:layout_gravity="center"
-        android:id="@+id/videoViewIntro"/>
-
-    <android.support.v7.widget.AppCompatImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|center_horizontal"
-        android:layout_marginTop="30dp"
-        android:src="@drawable/picto_tribe_onboarding_logo"
-        />
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtIntroMessage"
-        android:layout_width="244dp"
-        android:layout_height="17dp"
-        android:layout_gravity="bottom|center"
-        android:layout_marginBottom="75dp"
-        android:textColor="@android:color/white"
-        android:text="Use your phone number to connect"
-        android:textAlignment="center"
-        />
-
-
-
     <com.tribe.app.presentation.view.widget.CustomViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
-        >
-
-        <com.tribe.app.presentation.view.component.PhoneNumberView
-            android:id="@+id/viewPhoneNumber"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="@null"
             />
-
-        <com.tribe.app.presentation.view.component.CodeView
-            android:id="@+id/viewCode"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null"
-            />
-        <com.tribe.app.presentation.view.component.ConnectedView
-            android:id="@+id/viewConnected"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"/>
-
-    </com.tribe.app.presentation.view.widget.CustomViewPager>
-
-   <!-- <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/btnNext"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_gravity="bottom"
-        android:gravity="center"
-        android:background="@color/palette.two.two"
-        android:text="@string/Common.Next"
-        android:clickable="true"
-        /> -->
 
 </FrameLayout>
