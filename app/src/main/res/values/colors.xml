@@ -39,11 +39,14 @@
     <color name="grey.permissions">#93AAB5</color>
     <color name="grey.background">#FBFDFD</color>
     <color name="grey.background.profile_info">#F7F7F7</color>
+    <color name="grey.text.profile_info">#949494</color>
+    <color name="grey.text.friends_verify">#999999</color>
 
     <!-- BLUE -->
     <color name="blue.text">#02ADF2</color>
     <color name="blue.grey.faded">#F8FDFF</color>
     <color name="blue.facebook">#007FFF</color>
+    <color name="blue.facebook.dark">#4460A0</color>
 
     <!-- YELLOWS -->
     <color name="yellow">#FEBE00</color>

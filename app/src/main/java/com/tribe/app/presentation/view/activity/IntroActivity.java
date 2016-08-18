@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
@@ -23,6 +24,7 @@ import com.tribe.app.presentation.mvp.presenter.IntroPresenter;
 import com.tribe.app.presentation.mvp.view.IntroView;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.component.CodeView;
+import com.tribe.app.presentation.view.component.ConnectedView;
 import com.tribe.app.presentation.view.component.PhoneNumberView;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
@@ -44,6 +46,7 @@ public class IntroActivity extends BaseActivity implements IntroView {
 
     public static final int PAGE_PHONE_NUMBER = 0;
     public static final int PAGE_CODE = 1;
+    public static final int PAGE_CONNECTED = 2;
 
     public static Intent getCallingIntent(Context context) {
         return new Intent(context, IntroActivity.class);
@@ -60,6 +63,9 @@ public class IntroActivity extends BaseActivity implements IntroView {
 
     @BindView(R.id.viewCode)
     CodeView viewCode;
+
+    @BindView(R.id.viewConnected)
+    ConnectedView viewConnected;
 
     @BindView(R.id.videoViewIntro)
     IntroVideoView videoViewIntro;
@@ -129,7 +135,8 @@ public class IntroActivity extends BaseActivity implements IntroView {
             if (isValid) {
 //                this.code = viewCode.getCode();
 //                introPresenter.login(phoneNumber, code, pin.getPinId());
-                introPresenter.login("", "", "");
+//                introPresenter.login("", "", "");
+                goToConnected();
             }
         }));
     }
@@ -184,9 +191,22 @@ public class IntroActivity extends BaseActivity implements IntroView {
         navigator.navigateToHome(context());
     }
 
+
+    @Override
+    public void goToConnected() {
+        txtIntroMessage.setText("");
+        hideKeyboard();
+        viewPager.setCurrentItem(PAGE_CONNECTED, true);
+    }
+
     @Override
     public void goToProfileInfo() {
         navigator.navigateToProfileInfo(context());
+    }
+
+    @Override
+    public void goToAccess() {
+
     }
 
     @Override
@@ -241,6 +261,8 @@ public class IntroActivity extends BaseActivity implements IntroView {
                 case 1:
                     resId = R.id.viewCode;
                     break;
+                case 2:
+                    resId = R.id.viewConnected;
             }
 
             return findViewById(resId);
@@ -248,7 +270,7 @@ public class IntroActivity extends BaseActivity implements IntroView {
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
 
         @Override
@@ -264,4 +286,13 @@ public class IntroActivity extends BaseActivity implements IntroView {
 
         }
     }
+
+    public void hideKeyboard() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
 }

@@ -18,7 +18,7 @@
         android:layout_width="96dp"
         android:layout_height="96dp"
         android:layout_gravity="top|start"
-        android:scaleType="fitCenter"
+        android:scaleType="centerInside"
         android:layout_marginTop="86dp"
         android:src="@drawable/picto_profile_pic_placeholder"
         android:background="@drawable/shape_rect_profile_info_background_w_border"/>
@@ -69,12 +69,26 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:src="@drawable/picto_next_icon"
-        android:scaleType="fitCenter"
+        android:scaleType="centerInside"
         android:background="@android:color/white"
         android:layout_gravity="bottom|end"/>
 
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/profile_info_username_can_be_changed_later"
+        android:layout_gravity="center|top"
+        android:gravity="center|top"
+        android:layout_marginTop="398dp"
+        android:textColor="@color/grey.text.profile_info"/>
 
 
+    <com.tribe.app.presentation.view.widget.FacebookView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|bottom"
+        android:layout_marginEnd="60dp"
+        />
 
     
 </FrameLayout>

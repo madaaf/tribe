@@ -71,4 +71,7 @@
     <string name="profile_inifo_take_a_selfie">Take a selfie</string>
     <string name="profile_info_display_name">Display name</string>
     <string name="profile_info_username">Username</string>
+    <string name="view_facebook_or_autofill_profile">Or autofill profile</string>
+    <string name="profile_info_username_can_be_changed_later">Username can be changed later.</string>
+    <string name="view_connected_connected">Connected</string>
 </resources>

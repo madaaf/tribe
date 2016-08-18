@@ -106,6 +106,14 @@ public class IntroPresenter implements Presenter {
         this.introView.goToCode();
     }
 
+    public void goToConnected() {
+        this.introView.goToConnected();
+    }
+
+    public void goToAccess() {
+        this.introView.goToAccess();
+    }
+
     private void showViewLoading() {
         this.introView.showLoading();
     }

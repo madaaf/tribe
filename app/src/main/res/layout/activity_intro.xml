@@ -50,10 +50,13 @@
             android:id="@+id/viewCode"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="50dp"
-            android:gravity="center"
             android:background="@null"
             />
+        <com.tribe.app.presentation.view.component.ConnectedView
+            android:id="@+id/viewConnected"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"/>
+
     </com.tribe.app.presentation.view.widget.CustomViewPager>
 
    <!-- <com.tribe.app.presentation.view.widget.TextViewFont

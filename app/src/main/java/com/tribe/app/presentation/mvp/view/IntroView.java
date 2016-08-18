@@ -9,5 +9,7 @@ public interface IntroView extends LoadDataView {
     void goToCode();
     void goToHome();
     void goToProfileInfo();
+    void goToConnected();
+    void goToAccess();
 }
 
