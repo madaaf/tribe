@@ -9,6 +9,7 @@ import com.tribe.app.data.network.job.SendChatJob;
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.text.ConnectAndSubscribeMQTT;
+import com.tribe.app.domain.interactor.text.DeleteDiskConversation;
 import com.tribe.app.domain.interactor.text.DisconnectMQTT;
 import com.tribe.app.domain.interactor.text.GetDiskChatMessageList;
 import com.tribe.app.domain.interactor.text.SaveChat;
@@ -38,6 +39,7 @@ public class ChatPresenter implements Presenter {
     private final DisconnectMQTT disconnectMQTT;
     private final UnsubscribeMQTT unsubscribeMQTT;
     private final GetDiskChatMessageList diskGetChatMessages;
+    private final DeleteDiskConversation deleteDiskConversation;
     private final SaveChat saveChat;
 
     private MessageView messageView;
@@ -47,6 +49,7 @@ public class ChatPresenter implements Presenter {
     @Inject
     public ChatPresenter(JobManager jobManager,
                          @Named("diskGetChatMessages") GetDiskChatMessageList diskGetChatMessages,
+                         @Named("deleteDiskConversation") DeleteDiskConversation deleteDiskConversation,
                          @Named("saveChat") SaveChat saveChat,
                          @Named("connectAndSubscribe") ConnectAndSubscribeMQTT connectAndSubscribeMQTT,
                          @Named("subscribing") SubscribingMQTT subscribingMQTT,
@@ -59,6 +62,7 @@ public class ChatPresenter implements Presenter {
         this.disconnectMQTT = disconnectMQTT;
         this.diskGetChatMessages = diskGetChatMessages;
         this.saveChat = saveChat;
+        this.deleteDiskConversation = deleteDiskConversation;
     }
 
     @Override
@@ -141,6 +145,11 @@ public class ChatPresenter implements Presenter {
                 .subscribe(bitmap -> {
                     messageView.showGalleryImage(bitmap);
                 });
+    }
+
+    public void deleteConversation(String friendshipId) {
+        deleteDiskConversation.setFriendshipId(friendshipId);
+        deleteDiskConversation.execute(new DeleteConversationSubscriber());
     }
 
     public void subscribe(String id) {
@@ -231,7 +240,7 @@ public class ChatPresenter implements Presenter {
         }
     }
 
-    private final class SaveChatSubscriber extends DefaultSubscriber<ChatMessage> {
+    private final class DeleteConversationSubscriber extends DefaultSubscriber<Void> {
         @Override
         public void onCompleted() {
             super.onCompleted();
@@ -240,11 +249,6 @@ public class ChatPresenter implements Presenter {
         @Override
         public void onError(Throwable e) {
             e.printStackTrace();
-        }
-
-        @Override
-        public void onNext(ChatMessage chatMessage) {
-            System.out.println("Chat Message saved ! : " + chatMessage.getLocalId());
         }
     }
 }

@@ -145,6 +145,7 @@ public class ChatCacheImpl implements ChatCache {
 
                 obsRealm.commitTransaction();
                 subscriber.onNext(obsRealm.copyFromRealm(obj));
+                subscriber.onCompleted();
                 obsRealm.close();
             }
         });
@@ -177,6 +178,7 @@ public class ChatCacheImpl implements ChatCache {
                 result.deleteFromRealm();
                 obsRealm.commitTransaction();
                 subscriber.onNext(null);
+                subscriber.onCompleted();
                 obsRealm.close();
             }
         });
@@ -189,10 +191,39 @@ public class ChatCacheImpl implements ChatCache {
         obsRealm.beginTransaction();
         final ChatRealm result = obsRealm.where(ChatRealm.class).equalTo("localId", local.getLocalId()).findFirst();
         result.setId(server.getId());
+        result.setCreatedAt(server.getCreatedAt());
         resultChat = obsRealm.copyFromRealm(result);
         obsRealm.commitTransaction();
         obsRealm.close();
         return resultChat;
     }
 
+    @Override
+    public Observable<Void> deleteConversation(String friendshipId) {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(final Subscriber<? super Void> subscriber) {
+                Realm obsRealm = Realm.getDefaultInstance();
+                obsRealm.beginTransaction();
+                RealmResults results = obsRealm.where(ChatRealm.class)
+                        .beginGroup()
+                        .equalTo("from.id", friendshipId)
+                        .endGroup()
+                        .or()
+                        .beginGroup()
+                        .equalTo("friendshipRealm.friend.id", friendshipId)
+                        .endGroup()
+                        .or()
+                        .beginGroup()
+                        .equalTo("group.id", friendshipId)
+                        .endGroup()
+                        .findAllSorted("created_at", Sort.ASCENDING);
+
+                if (results != null && results.size() > 0) results.deleteAllFromRealm();
+                obsRealm.commitTransaction();
+                subscriber.onCompleted();
+                obsRealm.close();
+            }
+        });
+    }
 }

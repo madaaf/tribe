@@ -43,6 +43,7 @@ public class UserRealmDataMapper {
             user.setCreatedAt(userRealm.getCreatedAt());
             user.setUpdatedAt(userRealm.getUpdatedAt());
             user.setDisplayName(userRealm.getDisplayName());
+            user.setUsername(userRealm.getUsername());
             user.setProfilePicture(userRealm.getProfilePicture());
             user.setScore(userRealm.getScore());
             user.setEmail(userRealm.getEmail());
@@ -93,6 +94,7 @@ public class UserRealmDataMapper {
             userRealm.setCreatedAt(user.getCreatedAt());
             userRealm.setUpdatedAt(user.getUpdatedAt());
             userRealm.setDisplayName(user.getDisplayName());
+            userRealm.setUsername(user.getUsername());
             userRealm.setProfilePicture(user.getProfilePicture());
             userRealm.setScore(user.getScore());
             userRealm.setEmail(user.getEmail());

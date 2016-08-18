@@ -23,6 +23,10 @@ public interface TribeApi {
     @POST("/graphql")
     Observable<UserRealm> getUserInfos(@Field("query") String query);
 
+    @FormUrlEncoded
+    @POST("/graphql")
+    Observable<List<UserRealm>> getUserListInfos(@Field("query") String query);
+
     @Multipart
     @POST("/graphql")
     Observable<TribeRealm> uploadTribe(@Part("query") RequestBody query, @Part MultipartBody.Part file);
@@ -42,4 +46,8 @@ public interface TribeApi {
     @FormUrlEncoded
     @POST("/graphql")
     Observable<ChatRealm> sendChat(@Field("query") String query);
+
+    @Multipart
+    @POST("/graphql")
+    Observable<ChatRealm> uploadMessagePhoto(@Part("query") RequestBody query, @Part MultipartBody.Part file);
 }

@@ -44,7 +44,7 @@ public interface ChatRepository {
     Observable<IMqttToken> unsubscribe(final String topic);
 
     /**
-     * Get an {@link Observable} which will emit a {@link com.tribe.app.data.rxmqtt.impl.RxMqttMessage}.
+     * Get an {@link Observable} which will emit a {@link List<ChatMessage>}.
      *
      * @param friendshipId the friendshipId for which to get the messages for
      */
@@ -63,4 +63,11 @@ public interface ChatRepository {
      * @param chatMessage the ChatMessage to delete
      */
     Observable<Void> deleteMessage(final ChatMessage chatMessage);
+
+    /**
+     * Get an {@link Observable} which will emit nothing.
+     *
+     * @param friendshipId the friendshipId for which to get the messages for
+     */
+    Observable<Void> deleteConversation(final String friendshipId);
 }

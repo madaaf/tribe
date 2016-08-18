@@ -5,4 +5,6 @@ package com.tribe.app.data.realm;
  */
 public interface MessageRealmInterface {
 
+    UserRealm getFrom();
+    void setFrom(UserRealm userRealm);
 }

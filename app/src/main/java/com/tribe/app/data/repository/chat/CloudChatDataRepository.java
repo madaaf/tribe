@@ -87,4 +87,9 @@ public class CloudChatDataRepository implements ChatRepository {
     public Observable<Void> deleteMessage(ChatMessage chatMessage) {
         return null;
     }
+
+    @Override
+    public Observable<Void> deleteConversation(String friendshipId) {
+        return null;
+    }
 }

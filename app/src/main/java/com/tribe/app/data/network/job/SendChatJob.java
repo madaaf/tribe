@@ -83,6 +83,7 @@ public class SendChatJob extends BaseJob {
 
         @Override
         public void onError(Throwable e) {
+            e.printStackTrace();
             ChatRealm chatRealm = chatRealmDataMapper.transform(chatMessage);
             chatRealm.setMessageStatus(MessageStatus.STATUS_ERROR);
             chatCache.update(chatRealm);

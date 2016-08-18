@@ -24,7 +24,9 @@ import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.utils.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 import rx.Observable;
@@ -161,7 +163,52 @@ public class CloudUserDataStore implements UserDataStore {
 
         String req = context.getString(R.string.messages_infos, !StringUtils.isEmpty(ids.toString()) ? context.getString(R.string.tribe_sent_infos, ids) : "");
 
-        return tribeApi.messages(req).doOnNext(saveToCacheMessages);
+        return tribeApi.messages(req).flatMap(messageRealmInterfaceList -> {
+                    Set<String> idsFrom = new HashSet<>();
+
+                    for (MessageRealmInterface message : messageRealmInterfaceList) {
+                        if (message.getFrom() != null) {
+                            UserRealm userRealm = userCache.userInfosNoObs(message.getFrom().getId());
+
+                            if (userRealm == null) {
+                                idsFrom.add(message.getFrom().getId());
+                            } else {
+                                message.setFrom(userRealm);
+                            }
+                        }
+                    }
+
+                    if (idsFrom.size() > 0) {
+                        StringBuilder result = new StringBuilder();
+
+                        for (String string : idsFrom) {
+                            result.append("\"" + string + "\"");
+                            result.append(",");
+                        }
+
+                        String idsFromStr = result.length() > 0 ? result.substring(0, result.length() - 1): "";
+
+                        String reqUserList = context.getString(R.string.user_infos_list, idsFromStr);
+                        return tribeApi.getUserListInfos(reqUserList);
+                    } else {
+                        return Observable.just(new ArrayList<UserRealm>());
+                    }
+                },
+                (messageRealmInterfaceList, userRealmList) -> {
+                    if (userRealmList != null && userRealmList.size() > 0) {
+                        for (MessageRealmInterface message : messageRealmInterfaceList) {
+                            if (message.getFrom() != null && StringUtils.isEmpty(message.getFrom().getUsername())) {
+                                for (UserRealm userRealm : userRealmList) {
+                                    if (message.getFrom().getId().equals(userRealm.getId())) {
+                                        message.setFrom(userRealm);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    return messageRealmInterfaceList;
+                }).doOnNext(saveToCacheMessages);
     }
 
     private final Action1<AccessToken> saveToCacheAccessToken = accessToken -> {

@@ -133,7 +133,7 @@
             android:layout_width="12.5dp"
             android:layout_height="12.5dp"
             android:layout_gravity="center"
-            app:cpv_thickness="2dp"
+            app:cpv_thickness="@dimen/progress_bar_thickness"
             app:cpv_indeterminate="true"
             app:cpv_color="@android:color/white"
             app:cpv_animAutostart="true"

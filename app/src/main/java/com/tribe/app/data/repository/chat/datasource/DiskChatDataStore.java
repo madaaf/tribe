@@ -54,4 +54,9 @@ public class DiskChatDataStore implements ChatDataStore {
     public Observable<Void> deleteMessage(ChatRealm chatRealm) {
         return chatCache.delete(chatRealm);
     }
+
+    @Override
+    public Observable<Void> deleteConversation(String friendshipId) {
+        return chatCache.deleteConversation(friendshipId);
+    }
 }

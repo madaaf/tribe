@@ -19,13 +19,17 @@ import com.tribe.app.data.network.FileApi;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
+import com.tribe.app.data.network.deserializer.CollectionAdapter;
 import com.tribe.app.data.network.deserializer.DateDeserializer;
 import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
+import com.tribe.app.data.network.deserializer.NewMessageDeserializer;
 import com.tribe.app.data.network.deserializer.NewTribeDeserializer;
 import com.tribe.app.data.network.deserializer.TribeAccessTokenDeserializer;
 import com.tribe.app.data.network.deserializer.TribeUserDeserializer;
+import com.tribe.app.data.network.deserializer.UserListDeserializer;
 import com.tribe.app.data.network.deserializer.UserMessageListDeserializer;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.TribeRealm;
@@ -35,6 +39,7 @@ import com.tribe.app.presentation.internal.di.scope.PerApplication;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -83,9 +88,12 @@ public class NetModule {
                 .registerTypeAdapter(new TypeToken<UserRealm>() {}.getType(), new TribeUserDeserializer<>())
                 .registerTypeAdapter(AccessToken.class, new TribeAccessTokenDeserializer())
                 .registerTypeAdapter(TribeRealm.class, new NewTribeDeserializer<>())
+                .registerTypeAdapter(ChatRealm.class, new NewMessageDeserializer<>())
                 .registerTypeAdapter(new TypeToken<List<MessageRealmInterface>>() {}.getType(), new UserMessageListDeserializer<>(utcSimpleDate, userCache, tribeCache, currentUser))
                 .registerTypeAdapter(Installation.class, new NewInstallDeserializer<>())
                 .registerTypeAdapter(Date.class, new DateDeserializer(utcSimpleDateFull))
+                .registerTypeAdapter(new TypeToken<List<UserRealm>>() {}.getType(), new UserListDeserializer<>())
+                .registerTypeHierarchyAdapter(Collection.class, new CollectionAdapter())
                 .create();
     }
 

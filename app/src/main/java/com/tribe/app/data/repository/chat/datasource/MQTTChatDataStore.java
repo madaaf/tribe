@@ -73,4 +73,9 @@ public class MQTTChatDataStore implements ChatDataStore {
     public Observable<Void> deleteMessage(ChatRealm chatRealm) {
         return null;
     }
+
+    @Override
+    public Observable<Void> deleteConversation(String friendshipId) {
+        return null;
+    }
 }

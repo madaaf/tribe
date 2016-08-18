@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.internal.di.modules;
 
 import com.tribe.app.domain.interactor.text.ConnectAndSubscribeMQTT;
+import com.tribe.app.domain.interactor.text.DeleteDiskConversation;
 import com.tribe.app.domain.interactor.text.DisconnectMQTT;
 import com.tribe.app.domain.interactor.text.GetDiskChatMessageList;
 import com.tribe.app.domain.interactor.text.SaveChat;
@@ -62,5 +63,12 @@ public class ChatModule {
     @Named("saveChat")
     SaveChat provideSaveChat(SaveChat saveChat) {
         return saveChat;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("deleteDiskConversation")
+    DeleteDiskConversation provideDeleteDiskConversation(DeleteDiskConversation deleteDiskConversation) {
+        return deleteDiskConversation;
     }
 }

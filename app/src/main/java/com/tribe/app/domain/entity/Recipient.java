@@ -136,6 +136,7 @@ public abstract class Recipient implements Serializable {
     }
 
     public abstract String getDisplayName();
+    public abstract String getUsername();
     public abstract String getProfilePicture();
     public abstract String getId();
 

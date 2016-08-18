@@ -16,18 +16,6 @@
         android:background="@android:color/white"
         android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/imgTrash"
-            android:layout_width="@dimen/icons_start"
-            android:layout_height="@dimen/icons_start"
-            android:layout_gravity="left|center_vertical"
-            android:layout_marginLeft="10dp"
-            android:background="@drawable/selectable_button_oval"
-            android:padding="@dimen/icons_padding"
-            android:src="@drawable/picto_trash"
-            android:scaleType="centerInside"
-            />
-
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtTitle"
             android:background="@null"
@@ -40,16 +28,28 @@
             />
 
         <ImageView
-            android:id="@+id/imgExit"
+            android:id="@+id/imgBack"
+            android:layout_width="@dimen/icons_start"
+            android:layout_height="@dimen/icons_start"
+            android:layout_gravity="left|center_vertical"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/selectable_button_oval"
+            android:padding="@dimen/icons_padding"
+            android:src="@drawable/picto_back"
+            android:scaleType="centerInside"
+            android:clickable="true"
+            />
+
+        <ImageView
+            android:id="@+id/imgTrash"
             android:layout_width="@dimen/icons_start"
             android:layout_height="@dimen/icons_start"
             android:layout_gravity="right|center_vertical"
             android:layout_marginRight="10dp"
             android:background="@drawable/selectable_button_oval"
             android:padding="@dimen/icons_padding"
-            android:src="@drawable/picto_exit"
+            android:src="@drawable/img_trash_selector"
             android:scaleType="centerInside"
-            android:clickable="true"
             />
 
     </FrameLayout>
@@ -73,6 +73,7 @@
             android:id="@+id/recyclerViewText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@null"
             />
 
         <View

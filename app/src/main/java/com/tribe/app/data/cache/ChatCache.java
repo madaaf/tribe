@@ -23,4 +23,5 @@ public interface ChatCache {
     public Observable<List<ChatRealm>> messages(String friendshipId);
     public Observable<Void> delete(ChatRealm chatRealm);
     public ChatRealm updateLocalWithServerRealm(ChatRealm local, ChatRealm server);
+    public Observable<Void> deleteConversation(String friendshipId);
 }

@@ -50,7 +50,7 @@ public abstract class HeaderMessageAdapterDelegate extends RxAdapterDelegate<Lis
         HeaderTextViewHolder vh = (HeaderTextViewHolder) holder;
         ChatMessage chatMessage = items.get(position);
 
-        String dateFormatted = dateFormat.format(chatMessage.getRecordedAt());
+        String dateFormatted = dateFormat.format(chatMessage.getCreatedAt());
         dateFormatted = dateFormatted.substring(0, 1).toUpperCase() + dateFormatted.substring(1);
         vh.txtMessage.setText(chatMessage.isToday() ? todayStr + " - " + dateFormatted : dateFormatted);
     }

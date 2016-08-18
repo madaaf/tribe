@@ -370,8 +370,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         subscriptions.add(homeGridAdapter.onClickTapToCancel()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .subscribe(recipient -> {
-                    homeGridAdapter.updateItemWithTribe(recipient.getPosition(), null);
                     homeGridPresenter.deleteTribe(recipient.getTribe());
+                    homeGridAdapter.updateItemWithTribe(recipient.getPosition(), null);
                     currentRecipient = null;
                     currentTribe = null;
                 }));

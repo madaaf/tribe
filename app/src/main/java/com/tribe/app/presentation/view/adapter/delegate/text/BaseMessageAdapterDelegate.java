@@ -73,7 +73,7 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
                 vh.txtName.setVisibility(View.GONE);
             }
 
-            vh.txtTime.setText(simpleDateFormat.format(chatMessage.getRecordedAt()));
+            vh.txtTime.setText(simpleDateFormat.format(chatMessage.getCreatedAt()));
         }
 
         if (chatMessage.isFirstOfSection() || chatMessage.isLastOfSection() || chatMessage.isOtherPerson()) {

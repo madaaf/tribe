@@ -83,9 +83,11 @@ public class PhotoMessageAdapterDelegate extends BaseMessageAdapterDelegate {
 
         ChatMessage chatMessage = items.get(position);
 
+        vh.imgPhoto.setTag(R.id.tag_position, position);
+
         picasso.load(chatMessage.getContent())
-                .fit()
-                .centerCrop()
+                //.fit()
+                //.centerCrop()
                 //.transform(new RoundedCornersTransformation(radiusImg, 0, RoundedCornersTransformation.CornerType.ALL))
                 .into(vh.imgPhoto);
     }

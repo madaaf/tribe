@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
+import com.birbit.android.jobqueue.JobStatus;
 import com.tribe.app.data.network.job.DownloadTribeJob;
 import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
 import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
@@ -25,6 +26,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class HomeGridPresenter extends SendTribePresenter implements Presenter {
 
@@ -136,17 +141,28 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
     }
 
     public void downloadTribes(List<TribeMessage> tribes) {
-        int countPreload = 0;
+        Observable
+            .just("")
+            .doOnNext(o -> {
+                int countPreload = 0;
 
-        for (TribeMessage tribe : tribes) {
-            // WE ADD THE READY STATUS IN CASE THE VIDEO FILE WAS DELETED
-            if ((tribe.getMessageStatus() == null || tribe.getMessageStatus().equals(MessageStatus.STATUS_RECEIVED)) && tribe.getFrom() != null) {
-                countPreload++;
-                jobManager.addJobInBackground(new DownloadTribeJob(tribe));
-            }
+                for (TribeMessage tribeMessage : tribes) {
+                    if (tribeMessage.getMessageStatus() != null && tribeMessage.getMessageStatus().equals(MessageStatus.STATUS_LOADING) &&
+                            jobManager.getJobStatus(tribeMessage.getLocalId()).equals(JobStatus.UNKNOWN)) {
+                        tribeMessage.setMessageStatus(MessageStatus.STATUS_RECEIVED);
+                    }
 
-            if (countPreload == PRELOAD_MAX) break;
-        }
+                    if ((tribeMessage.getMessageStatus() == null || tribeMessage.getMessageStatus().equals(MessageStatus.STATUS_RECEIVED))
+                            && tribeMessage.getFrom() != null) {
+                        countPreload++;
+                        jobManager.addJobInBackground(new DownloadTribeJob(tribeMessage));
+                    }
+
+                    if (countPreload == PRELOAD_MAX) break;
+                }
+            }).subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe();
     }
 
     public void markTribeListAsRead(Recipient recipient) {

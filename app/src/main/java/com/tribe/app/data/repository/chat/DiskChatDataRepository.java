@@ -87,4 +87,10 @@ public class DiskChatDataRepository implements ChatRepository {
         ChatDataStore diskChatDataStore = chatDataStoreFactory.createDiskChatStore();
         return diskChatDataStore.deleteMessage(chatRealmDataMapper.transform(chatMessage));
     }
+
+    @Override
+    public Observable<Void> deleteConversation(String friendshipId) {
+        ChatDataStore diskChatDataStore = chatDataStoreFactory.createDiskChatStore();
+        return diskChatDataStore.deleteConversation(friendshipId);
+    }
 }

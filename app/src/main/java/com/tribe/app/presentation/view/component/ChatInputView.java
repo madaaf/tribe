@@ -20,6 +20,7 @@ import com.tribe.app.presentation.view.widget.ActionEditText;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -44,6 +45,7 @@ public class ChatInputView extends FrameLayout {
     private Unbinder unbinder;
     private PublishSubject<String> textChangeEventSubject = PublishSubject.create();
     private PublishSubject<String> sendClickEventSubject = PublishSubject.create();
+    private PublishSubject<Void> chooseImageFromGallery = PublishSubject.create();
 
     public ChatInputView(Context context) {
         super(context);
@@ -108,11 +110,20 @@ public class ChatInputView extends FrameLayout {
                 .subscribe(sendClickEventSubject);
     }
 
+    @OnClick(R.id.btnPhotoPicker)
+    public void clickPhotoPicker() {
+        chooseImageFromGallery.onNext(null);
+    }
+
     public Observable<String> textChanges() {
         return textChangeEventSubject;
     }
 
     public Observable<String> sendClick() {
         return sendClickEventSubject;
+    }
+
+    public Observable<Void> chooseImageFromGallery() {
+        return chooseImageFromGallery;
     }
 }

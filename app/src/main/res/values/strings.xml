@@ -66,4 +66,5 @@
     <string name="chat_is_typing">is typing</string>
     <string name="chat_are_typing">are typing</string>
     <string name="chat_and">and</string>
+    <string name="gallery_chooser">Choose a media</string>
 </resources>

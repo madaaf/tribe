@@ -46,10 +46,12 @@ public class ChatRealm extends RealmObject implements MessageRealmInterface {
         this.localId = localId;
     }
 
+    @Override
     public UserRealm getFrom() {
         return from;
     }
 
+    @Override
     public void setFrom(UserRealm from) {
         this.from = from;
     }

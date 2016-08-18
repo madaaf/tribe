@@ -14,6 +14,7 @@ import com.tribe.app.data.realm.LocationRealm;
 import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.TribeRecipientRealm;
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.WeatherRealm;
 import com.tribe.app.domain.entity.User;
 
@@ -50,13 +51,13 @@ public class UserMessageListDeserializer<T> implements JsonDeserializer<T> {
 
         for (JsonElement obj : resultsTribes) {
             TribeRealm tribeRealm = parseTribe(obj);
-            if (tribeRealm.getFrom() != null && ((tribeRealm.isToGroup() && tribeRealm.getGroup() != null) || !tribeRealm.isToGroup()))
+            if (((tribeRealm.isToGroup() && tribeRealm.getGroup() != null) || !tribeRealm.isToGroup()))
                 messages.add(tribeRealm);
         }
 
         for (JsonElement obj : resultsChatMessages) {
             ChatRealm chatRealm = parseChat(obj);
-            if (chatRealm.getFrom() != null && ((chatRealm.isToGroup() && chatRealm.getGroup() != null) || !chatRealm.isToGroup()))
+            if (((chatRealm.isToGroup() && chatRealm.getGroup() != null) || !chatRealm.isToGroup()))
                 messages.add(chatRealm);
         }
 
@@ -103,7 +104,9 @@ public class UserMessageListDeserializer<T> implements JsonDeserializer<T> {
 
         tribeRealm.setToGroup(toGroup);
 
-        tribeRealm.setFrom(userCache.userInfosNoObs(json.get("from").getAsString()));
+        UserRealm from = new UserRealm();
+        from.setId(json.get("from").getAsString());
+        tribeRealm.setFrom(from);
 
         LocationRealm locationRealm = new LocationRealm();
         locationRealm.setLatitude(json.get("lat") instanceof JsonNull ? 0.0D : json.get("lat").getAsDouble());
@@ -150,7 +153,11 @@ public class UserMessageListDeserializer<T> implements JsonDeserializer<T> {
         }
 
         chatRealm.setToGroup(toGroup);
-        chatRealm.setFrom(userCache.userInfosNoObs(json.get("from").getAsString()));
+
+        UserRealm from = new UserRealm();
+        from.setId(json.get("from").getAsString());
+        chatRealm.setFrom(from);
+
         chatRealm.setType(json.get("type").getAsString());
         chatRealm.setContent(json.get("content").getAsString());
 

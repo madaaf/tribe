@@ -18,6 +18,7 @@
         android:layout_marginRight="@dimen/horizontal_margin_xlarge"
         android:foreground="@drawable/selectable_button_light"
         android:background="@null"
+        android:scaleType="centerCrop"
         android:clickable="true"
         />
 

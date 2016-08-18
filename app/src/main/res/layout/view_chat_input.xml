@@ -11,7 +11,8 @@
         android:layout_width="@dimen/chat_bar_height"
         android:layout_height="@dimen/chat_bar_height"
         android:padding="@dimen/horizontal_margin_small"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:clickable="true">
 
         <ImageView
             android:id="@+id/imgGallery"
@@ -21,7 +22,6 @@
             android:padding="@dimen/divider_size"
             android:scaleType="centerCrop"
             android:background="@drawable/shape_rounded_gallery"
-            android:clickable="true"
             />
 
     </LinearLayout>

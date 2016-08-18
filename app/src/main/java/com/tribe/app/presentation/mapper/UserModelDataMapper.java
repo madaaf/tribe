@@ -41,6 +41,7 @@ public class UserModelDataMapper {
         userRealm.setCreatedAt(user.getCreatedAt());
         userRealm.setDisableSaveTribe(user.isDisableSaveTribe());
         userRealm.setDisplayName(user.getDisplayName());
+        userRealm.setUsername(user.getUsername());
         userRealm.setEmail(user.getEmail());
         userRealm.setEmailVerified(user.isEmailVerified());
         userRealm.setInvited(user.isInvited());

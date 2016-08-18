@@ -27,6 +27,7 @@
 
         fragment UserInfos on User {
             id
+            username
             displayName
             profilePicture
             created_at
@@ -34,15 +35,16 @@
         }
     </string>
 
-    <string name="user.infos.tribe">
+    <string name="user.infos.list">
         {
-            user(id: \"%1$s\") {
+            users (ids: [%1$s]) {
                 ...UserInfos
             }
         }
 
         fragment UserInfos on User {
             id
+            username
             displayName
             profilePicture
             created_at
@@ -98,7 +100,7 @@
                     recorded_at: \"%5$s\",
                     content : \"%6$s\"
                 }
-            ) { id, recorded_at }
+            ) { id, created_at, recorded_at }
         }
     </string>
 

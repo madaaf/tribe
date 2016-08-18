@@ -6,6 +6,8 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -43,6 +45,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -51,6 +54,10 @@ import rx.subscriptions.CompositeSubscription;
 
 public class ChatActivity extends BaseActivity implements MessageView {
 
+    // REQUEST CODES
+    public static final int REQUEST_GALLERY = 100;
+
+    // UI CONSTANTS
     public static final int DURATION = 300;
     public static final float OVERSHOOT = 1.2f;
     public static final int ERROR_MARGIN = 5;
@@ -88,6 +95,9 @@ public class ChatActivity extends BaseActivity implements MessageView {
     @BindView(R.id.txtTitle)
     TextViewFont txtTitle;
 
+    @BindView(R.id.imgTrash)
+    ImageView imgTrash;
+
     // PARAMS
     private Recipient recipient;
 
@@ -105,7 +115,6 @@ public class ChatActivity extends BaseActivity implements MessageView {
     private CompositeSubscription subscriptions;
 
     // LAYOUT VARIABLES
-    private boolean isRecyclerViewLayedOut = false;
     private MessageLayoutManager messageLayoutManager;
     private MessageAdapter messageAdapter;
     private List<ChatMessage> chatMessageList;
@@ -166,7 +175,6 @@ public class ChatActivity extends BaseActivity implements MessageView {
         messageAdapter = new MessageAdapter(LayoutInflater.from(this), this);
         recyclerViewText.setAdapter(messageAdapter);
         recyclerViewText.setHasFixedSize(true);
-
         recyclerViewText.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -189,167 +197,25 @@ public class ChatActivity extends BaseActivity implements MessageView {
         subscriptions.add(messageAdapter
                 .clickPhoto()
                 .subscribe(imageViewFrom -> {
-                    recyclerViewImageView = imageViewFrom;
+                    int position = (Integer) imageViewFrom.getTag(R.id.tag_position);
+                    imageViewFrom.getGlobalVisibleRect(new Rect());
+                    Rect scrollBounds = new Rect();
+                    recyclerViewText.getHitRect(scrollBounds);
 
-                    int [] location = new int[2];
-                    imageViewFrom.getLocationOnScreen(location);
-
-                    imageViewClicked = new ImageView(this);
-                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(imageViewFrom.getWidth(), imageViewFrom.getHeight());
-                    params.leftMargin = location[0];
-                    params.topMargin = location[1] - statusBarHeight;
-                    imageViewClicked.setLayoutParams(params);
-
-                    widthImageViewClicked = imageViewFrom.getWidth();
-                    heightImageViewClicked = imageViewFrom.getHeight();
-                    marginLeftImageViewClicked = params.leftMargin;
-                    marginTopImageViewClicked = params.topMargin;
-
-                    imageViewClicked.setImageDrawable(imageViewFrom.getDrawable());
-                    rootView.addView(imageViewClicked);
-
-                    imageViewClicked.setClickable(true);
-                    imageViewClicked.setFocusableInTouchMode(true);
-                    imageViewClicked.setOnTouchListener(new View.OnTouchListener() {
-
-                        int yDelta, downY;
-                        int ogTopMargin, ogLeftMargin;
-
-                        @Override
-                        public boolean onTouch(View v, MotionEvent event) {
-                            final int touchY = (int) event.getRawY();
-
-                            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) imageViewClicked.getLayoutParams();
-
-                            switch (event.getAction() & MotionEvent.ACTION_MASK) {
-                                case MotionEvent.ACTION_DOWN:
-                                    ogLeftMargin = layoutParams.leftMargin;
-                                    ogTopMargin = layoutParams.topMargin;
-                                    yDelta = touchY - layoutParams.topMargin;
-                                    downY = touchY;
-                                    break;
-
-                                case MotionEvent.ACTION_CANCEL: case MotionEvent.ACTION_UP:
-                                    if (Math.abs(downY - touchY) > dismissMove) {
-                                        snapImageBack();
-                                    } else {
-                                        ValueAnimator animator = ValueAnimator.ofInt(layoutParams.topMargin, ogTopMargin);
-                                        animator.setDuration(DURATION);
-                                        animator.addUpdateListener(animation -> {
-                                            layoutParams.topMargin = (Integer) animation.getAnimatedValue();
-                                            imageViewClicked.setLayoutParams(layoutParams);
-                                        });
-
-                                        animator.start();
-                                    }
-
-                                case MotionEvent.ACTION_MOVE:
-                                    layoutParams.topMargin = touchY - yDelta;
-                                    imageViewClicked.setLayoutParams(layoutParams);
-
-                                    break;
-                            }
-
-                            imageViewClicked.invalidate();
-                            return true;
-                        }
-                    });
-
-                    imageViewClicked.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                        @Override
-                        public void onGlobalLayout() {
-                            animateFullScreen();
-                            recyclerViewText.setEnabled(false);
-                            imageViewClicked.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        }
-                    });
+                    if (!imageViewFrom.getLocalVisibleRect(scrollBounds)
+                            || scrollBounds.height() < imageViewFrom.getHeight()) {
+                        recyclerViewText.smoothScrollToPosition(position);
+                        Observable.timer(500, TimeUnit.MILLISECONDS)
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribeOn(AndroidSchedulers.mainThread())
+                                .subscribe(aLong -> {
+                                   showImage(imageViewFrom);
+                                });
+                    } else {
+                        showImage(imageViewFrom);
+                    }
                 })
         );
-
-//        List<ChatMessage> chatMessageList = new ArrayList<>();
-//
-//        Calendar calendar = Calendar.getInstance();
-//        calendar.add(Calendar.DATE, -5);
-//
-//        Friendship friendship = (Friendship) recipient;
-//
-//        ChatMessage message = new ChatMessage();
-//        message.setId(UUID.randomUUID().toString());
-//        message.setFrom(getCurrentUser());
-//        message.setContent("Hey ça roule ou quoi batard ?");
-//        message.setRecordedAt(calendar.getTime());
-//        message.setTo(recipient);
-//        message.setType(ChatMessage.TEXT);
-//        chatMessageList.add(message);
-//
-//        calendar.add(Calendar.DATE, 2);
-//
-//        ChatMessage message2 = new ChatMessage();
-//        message2.setId(UUID.randomUUID().toString());
-//        message2.setFrom(getCurrentUser());
-//        message2.setContent("LOLs");
-//        message2.setRecordedAt(calendar.getTime());
-//        message2.setTo(recipient);
-//        message2.setType(ChatMessage.TEXT);
-//        chatMessageList.add(message2);
-//
-//        calendar.add(Calendar.MINUTE, 3);
-//
-//        ChatMessage message3 = new ChatMessage();
-//        message3.setId(UUID.randomUUID().toString());
-//        message3.setFrom(getCurrentUser());
-//        message3.setContent("MDR");
-//        message3.setRecordedAt(calendar.getTime());
-//        message3.setTo(recipient);
-//        message3.setType(ChatMessage.TEXT);
-//        chatMessageList.add(message3);
-//
-//        ChatMessage message4 = new ChatMessage();
-//        message4.setId(UUID.randomUUID().toString());
-//        message4.setFrom(friendship.getFriend());
-//        message4.setContent("Ha ha ha ha j'avoue t'as trop réson");
-//        message4.setRecordedAt(new Date());
-//        message4.setTo(recipient);
-//        message4.setType(ChatMessage.TEXT);
-//        chatMessageList.add(message4);
-//
-//        ChatMessage message5 = new ChatMessage();
-//        message5.setId(UUID.randomUUID().toString());
-//        message5.setFrom(friendship.getFriend());
-//        message5.setContent("\uD83D\uDE00" + "\uD83D\uDE00" + "\uD83D\uDE00" + "\uD83D\uDE00");
-//        message5.setRecordedAt(new Date());
-//        message5.setTo(recipient);
-//        message5.setType(ChatMessage.TEXT);
-//        chatMessageList.add(message5);
-//
-//        ChatMessage chatMessage6 = new ChatMessage();
-//        chatMessage6.setId(UUID.randomUUID().toString());
-//        chatMessage6.setFrom(friendship.getFriend());
-//        chatMessage6.setContent("\uD83D\uDC8C" + "love ya");
-//        chatMessage6.setRecordedAt(new Date());
-//        chatMessage6.setTo(recipient);
-//        chatMessage6.setType(ChatMessage.TEXT);
-//        chatMessageList.add(chatMessage6);
-//
-//        ChatMessage chatMessage7 = new ChatMessage();
-//        chatMessage7.setId(UUID.randomUUID().toString());
-//        chatMessage7.setFrom(getCurrentUser());
-//        chatMessage7.setContent("Hey ça va ? Tu connais : http://www.google.fr ? Ca défonce !");
-//        chatMessage7.setRecordedAt(new Date());
-//        chatMessage7.setTo(recipient);
-//        chatMessage7.setType(ChatMessage.TEXT);
-//        chatMessageList.add(chatMessage7);
-//
-//        ChatMessage chatMessage8 = new ChatMessage();
-//        chatMessage8.setId(UUID.randomUUID().toString());
-//        chatMessage8.setFrom(getCurrentUser());
-//        chatMessage8.setContent("http://vignette3.wikia.nocookie.net/miamivice/images/e/e2/Stevebuscemi.jpg/revision/latest?cb=20100913014130");
-//        chatMessage8.setRecordedAt(new Date());
-//        chatMessage8.setTo(recipient);
-//        chatMessage8.setType(ChatMessage.PHOTO);
-//        chatMessageList.add(chatMessage8);
-
-        //renderMessageList(ChatMessage.computeMessageList(chatMessageList));
     }
 
     private void initResources() {
@@ -374,11 +240,34 @@ public class ChatActivity extends BaseActivity implements MessageView {
 
     private void initSubscriptions() {
         subscriptions = new CompositeSubscription();
+
         subscriptions.add(chatInputView.sendClick().subscribe(s -> {
-            ChatMessage chatMessage = ChatMessage.createMessage(getCurrentUser(), recipient, s);
+            ChatMessage chatMessage = ChatMessage.createMessage(ChatMessage.TEXT, s, getCurrentUser(), recipient, getApplicationComponent().dateUtils());
             chatPresenter.sendMessage(chatMessage);
         }));
+
         subscriptions.add(chatInputView.textChanges().subscribe(s -> chatPresenter.sendTypingEvent()));
+
+        subscriptions.add(chatInputView.chooseImageFromGallery().subscribe(aVoid -> {
+            Intent openGalleryIntent = null;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                openGalleryIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                openGalleryIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
+                openGalleryIntent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                openGalleryIntent.setType("image/*");
+                openGalleryIntent.putExtra(Intent.EXTRA_MIME_TYPES, new String[] {"image/*", "video/*"});
+                openGalleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
+            } else {
+                openGalleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                openGalleryIntent.setType("image/* video/*");
+            }
+
+            openGalleryIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+            openGalleryIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            startActivityForResult(openGalleryIntent, REQUEST_GALLERY);
+        }));
     }
 
     private void initDependencyInjector() {
@@ -400,10 +289,32 @@ public class ChatActivity extends BaseActivity implements MessageView {
         txtTitle.setText(recipient.getDisplayName());
     }
 
+    @OnClick(R.id.imgTrash)
+    public void deleteConversation() {
+        chatPresenter.deleteConversation(recipient.getId());
+    }
+
+    @OnClick(R.id.imgBack)
+    public void exit() {
+        finish();
+    }
+
     @Override
     public void renderMessageList(List<ChatMessage> chatMessageList) {
         this.chatMessageList = new ArrayList<>(chatMessageList);
-        List<ChatMessage> result = ChatMessage.computeMessageList(chatMessageList);
+
+        if (chatMessageList.size() > 0) {
+            imgTrash.setEnabled(true);
+        } else {
+            imgTrash.setEnabled(false);
+        }
+
+        ChatMessage tutorial = new ChatMessage();
+        tutorial.setTo(recipient);
+        tutorial.setLocalId("tutorial");
+        tutorial.setTutorial(true);
+
+        List<ChatMessage> result = ChatMessage.computeMessageList(tutorial, chatMessageList);
 
         if (avatarsMap.size() > 0) {
             for (ChatMessage message : result) {
@@ -439,7 +350,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
         final int lastVisiblePosition = messageLayoutManager.findLastCompletelyVisibleItemPosition();
         final ChatMessage lastVisible = lastVisiblePosition != -1 && messageAdapter.getItemCount() > 0 ? messageAdapter.getMessage(lastVisiblePosition) : null;
 
-        List<ChatMessage> result = ChatMessage.computeMessageList(chatMessageList);
+        List<ChatMessage> result = ChatMessage.computeMessageList(null, chatMessageList);
         result.add(chatMessage);
         messageAdapter.setItems(result);
 
@@ -492,9 +403,89 @@ public class ChatActivity extends BaseActivity implements MessageView {
         return messageAdapter.getItemCount() == 0 || messageLayoutManager.findLastVisibleItemPosition() == messageAdapter.getItemCount() - 1;
     }
 
+    private void showImage(ImageView imageViewFrom) {
+        recyclerViewImageView = imageViewFrom;
+
+        int [] location = new int[2];
+        imageViewFrom.getLocationOnScreen(location);
+
+        imageViewClicked = new ImageView(this);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(imageViewFrom.getWidth(), imageViewFrom.getHeight());
+        params.leftMargin = location[0];
+        params.topMargin = location[1] - statusBarHeight;
+        imageViewClicked.setLayoutParams(params);
+
+        widthImageViewClicked = imageViewFrom.getWidth();
+        heightImageViewClicked = imageViewFrom.getHeight();
+        marginLeftImageViewClicked = params.leftMargin;
+        marginTopImageViewClicked = params.topMargin;
+
+        imageViewClicked.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        imageViewClicked.setImageDrawable(imageViewFrom.getDrawable());
+        rootView.addView(imageViewClicked);
+
+        imageViewClicked.setClickable(true);
+        imageViewClicked.setFocusableInTouchMode(true);
+        imageViewClicked.setOnTouchListener(new View.OnTouchListener() {
+
+            int yDelta, downY;
+            int ogTopMargin, ogLeftMargin;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int touchY = (int) event.getRawY();
+
+                FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) imageViewClicked.getLayoutParams();
+
+                switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                    case MotionEvent.ACTION_DOWN:
+                        ogLeftMargin = layoutParams.leftMargin;
+                        ogTopMargin = layoutParams.topMargin;
+                        yDelta = touchY - layoutParams.topMargin;
+                        downY = touchY;
+                        break;
+
+                    case MotionEvent.ACTION_CANCEL: case MotionEvent.ACTION_UP:
+                        if (Math.abs(downY - touchY) > dismissMove) {
+                            snapImageBack();
+                        } else {
+                            ValueAnimator animator = ValueAnimator.ofInt(layoutParams.topMargin, ogTopMargin);
+                            animator.setDuration(DURATION);
+                            animator.addUpdateListener(animation -> {
+                                layoutParams.topMargin = (Integer) animation.getAnimatedValue();
+                                imageViewClicked.setLayoutParams(layoutParams);
+                            });
+
+                            animator.start();
+                        }
+
+                    case MotionEvent.ACTION_MOVE:
+                        layoutParams.topMargin = touchY - yDelta;
+                        imageViewClicked.setLayoutParams(layoutParams);
+
+                        break;
+                }
+
+                imageViewClicked.invalidate();
+                return true;
+            }
+        });
+
+        imageViewClicked.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                animateFullScreen();
+                recyclerViewText.setEnabled(false);
+                imageViewClicked.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
+    }
+
     private void animateFullScreen() {
+        int targetHeight = (int) (screenUtils.getWidth() * ((float) widthImageViewClicked / heightImageViewClicked));
+
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) imageViewClicked.getLayoutParams();
-        ValueAnimator animatorTopMargin = ValueAnimator.ofInt(marginTopImageViewClicked, (screenUtils.getHeight() >> 1) - (params.height >> 1));
+        ValueAnimator animatorTopMargin = ValueAnimator.ofInt(marginTopImageViewClicked, ((screenUtils.getHeight() - statusBarHeight) >> 1) - (targetHeight >> 1));
         animatorTopMargin.setDuration(DURATION);
         animatorTopMargin.setInterpolator(new OvershootInterpolator(OVERSHOOT));
         animatorTopMargin.addUpdateListener(animation -> {
@@ -523,7 +514,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
 
         animatorWidth.start();
 
-        ValueAnimator animatorHeight = ValueAnimator.ofInt(heightImageViewClicked, (int) (screenUtils.getWidth() * ((float) widthImageViewClicked / heightImageViewClicked)));
+        ValueAnimator animatorHeight = ValueAnimator.ofInt(heightImageViewClicked, targetHeight);
         animatorHeight.setDuration(DURATION);
         animatorHeight.setInterpolator(new OvershootInterpolator(OVERSHOOT));
         animatorHeight.addUpdateListener(animation -> {
@@ -644,11 +635,6 @@ public class ChatActivity extends BaseActivity implements MessageView {
         }
 
         for (String id : toRemove) {
-//                            Section section = avatarsMap.remove(id);
-//                            layoutContent.removeView(section.getImageView());
-//                            layoutContent.requestLayout();
-//                            section.setImageView(null);
-//                            section = null;
             Observable.just(avatarsMap.remove(id))
                     .delay(0, TimeUnit.MILLISECONDS)
                     .subscribeOn(Schedulers.newThread())
@@ -681,6 +667,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
 
                     picasso.load(chatMessage.getFrom().getProfilePicture())
                             .fit()
+                            .centerCrop()
                             .transform(new RoundedCornersTransformation(avatarSize >> 1, 0, RoundedCornersTransformation.CornerType.ALL))
                             .into(avatar);
 
@@ -689,6 +676,16 @@ public class ChatActivity extends BaseActivity implements MessageView {
                     avatarsMap.put(chatMessage.getSectionId(), new Section(chatMessage.getBeginOfSection(), chatMessage.getEndOfSection(), avatar));
                 }
             }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_GALLERY && data.getData() != null) {
+            ChatMessage chatMessage = ChatMessage.createMessage(ChatMessage.PHOTO, data.getData().toString(), getCurrentUser(), recipient,  getApplicationComponent().dateUtils());
+            chatPresenter.sendMessage(chatMessage);
         }
     }
 

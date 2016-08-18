@@ -29,11 +29,13 @@ import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
 import com.tribe.app.presentation.internal.di.modules.NetModule;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
 import com.tribe.app.presentation.service.TribeFirebaseInstanceIDService;
+import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.text.PhotoMessageAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.text.TutorialMessageAdapterDelegate;
 import com.tribe.app.presentation.view.camera.view.HistogramVisualizerView;
 import com.tribe.app.presentation.view.component.TribeComponentView;
 import com.tribe.app.presentation.view.component.TribePagerView;
@@ -82,6 +84,7 @@ public interface ApplicationComponent {
     void inject(UpdateTribesErrorStatusJob updateTribesErrorStatusJob);
     void inject(MarkTribeListAsReadJob markTribeListAsReadJob);
     void inject(PhotoMessageAdapterDelegate photoMessageAdapterDelegate);
+    void inject(TutorialMessageAdapterDelegate tutorialMessageAdapterDelegate);
     void inject(SendChatJob sendChatJob);
 
     //Exposed to sub-graphs.
@@ -130,4 +133,6 @@ public interface ApplicationComponent {
     @Named("simpleDateHoursMinutes") SimpleDateFormat simpleDateHoursMinutes();
 
     @Named("fullLetteredDate") DateFormat fullLetteredDate();
+
+    DateUtils dateUtils();
 }

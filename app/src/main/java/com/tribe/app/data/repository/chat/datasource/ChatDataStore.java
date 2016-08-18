@@ -50,4 +50,11 @@ public interface ChatDataStore {
      * @param chatRealm the ChatMessage to delete
      */
     Observable<Void> deleteMessage(final ChatRealm chatRealm);
+
+    /**
+     * Get an {@link Observable} which will emit nothing.
+     *
+     * @param friendshipId the friendshipId for which to get the messages for
+     */
+    Observable<Void> deleteConversation(final String friendshipId);
 }

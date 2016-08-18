@@ -35,4 +35,9 @@ public class Group extends Recipient {
     public String getId() {
         return id;
     }
+
+    @Override
+    public String getUsername() {
+        return "";
+    }
 }

@@ -43,13 +43,21 @@
     <color name="blue.grey.faded">#F8FDFF</color>
     <color name="blue.facebook">#007FFF</color>
 
+    <!-- VIOLET -->
+    <color name="violet.status">#9013FE</color>
+
     <!-- YELLOWS -->
     <color name="yellow">#FEBE00</color>
+    <color name="yellow.status">#F8E71C</color>
+
+    <!-- GREENS -->
+    <color name="green.status">#2ECC4C</color>
 
     <!-- REDS -->
     <color name="red">#F9474C</color>
+    <color name="red.status">#FA5400</color>
 
     <!-- ORANGES -->
     <color name="orange">#FD6E02</color>
-    <color name="orange_error">#FF6D00</color>
+    <color name="orange.error">#FF6D00</color>
 </resources>

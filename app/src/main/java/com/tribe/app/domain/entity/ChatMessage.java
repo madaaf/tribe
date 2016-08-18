@@ -3,6 +3,7 @@ package com.tribe.app.domain.entity;
 import android.support.annotation.StringDef;
 import android.support.v4.util.Pair;
 
+import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.MessageStatus;
@@ -38,6 +39,7 @@ public class ChatMessage extends Message {
     private int widthImage;
     private int heightImage;
 
+    private boolean isTutorial;
     private boolean isHeader;
     private boolean isToday;
     private boolean shouldDisplayTime = true;
@@ -163,6 +165,14 @@ public class ChatMessage extends Message {
         isHeader = header;
     }
 
+    public boolean isTutorial() {
+        return isTutorial;
+    }
+
+    public void setTutorial(boolean tutorial) {
+        isTutorial = tutorial;
+    }
+
     public boolean isToday() {
         return isToday;
     }
@@ -207,17 +217,17 @@ public class ChatMessage extends Message {
         return sectionId;
     }
 
-    public static ChatMessage createMessage(User user, Recipient recipient, String content) {
+    public static ChatMessage createMessage(@ChatType String type, String content, User user, Recipient recipient, DateUtils dateUtils) {
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setContent(content);
         chatMessage.setLocalId(FileUtils.generateIdForMessage());
-        chatMessage.setRecordedAt(new Date(System.currentTimeMillis()));
+        chatMessage.setRecordedAt(dateUtils.getUTCTimeAsDate());
         chatMessage.setCreatedAt(chatMessage.getRecordedAt());
         chatMessage.setFrom(user);
         chatMessage.setTo(recipient);
         chatMessage.setToGroup(recipient instanceof Group);
         chatMessage.setMessageStatus(MessageStatus.STATUS_PENDING);
-        chatMessage.setType(ChatMessage.TEXT);
+        chatMessage.setType(type);
         return chatMessage;
     }
 
@@ -249,11 +259,13 @@ public class ChatMessage extends Message {
         return stringBuilder.toString();
     }
 
-    public static List<ChatMessage> computeMessageList(List<ChatMessage> chatMessageList) {
+    public static List<ChatMessage> computeMessageList(ChatMessage tutorial, List<ChatMessage> chatMessageList) {
         List<ChatMessage> result = new ArrayList<>();
         ChatMessage previousChatMessage = null;
         int count = 0;
         Pair<Integer, ChatMessage> currentBeginAvatarSection = new Pair<>(-1, null);
+
+        result.add(tutorial);
 
         for (ChatMessage chatMessage : chatMessageList) {
             computeMessage(result, previousChatMessage, chatMessage);
@@ -299,11 +311,11 @@ public class ChatMessage extends Message {
             chatMessage.isOtherPerson = !previousChatMessage.getFrom().equals(chatMessage.getFrom());
             previousChatMessage.isLastOfPerson = chatMessage.isOtherPerson;
 
-            if (chatMessage.getRecordedAt().getTime() - previousChatMessage.getRecordedAt().getTime() > MINUTE) {
+            if (chatMessage.getCreatedAt().getTime() - previousChatMessage.getCreatedAt().getTime() > MINUTE) {
                 Calendar cal1 = Calendar.getInstance();
                 Calendar cal2 = Calendar.getInstance();
-                cal1.setTime(previousChatMessage.getRecordedAt());
-                cal2.setTime(chatMessage.getRecordedAt());
+                cal1.setTime(previousChatMessage.getCreatedAt());
+                cal2.setTime(chatMessage.getCreatedAt());
                 chatMessage.isFirstOfSection = !(cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                         cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR));
                 previousChatMessage.isLastOfSection = chatMessage.isFirstOfSection;
@@ -324,14 +336,14 @@ public class ChatMessage extends Message {
 
         if (chatMessage.isFirstOfSection) {
             ChatMessage header = new ChatMessage();
-            header.setRecordedAt(chatMessage.recordedAt);
-            header.setLocalId("header_" + chatMessage.recordedAt.getTime());
+            header.setCreatedAt(chatMessage.createdAt);
+            header.setLocalId("header_" + chatMessage.createdAt.getTime());
             header.isHeader = true;
 
             // COMPUTING IF THE DATE IS TODAY'S DATE
             Calendar cal1 = Calendar.getInstance();
             Calendar cal2 = Calendar.getInstance();
-            cal2.setTime(header.getRecordedAt());
+            cal2.setTime(header.getCreatedAt());
             header.isToday = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                     cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
             result.add(header);
@@ -386,6 +398,7 @@ public class ChatMessage extends Message {
         chatMessage.setId(chatMessageFrom.id + chatMessageFrom.content);
         chatMessage.setRecordedAt(chatMessageFrom.recordedAt);
         chatMessage.setUpdatedAt(chatMessageFrom.updatedAt);
+        chatMessage.setCreatedAt(chatMessageFrom.createdAt);
         chatMessage.setFrom(chatMessageFrom.from);
         chatMessage.setTo(chatMessageFrom.to);
         chatMessage.setToGroup(chatMessageFrom.toGroup);

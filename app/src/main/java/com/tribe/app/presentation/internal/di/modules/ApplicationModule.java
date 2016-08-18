@@ -42,6 +42,7 @@ import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.UIThread;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -326,6 +327,12 @@ public class ApplicationModule {
     }
 
     // DATES
+    @Provides
+    @Singleton
+    DateUtils provideDateUtils(@Named("utcSimpleDate") SimpleDateFormat utcSimpleDate) {
+        return new DateUtils(utcSimpleDate);
+    }
+
     @Provides
     @Singleton
     @Named("utcSimpleDate")
