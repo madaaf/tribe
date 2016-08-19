@@ -154,7 +154,7 @@
         }
     </string>
 
-    <string name="tribe.markAsSeen">
+    <string name="message.markAsSeen">
         mutation { %1$s }
     </string>
 
@@ -171,6 +171,10 @@
                 is_seen
             }
         }
+    </string>
+
+    <string name="chatMessage.markAsSeen.item">
+        %1$s: markMessageAsSeen(id: \"%2$s\")
     </string>
 
     <string name="install.create">

@@ -92,4 +92,12 @@ public class CloudChatDataRepository implements ChatRepository {
     public Observable<Void> deleteConversation(String friendshipId) {
         return null;
     }
+
+    @Override
+    public Observable<List<ChatMessage>> markMessageListAsRead(final List<ChatMessage> messageList) {
+        final ChatDataStore chatDataStore = this.chatDataStoreFactory.createCloudChatStore();
+        return chatDataStore.markMessageListAsRead(chatRealmDataMapper.transform(messageList))
+                .filter(chatRealmList -> messageList != null)
+                .map(collection -> chatRealmDataMapper.transform(collection));
+    }
 }

@@ -57,4 +57,11 @@ public interface ChatDataStore {
      * @param friendshipId the friendshipId for which to get the messages for
      */
     Observable<Void> deleteConversation(final String friendshipId);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link List< ChatRealm >} containing info about the messages.
+     *
+     * @param messageRealmList the ChatRealm List to put as seen
+     */
+    Observable<List<ChatRealm>> markMessageListAsRead(final List<ChatRealm> messageRealmList);
 }

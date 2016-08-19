@@ -2,6 +2,7 @@ package com.tribe.app.data.repository.chat.datasource;
 
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.realm.ChatRealm;
+import com.tribe.app.presentation.view.utils.MessageStatus;
 
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 
@@ -58,5 +59,16 @@ public class DiskChatDataStore implements ChatDataStore {
     @Override
     public Observable<Void> deleteConversation(String friendshipId) {
         return chatCache.deleteConversation(friendshipId);
+    }
+
+    @Override
+    public Observable<List<ChatRealm>> markMessageListAsRead(List<ChatRealm> messageRealmList) {
+        for (ChatRealm chatRealm : messageRealmList) {
+            chatRealm.setMessageStatus(MessageStatus.STATUS_OPENED);
+        }
+
+        chatCache.put(messageRealmList);
+
+        return Observable.just(messageRealmList);
     }
 }

@@ -70,4 +70,11 @@ public interface ChatRepository {
      * @param friendshipId the friendshipId for which to get the messages for
      */
     Observable<Void> deleteConversation(final String friendshipId);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link List<ChatMessage>} containing info about the messages.
+     *
+     * @param messageList the ChatMessage List to put as seen
+     */
+    Observable<List<ChatMessage>> markMessageListAsRead(final List<ChatMessage> messageList);
 }

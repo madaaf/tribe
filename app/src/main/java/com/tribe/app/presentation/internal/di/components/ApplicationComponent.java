@@ -9,6 +9,7 @@ import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.job.DownloadTribeJob;
+import com.tribe.app.data.network.job.MarkMessageListAsReadJob;
 import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
 import com.tribe.app.data.network.job.SendChatJob;
 import com.tribe.app.data.network.job.SendTribeJob;
@@ -86,6 +87,7 @@ public interface ApplicationComponent {
     void inject(PhotoMessageAdapterDelegate photoMessageAdapterDelegate);
     void inject(TutorialMessageAdapterDelegate tutorialMessageAdapterDelegate);
     void inject(SendChatJob sendChatJob);
+    void inject(MarkMessageListAsReadJob markMessageListAsReadJob);
 
     //Exposed to sub-graphs.
     Context context();

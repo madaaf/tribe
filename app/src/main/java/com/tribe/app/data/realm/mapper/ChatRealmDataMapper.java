@@ -18,16 +18,19 @@ import javax.inject.Singleton;
 @Singleton
 public class ChatRealmDataMapper {
 
-    GroupRealmDataMapper groupRealmDataMapper;
-    UserRealmDataMapper userRealmDataMapper;
-    FriendshipRealmDataMapper friendshipRealmDataMapper;
+    private final GroupRealmDataMapper groupRealmDataMapper;
+    private final UserRealmDataMapper userRealmDataMapper;
+    private final FriendshipRealmDataMapper friendshipRealmDataMapper;
+    private final MessageRecipientRealmDataMapper messageRecipientRealmDataMapper;
 
     @Inject
     public ChatRealmDataMapper(GroupRealmDataMapper groupRealmDataMapper,
-                               UserRealmDataMapper userRealmDataMapper) {
+                               UserRealmDataMapper userRealmDataMapper,
+                               MessageRecipientRealmDataMapper messageRecipientRealmDataMapper) {
         this.groupRealmDataMapper = groupRealmDataMapper;
         this.userRealmDataMapper = userRealmDataMapper;
         this.friendshipRealmDataMapper = new FriendshipRealmDataMapper(userRealmDataMapper);
+        this.messageRecipientRealmDataMapper = messageRecipientRealmDataMapper;
     }
 
     /**
@@ -52,6 +55,7 @@ public class ChatRealmDataMapper {
             chatMessage.setUpdatedAt(chatRealm.getUpdatedAt());
             chatMessage.setToGroup(chatRealm.isToGroup());
             chatMessage.setMessageStatus(chatRealm.getMessageStatus());
+            chatMessage.setRecipientList(messageRecipientRealmDataMapper.transform(chatRealm.getRecipientList()));
         }
 
         return chatMessage;
@@ -85,6 +89,7 @@ public class ChatRealmDataMapper {
             chatRealm.setUpdatedAt(chatMessage.getUpdatedAt());
             chatRealm.setToGroup(chatMessage.isToGroup());
             chatRealm.setMessageStatus(chatMessage.getMessageStatus());
+            chatRealm.setRecipientList(messageRecipientRealmDataMapper.transform(chatMessage.getRecipientList()));
         }
 
         return chatRealm;
@@ -107,5 +112,24 @@ public class ChatRealmDataMapper {
         }
 
         return chatMessageList;
+    }
+
+    /**
+     * Transform a List of {@link ChatMessage} into a Collection of {@link ChatRealm}.
+     *
+     * @param chatMessageCollection Object Collection to be transformed.
+     * @return {@link List<ChatRealm>} if valid {@link ChatMessage} otherwise null.
+     */
+    public List<ChatRealm> transform(List<ChatMessage> chatMessageCollection) {
+        List<ChatRealm> chatRealmList = new ArrayList<>();
+        ChatRealm chatRealm;
+        for (ChatMessage chatMessage : chatMessageCollection) {
+            chatRealm = transform(chatMessage);
+            if (chatMessage != null) {
+                chatRealmList.add(chatRealm);
+            }
+        }
+
+        return chatRealmList;
     }
 }

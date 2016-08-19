@@ -29,6 +29,7 @@ public abstract class Message implements Serializable {
     protected Date createdAt;
     protected Date updatedAt;
     protected @MessageStatus.Status String messageStatus;
+    protected List<MessageRecipient> recipientList;
 
     public String getId() {
         return id;
@@ -108,6 +109,14 @@ public abstract class Message implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public void setRecipientList(List<MessageRecipient> recipientList) {
+        this.recipientList = recipientList;
+    }
+
+    public List<MessageRecipient> getRecipientList() {
+        return recipientList;
     }
 
     @Override

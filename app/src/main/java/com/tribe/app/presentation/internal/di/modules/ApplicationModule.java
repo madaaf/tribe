@@ -29,6 +29,7 @@ import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.text.ChatRepository;
+import com.tribe.app.domain.interactor.text.CloudMarkMessageListAsRead;
 import com.tribe.app.domain.interactor.text.DeleteChat;
 import com.tribe.app.domain.interactor.text.GetDiskChatMessageList;
 import com.tribe.app.domain.interactor.text.SendChat;
@@ -280,6 +281,12 @@ public class ApplicationModule {
     @Named("diskGetChatMessages")
     GetDiskChatMessageList provideGetDiskChatMessageList(GetDiskChatMessageList getDiskChatMessageList) {
         return getDiskChatMessageList;
+    }
+
+    @Provides
+    @Named("cloudMarkMessageListAsRead")
+    CloudMarkMessageListAsRead cloudMarkMessageListAsRead(CloudMarkMessageListAsRead cloudMarkMessageListAsRead) {
+        return cloudMarkMessageListAsRead;
     }
 
     @Provides

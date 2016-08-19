@@ -93,4 +93,11 @@ public class DiskChatDataRepository implements ChatRepository {
         ChatDataStore diskChatDataStore = chatDataStoreFactory.createDiskChatStore();
         return diskChatDataStore.deleteConversation(friendshipId);
     }
+
+    @Override
+    public Observable<List<ChatMessage>> markMessageListAsRead(final List<ChatMessage> chatList) {
+        final ChatDataStore chatDataStore = this.chatDataStoreFactory.createDiskChatStore();
+        return chatDataStore.markMessageListAsRead(chatRealmDataMapper.transform(chatList))
+                .map(collection -> chatRealmDataMapper.transform(collection));
+    }
 }

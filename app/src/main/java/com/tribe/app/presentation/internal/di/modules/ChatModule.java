@@ -3,6 +3,7 @@ package com.tribe.app.presentation.internal.di.modules;
 import com.tribe.app.domain.interactor.text.ConnectAndSubscribeMQTT;
 import com.tribe.app.domain.interactor.text.DeleteDiskConversation;
 import com.tribe.app.domain.interactor.text.DisconnectMQTT;
+import com.tribe.app.domain.interactor.text.DiskMarkMessageListAsRead;
 import com.tribe.app.domain.interactor.text.GetDiskChatMessageList;
 import com.tribe.app.domain.interactor.text.SaveChat;
 import com.tribe.app.domain.interactor.text.SubscribingMQTT;
@@ -70,5 +71,11 @@ public class ChatModule {
     @Named("deleteDiskConversation")
     DeleteDiskConversation provideDeleteDiskConversation(DeleteDiskConversation deleteDiskConversation) {
         return deleteDiskConversation;
+    }
+
+    @Provides
+    @Named("diskMarkMessageListAsRead")
+    DiskMarkMessageListAsRead diskMarkMessageListAsRead(DiskMarkMessageListAsRead diskMarkMessageListAsRead) {
+        return diskMarkMessageListAsRead;
     }
 }

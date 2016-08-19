@@ -23,17 +23,20 @@ public class TribeRealmDataMapper {
     UserRealmDataMapper userRealmDataMapper;
     WeatherRealmDataMapper weatherRealmDataMapper;
     FriendshipRealmDataMapper friendshipRealmDataMapper;
+    MessageRecipientRealmDataMapper messageRecipientRealmDataMapper;
 
     @Inject
     public TribeRealmDataMapper(LocationRealmDataMapper locationRealmDataMapper,
                                 GroupRealmDataMapper groupRealmDataMapper,
                                 UserRealmDataMapper userRealmDataMapper,
-                                WeatherRealmDataMapper weatherRealmDataMapper) {
+                                WeatherRealmDataMapper weatherRealmDataMapper,
+                                MessageRecipientRealmDataMapper messageRecipientRealmDataMapper) {
         this.locationRealmDataMapper = locationRealmDataMapper;
         this.groupRealmDataMapper = groupRealmDataMapper;
         this.userRealmDataMapper = userRealmDataMapper;
         this.weatherRealmDataMapper = weatherRealmDataMapper;
         this.friendshipRealmDataMapper = new FriendshipRealmDataMapper(userRealmDataMapper);
+        this.messageRecipientRealmDataMapper = messageRecipientRealmDataMapper;
     }
 
     /**
@@ -59,6 +62,7 @@ public class TribeRealmDataMapper {
             tribe.setContent(tribeRealm.getUrl());
             tribe.setMessageStatus(tribeRealm.getMessageStatus());
             tribe.setWeather(weatherRealmDataMapper.transform(tribeRealm.getWeatherRealm()));
+            tribe.setRecipientList(messageRecipientRealmDataMapper.transform(tribeRealm.getRecipientList()));
         }
 
         return tribe;
@@ -93,6 +97,7 @@ public class TribeRealmDataMapper {
             tribeRealm.setUrl(tribe.getContent());
             tribeRealm.setMessageStatus(tribe.getMessageStatus());
             tribeRealm.setWeatherRealm(weatherRealmDataMapper.transform(tribe.getWeather()));
+            tribeRealm.setRecipientList(messageRecipientRealmDataMapper.transform(tribe.getRecipientList()));
         }
 
         return tribeRealm;

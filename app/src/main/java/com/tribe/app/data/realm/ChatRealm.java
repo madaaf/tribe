@@ -137,19 +137,19 @@ public class ChatRealm extends RealmObject implements MessageRealmInterface {
     }
 
     public ChatRealm cloneMessageRealm(ChatRealm fromRealm) {
-        ChatRealm tribeRealm = new ChatRealm();
-        tribeRealm.setId(fromRealm.getId());
-        tribeRealm.setLocalId(fromRealm.getLocalId());
-        tribeRealm.setContent(fromRealm.getContent());
-        tribeRealm.setGroup(fromRealm.getGroup());
-        tribeRealm.setFriendshipRealm(fromRealm.getFriendshipRealm());
-        tribeRealm.setType(fromRealm.getType());
-        tribeRealm.setRecordedAt(fromRealm.getRecordedAt());
-        tribeRealm.setUpdatedAt(fromRealm.getUpdatedAt());
-        tribeRealm.setFrom(fromRealm.getFrom());
-        tribeRealm.setMessageStatus(fromRealm.getMessageStatus());
-        tribeRealm.setRecipientList(fromRealm.getRecipientList());
+        ChatRealm chatRealm = new ChatRealm();
+        chatRealm.setId(fromRealm.getId());
+        chatRealm.setLocalId(fromRealm.getLocalId());
+        chatRealm.setContent(fromRealm.getContent());
+        chatRealm.setGroup(fromRealm.getGroup());
+        chatRealm.setFriendshipRealm(fromRealm.getFriendshipRealm());
+        chatRealm.setType(fromRealm.getType());
+        chatRealm.setRecordedAt(fromRealm.getRecordedAt());
+        chatRealm.setUpdatedAt(fromRealm.getUpdatedAt());
+        chatRealm.setFrom(fromRealm.getFrom());
+        chatRealm.setMessageStatus(fromRealm.getMessageStatus());
+        chatRealm.setRecipientList(fromRealm.getRecipientList());
 
-        return tribeRealm;
+        return chatRealm;
     }
 }

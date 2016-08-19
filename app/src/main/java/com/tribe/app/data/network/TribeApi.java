@@ -45,6 +45,10 @@ public interface TribeApi {
 
     @FormUrlEncoded
     @POST("/graphql")
+    Observable<List<ChatRealm>> markMessageListAsSeen(@Field("query") String query);
+
+    @FormUrlEncoded
+    @POST("/graphql")
     Observable<ChatRealm> sendChat(@Field("query") String query);
 
     @Multipart

@@ -127,4 +127,22 @@ public class CloudChatDataStore implements ChatDataStore {
     public Observable<Void> deleteConversation(String friendshipId) {
         return null;
     }
+
+    @Override
+    public Observable<List<ChatRealm>> markMessageListAsRead(List<ChatRealm> messageRealmList) {
+        StringBuffer buffer = new StringBuffer();
+
+        int count = 0;
+        for (ChatRealm chatRealm : messageRealmList) {
+            buffer.append(context.getString(R.string.chatMessage_markAsSeen_item, "message" + chatRealm.getId(), chatRealm.getId()) + (count < messageRealmList.size() - 1 ? "," : ""));
+            count++;
+        }
+
+        if (buffer.length() > 0) {
+            String req = context.getString(R.string.message_markAsSeen, buffer.toString());
+            return this.tribeApi.markMessageListAsSeen(req);
+        }
+
+        return Observable.empty();
+    }
 }
