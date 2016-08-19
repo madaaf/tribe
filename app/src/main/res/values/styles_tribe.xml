@@ -28,6 +28,10 @@
         <item name="android:textColor">@color/white.opacity.40</item>
     </style>
 
+    <style name="Body.One.Grey" parent="@style/Body.One">
+        <item name="android:textColor">@color/grey.text.profile_info</item>
+    </style>
+
     <style name="Body.Two.Blue" parent="@style/Body.Two">
         <item name="android:textColor">@color/blue.text</item>
     </style>
@@ -120,6 +124,14 @@
         <item name="customFont">Roboto-Bold.ttf</item>
     </style>
 
+    <style name="Headline.Black" parent="@style/Headline">
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="Headline.Black.40" parent="Headline">
+        <item name="android:textColor">@color/black.opacity.40</item>
+    </style>
+
     <style name="Weather">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">30sp</item>
@@ -133,4 +145,15 @@
         <item name="android:singleLine">false</item>
         <item name="customFont">Roboto-Regular.ttf</item>
     </style>
+
+    <style name="Text.PhoneNumber" />
+
+    <style name="Text.PhoneNumber.Input">
+            <item name="customFont">Roboto-Regular.ttf</item>
+            <item name="android:textSize">17sp</item>
+            <item name="android:singleLine">true</item>
+            <item name="android:textColor">@android:color/black</item>
+            <item name="android:textColorHint">@color/black.opacity.40</item>
+    </style>
+
 </resources>

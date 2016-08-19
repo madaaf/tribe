@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="empty"></string>
     <string name="Common.Next">Next</string>
 
     <string name="exception_message_generic">Generic error message</string>
     <string name="exception_message_no_connection">No Internet connection</string>
 
-    <string name="Login.PhoneNumber.Hint">Enter a phone number</string>
+    <string name="Login.PhoneNumber.Hint">Phone number</string>
     <string name="Login.Code.Hint">Enter a code</string>
 
     <!-- GRID -->
@@ -66,6 +67,8 @@
     <string name="chat_is_typing">is typing</string>
     <string name="chat_are_typing">are typing</string>
     <string name="chat_and">and</string>
+
+    <!-- ONBOARDING -->
     <string name="title_activity_profile_info">ProfileInfoActivity</string>
     <string name="profile_info_open_camera_roll">Open camera roll</string>
     <string name="profile_inifo_take_a_selfie">Take a selfie</string>
@@ -74,4 +77,20 @@
     <string name="view_facebook_or_autofill_profile">Or autofill profile</string>
     <string name="profile_info_username_can_be_changed_later">Username can be changed later.</string>
     <string name="view_connected_connected">Connected</string>
+    <string name="profile_info_hi_there_set_yourself_up">Hi there! Set yourself up.</string>
+    <string name="access_rad_get_access_now">Rad! Get access now.</string>
+    <string name="access_a_friend_from_your_address_book_has_to_be_there_to_enter">A friend from your address book has to be here to enter.</string>
+    <string name="access_try_to_enter">Try to enter!</string>
+    <string name="access_get_access_now">Get access now.</string>
+    <string name="access_hang_tight">Hang tight…</string>
+    <string name="access_looking_for_your_contacts">Looking for one of your contacts in our database.</string>
+    <string name="access_cancel">Cancel</string>
+    <string name="access_sorry_title">Sorry, not yet!</string>
+    <string name="access_try_again">Try again</string>
+    <string name="access_congrats_title">Congrats! You\'re in.</string>
+    <string name="access_congrats_desc">Enter now, %1$s friends are already there.</string>
+    <string name="access_more_friends_needed">You need %1$s friend to enter. Send invites!</string>
+    <string name="access_enter_now">Enter now!</string>
+    <string name="access_text_friends">Text Friends</string>
+    <string name="country_item_country_code_content_desc">Country Code</string>
 </resources>

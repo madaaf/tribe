@@ -4,91 +4,112 @@
     android:layout_height="match_parent"
     android:background="@color/grey.background.profile_info"
     >
+
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:layout_width="match_parent"
-        android:layout_height="81dp"
-        android:layout_gravity="top|center_horizontal"
+        android:layout_height="@dimen/onboarding_top_bar_height"
+        android:layout_gravity="center_horizontal"
         android:background="@drawable/shape_rect_profile_info_background_w_border"
-        android:text="Hi there! Set yourself up."
-        android:textColor="@android:color/black"
-        android:textSize="22sp"
-        android:gravity="center"/>
+        android:text="@string/profile_info_hi_there_set_yourself_up"
+        android:gravity="center"
+        style="@style/Headline.Black"
+        />
 
     <ImageView
-        android:layout_width="96dp"
-        android:layout_height="96dp"
-        android:layout_gravity="top|start"
+        android:id="@+id/imgProfilePic"
+        android:layout_width="@dimen/avatar_size_intermediate"
+        android:layout_height="@dimen/avatar_size_intermediate"
+        android:layout_gravity="top"
         android:scaleType="centerInside"
         android:layout_marginTop="86dp"
         android:src="@drawable/picto_profile_pic_placeholder"
-        android:background="@drawable/shape_rect_profile_info_background_w_border"/>
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtProfileInfoOpenCameraRoll"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_gravity="top|start"
-        android:layout_marginTop="86dp"
-        android:layout_marginStart="96dp"
-        android:gravity="center"
         android:background="@drawable/shape_rect_profile_info_background_w_border"
-        android:text="@string/profile_info_open_camera_roll"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtProfileInfoTakeASelfie"
+        android:id="@+id/txtOpenCameraRoll"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_gravity="top|start"
+        android:layout_height="@dimen/onboarding_choose_picture_button_height"
+        android:layout_gravity="top"
+        android:layout_marginTop="86dp"
+        android:layout_marginStart="@dimen/horizontal_left_margin_onboarding_choose_picture_button"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/text_padding"
+        android:paddingEnd="@dimen/text_padding"
+        android:background="@drawable/shape_rect_profile_info_background_w_border"
+        android:text="@string/profile_info_open_camera_roll"
+        style="@style/Body.Two.Black"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtTakeASelfie"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/onboarding_choose_picture_button_height"
+        android:layout_gravity="top"
         android:layout_marginTop="134dp"
-        android:layout_marginStart="96dp"
-        android:gravity="center"
+        android:layout_marginStart="@dimen/horizontal_left_margin_onboarding_choose_picture_button"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/text_padding"
+        android:paddingEnd="@dimen/text_padding"
         android:background="@drawable/shape_rect_profile_info_background_w_border"
         android:text="@string/profile_inifo_take_a_selfie"
+        style="@style/Body.Two.Black"
         />
     
     <com.tribe.app.presentation.view.widget.EditTextFont
         android:id="@+id/editDisplayName"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="@dimen/onboarding_choose_name_height"
         android:layout_marginTop="186dp"
-        android:layout_gravity="top|start"
+        android:paddingStart="@dimen/text_padding"
+        android:paddingEnd="@dimen/text_padding"
         android:background="@drawable/shape_rect_profile_info_background_w_border"
-        android:hint="@string/profile_info_display_name"/>
+        android:hint="@string/profile_info_display_name"
+        style="@style/Title.1.Black"
+        android:textColorHint="@color/black.opacity.40"
+        />
 
     <com.tribe.app.presentation.view.widget.EditTextFont
         android:id="@+id/editUsername"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="@dimen/onboarding_choose_name_height"
         android:layout_marginTop="254dp"
-        android:layout_gravity="top|start"
+        android:paddingStart="@dimen/text_padding"
+        android:paddingEnd="@dimen/text_padding"
         android:background="@drawable/shape_rect_profile_info_background_w_border"
-        android:hint="@string/profile_info_username"/>
+        android:hint="@string/profile_info_username"
+        style="@style/Title.1.Black"
+        android:textColorHint="@color/black.opacity.40"
+        />
     
     <ImageView
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:id="@+id/imgNextIcon"
+        android:layout_width="@dimen/icons_end"
+        android:layout_height="@dimen/icons_end"
         android:src="@drawable/picto_next_icon"
         android:scaleType="centerInside"
         android:background="@android:color/white"
-        android:layout_gravity="bottom|end"/>
+        android:layout_gravity="bottom|end"
+        android:clickable="true"
+        />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/profile_info_username_can_be_changed_later"
-        android:layout_gravity="center|top"
-        android:gravity="center|top"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:layout_marginTop="398dp"
-        android:textColor="@color/grey.text.profile_info"/>
+        style="@style/Body.One.Black40"
+        />
 
 
     <com.tribe.app.presentation.view.widget.FacebookView
+        android:id="@+id/facebookView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="start|bottom"
+        android:layout_gravity="bottom"
         android:layout_marginEnd="60dp"
         />
-
     
 </FrameLayout>

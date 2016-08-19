@@ -23,6 +23,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|center_vertical"
         android:layout_marginEnd="@dimen/horizontal_margin_small"
-        android:src="@drawable/picto_us_flag"/>
+        android:src="@drawable/picto_us_flag"
+        android:contentDescription="@string/country_item_country_code_content_desc"
+        />
 
 </FrameLayout>

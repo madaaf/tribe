@@ -41,20 +41,28 @@
     <color name="grey.background.profile_info">#F7F7F7</color>
     <color name="grey.text.profile_info">#949494</color>
     <color name="grey.text.friends_verify">#999999</color>
+    <color name="grey.dark">#4A4A4A</color>
 
     <!-- BLUE -->
     <color name="blue.text">#02ADF2</color>
+    <color name="blue.text.access">#05B6F4</color>
     <color name="blue.grey.faded">#F8FDFF</color>
     <color name="blue.facebook">#007FFF</color>
     <color name="blue.facebook.dark">#4460A0</color>
+    <color name="blue.opaque">#0099E4</color>
 
     <!-- YELLOWS -->
     <color name="yellow">#FEBE00</color>
 
     <!-- REDS -->
     <color name="red">#F9474C</color>
+    <color name="red.deep">#F42F3E</color>
 
     <!-- ORANGES -->
     <color name="orange">#FD6E02</color>
     <color name="orange_error">#FF6D00</color>
+
+    <!-- GREENS -->
+    <color name="green.text.friends">#97C308</color>
+
 </resources>

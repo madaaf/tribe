@@ -15,6 +15,7 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.Extras;
+import com.tribe.app.presentation.view.fragment.AccessFragment;
 import com.tribe.app.presentation.view.fragment.IntroViewFragment;
 import com.tribe.app.presentation.view.fragment.ProfileInfoFragment;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
@@ -34,12 +35,14 @@ public class IntroActivity extends BaseActivity {
 
     private static final int PAGE_INTRO = 0;
     private static final int PAGE_PROFILE_INFO = 1;
+    private static final int PAGE_ACCESS = 2;
 
     @BindView(R.id.viewPager)
     CustomViewPager viewPager;
 
     private IntroViewFragment introViewFragment;
     private ProfileInfoFragment profileInfoFragment;
+    private AccessFragment accessFragment;
 
     private IntroViewPagerAdapter introViewPagerAdapter;
 
@@ -64,16 +67,20 @@ public class IntroActivity extends BaseActivity {
     private void initViewPager() {
         introViewPagerAdapter = new IntroViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(introViewPagerAdapter);
-        viewPager.setOffscreenPageLimit(3);
+        viewPager.setOffscreenPageLimit(4);
         viewPager.setScrollDurationFactor(2f);
         viewPager.setCurrentItem(PAGE_INTRO);
         viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_NONE);
         viewPager.setPageTransformer(false, new IntroPageTransformer());
-        viewPager.setSwipeable(true);
+        viewPager.setSwipeable(false);
     }
 
     public void goToProfileInfo() {
         viewPager.setCurrentItem(PAGE_PROFILE_INFO);
+    }
+
+    public void goToAccess() {
+        viewPager.setCurrentItem(PAGE_ACCESS);
     }
 
 
@@ -109,7 +116,7 @@ public class IntroActivity extends BaseActivity {
 
     private class IntroViewPagerAdapter extends FragmentPagerAdapter {
 
-        private static final int NUM_ITEMS = 2;
+        private static final int NUM_ITEMS = 3;
 
         public IntroViewPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -129,6 +136,9 @@ public class IntroActivity extends BaseActivity {
                 case 1:
                     profileInfoFragment = ProfileInfoFragment.newInstance();
                     return profileInfoFragment;
+                case 2:
+                    accessFragment = AccessFragment.newInstance();
+                    return accessFragment;
                 default:
                     introViewFragment = IntroViewFragment.newInstance();
                     return introViewFragment;

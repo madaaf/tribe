@@ -5,8 +5,20 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
+import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.presentation.view.activity.IntroActivity;
+import com.tribe.app.presentation.view.camera.gles.Texture;
+import com.tribe.app.presentation.view.widget.EditTextFont;
+import com.tribe.app.presentation.view.widget.FacebookView;
+import com.tribe.app.presentation.view.widget.TextViewFont;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by horatiothomas on 8/18/16.
@@ -14,17 +26,66 @@ import com.tribe.app.R;
 public class ProfileInfoFragment extends Fragment {
 
     public static ProfileInfoFragment newInstance() {
-        
+
         Bundle args = new Bundle();
-        
+
         ProfileInfoFragment fragment = new ProfileInfoFragment();
         fragment.setArguments(args);
         return fragment;
     }
-    
+
+    @BindView(R.id.imgProfilePic)
+    ImageView imgProfilePic;
+
+    @BindView(R.id.txtOpenCameraRoll)
+    TextViewFont txtOpenCameraRoll;
+
+    @BindView(R.id.txtTakeASelfie)
+    TextViewFont txtTakeASelfie;
+
+    @BindView(R.id.editDisplayName)
+    EditTextFont editDisplayName;
+
+    @BindView(R.id.editUsername)
+    EditTextFont editUsername;
+
+    @BindView(R.id.imgNextIcon)
+    ImageView imgNextIcon;
+
+    @BindView(R.id.facebookView)
+    FacebookView facebookView;
+
+    private Unbinder unbinder;
+    private CompositeSubscription subscriptions = new CompositeSubscription();
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View fragmentView = inflater.inflate(R.layout.fragment_profile_info, container, false);
+
+        initUi(fragmentView);
+
         return  fragmentView;
+    }
+
+    public void initUi(View view) {
+        unbinder = ButterKnife.bind(this, view);
+
+        subscriptions.add(RxView.clicks(imgNextIcon).subscribe(aVoid -> {
+            ((IntroActivity) getActivity()).goToAccess();
+        }));
+
+    }
+
+    @Override
+    public void onDestroy() {
+        unbinder.unbind();
+
+        if (subscriptions.hasSubscriptions()) {
+            subscriptions.unsubscribe();
+            subscriptions.clear();
+        }
+
+        super.onDestroy();
     }
 }
