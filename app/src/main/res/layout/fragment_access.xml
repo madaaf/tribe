@@ -27,18 +27,6 @@
         style="@style/Headline.Black.40"
         />
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtAccessTry"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_bar_height"
-        android:layout_gravity="bottom|center_horizontal"
-        android:background="@color/blue.text"
-        android:text="@string/access_try_to_enter"
-        android:gravity="center"
-        android:clickable="true"
-        style="@style/Title.2.White"
-        />
-
     <com.tribe.app.presentation.view.component.AccessLockView
         android:id="@+id/accessLockView"
         android:layout_width="wrap_content"
@@ -55,16 +43,12 @@
         android:visibility="invisible"
         android:clickable="true"
         />
-    
-    <ImageView
-        android:id="@+id/imgRedFb"
-        android:layout_width="@dimen/icons_end"
-        android:layout_height="@dimen/icons_end"
-        android:layout_gravity="bottom|end"
-        android:scaleType="centerInside"
-        android:background="@color/blue.opaque"
-        android:src="@drawable/picto_facebook_icon_red"
-        android:visibility="invisible"
-        />
+
+    <com.tribe.app.presentation.view.component.AccessBottomBarView
+        android:id="@+id/bottom_bar_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"/>
+
 
 </FrameLayout>

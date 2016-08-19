@@ -1,21 +1,27 @@
 package com.tribe.app.presentation.view.fragment;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.presentation.view.component.AccessBottomBarView;
 import com.tribe.app.presentation.view.component.AccessLockView;
 import com.tribe.app.presentation.view.component.TextFriendsView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -45,16 +51,14 @@ public class AccessFragment extends Fragment {
     @BindView(R.id.txtAccessDesc)
     TextViewFont txtAccessDesc;
 
-    @BindView(R.id.txtAccessTry)
-    TextViewFont txtAccessTry;
+    @BindView(R.id.bottom_bar_view)
+    AccessBottomBarView accessBottomBarView;
 
     @BindView(R.id.accessLockView)
     AccessLockView accessLockView;
 
     @BindView(R.id.textFriendsView)
     TextFriendsView textFriendsView;
-    @BindView(R.id.imgRedFb)
-    ImageView imgRedFb;
 
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -67,7 +71,9 @@ public class AccessFragment extends Fragment {
     private static final int STATE_CONGRATS = 3;
 
     //for UI testing
-    boolean tryAgain = true;
+    private boolean tryAgain = true;
+    private boolean isActive = false;
+    private boolean isActive2 = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -98,7 +104,8 @@ public class AccessFragment extends Fragment {
         unbinder = ButterKnife.bind(this, view);
         context = getActivity();
 
-        subscriptions.add(RxView.clicks(txtAccessTry).subscribe(aVoid -> {
+        subscriptions.add(RxView.clicks(accessBottomBarView.getTxtAccessTry()).subscribe(aVoid -> {
+            isActive = false;
             switch (viewState) {
                 case STATE_GET_ACCESS:
                     goToHangTight();
@@ -123,7 +130,7 @@ public class AccessFragment extends Fragment {
     }
 
     private void cleanUpSorry() {
-        imgRedFb.setVisibility(View.INVISIBLE);
+        accessBottomBarView.setImgRedFbVisibility(false);
         textFriendsView.setVisibility(View.INVISIBLE);
 
         setBottomMargin(txtAccessDesc, 112);
@@ -143,55 +150,102 @@ public class AccessFragment extends Fragment {
 
     private void goToHangTight() {
         viewState = STATE_HANG_TIGHT;
-//        txtAccessTry.animate()
-//                .translationY(txtAccessTry.getHeight());
-        changeBaseView(getString(R.string.access_hang_tight),
-                android.R.color.black,
-                getString(R.string.access_looking_for_your_contacts),
-                getString(R.string.access_cancel),
-                R.color.grey_dark);
-//        txtAccessTry.animate()
-//                .translationY(0);
-        accessLockView.setToHangTight();
+        isActive = true;
+        accessBottomBarView.animate()
+                .translationY(accessBottomBarView.getHeight())
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        if (isActive) {
+                            isActive = false;
+                            isActive2 = true;
+                            changeBaseView(getString(R.string.access_hang_tight),
+                                    android.R.color.black,
+                                    getString(R.string.access_looking_for_your_contacts),
+                                    getString(R.string.access_cancel),
+                                    R.color.grey_dark);
+                            accessLockView.setToHangTight();
+                            accessBottomBarView.animate()
+                                    .translationY(0);
 
-        // TODO: check if user has enough friends in app
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (tryAgain) {
-                    tryAgain = false;
-                    goToSorry();
-                }
-                else goToCongrats();
-            }
-        }, 2000);
+                            // TODO: check if user has enough friends in app
 
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (isActive2) {
+                                        isActive2 = false;
+                                        if (tryAgain) {
+                                            tryAgain = false;
+                                            goToSorry();
+                                        } else goToCongrats();
+
+                                    }
+                                }
+                            }, 2000);
+                        }
+                    }
+                });
     }
 
     private void goToSorry() {
         viewState = STATE_SORRY;
-        changeBaseView(getString(R.string.access_sorry_title),
-                R.color.red_deep,
-                getString(R.string.access_more_friends_needed, "1"),
-                getString(R.string.access_try_again),
-                R.color.blue_text);
-        accessLockView.setToSorry();
 
-        setBottomMargin(txtAccessDesc, 157);
+        isActive = true;
+        accessBottomBarView.animate()
+                .translationY(accessBottomBarView.getHeight())
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        if (isActive) {
+                            isActive = false;
+                            changeBaseView(getString(R.string.access_sorry_title),
+                                    R.color.red_deep,
+                                    getString(R.string.access_more_friends_needed, "1"),
+                                    getString(R.string.access_try_again),
+                                    R.color.blue_text);
+                            accessLockView.setToSorry();
 
-        textFriendsView.setVisibility(View.VISIBLE);
-        imgRedFb.setVisibility(View.VISIBLE);
+                            setBottomMargin(txtAccessDesc, 157);
 
+                            textFriendsView.setVisibility(View.VISIBLE);
+                            Animation slideInUp = AnimationUtils.loadAnimation(context, R.anim.slide_in_up);
+                            accessBottomBarView.setImgRedFbVisibility(true);
+
+                            accessBottomBarView.animate()
+                                    .translationY(0);
+                        }
+                    }
+                });
     }
 
     private void goToCongrats() {
         viewState = STATE_CONGRATS;
-        changeBaseView(getString(R.string.access_congrats_title),
-                R.color.blue_text_access,
-                getString(R.string.access_congrats_desc, "3"),
-                getString(R.string.access_enter_now),
-                R.color.blue_text);
+
+        isActive = true;
+        accessBottomBarView.animate()
+                .translationY(accessBottomBarView.getHeight())
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        if (isActive) {
+                            isActive = false;
+
+                            changeBaseView(getString(R.string.access_congrats_title),
+                                    R.color.blue_text_access,
+                                    getString(R.string.access_congrats_desc, "3"),
+                                    getString(R.string.access_enter_now),
+                                    R.color.blue_text);
+
+                            accessBottomBarView.animate()
+                                    .translationY(0);
+                        }
+                    }
+                });
     }
 
     private void goToHome() {
@@ -202,8 +256,8 @@ public class AccessFragment extends Fragment {
         txtAccessTitle.setText(titleTxt);
         txtAccessTitle.setTextColor(ContextCompat.getColor(context, titleTxtColor));
         txtAccessDesc.setText(descTxt);
-        txtAccessTry.setText(tryAgainTxt);
-        txtAccessTry.setBackgroundColor(ContextCompat.getColor(context, tryAgainBackTextColor));
+        accessBottomBarView.setText(tryAgainTxt);
+        accessBottomBarView.setBackgroundColor(context, tryAgainBackTextColor);
 
     }
 

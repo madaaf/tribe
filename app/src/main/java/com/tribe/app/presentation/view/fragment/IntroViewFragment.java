@@ -88,6 +88,9 @@ public class IntroViewFragment extends Fragment implements IntroView {
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
+    // TODO: remove when threading is removed
+    private boolean isActive = false;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -250,11 +253,15 @@ public class IntroViewFragment extends Fragment implements IntroView {
         viewPager.setCurrentItem(PAGE_CONNECTED, true);
 
         // TODO: get user info and check if they have a picture
+        isActive =true;
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
+                if (isActive) {
+                    isActive = false;
                     ((IntroActivity) getActivity()).goToProfileInfo();
+                }
             }
         }, 2000);
 

@@ -25,6 +25,10 @@ public class IntroPresenter implements Presenter {
     private final DoLoginWithPhoneNumber cloudLoginUseCase;
     private final GetCloudUserInfos cloudUserInfos;
 
+    // TODO: remove after threading is removed
+    private boolean isActive1 = false;
+    private boolean isActive2 = false;
+
     private IntroView introView;
 
     @Inject
@@ -76,14 +80,17 @@ public class IntroPresenter implements Presenter {
         // TODO: get pin
 //                cloudGetRequestCodeUseCase.prepare(phoneNumber);
 //        cloudGetRequestCodeUseCase.execute(new RequestCodeSubscriber());
-
         showViewLoading();
+        isActive1 = true;
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                hideViewLoading();
-                goToCode();
+                if (isActive1) {
+                    hideViewLoading();
+                    goToCode();
+                    isActive1 = false;
+                }
             }
         }, 2000);
 
@@ -97,12 +104,16 @@ public class IntroPresenter implements Presenter {
     public void login(String phoneNumber, String code, String pinId) {
         showViewLoading();
         // TODO: get user id
+        isActive2 = true;
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                hideViewLoading();
-                goToConnected();
+                if (isActive2) {
+                    hideViewLoading();
+                    goToConnected();
+                    isActive2 = false;
+                }
             }
         }, 2000);
 

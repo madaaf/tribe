@@ -42,7 +42,6 @@ public class AccessLockView extends FrameLayout {
 
     }
 
-
     public void setToAccess() {
 //        viewState = STATE_GET_ACCESS;
     }
