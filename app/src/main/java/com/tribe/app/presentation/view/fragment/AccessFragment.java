@@ -127,11 +127,8 @@ public class AccessFragment extends Fragment {
         imgRedFb.setVisibility(View.INVISIBLE);
         textFriendsView.setVisibility(View.INVISIBLE);
 
-        // Move textview down
-        FrameLayout.LayoutParams llp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-        float d = context.getResources().getDisplayMetrics().density;
-        llp.setMargins((int) (35 * d),(int) (402 * d),(int) (35 * d), 0);
-        txtAccessDesc.setLayoutParams(llp);
+        setBottomMargin(txtAccessDesc, 112);
+
     }
 
     private void goToAccess() {
@@ -178,11 +175,7 @@ public class AccessFragment extends Fragment {
                 R.color.blue_text);
         accessLockView.setToSorry();
 
-        // Move textview up
-        FrameLayout.LayoutParams llp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-        float d = context.getResources().getDisplayMetrics().density;
-        llp.setMargins((int) (35 * d),(int) (357 * d),(int) (35 * d), 0);
-        txtAccessDesc.setLayoutParams(llp);
+        setBottomMargin(txtAccessDesc, 157);
 
         textFriendsView.setVisibility(View.VISIBLE);
         imgRedFb.setVisibility(View.VISIBLE);
@@ -209,6 +202,14 @@ public class AccessFragment extends Fragment {
         txtAccessTry.setText(tryAgainTxt);
         txtAccessTry.setBackgroundColor(ContextCompat.getColor(context, tryAgainBackTextColor));
 
+    }
+
+    private void setBottomMargin(View view, int margin) {
+                FrameLayout.LayoutParams llp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        float d = context.getResources().getDisplayMetrics().density;
+        ViewGroup.MarginLayoutParams viewLayoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        viewLayoutParams.bottomMargin = (int) (margin * d);
+        view.requestLayout();
     }
 
 
