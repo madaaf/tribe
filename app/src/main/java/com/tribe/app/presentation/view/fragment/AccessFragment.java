@@ -21,7 +21,6 @@ import com.tribe.app.presentation.view.component.TextFriendsView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import butterknife.BindView;
-import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import rx.subscriptions.CompositeSubscription;
@@ -144,11 +143,15 @@ public class AccessFragment extends Fragment {
 
     private void goToHangTight() {
         viewState = STATE_HANG_TIGHT;
+//        txtAccessTry.animate()
+//                .translationY(txtAccessTry.getHeight());
         changeBaseView(getString(R.string.access_hang_tight),
                 android.R.color.black,
                 getString(R.string.access_looking_for_your_contacts),
                 getString(R.string.access_cancel),
                 R.color.grey_dark);
+//        txtAccessTry.animate()
+//                .translationY(0);
         accessLockView.setToHangTight();
 
         // TODO: check if user has enough friends in app
@@ -205,7 +208,7 @@ public class AccessFragment extends Fragment {
     }
 
     private void setBottomMargin(View view, int margin) {
-                FrameLayout.LayoutParams llp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        FrameLayout.LayoutParams llp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         float d = context.getResources().getDisplayMetrics().density;
         ViewGroup.MarginLayoutParams viewLayoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         viewLayoutParams.bottomMargin = (int) (margin * d);

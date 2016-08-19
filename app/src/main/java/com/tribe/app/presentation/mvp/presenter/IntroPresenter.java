@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.os.Handler;
+
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.User;
@@ -71,11 +73,21 @@ public class IntroPresenter implements Presenter {
     }
 
     public void requestCode(String phoneNumber) {
-        showViewLoading();
-        hideViewLoading();
-//        cloudGetRequestCodeUseCase.prepare(phoneNumber);
+        // TODO: get pin
+//                cloudGetRequestCodeUseCase.prepare(phoneNumber);
 //        cloudGetRequestCodeUseCase.execute(new RequestCodeSubscriber());
-        goToCode();
+
+        showViewLoading();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                hideViewLoading();
+                goToCode();
+            }
+        }, 2000);
+
+
     }
 
     public void backToPhoneNumber() {
@@ -84,10 +96,19 @@ public class IntroPresenter implements Presenter {
 
     public void login(String phoneNumber, String code, String pinId) {
         showViewLoading();
-        hideViewLoading();
+        // TODO: get user id
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                hideViewLoading();
+                goToConnected();
+            }
+        }, 2000);
+
 //        cloudLoginUseCase.prepare(phoneNumber, code, pinId);
 //        cloudLoginUseCase.execute(new LoginSubscriber());
-        goToProfileInfo();
+
     }
 
     public void getUserInfo() {

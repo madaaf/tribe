@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -131,7 +132,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
             if (isValid) {
 //                this.code = viewCode.getCode();
 //                introPresenter.login(phoneNumber, code, pin.getPinId());
-//                introPresenter.login("", "", "");
+                introPresenter.login("", "", "");
                 goToConnected();
             }
         }));
@@ -247,7 +248,17 @@ public class IntroViewFragment extends Fragment implements IntroView {
         txtIntroMessage.setText("");
         hideKeyboard();
         viewPager.setCurrentItem(PAGE_CONNECTED, true);
-        ((IntroActivity) getActivity()).goToProfileInfo();
+
+        // TODO: get user info and check if they have a picture
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                    ((IntroActivity) getActivity()).goToProfileInfo();
+            }
+        }, 2000);
+
+
     }
 
     @Override
