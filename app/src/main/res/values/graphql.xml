@@ -139,6 +139,7 @@
             }
 
             %1$s
+            %2$s
         }
     </string>
 
@@ -159,6 +160,17 @@
 
     <string name="tribe.markAsSeen.item">
         %1$s: markTribeAsSeen(id: \"%2$s\")
+    </string>
+
+     <string name="message.sent.infos">
+        messages (ids: [%1$s]) {
+            id
+
+            recipients {
+                to
+                is_seen
+            }
+        }
     </string>
 
     <string name="install.create">

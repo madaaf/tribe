@@ -29,7 +29,7 @@ public class TribeRealm extends RealmObject implements MessageRealmInterface {
     private Date updatedAt;
     private WeatherRealm weatherRealm;
     private LocationRealm locationRealm;
-    private RealmList<TribeRecipientRealm> recipientList;
+    private RealmList<MessageRecipientRealm> recipientList;
 
     public void setId(String id) {
         this.id = id;
@@ -137,11 +137,11 @@ public class TribeRealm extends RealmObject implements MessageRealmInterface {
         this.locationRealm = locationRealm;
     }
 
-    public void setRecipientList(RealmList<TribeRecipientRealm> recipientList) {
+    public void setRecipientList(RealmList<MessageRecipientRealm> recipientList) {
         this.recipientList = recipientList;
     }
 
-    public RealmList<TribeRecipientRealm> getRecipientList() {
+    public RealmList<MessageRecipientRealm> getRecipientList() {
         return recipientList;
     }
 

@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.adapter.delegate.text;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -26,6 +27,7 @@ import butterknife.ButterKnife;
 public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<ChatMessage>> {
 
     // VARIABLES
+    protected Context context;
     protected User currentUser;
     protected SimpleDateFormat simpleDateFormat;
     protected LayoutInflater layoutInflater;
@@ -35,6 +37,7 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
     protected int marginVerticalXSmall;
 
     public BaseMessageAdapterDelegate(LayoutInflater inflater, Context context) {
+        this.context = context;
         this.currentUser = ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().currentUser();
         this.simpleDateFormat = ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().simpleDateHoursMinutes();
         this.layoutInflater = inflater;
@@ -69,6 +72,8 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
             if (chatMessage.isOtherPerson()) {
                 vh.txtName.setVisibility(View.VISIBLE);
                 vh.txtName.setText(chatMessage.getFrom().getDisplayName());
+                if (chatMessage.getFrom().equals(currentUser)) vh.txtName.setTextColor(context.getResources().getColor(R.color.blue_text));
+                else vh.txtName.setTextColor(Color.BLACK);
             } else {
                 vh.txtName.setVisibility(View.GONE);
             }

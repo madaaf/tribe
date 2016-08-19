@@ -1,9 +1,10 @@
 package com.tribe.app.data.cache;
 
 import com.tribe.app.data.realm.TribeRealm;
-import com.tribe.app.data.realm.TribeRecipientRealm;
+import com.tribe.app.data.realm.MessageRecipientRealm;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Singleton;
 
@@ -21,12 +22,12 @@ public interface TribeCache {
     public Observable<TribeRealm> put(TribeRealm tribeRealm);
     public void update(TribeRealm tribeRealm);
     public void put(List<TribeRealm> tribeRealmList);
-    public RealmList<TribeRecipientRealm> createTribeRecipientRealm(List<TribeRecipientRealm> tribeRecipientRealm);
+    public RealmList<MessageRecipientRealm> createTribeRecipientRealm(List<MessageRecipientRealm> tribeRecipientRealm);
     public Observable<Void> delete(TribeRealm tribeRealm);
     public Observable<List<TribeRealm>> tribes();
     public Observable<List<TribeRealm>> tribesPending();
     public List<TribeRealm> tribesNotSent();
-    public List<TribeRealm> tribesSent();
+    public List<TribeRealm> tribesSent(Set<String> toIds);
     public TribeRealm updateLocalWithServerRealm(TribeRealm local, TribeRealm server);
     public void updateToError(List<TribeRealm> tribeRealmList);
 }

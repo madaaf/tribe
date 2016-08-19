@@ -2,13 +2,15 @@ package com.tribe.app.data.cache;
 
 import android.content.Context;
 
+import com.tribe.app.data.realm.MessageRecipientRealm;
 import com.tribe.app.data.realm.TribeRealm;
-import com.tribe.app.data.realm.TribeRecipientRealm;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.utils.MessageStatus;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -136,21 +138,21 @@ public class TribeCacheImpl implements TribeCache {
     }
 
     @Override
-    public RealmList<TribeRecipientRealm> createTribeRecipientRealm(List<TribeRecipientRealm> tribeRecipientRealmList) {
+    public RealmList<MessageRecipientRealm> createTribeRecipientRealm(List<MessageRecipientRealm> tribeRecipientRealmList) {
         Realm realmObs = Realm.getDefaultInstance();
         realmObs.beginTransaction();
 
-        for (TribeRecipientRealm tribeRecipientRealm : tribeRecipientRealmList) {
-            TribeRecipientRealm realmRecipient = realmObs.where(TribeRecipientRealm.class).equalTo("id", tribeRecipientRealm.getId()).findFirst();
+        for (MessageRecipientRealm tribeRecipientRealm : tribeRecipientRealmList) {
+            MessageRecipientRealm realmRecipient = realmObs.where(MessageRecipientRealm.class).equalTo("id", tribeRecipientRealm.getId()).findFirst();
             if (realmRecipient != null)
-                realmObs.where(TribeRecipientRealm.class).equalTo("id", tribeRecipientRealm.getId()).findFirst().deleteFromRealm();
+                realmObs.where(MessageRecipientRealm.class).equalTo("id", tribeRecipientRealm.getId()).findFirst().deleteFromRealm();
         }
 
-        List<TribeRecipientRealm> tribeRecipientRealmManaged = realmObs.copyFromRealm(realmObs.copyToRealmOrUpdate(tribeRecipientRealmList));
+        List<MessageRecipientRealm> tribeRecipientRealmManaged = realmObs.copyFromRealm(realmObs.copyToRealmOrUpdate(tribeRecipientRealmList));
         realmObs.commitTransaction();
         realmObs.close();
 
-        RealmList<TribeRecipientRealm> results = new RealmList<>();
+        RealmList<MessageRecipientRealm> results = new RealmList<>();
         results.addAll(tribeRecipientRealmManaged);
 
         return results;
@@ -219,13 +221,28 @@ public class TribeCacheImpl implements TribeCache {
     }
 
     @Override
-    public List<TribeRealm> tribesSent() {
-        Realm otherRealm = Realm.getDefaultInstance();
-        RealmResults<TribeRealm> sentTribes = otherRealm.where(TribeRealm.class)
-                .equalTo("from.id", currentUser.getId())
-                .equalTo("messageStatus", MessageStatus.STATUS_SENT)
-                .findAllSorted("recorded_at", Sort.ASCENDING);
-        return otherRealm.copyFromRealm(sentTribes);
+    public List<TribeRealm> tribesSent(Set<String> idsTo) {
+        Realm obsRealm = Realm.getDefaultInstance();
+        List<TribeRealm> result = new ArrayList<>();
+
+        for (String id : idsTo) {
+            RealmResults<TribeRealm> sentMessages = obsRealm.where(TribeRealm.class)
+                    .equalTo("from.id", currentUser.getId())
+                    .beginGroup()
+                    .equalTo("friendshipRealm.friend.id", id)
+                    .endGroup()
+                    .or()
+                    .beginGroup()
+                    .equalTo("group.id", id)
+                    .endGroup()
+                    .equalTo("messageStatus", MessageStatus.STATUS_SENT)
+                    .findAllSorted("recorded_at", Sort.ASCENDING);
+
+            if (sentMessages != null && sentMessages.size() > 0) result.addAll(obsRealm.copyFromRealm(sentMessages.subList(0, 1)));
+        }
+
+        obsRealm.close();
+        return result;
     }
 
     @Override

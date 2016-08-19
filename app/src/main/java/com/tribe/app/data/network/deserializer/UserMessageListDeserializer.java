@@ -7,13 +7,14 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.LocationRealm;
 import com.tribe.app.data.realm.MessageRealmInterface;
+import com.tribe.app.data.realm.MessageRecipientRealm;
 import com.tribe.app.data.realm.TribeRealm;
-import com.tribe.app.data.realm.TribeRecipientRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.WeatherRealm;
 import com.tribe.app.domain.entity.User;
@@ -30,11 +31,14 @@ public class UserMessageListDeserializer<T> implements JsonDeserializer<T> {
     private User currentUser;
     private UserCache userCache;
     private TribeCache tribeCache;
+    private ChatCache chatCache;
 
-    public UserMessageListDeserializer(SimpleDateFormat utcSimpleDate, UserCache userCache, TribeCache tribeCache, User currentUser) {
+    public UserMessageListDeserializer(SimpleDateFormat utcSimpleDate, UserCache userCache,
+                                       TribeCache tribeCache, ChatCache chatCache, User currentUser) {
         this.utcSimpleDate = utcSimpleDate;
         this.userCache = userCache;
         this.tribeCache = tribeCache;
+        this.chatCache = chatCache;
         this.currentUser = currentUser;
     }
 
@@ -46,6 +50,7 @@ public class UserMessageListDeserializer<T> implements JsonDeserializer<T> {
         JsonArray resultsTribes = user.getAsJsonArray("tribes");
         JsonArray resultsChatMessages = user.getAsJsonArray("unSeenMessages");
         JsonArray resultsTribesSent = je.getAsJsonObject().getAsJsonObject("data").getAsJsonArray("tribes");
+        JsonArray resultsMessagesSent = je.getAsJsonObject().getAsJsonObject("data").getAsJsonArray("messages");
 
         List<MessageRealmInterface> messages = new ArrayList<>();
 
@@ -63,23 +68,49 @@ public class UserMessageListDeserializer<T> implements JsonDeserializer<T> {
 
         if (resultsTribesSent != null) {
             for (JsonElement obj : resultsTribesSent) {
-                TribeRealm tribeRealm = new TribeRealm();
-                JsonObject json = obj.getAsJsonObject();
-                tribeRealm.setId(json.get("id").getAsString());
+                if (!(obj instanceof JsonNull)) {
+                    TribeRealm tribeRealm = new TribeRealm();
+                    JsonObject json = obj.getAsJsonObject();
+                    tribeRealm.setId(json.get("id").getAsString());
 
-                List<TribeRecipientRealm> tribeRecipientRealmList = new ArrayList<>();
+                    List<MessageRecipientRealm> tribeRecipientRealmList = new ArrayList<>();
 
-                for (JsonElement recipient : json.getAsJsonArray("recipients")) {
-                    JsonObject jsonRecipient = recipient.getAsJsonObject();
-                    TribeRecipientRealm tribeRecipientRealm = new TribeRecipientRealm();
-                    tribeRecipientRealm.setId(tribeRealm.getId() + jsonRecipient.get("to").getAsString());
-                    tribeRecipientRealm.setTo(jsonRecipient.get("to").getAsString());
-                    tribeRecipientRealm.setIsSeen(jsonRecipient.get("is_seen").getAsBoolean());
-                    tribeRecipientRealmList.add(tribeRecipientRealm);
+                    for (JsonElement recipient : json.getAsJsonArray("recipients")) {
+                        JsonObject jsonRecipient = recipient.getAsJsonObject();
+                        MessageRecipientRealm tribeRecipientRealm = new MessageRecipientRealm();
+                        tribeRecipientRealm.setId(tribeRealm.getId() + jsonRecipient.get("to").getAsString());
+                        tribeRecipientRealm.setTo(jsonRecipient.get("to").getAsString());
+                        tribeRecipientRealm.setIsSeen(jsonRecipient.get("is_seen").getAsBoolean());
+                        tribeRecipientRealmList.add(tribeRecipientRealm);
+                    }
+
+                    tribeRealm.setRecipientList(tribeCache.createTribeRecipientRealm(tribeRecipientRealmList));
+                    messages.add(tribeRealm);
                 }
+            }
+        }
 
-                tribeRealm.setRecipientList(tribeCache.createTribeRecipientRealm(tribeRecipientRealmList));
-                messages.add(tribeRealm);
+        if (resultsMessagesSent != null) {
+            for (JsonElement obj : resultsMessagesSent) {
+                if (!(obj instanceof JsonNull)) {
+                    ChatRealm chatRealm = new ChatRealm();
+                    JsonObject json = obj.getAsJsonObject();
+                    chatRealm.setId(json.get("id").getAsString());
+
+                    List<MessageRecipientRealm> messageRecipientRealmList = new ArrayList<>();
+
+                    for (JsonElement recipient : json.getAsJsonArray("recipients")) {
+                        JsonObject jsonRecipient = recipient.getAsJsonObject();
+                        MessageRecipientRealm chatRecipientRealm = new MessageRecipientRealm();
+                        chatRecipientRealm.setId(chatRealm.getId() + jsonRecipient.get("to").getAsString());
+                        chatRecipientRealm.setTo(jsonRecipient.get("to").getAsString());
+                        chatRecipientRealm.setIsSeen(jsonRecipient.get("is_seen").getAsBoolean());
+                        messageRecipientRealmList.add(chatRecipientRealm);
+                    }
+
+                    chatRealm.setRecipientList(chatCache.createMessageRecipientRealm(messageRecipientRealmList));
+                    messages.add(chatRealm);
+                }
             }
         }
 

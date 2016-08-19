@@ -13,6 +13,7 @@ import com.jakewharton.byteunits.DecimalByteUnit;
 import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 import com.tribe.app.BuildConfig;
+import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.FileApi;
@@ -72,6 +73,7 @@ public class NetModule {
                      @Named("utcSimpleDateFull") SimpleDateFormat utcSimpleDateFull,
                      UserCache userCache,
                      TribeCache tribeCache,
+                     ChatCache chatCache,
                      User currentUser) {
         return new GsonBuilder()
                 .setExclusionStrategies(new ExclusionStrategy() {
@@ -89,7 +91,7 @@ public class NetModule {
                 .registerTypeAdapter(AccessToken.class, new TribeAccessTokenDeserializer())
                 .registerTypeAdapter(TribeRealm.class, new NewTribeDeserializer<>())
                 .registerTypeAdapter(ChatRealm.class, new NewMessageDeserializer<>())
-                .registerTypeAdapter(new TypeToken<List<MessageRealmInterface>>() {}.getType(), new UserMessageListDeserializer<>(utcSimpleDate, userCache, tribeCache, currentUser))
+                .registerTypeAdapter(new TypeToken<List<MessageRealmInterface>>() {}.getType(), new UserMessageListDeserializer<>(utcSimpleDate, userCache, tribeCache, chatCache, currentUser))
                 .registerTypeAdapter(Installation.class, new NewInstallDeserializer<>())
                 .registerTypeAdapter(Date.class, new DateDeserializer(utcSimpleDateFull))
                 .registerTypeAdapter(new TypeToken<List<UserRealm>>() {}.getType(), new UserListDeserializer<>())

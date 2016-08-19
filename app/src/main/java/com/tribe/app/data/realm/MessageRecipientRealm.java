@@ -6,7 +6,7 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by tiago on 04/08/2016.
  */
-public class TribeRecipientRealm extends RealmObject {
+public class MessageRecipientRealm extends RealmObject {
 
     @PrimaryKey
     private String id;

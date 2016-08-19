@@ -15,6 +15,8 @@ import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ChatRealm;
+import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.LocationRealm;
 import com.tribe.app.data.realm.MessageRealmInterface;
@@ -76,7 +78,7 @@ public class CloudUserDataStore implements UserDataStore {
                 .requestCode(new LoginEntity(phoneNumber))
                 .doOnError(throwable -> {
                     AccessToken accessToken1 = new AccessToken();
-                    accessToken1.setAccessToken("TO94aH0PV6LETnP8uPwQpKwh1JuMaj7pxD8ghrpmgEfJlQjHRn");
+                    accessToken1.setAccessToken("DvEZQrxOZ5LgHQE9XjWYzCNMEcSmlCMVfvm27ZTLJ72KpRpVIY");
                     accessToken1.setTokenType("Bearer");
                     accessToken1.setUserId("BJgkS2rN");
                     CloudUserDataStore.this.userCache.put(accessToken1);
@@ -89,7 +91,7 @@ public class CloudUserDataStore implements UserDataStore {
                 .loginWithUsername(new LoginEntity(phoneNumber, code, scope, "password"))
                 .doOnError(throwable -> {
                     AccessToken accessToken1 = new AccessToken();
-                    accessToken1.setAccessToken("TO94aH0PV6LETnP8uPwQpKwh1JuMaj7pxD8ghrpmgEfJlQjHRn");
+                    accessToken1.setAccessToken("DvEZQrxOZ5LgHQE9XjWYzCNMEcSmlCMVfvm27ZTLJ72KpRpVIY");
                     accessToken1.setTokenType("Bearer");
                     accessToken1.setUserId("BJgkS2rN");
                     CloudUserDataStore.this.userCache.put(accessToken1);
@@ -153,15 +155,44 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<List<MessageRealmInterface>> messages() {
-        StringBuffer ids = new StringBuffer();
+        StringBuffer idsTribes = new StringBuffer();
+        StringBuffer idsMessages = new StringBuffer();
 
-        int count = 0;
-        for (TribeRealm tribeRealm : tribeCache.tribesSent()) {
-            ids.append((count > 0 ? "," : "") +"\"" + tribeRealm.getId() + "\"");
-            count++;
+        Set<String> toIds = new HashSet<>();
+
+        UserRealm user = userCache.userInfosNoObs(accessToken.getUserId());
+
+        for (FriendshipRealm fr : user.getFriendships()) {
+            toIds.add(fr.getFriend().getId());
         }
 
-        String req = context.getString(R.string.messages_infos, !StringUtils.isEmpty(ids.toString()) ? context.getString(R.string.tribe_sent_infos, ids) : "");
+        for (GroupRealm gr : user.getGroups()) {
+            toIds.add(gr.getId());
+        }
+
+        List<TribeRealm> lastTribesSent = tribeCache.tribesSent(toIds);
+        List<ChatRealm> lastMessageSent = chatCache.messagesSent(toIds);
+
+        int countTribes = 0;
+        for (TribeRealm tribeRealm : lastTribesSent) {
+            if (!StringUtils.isEmpty(tribeRealm.getId())) {
+                idsTribes.append((countTribes > 0 ? "," : "") + "\"" + tribeRealm.getId() + "\"");
+                countTribes++;
+            }
+        }
+
+        int countMessages = 0;
+        for (ChatRealm chatRealm : lastMessageSent) {
+            if (!StringUtils.isEmpty(chatRealm.getId())) {
+                idsMessages.append((countMessages > 0 ? "," : "") + "\"" + chatRealm.getId() + "\"");
+                countMessages++;
+            }
+        }
+
+        String req = context.getString(R.string.messages_infos,
+                !StringUtils.isEmpty(idsTribes.toString()) ? context.getString(R.string.tribe_sent_infos, idsTribes) : "",
+                !StringUtils.isEmpty(idsMessages.toString()) ? context.getString(R.string.message_sent_infos, idsMessages) : "");
+
 
         return tribeApi.messages(req).flatMap(messageRealmInterfaceList -> {
                     Set<String> idsFrom = new HashSet<>();

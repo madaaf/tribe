@@ -28,7 +28,7 @@ public class ChatRealm extends RealmObject implements MessageRealmInterface {
     private boolean to_group = false;
     private @MessageStatus.Status String messageStatus;
     private Date updated_at;
-    private RealmList<TribeRecipientRealm> recipientList;
+    private RealmList<MessageRecipientRealm> recipientList;
 
     public void setId(String id) {
         this.id = id;
@@ -112,11 +112,11 @@ public class ChatRealm extends RealmObject implements MessageRealmInterface {
         this.updated_at = updatedAt;
     }
 
-    public void setRecipientList(RealmList<TribeRecipientRealm> recipientList) {
+    public void setRecipientList(RealmList<MessageRecipientRealm> recipientList) {
         this.recipientList = recipientList;
     }
 
-    public RealmList<TribeRecipientRealm> getRecipientList() {
+    public RealmList<MessageRecipientRealm> getRecipientList() {
         return recipientList;
     }
 
