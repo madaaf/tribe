@@ -11,7 +11,9 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 /**
+ * TextFriendsView.java
  * Created by horatiothomas on 8/18/16.
+ * Component used in AccessFragment to create the view that a user can tap on to invite their friends to Tribe.
  */
 public class TextFriendsView extends FrameLayout {
     public TextFriendsView(Context context) {
@@ -39,6 +41,12 @@ public class TextFriendsView extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.view_text_friends, this);
         unbinder = ButterKnife.bind(this);
 
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        unbinder.unbind();
+        super.onDetachedFromWindow();
     }
 
 }

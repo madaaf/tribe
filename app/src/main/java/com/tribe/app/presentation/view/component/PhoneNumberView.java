@@ -15,8 +15,6 @@ import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
-import com.tribe.app.presentation.view.widget.TextViewFont;
-
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -27,8 +25,13 @@ import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 
 /**
+ * PhoneNumberView.java
  * Created by tiago on 10/06/2016.
+ * Last modified by Horatio
+ * Component used in IntroViewFragment.java for a user to input their phone number, country code, and verify that it is a valid phone number.
  */
+
+// TODO: fix loading view size
 public class PhoneNumberView extends FrameLayout {
 
     @BindView(R.id.editTextPhoneNumber)

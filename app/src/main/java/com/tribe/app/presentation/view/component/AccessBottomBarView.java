@@ -15,7 +15,9 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 /**
+ * AccessBottomBarView.java
  * Created by horatiothomas on 8/19/16.
+ * Component used in AccessFragment.java to create bottom bar
  */
 public class AccessBottomBarView extends FrameLayout {
     public AccessBottomBarView(Context context) {
@@ -34,6 +36,10 @@ public class AccessBottomBarView extends FrameLayout {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
+    /**
+     * Globals
+     */
+
     Unbinder unbinder;
 
     @BindView(R.id.imgRedFb)
@@ -41,6 +47,10 @@ public class AccessBottomBarView extends FrameLayout {
 
     @BindView(R.id.txtAccessTry)
     TextViewFont txtAccessTry;
+
+    /**
+     * Lifecycle methods
+     */
 
     @Override
     protected void onFinishInflate() {
@@ -50,6 +60,16 @@ public class AccessBottomBarView extends FrameLayout {
         unbinder = ButterKnife.bind(this);
 
     }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        unbinder.unbind();
+        super.onDetachedFromWindow();
+    }
+
+    /**
+     * Public modify view methods
+     */
 
     public TextViewFont getTxtAccessTry() {
         return txtAccessTry;

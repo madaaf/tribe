@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,9 +28,6 @@ import com.tribe.app.presentation.view.widget.CustomViewPager;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.inject.Inject;
 
 import butterknife.BindView;
@@ -40,7 +36,12 @@ import butterknife.Unbinder;
 import rx.subscriptions.CompositeSubscription;
 
 /**
+ * IntroViewFragment.java
  * Created by horatiothomas on 8/17/16.
+ * The first fragment of the view pager from IntroActivity.java.
+ * This fragment contains the intro video and the view pager that goes through
+ * the process of capturing the users phone number, sending, and validating their pin code.
+ * Next fragment in onboarding view pager is ProfileInfoFragment.
  */
 public class IntroViewFragment extends Fragment implements IntroView {
 
@@ -52,6 +53,10 @@ public class IntroViewFragment extends Fragment implements IntroView {
         fragment.setArguments(args);
         return fragment;
     }
+
+    /**
+     * Globals
+     */
 
     @Inject
     IntroPresenter introPresenter;
@@ -91,6 +96,9 @@ public class IntroViewFragment extends Fragment implements IntroView {
     // TODO: remove when threading is removed
     private boolean isActive = false;
 
+    /**
+     * Lifecycle methods
+     */
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -118,6 +126,10 @@ public class IntroViewFragment extends Fragment implements IntroView {
         super.onDestroy();
     }
 
+    /**
+     * View Initialization methods
+     */
+
     private void initUi(View view) {
         unbinder = ButterKnife.bind(this, view);
 
@@ -133,6 +145,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
 
         subscriptions.add(viewCode.codeValid().subscribe(isValid -> {
             if (isValid) {
+                // TODO: replace with valid networking code when UI is complete
 //                this.code = viewCode.getCode();
 //                introPresenter.login(phoneNumber, code, pin.getPinId());
                 introPresenter.login("", "", "");
@@ -176,6 +189,11 @@ public class IntroViewFragment extends Fragment implements IntroView {
     private void initPresenter() {
         introPresenter.attachView(this);
     }
+
+    /**
+     * Initialize View Pager Adapter
+     * Used for bottom bar navigation
+     */
 
     private class IntroViewFragmentPagerAdapter extends PagerAdapter {
 
@@ -221,14 +239,9 @@ public class IntroViewFragment extends Fragment implements IntroView {
         }
     }
 
-    public void hideKeyboard() {
-        View view = getActivity().getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-    }
-
+    /**
+     * Navigation methods
+     */
 
     @Override
     public void goToCode() {
@@ -253,7 +266,8 @@ public class IntroViewFragment extends Fragment implements IntroView {
         viewPager.setCurrentItem(PAGE_CONNECTED, true);
 
         // TODO: get user info and check if they have a picture
-        isActive =true;
+        // TODO: view code in camerawrapper for rxjava example observable.timer
+        isActive = true;
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -273,10 +287,15 @@ public class IntroViewFragment extends Fragment implements IntroView {
         navigator.navigateToProfileInfo(context());
     }
 
+
     @Override
     public void goToAccess() {
-
+        // TODO: figure out if needed
     }
+
+    /**
+     * Manage view pager transition methods
+     */
 
     @Override
     public void showLoading() {
@@ -334,6 +353,18 @@ public class IntroViewFragment extends Fragment implements IntroView {
                 .activityModule(getActivityModule())
                 .applicationComponent(getApplicationComponent())
                 .build().inject(this);
+    }
+
+    /**
+     * Util methods
+     */
+
+    public void hideKeyboard() {
+        View view = getActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
 

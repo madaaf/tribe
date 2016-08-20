@@ -21,7 +21,11 @@ import butterknife.Unbinder;
 import rx.subscriptions.CompositeSubscription;
 
 /**
+ * ProfileInfoFragment.java
  * Created by horatiothomas on 8/18/16.
+ * Second fragment in onboarding process.
+ * Responsible for collecting user's profile picture, name, and username.
+ * Has ability to retrieve this information from Facebook.
  */
 public class ProfileInfoFragment extends Fragment {
 
@@ -33,6 +37,10 @@ public class ProfileInfoFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
+    /**
+     * Globals
+     */
 
     @BindView(R.id.imgProfilePic)
     ImageView imgProfilePic;
@@ -58,6 +66,9 @@ public class ProfileInfoFragment extends Fragment {
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
+    /**
+     * View Lifecycle
+     */
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -66,15 +77,6 @@ public class ProfileInfoFragment extends Fragment {
         initUi(fragmentView);
 
         return  fragmentView;
-    }
-
-    public void initUi(View view) {
-        unbinder = ButterKnife.bind(this, view);
-
-        subscriptions.add(RxView.clicks(imgNextIcon).subscribe(aVoid -> {
-            ((IntroActivity) getActivity()).goToAccess();
-        }));
-
     }
 
     @Override
@@ -88,4 +90,19 @@ public class ProfileInfoFragment extends Fragment {
 
         super.onDestroy();
     }
+
+    /**
+     * View initialization
+     */
+
+    public void initUi(View view) {
+        unbinder = ButterKnife.bind(this, view);
+
+        subscriptions.add(RxView.clicks(imgNextIcon).subscribe(aVoid -> {
+            ((IntroActivity) getActivity()).goToAccess();
+        }));
+
+    }
+
+
 }

@@ -5,19 +5,14 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
@@ -32,7 +27,11 @@ import butterknife.Unbinder;
 import rx.subscriptions.CompositeSubscription;
 
 /**
+ * AccessFragment.java
  * Created by horatiothomas on 8/18/16.
+ * Third and final fragment in onboarding fragment view pager.
+ * Responsible for making sure user has enough friends on tribe before giving them access to the app.
+ * A lot of fancy UI stuff going on here.
  */
 public class AccessFragment extends Fragment {
 
@@ -44,6 +43,10 @@ public class AccessFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
+    /**
+     * Globals
+     */
 
     @BindView(R.id.txtAccessTitle)
     TextViewFont txtAccessTitle;
@@ -75,6 +78,10 @@ public class AccessFragment extends Fragment {
     private boolean isActive = false;
     private boolean isActive2 = false;
 
+    /**
+     * View Lifecycle
+     */
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View fragmentView = inflater.inflate(R.layout.fragment_access, container, false);
@@ -100,12 +107,16 @@ public class AccessFragment extends Fragment {
         super.onDestroy();
     }
 
+    /**
+     * Initialize Views
+     */
+
     private void initUi(View view) {
         unbinder = ButterKnife.bind(this, view);
         context = getActivity();
 
         subscriptions.add(RxView.clicks(accessBottomBarView.getTxtAccessTry()).subscribe(aVoid -> {
-            isActive = false;
+            isActive2 = false;
             switch (viewState) {
                 case STATE_GET_ACCESS:
                     goToHangTight();
@@ -126,16 +137,13 @@ public class AccessFragment extends Fragment {
             }
         }));
 
-
     }
 
-    private void cleanUpSorry() {
-        accessBottomBarView.setImgRedFbVisibility(false);
-        textFriendsView.setVisibility(View.INVISIBLE);
 
-        setBottomMargin(txtAccessDesc, 112);
 
-    }
+    /**
+     * Navigation methods
+     */
 
     private void goToAccess() {
         viewState = STATE_GET_ACCESS;
@@ -146,7 +154,6 @@ public class AccessFragment extends Fragment {
                 R.color.blue_text);
         accessLockView.setToAccess();
     }
-
 
     private void goToHangTight() {
         viewState = STATE_HANG_TIGHT;
@@ -249,6 +256,18 @@ public class AccessFragment extends Fragment {
     }
 
     private void goToHome() {
+
+    }
+
+    /**
+     * Utils
+     */
+
+    private void cleanUpSorry() {
+        accessBottomBarView.setImgRedFbVisibility(false);
+        textFriendsView.setVisibility(View.INVISIBLE);
+
+        setBottomMargin(txtAccessDesc, 112);
 
     }
 

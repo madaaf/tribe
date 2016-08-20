@@ -21,13 +21,17 @@ import rx.Observable;
 import rx.subjects.PublishSubject;
 
 /**
+ * CodeView.java
  * Created by tiago on 10/06/2016.
+ * Last Modified by Horatio.
+ * Component used in View Pager in IntroViewFragment.java for a user to input their verification code.
  */
 public class CodeView extends FrameLayout {
 
     @BindView(R.id.editTextCode)
     EditTextFont editTextCode;
 
+    // TODO: fix size and add sleeper handler
     @BindView(R.id.circularProgressViewCode)
     CircularProgressView circularProgressViewCode;
 
@@ -55,6 +59,10 @@ public class CodeView extends FrameLayout {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
+    /**
+     * Lifecycle methods
+     */
+
     @Override
     protected void onDetachedFromWindow() {
         unbinder.unbind();
@@ -75,16 +83,21 @@ public class CodeView extends FrameLayout {
                 .subscribe(codeValid);
     }
 
-    public String getCode() {
-        return editTextCode.getText().toString();
-    }
+    /**
+     * Obeservable
+     */
 
     public Observable<Boolean> codeValid() {
         return codeValid;
     }
 
+    /**
+     * Public view methods
+     */
 
-
+    public String getCode() {
+        return editTextCode.getText().toString();
+    }
 
     public void progressViewVisible(boolean visible) {
         if (visible) {

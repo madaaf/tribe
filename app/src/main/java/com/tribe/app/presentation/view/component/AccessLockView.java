@@ -12,7 +12,9 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 /**
+ * AccessLockView.java
  * Created by horatiothomas on 8/18/16.
+ * Component used in AccessFragment.java to create the lock view with animations
  */
 public class AccessLockView extends FrameLayout {
     public AccessLockView(Context context) {
@@ -33,6 +35,10 @@ public class AccessLockView extends FrameLayout {
 
     Unbinder unbinder;
 
+    /**
+     * Lifecycle methods
+     */
+
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -41,6 +47,16 @@ public class AccessLockView extends FrameLayout {
         unbinder = ButterKnife.bind(this);
 
     }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        unbinder.unbind();
+        super.onDetachedFromWindow();
+    }
+
+    /**
+     * Modify view methods
+     */
 
     public void setToAccess() {
 //        viewState = STATE_GET_ACCESS;

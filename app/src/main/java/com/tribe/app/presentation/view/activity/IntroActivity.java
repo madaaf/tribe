@@ -20,25 +20,33 @@ import com.tribe.app.presentation.view.fragment.IntroViewFragment;
 import com.tribe.app.presentation.view.fragment.ProfileInfoFragment;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
 
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 import rx.subscriptions.CompositeSubscription;
 
+/**
+ * IntroActivity.java
+ * This is the first activity when app is launched for the first time.
+ * Consists of a fragment view pager that is used throughout the onboarding process.
+ * The first fragment in the view pager is IntroViewFragment.java
+ */
+
+// TODO: fix keyboard overlapping issue
 public class IntroActivity extends BaseActivity {
 
     public static Intent getCallingIntent(Context context) {
         return new Intent(context, IntroActivity.class);
     }
 
+    /**
+     * Globals
+     */
+
     private static final int PAGE_INTRO = 0;
     private static final int PAGE_PROFILE_INFO = 1;
     private static final int PAGE_ACCESS = 2;
-
-    @BindView(R.id.viewPager)
-    CustomViewPager viewPager;
 
     private IntroViewFragment introViewFragment;
     private ProfileInfoFragment profileInfoFragment;
@@ -49,7 +57,12 @@ public class IntroActivity extends BaseActivity {
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
+    @BindView(R.id.viewPager)
+    CustomViewPager viewPager;
 
+    /**
+     * Lifecycle methods
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +71,32 @@ public class IntroActivity extends BaseActivity {
         initViewPager();
         initDependencyInjector();
     }
+
+    @Override
+    protected void onDestroy() {
+        unbinder.unbind();
+
+        if (subscriptions.hasSubscriptions()) {
+            subscriptions.unsubscribe();
+            subscriptions.clear();
+        }
+
+        super.onDestroy();
+    }
+
+    // TODO: Fix this
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == Navigator.REQUEST_COUNTRY && resultCode == Activity.RESULT_OK) {
+            introViewFragment.initPhoneNumberViewWithCountryCode(data.getStringExtra(Extras.COUNTRY_CODE));
+        }
+    }
+
+    /**
+     * View Initialization methods
+     */
 
     private void initUi() {
         setContentView(R.layout.activity_intro);
@@ -75,6 +114,10 @@ public class IntroActivity extends BaseActivity {
         viewPager.setSwipeable(false);
     }
 
+    /**
+     * Navigation methods
+     */
+
     public void goToProfileInfo() {
         viewPager.setCurrentItem(PAGE_PROFILE_INFO);
     }
@@ -83,36 +126,9 @@ public class IntroActivity extends BaseActivity {
         viewPager.setCurrentItem(PAGE_ACCESS);
     }
 
-
-    // TODO: Fix this
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == Navigator.REQUEST_COUNTRY && resultCode == Activity.RESULT_OK) {
-            introViewFragment.initPhoneNumberViewWithCountryCode(data.getStringExtra(Extras.COUNTRY_CODE));
-        }
-    }
-
-
-    @Override
-    protected void onDestroy() {
-        unbinder.unbind();
-
-        if (subscriptions.hasSubscriptions()) {
-            subscriptions.unsubscribe();
-            subscriptions.clear();
-        }
-
-        super.onDestroy();
-    }
-
-    private void initDependencyInjector() {
-        DaggerUserComponent.builder()
-                .activityModule(getActivityModule())
-                .applicationComponent(getApplicationComponent())
-                .build().inject(this);
-    }
+    /**
+     * Initialize fragment view pager adapter
+     */
 
     private class IntroViewPagerAdapter extends FragmentPagerAdapter {
 
@@ -155,9 +171,15 @@ public class IntroActivity extends BaseActivity {
         }
     }
 
+    /**
+     * Dagger setup
+     */
 
-
-
-
+    private void initDependencyInjector() {
+        DaggerUserComponent.builder()
+                .activityModule(getActivityModule())
+                .applicationComponent(getApplicationComponent())
+                .build().inject(this);
+    }
 
 }

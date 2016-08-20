@@ -35,12 +35,18 @@ import rx.Subscription;
 
 /**
  * Created by tiago on 10/06/2016.
+ * Last Modified by Horatio
+ * Activity used for a user to select their country when inputting their phone number in the IntroViewFragment.
  */
 public class CountryActivity extends BaseActivity {
 
     public static Intent getCallingIntent(Context context) {
         return new Intent(context, CountryActivity.class);
     }
+
+    /**
+     * Globals
+     */
 
     @Inject
     CountryPhoneNumberAdapter countryAdapter;
@@ -59,6 +65,10 @@ public class CountryActivity extends BaseActivity {
 
     private Unbinder unbinder;
     private Subscription subscription;
+
+    /**
+     * Lifecycle methods
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +93,10 @@ public class CountryActivity extends BaseActivity {
         setContentView(R.layout.activity_country);
         unbinder = ButterKnife.bind(this);
     }
+
+    /**
+     * Initialize view methods
+     */
 
     public void initCountryList() {
         List<String> listCodeCountry = new ArrayList<>(phoneUtils.getSupportedRegions());
@@ -129,14 +143,10 @@ public class CountryActivity extends BaseActivity {
         });
     }
 
-    private void initDependencyInjector() {
-        DaggerUserComponent.builder()
-                .applicationComponent(getApplicationComponent())
-                .activityModule(getActivityModule())
-                .build()
-                .inject(this);
-    }
-
+    /**
+     * Method used for search. Takes in a string parameter and updates recycler view accordingly.
+     * @param text
+     */
 
     private void filter(String text) {
         if(text.isEmpty()){
@@ -154,5 +164,17 @@ public class CountryActivity extends BaseActivity {
             listCountry.addAll(result);
         }
         countryAdapter.setItems(listCountry);
+    }
+
+    /**
+     * Dagger Setup
+     */
+
+    private void initDependencyInjector() {
+        DaggerUserComponent.builder()
+                .applicationComponent(getApplicationComponent())
+                .activityModule(getActivityModule())
+                .build()
+                .inject(this);
     }
 }
