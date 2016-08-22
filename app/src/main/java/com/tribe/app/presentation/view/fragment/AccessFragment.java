@@ -141,19 +141,35 @@ public class AccessFragment extends Fragment {
     }
 
 
-
     /**
      * Navigation methods
      */
 
     private void goToAccess() {
         viewState = STATE_GET_ACCESS;
-        changeBaseView(getString(R.string.access_get_access_now),
-                android.R.color.black,
-                getString(R.string.access_a_friend_from_your_address_book_has_to_be_there_to_enter),
-                getString(R.string.access_try_to_enter),
-                R.color.blue_text);
-        accessLockView.setToAccess();
+
+        isActive = true;
+        accessBottomBarView.animate()
+                .translationY(accessBottomBarView.getHeight())
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        if (isActive) {
+                            isActive = false;
+
+                            changeBaseView(getString(R.string.access_get_access_now),
+                                    android.R.color.black,
+                                    getString(R.string.access_a_friend_from_your_address_book_has_to_be_there_to_enter),
+                                    getString(R.string.access_try_to_enter),
+                                    R.color.blue_text);
+                            accessLockView.setToAccess();
+
+                            accessBottomBarView.animate()
+                                    .translationY(0);
+                        }
+                    }
+                });
     }
 
     private void goToHangTight() {
@@ -173,7 +189,7 @@ public class AccessFragment extends Fragment {
                                     getString(R.string.access_looking_for_your_contacts),
                                     getString(R.string.access_cancel),
                                     R.color.grey_dark);
-                            accessLockView.setToHangTight();
+                            accessLockView.setToHangTight(2);
                             accessBottomBarView.animate()
                                     .translationY(0);
 
@@ -250,6 +266,7 @@ public class AccessFragment extends Fragment {
                                     getString(R.string.access_congrats_desc, "3"),
                                     getString(R.string.access_enter_now),
                                     R.color.blue_text);
+                            accessLockView.setToCongrats();
 
                             accessBottomBarView.animate()
                                     .translationY(0);
@@ -295,8 +312,6 @@ public class AccessFragment extends Fragment {
         GetNotifiedDialogFragment getNotifiedDialogFragment = GetNotifiedDialogFragment.newInstance();
         getNotifiedDialogFragment.show(getFragmentManager(), GetNotifiedDialogFragment.class.getName());
     }
-
-
 
 
 }

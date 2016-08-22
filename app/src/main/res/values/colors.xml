@@ -42,6 +42,7 @@
     <color name="grey.text.profile_info">#949494</color>
     <color name="grey.text.friends_verify">#999999</color>
     <color name="grey.dark">#4A4A4A</color>
+    <color name="grey.circle">#F6F6F6</color>
 
     <!-- BLUE -->
     <color name="blue.text">#02ADF2</color>
