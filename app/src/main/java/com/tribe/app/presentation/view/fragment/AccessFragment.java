@@ -19,6 +19,7 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.view.component.AccessBottomBarView;
 import com.tribe.app.presentation.view.component.AccessLockView;
 import com.tribe.app.presentation.view.component.TextFriendsView;
+import com.tribe.app.presentation.view.dialog_fragment.GetNotifiedDialogFragment;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import butterknife.BindView;
@@ -224,6 +225,8 @@ public class AccessFragment extends Fragment {
 
                             accessBottomBarView.animate()
                                     .translationY(0);
+
+                            showGetNotifiedDialog();
                         }
                     }
                 });
@@ -286,6 +289,11 @@ public class AccessFragment extends Fragment {
         ViewGroup.MarginLayoutParams viewLayoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         viewLayoutParams.bottomMargin = (int) (margin * d);
         view.requestLayout();
+    }
+
+    private void showGetNotifiedDialog() {
+        GetNotifiedDialogFragment getNotifiedDialogFragment = GetNotifiedDialogFragment.newInstance();
+        getNotifiedDialogFragment.show(getFragmentManager(), GetNotifiedDialogFragment.class.getName());
     }
 
 

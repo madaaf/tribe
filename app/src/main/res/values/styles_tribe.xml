@@ -128,6 +128,10 @@
         <item name="android:textColor">@android:color/black</item>
     </style>
 
+    <style name="Headline.Black.1" parent="@style/Headline.Black">
+        <item name="customFont">Roboto-Bold.ttf</item>
+    </style>
+
     <style name="Headline.Black.40" parent="Headline">
         <item name="android:textColor">@color/black.opacity.40</item>
     </style>
