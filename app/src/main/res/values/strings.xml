@@ -22,17 +22,14 @@
 
     <!-- TRIBE -->
     <string name="Tribe.Swipe.Down">Swipe down to dismiss</string>
-    <string name="Tribe.Swipe.Up">Swipe up to reply</string>
-    <string name="Tribe.Back">Back to message</string>
     <string name="Tribe.Snooze.Snooze">Snooze it</string>
     <string name="Tribe.Snooze.Later">Later</string>
     <string name="Tribe.Snooze.Tomorrow">Tomorrow</string>
     <string name="Tribe.Snooze.Weekend">This weekend</string>
     <string name="Tribe.Snooze.Next">Next week</string>
     <string name="Tribe.Reply.Hint">Tap and hold to reply</string>
-    <string name="Tribe.Speed">%1$sx</string>
     <string name="tribe_distance_nearby">Nearby</string>
-    <string name="tribe_distance_enable">Tap to enable "Distance"</string>
+    <string name="tribe_distance_enable">Get distance</string>
     <string name="grid_unsent_tribes_action_resend">Resend (%1$d)</string>
     <string name="grid_unsent_tribes_action_delete">Delete (%1$d)</string>
     <string name="grid_unsent_tribes_action_resend_name">Resend %1$s (%2$d)</string>

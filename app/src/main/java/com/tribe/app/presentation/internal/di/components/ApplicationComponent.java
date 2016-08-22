@@ -40,10 +40,12 @@ import com.tribe.app.presentation.view.adapter.delegate.text.TutorialMessageAdap
 import com.tribe.app.presentation.view.camera.view.HistogramVisualizerView;
 import com.tribe.app.presentation.view.component.TribeComponentView;
 import com.tribe.app.presentation.view.component.TribePagerView;
+import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
+import com.tribe.app.presentation.view.widget.LabelButton;
 import com.tribe.app.presentation.view.widget.PathView;
 import com.tribe.app.presentation.view.widget.PlayerView;
 
@@ -88,6 +90,7 @@ public interface ApplicationComponent {
     void inject(TutorialMessageAdapterDelegate tutorialMessageAdapterDelegate);
     void inject(SendChatJob sendChatJob);
     void inject(MarkMessageListAsReadJob markMessageListAsReadJob);
+    void inject(LabelButton labelButton);
 
     //Exposed to sub-graphs.
     Context context();
@@ -137,4 +140,6 @@ public interface ApplicationComponent {
     @Named("fullLetteredDate") DateFormat fullLetteredDate();
 
     DateUtils dateUtils();
+
+    PaletteGrid paletteGrid();
 }

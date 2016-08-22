@@ -24,6 +24,7 @@ import com.tribe.app.data.repository.tribe.CloudTribeDataRepository;
 import com.tribe.app.data.repository.tribe.DiskTribeDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.data.repository.user.DiskUserDataRepository;
+import com.tribe.app.domain.entity.Location;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
@@ -192,6 +193,10 @@ public class ApplicationModule {
         final UserRealm userRealm = realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
         if (userRealm != null)
             user = userRealmDataMapper.transform(realm.copyFromRealm(userRealm));
+
+        Location location = new Location(3.8D, 50.0D);
+        location.setHasLocation(true);
+        user.setLocation(location);
 
         return user;
     }

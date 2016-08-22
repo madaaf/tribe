@@ -22,4 +22,13 @@
     <declare-styleable name="PictoVisualizerView">
         <attr name="picto" format="integer"></attr>
     </declare-styleable>
+
+    <declare-styleable name="LabelButton">
+        <attr name="drawable" format="integer"></attr>
+        <attr name="type" format="enum">
+            <enum name="infos" value="0" />
+            <enum name="action" value="1" />
+        </attr>
+        <attr name="label" format="string" />
+    </declare-styleable>
 </resources>

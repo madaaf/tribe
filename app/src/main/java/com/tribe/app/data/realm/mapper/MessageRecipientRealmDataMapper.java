@@ -70,11 +70,13 @@ public class MessageRecipientRealmDataMapper {
         RealmList<MessageRecipientRealm> messageRecipientRealmList = new RealmList<>();
         MessageRecipientRealm messageRecipientRealm;
 
-        for (MessageRecipient messageRecipient : messageRecipientList) {
-            messageRecipientRealm = transform(messageRecipient);
+        if (messageRecipientList != null) {
+            for (MessageRecipient messageRecipient : messageRecipientList) {
+                messageRecipientRealm = transform(messageRecipient);
 
-            if (messageRecipientRealm != null) {
-                messageRecipientRealmList.add(messageRecipientRealm);
+                if (messageRecipientRealm != null) {
+                    messageRecipientRealmList.add(messageRecipientRealm);
+                }
             }
         }
 
@@ -91,11 +93,13 @@ public class MessageRecipientRealmDataMapper {
         List<MessageRecipient> messageRecipientList = new ArrayList<>();
         MessageRecipient messageRecipient;
 
-        for (MessageRecipientRealm messageRecipientRealm : messageRecipientRealmList) {
-            messageRecipient = transform(messageRecipientRealm);
+        if (messageRecipientRealmList != null) {
+            for (MessageRecipientRealm messageRecipientRealm : messageRecipientRealmList) {
+                messageRecipient = transform(messageRecipientRealm);
 
-            if (messageRecipient != null) {
-                messageRecipientList.add(messageRecipient);
+                if (messageRecipient != null) {
+                    messageRecipientList.add(messageRecipient);
+                }
             }
         }
 

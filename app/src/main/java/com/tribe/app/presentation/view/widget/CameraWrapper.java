@@ -80,6 +80,7 @@ public class CameraWrapper extends FrameLayout {
     private double aspectRatio;
     private boolean isAudioMode;
     private PathView pathView;
+    private boolean canMove = true;
 
     // RESOURCES
     private int marginTopInit, marginLeftInit, marginBottomInit, marginVerticalIcons, marginHorizontalIcons, diffTouch;
@@ -98,13 +99,14 @@ public class CameraWrapper extends FrameLayout {
         initUI();
     }
 
-    public void initDimens(int marginTopInit, int marginLeftInit, int marginBottomInit) {
+    public void initDimens(int marginTopInit, int marginLeftInit, int marginBottomInit, boolean canMove) {
         this.marginTopInit = marginTopInit;
         this.marginLeftInit = marginLeftInit;
         this.marginBottomInit = marginBottomInit;
         marginHorizontalIcons = getContext().getResources().getDimensionPixelOffset(R.dimen.horizontal_margin);
         marginVerticalIcons = getContext().getResources().getDimensionPixelOffset(R.dimen.vertical_margin);
         diffTouch = screenUtils.dpToPx(DIFF_TOUCH);
+        this.canMove = canMove;
     }
 
     public void initUI() {
@@ -195,12 +197,16 @@ public class CameraWrapper extends FrameLayout {
     public void setMargins() {
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) getLayoutParams();
         layoutParams.leftMargin = marginLeftInit;
-        layoutParams.topMargin = ((View) getParent()).getHeight() - getMeasuredHeight() - marginBottomInit;
+        layoutParams.topMargin = marginTopInit;
         setLayoutParams(layoutParams);
     }
 
     public int getHeightFromRatio() {
         return (int) (screenUtils.getWidth() / RATIO * aspectRatio);
+    }
+
+    public int getWidthFromRatio() {
+        return (int) (screenUtils.getWidth() / RATIO);
     }
 
     @Override
@@ -235,7 +241,8 @@ public class CameraWrapper extends FrameLayout {
                     cameraView.switchCamera();
                 }
 
-                snapCamera();
+                if (canMove)
+                    snapCamera();
                 break;
 
             case MotionEvent.ACTION_POINTER_DOWN:
@@ -245,10 +252,12 @@ public class CameraWrapper extends FrameLayout {
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                layoutParams.leftMargin = touchX - xDelta;
-                layoutParams.topMargin = touchY - yDelta;
-                setLayoutParams(layoutParams);
-                invalidate();
+                if (canMove) {
+                    layoutParams.leftMargin = touchX - xDelta;
+                    layoutParams.topMargin = touchY - yDelta;
+                    setLayoutParams(layoutParams);
+                    invalidate();
+                }
 
                 break;
         }

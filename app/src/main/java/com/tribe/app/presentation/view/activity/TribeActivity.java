@@ -39,6 +39,9 @@ public class TribeActivity extends BaseActivity implements TribeView {
     @Inject
     TribePresenter tribePresenter;
 
+    @Inject
+    PaletteGrid paletteGrid;
+
     @BindView(R.id.viewTribePager)
     TribePagerView viewTribePager;
 
@@ -146,7 +149,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
         subscriptions.add(viewTribePager.onNotCancel()
                 .subscribe(friendship -> {
-                    tribePresenter.sendTribe(currentTribe);
+                    //tribePresenter.sendTribe(currentTribe);
                     currentTribe = null;
                 }));
 

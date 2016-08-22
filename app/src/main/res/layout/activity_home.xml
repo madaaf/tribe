@@ -74,7 +74,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    style="@style/Headline.White.1"
+                    style="@style/Headline.White.2"
                     />
 
                 <com.github.rahatarmanahmed.cpv.CircularProgressView
@@ -119,7 +119,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
-                style="@style/Headline.White.1"
+                style="@style/Headline.White.2"
                 />
 
             <com.github.rahatarmanahmed.cpv.CircularProgressView

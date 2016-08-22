@@ -1,0 +1,327 @@
+---- AspectJ Properties ---
+AspectJ Compiler 1.8.6 built on Friday Jun 5, 2015 at 23:41:42 GMT
+---- Dump Properties ---
+Dump file: ajcore.20160819.164819.233.txt
+Dump reason: java.lang.OutOfMemoryError
+Dump on exception: true
+Dump at exit condition: abort
+---- Exception Information ---
+java.lang.OutOfMemoryError: GC overhead limit exceeded
+	at org.aspectj.apache.bcel.classfile.ClassParser.readMethods(ClassParser.java:240)
+	at org.aspectj.apache.bcel.classfile.ClassParser.parse(ClassParser.java:144)
+	at org.aspectj.weaver.bcel.Utility.makeJavaClass(Utility.java:467)
+	at org.aspectj.weaver.bcel.UnwovenClassFile.getJavaClass(UnwovenClassFile.java:68)
+	at org.aspectj.weaver.bcel.UnwovenClassFile.getClassName(UnwovenClassFile.java:149)
+	at org.aspectj.weaver.bcel.BcelWeaver.prepareForWeave(BcelWeaver.java:504)
+	at org.aspectj.ajdt.internal.compiler.AjPipeliningCompilerAdapter.ensureWeaverInitialized(AjPipeliningCompilerAdapter.java:529)
+	at org.aspectj.ajdt.internal.compiler.AjPipeliningCompilerAdapter.weaveQueuedEntries(AjPipeliningCompilerAdapter.java:509)
+	at org.aspectj.ajdt.internal.compiler.AjPipeliningCompilerAdapter.afterCompiling(AjPipeliningCompilerAdapter.java:375)
+	at org.aspectj.ajdt.internal.compiler.CompilerAdapter.ajc$afterReturning$org_aspectj_ajdt_internal_compiler_CompilerAdapter$2$f9cc9ca0(CompilerAdapter.aj:78)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.compile(Compiler.java:421)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.performCompilation(AjBuildManager.java:1036)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.performBuild(AjBuildManager.java:272)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.batchBuild(AjBuildManager.java:185)
+	at org.aspectj.ajdt.ajc.AjdtCommand.doCommand(AjdtCommand.java:112)
+	at org.aspectj.ajdt.ajc.AjdtCommand.runCommand(AjdtCommand.java:60)
+	at org.aspectj.tools.ajc.Main.run(Main.java:371)
+	at org.aspectj.tools.ajc.Main$run.call(Unknown Source)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:48)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:113)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:133)
+	at com.fernandocejas.frodo.plugin.FrodoPlugin$_apply_closure4_closure5.doCall(FrodoPlugin.groovy:50)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:93)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:325)
+	at org.codehaus.groovy.runtime.metaclass.ClosureMetaClass.invokeMethod(ClosureMetaClass.java:294)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1019)
+	at groovy.lang.Closure.call(Closure.java:426)
+	at groovy.lang.Closure.call(Closure.java:442)
+---- System Properties ---
+java.vendor=Oracle Corporation
+com.apple.mrj.application.live-resize=false
+sun.java.launcher=SUN_STANDARD
+idea.executable=studio
+sun.management.compiler=HotSpot 64-Bit Tiered Compilers
+idea.paths.selector=AndroidStudio2.1
+jnidispatch.path=/Users/tiago/Library/Caches/AndroidStudio2.1/tmp/jna-110353012/jna4651599822334519606.tmp
+os.name=Mac OS X
+sun.boot.class.path=/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/sunrsasign.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/classes
+java.vm.specification.vendor=Oracle Corporation
+java.runtime.version=1.8.0_91-b14
+jb.vmOptionsFile=/Applications/Android Studio.app/Contents/bin/studio.vmoptions,/Users/tiago/Library/Preferences/AndroidStudio2.1/studio.vmoptions
+idea.java.redist=NoJavaDistribution
+user.name=tiago
+java.rmi.server.disableHttp=true
+idea.use.default.antialiasing.in.editor=false
+idea.home.path=/Applications/Android Studio.app/Contents
+http.keepAlive=true
+svnkit.http.methods=Basic,Digest,NTLM
+user.language=fr
+sun.boot.library.path=/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib
+jna.nosys=true
+idea.fatal.error.notification=disabled
+swing.bufferPerWindow=false
+CVS_PASSFILE=~/.cvspass
+java.version=1.8.0_91
+java.net.preferIPv4Stack=true
+user.timezone=America/Los_Angeles
+sun.arch.data.model=64
+http.nonProxyHosts=local|*.local|169.254/16|*.169.254/16
+java.endorsed.dirs=/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/endorsed
+sun.cpu.isalist=
+sun.jnu.encoding=UTF-8
+file.encoding.pkg=sun.io
+file.separator=/
+java.specification.name=Java Platform API Specification
+java.class.version=52.0
+user.country=FR
+jna.boot.library.path=
+java.home=/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre
+java.vm.info=mixed mode
+jna.debug_load=true
+os.version=10.11.1
+path.separator=:
+java.vm.version=25.91-b14
+idea.smooth.progress=false
+jna.debug_load.jna=true
+idea.no.launcher=false
+user.variant=
+java.awt.printerjob=sun.lwawt.macosx.CPrinterJob
+sun.io.unicode.encoding=UnicodeBig
+idea.cycle.buffer.size=1024
+awt.toolkit=sun.lwawt.macosx.LWCToolkit
+ide.new.welcome.screen.force=true
+socksNonProxyHosts=local|*.local|169.254/16|*.169.254/16
+log4j.defaultInitOverride=true
+ftp.nonProxyHosts=local|*.local|169.254/16|*.169.254/16
+io.netty.processId=3068
+idea.platform.prefix=AndroidStudio
+idea.dynamic.classpath=false
+user.home=/Users/tiago
+__idea.mac.env.lock=unlocked
+java.specification.vendor=Oracle Corporation
+apple.laf.useScreenMenuBar=true
+jna.encoding=UTF8
+java.library.path=/Users/tiago/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:.
+java.vendor.url=http://java.oracle.com/
+java.vm.vendor=Oracle Corporation
+gopherProxySet=false
+external.system.remote.process.idle.ttl.ms=-1
+java.runtime.name=Java(TM) SE Runtime Environment
+sun.java.command=org.gradle.launcher.daemon.bootstrap.GradleDaemon 2.10
+java.class.path=/Users/tiago/Dev/gradle/wrapper/dists/gradle-2.10-all/a4w5fzrkeut1ox71xslb49gst/gradle-2.10/lib/gradle-launcher-2.10.jar
+io.netty.machineId=9e43d860
+java.vm.specification.name=Java Virtual Machine Specification
+idea.xdebug.key=-Xdebug
+java.vm.specification.version=1.8
+idea.popup.weight=heavy
+sun.cpu.endian=little
+sun.os.patch.level=unknown
+java.io.tmpdir=/var/folders/h1/qnqh09_d0kq5xvy7b2g2ylbc0000gn/T/
+java.vendor.url.bug=http://bugreport.sun.com/bugreport/
+svnkit.log.native.calls=true
+java.rmi.server.hostname=localhost
+jna.platform.library.path=/usr/lib:/usr/lib
+os.arch=x86_64
+java.awt.graphicsenv=sun.awt.CGraphicsEnvironment
+idea.max.intellisense.filesize=2500
+java.ext.dirs=/Users/tiago/Library/Java/Extensions:/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/ext:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java
+user.dir=/Users/tiago/Dev/Tribe2
+line.separator=
+
+java.vm.name=Java HotSpot(TM) 64-Bit Server VM
+file.encoding=UTF-8
+studio.record.file=/Users/tiago/Library/Caches/AndroidStudio2.1/tmp/AndroidStudio.ea7d9491-7339-4d47-b9cd-e23f460c1429
+java.specification.version=1.8
+---- Command Line ---
+-showWeaveInfo
+-1.5
+-inpath
+/Users/tiago/Dev/Tribe2/app/build/retrolambda/debug
+-aspectpath
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.birbit/android-priority-jobqueue/2.0.0-beta1/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.fernandocejas.frodo/frodo-api/0.8.1/f58e3edff23a9f04fddd17e36807c1d0fa395cdc/frodo-api-0.8.1.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/org.aspectj/aspectjrt/1.8.6/a7db7ea5f7bb18a1cbd9f24edd0e666504800be/aspectjrt-1.8.6.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-location/9.2.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/23.3.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.3.0/jars/libs/internal_impl-23.3.0.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton.byteunits/byteunits/0.9.1/202a0c874feafe7ece9be0a53e9640c9a26f2197/byteunits-0.9.1.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/io.reactivex/rxandroid/1.1.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okio/okio/1.8.0/5ea7af56cc7c567ed9856d99efb30740e9b17ff/okio-1.8.0.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.fernandocejas.frodo/frodo-runtime/0.8.1/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.jakewharton.rxbinding/rxbinding/0.4.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/cardview-v7/23.3.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.f2prateek.rx.preferences/rx-preferences/1.0.1/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/pl.charmas.android/android-reactive-location/0.9/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.leakcanary/leakcanary-analyzer/1.3.1/325e7401a7ea16918eb39ba8baad8fd5561a55d3/leakcanary-analyzer-1.3.1.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/adapter-rxjava/2.0.2/a60c039ba54c73d1133b72178e1b04133c73d13d/adapter-rxjava-2.0.2.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-common/9.2.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton/butterknife-annotations/8.0.1/345b89f45d02d8b09400b472fab7b7e38f4ede1f/butterknife-annotations-8.0.1.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/9.2.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.squareup.leakcanary/leakcanary-android/1.3.1/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/23.3.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.rebound/rebound/0.3.8/c8b90640dddaf1e7ad75d7cb00b09a44b3788f7e/rebound-0.3.8.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.stetho/stetho-okhttp3/1.3.1/c596b3b33b5a92107bb70544bb5ee35f597bc6d8/stetho-okhttp3-1.3.1.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/javax.inject/javax.inject/1/6975da39a7040257bd51d21a231b76c915872d38/javax.inject-1.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/23.3.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/io.reactivex/rxjava/1.1.3/5a1aef6a9d56efb473b8be6b66689077e7317c45/rxjava-1.1.3.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-analytics-impl/9.2.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-iid/9.2.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.getkeepsafe.relinker/relinker/1.2.1/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.github.rahatarmanahmed/circularprogressview/2.5.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/io.realm/realm-annotations/1.1.0/4459414c171c7b60cdc2f089ffa72d19d773835e/realm-annotations-1.1.0.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.googlecode.libphonenumber/libphonenumber/7.1.0/a8144be5e41b43f2660e7532347f8f367e4b442f/libphonenumber-7.1.0.jar:/Users/tiago/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/23.3.0/support-annotations-23.3.0.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/design/23.3.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/io.realm/realm-android-library/1.1.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/2.0.1/516c03b21d50a644d538de0f0369c620989cd8f0/jsr305-2.0.1.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.3.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.picasso/picasso/2.5.2/7446d06ec8d4f7ffcc53f1da37c95f200dcb9387/picasso-2.5.2.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-analytics/9.2.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-messaging/9.2.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/9.2.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.tbruyelle.rxpermissions/rxpermissions/0.7.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/org.eclipse.paho/org.eclipse.paho.client.mqttv3/1.0.2/11752d3f24d1a9deda4533a7ca18d8496417ceeb/org.eclipse.paho.client.mqttv3-1.0.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/commons-cli/commons-cli/1.2/2bf96b7aa8b611c177d329452af1dc933e14501c/commons-cli-1.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okhttp3/okhttp/3.2.0/f7873a2ebde246a45c2a8d6f3247108b4c88a879/okhttp-3.2.0.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/javax.annotation/jsr250-api/1.0/5025422767732a1ab45d93abfea846513d742dcf/jsr250-api-1.0.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/retrofit/2.0.2/43eeae0b9fb087bb3194ba59ab63a38a32fbf3e/retrofit-2.0.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.6.2/f1bc476cc167b18e66c297df599b2377131a8947/gson-2.6.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.dagger/dagger/2.2/febfd2d9e89bde4c3a9723bcd9522cba96bddac7/dagger-2.2.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-core/9.2.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton.picasso/picasso2-okhttp3-downloader/1.0.2/74a586d03a233d356290983d1ef23a64c1d122b2/picasso2-okhttp3-downloader-1.0.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/converter-gson/2.0.2/f8d87f15b94b8d74e7ccf61d7eedb558811cdb30/converter-gson-2.0.2.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.jakewharton/butterknife/8.0.1/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.stetho/stetho/1.3.1/2c4076b466a0eb4d6ddf5721edd35cd1adc1f317/stetho-1.3.1.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.3.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-tasks/9.2.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/Tribe2/AdapterDelegates/unspecified/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okhttp3/logging-interceptor/3.2.0/a56f28d5b7fab623c6c1d2afa08dd496d873ac21/logging-interceptor-3.2.0.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/de.mrmaffen/vlc-android-sdk/1.9.8/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.haha/haha/1.3/d2c832f9d14a11c79f58a7ee2e10526a12152c72/haha-1.3.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.leakcanary/leakcanary-watcher/1.3.1/6904771474c058abfc5912c13d12b02754712165/leakcanary-watcher-1.3.1.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/rt.jar
+-d
+/Users/tiago/Dev/Tribe2/app/build/retrolambda/debug
+-classpath
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.birbit/android-priority-jobqueue/2.0.0-beta1/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.fernandocejas.frodo/frodo-api/0.8.1/f58e3edff23a9f04fddd17e36807c1d0fa395cdc/frodo-api-0.8.1.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/org.aspectj/aspectjrt/1.8.6/a7db7ea5f7bb18a1cbd9f24edd0e666504800be/aspectjrt-1.8.6.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-location/9.2.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/23.3.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.3.0/jars/libs/internal_impl-23.3.0.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton.byteunits/byteunits/0.9.1/202a0c874feafe7ece9be0a53e9640c9a26f2197/byteunits-0.9.1.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/io.reactivex/rxandroid/1.1.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okio/okio/1.8.0/5ea7af56cc7c567ed9856d99efb30740e9b17ff/okio-1.8.0.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.fernandocejas.frodo/frodo-runtime/0.8.1/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.jakewharton.rxbinding/rxbinding/0.4.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/cardview-v7/23.3.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.f2prateek.rx.preferences/rx-preferences/1.0.1/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/pl.charmas.android/android-reactive-location/0.9/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.leakcanary/leakcanary-analyzer/1.3.1/325e7401a7ea16918eb39ba8baad8fd5561a55d3/leakcanary-analyzer-1.3.1.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/adapter-rxjava/2.0.2/a60c039ba54c73d1133b72178e1b04133c73d13d/adapter-rxjava-2.0.2.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-common/9.2.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton/butterknife-annotations/8.0.1/345b89f45d02d8b09400b472fab7b7e38f4ede1f/butterknife-annotations-8.0.1.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/9.2.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.squareup.leakcanary/leakcanary-android/1.3.1/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/23.3.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.rebound/rebound/0.3.8/c8b90640dddaf1e7ad75d7cb00b09a44b3788f7e/rebound-0.3.8.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.stetho/stetho-okhttp3/1.3.1/c596b3b33b5a92107bb70544bb5ee35f597bc6d8/stetho-okhttp3-1.3.1.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/javax.inject/javax.inject/1/6975da39a7040257bd51d21a231b76c915872d38/javax.inject-1.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/23.3.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/io.reactivex/rxjava/1.1.3/5a1aef6a9d56efb473b8be6b66689077e7317c45/rxjava-1.1.3.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-analytics-impl/9.2.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-iid/9.2.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.getkeepsafe.relinker/relinker/1.2.1/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.github.rahatarmanahmed/circularprogressview/2.5.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/io.realm/realm-annotations/1.1.0/4459414c171c7b60cdc2f089ffa72d19d773835e/realm-annotations-1.1.0.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.googlecode.libphonenumber/libphonenumber/7.1.0/a8144be5e41b43f2660e7532347f8f367e4b442f/libphonenumber-7.1.0.jar:/Users/tiago/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/23.3.0/support-annotations-23.3.0.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/design/23.3.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/io.realm/realm-android-library/1.1.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/2.0.1/516c03b21d50a644d538de0f0369c620989cd8f0/jsr305-2.0.1.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.3.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.picasso/picasso/2.5.2/7446d06ec8d4f7ffcc53f1da37c95f200dcb9387/picasso-2.5.2.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-analytics/9.2.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-messaging/9.2.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/9.2.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.tbruyelle.rxpermissions/rxpermissions/0.7.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/org.eclipse.paho/org.eclipse.paho.client.mqttv3/1.0.2/11752d3f24d1a9deda4533a7ca18d8496417ceeb/org.eclipse.paho.client.mqttv3-1.0.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/commons-cli/commons-cli/1.2/2bf96b7aa8b611c177d329452af1dc933e14501c/commons-cli-1.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okhttp3/okhttp/3.2.0/f7873a2ebde246a45c2a8d6f3247108b4c88a879/okhttp-3.2.0.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/javax.annotation/jsr250-api/1.0/5025422767732a1ab45d93abfea846513d742dcf/jsr250-api-1.0.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/retrofit/2.0.2/43eeae0b9fb087bb3194ba59ab63a38a32fbf3e/retrofit-2.0.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.6.2/f1bc476cc167b18e66c297df599b2377131a8947/gson-2.6.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.dagger/dagger/2.2/febfd2d9e89bde4c3a9723bcd9522cba96bddac7/dagger-2.2.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-core/9.2.0/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton.picasso/picasso2-okhttp3-downloader/1.0.2/74a586d03a233d356290983d1ef23a64c1d122b2/picasso2-okhttp3-downloader-1.0.2.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/converter-gson/2.0.2/f8d87f15b94b8d74e7ccf61d7eedb558811cdb30/converter-gson-2.0.2.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.jakewharton/butterknife/8.0.1/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.stetho/stetho/1.3.1/2c4076b466a0eb4d6ddf5721edd35cd1adc1f317/stetho-1.3.1.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.3.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-tasks/9.2.0/jars/classes.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/Tribe2/AdapterDelegates/unspecified/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okhttp3/logging-interceptor/3.2.0/a56f28d5b7fab623c6c1d2afa08dd496d873ac21/logging-interceptor-3.2.0.jar:/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/de.mrmaffen/vlc-android-sdk/1.9.8/jars/classes.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.haha/haha/1.3/d2c832f9d14a11c79f58a7ee2e10526a12152c72/haha-1.3.jar:/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.leakcanary/leakcanary-watcher/1.3.1/6904771474c058abfc5912c13d12b02754712165/leakcanary-watcher-1.3.1.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/rt.jar
+-bootclasspath
+/Users/tiago/Library/Android/sdk/platforms/android-23/android.jar
+---- Full Classpath ---
+/Users/tiago/Library/Android/sdk/platforms/android-23/android.jar(23947250 bytes)
+/Users/tiago/Dev/Tribe2/app/build/retrolambda/debug(4 entries)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.birbit/android-priority-jobqueue/2.0.0-beta1/jars/classes.jar(160675 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.fernandocejas.frodo/frodo-api/0.8.1/f58e3edff23a9f04fddd17e36807c1d0fa395cdc/frodo-api-0.8.1.jar(1610 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/org.aspectj/aspectjrt/1.8.6/a7db7ea5f7bb18a1cbd9f24edd0e666504800be/aspectjrt-1.8.6.jar(117529 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-location/9.2.0/jars/classes.jar(108961 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/23.3.0/jars/classes.jar(298791 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.3.0/jars/libs/internal_impl-23.3.0.jar(322724 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton.byteunits/byteunits/0.9.1/202a0c874feafe7ece9be0a53e9640c9a26f2197/byteunits-0.9.1.jar(23349 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/io.reactivex/rxandroid/1.1.0/jars/classes.jar(8596 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okio/okio/1.8.0/5ea7af56cc7c567ed9856d99efb30740e9b17ff/okio-1.8.0.jar(72016 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.fernandocejas.frodo/frodo-runtime/0.8.1/jars/classes.jar(24044 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.jakewharton.rxbinding/rxbinding/0.4.0/jars/classes.jar(200238 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/cardview-v7/23.3.0/jars/classes.jar(18924 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.f2prateek.rx.preferences/rx-preferences/1.0.1/jars/classes.jar(22061 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/pl.charmas.android/android-reactive-location/0.9/jars/classes.jar(51356 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.leakcanary/leakcanary-analyzer/1.3.1/325e7401a7ea16918eb39ba8baad8fd5561a55d3/leakcanary-analyzer-1.3.1.jar(14774 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/adapter-rxjava/2.0.2/a60c039ba54c73d1133b72178e1b04133c73d13d/adapter-rxjava-2.0.2.jar(19611 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-common/9.2.0/jars/classes.jar(20717 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton/butterknife-annotations/8.0.1/345b89f45d02d8b09400b472fab7b7e38f4ede1f/butterknife-annotations-8.0.1.jar(16124 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/9.2.0/jars/classes.jar(279468 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.squareup.leakcanary/leakcanary-android/1.3.1/jars/classes.jar(75028 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/23.3.0/jars/classes.jar(40821 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.rebound/rebound/0.3.8/c8b90640dddaf1e7ad75d7cb00b09a44b3788f7e/rebound-0.3.8.jar(42706 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.stetho/stetho-okhttp3/1.3.1/c596b3b33b5a92107bb70544bb5ee35f597bc6d8/stetho-okhttp3-1.3.1.jar(43892 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/javax.inject/javax.inject/1/6975da39a7040257bd51d21a231b76c915872d38/javax.inject-1.jar(2497 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/23.3.0/jars/classes.jar(11288 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/io.reactivex/rxjava/1.1.3/5a1aef6a9d56efb473b8be6b66689077e7317c45/rxjava-1.1.3.jar(1038620 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-analytics-impl/9.2.0/jars/classes.jar(175873 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-iid/9.2.0/jars/classes.jar(28565 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.getkeepsafe.relinker/relinker/1.2.1/jars/classes.jar(27295 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.github.rahatarmanahmed/circularprogressview/2.5.0/jars/classes.jar(15939 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/io.realm/realm-annotations/1.1.0/4459414c171c7b60cdc2f089ffa72d19d773835e/realm-annotations-1.1.0.jar(3539 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.googlecode.libphonenumber/libphonenumber/7.1.0/a8144be5e41b43f2660e7532347f8f367e4b442f/libphonenumber-7.1.0.jar(308186 bytes)
+/Users/tiago/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/23.3.0/support-annotations-23.3.0.jar(19252 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/design/23.3.0/jars/classes.jar(288295 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/io.realm/realm-android-library/1.1.0/jars/classes.jar(262949 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/2.0.1/516c03b21d50a644d538de0f0369c620989cd8f0/jsr305-2.0.1.jar(31866 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.3.0/jars/classes.jar(606590 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.picasso/picasso/2.5.2/7446d06ec8d4f7ffcc53f1da37c95f200dcb9387/picasso-2.5.2.jar(120459 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-analytics/9.2.0/jars/classes.jar(3364 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-messaging/9.2.0/jars/classes.jar(18171 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/9.2.0/jars/classes.jar(562681 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.tbruyelle.rxpermissions/rxpermissions/0.7.0/jars/classes.jar(10078 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/org.eclipse.paho/org.eclipse.paho.client.mqttv3/1.0.2/11752d3f24d1a9deda4533a7ca18d8496417ceeb/org.eclipse.paho.client.mqttv3-1.0.2.jar(171372 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/commons-cli/commons-cli/1.2/2bf96b7aa8b611c177d329452af1dc933e14501c/commons-cli-1.2.jar(41123 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okhttp3/okhttp/3.2.0/f7873a2ebde246a45c2a8d6f3247108b4c88a879/okhttp-3.2.0.jar(335509 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/javax.annotation/jsr250-api/1.0/5025422767732a1ab45d93abfea846513d742dcf/jsr250-api-1.0.jar(5848 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/retrofit/2.0.2/43eeae0b9fb087bb3194ba59ab63a38a32fbf3e/retrofit-2.0.2.jar(86225 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.6.2/f1bc476cc167b18e66c297df599b2377131a8947/gson-2.6.2.jar(229650 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.dagger/dagger/2.2/febfd2d9e89bde4c3a9723bcd9522cba96bddac7/dagger-2.2.jar(23473 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-core/9.2.0/jars/classes.jar(166 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton.picasso/picasso2-okhttp3-downloader/1.0.2/74a586d03a233d356290983d1ef23a64c1d122b2/picasso2-okhttp3-downloader-1.0.2.jar(5503 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/converter-gson/2.0.2/f8d87f15b94b8d74e7ccf61d7eedb558811cdb30/converter-gson-2.0.2.jar(5490 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.jakewharton/butterknife/8.0.1/jars/classes.jar(16500 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.stetho/stetho/1.3.1/2c4076b466a0eb4d6ddf5721edd35cd1adc1f317/stetho-1.3.1.jar(529919 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.3.0/jars/classes.jar(1074102 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-tasks/9.2.0/jars/classes.jar(23895 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/Tribe2/AdapterDelegates/unspecified/jars/classes.jar(7973 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okhttp3/logging-interceptor/3.2.0/a56f28d5b7fab623c6c1d2afa08dd496d873ac21/logging-interceptor-3.2.0.jar(7488 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/de.mrmaffen/vlc-android-sdk/1.9.8/jars/classes.jar(103370 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.haha/haha/1.3/d2c832f9d14a11c79f58a7ee2e10526a12152c72/haha-1.3.jar(316913 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.leakcanary/leakcanary-watcher/1.3.1/6904771474c058abfc5912c13d12b02754712165/leakcanary-watcher-1.3.1.jar(13798 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/rt.jar(66591469 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/ext/cldrdata.jar(3860522 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/ext/dnsns.jar(8286 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/ext/jaccess.jar(44516 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/ext/jfxrt.jar(18552899 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/ext/localedata.jar(1178848 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/ext/nashorn.jar(2028225 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/ext/sunec.jar(39771 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/ext/sunjce_provider.jar(278718 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/ext/sunpkcs11.jar(250826 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/ext/zipfs.jar(68849 bytes)
+/System/Library/Java/Extensions/MRJToolkit.jar(12849 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.birbit/android-priority-jobqueue/2.0.0-beta1/jars/classes.jar(160675 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.fernandocejas.frodo/frodo-api/0.8.1/f58e3edff23a9f04fddd17e36807c1d0fa395cdc/frodo-api-0.8.1.jar(1610 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/org.aspectj/aspectjrt/1.8.6/a7db7ea5f7bb18a1cbd9f24edd0e666504800be/aspectjrt-1.8.6.jar(117529 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-location/9.2.0/jars/classes.jar(108961 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/23.3.0/jars/classes.jar(298791 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.3.0/jars/libs/internal_impl-23.3.0.jar(322724 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton.byteunits/byteunits/0.9.1/202a0c874feafe7ece9be0a53e9640c9a26f2197/byteunits-0.9.1.jar(23349 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/io.reactivex/rxandroid/1.1.0/jars/classes.jar(8596 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okio/okio/1.8.0/5ea7af56cc7c567ed9856d99efb30740e9b17ff/okio-1.8.0.jar(72016 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.fernandocejas.frodo/frodo-runtime/0.8.1/jars/classes.jar(24044 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.jakewharton.rxbinding/rxbinding/0.4.0/jars/classes.jar(200238 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/cardview-v7/23.3.0/jars/classes.jar(18924 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.f2prateek.rx.preferences/rx-preferences/1.0.1/jars/classes.jar(22061 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/pl.charmas.android/android-reactive-location/0.9/jars/classes.jar(51356 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.leakcanary/leakcanary-analyzer/1.3.1/325e7401a7ea16918eb39ba8baad8fd5561a55d3/leakcanary-analyzer-1.3.1.jar(14774 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/adapter-rxjava/2.0.2/a60c039ba54c73d1133b72178e1b04133c73d13d/adapter-rxjava-2.0.2.jar(19611 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-common/9.2.0/jars/classes.jar(20717 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton/butterknife-annotations/8.0.1/345b89f45d02d8b09400b472fab7b7e38f4ede1f/butterknife-annotations-8.0.1.jar(16124 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/9.2.0/jars/classes.jar(279468 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.squareup.leakcanary/leakcanary-android/1.3.1/jars/classes.jar(75028 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/23.3.0/jars/classes.jar(40821 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.rebound/rebound/0.3.8/c8b90640dddaf1e7ad75d7cb00b09a44b3788f7e/rebound-0.3.8.jar(42706 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.stetho/stetho-okhttp3/1.3.1/c596b3b33b5a92107bb70544bb5ee35f597bc6d8/stetho-okhttp3-1.3.1.jar(43892 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/javax.inject/javax.inject/1/6975da39a7040257bd51d21a231b76c915872d38/javax.inject-1.jar(2497 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/23.3.0/jars/classes.jar(11288 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/io.reactivex/rxjava/1.1.3/5a1aef6a9d56efb473b8be6b66689077e7317c45/rxjava-1.1.3.jar(1038620 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-analytics-impl/9.2.0/jars/classes.jar(175873 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-iid/9.2.0/jars/classes.jar(28565 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.getkeepsafe.relinker/relinker/1.2.1/jars/classes.jar(27295 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.github.rahatarmanahmed/circularprogressview/2.5.0/jars/classes.jar(15939 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/io.realm/realm-annotations/1.1.0/4459414c171c7b60cdc2f089ffa72d19d773835e/realm-annotations-1.1.0.jar(3539 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.googlecode.libphonenumber/libphonenumber/7.1.0/a8144be5e41b43f2660e7532347f8f367e4b442f/libphonenumber-7.1.0.jar(308186 bytes)
+/Users/tiago/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/23.3.0/support-annotations-23.3.0.jar(19252 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/design/23.3.0/jars/classes.jar(288295 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/io.realm/realm-android-library/1.1.0/jars/classes.jar(262949 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/2.0.1/516c03b21d50a644d538de0f0369c620989cd8f0/jsr305-2.0.1.jar(31866 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.3.0/jars/classes.jar(606590 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.picasso/picasso/2.5.2/7446d06ec8d4f7ffcc53f1da37c95f200dcb9387/picasso-2.5.2.jar(120459 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-analytics/9.2.0/jars/classes.jar(3364 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-messaging/9.2.0/jars/classes.jar(18171 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/9.2.0/jars/classes.jar(562681 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.tbruyelle.rxpermissions/rxpermissions/0.7.0/jars/classes.jar(10078 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/org.eclipse.paho/org.eclipse.paho.client.mqttv3/1.0.2/11752d3f24d1a9deda4533a7ca18d8496417ceeb/org.eclipse.paho.client.mqttv3-1.0.2.jar(171372 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/commons-cli/commons-cli/1.2/2bf96b7aa8b611c177d329452af1dc933e14501c/commons-cli-1.2.jar(41123 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okhttp3/okhttp/3.2.0/f7873a2ebde246a45c2a8d6f3247108b4c88a879/okhttp-3.2.0.jar(335509 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/javax.annotation/jsr250-api/1.0/5025422767732a1ab45d93abfea846513d742dcf/jsr250-api-1.0.jar(5848 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/retrofit/2.0.2/43eeae0b9fb087bb3194ba59ab63a38a32fbf3e/retrofit-2.0.2.jar(86225 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.6.2/f1bc476cc167b18e66c297df599b2377131a8947/gson-2.6.2.jar(229650 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.google.dagger/dagger/2.2/febfd2d9e89bde4c3a9723bcd9522cba96bddac7/dagger-2.2.jar(23473 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.firebase/firebase-core/9.2.0/jars/classes.jar(166 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.jakewharton.picasso/picasso2-okhttp3-downloader/1.0.2/74a586d03a233d356290983d1ef23a64c1d122b2/picasso2-okhttp3-downloader-1.0.2.jar(5503 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/converter-gson/2.0.2/f8d87f15b94b8d74e7ccf61d7eedb558811cdb30/converter-gson-2.0.2.jar(5490 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.jakewharton/butterknife/8.0.1/jars/classes.jar(16500 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.facebook.stetho/stetho/1.3.1/2c4076b466a0eb4d6ddf5721edd35cd1adc1f317/stetho-1.3.1.jar(529919 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.3.0/jars/classes.jar(1074102 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-tasks/9.2.0/jars/classes.jar(23895 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/Tribe2/AdapterDelegates/unspecified/jars/classes.jar(7973 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.okhttp3/logging-interceptor/3.2.0/a56f28d5b7fab623c6c1d2afa08dd496d873ac21/logging-interceptor-3.2.0.jar(7488 bytes)
+/Users/tiago/Dev/Tribe2/app/build/intermediates/exploded-aar/de.mrmaffen/vlc-android-sdk/1.9.8/jars/classes.jar(103370 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.haha/haha/1.3/d2c832f9d14a11c79f58a7ee2e10526a12152c72/haha-1.3.jar(316913 bytes)
+/Users/tiago/Dev/gradle/caches/modules-2/files-2.1/com.squareup.leakcanary/leakcanary-watcher/1.3.1/6904771474c058abfc5912c13d12b02754712165/leakcanary-watcher-1.3.1.jar(13798 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/jre/lib/rt.jar(66591469 bytes)
+---- Compiler Messages ---
+info Pipelining compilation
+abort ABORT -- (OutOfMemoryError) GC overhead limit exceeded
+GC overhead limit exceeded
+java.lang.OutOfMemoryError: GC overhead limit exceeded
+	at org.aspectj.apache.bcel.classfile.ClassParser.readMethods(ClassParser.java:240)
+	at org.aspectj.apache.bcel.classfile.ClassParser.parse(ClassParser.java:144)
+	at org.aspectj.weaver.bcel.Utility.makeJavaClass(Utility.java:467)
+	at org.aspectj.weaver.bcel.UnwovenClassFile.getJavaClass(UnwovenClassFile.java:68)
+	at org.aspectj.weaver.bcel.UnwovenClassFile.getClassName(UnwovenClassFile.java:149)
+	at org.aspectj.weaver.bcel.BcelWeaver.prepareForWeave(BcelWeaver.java:504)
+	at org.aspectj.ajdt.internal.compiler.AjPipeliningCompilerAdapter.ensureWeaverInitialized(AjPipeliningCompilerAdapter.java:529)
+	at org.aspectj.ajdt.internal.compiler.AjPipeliningCompilerAdapter.weaveQueuedEntries(AjPipeliningCompilerAdapter.java:509)
+	at org.aspectj.ajdt.internal.compiler.AjPipeliningCompilerAdapter.afterCompiling(AjPipeliningCompilerAdapter.java:375)
+	at org.aspectj.ajdt.internal.compiler.CompilerAdapter.ajc$afterReturning$org_aspectj_ajdt_internal_compiler_CompilerAdapter$2$f9cc9ca0(CompilerAdapter.aj:78)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.compile(Compiler.java:421)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.performCompilation(AjBuildManager.java:1036)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.performBuild(AjBuildManager.java:272)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.batchBuild(AjBuildManager.java:185)
+	at org.aspectj.ajdt.ajc.AjdtCommand.doCommand(AjdtCommand.java:112)
+	at org.aspectj.ajdt.ajc.AjdtCommand.runCommand(AjdtCommand.java:60)
+	at org.aspectj.tools.ajc.Main.run(Main.java:371)
+	at org.aspectj.tools.ajc.Main$run.call(Unknown Source)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:48)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:113)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:133)
+	at com.fernandocejas.frodo.plugin.FrodoPlugin$_apply_closure4_closure5.doCall(FrodoPlugin.groovy:50)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:93)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:325)
+	at org.codehaus.groovy.runtime.metaclass.ClosureMetaClass.invokeMethod(ClosureMetaClass.java:294)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1019)
+	at groovy.lang.Closure.call(Closure.java:426)
+	at groovy.lang.Closure.call(Closure.java:442)
+

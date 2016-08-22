@@ -94,7 +94,7 @@ public class MediaVideoEncoder extends MediaEncoder {
 
     public boolean swapBuffers() {
         boolean result;
-        if (result = super.frameAvailableSoon()) {
+        if (result = super.frameAvailableSoon() && inputSurface != null) {
             inputSurface.swapBuffers();
             inputSurface.setPresentationTime(getPTSUs());
         }

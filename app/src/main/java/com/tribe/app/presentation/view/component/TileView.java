@@ -73,14 +73,17 @@ public class TileView extends SquareFrameLayout {
     private final int END_RECORD_DELAY = 1000;
     private final float OVERSHOOT = 3f;
     private final float TAP_TO_CANCEL_SPRING_VALUE = 0.60f;
+    private final float REPLY_OPEN_CAMERA = 0.25f;
+    private final float REPLY_RECORD = 1f;
+    private final float REPLY_TAP_TO_CANCEL = 0.7f;
     private final int ANIMATION_DELAY = 500;
 
-    @BindView(R.id.txtName) public TextViewFont txtName;
+    @Nullable @BindView(R.id.txtName) public TextViewFont txtName;
     @Nullable @BindView(R.id.btnText) public ImageView btnText;
     @Nullable @BindView(R.id.btnMore) public ImageView btnMore;
-    @BindView(R.id.txtStatus) public TextViewFont txtStatus;
+    @Nullable @BindView(R.id.txtStatus) public TextViewFont txtStatus;
     @Nullable @BindView(R.id.txtStatusError) public TextViewFont txtStatusError;
-    @BindView(R.id.txtSending) public TextViewFont txtSending;
+    @Nullable @BindView(R.id.txtSending) public TextViewFont txtSending;
     @BindView(R.id.viewShadow) public View viewShadow;
     @BindView(R.id.avatar) public AvatarView avatar;
     @BindView(R.id.progressBar) public ProgressBar progressBar;
@@ -92,6 +95,7 @@ public class TileView extends SquareFrameLayout {
     @Nullable @BindView(R.id.txtNbTribes) public TextViewFont txtNbTribes;
     @Nullable @BindView(R.id.layoutNbTribes) public FrameLayout layoutNbTribes;
     @Nullable @BindView(R.id.circularProgressView) public CircularProgressView circularProgressView;
+    @Nullable @BindView(R.id.layoutReply) public ViewGroup layoutReply;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions;
@@ -107,6 +111,7 @@ public class TileView extends SquareFrameLayout {
     private final PublishSubject<View> onNotCancel = PublishSubject.create();
     private final PublishSubject<View> recordStarted = PublishSubject.create();
     private final PublishSubject<View> recordEnded = PublishSubject.create();
+    private final PublishSubject<Boolean> replyModeStarted = PublishSubject.create();
 
     // RESOURCES
     private int transitionGridPressed;
@@ -118,9 +123,11 @@ public class TileView extends SquareFrameLayout {
     private int sizeAvatarInner;
     private int sizeAvatarInnerIntermediate;
     private int sizeAvatarInnerScaled;
+    private int replySize;
     private int colorBlackOpacity20;
     private int diffSizeForScale;
     private int diffDown;
+    private int replySizeScaled;
 
     // VARIABLES
     private int type;
@@ -151,12 +158,18 @@ public class TileView extends SquareFrameLayout {
 
         transitionGridPressed = context.getResources().getDimensionPixelSize(R.dimen.transition_grid_pressed);
         sizePressedBorder = context.getResources().getDimensionPixelSize(R.dimen.inside_cell_border);
-        sizeAvatarScaled = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_scaled);
-        sizeAvatar = context.getResources().getDimensionPixelSize(R.dimen.avatar_size);
-        sizeAvatarIntermediate = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_intermediate);
+        sizeAvatarScaled = type == TYPE_GRID ?
+                context.getResources().getDimensionPixelSize(R.dimen.avatar_size_scaled) :
+                context.getResources().getDimensionPixelSize(R.dimen.avatar_size_reply_full);
+        sizeAvatar = type == TYPE_GRID ? context.getResources().getDimensionPixelSize(R.dimen.avatar_size) : context.getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
+        sizeAvatarIntermediate = type == TYPE_GRID ?
+                context.getResources().getDimensionPixelSize(R.dimen.avatar_size_intermediate) :
+                context.getResources().getDimensionPixelSize(R.dimen.avatar_size_reply_intermediate);
         sizeAvatarInner = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_inner);
         sizeAvatarInnerIntermediate = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_inner_intermediate);
         sizeAvatarInnerScaled = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_inner_scaled);
+        replySize = context.getResources().getDimensionPixelSize(R.dimen.reply_size);
+        replySizeScaled = context.getResources().getDimensionPixelSize(R.dimen.reply_size_full);
         timeTapToCancel = context.getResources().getInteger(R.integer.time_tap_to_cancel);
         colorBlackOpacity20 = context.getResources().getColor(R.color.black_opacity_20);
         diffSizeForScale = (int) (context.getResources().getDisplayMetrics().density * 0.5);
@@ -226,7 +239,6 @@ public class TileView extends SquareFrameLayout {
                                 if ((System.currentTimeMillis() - longDown) >= LONG_PRESS && isDown
                                         && Math.abs(currentX - downX) < diffDown
                                         && Math.abs(currentY - downY) < diffDown) {
-                                    recordStarted.onNext(this);
                                     isRecording = true;
                                     isTapToCancel = false;
 
@@ -234,11 +246,18 @@ public class TileView extends SquareFrameLayout {
                                     springInside.setEndValue(1f);
 
                                     Spring springAvatar = (Spring) v.getTag(R.id.spring_avatar);
-                                    springAvatar.setEndValue(1f);
+                                    springAvatar.setEndValue(type == TYPE_GRID ? 1f : REPLY_RECORD);
 
                                     if (type == TYPE_GRID) {
+                                        recordStarted.onNext(this);
+
                                         Spring springOutside = (Spring) v.getTag(R.id.spring_outside);
                                         springOutside.setEndValue(1f);
+                                    } else {
+                                        Spring springReplyBG = (Spring) v.getTag(R.id.spring_reply_bg);
+                                        springReplyBG.setEndValue(REPLY_RECORD);
+
+                                        replyModeStarted.onNext(false);
                                     }
                                 }
                             });
@@ -251,7 +270,14 @@ public class TileView extends SquareFrameLayout {
                     recordEnded.onNext(this);
                     isRecording = false;
                 } else if (isDown && (System.currentTimeMillis() - longDown) <= LONG_PRESS) {
-                    clickOpenTribes.onNext(this);
+                    if (type == TYPE_GRID) {
+                        clickOpenTribes.onNext(this);
+                    } else {
+                        Spring springAvatar = (Spring) v.getTag(R.id.spring_avatar);
+                        springAvatar.setEndValue(REPLY_OPEN_CAMERA);
+
+                        replyModeStarted.onNext(true);
+                    }
                 }
 
                 isDown = false;
@@ -274,10 +300,10 @@ public class TileView extends SquareFrameLayout {
                 float value = (float) spring.getCurrentValue();
 
                 float alpha = 1 - value;
-                txtName.setAlpha(alpha);
-                txtStatus.setAlpha(alpha);
 
                 if (type == TYPE_GRID) {
+                    txtName.setAlpha(alpha);
+                    txtStatus.setAlpha(alpha);
                     btnText.setAlpha(alpha);
                     btnMore.setAlpha(alpha);
                     txtStatusError.setAlpha(alpha);
@@ -291,30 +317,38 @@ public class TileView extends SquareFrameLayout {
 
         // SPRING INSIDE CONFIGURATION
         Spring springAvatar = springSystem.createSpring();
-        SpringConfig configAvatar = SpringConfig.fromBouncinessAndSpeed(BOUNCINESS_INSIDE, SPEED_INSIDE);
+        SpringConfig configAvatar = type == TYPE_GRID ? SpringConfig.fromBouncinessAndSpeed(BOUNCINESS_INSIDE, SPEED_INSIDE) : SpringConfig.fromBouncinessAndSpeed(BOUNCINESS_OUTSIDE, SPEED_OUTSIDE);
         springAvatar.setSpringConfig(configAvatar);
         springAvatar.addListener(new SimpleSpringListener() {
             @Override
             public void onSpringUpdate(Spring spring) {
                 float value = (float) spring.getCurrentValue();
 
-                int scaleUp = (int) (sizeAvatar + ((sizeAvatarScaled - sizeAvatar) * value));
-                ViewGroup.LayoutParams paramsAvatar = avatar.getLayoutParams();
+                if (type == TYPE_GRID) {
+                    int scaleUp = (int) (sizeAvatar + ((sizeAvatarScaled - sizeAvatar) * value));
+                    ViewGroup.LayoutParams paramsAvatar = avatar.getLayoutParams();
 
-                if (Math.abs(scaleUp - paramsAvatar.height) > diffSizeForScale) {
+                    if (Math.abs(scaleUp - paramsAvatar.height) > diffSizeForScale) {
+                        paramsAvatar.height = scaleUp;
+                        paramsAvatar.width = scaleUp;
+                        avatar.setLayoutParams(paramsAvatar);
+
+                        float scale = 1f + (value * (((float) sizeAvatarInnerScaled / sizeAvatarInner) - 1));
+                        progressBar.setScaleX(scale);
+                        progressBar.setScaleY(scale);
+
+                        viewForeground.setScaleX(scale);
+                        viewForeground.setScaleY(scale);
+
+                        viewShadow.setScaleX(scale);
+                        viewShadow.setScaleY(scale);
+                    }
+                } else {
+                    int scaleUp = (int) (sizeAvatar + ((sizeAvatarScaled - sizeAvatar) * value));
+                    ViewGroup.LayoutParams paramsAvatar = avatar.getLayoutParams();
                     paramsAvatar.height = scaleUp;
                     paramsAvatar.width = scaleUp;
                     avatar.setLayoutParams(paramsAvatar);
-
-                    float scale = 1f + (value * (((float) sizeAvatarInnerScaled / sizeAvatarInner) - 1));
-                    progressBar.setScaleX(scale);
-                    progressBar.setScaleY(scale);
-
-                    viewForeground.setScaleX(scale);
-                    viewForeground.setScaleY(scale);
-
-                    viewShadow.setScaleX(scale);
-                    viewShadow.setScaleY(scale);
                 }
             }
 
@@ -322,9 +356,17 @@ public class TileView extends SquareFrameLayout {
             public void onSpringAtRest(Spring spring) {
                 super.onSpringAtRest(spring);
 
-                if (currentTribe != null && spring.getCurrentValue() == TAP_TO_CANCEL_SPRING_VALUE && currentTribeMode.equals(CameraWrapper.VIDEO)) {
+                if (currentTribe == null && spring.getEndValue() == REPLY_RECORD && type == TYPE_TILE) {
+                    Observable.timer(100, TimeUnit.MILLISECONDS)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.newThread())
+                            .subscribe(aLong -> recordStarted.onNext(TileView.this));
+                } else if (currentTribe != null
+                        && (spring.getCurrentValue() == TAP_TO_CANCEL_SPRING_VALUE || spring.getCurrentValue() == REPLY_TAP_TO_CANCEL)
+                        && currentTribeMode.equals(CameraWrapper.VIDEO)) {
                     playerView.createPlayer(FileUtils.getPathForId(currentTribe.getLocalId()));
-                } else if (currentTribe != null && spring.getCurrentValue() == TAP_TO_CANCEL_SPRING_VALUE) {
+                } else if (currentTribe != null
+                        && (spring.getCurrentValue() == TAP_TO_CANCEL_SPRING_VALUE || spring.getCurrentValue() == REPLY_TAP_TO_CANCEL)) {
                     animateTapToCancel();
                 }
             }
@@ -352,6 +394,36 @@ public class TileView extends SquareFrameLayout {
 
             springOutside.setEndValue(0f);
             setTag(R.id.spring_outside, springOutside);
+        } else {
+            // SPRING REPLY BACKGROUND CONFIGURATION
+            Spring springReplyBG = springSystem.createSpring();
+            SpringConfig configReplyBG = SpringConfig.fromBouncinessAndSpeed(BOUNCINESS_OUTSIDE, SPEED_OUTSIDE);
+            springReplyBG.setSpringConfig(configReplyBG);
+            springReplyBG.addListener(new SimpleSpringListener() {
+                @Override
+                public void onSpringUpdate(Spring spring) {
+                    float value = (float) spring.getCurrentValue();
+
+                    int scaleUpReply = (int) (replySize + ((replySizeScaled - replySize) * value));
+                    ViewGroup.LayoutParams paramsReplySize = layoutReply.getLayoutParams();
+                    paramsReplySize.height = scaleUpReply;
+                    paramsReplySize.width = scaleUpReply;
+                    layoutReply.setLayoutParams(paramsReplySize);
+
+                    ViewGroup.LayoutParams paramsViewShadow = viewShadow.getLayoutParams();
+                    paramsViewShadow.height = scaleUpReply;
+                    paramsViewShadow.width = scaleUpReply;
+                    viewShadow.setLayoutParams(paramsViewShadow);
+
+                    ViewGroup.LayoutParams paramsTile = getLayoutParams();
+                    paramsTile.height = scaleUpReply;
+                    paramsTile.width = scaleUpReply;
+                    setLayoutParams(paramsTile);
+                }
+            });
+
+            springReplyBG.setEndValue(0f);
+            setTag(R.id.spring_reply_bg, springReplyBG);
         }
     }
 
@@ -360,7 +432,7 @@ public class TileView extends SquareFrameLayout {
         else AnimationUtils.scaleDown(imgCancel, SCALE_DURATION);
 
         AnimationUtils.fadeOut(viewForeground, 0);
-        AnimationUtils.fadeOut(txtSending, 0);
+        //AnimationUtils.fadeOut(txtSending, 0);
 
         if (getTag(R.id.progress_bar_animation) != null) {
             ObjectAnimator animator = (ObjectAnimator) getTag(R.id.progress_bar_animation);
@@ -381,7 +453,13 @@ public class TileView extends SquareFrameLayout {
         Spring springAvatar = (Spring) getTag(R.id.spring_avatar);
         springAvatar.setEndValue(0f);
 
+        if (type == TYPE_TILE) {
+            Spring springReplyBG = (Spring) getTag(R.id.spring_reply_bg);
+            springReplyBG.setEndValue(0f);
+        }
+
         setTag(R.id.is_tap_to_cancel, false);
+
         isTapToCancel = false;
 
         ((TransitionDrawable) ((LayerDrawable) viewForeground.getBackground()).getDrawable(0)).reverseTransition(FADE_DURATION);
@@ -394,8 +472,6 @@ public class TileView extends SquareFrameLayout {
     }
 
     public void setInfo(String name, String urlAvatar, List<TribeMessage> receivedTribes) {
-        txtName.setText(name);
-
         // WE DON'T LOAD THE AVATAR AGAIN IF THE URL IS THE SAME
         String previousAvatar = (String) avatar.getTag(R.id.profile_picture);
         if (previousAvatar == null || !previousAvatar.equals(urlAvatar)) {
@@ -404,6 +480,8 @@ public class TileView extends SquareFrameLayout {
         }
 
         if (type == TYPE_GRID) {
+            txtName.setText(name);
+
             if (receivedTribes != null && receivedTribes.size() > 0) {
                 txtNbTribes.setText("" + receivedTribes.size());
                 if (layoutNbTribes.getScaleX() == 0) {
@@ -470,10 +548,13 @@ public class TileView extends SquareFrameLayout {
         if (type == TYPE_GRID) {
             Spring springOutside = (Spring) getTag(R.id.spring_outside);
             springOutside.setEndValue(0f);
+        } else {
+            Spring springReplyBG = (Spring) getTag(R.id.spring_reply_bg);
+            springReplyBG.setEndValue(TAP_TO_CANCEL_SPRING_VALUE);
         }
 
         Spring springAvatar = (Spring) getTag(R.id.spring_avatar);
-        springAvatar.setEndValue(TAP_TO_CANCEL_SPRING_VALUE);
+        springAvatar.setEndValue(type == TYPE_GRID ? TAP_TO_CANCEL_SPRING_VALUE : REPLY_TAP_TO_CANCEL);
 
         setTag(R.id.is_tap_to_cancel, true);
         isTapToCancel = true;
@@ -492,7 +573,7 @@ public class TileView extends SquareFrameLayout {
         ((TransitionDrawable) ((LayerDrawable) viewForeground.getBackground()).getDrawable(0)).startTransition(FADE_DURATION);
         AnimationUtils.scaleUp(imgCancel, SCALE_DURATION, new OvershootInterpolator(OVERSHOOT));
 
-        showSending();
+        //showSending();
 
         ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", 0, timeTapToCancel);
         animation.setDuration(timeTapToCancel);
@@ -503,7 +584,7 @@ public class TileView extends SquareFrameLayout {
                 AnimationUtils.scaleDown(imgCancel, SCALE_DURATION);
                 AnimationUtils.scaleUp(imgDone, SCALE_DURATION, SCALE_DURATION, new OvershootInterpolator(OVERSHOOT));
 
-                txtSending.setText(R.string.Grid_User_Sent);
+                //txtSending.setText(R.string.Grid_User_Sent);
 
                 Observable.timer(END_RECORD_DELAY, TimeUnit.MILLISECONDS)
                         .subscribeOn(Schedulers.io())
@@ -554,6 +635,29 @@ public class TileView extends SquareFrameLayout {
         }
     }
 
+    public boolean isRecording() {
+        return isRecording;
+    }
+
+    public boolean isTapToCancel() {
+        return isTapToCancel;
+    }
+
+    public String getCurrentTribeMode() {
+        return currentTribeMode;
+    }
+
+    public void cancelReplyMode() {
+        Spring springAvatar = (Spring) getTag(R.id.spring_avatar);
+        springAvatar.setEndValue(0);
+
+        if (type == TYPE_TILE) {
+            Spring springReplyBG = (Spring) getTag(R.id.spring_reply_bg);
+            springReplyBG.setEndValue(0);
+        }
+    }
+
+    // OBSERVABLES
     public Observable<View> onClickErrorTribes() {
         return clickErrorTribes;
     }
@@ -586,15 +690,7 @@ public class TileView extends SquareFrameLayout {
         return onNotCancel;
     }
 
-    public boolean isRecording() {
-        return isRecording;
-    }
-
-    public boolean isTapToCancel() {
-        return isTapToCancel;
-    }
-
-    public String getCurrentTribeMode() {
-        return currentTribeMode;
+    public Observable<Boolean> onReplyModeStarted() {
+        return replyModeStarted;
     }
 }

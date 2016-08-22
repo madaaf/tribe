@@ -10,7 +10,7 @@ import com.tribe.app.presentation.internal.di.scope.PerApplication;
 import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.utils.PreferencesConstants;
-import com.tribe.app.presentation.view.component.TribeComponentView;
+import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.utils.Distance;
 
 import javax.inject.Singleton;
@@ -40,7 +40,7 @@ public class DataModule {
 
     @Provides @Singleton @SpeedPlayback
     Preference<Float> provideSpeedRate(RxSharedPreferences prefs) {
-        return prefs.getFloat(PreferencesConstants.SPEED_PLAYBACK, TribeComponentView.SPEED_NORMAL);
+        return prefs.getFloat(PreferencesConstants.SPEED_PLAYBACK, TribePagerView.SPEED_NORMAL);
     }
 
     @Provides @Singleton @DistanceUnits

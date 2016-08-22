@@ -6,7 +6,9 @@
     <color name="black.opacity.20">#33000000</color>
     <color name="black.opacity.40">#66000000</color>
     <color name="black.opacity.50">#80000000</color>
+    <color name="black.opacity.70">#B3000000</color>
     <color name="black.tribe">#1A1A1A</color>
+    <color name="black.infos">#1A14181A</color>
 
     <!-- WHITES -->
     <color name="white.opacity.20">#33FFFFFF</color>

@@ -117,6 +117,10 @@
     </style>
 
     <style name="Headline.White.1" parent="@style/Headline.White">
+        <item name="customFont">Roboto-Regular.ttf</item>
+    </style>
+
+    <style name="Headline.White.2" parent="@style/Headline.White">
         <item name="customFont">Roboto-Bold.ttf</item>
     </style>
 

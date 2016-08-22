@@ -225,88 +225,92 @@ public abstract class MediaEncoder implements Runnable {
     protected void drain() {
         if (mediaCodec == null) return;
 
-        ByteBuffer[] encoderOutputBuffers = mediaCodec.getOutputBuffers();
-        int encoderStatus;
-        final TribeMuxerWrapper muxer = weakMuxer.get();
+        try {
+            ByteBuffer[] encoderOutputBuffers = mediaCodec.getOutputBuffers();
+            int encoderStatus;
+            final TribeMuxerWrapper muxer = weakMuxer.get();
 
-        if (muxer == null) {
-            Log.w(TAG, "muxer is unexpectedly null");
-            return;
-        }
+            if (muxer == null) {
+                Log.w(TAG, "muxer is unexpectedly null");
+                return;
+            }
 
-        while (isRecording) {
-            encoderStatus = mediaCodec.dequeueOutputBuffer(bufferInfo, 0);
-            if (encoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
-                if (!isEOS) {
-                    break;
-                }
-            } else if (encoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
-                if (DEBUG) Log.v(TAG, "INFO_OUTPUT_BUFFERS_CHANGED");
-                // this shoud not come when encoding
-                encoderOutputBuffers = mediaCodec.getOutputBuffers();
-            } else if (encoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-                if (DEBUG) Log.v(TAG, "INFO_OUTPUT_FORMAT_CHANGED");
-                // this status indicate the output format of codec is changed
-                // this should come only once before actual encoded data
-                // but this status never come on Android4.3 or less
-                // and in that case, you should treat when MediaCodec.BUFFER_FLAG_CODEC_CONFIG come.
-                if (muxerStarted) {    // second time request is error
-                    throw new RuntimeException("format changed twice");
-                }
-                // get output format from codec and pass them to muxer
-                // getOutputFormat should be called after INFO_OUTPUT_FORMAT_CHANGED otherwise crash.
-                final MediaFormat format = mediaCodec.getOutputFormat();
-                trackIndex = muxer.addTrack(format);
-                muxerStarted = true;
-                if (!muxer.start()) {
-                    // we should wait until muxer is ready
-                    synchronized (muxer) {
-                        while (!muxer.isStarted())
-                            try {
-                                muxer.wait(100);
-                            } catch (final InterruptedException e) {
-                                e.printStackTrace();
-                            }
+            while (isRecording) {
+                encoderStatus = mediaCodec.dequeueOutputBuffer(bufferInfo, 0);
+                if (encoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
+                    if (!isEOS) {
+                        break;
                     }
-                }
-            } else if (encoderStatus < 0) {
-                // unexpected status
-                if (DEBUG)
-                    Log.w(TAG, "drain:unexpected result from encoder#dequeueOutputBuffer: " + encoderStatus);
-            } else {
-                final ByteBuffer encodedData = encoderOutputBuffers[encoderStatus];
-                if (encodedData == null) {
-                    // this never should come...may be a MediaCodec internal error
-                    throw new RuntimeException("encoderOutputBuffer " + encoderStatus + " was null");
-                }
-
-                if ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
-                    // You shoud set output format to muxer here when you target Android4.3 or less
-                    // but MediaCodec#getOutputFormat can not call here(because INFO_OUTPUT_FORMAT_CHANGED don't come yet)
-                    // therefor we should expand and prepare output format from buffer data.
-                    // This sample is for API>=18(>=Android 4.3), just ignore this flag here
-                    if (DEBUG) Log.d(TAG, "drain:BUFFER_FLAG_CODEC_CONFIG");
-                    bufferInfo.size = 0;
-                }
-
-                if (bufferInfo.size != 0) {
-                    // encoded data is ready, clear waiting counter
-                    if (!muxerStarted) {
-                        // muxer is not ready...this will prrograming failure.
-                        throw new RuntimeException("drain:muxer hasn't started");
+                } else if (encoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
+                    if (DEBUG) Log.v(TAG, "INFO_OUTPUT_BUFFERS_CHANGED");
+                    // this shoud not come when encoding
+                    encoderOutputBuffers = mediaCodec.getOutputBuffers();
+                } else if (encoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+                    if (DEBUG) Log.v(TAG, "INFO_OUTPUT_FORMAT_CHANGED");
+                    // this status indicate the output format of codec is changed
+                    // this should come only once before actual encoded data
+                    // but this status never come on Android4.3 or less
+                    // and in that case, you should treat when MediaCodec.BUFFER_FLAG_CODEC_CONFIG come.
+                    if (muxerStarted) {    // second time request is error
+                        throw new RuntimeException("format changed twice");
+                    }
+                    // get output format from codec and pass them to muxer
+                    // getOutputFormat should be called after INFO_OUTPUT_FORMAT_CHANGED otherwise crash.
+                    final MediaFormat format = mediaCodec.getOutputFormat();
+                    trackIndex = muxer.addTrack(format);
+                    muxerStarted = true;
+                    if (!muxer.start()) {
+                        // we should wait until muxer is ready
+                        synchronized (muxer) {
+                            while (!muxer.isStarted())
+                                try {
+                                    muxer.wait(100);
+                                } catch (final InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                        }
+                    }
+                } else if (encoderStatus < 0) {
+                    // unexpected status
+                    if (DEBUG)
+                        Log.w(TAG, "drain:unexpected result from encoder#dequeueOutputBuffer: " + encoderStatus);
+                } else {
+                    final ByteBuffer encodedData = encoderOutputBuffers[encoderStatus];
+                    if (encodedData == null) {
+                        // this never should come...may be a MediaCodec internal error
+                        throw new RuntimeException("encoderOutputBuffer " + encoderStatus + " was null");
                     }
 
-                    encodedData.position(bufferInfo.offset);
-                    encodedData.limit(bufferInfo.offset + bufferInfo.size);
-					muxer.writeSampleData(trackIndex, encodedData, bufferInfo);
-                }
+                    if ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
+                        // You shoud set output format to muxer here when you target Android4.3 or less
+                        // but MediaCodec#getOutputFormat can not call here(because INFO_OUTPUT_FORMAT_CHANGED don't come yet)
+                        // therefor we should expand and prepare output format from buffer data.
+                        // This sample is for API>=18(>=Android 4.3), just ignore this flag here
+                        if (DEBUG) Log.d(TAG, "drain:BUFFER_FLAG_CODEC_CONFIG");
+                        bufferInfo.size = 0;
+                    }
 
-                mediaCodec.releaseOutputBuffer(encoderStatus, false);
-                if ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-                    isRecording = false;
-                    break;
+                    if (bufferInfo.size != 0) {
+                        // encoded data is ready, clear waiting counter
+                        if (!muxerStarted) {
+                            // muxer is not ready...this will prrograming failure.
+                            throw new RuntimeException("drain:muxer hasn't started");
+                        }
+
+                        encodedData.position(bufferInfo.offset);
+                        encodedData.limit(bufferInfo.offset + bufferInfo.size);
+                        muxer.writeSampleData(trackIndex, encodedData, bufferInfo);
+                    }
+
+                    mediaCodec.releaseOutputBuffer(encoderStatus, false);
+                    if ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+                        isRecording = false;
+                        break;
+                    }
                 }
             }
+        } catch (IllegalStateException ex) {
+            ex.printStackTrace();
         }
     }
 

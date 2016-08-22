@@ -1,7 +1,9 @@
 package com.tribe.app.presentation.view.component;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.SurfaceTexture;
+import android.net.Uri;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -19,12 +21,11 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.entity.Weather;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
-import com.tribe.app.presentation.internal.di.scope.FloatDef;
 import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.utils.FileUtils;
-import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.widget.AvatarView;
+import com.tribe.app.presentation.view.widget.LabelButton;
 import com.tribe.app.presentation.view.widget.ScalableTextureView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.VideoTextureView;
@@ -50,16 +51,9 @@ import rx.subjects.PublishSubject;
  */
 public class TribeComponentView extends FrameLayout implements TextureView.SurfaceTextureListener, IVLCVout.Callback {
 
-    public static final float SPEED_NORMAL = 1f;
-    public static final float SPEED_LIGHTLY_FASTER = 1.25f;
-    public static final float SPEED_FAST = 1.5f;
-
-    @FloatDef({SPEED_NORMAL, SPEED_LIGHTLY_FASTER, SPEED_FAST})
-    public @interface SpeedPlaybackValues{}
-
     @Inject User currentUser;
     @Inject LibVLC libVLC;
-    @Inject @SpeedPlayback Preference<Float> speedPlayback;
+    @Inject @SpeedPlayback Preference<Float> speedPlayack;
     @Inject @DistanceUnits Preference<String> distanceUnits;
     @Inject @WeatherUnits Preference<String> weatherUnits;
 
@@ -69,14 +63,11 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     @BindView(R.id.avatar)
     AvatarView avatarView;
 
-    @BindView(R.id.imgSave)
-    ImageView imgSave;
-
     @BindView(R.id.imgMore)
     ImageView imgMore;
 
-    @BindView(R.id.txtDistance)
-    TextViewFont txtDistance;
+    @BindView(R.id.labelDistance)
+    LabelButton labelDistance;
 
     @BindView(R.id.txtName)
     TextViewFont txtName;
@@ -84,32 +75,14 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     @BindView(R.id.txtTime)
     TextViewFont txtTime;
 
-    @BindView(R.id.imgSpeed)
-    ImageView imgSpeed;
-
-    @BindView(R.id.txtSpeed)
-    TextViewFont txtSpeed;
-
-    @BindView(R.id.viewSeparator)
-    View viewSeparator;
-
-    @BindView(R.id.txtCity)
-    TextViewFont txtCity;
-
-    @BindView(R.id.txtSwipeUp)
-    TextViewFont txtSwipeUp;
+    @BindView(R.id.labelCity)
+    LabelButton labelCity;
 
     @BindView(R.id.txtSwipeDown)
     TextViewFont txtSwipeDown;
 
-    @BindView(R.id.btnBackToTribe)
-    View btnBackToTribe;
-
-    @BindView(R.id.txtWeather)
-    TextViewFont txtWeather;
-
-    @BindView(R.id.imgWeather)
-    ImageView imgWeather;
+    @BindView(R.id.labelWeather)
+    LabelButton labelWeather;
 
     // OBSERVABLES
     private Unbinder unbinder;
@@ -171,35 +144,32 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         txtTime.setText(DateUtils.getRelativeTimeSpanString(tribe.getRecordedAt().getTime(), new Date().getTime(), DateUtils.SECOND_IN_MILLIS));
 
         if (tribe.getLocation() != null && tribe.getLocation().hasLocation()) {
-            txtCity.setVisibility(View.VISIBLE);
-            txtDistance.setVisibility(View.VISIBLE);
-            viewSeparator.setVisibility(View.VISIBLE);
+            labelCity.setVisibility(View.VISIBLE);
+            labelDistance.setVisibility(View.VISIBLE);
 
             Location location = tribe.getLocation();
             Weather weatherObj = tribe.getWeather();
-            txtCity.setText(location.getCity());
-            txtDistance.setText(currentUser.getLocation() != null ? currentUser.getLocation().distanceTo(getContext(), distanceUnits.get(), tribe.getLocation()) : getContext().getString(R.string.tribe_distance_enable));
+            labelCity.setText(location.getCity());
+            labelDistance.setText(currentUser.getLocation() != null ? currentUser.getLocation().distanceTo(getContext(), distanceUnits.get(), tribe.getLocation()) : getContext().getString(R.string.tribe_distance_enable));
+            labelDistance.setType(currentUser.getLocation() != null ? LabelButton.INFOS : LabelButton.ACTION);
+
             if (tribe.getWeather() != null) {
-                txtWeather.setVisibility(View.VISIBLE);
-                imgWeather.setVisibility(View.VISIBLE);
-                txtWeather.setText((weatherUnits.get().equals(com.tribe.app.presentation.view.utils.Weather.CELSIUS) ? weatherObj.getTempC() : weatherObj.getTempF()) + "°");
-                imgWeather.setImageResource(getResources().getIdentifier("weather_" + weatherObj.getIcon(), "drawable", getContext().getPackageName()));
+                labelWeather.setVisibility(View.VISIBLE);
+                labelWeather.setText((weatherUnits.get().equals(com.tribe.app.presentation.view.utils.Weather.CELSIUS) ? weatherObj.getTempC() : weatherObj.getTempF()) + "°");
+                labelWeather.setDrawableResource(getResources().getIdentifier("weather_" + weatherObj.getIcon(), "drawable", getContext().getPackageName()));
             } else {
-                txtWeather.setVisibility(View.GONE);
-                imgWeather.setVisibility(View.GONE);
+                labelWeather.setVisibility(View.GONE);
             }
         } else {
-            txtCity.setVisibility(View.GONE);
-            txtDistance.setVisibility(View.GONE);
-            txtWeather.setVisibility(View.GONE);
-            viewSeparator.setVisibility(View.GONE);
-            imgWeather.setVisibility(View.GONE);
+            labelCity.setVisibility(View.GONE);
+            labelDistance.setVisibility(View.GONE);
+            labelWeather.setVisibility(View.GONE);
         }
     }
 
     public void startPlayer() {
         setMedia();
-        setTxtSpeed();
+        //setTxtSpeed();
         if (surfaceTexture != null) prepareWithSurface();
     }
 
@@ -254,65 +224,45 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
     public void setIconsAlpha(float alpha) {
         avatarView.setAlpha(alpha);
-        imgSpeed.setAlpha(alpha);
         imgMore.setAlpha(alpha);
-        imgSave.setAlpha(alpha);
-        viewSeparator.setAlpha(alpha);
-        txtCity.setAlpha(alpha);
-        txtDistance.setAlpha(alpha);
+        labelCity.setAlpha(alpha);
+        labelDistance.setAlpha(alpha);
         txtName.setAlpha(alpha);
-        txtSpeed.setAlpha(alpha);
         txtTime.setAlpha(alpha);
-        imgWeather.setAlpha(alpha);
-        txtWeather.setAlpha(alpha);
-    }
-
-    public void setSwipeUpAlpha(float alpha) {
-        txtSwipeUp.setAlpha(alpha);
+        labelWeather.setAlpha(alpha);
     }
 
     public void setSwipeDownAlpha(float alpha) {
         txtSwipeDown.setAlpha(alpha);
     }
 
-    public void showBackToTribe(int duration) {
-        btnBackToTribe.setClickable(true);
-        AnimationUtils.fadeIn(btnBackToTribe, duration);
-    }
-
-    public void hideBackToTribe(int duration) {
-        btnBackToTribe.setClickable(false);
-        AnimationUtils.fadeOut(btnBackToTribe, duration);
-    }
-
     public Observable<View> onClickEnableLocation() {
         return clickEnableLocation;
     }
 
-    @OnClick(R.id.imgSpeed)
-    void changeSpeed(View view) {
+    public void changeSpeed() {
         if (mediaPlayer.isPlaying()) {
-            Float newSpeed;
-            if (speedPlayback.get().equals(SPEED_NORMAL)) newSpeed = SPEED_LIGHTLY_FASTER;
-            else if (speedPlayback.get().equals(SPEED_LIGHTLY_FASTER)) newSpeed = SPEED_FAST;
-            else newSpeed = SPEED_NORMAL;
-
-            speedPlayback.set(newSpeed);
-            setTxtSpeed();
-            mediaPlayer.setRate(newSpeed);
+            mediaPlayer.setRate(speedPlayack.get());
         }
     }
 
-    @OnClick(R.id.txtDistance)
+    @OnClick(R.id.labelDistance)
     void enableDistance(View view) {
         if (currentUser.getLocation() == null || !currentUser.getLocation().hasLocation()) {
             clickEnableLocation.onNext(this);
+        } else if (currentUser.getLocation() != null && currentUser.getLocation().hasLocation()) {
+            Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                    Uri.parse("http://maps.google.com/maps?saddr="
+                            + currentUser.getLocation().getLatitude() + "," + currentUser.getLocation().getLongitude()
+                            + "&daddr=" + tribe.getLocation().getLatitude() + "," + tribe.getLocation().getLongitude()));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getContext().getApplicationContext().startActivity(intent);
         }
     }
 
-    private void setTxtSpeed() {
-        txtSpeed.setText(getContext().getResources().getString(R.string.Tribe_Speed, fmt(speedPlayback.get())));
-    }
+//    private void setTxtSpeed() {
+//        txtSpeed.setText(getContext().getResources().getString(R.string.Tribe_Speed, fmt(speedPlayback.get())));
+//    }
 
     public static String fmt(double d) {
         if (d == (long) d)
@@ -406,13 +356,11 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
                     mediaPlayer.play();
                     break;
                 case MediaPlayer.Event.Vout:
-                    if (mediaPlayer != null && mediaPlayer.getRate() != speedPlayback.get()) {
-                        mediaPlayer.setRate(speedPlayback.get());
+                    if (mediaPlayer != null && mediaPlayer.getRate() != speedPlayack.get()) {
+                        mediaPlayer.setRate(speedPlayack.get());
                     }
                     break;
                 case MediaPlayer.Event.Playing:
-                    System.out.println("Playing");
-                    break;
                 case MediaPlayer.Event.Paused:
                 case MediaPlayer.Event.Stopped:
                 default:

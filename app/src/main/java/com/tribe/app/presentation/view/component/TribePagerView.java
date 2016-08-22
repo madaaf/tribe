@@ -3,7 +3,6 @@ package com.tribe.app.presentation.view.component;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -18,6 +17,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringConfig;
@@ -28,6 +28,8 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.internal.di.scope.FloatDef;
+import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.view.adapter.pager.TribePagerAdapter;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -54,21 +56,32 @@ import rx.subscriptions.CompositeSubscription;
 
 public class TribePagerView extends FrameLayout {
 
+    public static final float SPEED_NORMAL = 1f;
+    public static final float SPEED_LIGHTLY_FASTER = 1.25f;
+    public static final float SPEED_FAST = 1.5f;
+
+    @FloatDef({SPEED_NORMAL, SPEED_LIGHTLY_FASTER, SPEED_FAST})
+    public @interface SpeedPlaybackValues{}
+
     private static final SpringConfig ORIGAMI_SPRING_BOUNCE_LIGHT_CONFIG = SpringConfig.fromOrigamiTensionAndFriction(132, 11f);
     private static final SpringConfig ORIGAMI_SPRING_BOUNCE_CONFIG = SpringConfig.fromOrigamiTensionAndFriction(132, 7f);
     private static final SpringConfig ORIGAMI_SPRING_CONFIG = SpringConfig.fromOrigamiTensionAndFriction(200, 17);
+    private static final SpringConfig SPRING_REPLY_CONFIG = SpringConfig.fromBouncinessAndSpeed(5f, 5f);
     private static final float DRAG_RATE = 0.5f;
     private static final float OVERSHOOT = 0.75f;
     private static final float OVERSHOOT_MEDIUM = 2.5f;
     private static final float OVERSHOOT_BIG = 3f;
     private static final int DURATION = 200;
     private static final int DURATION_SLOW = 400;
+    private static final int DURATION_REPLY = 600;
     private static final int DELAY_BEFORE_CLOSE = 750;
     private static final int DELAY = 20;
     private static final int DELAY_INIT = 100;
 
     @Inject
     TribePagerAdapter tribePagerAdapter;
+
+    @Inject @SpeedPlayback Preference<Float> speedPlayback;
 
     @BindView(R.id.viewPager)
     CustomViewPager viewPager;
@@ -81,9 +94,6 @@ public class TribePagerView extends FrameLayout {
 
     @BindView(R.id.viewShadowBottom)
     View viewShadowBottom;
-
-    @BindView(R.id.layoutReply)
-    FrameLayout layoutReply;
 
     @BindView(R.id.layoutSnooze)
     FrameLayout layoutSnooze;
@@ -112,14 +122,29 @@ public class TribePagerView extends FrameLayout {
     @BindView(R.id.imgBigSnooze)
     ImageView imgBigSnooze;
 
-    @BindView(R.id.imgReply)
-    ImageView imgReply;
-
     @BindView(R.id.layoutTile)
     TileView viewTile;
 
     @BindView(R.id.cameraWrapper)
     CameraWrapper cameraWrapper;
+
+    @BindView(R.id.imgSpeed)
+    ImageView imgSpeed;
+
+    @BindView(R.id.layoutBottom)
+    ViewGroup layoutBottom;
+
+    @BindView(R.id.viewCircleGradient)
+    View viewCircleGradient;
+
+    @BindView(R.id.txtNbTribes)
+    TextViewFont txtNbTribes;
+
+    @BindView(R.id.layoutNbTribes)
+    ViewGroup layoutNbTribes;
+
+    @BindView(R.id.imgCancelReply)
+    ImageView imgCancelReply;
 
     // SPRINGS
     private SpringSystem springSystem = null;
@@ -128,8 +153,8 @@ public class TribePagerView extends FrameLayout {
     private Spring springTop;
     private Spring springBottom;
     private Spring springAlpha;
-    private Spring springAlphaSwipeUp;
     private Spring springAlphaSwipeDown;
+    private Spring springReplyMode;
     private LeftSpringListener springLeftListener;
     private RightSpringListener springRightListener;
     private TopSpringListener springTopListener;
@@ -145,15 +170,14 @@ public class TribePagerView extends FrameLayout {
     private int currentSwipeDirection;
     private float currentDragPercent;
     private int currentOffsetRight;
-    private int currentOffsetTop;
     private int currentOffsetLeft;
     private int currentOffsetBottom;
     private List<TribeMessage> tribeList;
     private List<TribeMessage> tribeListSeens;
     private TribeComponentView currentView;
     private boolean inSnoozeMode = false;
-    private boolean inReplyMode = false;
     private @CameraWrapper.TribeMode String tribeMode;
+    private boolean inReplyMode = false;
 
     // DIMENS
     private int thresholdEnd;
@@ -162,8 +186,7 @@ public class TribePagerView extends FrameLayout {
     private int thresholdAlphaEnd;
     private int iconSize;
     private int iconSizeMax;
-    private int marginBottomReplyTile;
-    private int marginCameraLeftInit;
+    private int marginCameraTopInit;
     private int marginCameraBottomInit;
 
     // TOUCH HANDLING
@@ -205,7 +228,6 @@ public class TribePagerView extends FrameLayout {
         springTop.addListener(springTopListener);
         springBottom.addListener(springBottomListener);
         springAlpha.addListener(springAlphaListener);
-        springAlphaSwipeUp.addListener(springAlphaSwipeUpListener);
         springAlphaSwipeDown.addListener(springAlphaSwipeDownListener);
     }
 
@@ -218,7 +240,6 @@ public class TribePagerView extends FrameLayout {
         springTop.addListener(springTopListener);
         springBottom.addListener(springBottomListener);
         springAlpha.addListener(springAlphaListener);
-        springAlphaSwipeUp.addListener(springAlphaSwipeUpListener);
         springAlphaSwipeDown.addListener(springAlphaSwipeDownListener);
 
         if (currentView == null)
@@ -251,8 +272,8 @@ public class TribePagerView extends FrameLayout {
 
         initViewPager();
         initDimen();
-        initCamera();
         initUI();
+        initCamera();
     }
 
     public void onResume() {
@@ -303,7 +324,6 @@ public class TribePagerView extends FrameLayout {
         springTop = springSystem.createSpring();
         springBottom = springSystem.createSpring();
         springAlpha = springSystem.createSpring();
-        springAlphaSwipeUp = springSystem.createSpring();
         springAlphaSwipeDown = springSystem.createSpring();
 
         springLeft.setSpringConfig(ORIGAMI_SPRING_CONFIG);
@@ -311,7 +331,6 @@ public class TribePagerView extends FrameLayout {
         springTop.setSpringConfig(ORIGAMI_SPRING_CONFIG);
         springBottom.setSpringConfig(ORIGAMI_SPRING_CONFIG);
         springAlpha.setSpringConfig(ORIGAMI_SPRING_CONFIG);
-        springAlphaSwipeUp.setSpringConfig(ORIGAMI_SPRING_CONFIG);
         springAlphaSwipeDown.setSpringConfig(ORIGAMI_SPRING_CONFIG);
 
         springLeftListener = new LeftSpringListener();
@@ -328,16 +347,42 @@ public class TribePagerView extends FrameLayout {
         viewTile.setLayoutParams(paramsLayoutTile);
         viewTile.invalidate();
         viewTile.initWithParent(null);
-        viewTile.onRecordStart().subscribe(recordStarted);
-        viewTile.onRecordEnd().subscribe(recordEnded);
-        viewTile.onTapToCancel().subscribe(clickTapToCancel);
-        viewTile.onNotCancel().subscribe(onNotCancel);
+
+        viewTile.onRecordStart()
+                .doOnNext(view -> hideExitCamera())
+                .subscribe(recordStarted);
+        viewTile.onRecordEnd()
+                .subscribe(recordEnded);
+        viewTile.onTapToCancel()
+                .doOnNext(view -> {
+                    closeReplyMode();
+                    inReplyMode = false;
+                })
+                .subscribe(clickTapToCancel);
+        viewTile.onNotCancel()
+                .doOnNext(view -> {
+                    closeReplyMode();
+                    inReplyMode = false;
+                })
+                .subscribe(onNotCancel);
+        subscriptions.add(viewTile
+                .onReplyModeStarted()
+                .doOnNext(bool -> {
+                    computeCurrentView();
+                    currentView.pausePlayer();
+                    inReplyMode = true;
+                })
+                .subscribe(bool -> {
+                    openReplyMode(bool);
+                })
+        );
 
         FrameLayout.LayoutParams paramsCamera = (FrameLayout.LayoutParams) cameraWrapper.getLayoutParams();
-        paramsCamera.topMargin = screenUtils.getHeight() - cameraWrapper.getHeightFromRatio() - marginCameraBottomInit;
-        paramsCamera.leftMargin = marginCameraLeftInit;
+        paramsCamera.topMargin = (screenUtils.getHeight() >> 1) - (cameraWrapper.getHeightFromRatio() >> 1);
+        paramsCamera.leftMargin = (screenUtils.getWidth() >> 1) - (cameraWrapper.getWidthFromRatio() >> 1);
         cameraWrapper.setLayoutParams(paramsCamera);
-        cameraWrapper.invalidate();
+
+        imgCancelReply.setTranslationX(screenUtils.getWidth());
     }
 
     private void initDimen() {
@@ -347,17 +392,37 @@ public class TribePagerView extends FrameLayout {
         snoozeModeWidth = getContext().getResources().getDimensionPixelSize(R.dimen.snooze_mode_width);
         iconSize = getContext().getResources().getDimensionPixelSize(R.dimen.tribe_icon_size);
         iconSizeMax = getContext().getResources().getDimensionPixelSize(R.dimen.tribe_icon_size_max);
-        marginBottomReplyTile = getResources().getDimensionPixelOffset(R.dimen.vertical_margin_reply_tile);
-        marginCameraLeftInit = getContext().getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
         marginCameraBottomInit = getContext().getResources().getDimensionPixelOffset(R.dimen.vertical_margin_small);
     }
 
     private void initCamera() {
+        marginCameraTopInit = (screenUtils.getHeight() >> 1) - (cameraWrapper.getHeightFromRatio() >> 1);
+
         cameraWrapper.initDimens(
-                marginCameraLeftInit + backToMessageHeight,
-                marginCameraLeftInit,
-                marginCameraBottomInit
+                marginCameraTopInit,
+                (screenUtils.getWidth() >> 1) - (cameraWrapper.getWidthFromRatio() >> 1),
+                marginCameraBottomInit,
+                false
         );
+
+        // SPRING INSIDE CONFIGURATION
+        springReplyMode = springSystem.createSpring();
+        springReplyMode.setSpringConfig(SPRING_REPLY_CONFIG);
+        springReplyMode.addListener(new SimpleSpringListener() {
+            @Override
+            public void onSpringUpdate(Spring spring) {
+                float value = (float) spring.getCurrentValue();
+
+                int marginTop = marginCameraTopInit - (int) (value * screenUtils.getHeight());
+                FrameLayout.LayoutParams paramsCamera = (FrameLayout.LayoutParams) cameraWrapper.getLayoutParams();
+                paramsCamera.topMargin = marginTop;
+                cameraWrapper.setLayoutParams(paramsCamera);
+
+                viewCircleGradient.setAlpha(1 - value);
+            }
+        });
+
+        springReplyMode.setEndValue(1f);
 
         subscriptions.add(cameraWrapper.tribeMode().subscribe(mode -> tribeMode = mode));
     }
@@ -396,18 +461,18 @@ public class TribePagerView extends FrameLayout {
         viewPager.computeSwipeDirection(event);
         currentSwipeDirection = viewPager.getCurrentSwipeDirection();
 
+        if (inReplyMode) return false;
+
         int action = event.getAction();
         switch (action & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN: {
-                if (!inReplyMode && !inSnoozeMode) {
+                if (!inSnoozeMode && !inReplyMode) {
                     initSnoozeItems();
-                    initReplyItems();
                     springLeft.setCurrentValue(0).setAtRest();
                     springBottom.setCurrentValue(0).setAtRest();
                     springRight.setCurrentValue(0).setAtRest();
                     springTop.setCurrentValue(0).setAtRest();
                     springAlpha.setCurrentValue(1).setAtRest();
-                    springAlphaSwipeUp.setCurrentValue(0).setAtRest();
                     springAlphaSwipeDown.setCurrentValue(0).setAtRest();
                 }
 
@@ -421,8 +486,7 @@ public class TribePagerView extends FrameLayout {
                 velocityTracker = VelocityTracker.obtain();
                 velocityTracker.addMovement(event);
 
-                if ((inReplyMode && event.getY() < backToMessageHeight)
-                    || (inSnoozeMode &&  (event.getX() > getWidth() - snoozeModeWidth))) {
+                if (inSnoozeMode && (event.getX() > getWidth() - snoozeModeWidth)) {
                     return true;
                 } else {
                     return false;
@@ -430,25 +494,13 @@ public class TribePagerView extends FrameLayout {
             }
 
             case MotionEvent.ACTION_MOVE: {
-                if (currentSwipeDirection == -1) return false;
+                if (currentSwipeDirection == -1 || inReplyMode) return false;
 
                 final int pointerIndex = event.findPointerIndex(activePointerId);
 
                 if (pointerIndex != -1) {
                     final int location[] = {0, 0};
                     getLocationOnScreen(location);
-
-                    if (inReplyMode) {
-                        final int locationCamera[] = {0, 0};
-                        cameraWrapper.getLocationOnScreen(locationCamera);
-
-                        if (event.getX() <= locationCamera[0] + cameraWrapper.getWidth()
-                                && event.getX() > locationCamera[0]
-                                && event.getY() <= locationCamera[1] + cameraWrapper.getHeight()
-                                && event.getY() > locationCamera[1]) {
-                            return false;
-                        }
-                    }
 
                     if (currentSwipeDirection == CustomViewPager.SWIPE_MODE_RIGHT || currentSwipeDirection == CustomViewPager.SWIPE_MODE_LEFT) {
                         float x = event.getX(pointerIndex) + location[0];
@@ -467,23 +519,13 @@ public class TribePagerView extends FrameLayout {
 
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
-                if (currentSwipeDirection == -1) return false;
+                if (currentSwipeDirection == -1 || inReplyMode) return false;
 
                 final int pointerIndex = event.findPointerIndex(activePointerId);
 
                 if (pointerIndex != -1) {
                     final int location[] = {0, 0};
                     getLocationOnScreen(location);
-
-                    final int locationCamera[] = {0, 0};
-                    cameraWrapper.getLocationOnScreen(locationCamera);
-
-                    if (event.getX() <= locationCamera[0] + cameraWrapper.getWidth()
-                            && event.getX() > locationCamera[0]
-                            && event.getY() <= locationCamera[1] + cameraWrapper.getHeight()
-                            && event.getY() > locationCamera[1]) {
-                        return false;
-                    }
 
                     if (currentSwipeDirection == CustomViewPager.SWIPE_MODE_RIGHT || currentSwipeDirection == CustomViewPager.SWIPE_MODE_LEFT) {
                         float x = event.getX(pointerIndex) + location[0];
@@ -544,8 +586,6 @@ public class TribePagerView extends FrameLayout {
                         if (!inReplyMode && !inSnoozeMode) {
                             if (offsetY >= 0) {
                                 return applyOffsetBottomWithTension(offsetY);
-                            } else {
-                                return applyOffsetTopWithTension(offsetY);
                             }
                         }
                     }
@@ -566,9 +606,7 @@ public class TribePagerView extends FrameLayout {
                     final int location[] = {0, 0};
                     getLocationOnScreen(location);
 
-                    if (inReplyMode) {
-                        if (event.getY() < backToMessageHeight) closeReplyMode();
-                    } else if (inSnoozeMode) {
+                    if (inSnoozeMode) {
                         if (event.getX() > snoozeModeWidth) closeSnoozeMenu(false);
                     }
 
@@ -603,7 +641,7 @@ public class TribePagerView extends FrameLayout {
                         float y = event.getY(pointerIndex) - location[1];
                         float offsetY = y - lastDownY + lastDownYTr;
 
-                        if (!inReplyMode && !inSnoozeMode) {
+                        if (!inSnoozeMode) {
                             if (offsetY >= 0) {
                                 springBottom.setCurrentValue(currentOffsetBottom);
 
@@ -614,19 +652,7 @@ public class TribePagerView extends FrameLayout {
                                     springAlpha.setVelocity(velocityTracker.getYVelocity()).setEndValue(1);
                                     springBottom.setVelocity(velocityTracker.getYVelocity()).setEndValue(0);
                                 }
-                            } else {
-                                springTop.setCurrentValue(currentOffsetTop).setAtRest();
-
-                                if (offsetY < -thresholdEnd) {
-                                    openReplyMode();
-                                } else {
-                                    springAlpha.setVelocity(velocityTracker.getYVelocity()).setEndValue(1);
-                                    springAlphaSwipeUp.setVelocity(velocityTracker.getYVelocity()).setEndValue(0);
-                                    springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(0);
-                                }
                             }
-                        } else if (inReplyMode) {
-                            closeReplyMode();
                         }
                     }
                 }
@@ -639,13 +665,12 @@ public class TribePagerView extends FrameLayout {
 
     @Override
     public void setBackgroundColor(int color) {
-        ColorDrawable[] colorList = {
-                new ColorDrawable(getResources().getColor(R.color.black_tribe)),
-                new ColorDrawable(color),
-        };
-        TransitionDrawable trd = new TransitionDrawable(colorList);
-        this.layoutReply.setBackground(trd);
-
+//        ColorDrawable[] colorList = {
+//                new ColorDrawable(getResources().getColor(R.color.black_tribe)),
+//                new ColorDrawable(color),
+//        };
+//        TransitionDrawable trd = new TransitionDrawable(colorList);
+//        this.layoutReply.setBackground(trd);
     }
 
     private class LeftSpringListener extends SimpleSpringListener {
@@ -691,25 +716,26 @@ public class TribePagerView extends FrameLayout {
         viewPager.setTranslationY(value);
         layoutSnooze.setTranslationY(value);
         viewShadowBottom.setTranslationY(value);
+        layoutBottom.setTranslationY(value);
     }
 
     private void scrollBottom(float value) {
         viewPager.setTranslationY(value);
-        layoutReply.setTranslationY(value);
         layoutSnooze.setTranslationY(value);
         viewShadowTop.setTranslationY(value);
+        layoutBottom.setTranslationY(value);
     }
 
     private void scrollRight(float value) {
         viewPager.setTranslationX(value);
-        layoutReply.setTranslationX(value);
         viewShadowLeft.setTranslationX(value);
+        layoutBottom.setTranslationX(value);
     }
 
     private void scrollLeft(float value) {
         viewPager.setTranslationX(value);
-        layoutReply.setTranslationX(value);
         layoutSnooze.setTranslationX(value);
+        layoutBottom.setTranslationX(value);
     }
 
     private class BottomSpringListener extends SimpleSpringListener {
@@ -750,7 +776,6 @@ public class TribePagerView extends FrameLayout {
                 float value = (float) spring.getCurrentValue();
 
                 computeCurrentView();
-                currentView.setSwipeUpAlpha(value);
             }
         }
     }
@@ -783,16 +808,6 @@ public class TribePagerView extends FrameLayout {
         layoutTomorrow.setTranslationX(getWidth() >> 1);
         layoutWeekend.setTranslationX(getWidth() >> 1);
         layoutWeek.setTranslationX(getWidth() >> 1);
-    }
-
-    private void initReplyItems() {
-        imgReply.setAlpha(1f);
-        TransitionDrawable trd = ((TransitionDrawable) layoutReply.getBackground());
-        trd.resetTransition();
-        viewTile.setRotation(-10f);
-        viewTile.setTranslationY(0);
-        viewTile.setAvatarScale(0.8f, 0, 0, null);
-        cameraWrapper.setTranslationY(getHeight());
     }
 
     private void updateIconSize(View view, int size) {
@@ -920,54 +935,6 @@ public class TribePagerView extends FrameLayout {
                 .start();
     }
 
-    private void openReplyMode() {
-        inReplyMode = true;
-        springAlpha.setVelocity(velocityTracker.getYVelocity()).setEndValue(0);
-        springAlphaSwipeUp.setVelocity(velocityTracker.getYVelocity()).setEndValue(0);
-        springTop.setSpringConfig(ORIGAMI_SPRING_BOUNCE_LIGHT_CONFIG);
-        springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(-getHeight() + backToMessageHeight);
-
-        AnimationUtils.fadeOut(imgReply, DURATION);
-
-        TransitionDrawable trd = ((TransitionDrawable) layoutReply.getBackground());
-        trd.setCrossFadeEnabled(false);
-        trd.startTransition(DURATION);
-
-        viewTile.setAvatarScale(1, DURATION, DURATION >> 1, new OvershootInterpolator(OVERSHOOT_MEDIUM));
-        viewTile.animate().translationY(-((getHeight() >> 1) - (viewTile.getHeight() >> 1) - marginBottomReplyTile))
-                .rotation(0)
-                .setInterpolator(new DecelerateInterpolator())
-                .setDuration(DURATION)
-                .start();
-
-        cameraWrapper.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).setDuration(DURATION).start();
-
-        computeCurrentView();
-        currentView.showBackToTribe(DURATION);
-
-        if (currentView != null) currentView.pausePlayer();
-    }
-
-    private void closeReplyMode() {
-        inReplyMode = false;
-        springAlpha.setVelocity(velocityTracker.getYVelocity()).setEndValue(1);
-        springAlphaSwipeUp.setVelocity(velocityTracker.getYVelocity()).setEndValue(0);
-        springTop.setSpringConfig(ORIGAMI_SPRING_CONFIG);
-        springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(0);
-
-        TransitionDrawable trd = ((TransitionDrawable) layoutReply.getBackground());
-        trd.setCrossFadeEnabled(false);
-        trd.reverseTransition(DURATION);
-
-        viewTile.setAvatarScale(0.8f, DURATION, 0, null);
-        viewTile.animate().translationY(marginBottomReplyTile).rotation(-10f).setDuration(DURATION_SLOW).start();
-        cameraWrapper.animate().translationY(getHeight()).setDuration(DURATION_SLOW).start();
-
-        currentView.hideBackToTribe(DURATION);
-
-        if (currentView != null) currentView.resumePlayer();
-    }
-
     private boolean applyOffsetLeftWithTension(float offsetX) {
         // OPENING SNOOZE MENU
         float totalDragDistance = getWidth() - snoozeModeWidth;
@@ -994,7 +961,8 @@ public class TribePagerView extends FrameLayout {
         }
 
         currentOffsetRight = computeOffsetWithTension(scrollRight, totalDragDistance);
-        viewPager.setTranslationX(currentOffsetRight);
+        scrollRight(currentOffsetRight);
+
         updateIconSize(imgSnooze, (int) (currentDragPercent * iconSizeMax));
         imgSnooze.setTranslationY((getHeight() >> 1) - ((LayoutParams) imgSnooze.getLayoutParams()).topMargin - (imgSnooze.getHeight() >> 1));
         txtSnooze.setTranslationY((getHeight() >> 1) - ((LayoutParams) txtSnooze.getLayoutParams()).topMargin - (txtSnooze.getHeight() >> 1));
@@ -1015,26 +983,6 @@ public class TribePagerView extends FrameLayout {
 
         springAlpha.setCurrentValue(1 - (offsetY / thresholdAlphaEnd));
         springAlphaSwipeDown.setCurrentValue(offsetY / (thresholdAlphaEnd * 2));
-        return true;
-    }
-
-    private boolean applyOffsetTopWithTension(float offsetY) {
-        // OPENING REPLY MENU
-        float totalDragDistance = getHeight() / 3;
-        final float scrollTop = -offsetY * DRAG_RATE;
-        currentDragPercent = scrollTop / totalDragDistance;
-
-        if (currentDragPercent < 0) {
-            return false;
-        }
-
-        currentOffsetTop = -computeOffsetWithTension(scrollTop, totalDragDistance);
-        scrollTop(currentOffsetTop);
-        updateIconSize(imgReply, (int) (currentDragPercent * iconSizeMax));
-        viewTile.setTranslationY(currentOffsetTop);
-
-        springAlpha.setCurrentValue(1 - (offsetY / -thresholdAlphaEnd));
-        springAlphaSwipeUp.setCurrentValue(offsetY / (-thresholdAlphaEnd * 2));
         return true;
     }
 
@@ -1066,6 +1014,74 @@ public class TribePagerView extends FrameLayout {
 
     public List<TribeMessage> getTribeListSeens() {
         return tribeListSeens;
+    }
+
+    private void hideSpeed() {
+        imgSpeed.animate().translationX(-screenUtils.getWidth()).setDuration(DURATION_SLOW).setInterpolator(new DecelerateInterpolator()).start();
+    }
+
+    private void showSpeed() {
+        imgSpeed.animate().translationX(0).setDuration(DURATION_SLOW).setInterpolator(new DecelerateInterpolator()).start();
+    }
+
+    private void hideNbTribes() {
+        layoutNbTribes.animate().translationX(screenUtils.getWidth()).setDuration(DURATION_REPLY).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
+    }
+
+    private void showNbTribes() {
+        layoutNbTribes.animate().translationX(0).setDuration(DURATION_REPLY).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
+    }
+
+    private void showExitCamera() {
+        imgCancelReply.animate().translationX(0).setDuration(DURATION_REPLY).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
+    }
+
+    private void hideExitCamera() {
+        imgCancelReply.animate().translationX(screenUtils.getWidth()).setDuration(DURATION_REPLY).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
+    }
+
+    private void openReplyMode(boolean showExitCamera) {
+        springReplyMode.setEndValue(0f);
+        hideSpeed();
+        hideNbTribes();
+        if (showExitCamera) showExitCamera();
+    }
+
+    private void closeReplyMode() {
+        springReplyMode.setEndValue(1f);
+        showSpeed();
+        showNbTribes();
+        hideExitCamera();
+        currentView.resumePlayer();
+        viewTile.cancelReplyMode();
+    }
+
+    @OnClick(R.id.imgCancelReply)
+    public void stopReply() {
+        closeReplyMode();
+    }
+
+    //////////////////////
+    //     PLAYER       //
+    //////////////////////
+    @OnClick(R.id.imgSpeed)
+    public void changeSpeed() {
+        Float newSpeed;
+        if (speedPlayback.get().equals(SPEED_NORMAL)) newSpeed = SPEED_LIGHTLY_FASTER;
+        else if (speedPlayback.get().equals(SPEED_LIGHTLY_FASTER)) newSpeed = SPEED_FAST;
+        else newSpeed = SPEED_NORMAL;
+        speedPlayback.set(newSpeed);
+
+        computeCurrentView();
+        currentView.changeSpeed();
+
+        if (newSpeed.equals(SPEED_NORMAL)) {
+            imgSpeed.setImageResource(R.drawable.picto_speed_regular);
+        } else if (newSpeed.equals(SPEED_LIGHTLY_FASTER)) {
+            imgSpeed.setImageResource(R.drawable.picto_speed_medium);
+        } else if (newSpeed.equals(SPEED_FAST)) {
+            imgSpeed.setImageResource(R.drawable.picto_speed_fast);
+        }
     }
 
     //////////////////////

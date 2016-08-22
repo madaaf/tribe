@@ -4,72 +4,6 @@
     >
 
     <FrameLayout
-        android:id="@+id/layoutReply"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@null"
-        >
-
-        <ImageView
-            android:id='@+id/imgReply'
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginBottom="@dimen/vertical_margin_xlarge"
-            android:layout_gravity="center_horizontal|bottom"
-            android:src="@drawable/picto_reply"
-            android:scaleType="centerInside"
-            />
-
-        <com.tribe.app.presentation.view.component.TileView
-            android:id="@+id/layoutTile"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginBottom="@dimen/vertical_margin_reply_tile"
-            android:background="@drawable/shape_rounded_reply"
-            app:tileType="tile"
-            />
-
-        <!--<com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top|center_horizontal"
-            android:layout_marginTop="@dimen/vertical_margin_small"
-            style="@style/Text.Grid.Name"
-            />
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/Text.Grid.Status"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginBottom="@dimen/vertical_margin_small"
-            android:text="@string/Tribe.Reply.Hint"
-            />
-
-        <com.tribe.app.presentation.view.widget.AvatarView
-            android:id="@+id/avatar"
-            android:layout_width="@dimen/avatar_size"
-            android:layout_height="@dimen/avatar_size"
-            android:layout_gravity="center"
-            />-->
-
-        <com.tribe.app.presentation.view.widget.CameraWrapper
-            android:id="@+id/cameraWrapper"
-            android:layout_width="@dimen/camera_width"
-            android:layout_height="@dimen/camera_height"
-            android:layout_gravity="top|left"
-            android:elevation="5dp"
-            android:clipToPadding="false"
-            app:cornerRadius="5dp"
-            android:background="@null"
-            />
-
-    </FrameLayout>
-
-    <FrameLayout
         android:id="@+id/layoutSnooze"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -256,9 +190,26 @@
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/black"
+        android:background="@android:color/white"
         android:visibility="visible"
         />
+
+    <View
+        android:id="@+id/viewCircleGradient"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_tribe_reply_gradient"
+        android:layout_gravity="center"
+        android:alpha="0"
+        />
+
+    <!--<com.tribe.app.presentation.view.widget.GradientCircleView
+        android:id="@+id/viewCircleGradient"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:alpha="0"
+        />-->
 
     <ImageView
         android:id="@+id/imgBigSnooze"
@@ -270,6 +221,81 @@
         android:scaleY="0"
         android:alpha="0"
         android:rotation="0"
+        android:visibility="gone"
         />
 
+    <FrameLayout
+        android:id="@+id/layoutBottom"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/reply_size_full"
+        android:layout_marginBottom="7dp"
+        android:layout_gravity="bottom"
+        android:background="@null"
+        >
+
+        <ImageView
+            android:id="@+id/imgSpeed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|left"
+            android:layout_marginLeft="7dp"
+            android:src="@drawable/picto_speed_regular"
+            android:scaleType="centerInside"
+            android:background="@drawable/bg_speed"
+            android:foreground="@drawable/selectable_button_oval"
+            android:clickable="true"
+            />
+
+        <LinearLayout
+            android:id="@+id/layoutNbTribes"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="right|bottom"
+            android:layout_marginRight="7dp"
+            android:background="@drawable/bg_nb_tribes"
+            android:foreground="@drawable/selectable_button_oval_light"
+            android:gravity="center"
+            android:clickable="true">
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:id="@+id/txtNbTribes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="2"
+                style="@style/Headline.White.2"
+                />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/imgCancelReply"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="bottom|right"
+            android:layout_marginRight="7dp"
+            android:src="@drawable/picto_tap_to_cancel_black"
+            android:scaleType="centerInside"
+            android:background="@drawable/bg_tap_to_cancel_tribe"
+            android:foreground="@drawable/selectable_button_oval"
+            android:clickable="true"
+            />
+
+        <com.tribe.app.presentation.view.component.TileView
+            android:id="@+id/layoutTile"
+            android:layout_width="@dimen/reply_size"
+            android:layout_height="@dimen/reply_size"
+            android:layout_gravity="bottom|center_horizontal"
+            android:background="@null"
+            app:tileType="tile"
+            />
+
+    </FrameLayout>
+
+    <com.tribe.app.presentation.view.widget.CameraWrapper
+        android:id="@+id/cameraWrapper"
+        android:layout_width="@dimen/camera_width"
+        android:layout_height="@dimen/camera_height"
+        android:background="@null"
+        />
 </merge>

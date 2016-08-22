@@ -182,7 +182,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         cameraWrapper.initDimens(
                 getResources().getDimensionPixelSize(R.dimen.vertical_margin_small),
                 getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small),
-                getResources().getDimensionPixelSize(R.dimen.nav_layout_height)
+                getResources().getDimensionPixelSize(R.dimen.nav_layout_height),
+                true
         );
 
         subscriptions.add(cameraWrapper.tribeMode().subscribe(mode -> {
