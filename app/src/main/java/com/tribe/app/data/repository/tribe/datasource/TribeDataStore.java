@@ -28,8 +28,10 @@ public interface TribeDataStore {
     /**
      * Get an {@link Observable} which will emit a {@link List < TribeMessage >} containing infos
      * about the tribes received and sent.
+     *
+     * @param friendshipId (friendship or group)
      */
-    Observable<List<TribeRealm>> tribes();
+    Observable<List<TribeRealm>> tribes(String friendshipId);
 
     /**
      * Get an {@link Observable} which will emit a {@link List < TribeMessage >} containing infos

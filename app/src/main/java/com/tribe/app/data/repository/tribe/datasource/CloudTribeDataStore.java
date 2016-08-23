@@ -85,7 +85,7 @@ public class CloudTribeDataStore implements TribeDataStore {
     }
 
     @Override
-    public Observable<List<TribeRealm>> tribes() {
+    public Observable<List<TribeRealm>> tribes(String friendshipId) {
         return null;
 
 //        return tribeApi.tribes(context.getString(R.string.tribe_infos))

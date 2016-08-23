@@ -38,6 +38,7 @@ import com.tribe.app.presentation.view.widget.CustomViewPager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -305,6 +306,7 @@ public class TribePagerView extends FrameLayout {
 
             public void onPageSelected(int currentPosition) {
                 tribeListSeens.add(tribeList.get(currentPosition));
+                updateNbTribes();
                 tribePagerAdapter.setCurrentPosition(currentPosition);
                 currentView = (TribeComponentView) viewPager.findViewWithTag(currentPosition);
                 tribePagerAdapter.releaseTribe((TribeComponentView) viewPager.findViewWithTag(previousPosition));
@@ -367,12 +369,12 @@ public class TribePagerView extends FrameLayout {
                 .subscribe(onNotCancel);
         subscriptions.add(viewTile
                 .onReplyModeStarted()
-                .doOnNext(bool -> {
+                .subscribe(bool -> {
+                    cameraWrapper.setVisibility(View.VISIBLE);
+                    cameraWrapper.onResume(false);
                     computeCurrentView();
                     currentView.pausePlayer();
                     inReplyMode = true;
-                })
-                .subscribe(bool -> {
                     openReplyMode(bool);
                 })
         );
@@ -420,6 +422,14 @@ public class TribePagerView extends FrameLayout {
 
                 viewCircleGradient.setAlpha(1 - value);
             }
+
+            @Override
+            public void onSpringAtRest(Spring spring) {
+                if (spring.getEndValue() == 1f) {
+                    cameraWrapper.onPause();
+                    cameraWrapper.setVisibility(View.GONE);
+                }
+            }
         });
 
         springReplyMode.setEndValue(1f);
@@ -429,8 +439,30 @@ public class TribePagerView extends FrameLayout {
 
     public void setItems(List<TribeMessage> items) {
         this.tribeList = items;
-        tribeListSeens.add(tribeList.get(0));
+        this.tribeListSeens.add(tribeList.get(0));
         this.tribePagerAdapter.setItems(items);
+        updateNbTribes();
+    }
+
+    public void addItems(List<TribeMessage> items) {
+        List<TribeMessage> newTribeList = new ArrayList<>();
+        Date newestDate = this.tribeList.get(this.tribeList.size() - 1).getRecordedAt();
+
+        for (TribeMessage message : items) {
+            if (message.getRecordedAt().after(newestDate)) {
+                newTribeList.add(message);
+            }
+        }
+
+        if (newTribeList.size() > 0) {
+            this.tribeList.addAll(newTribeList);
+            this.tribePagerAdapter.setItems(newTribeList);
+            updateNbTribes();
+        }
+    }
+
+    private void updateNbTribes() {
+        this.txtNbTribes.setText("" + (tribeList.size() - tribeListSeens.size()));
     }
 
     public @CameraWrapper.TribeMode String getTribeMode() {
@@ -569,13 +601,13 @@ public class TribePagerView extends FrameLayout {
                                 if (offsetX <= 0) {
                                     return applyOffsetLeftWithTension(offsetX);
                                 } else {
-                                    return applyOffsetRightWithTension(offsetX);
+                                    //return applyOffsetRightWithTension(offsetX);
                                 }
                             } else {
                                 if (offsetX <= 0) {
                                     return viewPager.onTouchEvent(event);
                                 } else {
-                                    return applyOffsetRightWithTension(offsetX);
+                                    //return applyOffsetRightWithTension(offsetX);
                                 }
                             }
                         }
@@ -625,13 +657,13 @@ public class TribePagerView extends FrameLayout {
                                         springLeft.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
                                     }
                                 } else {
-                                    computeUpToRight(offsetX);
+                                    //computeUpToRight(offsetX);
                                 }
                             } else {
                                 if (offsetX <= 0) {
                                     return viewPager.onTouchEvent(event);
                                 } else {
-                                    computeUpToRight(offsetX);
+                                    //computeUpToRight(offsetX);
                                 }
                             }
                         } else if (inSnoozeMode) {

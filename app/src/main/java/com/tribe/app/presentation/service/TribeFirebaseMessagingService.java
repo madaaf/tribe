@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.tribe.app.data.network.job.UpdateMessagesJob;
+import com.tribe.app.presentation.AndroidApplication;
 
 /**
  * Created by tiago on 12/07/2016.
@@ -16,6 +18,6 @@ public class TribeFirebaseMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Log.d(TAG, "From: " + remoteMessage.getFrom());
         Log.d(TAG, "Notification ChatMessage Body: " + remoteMessage.getNotification().getBody());
-        //((AndroidApplication) getApplication()).getApplicationComponent().jobManager().addJobInBackground(new UpdateMessagesJob());
+        ((AndroidApplication) getApplication()).getApplicationComponent().jobManager().addJobInBackground(new UpdateMessagesJob());
     }
 }

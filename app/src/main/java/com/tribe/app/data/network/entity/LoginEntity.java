@@ -6,19 +6,17 @@ package com.tribe.app.data.network.entity;
 public class LoginEntity {
 
     private String to;
-    private String grant_type;
     private String username;
     private String password;
-    private String scope;
+    private String pinId;
 
     public LoginEntity(String to) {
         this.to = to;
     }
 
-    public LoginEntity(String phoneNumber, String code, String scope, String grant_type) {
+    public LoginEntity(String phoneNumber, String code, String pinId) {
         this.username = phoneNumber;
         this.password = code;
-        this.scope = scope;
-        this.grant_type = grant_type;
+        this.pinId = pinId;
     }
 }

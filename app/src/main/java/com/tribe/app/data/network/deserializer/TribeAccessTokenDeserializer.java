@@ -18,9 +18,9 @@ public class TribeAccessTokenDeserializer implements JsonDeserializer<AccessToke
             JsonObject results = je.getAsJsonObject();
             AccessToken accessToken = new AccessToken();
             accessToken.setAccessToken(results.get("access_token").getAsString());
-            accessToken.setUserId(results.get("3").getAsString());
+            accessToken.setUserId(results.get("user_id").getAsString());
             accessToken.setRefreshToken(results.get("refresh_token").getAsString());
-            accessToken.setTokenType(results.get("token_type").getAsString());
+            accessToken.setTokenType("Bearer");
             return accessToken;
         }
     }

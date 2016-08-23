@@ -190,7 +190,7 @@
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/white"
+        android:background="@android:color/black"
         android:visibility="visible"
         />
 
@@ -202,14 +202,6 @@
         android:layout_gravity="center"
         android:alpha="0"
         />
-
-    <!--<com.tribe.app.presentation.view.widget.GradientCircleView
-        android:id="@+id/viewCircleGradient"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:alpha="0"
-        />-->
 
     <ImageView
         android:id="@+id/imgBigSnooze"
@@ -297,5 +289,6 @@
         android:layout_width="@dimen/camera_width"
         android:layout_height="@dimen/camera_height"
         android:background="@null"
+        android:visibility="gone"
         />
 </merge>

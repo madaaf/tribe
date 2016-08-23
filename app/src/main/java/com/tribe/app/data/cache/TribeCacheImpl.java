@@ -175,20 +175,34 @@ public class TribeCacheImpl implements TribeCache {
     }
 
     @Override
-    public Observable<List<TribeRealm>> tribes() {
+    public Observable<List<TribeRealm>> tribes(String friendshipId) {
         return Observable.create(new Observable.OnSubscribe<List<TribeRealm>>() {
             @Override
             public void call(final Subscriber<? super List<TribeRealm>> subscriber) {
-                tribes = realm.where(TribeRealm.class)
-                        .beginGroup()
-                        .notEqualTo("messageStatus", MessageStatus.STATUS_OPENED)
-                        .notEqualTo("from.id", currentUser.getId())
-                        .endGroup()
-                        .or()
-                        .beginGroup()
-                        .equalTo("from.id", currentUser.getId())
-                        .endGroup()
-                        .findAllSorted("recorded_at", Sort.ASCENDING);
+                if (friendshipId == null) {
+                    tribes = realm.where(TribeRealm.class)
+                            .beginGroup()
+                            .notEqualTo("messageStatus", MessageStatus.STATUS_OPENED)
+                            .notEqualTo("from.id", currentUser.getId())
+                            .endGroup()
+                            .or()
+                            .beginGroup()
+                            .equalTo("from.id", currentUser.getId())
+                            .endGroup()
+                            .findAllSorted("recorded_at", Sort.ASCENDING);
+                } else {
+                    tribes = realm.where(TribeRealm.class)
+                            .beginGroup()
+                            .equalTo("from.id", friendshipId)
+                            .endGroup()
+                            .or()
+                            .beginGroup()
+                            .equalTo("group.id", friendshipId)
+                            .notEqualTo("from.id", currentUser.getId())
+                            .endGroup()
+                            .findAllSorted("recorded_at", Sort.ASCENDING);
+                }
+
                 tribes.removeChangeListeners();
                 tribes.addChangeListener(tribesUpdated -> {
                     subscriber.onNext(realm.copyFromRealm(tribesUpdated));

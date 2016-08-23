@@ -26,6 +26,9 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by tiago on 05/07/2016.
@@ -73,13 +76,19 @@ public class DownloadTribeJob extends BaseJob {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    Log.d(TAG, "server contacted and has file");
-                    boolean writtenToDisk = writeResponseBodyToDisk(response.body());
-                    Log.d(TAG, "file download was a success? " + writtenToDisk);
+                    Observable.just("")
+                            .doOnNext(s -> {
+                                Log.d(TAG, "server contacted and has file");
+                                boolean writtenToDisk = writeResponseBodyToDisk(response.body());
+                                Log.d(TAG, "file download was a success? " + writtenToDisk);
 
-                    TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
-                    tribeRealm.setMessageStatus(MessageStatus.STATUS_READY);
-                    tribeCache.update(tribeRealm);
+                                TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
+                                tribeRealm.setMessageStatus(MessageStatus.STATUS_READY);
+                                tribeCache.update(tribeRealm);
+                            })
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(s -> {});
                 } else {
                     Log.d(TAG, "server contact failed");
                 }

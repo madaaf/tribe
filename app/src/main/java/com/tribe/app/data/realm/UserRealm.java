@@ -19,7 +19,7 @@ public class UserRealm extends RealmObject {
     private String displayName;
     private String username;
     private String phone;
-    private String profilePicture;
+    private String picture;
     private int score;
     private String email;
     private boolean emailVerified;
@@ -66,11 +66,11 @@ public class UserRealm extends RealmObject {
     }
 
     public String getProfilePicture() {
-        return profilePicture;
+        return picture;
     }
 
     public void setProfilePicture(String profilePicture) {
-        this.profilePicture = profilePicture;
+        this.picture = profilePicture;
     }
 
     public int getScore() {

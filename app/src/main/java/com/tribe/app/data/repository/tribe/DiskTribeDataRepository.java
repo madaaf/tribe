@@ -61,9 +61,9 @@ public class DiskTribeDataRepository implements TribeRepository {
     }
 
     @Override
-    public Observable<List<TribeMessage>> tribes() {
+    public Observable<List<TribeMessage>> tribes(String friendshipId) {
         final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
-        return tribeDataStore.tribes().map(collection -> tribeRealmDataMapper.transform(collection));
+        return tribeDataStore.tribes(friendshipId).map(collection -> tribeRealmDataMapper.transform(collection));
     }
 
     @Override

@@ -31,9 +31,9 @@ public interface UserRepository {
      *
      * @param phoneNumber The phoneNumber used to login.
      * @param code the validation code the user entered.
-     * @param scope The scope for the call.
+     * @param pinId The pinId for the call.
      */
-    Observable<AccessToken> loginWithPhoneNumber(final String phoneNumber, final String code, final String scope);
+    Observable<AccessToken> loginWithPhoneNumber(final String phoneNumber, final String code, final String pinId);
 
     /**
      * Get an {@link Observable} which will emit a {@link User}.

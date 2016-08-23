@@ -24,6 +24,6 @@ public class GetCloudTribeList extends UseCase {
 
     @Override
     protected Observable buildUseCaseObservable() {
-        return tribeRepository.tribes();
+        return tribeRepository.tribes(null);
     }
 }

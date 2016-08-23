@@ -86,9 +86,9 @@ public class CloudUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<AccessToken> loginWithPhoneNumber(String phoneNumber, String code, String scope) {
+    public Observable<AccessToken> loginWithPhoneNumber(String phoneNumber, String code, String pinId) {
         return this.loginApi
-                .loginWithUsername(new LoginEntity(phoneNumber, code, scope, "password"))
+                .loginWithUsername(new LoginEntity(phoneNumber, code, pinId))
                 .doOnError(throwable -> {
                     AccessToken accessToken1 = new AccessToken();
                     accessToken1.setAccessToken("DvEZQrxOZ5LgHQE9XjWYzCNMEcSmlCMVfvm27ZTLJ72KpRpVIY");
@@ -102,7 +102,7 @@ public class CloudUserDataStore implements UserDataStore {
     @Override
     public Observable<AccessToken> loginWithUsername(String username, String password) {
         return this.loginApi
-                .loginWithUsername(new LoginEntity(username, password, "", "password"))
+                .loginWithUsername(new LoginEntity(username, password, ""))
                 .doOnNext(saveToCacheAccessToken);
     }
 

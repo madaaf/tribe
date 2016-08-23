@@ -24,7 +24,7 @@ public interface TribeCache {
     public void put(List<TribeRealm> tribeRealmList);
     public RealmList<MessageRecipientRealm> createTribeRecipientRealm(List<MessageRecipientRealm> tribeRecipientRealm);
     public Observable<Void> delete(TribeRealm tribeRealm);
-    public Observable<List<TribeRealm>> tribes();
+    public Observable<List<TribeRealm>> tribes(String friendshipId);
     public Observable<List<TribeRealm>> tribesPending();
     public List<TribeRealm> tribesNotSent();
     public List<TribeRealm> tribesSent(Set<String> toIds);

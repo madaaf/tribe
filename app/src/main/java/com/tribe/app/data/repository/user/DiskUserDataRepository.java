@@ -57,7 +57,7 @@ public class DiskUserDataRepository implements UserRepository {
     public Observable<Pin> requestCode(String phoneNumber) { return null; }
 
     @Override
-    public Observable<AccessToken> loginWithPhoneNumber(String phoneNumber, String code, String scope) { return null; }
+    public Observable<AccessToken> loginWithPhoneNumber(String phoneNumber, String code, String pinId) { return null; }
 
     @Override
     public Observable<AccessToken> loginWithUserName(String username, String password) { return null; }
@@ -66,7 +66,7 @@ public class DiskUserDataRepository implements UserRepository {
     public Observable<User> userInfos(String userId) {
         final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-        return Observable.zip(tribeDataStore.tribes().map(collection -> tribeRealmDataMapper.transform(collection)),
+        return Observable.zip(tribeDataStore.tribes(null).map(collection -> tribeRealmDataMapper.transform(collection)),
                 userDataStore.userInfos(null).map(userRealm -> userRealmDataMapper.transform(userRealm)),
                 (tribes, user) -> {
                     List<Recipient> result = user.getFriendshipList();

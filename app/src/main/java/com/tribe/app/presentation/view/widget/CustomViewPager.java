@@ -66,8 +66,8 @@ public class CustomViewPager extends ViewPager {
                 float diffY = event.getY() - downY;
                 float diffX = event.getX() - downX;
 
-                final boolean isSwipingHorizontally = Math.abs(diffX) > screenUtils.dpToPx(SWIPING_THRESHOLD);
-                final boolean isSwipingVertically = Math.abs(diffY) > screenUtils.dpToPx(SWIPING_THRESHOLD);
+                final boolean isSwipingHorizontally = Math.abs(diffX) > Math.abs(diffY);
+                final boolean isSwipingVertically = Math.abs(diffY) > Math.abs(diffX);
 
                 if (isSwipingHorizontally && (!isInMotion || currentSwipeDirection == SWIPE_MODE_RIGHT || currentSwipeDirection == SWIPE_MODE_LEFT)) {
                     if (diffX < 0) {

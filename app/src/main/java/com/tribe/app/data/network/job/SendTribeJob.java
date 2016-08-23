@@ -79,7 +79,6 @@ public class  SendTribeJob extends BaseJob {
         @Override
         public void onCompleted() {
             cloudSendTribe.unsubscribe();
-
         }
 
         @Override

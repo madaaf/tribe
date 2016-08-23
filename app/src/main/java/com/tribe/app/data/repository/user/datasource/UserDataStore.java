@@ -27,9 +27,9 @@ public interface UserDataStore {
      * Get an {@link Observable} which will emit an Access Token.
      * @param phoneNumber The phoneNumber used to login.
      * @param code the code the user entered.
-     * @param scope the scope for the call
+     * @param pinId the pinId for the call
      */
-    Observable<AccessToken> loginWithPhoneNumber(String phoneNumber, String code, String scope);
+    Observable<AccessToken> loginWithPhoneNumber(String phoneNumber, String code, String pinId);
 
     /**
      * Get an {@link Observable} which will emit an Access Token.

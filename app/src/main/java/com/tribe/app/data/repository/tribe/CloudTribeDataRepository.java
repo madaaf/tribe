@@ -56,15 +56,14 @@ public class CloudTribeDataRepository implements TribeRepository {
     }
 
     @Override
-    public Observable<List<TribeMessage>> tribes() {
+    public Observable<List<TribeMessage>> tribes(String friendshipId) {
         final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createCloudDataStore();
-        return tribeDataStore.tribes().map(collection -> tribeRealmDataMapper.transform(collection));
+        return tribeDataStore.tribes(friendshipId).map(collection -> tribeRealmDataMapper.transform(collection));
     }
 
     @Override
     public Observable<List<TribeMessage>> tribesPending() {
-        final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createCloudDataStore();
-        return tribeDataStore.tribes().map(collection -> tribeRealmDataMapper.transform(collection));
+        return null;
     }
 
     @Override

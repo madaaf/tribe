@@ -3,8 +3,12 @@ package com.tribe.app.presentation.mvp.presenter;
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
+import com.tribe.app.domain.exception.DefaultErrorBundle;
+import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.common.UseCaseDisk;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.DiskMarkTribeListAsRead;
+import com.tribe.app.domain.interactor.tribe.GetDiskTribeList;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.presentation.mvp.view.SendTribeView;
 import com.tribe.app.presentation.mvp.view.TribeView;
@@ -20,14 +24,17 @@ public class TribePresenter extends SendTribePresenter implements Presenter {
     private TribeView tribeView;
 
     // OBSERVABLES
+    private GetDiskTribeList diskGetTribeList;
     private DiskMarkTribeListAsRead diskMarkTribeListAsRead;
 
     @Inject
     public TribePresenter(JobManager jobManager,
+                          @Named("diskGetTribes") UseCaseDisk diskGetTribeList,
                           @Named("diskSaveTribe") SaveTribe diskSaveTribe,
                           @Named("diskDeleteTribe") DeleteTribe diskDeleteTribe,
                           @Named("diskMarkTribeListAsRead") DiskMarkTribeListAsRead diskMarkTribeListAsRead) {
         super(jobManager, diskSaveTribe, diskDeleteTribe);
+        this.diskGetTribeList = (GetDiskTribeList) diskGetTribeList;
         this.diskMarkTribeListAsRead = diskMarkTribeListAsRead;
     }
 
@@ -38,6 +45,7 @@ public class TribePresenter extends SendTribePresenter implements Presenter {
 
     @Override
     public void onStart() {
+
     }
 
     @Override
@@ -57,6 +65,8 @@ public class TribePresenter extends SendTribePresenter implements Presenter {
 
     @Override
     public void onDestroy() {
+        diskGetTribeList.unsubscribe();
+        diskMarkTribeListAsRead.unsubscribe();
         super.onDestroy();
     }
 
@@ -70,10 +80,33 @@ public class TribePresenter extends SendTribePresenter implements Presenter {
         return tribeView;
     }
 
+    public void loadTribes(String recipientId) {
+        diskGetTribeList.setRecipientId(recipientId);
+        diskGetTribeList.execute(new TribeListSubscriber());
+    }
+
     public void markTribeListAsRead(Recipient recipient, List<TribeMessage> tribeList) {
 //        diskMarkTribeListAsRead.setTribeList(tribeList);
 //        diskMarkTribeListAsRead.execute(new DefaultSubscriber<>());
 //        jobManager.addJobInBackground(new MarkTribeListAsReadJob(recipient, tribeList));
+    }
+
+    private final class TribeListSubscriber extends DefaultSubscriber<List<TribeMessage>> {
+
+        @Override
+        public void onCompleted() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            hideViewLoading();
+            showErrorMessage(new DefaultErrorBundle((Exception) e));
+        }
+
+        @Override
+        public void onNext(List<TribeMessage> tribeList) {
+            tribeView.updateNewTribes(tribeList);
+        }
     }
 }
 

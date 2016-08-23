@@ -26,7 +26,8 @@ public class TribeRealm extends RealmObject implements MessageRealmInterface {
     private Date recorded_at;
     private boolean to_group = false;
     private @MessageStatus.Status String messageStatus;
-    private Date updatedAt;
+    private Date updated_at;
+    private Date created_at;
     private WeatherRealm weatherRealm;
     private LocationRealm locationRealm;
     private RealmList<MessageRecipientRealm> recipientList;
@@ -114,11 +115,19 @@ public class TribeRealm extends RealmObject implements MessageRealmInterface {
     }
 
     public Date getUpdatedAt() {
-        return updatedAt;
+        return updated_at;
     }
 
     public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
+        this.updated_at = updatedAt;
+    }
+
+    public Date getCreatedAt() {
+        return created_at;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.created_at = createdAt;
     }
 
     public WeatherRealm getWeatherRealm() {

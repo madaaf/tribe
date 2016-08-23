@@ -327,6 +327,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
 
                     return filter;
                 })
+                .doOnError(throwable -> throwable.printStackTrace())
                 .subscribe(clickOpenTribes));
 
         subscriptions.add(homeGridAdapter.onClickChat()

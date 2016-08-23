@@ -31,12 +31,11 @@ public class DiskUserDataStore implements UserDataStore {
 
     @Override
     public Observable<PinRealm> requestCode(String phoneNumber) {
-        //return this.userCache.;
         return null;
     }
 
     @Override
-    public Observable<AccessToken> loginWithPhoneNumber(String phoneNumber, String code, String scope) {
+    public Observable<AccessToken> loginWithPhoneNumber(String phoneNumber, String code, String pinId) {
         return null;
     }
 

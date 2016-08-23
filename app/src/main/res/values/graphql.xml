@@ -29,7 +29,7 @@
             id
             username
             displayName
-            profilePicture
+            picture
             created_at
             updated_at
         }
@@ -46,7 +46,7 @@
             id
             username
             displayName
-            profilePicture
+            picture
             created_at
             updated_at
         }
@@ -205,10 +205,10 @@
             token : \"%2$s\",
             os_name : \"%3$s\",
             os_version : \"%4$s\",
-            phone_manufacturer : \"%5$s\",
-            phone_model : \"%6$s\",
-            app_version : \"%7$s\",
-            app_identifier : \"%8$s\",
+            device_manufacturer : \"%5$s\",
+            device_model : \"%6$s\",
+            client_version : \"%7$s\",
+            client_id : \"%8$s\",
             lang : \"%9$s\",
             carrier : \"%10$s\"
         }

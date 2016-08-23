@@ -14,6 +14,7 @@ import rx.Observable;
 public class GetDiskTribeList extends UseCaseDisk {
 
     private TribeRepository tribeRepository;
+    private String recipientId;
 
     @Inject
     public GetDiskTribeList(DiskTribeDataRepository tribeRepository, PostExecutionThread postExecutionThread) {
@@ -21,8 +22,12 @@ public class GetDiskTribeList extends UseCaseDisk {
         this.tribeRepository = tribeRepository;
     }
 
+    public void setRecipientId(String recipientId) {
+        this.recipientId = recipientId;
+    }
+
     @Override
     protected Observable buildUseCaseObservable() {
-        return tribeRepository.tribes();
+        return tribeRepository.tribes(recipientId);
     }
 }

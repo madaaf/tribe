@@ -31,6 +31,7 @@ import com.tribe.app.presentation.view.fragment.FriendsGridFragment;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -69,6 +70,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @Inject
     HomePresenter homePresenter;
+
+    @Inject
+    ScreenUtils screenUtils;
 
     @BindView(android.R.id.content)
     ViewGroup rootView;
@@ -126,11 +130,11 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initDependencyInjector();
         initUi();
         initDimensions();
         initViewPager();
         initCamera();
-        initDependencyInjector();
         initPresenter();
         initRegistrationToken();
     }
@@ -180,7 +184,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     private void initCamera() {
         cameraWrapper.initDimens(
-                getResources().getDimensionPixelSize(R.dimen.vertical_margin_small),
+                screenUtils.getHeight()
+                        - getResources().getDimensionPixelSize(R.dimen.nav_layout_height)
+                        - cameraWrapper.getHeightFromRatio(),
                 getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small),
                 getResources().getDimensionPixelSize(R.dimen.nav_layout_height),
                 true

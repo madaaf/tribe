@@ -15,6 +15,7 @@ import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -149,7 +150,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
         subscriptions.add(viewTribePager.onNotCancel()
                 .subscribe(friendship -> {
-                    //tribePresenter.sendTribe(currentTribe);
+                    tribePresenter.sendTribe(currentTribe);
                     currentTribe = null;
                 }));
 
@@ -173,6 +174,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
     private void initializePresenter() {
         tribePresenter.onStart();
         tribePresenter.attachView(this);
+        tribePresenter.loadTribes(recipient.getId());
     }
 
     @Override
@@ -215,5 +217,10 @@ public class TribeActivity extends BaseActivity implements TribeView {
     public void finish() {
         super.finish();
         overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
+    }
+
+    @Override
+    public void updateNewTribes(List<TribeMessage> tribeList) {
+        viewTribePager.addItems(tribeList);
     }
 }

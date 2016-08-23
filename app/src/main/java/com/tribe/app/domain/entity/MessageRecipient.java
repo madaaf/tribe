@@ -1,11 +1,11 @@
 package com.tribe.app.domain.entity;
 
-import io.realm.RealmObject;
+import java.io.Serializable;
 
 /**
  * Created by tiago on 04/08/2016.
  */
-public class MessageRecipient extends RealmObject {
+public class MessageRecipient implements Serializable {
 
     private String id;
     private String to;
