@@ -3,15 +3,23 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:background="@android:color/white">
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/onboarding_top_bar_height"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/shape_white_rect_grey_border"
+        android:text="@string/access_rad_get_access_now"
+        />
+
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtAccessTitle"
         android:layout_width="match_parent"
         android:layout_height="@dimen/onboarding_top_bar_height"
         android:layout_gravity="center_horizontal"
-        android:background="@drawable/shape_rect_profile_info_background_w_border"
         android:text="@string/access_rad_get_access_now"
         android:gravity="center"
-        style="@style/Headline.Black"/>
+        style="@style/Headline.Black"
+        />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtAccessDesc"

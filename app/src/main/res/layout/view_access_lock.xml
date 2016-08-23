@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="210dp"
-    android:layout_height="210dp"
+    android:layout_width="250dp"
+    android:layout_height="250dp"
     >
 
     <View
@@ -19,32 +19,40 @@
         android:layout_gravity="center"
         />
 
-    <com.tribe.app.presentation.view.widget.SemiCircleView
+    <View
         android:id="@+id/semiCircleView"
         android:layout_width="125dp"
         android:layout_height="125dp"
-        android:layout_gravity="center"/>
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtNumFriends"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="62dp"
-        android:layout_gravity="top|center"
-        android:textSize="55sp"
-        android:visibility="invisible"
+        android:layout_gravity="center"
         />
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtFriends"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="122dp"
-        android:layout_gravity="top|center"
-        android:visibility="invisible"
-        android:text="friends"
-        style="@style/Body.One.Black40"
-        />
+    <FrameLayout
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:layout_gravity="center">
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtNumFriends"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="19dp"
+            android:layout_gravity="top|center"
+            android:textSize="55sp"
+            android:alpha="0"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtFriends"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
+            android:layout_gravity="bottom|center"
+            android:alpha="0"
+            android:text="friends"
+            style="@style/Body.One.Black40"
+            />
+    </FrameLayout>
+
+
 
     <ImageView
         android:id="@+id/imgLockIcon"

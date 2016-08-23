@@ -31,6 +31,7 @@
     <!-- HEIGHTS -->
     <dimen name="chat_bar_height">50dp</dimen>
     <dimen name="bottom_bar_height">60dp</dimen>
+    <dimen name="bottom_bar_with_shadow_height">70dp</dimen>
     <dimen name="tribe_bottom_bar_height">47.5dp</dimen>
     <dimen name="back_to_message_height">48dp</dimen>
     <dimen name="snooze_items_height">100dp</dimen>

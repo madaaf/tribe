@@ -40,6 +40,14 @@ public class GetNotifiedDialogFragment extends DialogFragment {
 
     }
 
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        final Dialog dialog = super.onCreateDialog(savedInstanceState);
+        dialog.getWindow().getAttributes().windowAnimations = R.style.GetNotifiedAnimation;
+        return dialog;
+    }
+
     @Override
     public void onDestroy() {
         unbinder.unbind();

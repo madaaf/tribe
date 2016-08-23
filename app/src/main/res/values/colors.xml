@@ -58,6 +58,7 @@
     <!-- REDS -->
     <color name="red">#F9474C</color>
     <color name="red.deep">#F42F3E</color>
+    <color name="red.circle">#F22936</color>
 
     <!-- ORANGES -->
     <color name="orange">#FD6E02</color>

@@ -106,9 +106,11 @@ public class IntroActivity extends BaseActivity {
     private void initViewPager() {
         introViewPagerAdapter = new IntroViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(introViewPagerAdapter);
+        // TODO: fix duration
+        viewPager.setScrollDurationFactor(.5);
         viewPager.setOffscreenPageLimit(4);
         viewPager.setScrollDurationFactor(2f);
-        viewPager.setCurrentItem(PAGE_ACCESS);
+        viewPager.setCurrentItem(PAGE_INTRO);
         viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_NONE);
         viewPager.setPageTransformer(false, new IntroPageTransformer());
         viewPager.setSwipeable(false);

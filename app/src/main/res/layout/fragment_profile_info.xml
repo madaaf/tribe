@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/onboarding_top_bar_height"
         android:layout_gravity="center_horizontal"
-        android:background="@drawable/shape_rect_profile_info_background_w_border"
+        android:background="@drawable/shape_white_rect_grey_border"
         android:text="@string/profile_info_hi_there_set_yourself_up"
         android:gravity="center"
         style="@style/Headline.Black"
@@ -23,7 +23,7 @@
         android:scaleType="centerInside"
         android:layout_marginTop="86dp"
         android:src="@drawable/picto_profile_pic_placeholder"
-        android:background="@drawable/shape_rect_profile_info_background_w_border"
+        android:background="@drawable/shape_white_rect_grey_border"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -36,7 +36,7 @@
         android:gravity="center_vertical"
         android:paddingStart="@dimen/text_padding"
         android:paddingEnd="@dimen/text_padding"
-        android:background="@drawable/shape_rect_profile_info_background_w_border"
+        android:background="@drawable/shape_white_rect_grey_border"
         android:text="@string/profile_info_open_camera_roll"
         style="@style/Body.Two.Black"
         />
@@ -51,7 +51,7 @@
         android:gravity="center_vertical"
         android:paddingStart="@dimen/text_padding"
         android:paddingEnd="@dimen/text_padding"
-        android:background="@drawable/shape_rect_profile_info_background_w_border"
+        android:background="@drawable/shape_white_rect_grey_border"
         android:text="@string/profile_inifo_take_a_selfie"
         style="@style/Body.Two.Black"
         />
@@ -63,7 +63,7 @@
         android:layout_marginTop="186dp"
         android:paddingStart="@dimen/text_padding"
         android:paddingEnd="@dimen/text_padding"
-        android:background="@drawable/shape_rect_profile_info_background_w_border"
+        android:background="@drawable/shape_white_rect_grey_border"
         android:hint="@string/profile_info_display_name"
         style="@style/Title.1.Black"
         android:textColorHint="@color/black.opacity.40"
@@ -76,7 +76,7 @@
         android:layout_marginTop="254dp"
         android:paddingStart="@dimen/text_padding"
         android:paddingEnd="@dimen/text_padding"
-        android:background="@drawable/shape_rect_profile_info_background_w_border"
+        android:background="@drawable/shape_white_rect_grey_border"
         android:hint="@string/profile_info_username"
         style="@style/Title.1.Black"
         android:textColorHint="@color/black.opacity.40"
@@ -103,6 +103,12 @@
         style="@style/Body.One.Black40"
         />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@drawable/shadow_top"
+        android:layout_marginBottom="@dimen/bottom_bar_height"
+        />
 
     <com.tribe.app.presentation.view.widget.FacebookView
         android:id="@+id/facebookView"

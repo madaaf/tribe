@@ -147,9 +147,12 @@ public class AccessFragment extends Fragment {
 
     private void goToAccess() {
         viewState = STATE_GET_ACCESS;
-
         isActive = true;
+        fadeTextInOut();
+        accessLockView.setToAccess();
+        accessBottomBarView.setClickable(false);
         accessBottomBarView.animate()
+                .setDuration(300)
                 .translationY(accessBottomBarView.getHeight())
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
@@ -158,15 +161,18 @@ public class AccessFragment extends Fragment {
                         if (isActive) {
                             isActive = false;
 
+
                             changeBaseView(getString(R.string.access_get_access_now),
                                     android.R.color.black,
                                     getString(R.string.access_a_friend_from_your_address_book_has_to_be_there_to_enter),
                                     getString(R.string.access_try_to_enter),
                                     R.color.blue_text);
-                            accessLockView.setToAccess();
+
 
                             accessBottomBarView.animate()
                                     .translationY(0);
+                            accessBottomBarView.setClickable(true);
+
                         }
                     }
                 });
@@ -175,7 +181,12 @@ public class AccessFragment extends Fragment {
     private void goToHangTight() {
         viewState = STATE_HANG_TIGHT;
         isActive = true;
+
+        fadeTextInOut();
+        accessLockView.setToHangTight(2);
+        accessBottomBarView.setClickable(false);
         accessBottomBarView.animate()
+                .setDuration(300)
                 .translationY(accessBottomBarView.getHeight())
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
@@ -189,9 +200,10 @@ public class AccessFragment extends Fragment {
                                     getString(R.string.access_looking_for_your_contacts),
                                     getString(R.string.access_cancel),
                                     R.color.grey_dark);
-                            accessLockView.setToHangTight(2);
                             accessBottomBarView.animate()
+                                    .setDuration(300)
                                     .translationY(0);
+                            accessBottomBarView.setClickable(true);
 
                             // TODO: check if user has enough friends in app
 
@@ -208,17 +220,21 @@ public class AccessFragment extends Fragment {
 
                                     }
                                 }
-                            }, 2000);
+                            }, 3000);
                         }
                     }
-                });
+                }).start();
     }
 
     private void goToSorry() {
         viewState = STATE_SORRY;
-
         isActive = true;
+
+        fadeTextInOut();
+        accessLockView.setToSorry();
+        accessBottomBarView.setClickable(false);
         accessBottomBarView.animate()
+                .setDuration(300)
                 .translationY(accessBottomBarView.getHeight())
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
@@ -231,16 +247,16 @@ public class AccessFragment extends Fragment {
                                     getString(R.string.access_more_friends_needed, "1"),
                                     getString(R.string.access_try_again),
                                     R.color.blue_text);
-                            accessLockView.setToSorry();
+
 
                             setBottomMargin(txtAccessDesc, 157);
 
-                            textFriendsView.setVisibility(View.VISIBLE);
-                            Animation slideInUp = AnimationUtils.loadAnimation(context, R.anim.slide_in_up);
                             accessBottomBarView.setImgRedFbVisibility(true);
 
                             accessBottomBarView.animate()
+                                    .setDuration(300)
                                     .translationY(0);
+                            accessBottomBarView.setClickable(true);
 
                             showGetNotifiedDialog();
                         }
@@ -252,7 +268,10 @@ public class AccessFragment extends Fragment {
         viewState = STATE_CONGRATS;
 
         isActive = true;
+        fadeTextInOut();
+        accessBottomBarView.setClickable(false);
         accessBottomBarView.animate()
+                .setDuration(300)
                 .translationY(accessBottomBarView.getHeight())
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
@@ -269,7 +288,9 @@ public class AccessFragment extends Fragment {
                             accessLockView.setToCongrats();
 
                             accessBottomBarView.animate()
+                                    .setDuration(300)
                                     .translationY(0);
+                            accessBottomBarView.setClickable(true);
                         }
                     }
                 });
@@ -285,7 +306,6 @@ public class AccessFragment extends Fragment {
 
     private void cleanUpSorry() {
         accessBottomBarView.setImgRedFbVisibility(false);
-        textFriendsView.setVisibility(View.INVISIBLE);
 
         setBottomMargin(txtAccessDesc, 112);
 
@@ -313,5 +333,39 @@ public class AccessFragment extends Fragment {
         getNotifiedDialogFragment.show(getFragmentManager(), GetNotifiedDialogFragment.class.getName());
     }
 
+    private void fadeTextInOut() {
+        txtAccessDesc.animate()
+                .alpha(0)
+                .setDuration(300)
+                .translationY(100)
+                .setStartDelay(0)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                         txtAccessDesc.animate().alpha(1)
+                                 .setDuration(300)
+                                 .translationY(0)
+                                 .setStartDelay(0)
+                                 .start();
+                    }
+                }).start();
 
+        txtAccessTitle.animate()
+                .alpha(0)
+                .setDuration(300)
+                .translationY(100)
+                .setStartDelay(0)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        txtAccessTitle.animate().alpha(1)
+                                .setDuration(300)
+                                .translationY(0)
+                                .setStartDelay(0)
+                                .start();
+                    }
+                }).start();
+    }
 }
