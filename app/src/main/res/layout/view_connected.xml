@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/vertical_margin"
         android:layout_gravity="bottom|center"
-        android:text="@string/view_connected_connected"
+        android:text="@string/onboarding_connected"
         style="@style/Headline.Blue"
         />
 

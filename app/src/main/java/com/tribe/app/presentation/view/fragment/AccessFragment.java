@@ -162,10 +162,10 @@ public class AccessFragment extends Fragment {
                             isActive = false;
 
 
-                            changeBaseView(getString(R.string.access_get_access_now),
+                            changeBaseView(getString(R.string.onboarding_queue_title),
                                     android.R.color.black,
-                                    getString(R.string.access_a_friend_from_your_address_book_has_to_be_there_to_enter),
-                                    getString(R.string.access_try_to_enter),
+                                    getString(R.string.onboarding_queue_description),
+                                    getString(R.string.onboarding_queue_button_title),
                                     R.color.blue_text);
 
 
@@ -195,10 +195,10 @@ public class AccessFragment extends Fragment {
                         if (isActive) {
                             isActive = false;
                             isActive2 = true;
-                            changeBaseView(getString(R.string.access_hang_tight),
+                            changeBaseView(getString(R.string.onboarding_queue_loading_title),
                                     android.R.color.black,
-                                    getString(R.string.access_looking_for_your_contacts),
-                                    getString(R.string.access_cancel),
+                                    getString(R.string.onboarding_queue_loading_description),
+                                    getString(R.string.action_cancel),
                                     R.color.grey_dark);
                             accessBottomBarView.animate()
                                     .setDuration(300)
@@ -242,10 +242,10 @@ public class AccessFragment extends Fragment {
                         super.onAnimationEnd(animation);
                         if (isActive) {
                             isActive = false;
-                            changeBaseView(getString(R.string.access_sorry_title),
+                            changeBaseView(getString(R.string.onboarding_queue_declined_title),
                                     R.color.red_deep,
-                                    getString(R.string.access_more_friends_needed, "1"),
-                                    getString(R.string.access_try_again),
+                                    getString(R.string.onboarding_queue_declined_description, "1"),
+                                    getString(R.string.onboarding_queue_button_title),
                                     R.color.blue_text);
 
 
@@ -280,10 +280,10 @@ public class AccessFragment extends Fragment {
                         if (isActive) {
                             isActive = false;
 
-                            changeBaseView(getString(R.string.access_congrats_title),
+                            changeBaseView(getString(R.string.onboarding_queue_valid_title),
                                     R.color.blue_text_access,
-                                    getString(R.string.access_congrats_desc, "3"),
-                                    getString(R.string.access_enter_now),
+                                    getString(R.string.onboarding_queue_valid_description, "3"),
+                                    getString(R.string.onboarding_queue_valid_button_title),
                                     R.color.blue_text);
                             accessLockView.setToCongrats();
 

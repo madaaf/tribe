@@ -13,7 +13,7 @@
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/access_text_friends"
+        android:text="@string/onboarding_queue_declined_message_button"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="41dp"
         style="@style/Title.2.White"

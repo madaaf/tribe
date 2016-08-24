@@ -33,7 +33,7 @@
         android:layout_gravity="bottom|center"
         android:layout_marginBottom="75dp"
         style="@style/Body.One.White"
-        android:text="Use your phone number to connect"
+        android:text="@string/onboarding_step_phone"
         android:textAlignment="center"
         />
 

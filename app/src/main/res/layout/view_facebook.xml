@@ -19,7 +19,7 @@
         android:layout_marginStart="77dp"
         android:layout_marginBottom="@dimen/vertical_margin"
         android:layout_gravity="bottom"
-        android:text="@string/view_facebook_or_autofill_profile"
+        android:text="@string/onboarding_user_facebook_button_title"
         style="@style/Title.2.White"
         />
 

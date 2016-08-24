@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="empty"></string>
     <string name="Common.Next">Next</string>
 
     <string name="exception_message_generic">Generic error message</string>
@@ -8,6 +7,13 @@
 
     <string name="Login.PhoneNumber.Hint">Phone number</string>
     <string name="Login.Code.Hint">Enter a code</string>
+
+    <!-- Actions -->
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_done">Done</string>
+
 
     <!-- GRID -->
     <string name="Grid.Me.Points">Points</string>
@@ -69,28 +75,32 @@
     <string name="chat_and">and</string>
 
     <!-- ONBOARDING -->
-    <string name="title_activity_profile_info">ProfileInfoActivity</string>
-    <string name="profile_info_open_camera_roll">Open camera roll</string>
-    <string name="profile_inifo_take_a_selfie">Take a selfie</string>
-    <string name="profile_info_display_name">Display name</string>
-    <string name="profile_info_username">Username</string>
-    <string name="view_facebook_or_autofill_profile">Or autofill profile</string>
-    <string name="profile_info_username_can_be_changed_later">Username can be changed later.</string>
-    <string name="view_connected_connected">Connected</string>
-    <string name="profile_info_hi_there_set_yourself_up">Hi there! Set yourself up.</string>
-    <string name="access_rad_get_access_now">Rad! Get access now.</string>
-    <string name="access_a_friend_from_your_address_book_has_to_be_there_to_enter">A friend from your address book has to be here to enter.</string>
-    <string name="access_try_to_enter">Try to enter!</string>
-    <string name="access_get_access_now">Get access now.</string>
-    <string name="access_hang_tight">Hang tight…</string>
-    <string name="access_looking_for_your_contacts">Looking for one of your contacts in our database.</string>
-    <string name="access_cancel">Cancel</string>
-    <string name="access_sorry_title">Sorry, not yet!</string>
-    <string name="access_try_again">Try again</string>
-    <string name="access_congrats_title">Congrats! You\'re in.</string>
-    <string name="access_congrats_desc">Enter now, %1$s friends are already there.</string>
-    <string name="access_more_friends_needed">You need %1$s friend to enter. Send invites!</string>
-    <string name="access_enter_now">Enter now!</string>
-    <string name="access_text_friends">Text Friends</string>
-    <string name="country_item_country_code_content_desc">Country Code</string>
+    <string name="onboarding_step_phone">Use your phone number to connect </string>
+    <string name="onboarding_step_code">We texted you a code to verify it.</string>
+    <string name="onboarding_phone_number">Phone number</string>
+    <string name="onboarding_code">Code</string>
+    <string name="onboarding_connected">Connected</string>
+    <string name="onboarding_user_title">Hi there! Set yourself up.</string>
+    <string name="onboarding_user_avatar_library">Open camera roll</string>
+    <string name="onboarding_user_avatar_selfie">Take a selfie</string>
+    <string name="onboarding_user_displayname_placeholder">Display name</string>
+    <string name="onboarding_user_username_placeholder">Username</string>
+    <string name="onboarding_user_facebook_button_title">Or autofill profile</string>
+    <string name="onboarding_queue_title">Get access now.</string>
+    <string name="onboarding_queue_description">You need to have at\nleast 1 friend to enter.</string>
+    <string name="onboarding_queue_button_title">Try again</string>
+    <string name="onboarding_queue_loading_title">Hang tight…</string>
+    <string name="onboarding_queue_loading_description">Looking if one of your\n friends has already signed up.</string>
+    <string name="onboarding_queue_declined_title">Sorry, you can\'t have access.</string>
+    <string name="onboarding_queue_declined_description">You need %1$s friend to\nenter. Send invites!</string>
+    <string name="onboarding_queue_declined_message_button">Text friends</string>
+    <string name="onboarding_queue_declined_popup_title">Get notified!</string>
+    <string name="onboarding_queue_declined_popup_description">Receive a push notification\nwhen a friend jons the app.</string>
+    <string name="onboarding_queue_declined_popup_cancel_button">Stay alone. </string>
+    <string name="onboarding_queue_declined_popup_confirm_button">Sure!</string>
+    <string name="onboarding_queue_valid_title">Congrats! You\'re in. </string>
+    <string name="onboarding_queue_valid_description">Enter now, %1$s friends\nare already there.</string>
+    <string name="onboarding_queue_valid_button_title">Enter now!</string>
+
+
 </resources>

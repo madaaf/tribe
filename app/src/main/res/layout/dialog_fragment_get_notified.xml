@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:background="@android:color/white"
     >
-    <!-- TODO: add strings.xml when spreadsheet updated -->
+
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="82dp"
-        android:text="Get Notified"
+        android:text="@string/onboarding_queue_declined_popup_title"
         style="@style/Headline.Black.1"
         />
 
@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="85dp"
-        android:text="Receive a push notification when a friend joins the app!"
+        android:text="@string/onboarding_queue_declined_popup_description"
         android:gravity="center"
         style="@style/Title.1.Black"
         />
@@ -44,7 +44,7 @@
             android:background="@color/grey.light"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Stay alone."
+            android:text="@string/onboarding_queue_declined_popup_cancel_button"
             style="@style/Title.2.White"
             />
         <com.tribe.app.presentation.view.widget.TextViewFont
@@ -53,7 +53,7 @@
             android:background="@color/blue.text"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Sure!"
+            android:text="@string/onboarding_queue_declined_popup_confirm_button"
             style="@style/Title.2.White"
             />
 

@@ -13,7 +13,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/horizontal_margin_small"
         android:gravity="start|center_vertical"
-        android:text="United States (+1)"
         style="@style/Text.Grid.Me.Name"
         />
 
@@ -24,7 +23,6 @@
         android:layout_gravity="end|center_vertical"
         android:layout_marginEnd="@dimen/horizontal_margin_small"
         android:src="@drawable/picto_us_flag"
-        android:contentDescription="@string/country_item_country_code_content_desc"
         />
 
 </FrameLayout>

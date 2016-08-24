@@ -88,7 +88,6 @@ public class IntroViewFragment extends Fragment implements IntroView {
     @BindView(R.id.videoViewIntro)
     IntroVideoView videoViewIntro;
 
-    // TODO: add to strings.xml
     @BindView(R.id.txtIntroMessage)
     TextViewFont txtIntroMessage;
 
@@ -260,8 +259,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
     public void goToCode() {
 //        this.pin = pin;
         viewPhoneNumber.setNextEnabled(false);
-        //TODO: add to strings.xml and add animation
-        txtIntroMessage.setText("We just texted you a code to verify it.");
+        txtIntroMessage.setText(getString(R.string.onboarding_step_code));
         viewPager.setCurrentItem(PAGE_CODE, true);
     }
 
