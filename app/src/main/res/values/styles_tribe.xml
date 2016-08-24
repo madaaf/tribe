@@ -135,6 +135,10 @@
     <style name="Headline.Black.40" parent="Headline">
         <item name="android:textColor">@color/black.opacity.40</item>
     </style>
+    
+    <style name="Headline.Blue" parent="Headline">
+        <item name="android:textColor">@color/blue.text</item>
+    </style>
 
     <style name="Weather">
         <item name="android:textColor">@android:color/white</item>

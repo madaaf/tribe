@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -12,7 +13,6 @@ import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.widget.EditTextFont;
-import com.tribe.app.presentation.view.widget.IntroVideoView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,6 +36,18 @@ public class CodeView extends FrameLayout {
 
     @BindView(R.id.imgBackIcon)
     ImageView imgBackIcon;
+
+    @BindView(R.id.pinCircle1)
+    ImageView pinCircle1;
+
+    @BindView(R.id.pinCircle2)
+    ImageView pinCircle2;
+
+    @BindView(R.id.pinCircle3)
+    ImageView pinCircle3;
+
+    @BindView(R.id.pinCircle4)
+    ImageView pinCircle4;
 
     // OBSERVABLES
     private Unbinder unbinder;
@@ -75,8 +87,42 @@ public class CodeView extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.view_code, this);
         unbinder = ButterKnife.bind(this);
 
+        editTextCode.setLetterSpacing((float) 1.5);
+
         RxTextView.textChanges(editTextCode).map(CharSequence::toString)
                 .map(s -> {
+                    switch (s.length()) {
+                        case 0:
+                            pinCircle1.setVisibility(VISIBLE);
+                            pinCircle2.setVisibility(VISIBLE);
+                            pinCircle3.setVisibility(VISIBLE);
+                            pinCircle4.setVisibility(VISIBLE);
+                            break;
+                        case 1:
+                            pinCircle1.setVisibility(INVISIBLE);
+                            pinCircle2.setVisibility(VISIBLE);
+                            pinCircle3.setVisibility(VISIBLE);
+                            pinCircle4.setVisibility(VISIBLE);
+                            break;
+                        case 2:
+                            pinCircle1.setVisibility(INVISIBLE);
+                            pinCircle2.setVisibility(INVISIBLE);
+                            pinCircle3.setVisibility(VISIBLE);
+                            pinCircle4.setVisibility(VISIBLE);
+                            break;
+                        case 3:
+                            pinCircle1.setVisibility(INVISIBLE);
+                            pinCircle2.setVisibility(INVISIBLE);
+                            pinCircle3.setVisibility(INVISIBLE);
+                            pinCircle4.setVisibility(VISIBLE);
+                            break;
+                        case 4:
+                            pinCircle1.setVisibility(INVISIBLE);
+                            pinCircle2.setVisibility(INVISIBLE);
+                            pinCircle3.setVisibility(INVISIBLE);
+                            pinCircle4.setVisibility(INVISIBLE);
+                            break;
+                    }
                     return s.length() == 4;
                 })
                 .subscribe(codeValid);
@@ -109,4 +155,13 @@ public class CodeView extends FrameLayout {
     public ImageView getBackIcon() {
         return imgBackIcon;
     }
+
+    /**
+     * Utils
+     */
+
+    public int dpToPx(int dp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getContext().getResources().getDisplayMetrics());
+    }
+
 }

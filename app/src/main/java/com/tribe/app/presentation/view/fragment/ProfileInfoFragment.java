@@ -98,7 +98,7 @@ public class ProfileInfoFragment extends Fragment {
 
     public void initUi(View view) {
         unbinder = ButterKnife.bind(this, view);
-        
+
         subscriptions.add(RxView.clicks(imgNextIcon).subscribe(aVoid -> {
             ((IntroActivity) getActivity()).goToAccess();
         }));

@@ -25,7 +25,7 @@
         android:layout_marginBottom="@dimen/vertical_margin"
         android:layout_gravity="bottom|center"
         android:text="@string/view_connected_connected"
-        style="@style/Body.Two.Blue"
+        style="@style/Headline.Blue"
         />
 
 </FrameLayout>
