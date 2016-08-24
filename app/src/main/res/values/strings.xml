@@ -91,6 +91,7 @@
     <string name="onboarding_queue_button_title">Try again</string>
     <string name="onboarding_queue_loading_title">Hang tight…</string>
     <string name="onboarding_queue_loading_description">Looking if one of your\n friends has already signed up.</string>
+    <string name="onboarding_queue_loading_friends">friends</string>
     <string name="onboarding_queue_declined_title">Sorry, you can\'t have access.</string>
     <string name="onboarding_queue_declined_description">You need %1$s friend to\nenter. Send invites!</string>
     <string name="onboarding_queue_declined_message_button">Text friends</string>
@@ -101,6 +102,7 @@
     <string name="onboarding_queue_valid_title">Congrats! You\'re in. </string>
     <string name="onboarding_queue_valid_description">Enter now, %1$s friends\nare already there.</string>
     <string name="onboarding_queue_valid_button_title">Enter now!</string>
+
 
     <!-- DEPENDENDENCIES -->
     <string name="facebook_app_id">1743579545897830</string>

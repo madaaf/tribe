@@ -140,6 +140,18 @@
         <item name="android:textColor">@color/blue.text</item>
     </style>
 
+    <style name="Giant">
+        <item name="android:textSize">55sp</item>
+    </style>
+
+    <style name="Giant.1" parent="Giant">
+        <item name="customFont">Roboto-Bold.ttf</item>
+    </style>
+
+    <style name="Giant.1.Black" parent="Giant.1">
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
     <style name="Weather">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">30sp</item>

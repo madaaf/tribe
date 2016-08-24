@@ -27,16 +27,16 @@
         />
 
     <FrameLayout
-        android:layout_width="125dp"
-        android:layout_height="125dp"
+        android:layout_width="wrap_content"
+        android:layout_height="75dp"
         android:layout_gravity="center">
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtNumFriends"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="19dp"
             android:layout_gravity="top|center"
-            android:textSize="55sp"
+            style="@style/Giant.1.Black"
+            android:layout_marginTop="-12dp"
             android:alpha="0"
             />
 
@@ -44,10 +44,10 @@
             android:id="@+id/txtFriends"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
             android:layout_gravity="bottom|center"
+            android:layout_marginBottom="4dp"
             android:alpha="0"
-            android:text="friends"
+            android:text="@string/onboarding_queue_loading_friends"
             style="@style/Body.One.Black40"
             />
     </FrameLayout>
