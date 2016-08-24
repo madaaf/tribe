@@ -10,7 +10,7 @@
         <ImageView
             android:id="@+id/imgCountryCode"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="18dp"
             android:layout_gravity="bottom"
             android:layout_marginStart="@dimen/horizontal_margin_small"
             android:layout_marginBottom="@dimen/vertical_margin"

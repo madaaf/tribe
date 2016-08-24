@@ -53,6 +53,7 @@ public class PhoneNumberView extends FrameLayout {
     private String countryCode = "US";
     private String currentPhoneNumber;
     private Context context;
+    private boolean editable = true;
 
     // OBSERVABLES
 
@@ -140,7 +141,15 @@ public class PhoneNumberView extends FrameLayout {
                 .doOnNext(new Action1<String>() {
                     @Override
                     public void call(String s) {
-                        currentPhoneNumber = phoneUtils.formatMobileNumber(PhoneNumberView.this.getPhoneNumberInput(), countryCode);
+                        if (editable) {
+                            currentPhoneNumber = phoneUtils.formatMobileNumber(PhoneNumberView.this.getPhoneNumberInput(), countryCode);
+                            if (currentPhoneNumber != null) {
+                                editable = false;
+                                editTextPhoneNumber.setText(currentPhoneNumber);
+                                editTextPhoneNumber.setSelection(editTextPhoneNumber.getText().length());
+                                editable = true;
+                            }
+                        }
                     }
                 })
                 .map(s -> currentPhoneNumber != null)
