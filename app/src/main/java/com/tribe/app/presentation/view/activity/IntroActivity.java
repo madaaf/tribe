@@ -20,6 +20,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.navigation.Navigator;
@@ -65,6 +70,8 @@ public class IntroActivity extends BaseActivity {
 
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
+    private CallbackManager mCallbackManager;
+
 
 
 
@@ -84,6 +91,7 @@ public class IntroActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         initUi();
         initViewPager();
+        initFacebookLogin();
         initDependencyInjector();
     }
 
@@ -105,8 +113,14 @@ public class IntroActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        // Country code selector
         if (requestCode == Navigator.REQUEST_COUNTRY && resultCode == Activity.RESULT_OK) {
             introViewFragment.initPhoneNumberViewWithCountryCode(data.getStringExtra(Extras.COUNTRY_CODE));
+        }
+
+        // Facebook login
+        if(mCallbackManager.onActivityResult(requestCode, resultCode, data)) {
+            return;
         }
     }
 
@@ -132,6 +146,26 @@ public class IntroActivity extends BaseActivity {
         viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_NONE);
         viewPager.setPageTransformer(false, new IntroPageTransformer());
         viewPager.setSwipeable(false);
+    }
+
+    private void initFacebookLogin() {
+        LoginManager.getInstance().registerCallback(mCallbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        Toast.makeText(IntroActivity.this, "Login success", Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Toast.makeText(IntroActivity.this, "Login Cancel", Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onError(FacebookException exception) {
+                        Toast.makeText(IntroActivity.this, exception.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     /**

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+import com.facebook.login.LoginManager;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.activity.IntroActivity;
@@ -15,6 +16,8 @@ import com.tribe.app.presentation.view.camera.gles.Texture;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.FacebookView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -101,6 +104,10 @@ public class ProfileInfoFragment extends Fragment {
 
         subscriptions.add(RxView.clicks(imgNextIcon).subscribe(aVoid -> {
             ((IntroActivity) getActivity()).goToAccess();
+        }));
+
+        subscriptions.add(RxView.clicks(facebookView).subscribe(aVoid -> {
+            LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
         }));
 
     }

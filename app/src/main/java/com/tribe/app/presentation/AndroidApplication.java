@@ -27,7 +27,7 @@ public class AndroidApplication extends Application {
         this.initializeLeakDetection();
         this.initializeRealm();
         this.initializeStetho();
-        this.initializeFacebook()
+        this.initializeFacebook();
     }
 
     @Override
