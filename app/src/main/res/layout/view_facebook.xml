@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="@dimen/bottom_bar_height"
     android:layout_gravity="bottom"
-    android:background="@color/blue.facebook.dark">
+    android:background="@drawable/shape_facebook_blue_rect_bottom">
 
     <ImageView
         android:layout_width="wrap_content"
@@ -16,9 +16,9 @@
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="77dp"
         android:layout_marginBottom="@dimen/vertical_margin"
-        android:layout_gravity="bottom"
+        android:layout_gravity="bottom|center_horizontal"
+        android:gravity="center"
         android:text="@string/onboarding_user_facebook_button_title"
         style="@style/Title.2.White"
         />

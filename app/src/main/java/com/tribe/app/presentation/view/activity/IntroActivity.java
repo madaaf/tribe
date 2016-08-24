@@ -149,6 +149,8 @@ public class IntroActivity extends BaseActivity {
     }
 
     private void initFacebookLogin() {
+        mCallbackManager = CallbackManager.Factory.create();
+
         LoginManager.getInstance().registerCallback(mCallbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
@@ -174,7 +176,8 @@ public class IntroActivity extends BaseActivity {
 
     public void goToProfileInfo() {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
-
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         viewPager.setCurrentItem(PAGE_PROFILE_INFO);
     }
 

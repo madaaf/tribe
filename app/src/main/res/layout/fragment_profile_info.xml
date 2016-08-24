@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/onboarding_top_bar_height"
         android:layout_gravity="center_horizontal"
-        android:background="@drawable/shape_white_rect_grey_border"
+        android:background="@drawable/shape_white_rect_grey_border_no_top"
         android:text="@string/onboarding_user_title"
         android:gravity="center"
         style="@style/Headline.Black"
@@ -90,23 +90,13 @@
         android:layout_height="@dimen/icons_end"
         android:src="@drawable/picto_next_icon"
         android:scaleType="centerInside"
-        android:background="@android:color/white"
+        android:background="@drawable/shape_white_rect_rounded_bottom_right"
         android:layout_gravity="bottom|end"
         android:clickable="true"
         />
 
-    <!--<com.tribe.app.presentation.view.widget.TextViewFont-->
-    <!--User name can be changed later-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="@string/"-->
-        <!--android:layout_gravity="center"-->
-        <!--android:gravity="center"-->
-        <!--android:layout_marginTop="398dp"-->
-        <!--style="@style/Body.One.Black40"-->
-        <!--/>-->
-
     <View
+        android:id="@+id/shadow"
         android:layout_width="match_parent"
         android:layout_height="10dp"
         android:background="@drawable/shadow_top"
