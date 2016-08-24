@@ -39,6 +39,7 @@
     <color name="grey.action.tint">#98aab4</color>
     <color name="grey.permissions">#93AAB5</color>
     <color name="grey.background">#FBFDFD</color>
+    <color name="grey.dark">#666666</color>
 
     <!-- BLUE -->
     <color name="blue.text">#02ADF2</color>
@@ -50,6 +51,7 @@
 
     <!-- YELLOWS -->
     <color name="yellow">#FEBE00</color>
+    <color name="yellow.opacity.40">#66FEBE00</color>
     <color name="yellow.status">#F8E71C</color>
 
     <!-- GREENS -->

@@ -31,6 +31,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
     private ScreenUtils screenUtils;
 
     protected RxAdapterDelegatesManager delegatesManager;
+    private MeGridAdapterDelegate meGridAdapterDelegate;
     private UserGridAdapterDelegate userGridAdapterDelegate;
     private GroupGridAdapterDelegate groupGridAdapterDelegate;
 
@@ -43,8 +44,10 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
     public HomeGridAdapter(Context context) {
         screenUtils = ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().screenUtils();
         delegatesManager = new RxAdapterDelegatesManager<>();
-        delegatesManager.addDelegate(new MeGridAdapterDelegate(context));
         delegatesManager.addDelegate(new EmptyGridAdapterDelegate(context));
+
+        meGridAdapterDelegate = new MeGridAdapterDelegate(context);
+        delegatesManager.addDelegate(meGridAdapterDelegate);
 
         userGridAdapterDelegate = new UserGridAdapterDelegate(context);
         delegatesManager.addDelegate(userGridAdapterDelegate);
@@ -118,6 +121,10 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
 
     public Observable<View> onClickErrorTribes() {
         return Observable.merge(userGridAdapterDelegate.onClickErrorTribes(), groupGridAdapterDelegate.onClickErrorTribes());
+    }
+
+    public Observable<View> onClickOpenPoints() {
+        return meGridAdapterDelegate.clickOpenPoints();
     }
 
     public void setItems(List<Recipient> items) {

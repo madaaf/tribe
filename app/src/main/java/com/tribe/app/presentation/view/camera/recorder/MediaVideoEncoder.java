@@ -18,7 +18,7 @@ public class MediaVideoEncoder extends MediaEncoder {
     private static final String MIME_TYPE = MediaFormat.MIMETYPE_VIDEO_AVC;
     private static final int FRAME_RATE = 15;
     private static final int FRAME_INTERVAL = 10;
-    private static final int BITRATE = 2000000;
+    private static final int BITRATE = 1000000;
 
     // VARIABLES
     private InputSurface inputSurface = null;

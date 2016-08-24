@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
+import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.exception.DefaultErrorBundle;
@@ -86,9 +87,9 @@ public class TribePresenter extends SendTribePresenter implements Presenter {
     }
 
     public void markTribeListAsRead(Recipient recipient, List<TribeMessage> tribeList) {
-//        diskMarkTribeListAsRead.setTribeList(tribeList);
-//        diskMarkTribeListAsRead.execute(new DefaultSubscriber<>());
-//        jobManager.addJobInBackground(new MarkTribeListAsReadJob(recipient, tribeList));
+        diskMarkTribeListAsRead.setTribeList(tribeList);
+        diskMarkTribeListAsRead.execute(new DefaultSubscriber<>());
+        jobManager.addJobInBackground(new MarkTribeListAsReadJob(recipient, tribeList));
     }
 
     private final class TribeListSubscriber extends DefaultSubscriber<List<TribeMessage>> {

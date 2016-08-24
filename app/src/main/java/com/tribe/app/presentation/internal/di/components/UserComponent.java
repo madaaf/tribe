@@ -6,6 +6,7 @@ import com.tribe.app.presentation.internal.di.modules.UserModule;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.IntroActivity;
+import com.tribe.app.presentation.view.activity.ScoreActivity;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
 
 import dagger.Component;
@@ -21,4 +22,5 @@ public interface UserComponent extends ActivityComponent {
     void inject(CountryActivity countryActivity);
     void inject(HomeGridFragment homeGridFragment);
     void inject(HomeActivity homeActivity);
+    void inject(ScoreActivity scoreActivity);
 }

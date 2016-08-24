@@ -137,4 +137,29 @@
         <item name="android:singleLine">false</item>
         <item name="customFont">Roboto-Regular.ttf</item>
     </style>
+
+
+    <style name="Points">
+        <item name="customFont">SBNav.ttf</item>
+    </style>
+
+    <style name="Points.Reg" parent="@style/Points">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="Points.Reg.Black" parent="Points.Reg">
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="Points.Reg.Yellow" parent="Points.Reg">
+        <item name="android:textColor">@color/yellow</item>
+    </style>
+
+    <style name="Points.Reg.Black40" parent="Points.Reg">
+        <item name="android:textColor">@color/black.opacity.40</item>
+    </style>
+
+    <style name="Points.Large" parent="Points.Reg.Black">
+        <item name="android:textSize">35sp</item>
+    </style>
 </resources>

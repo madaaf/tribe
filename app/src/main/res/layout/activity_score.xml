@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    >
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="146dp"
+        >
+
+        <ImageView
+            android:id="@+id/imgLevel"
+            android:layout_width="@dimen/avatar_size"
+            android:layout_height="@dimen/avatar_size"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/horizontal_margin_xlarge"
+            android:src="@drawable/picto_legend"
+            android:scaleType="centerInside"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/imgLevel"
+            android:layout_marginLeft="@dimen/horizontal_margin_xlarge"
+            android:orientation="vertical"
+            >
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:singleLine="true"
+                style="@style/Body.Two.Black40"
+                android:text="@string/score_current_level"
+                />
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:id="@+id/txtLevel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:singleLine="true"
+                style="@style/Points.Large"
+                android:text="@string/level_legend_title"
+                />
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:id="@+id/txtPoints"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:singleLine="true"
+                style="@style/Points.Reg.Yellow"
+                />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/btnClose"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
+            android:src="@drawable/picto_exit"
+            android:scaleType="centerInside"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/selectable_button_oval"
+            />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@color/grey.light"
+        android:padding="@dimen/horizontal_margin_small"
+        android:orientation="horizontal">
+        
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_score_share"
+            android:clickable="true"
+            android:foreground="@drawable/selectable_button">
+
+            <ImageView
+                android:id="@+id/imgLevelSmall"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="@dimen/horizontal_margin_small"
+                android:src="@drawable/picto_legend"
+                android:scaleType="centerInside"
+                />
+
+            <View
+                android:layout_width="@dimen/divider_size"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="50dp"
+                android:background="@color/grey.light"
+                />
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/points_ShareProfile_title"
+                android:singleLine="true"
+                style="@style/Body.Two.Black"
+                />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/horizontal_margin_small"
+                android:layout_gravity="center_vertical|right"
+                android:src="@drawable/picto_share_black"
+                />
+        </FrameLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_size"
+        android:background="@color/grey.light"
+        />
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="76dp">
+
+        <View
+            android:id="@+id/viewScoreMax"
+            android:layout_width="6dp"
+            android:layout_height="@dimen/score_progress_height"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/horizontal_margin_small"
+            android:background="@drawable/shape_rect_rounded_yellow_alpha40"
+            />
+
+        <View
+            android:id="@+id/viewScoreProgress"
+            android:layout_width="6dp"
+            android:layout_height="0dp"
+            android:layout_alignLeft="@id/viewScoreMax"
+            android:layout_alignBottom="@id/viewScoreMax"
+            android:background="@drawable/shape_rect_rounded_yellow"
+            />
+
+        <ImageView
+            android:id="@+id/imgLock"
+            android:layout_width="@dimen/score_circle_size"
+            android:layout_height="@dimen/score_circle_size"
+            android:layout_toRightOf="@id/viewScoreMax"
+            android:layout_marginLeft="@dimen/horizontal_margin_small"
+            android:layout_centerVertical="true"
+            android:src="@drawable/picto_lock_white"
+            android:background="@drawable/shape_oval_dark_grey"
+            android:scaleType="centerInside"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/imgLock"
+            android:layout_marginLeft="@dimen/horizontal_margin_small"
+            android:orientation="vertical"
+            >
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:singleLine="true"
+                style="@style/Body.Two.Black40"
+                android:text="@string/score_next_level"
+                />
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:id="@+id/txtPointsLeft"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:singleLine="true"
+                style="@style/Points.Reg.Yellow"
+                />
+
+        </LinearLayout>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_size"
+        android:background="@color/grey.light"
+        />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerViewLevel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+</LinearLayout>

@@ -27,6 +27,7 @@
 
         fragment UserInfos on User {
             id
+            score
             username
             displayName
             picture
@@ -44,6 +45,7 @@
 
         fragment UserInfos on User {
             id
+            score
             username
             displayName
             picture

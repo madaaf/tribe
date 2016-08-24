@@ -6,15 +6,19 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
-import com.hannesdorfmann.adapterdelegates2.AdapterDelegate;
+import com.jakewharton.rxbinding.view.RxView;
+import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
-import com.tribe.app.presentation.view.widget.AvatarView;
+import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
+import com.tribe.app.presentation.view.utils.ScoreUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
@@ -23,18 +27,34 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 18/05/2016.
  */
-public class MeGridAdapterDelegate implements AdapterDelegate<List<Recipient>> {
+public class MeGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>> {
 
     protected LayoutInflater layoutInflater;
-    @Inject PaletteGrid paletteGrid;
+    private Context context;
+
+    @Inject
+    PaletteGrid paletteGrid;
+
+    @Inject
+    Picasso picasso;
+
+    // RESOURCES
+    private int avatarSize;
+
+    // OBSERVABLES
+    protected final PublishSubject<View> clickOpenPoints = PublishSubject.create();
 
     public MeGridAdapterDelegate(Context context) {
+        this.context = context;
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
+
+        avatarSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
     }
 
     @Override
@@ -45,7 +65,14 @@ public class MeGridAdapterDelegate implements AdapterDelegate<List<Recipient>> {
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
-        return new MeGridViewHolder(layoutInflater.inflate(R.layout.item_me_grid, parent, false));
+        MeGridViewHolder vh = new MeGridViewHolder(layoutInflater.inflate(R.layout.item_me_grid, parent, false));
+
+        subscriptions.add(RxView.clicks(vh.layoutPoints)
+            .takeUntil(RxView.detaches(parent))
+            .map(aVoid -> vh.layoutPoints)
+            .subscribe(clickOpenPoints));
+
+        return vh;
     }
 
     @Override
@@ -54,16 +81,28 @@ public class MeGridAdapterDelegate implements AdapterDelegate<List<Recipient>> {
         User me = ((Friendship) items.get(position)).getFriend();
 
         vh.txtName.setText(me.getDisplayName());
-        vh.avatar.load(me.getProfilePicture());
         vh.txtPoints.setText(me.getScoreStr());
+        vh.imgLevel.setImageResource(ScoreUtils.getLevelForScore(me.getScore()).getDrawableId());
+
+        picasso.load(me.getProfilePicture())
+                .fit()
+                .centerCrop()
+                .transform(new RoundedCornersTransformation(avatarSize >> 1, 0, RoundedCornersTransformation.CornerType.ALL))
+                .into(vh.avatar);
+    }
+
+    public PublishSubject<View> clickOpenPoints() {
+        return clickOpenPoints;
     }
 
     static class MeGridViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.layoutContent) public ViewGroup layoutContent;
-        @BindView(R.id.avatar) public AvatarView avatar;
+        @BindView(R.id.imgAvatar) public ImageView avatar;
         @BindView(R.id.txtName) public TextViewFont txtName;
         @BindView(R.id.txtPoints) public TextViewFont txtPoints;
+        @BindView(R.id.imgLevel) public ImageView imgLevel;
+        @BindView(R.id.layoutPoints) public ViewGroup layoutPoints;
 
         public MeGridViewHolder(View itemView) {
             super(itemView);

@@ -43,8 +43,6 @@
     <!-- PERMISSIONS -->
     <string name="permission_camera_enable_button_title">Enable\ncamera</string>
 
-    <!-- POINTS -->
-
     <!-- CHAT -->
     <string name="chat_tutorial_content">This is where you can chat when you can\'t speak or to share an address, a phone number, a handle, etc..</string>
     <string name="chat_tutorial_statuses_title">Message status</string>
@@ -64,4 +62,46 @@
     <string name="chat_are_typing">are typing</string>
     <string name="chat_and">and</string>
     <string name="gallery_chooser">Choose a media</string>
+
+    <!-- Score -->
+    <string name="score_current_level">Current level</string>
+    <string name="score_next_level">Next level in</string>
+    <string name="score_points_system_button">Get free and easy points</string>
+
+    <!-- Points System -->
+    <string name="points_system_title">Get free points</string>
+    <string name="points_AppOpened_title">Stay on the app</string>
+    <string name="points_AppOpened_description">Every 15 sec</string>
+    <string name="points_SendReceiveChat_title">Send or receive</string>
+    <string name="points_SendReceiveChat_description">Text message</string>
+    <string name="points_SendReceiveTribe_title">Send or receive</string>
+    <string name="points_SendReceiveTribe_description">Video or voice message</string>
+    <string name="points_NewFriendship_title">New friendship</string>
+    <string name="points_NewFriendship_description">Swipe left on the grid</string>
+    <string name="points_InviteTribe_title">Invite a friend</string>
+    <string name="points_InviteTribe_description">Swipe left on the grid</string>
+    <string name="points_CreateGroup_title">Create a group</string>
+    <string name="points_CreateGroup_description">Swipe right on the grid</string>
+    <string name="points_RateApp_title">Rate the app</string>
+    <string name="points_RateApp_description">Go to the App Store</string>
+    <string name="points_ShareProfile_title">Share your profile</string>
+    <string name="points_ShareProfile_description">Swipe left on the grid</string>
+    <string name="points_InviteFacebookFriends_title">Invite Facebook friends</string>
+    <string name="points_InviteFacebookFriends_description">Swipe left on the grid</string>
+    <string name="points_HundredGroupMembers_title">100 Group members</string>
+    <string name="points_HundredGroupMembers_description">Every 100 members in Public Group</string>
+    <string name="points_suffix">%1$s pts</string>
+
+    <!-- Level -->
+    <string name="level_noob_title">Noob</string>
+    <string name="level_rookie_title">Rookie</string>
+    <string name="level_coolkid_title">Coolkid</string>
+    <string name="level_champ_title">Champ</string>
+    <string name="level_rockstar_title">Rockstar</string>
+    <string name="level_legend_title">Legend</string>
+    <string name="level_king_title">King</string>
+    <string name="level_alien_title">Alien</string>
+    <string name="level_unicorn_title">Unicorn</string>
+    <string name="level_bot_title">Bot</string>
+
 </resources>

@@ -36,6 +36,7 @@
     <dimen name="back_to_message_height">48dp</dimen>
     <dimen name="snooze_items_height">100dp</dimen>
     <dimen name="chat_header_height">40dp</dimen>
+    <dimen name="score_progress_height">45dp</dimen>
 
     <!-- WIDTHS -->
     <dimen name="snooze_mode_width">93dp</dimen>
@@ -70,6 +71,7 @@
     <dimen name="avatar_size_reply_intermediate">50dp</dimen>
     <dimen name="avatar_size_reply_full">98dp</dimen>
     <dimen name="reply_tap_to_cancel">82dp</dimen>
+    <dimen name="score_circle_size">40dp</dimen>
 
     <!-- THRESHOLDS -->
     <dimen name="threshold_dismiss">100dp</dimen>

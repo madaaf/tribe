@@ -10,6 +10,7 @@ import com.tribe.app.presentation.view.activity.ChatActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.IntroActivity;
+import com.tribe.app.presentation.view.activity.ScoreActivity;
 import com.tribe.app.presentation.view.activity.TribeActivity;
 
 import javax.inject.Inject;
@@ -85,6 +86,19 @@ public class Navigator {
     public void navigateToTribe(Activity activity, int position, Recipient recipient) {
         if (activity != null) {
             Intent intent = TribeActivity.getCallingIntent(activity, position, recipient);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+        }
+    }
+
+    /**
+     * Goes to the score screen.
+     *
+     * @param activity An activity needed to open the destiny activity.
+     */
+    public void navigateToScorePoints(Activity activity) {
+        if (activity != null) {
+            Intent intent = ScoreActivity.getCallingIntent(activity);
             activity.startActivity(intent);
             activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
         }
