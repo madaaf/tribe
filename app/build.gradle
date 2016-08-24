@@ -127,6 +127,7 @@ dependencies {
     compile presentationDependencies.rxLocation
     compile presentationDependencies.googlePlayLocation
     compile presentationDependencies.rxPermissions
+    compile presentationDependencies.facebook
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker

@@ -23,7 +23,7 @@ ext {
     javaxAnnotationVersion = '1.0'
     gsonVersion = '2.6.2'
     retrofitVersion = '2.0.2'
-    androidAnnotationsVersion = '23.3.0'
+    androidAnnotationsVersion = '23.4.0'
     okHttpVersion = '3.2.0'
     priorityJobQueueVersion = '2.0.0-beta1'
     pahoMQTT3Version = '1.0.2'
@@ -43,6 +43,7 @@ ext {
     rxLocationVersion = '0.9@aar'
     googlePlayLocationVersion = '9.2.0'
     rxPermissionsVersion = '0.7.0@aar'
+    facebookVersion = '4,5'
 
     //Testing
     robolectricVersion = '3.0'
@@ -90,7 +91,8 @@ ext {
             circularProgressView    : "com.github.rahatarmanahmed:circularprogressview:${circularProgressViewVersion}",
             rxLocation              : "pl.charmas.android:android-reactive-location:${rxLocationVersion}",
             googlePlayLocation      : "com.google.android.gms:play-services-location:${googlePlayLocationVersion}",
-            rxPermissions           : "com.tbruyelle.rxpermissions:rxpermissions:${rxPermissionsVersion}"
+            rxPermissions           : "com.tbruyelle.rxpermissions:rxpermissions:${rxPermissionsVersion}",
+            facebook                : "com.facebook.android:facebook-android-sdk:[${facebookVersion})"
     ]
 
     presentationTestDependencies = [

@@ -102,5 +102,7 @@
     <string name="onboarding_queue_valid_description">Enter now, %1$s friends\nare already there.</string>
     <string name="onboarding_queue_valid_button_title">Enter now!</string>
 
+    <!-- DEPENDENDENCIES -->
+    <string name="facebook_app_id">1743579545897830</string>
 
 </resources>
