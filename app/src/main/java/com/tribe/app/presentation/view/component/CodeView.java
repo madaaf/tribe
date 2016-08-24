@@ -156,12 +156,4 @@ public class CodeView extends FrameLayout {
         return imgBackIcon;
     }
 
-    /**
-     * Utils
-     */
-
-    public int dpToPx(int dp) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getContext().getResources().getDisplayMetrics());
-    }
-
 }

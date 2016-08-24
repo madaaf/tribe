@@ -35,6 +35,7 @@
             android:textColor="@android:color/black"
             android:maxLength="4"
             android:layout_marginStart="-14dp"
+            android:layout_marginEnd="-14dp"
             style="@style/Text.Message.Input"
             android:inputType="phone"
             android:cursorVisible="false"
