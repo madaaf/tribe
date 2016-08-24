@@ -31,7 +31,6 @@ public class CodeView extends FrameLayout {
     @BindView(R.id.editTextCode)
     EditTextFont editTextCode;
 
-    // TODO: fix size and add sleeper handler
     @BindView(R.id.circularProgressViewCode)
     CircularProgressView circularProgressViewCode;
 

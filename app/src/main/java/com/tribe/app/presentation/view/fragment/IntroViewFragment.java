@@ -1,16 +1,22 @@
 package com.tribe.app.presentation.view.fragment;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
@@ -22,6 +28,7 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.IntroPresenter;
 import com.tribe.app.presentation.mvp.view.IntroView;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.component.CodeView;
 import com.tribe.app.presentation.view.component.PhoneNumberView;
@@ -85,6 +92,9 @@ public class IntroViewFragment extends Fragment implements IntroView {
     @BindView(R.id.txtIntroMessage)
     TextViewFont txtIntroMessage;
 
+    @BindView(R.id.blackOpaqueOverlay)
+    View blackOpaqueOverlay;
+
     private IntroViewFragmentPagerAdapter introViewFragmentPagerAdapter;
 
     private Pin pin;
@@ -124,6 +134,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
             subscriptions.clear();
         }
 
+
         super.onDestroy();
     }
 
@@ -133,6 +144,8 @@ public class IntroViewFragment extends Fragment implements IntroView {
 
     private void initUi(View view) {
         unbinder = ButterKnife.bind(this, view);
+
+//        attachKeyboardListeners();
 
         viewPhoneNumber.setNextEnabled(false);
 
@@ -150,7 +163,6 @@ public class IntroViewFragment extends Fragment implements IntroView {
 //                this.code = viewCode.getCode();
 //                introPresenter.login(phoneNumber, code, pin.getPinId());
                 introPresenter.login("", "", "");
-                goToConnected();
             }
         }));
     }
@@ -367,6 +379,5 @@ public class IntroViewFragment extends Fragment implements IntroView {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
-
 
 }

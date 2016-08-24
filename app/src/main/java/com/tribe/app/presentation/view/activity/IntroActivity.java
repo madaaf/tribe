@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.activity;
 
 import android.app.Activity;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 
@@ -8,8 +9,16 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -33,7 +42,7 @@ import rx.subscriptions.CompositeSubscription;
  * The first fragment in the view pager is IntroViewFragment.java
  */
 
-// TODO: fix keyboard overlapping issue
+// TODO: fix keyboard overlapping issue in full screen
 public class IntroActivity extends BaseActivity {
 
     public static Intent getCallingIntent(Context context) {
@@ -57,8 +66,14 @@ public class IntroActivity extends BaseActivity {
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
+
+
     @BindView(R.id.viewPager)
     CustomViewPager viewPager;
+
+    @BindView(R.id.introActivityRoot)
+    FrameLayout introRoot;
+
 
     /**
      * Lifecycle methods
@@ -81,6 +96,7 @@ public class IntroActivity extends BaseActivity {
             subscriptions.clear();
         }
 
+
         super.onDestroy();
     }
 
@@ -101,6 +117,8 @@ public class IntroActivity extends BaseActivity {
     private void initUi() {
         setContentView(R.layout.activity_intro);
         unbinder = ButterKnife.bind(this);
+
+
     }
 
     private void initViewPager() {
@@ -121,6 +139,8 @@ public class IntroActivity extends BaseActivity {
      */
 
     public void goToProfileInfo() {
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+
         viewPager.setCurrentItem(PAGE_PROFILE_INFO);
     }
 
@@ -183,5 +203,9 @@ public class IntroActivity extends BaseActivity {
                 .applicationComponent(getApplicationComponent())
                 .build().inject(this);
     }
+
+
+
+
 
 }

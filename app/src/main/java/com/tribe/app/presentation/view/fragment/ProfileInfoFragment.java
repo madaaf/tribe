@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.jakewharton.rxbinding.view.RxView;
@@ -97,7 +98,7 @@ public class ProfileInfoFragment extends Fragment {
 
     public void initUi(View view) {
         unbinder = ButterKnife.bind(this, view);
-
+        
         subscriptions.add(RxView.clicks(imgNextIcon).subscribe(aVoid -> {
             ((IntroActivity) getActivity()).goToAccess();
         }));
