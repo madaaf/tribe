@@ -9,7 +9,7 @@
 
         <ImageView
             android:id="@+id/imgCountryCode"
-            android:layout_width="wrap_content"
+            android:layout_width="25dp"
             android:layout_height="18dp"
             android:layout_gravity="bottom"
             android:layout_marginStart="@dimen/horizontal_margin_small"
@@ -46,13 +46,12 @@
             android:id="@+id/circularProgressViewPhoneNumber"
             android:layout_width="wrap_content"
             android:layout_height="28dp"
-            android:layout_gravity="end|bottom"
-            android:layout_marginBottom="@dimen/vertical_margin"
+            android:layout_gravity="end|center_vertical"
             android:layout_marginEnd="@dimen/horizontal_margin"
             android:visibility="invisible"
             app:cpv_animAutostart="true"
             app:cpv_indeterminate="true"
-            app:cpv_thickness="1.5dp"
+            app:cpv_thickness="2dp"
             app:cpv_color="@android:color/black"
             />
 
