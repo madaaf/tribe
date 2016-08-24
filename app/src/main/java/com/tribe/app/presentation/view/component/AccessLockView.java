@@ -288,17 +288,17 @@ public class AccessLockView extends FrameLayout {
 
         TransitionDrawable crossfader = new TransitionDrawable(backgrounds);
         viewPulse.setBackground(crossfader);
-        crossfader.startTransition(1200);
+        crossfader.startTransition(2400);
 
-        subscriptions.add(Observable.interval(600, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+        subscriptions.add(Observable.interval(1200, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .subscribe(aVoid -> {
                     if (isRed) {
                         isRed = false;
-                        crossfader.reverseTransition(600);
+                        crossfader.reverseTransition(1200);
                         viewPulse.animate().scaleY((float) 1).scaleX((float) 1).setDuration(600).start();
                     } else {
                         isRed = true;
-                        crossfader.startTransition(1200);
+                        crossfader.startTransition(2400);
                         viewPulse.animate().scaleY((float) 1.2).scaleX((float) 1.2).setDuration(600).start();
                     }
                 }));
