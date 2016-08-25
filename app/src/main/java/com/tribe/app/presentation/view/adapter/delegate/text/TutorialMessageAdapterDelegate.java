@@ -62,7 +62,7 @@ public class TutorialMessageAdapterDelegate implements AdapterDelegate<List<Chat
         ChatMessage chatMessage = items.get(position);
 
         vh.txtName.setText(chatMessage.getTo().getDisplayName());
-        vh.txtUsername.setText(chatMessage.getTo().getUsername());
+        vh.txtUsername.setText(chatMessage.getTo().getUsernameDisplay());
         picasso.load(chatMessage.getTo().getProfilePicture())
                 .fit()
                 .centerCrop()

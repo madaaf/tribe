@@ -23,7 +23,6 @@ import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.AndroidApplication;
@@ -161,12 +160,10 @@ public class TribePagerView extends FrameLayout {
     private TopSpringListener springTopListener;
     private BottomSpringListener springBottomListener;
     private AlphaSpringListener springAlphaListener;
-    private AlphaSwipeUpSpringListener springAlphaSwipeUpListener;
     private AlphaSwipeDownSpringListener springAlphaSwipeDownListener;
 
     // VARIABLES
     private ScreenUtils screenUtils;
-    private Friendship friendship;
     private int previousPosition;
     private int currentSwipeDirection;
     private float currentDragPercent;
@@ -340,7 +337,6 @@ public class TribePagerView extends FrameLayout {
         springTopListener = new TopSpringListener();
         springBottomListener = new BottomSpringListener();
         springAlphaListener = new AlphaSpringListener();
-        springAlphaSwipeUpListener = new AlphaSwipeUpSpringListener();
         springAlphaSwipeDownListener = new AlphaSwipeDownSpringListener();
 
         ViewGroup.LayoutParams paramsLayoutTile = viewTile.getLayoutParams();
@@ -353,20 +349,25 @@ public class TribePagerView extends FrameLayout {
         viewTile.onRecordStart()
                 .doOnNext(view -> hideExitCamera())
                 .subscribe(recordStarted);
+
         viewTile.onRecordEnd()
+                .doOnNext(view -> closeReplyMode())
                 .subscribe(recordEnded);
+
         viewTile.onTapToCancel()
                 .doOnNext(view -> {
-                    closeReplyMode();
+                    viewTile.cancelReplyMode();
                     inReplyMode = false;
                 })
                 .subscribe(clickTapToCancel);
+
         viewTile.onNotCancel()
                 .doOnNext(view -> {
-                    closeReplyMode();
+                    viewTile.cancelReplyMode();
                     inReplyMode = false;
                 })
                 .subscribe(onNotCancel);
+
         subscriptions.add(viewTile
                 .onReplyModeStarted()
                 .subscribe(bool -> {
@@ -801,17 +802,6 @@ public class TribePagerView extends FrameLayout {
         }
     }
 
-    private class AlphaSwipeUpSpringListener extends SimpleSpringListener {
-        @Override
-        public void onSpringUpdate(Spring spring) {
-            if (isAttachedToWindow()) {
-                float value = (float) spring.getCurrentValue();
-
-                computeCurrentView();
-            }
-        }
-    }
-
     private class AlphaSwipeDownSpringListener extends SimpleSpringListener {
         @Override
         public void onSpringUpdate(Spring spring) {
@@ -1085,12 +1075,12 @@ public class TribePagerView extends FrameLayout {
         showNbTribes();
         hideExitCamera();
         currentView.resumePlayer();
-        viewTile.cancelReplyMode();
     }
 
     @OnClick(R.id.imgCancelReply)
     public void stopReply() {
         closeReplyMode();
+        viewTile.cancelReplyMode();
     }
 
     @OnClick(R.id.layoutNbTribes)

@@ -40,4 +40,9 @@ public class Group extends Recipient {
     public String getUsername() {
         return "";
     }
+
+    @Override
+    public String getUsernameDisplay() {
+        return "";
+    }
 }
