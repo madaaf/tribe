@@ -489,10 +489,10 @@ public class ChatActivity extends BaseActivity implements MessageView {
     }
 
     private void animateFullScreen() {
-        int targetHeight = (int) (screenUtils.getWidth() * ((float) widthImageViewClicked / heightImageViewClicked));
+        int targetHeight = (int) (screenUtils.getWidthPx() * ((float) widthImageViewClicked / heightImageViewClicked));
 
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) imageViewClicked.getLayoutParams();
-        ValueAnimator animatorTopMargin = ValueAnimator.ofInt(marginTopImageViewClicked, ((screenUtils.getHeight() - statusBarHeight) >> 1) - (targetHeight >> 1));
+        ValueAnimator animatorTopMargin = ValueAnimator.ofInt(marginTopImageViewClicked, ((screenUtils.getHeightPx() - statusBarHeight) >> 1) - (targetHeight >> 1));
         animatorTopMargin.setDuration(DURATION);
         animatorTopMargin.setInterpolator(new OvershootInterpolator(OVERSHOOT));
         animatorTopMargin.addUpdateListener(animation -> {

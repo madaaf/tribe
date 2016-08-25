@@ -184,7 +184,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     private void initCamera() {
         cameraWrapper.initDimens(
-                screenUtils.getHeight()
+                screenUtils.getHeightPx()
                         - getResources().getDimensionPixelSize(R.dimen.nav_layout_height)
                         - cameraWrapper.getHeightFromRatio(),
                 getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small),

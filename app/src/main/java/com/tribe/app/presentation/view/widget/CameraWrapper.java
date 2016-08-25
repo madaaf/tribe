@@ -206,7 +206,7 @@ public class CameraWrapper extends FrameLayout {
     }
 
     public int getWidthFromRatio() {
-        return (int) (screenUtils.getWidth() / RATIO);
+        return (int) (screenUtils.getWidthPx() / RATIO);
     }
 
     @Override

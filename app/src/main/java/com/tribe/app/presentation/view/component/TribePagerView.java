@@ -380,12 +380,12 @@ public class TribePagerView extends FrameLayout {
                 })
         );
 
-        FrameLayout.LayoutParams paramsCamera = (FrameLayout.LayoutParams) cameraWrapper.getLayoutParams();
-        paramsCamera.topMargin = (screenUtils.getHeight() >> 1) - (cameraWrapper.getHeightFromRatio() >> 1);
-        paramsCamera.leftMargin = (screenUtils.getWidth() >> 1) - (cameraWrapper.getWidthFromRatio() >> 1);
+        LayoutParams paramsCamera = (LayoutParams) cameraWrapper.getLayoutParams();
+        paramsCamera.topMargin = (screenUtils.getHeightPx() >> 1) - (cameraWrapper.getHeightFromRatio() >> 1);
+        paramsCamera.leftMargin = (screenUtils.getWidthPx() >> 1) - (cameraWrapper.getWidthFromRatio() >> 1);
         cameraWrapper.setLayoutParams(paramsCamera);
 
-        imgCancelReply.setTranslationX(screenUtils.getWidth());
+        imgCancelReply.setTranslationX(screenUtils.getWidthPx());
     }
 
     private void initDimen() {
@@ -399,11 +399,11 @@ public class TribePagerView extends FrameLayout {
     }
 
     private void initCamera() {
-        marginCameraTopInit = (screenUtils.getHeight() >> 1) - (cameraWrapper.getHeightFromRatio() >> 1);
+        marginCameraTopInit = (screenUtils.getHeightPx() >> 1) - (cameraWrapper.getHeightFromRatio() >> 1);
 
         cameraWrapper.initDimens(
                 marginCameraTopInit,
-                (screenUtils.getWidth() >> 1) - (cameraWrapper.getWidthFromRatio() >> 1),
+                (screenUtils.getWidthPx() >> 1) - (cameraWrapper.getWidthFromRatio() >> 1),
                 marginCameraBottomInit,
                 false
         );
@@ -416,7 +416,7 @@ public class TribePagerView extends FrameLayout {
             public void onSpringUpdate(Spring spring) {
                 float value = (float) spring.getCurrentValue();
 
-                int marginTop = marginCameraTopInit - (int) (value * screenUtils.getHeight());
+                int marginTop = marginCameraTopInit - (int) (value * screenUtils.getHeightPx());
                 FrameLayout.LayoutParams paramsCamera = (FrameLayout.LayoutParams) cameraWrapper.getLayoutParams();
                 paramsCamera.topMargin = marginTop;
                 cameraWrapper.setLayoutParams(paramsCamera);
@@ -1039,7 +1039,7 @@ public class TribePagerView extends FrameLayout {
     }
 
     private void hideSpeed() {
-        imgSpeed.animate().translationX(-screenUtils.getWidth()).setDuration(DURATION_SLOW).setInterpolator(new DecelerateInterpolator()).start();
+        imgSpeed.animate().translationX(-screenUtils.getWidthPx()).setDuration(DURATION_SLOW).setInterpolator(new DecelerateInterpolator()).start();
     }
 
     private void showSpeed() {
@@ -1047,7 +1047,7 @@ public class TribePagerView extends FrameLayout {
     }
 
     private void hideNbTribes() {
-        layoutNbTribes.animate().translationX(screenUtils.getWidth()).setDuration(DURATION_REPLY).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
+        layoutNbTribes.animate().translationX(screenUtils.getWidthPx()).setDuration(DURATION_REPLY).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
     }
 
     private void showNbTribes() {
@@ -1059,7 +1059,7 @@ public class TribePagerView extends FrameLayout {
     }
 
     private void hideExitCamera() {
-        imgCancelReply.animate().translationX(screenUtils.getWidth()).setDuration(DURATION_REPLY).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
+        imgCancelReply.animate().translationX(screenUtils.getWidthPx()).setDuration(DURATION_REPLY).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
     }
 
     private void openReplyMode(boolean showExitCamera) {

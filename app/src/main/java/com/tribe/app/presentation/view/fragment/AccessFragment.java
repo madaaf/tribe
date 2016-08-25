@@ -227,7 +227,7 @@ public class AccessFragment extends Fragment {
                                     android.R.color.black,
                                     getString(R.string.onboarding_queue_loading_description),
                                     getString(R.string.action_cancel),
-                                    R.color.grey_dark);
+                                    R.color.grey_darker);
                             accessBottomBarView.animate()
                                     .setDuration(300)
                                     .translationY(0);
