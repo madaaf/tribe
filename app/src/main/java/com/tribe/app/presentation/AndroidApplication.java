@@ -2,6 +2,8 @@ package com.tribe.app.presentation;
 
 import android.app.Application;
 
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 import com.facebook.stetho.Stetho;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -25,6 +27,7 @@ public class AndroidApplication extends Application {
         this.initializeLeakDetection();
         this.initializeRealm();
         this.initializeStetho();
+        this.initializeFacebook();
     }
 
     @Override
@@ -60,5 +63,10 @@ public class AndroidApplication extends Application {
                 .deleteRealmIfMigrationNeeded()
                 .build();
         Realm.setDefaultConfiguration(realmConfiguration);
+    }
+
+    private void initializeFacebook() {
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
     }
 }

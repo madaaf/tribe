@@ -97,6 +97,14 @@ public class AnimationUtils {
         v.animate().alpha(1).setInterpolator(new DecelerateInterpolator()).setDuration(duration).start();
     }
 
+    public static void fadeViewDownOut(View view) {
+        view.animate().translationY(100).alpha(0).setDuration(300).start();
+    }
+
+    public static void fadeViewUpIn(View view) {
+        view.animate().translationY(0).alpha(1).setDuration(300).start();
+    }
+
     /**
      *
      * @param context

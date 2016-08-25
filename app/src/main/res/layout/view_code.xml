@@ -1,20 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@null">
+    android:layout_height="@dimen/bottom_bar_height"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white.opacity.100"
+    android:layout_gravity="bottom">
 
-    <com.tribe.app.presentation.view.widget.EditTextFont
-        android:id="@+id/editTextCode"
-        android:background="@null"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="@dimen/horizontal_margin"
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/imgBackIcon"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:hint="@string/Login.Code.Hint"
-        style="@style/Text.Message.Input"
-        android:inputType="phone"
+        android:layout_gravity="start|bottom"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:layout_marginBottom="@dimen/vertical_margin"
+        android:gravity="center"
+        android:clickable="true"
+        android:src="@drawable/picto_next_icon_black"
+        android:scaleX="-1"
+        />
+
+    <FrameLayout
+        android:layout_width="116dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="55dp"
+        android:layout_marginEnd="55dp"
+        android:layout_marginBottom="@dimen/horizontal_margin"
+        android:layout_gravity="bottom|center">
+
+        <com.tribe.app.presentation.view.widget.EditTextFont
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/editTextCode"
+            android:background="@null"
+            android:textColor="@android:color/black"
+            android:maxLength="4"
+            android:layout_marginStart="-14dp"
+            android:layout_marginEnd="-14dp"
+            style="@style/Text.Message.Input"
+            android:inputType="phone"
+            android:cursorVisible="false"
+            />
+
+        <ImageView
+            android:id="@+id/pinCircle1"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/picto_pin_circle"/>
+
+        <ImageView
+            android:id="@+id/pinCircle2"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="34dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/picto_pin_circle"/>
+
+        <ImageView
+            android:id="@+id/pinCircle3"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="68dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/picto_pin_circle"/>
+
+        <ImageView
+            android:id="@+id/pinCircle4"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="102dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/picto_pin_circle"/>
+
+    </FrameLayout>
+
+    <com.github.rahatarmanahmed.cpv.CircularProgressView
+        android:id="@+id/circularProgressViewCode"
+        android:layout_width="wrap_content"
+        android:layout_height="28dp"
+        android:layout_gravity="end|center_vertical"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:visibility="invisible"
+        app:cpv_animAutostart="true"
+        app:cpv_indeterminate="true"
+        app:cpv_color="@android:color/black"
+        app:cpv_thickness="2dp"
         />
 
 </FrameLayout>

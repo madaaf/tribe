@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:id="@+id/viewConnected"
+    android:background="@color/white.opacity.100"
+    android:layout_gravity="bottom">
+
+    <ImageView
+        android:id="@+id/imgConnectedIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/horizontal_margin"
+        android:layout_marginBottom="@dimen/vertical_margin"
+        android:gravity="center"
+        android:src="@drawable/picto_connected_icon"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtConnected"
+        android:background="@null"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/vertical_margin"
+        android:layout_gravity="bottom|center"
+        android:text="@string/onboarding_connected"
+        style="@style/Headline.Blue"
+        />
+
+</FrameLayout>

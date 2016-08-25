@@ -4,9 +4,12 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.widget.EditTextFont;
@@ -18,12 +21,33 @@ import rx.Observable;
 import rx.subjects.PublishSubject;
 
 /**
+ * CodeView.java
  * Created by tiago on 10/06/2016.
+ * Last Modified by Horatio.
+ * Component used in View Pager in IntroViewFragment.java for a user to input their verification code.
  */
 public class CodeView extends FrameLayout {
 
     @BindView(R.id.editTextCode)
     EditTextFont editTextCode;
+
+    @BindView(R.id.circularProgressViewCode)
+    CircularProgressView circularProgressViewCode;
+
+    @BindView(R.id.imgBackIcon)
+    ImageView imgBackIcon;
+
+    @BindView(R.id.pinCircle1)
+    ImageView pinCircle1;
+
+    @BindView(R.id.pinCircle2)
+    ImageView pinCircle2;
+
+    @BindView(R.id.pinCircle3)
+    ImageView pinCircle3;
+
+    @BindView(R.id.pinCircle4)
+    ImageView pinCircle4;
 
     // OBSERVABLES
     private Unbinder unbinder;
@@ -46,6 +70,10 @@ public class CodeView extends FrameLayout {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
+    /**
+     * Lifecycle methods
+     */
+
     @Override
     protected void onDetachedFromWindow() {
         unbinder.unbind();
@@ -59,15 +87,73 @@ public class CodeView extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.view_code, this);
         unbinder = ButterKnife.bind(this);
 
+        editTextCode.setLetterSpacing((float) 1.5);
+
         RxTextView.textChanges(editTextCode).map(CharSequence::toString)
-                .map(s -> s.length() >= 4).subscribe(codeValid);
+                .map(s -> {
+                    switch (s.length()) {
+                        case 0:
+                            pinCircle1.setVisibility(VISIBLE);
+                            pinCircle2.setVisibility(VISIBLE);
+                            pinCircle3.setVisibility(VISIBLE);
+                            pinCircle4.setVisibility(VISIBLE);
+                            break;
+                        case 1:
+                            pinCircle1.setVisibility(INVISIBLE);
+                            pinCircle2.setVisibility(VISIBLE);
+                            pinCircle3.setVisibility(VISIBLE);
+                            pinCircle4.setVisibility(VISIBLE);
+                            break;
+                        case 2:
+                            pinCircle1.setVisibility(INVISIBLE);
+                            pinCircle2.setVisibility(INVISIBLE);
+                            pinCircle3.setVisibility(VISIBLE);
+                            pinCircle4.setVisibility(VISIBLE);
+                            break;
+                        case 3:
+                            pinCircle1.setVisibility(INVISIBLE);
+                            pinCircle2.setVisibility(INVISIBLE);
+                            pinCircle3.setVisibility(INVISIBLE);
+                            pinCircle4.setVisibility(VISIBLE);
+                            break;
+                        case 4:
+                            pinCircle1.setVisibility(INVISIBLE);
+                            pinCircle2.setVisibility(INVISIBLE);
+                            pinCircle3.setVisibility(INVISIBLE);
+                            pinCircle4.setVisibility(INVISIBLE);
+                            break;
+                    }
+                    return s.length() == 4;
+                })
+                .subscribe(codeValid);
     }
+
+    /**
+     * Obeservable
+     */
+
+    public Observable<Boolean> codeValid() {
+        return codeValid;
+    }
+
+    /**
+     * Public view methods
+     */
 
     public String getCode() {
         return editTextCode.getText().toString();
     }
 
-    public Observable<Boolean> codeValid() {
-        return codeValid;
+    public void progressViewVisible(boolean visible) {
+        if (visible) {
+            circularProgressViewCode.setVisibility(VISIBLE);
+        } else {
+            circularProgressViewCode.setVisibility(INVISIBLE);
+        }
     }
+
+    public ImageView getBackIcon() {
+        return imgBackIcon;
+    }
+
 }
