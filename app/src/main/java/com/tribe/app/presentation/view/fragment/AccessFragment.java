@@ -10,17 +10,22 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.component.AccessBottomBarView;
 import com.tribe.app.presentation.view.component.AccessLockView;
 import com.tribe.app.presentation.view.component.TextFriendsView;
 import com.tribe.app.presentation.view.dialog_fragment.GetNotifiedDialogFragment;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,6 +54,9 @@ public class AccessFragment extends Fragment {
      * Globals
      */
 
+    @Inject
+    ScreenUtils screenUtils;
+
     @BindView(R.id.txtAccessTitle)
     TextViewFont txtAccessTitle;
 
@@ -69,10 +77,10 @@ public class AccessFragment extends Fragment {
     Context context;
 
     private int viewState;
-    private static final int STATE_GET_ACCESS = 0;
-    private static final int STATE_HANG_TIGHT = 1;
-    private static final int STATE_SORRY = 2;
-    private static final int STATE_CONGRATS = 3;
+    private static final int STATE_GET_ACCESS = 0,
+            STATE_HANG_TIGHT = 1,
+            STATE_SORRY = 2,
+            STATE_CONGRATS = 3;
 
     //for UI testing
     private boolean tryAgain = true;
@@ -89,8 +97,9 @@ public class AccessFragment extends Fragment {
 
         // TODO: change to dynamic on open
         viewState = STATE_GET_ACCESS;
-
+        initDependencyInjector();
         initUi(fragmentView);
+        initLockViewSize();
 
         return fragmentView;
 
@@ -137,9 +146,28 @@ public class AccessFragment extends Fragment {
                     break;
             }
         }));
-
     }
 
+    private void initLockViewSize() {
+        float lockViewWidthDp, pulseWidthDp, whiteCircleWidthDp;
+        int lockViewWidth, pulseWidth, whiteCircleWidth;
+
+        whiteCircleWidthDp = screenUtils.getWidthDp() / 3;
+        pulseWidthDp = whiteCircleWidthDp + 50;
+        lockViewWidthDp = (float) (pulseWidthDp * 1.2);
+
+        whiteCircleWidth = screenUtils.dpToPx(whiteCircleWidthDp);
+        pulseWidth = screenUtils.dpToPx(pulseWidthDp);
+        lockViewWidth = screenUtils.dpToPx(lockViewWidthDp);
+
+        FrameLayout.LayoutParams lockViewLayoutParams = (FrameLayout.LayoutParams) accessLockView.getLayoutParams();
+        lockViewLayoutParams.height = lockViewWidth;
+        lockViewLayoutParams.width = lockViewWidth;
+
+        accessLockView.setLayoutParams(lockViewLayoutParams);
+        accessLockView.setViewWidthHeight(whiteCircleWidth, pulseWidth);
+
+    }
 
     /**
      * Navigation methods
@@ -368,4 +396,24 @@ public class AccessFragment extends Fragment {
                     }
                 }).start();
     }
+
+    /**
+     * Dagger setup
+     */
+
+    protected ApplicationComponent getApplicationComponent() {
+        return ((AndroidApplication) getActivity().getApplication()).getApplicationComponent();
+    }
+
+    protected ActivityModule getActivityModule() {
+        return new ActivityModule(getActivity());
+    }
+
+    private void initDependencyInjector() {
+        DaggerUserComponent.builder()
+                .activityModule(getActivityModule())
+                .applicationComponent(getApplicationComponent())
+                .build().inject(this);
+    }
+
 }

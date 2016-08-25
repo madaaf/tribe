@@ -9,6 +9,7 @@ import android.graphics.drawable.TransitionDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
@@ -18,10 +19,13 @@ import android.widget.ImageView;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.drawable.SemiCircleDrawable;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.SemiCircleView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -64,11 +68,14 @@ public class AccessLockView extends FrameLayout {
     @BindView(R.id.pulse)
     View viewPulse;
 
-    @BindView(R.id.imgLockIcon)
-    ImageView imgLockIcon;
-
     @BindView(R.id.semiCircleView)
     View semiCircleView;
+
+    @BindView(R.id.whiteCircle)
+    View whiteCircle;
+
+    @BindView(R.id.imgLockIcon)
+    ImageView imgLockIcon;
 
     @BindView(R.id.txtNumFriends)
     TextViewFont txtNumFriends;
@@ -265,8 +272,13 @@ public class AccessLockView extends FrameLayout {
         }
         semiCircleView.setBackground(animationDrawable);
         animationDrawable.start();
+    }
 
-
+    public void setViewWidthHeight(int whiteCircleWidth, int pulseWidth) {
+        whiteCircle.setLayoutParams(new LayoutParams(whiteCircleWidth, whiteCircleWidth));
+        setNewWidthAndHeight(whiteCircle, whiteCircleWidth, whiteCircleWidth);
+        setNewWidthAndHeight(semiCircleView, whiteCircleWidth, whiteCircleWidth);
+        setNewWidthAndHeight(viewPulse, pulseWidth, pulseWidth);
     }
 
     private void removePulsingCircleAnimation() {
@@ -302,5 +314,13 @@ public class AccessLockView extends FrameLayout {
                         viewPulse.animate().scaleY((float) 1.2).scaleX((float) 1.2).setDuration(600).start();
                     }
                 }));
+    }
+
+    private void setNewWidthAndHeight(View view, int width, int height) {
+        LayoutParams viewLayoutParams = (LayoutParams) view.getLayoutParams();
+        viewLayoutParams.height = height;
+        viewLayoutParams.width = width;
+        viewLayoutParams.gravity = Gravity.CENTER;
+        view.setLayoutParams(viewLayoutParams);
     }
 }

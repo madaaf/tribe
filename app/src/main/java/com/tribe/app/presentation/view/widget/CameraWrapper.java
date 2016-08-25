@@ -123,7 +123,7 @@ public class CameraWrapper extends FrameLayout {
             }
         });
 
-        imgVideo.setTranslationX(screenUtils.getWidth() / RATIO);
+        imgVideo.setTranslationX(screenUtils.getWidthPx() / RATIO);
 
         setBackgroundResource(R.color.black_opacity_20);
     }
@@ -200,14 +200,14 @@ public class CameraWrapper extends FrameLayout {
     }
 
     public int getHeightFromRatio() {
-        return (int) (screenUtils.getWidth() / RATIO * aspectRatio);
+        return (int) (screenUtils.getWidthPx() / RATIO * aspectRatio);
     }
 
     @Override
     protected void onMeasure(int widthSpec, int heightSpec) {
         // Scale the preview while keeping the aspect ratio
-        int fullWidth = screenUtils.getWidth() / RATIO;
-        int fullHeight = (int) (screenUtils.getWidth() / RATIO * aspectRatio);
+        int fullWidth = screenUtils.getWidthPx() / RATIO;
+        int fullHeight = (int) (screenUtils.getWidthPx() / RATIO * aspectRatio);
 
         setMeasuredDimension(fullWidth, fullHeight);
 
@@ -265,13 +265,13 @@ public class CameraWrapper extends FrameLayout {
         int leftMargin = 0;
         int topMargin = 0;
 
-        if (lp.leftMargin > screenUtils.getWidth() / 4) {
-            leftMargin = screenUtils.getWidth() - getWidth() - marginLeftInit;
+        if (lp.leftMargin > screenUtils.getWidthPx() / 4) {
+            leftMargin = screenUtils.getWidthPx() - getWidth() - marginLeftInit;
         } else {
             leftMargin = marginLeftInit;
         }
 
-        if (lp.topMargin > screenUtils.getHeight() / 4) {
+        if (lp.topMargin > screenUtils.getHeightPx() / 4) {
             topMargin = ((View) getParent()).getHeight() - getMeasuredHeight() - marginBottomInit;
         } else {
             topMargin = marginTopInit;
@@ -367,7 +367,7 @@ public class CameraWrapper extends FrameLayout {
                 .start();
 
         imgVideo.animate()
-                .translationX(screenUtils.getWidth() / RATIO)
+                .translationX(screenUtils.getWidthPx() / RATIO)
                 .setDuration(DURATION_ICONS)
                 .setInterpolator(new DecelerateInterpolator())
                 .setListener(new AnimatorListenerAdapter() {

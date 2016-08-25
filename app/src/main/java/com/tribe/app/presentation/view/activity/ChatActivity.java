@@ -442,7 +442,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
 
     private void animateFullScreen() {
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) imageViewClicked.getLayoutParams();
-        ValueAnimator animatorTopMargin = ValueAnimator.ofInt(marginTopImageViewClicked, (screenUtils.getHeight() >> 1) - (params.height >> 1));
+        ValueAnimator animatorTopMargin = ValueAnimator.ofInt(marginTopImageViewClicked, (screenUtils.getHeightPx() >> 1) - (params.height >> 1));
         animatorTopMargin.setDuration(DURATION);
         animatorTopMargin.setInterpolator(new OvershootInterpolator(OVERSHOOT));
         animatorTopMargin.addUpdateListener(animation -> {
@@ -461,7 +461,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
 
         animatorLeftMargin.start();
 
-        ValueAnimator animatorWidth = ValueAnimator.ofInt(widthImageViewClicked, screenUtils.getWidth());
+        ValueAnimator animatorWidth = ValueAnimator.ofInt(widthImageViewClicked, screenUtils.getWidthPx());
         animatorWidth.setDuration(DURATION);
         animatorWidth.setInterpolator(new OvershootInterpolator(OVERSHOOT));
         animatorWidth.addUpdateListener(animation -> {
@@ -471,7 +471,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
 
         animatorWidth.start();
 
-        ValueAnimator animatorHeight = ValueAnimator.ofInt(heightImageViewClicked, (int) (screenUtils.getWidth() * ((float) widthImageViewClicked / heightImageViewClicked)));
+        ValueAnimator animatorHeight = ValueAnimator.ofInt(heightImageViewClicked, (int) (screenUtils.getWidthPx() * ((float) widthImageViewClicked / heightImageViewClicked)));
         animatorHeight.setDuration(DURATION);
         animatorHeight.setInterpolator(new OvershootInterpolator(OVERSHOOT));
         animatorHeight.addUpdateListener(animation -> {
