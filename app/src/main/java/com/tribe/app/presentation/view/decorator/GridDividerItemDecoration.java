@@ -11,9 +11,9 @@ import android.view.View;
  */
 public class GridDividerItemDecoration extends RecyclerView.ItemDecoration {
 
-    private Drawable mHorizontalDivider;
-    private Drawable mVerticalDivider;
-    private int mNumColumns;
+    private Drawable horizontalDivider;
+    private Drawable verticalDivider;
+    private int numColumns;
 
     /**
      * Sole constructor. Takes in {@link Drawable} objects to be used as
@@ -26,9 +26,9 @@ public class GridDividerItemDecoration extends RecyclerView.ItemDecoration {
      * @param numColumns The number of columns in the grid of the RecyclerView
      */
     public GridDividerItemDecoration(Drawable horizontalDivider, Drawable verticalDivider, int numColumns) {
-        mHorizontalDivider = horizontalDivider;
-        mVerticalDivider = verticalDivider;
-        mNumColumns = numColumns;
+        this.horizontalDivider = horizontalDivider;
+        this.verticalDivider = verticalDivider;
+        this.numColumns = numColumns;
     }
 
     /**
@@ -57,14 +57,14 @@ public class GridDividerItemDecoration extends RecyclerView.ItemDecoration {
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
 
-        boolean childIsInLeftmostColumn = (parent.getChildAdapterPosition(view) % mNumColumns) == 0;
+        boolean childIsInLeftmostColumn = (parent.getChildAdapterPosition(view) % numColumns) == 0;
         if (!childIsInLeftmostColumn) {
-            outRect.left = mHorizontalDivider.getIntrinsicWidth();
+            outRect.left = horizontalDivider.getIntrinsicWidth();
         }
 
-        boolean childIsInFirstRow = (parent.getChildAdapterPosition(view)) < mNumColumns;
+        boolean childIsInFirstRow = (parent.getChildAdapterPosition(view)) < numColumns;
         if (!childIsInFirstRow) {
-            outRect.top = mVerticalDivider.getIntrinsicHeight();
+            outRect.top = verticalDivider.getIntrinsicHeight();
         }
     }
 
@@ -79,15 +79,15 @@ public class GridDividerItemDecoration extends RecyclerView.ItemDecoration {
         int parentTop = parent.getPaddingTop();
         int parentBottom = parent.getHeight() - parent.getPaddingBottom();
 
-        for (int i = 0; i < mNumColumns; i++) {
+        for (int i = 0; i < numColumns; i++) {
             View child = parent.getChildAt(i);
             RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
 
             int parentLeft = child.getRight() + params.rightMargin;
-            int parentRight = parentLeft + mHorizontalDivider.getIntrinsicWidth();
+            int parentRight = parentLeft + horizontalDivider.getIntrinsicWidth();
 
-            mHorizontalDivider.setBounds(parentLeft, parentTop, parentRight, parentBottom);
-            mHorizontalDivider.draw(canvas);
+            horizontalDivider.setBounds(parentLeft, parentTop, parentRight, parentBottom);
+            horizontalDivider.draw(canvas);
         }
     }
 
@@ -103,20 +103,20 @@ public class GridDividerItemDecoration extends RecyclerView.ItemDecoration {
         int parentRight = parent.getWidth() - parent.getPaddingRight();
 
         int childCount = parent.getChildCount();
-        int numChildrenOnLastRow = childCount % mNumColumns;
-        int numRows = childCount / mNumColumns;
+        int numChildrenOnLastRow = childCount % numColumns;
+        int numRows = childCount / numColumns;
         if (numChildrenOnLastRow == 0) { // TODO: Replace this with math
             numRows--;
         }
         for (int i = 0; i < numRows; i++) {
-            View child = parent.getChildAt(i * mNumColumns);
+            View child = parent.getChildAt(i * numColumns);
             RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
 
             int parentTop = child.getBottom() + params.bottomMargin;
-            int parentBottom = parentTop + mVerticalDivider.getIntrinsicHeight();
+            int parentBottom = parentTop + verticalDivider.getIntrinsicHeight();
 
-            mVerticalDivider.setBounds(parentLeft, parentTop, parentRight, parentBottom);
-            mVerticalDivider.draw(canvas);
+            verticalDivider.setBounds(parentLeft, parentTop, parentRight, parentBottom);
+            verticalDivider.draw(canvas);
         }
     }
 }

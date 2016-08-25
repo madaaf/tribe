@@ -9,7 +9,9 @@ import android.support.v7.widget.RecyclerView;
  */
 public class LevelLayoutManager extends GridLayoutManager {
 
+    public static final int spanCount = 4;
+
     public LevelLayoutManager(Context context) {
-        super(context, 4);
+        super(context, spanCount);
     }
 }

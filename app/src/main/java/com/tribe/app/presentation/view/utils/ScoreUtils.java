@@ -8,7 +8,6 @@ import com.tribe.app.R;
 public class ScoreUtils {
 
     public enum Level {
-
         NOOB        (R.string.level_noob_title, 0, R.drawable.picto_noob),
         ROOKIE      (R.string.level_rookie_title, 2000, R.drawable.picto_rookie),
         COOL_KID    (R.string.level_coolkid_title, 10000, R.drawable.picto_cool_kid),
@@ -40,6 +39,47 @@ public class ScoreUtils {
 
         public int getStringId() {
             return stringId;
+        }
+    }
+
+    public enum Point {
+        APP_OPENED              (R.string.points_AppOpened_title, R.string.points_AppOpened_description, 1, R.drawable.picto_points_time),
+        SEND_RECEIVE_CHAT       (R.string.points_SendReceiveChat_title, R.string.points_SendReceiveChat_description, 2, R.drawable.picto_text),
+        SEND_RECEIVE_TRIBE      (R.string.points_SendReceiveTribe_title, R.string.points_SendReceiveTribe_description, 10, R.drawable.picto_camera),
+        NEW_FRIENDSHIP          (R.string.points_NewFriendship_title, R.string.points_NewFriendship_description, 30, R.drawable.picto_points_friend),
+        INVITE                  (R.string.points_InviteTribe_title, R.string.points_InviteTribe_description, 50, R.drawable.picto_points_invite),
+        CREATE_GROUP            (R.string.points_CreateGroup_title, R.string.points_CreateGroup_description, 100, R.drawable.picto_group),
+        RATE_APP                (R.string.points_RateApp_title, R.string.points_RateApp_description, 500, R.drawable.picto_points_rate),
+        SHARE_PROFILE           (R.string.points_ShareProfile_title, R.string.points_ShareProfile_description, 1000, R.drawable.picto_share),
+        INVITE_FACEBOOK         (R.string.points_InviteFacebookFriends_title, R.string.points_InviteFacebookFriends_description, 1500, R.drawable.picto_points_facebook),
+        GROUP_100_MEMBERS       (R.string.points_HundredGroupMembers_title, R.string.points_HundredGroupMembers_description, 2000, R.drawable.picto_points_public_group);
+
+        private final int stringLabelId;
+        private final int stringSubLabelId;
+        private final int points;
+        private final int drawableId;
+
+        Point(int stringLabelId, int stringSubLabelId, int points, int drawableId) {
+            this.stringLabelId = stringLabelId;
+            this.stringSubLabelId = stringSubLabelId;
+            this.points = points;
+            this.drawableId = drawableId;
+        }
+
+        public int getPoints() {
+            return points;
+        }
+
+        public int getDrawableId() {
+            return drawableId;
+        }
+
+        public int getStringLabelId() {
+            return stringLabelId;
+        }
+
+        public int getStringSubLabelId() {
+            return stringSubLabelId;
         }
     }
 

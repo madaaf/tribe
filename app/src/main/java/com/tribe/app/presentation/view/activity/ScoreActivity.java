@@ -15,8 +15,10 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.ScorePresenter;
 import com.tribe.app.presentation.mvp.view.ScoreView;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.adapter.LevelAdapter;
 import com.tribe.app.presentation.view.adapter.manager.LevelLayoutManager;
+import com.tribe.app.presentation.view.decorator.GridDividerTopItemDecoration;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
@@ -40,6 +42,9 @@ public class ScoreActivity extends BaseActivity implements ScoreView {
 
     private final int DURATION = 500;
     private final float OVERSHOOT = 1.5f;
+
+    @Inject
+    Navigator navigator;
 
     @Inject
     ScorePresenter scorePresenter;
@@ -73,15 +78,17 @@ public class ScoreActivity extends BaseActivity implements ScoreView {
 
     // RESOURCES
     private int scoreMaxHeight;
+    private int marginVerticalSmall;
 
     // BINDERS / SUBSCRIPTIONS
     private Unbinder unbinder;
     private CompositeSubscription subscriptions;
 
-    // LAYOUT VARIABLES
+    // VARIABLES
     private LevelLayoutManager levelLayoutManager;
     private LevelAdapter levelAdapter;
     private List<ScoreUtils.Level> levelList;
+    private ValueAnimator animatorHeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +114,8 @@ public class ScoreActivity extends BaseActivity implements ScoreView {
 
     @Override
     protected void onDestroy() {
+        animatorHeight.cancel();
+
         if (unbinder != null) unbinder.unbind();
         if (scorePresenter != null) scorePresenter.onDestroy();
         if (subscriptions != null && subscriptions.hasSubscriptions()) {
@@ -120,6 +129,7 @@ public class ScoreActivity extends BaseActivity implements ScoreView {
 
     private void initResources() {
         scoreMaxHeight = getResources().getDimensionPixelSize(R.dimen.score_progress_height);
+        marginVerticalSmall = getResources().getDimensionPixelSize(R.dimen.vertical_margin_small);
     }
 
     private void initUi() {
@@ -141,7 +151,7 @@ public class ScoreActivity extends BaseActivity implements ScoreView {
         int progressHeight = (int) (((float) scoreMaxHeight / nextLevel.getPoints()) * currentUser.getScore());
 
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) viewScoreProgress.getLayoutParams();
-        ValueAnimator animatorHeight = ValueAnimator.ofInt(0, progressHeight);
+        animatorHeight = ValueAnimator.ofInt(0, progressHeight);
         animatorHeight.setDuration(DURATION);
         animatorHeight.setInterpolator(new OvershootInterpolator(OVERSHOOT));
         animatorHeight.setStartDelay(1000);
@@ -159,6 +169,7 @@ public class ScoreActivity extends BaseActivity implements ScoreView {
         levelAdapter.setItems(Arrays.asList(ScoreUtils.Level.values()));
         recyclerViewLevel.setAdapter(levelAdapter);
         recyclerViewLevel.setHasFixedSize(true);
+        recyclerViewLevel.addItemDecoration(new GridDividerTopItemDecoration(marginVerticalSmall, LevelLayoutManager.spanCount));
     }
 
     private void initSubscriptions() {
@@ -181,6 +192,11 @@ public class ScoreActivity extends BaseActivity implements ScoreView {
     @OnClick(R.id.btnClose)
     public void exit() {
         finish();
+    }
+
+    @OnClick(R.id.layoutNextPoints)
+    public void goToPoints() {
+        navigator.navigateToPoints(this);
     }
 
     @Override

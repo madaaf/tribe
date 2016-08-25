@@ -470,7 +470,7 @@ public class TribePagerView extends FrameLayout {
     }
 
     public void initWithInfo(Recipient recipient) {
-        viewTile.setInfo(recipient.getDisplayName(), recipient.getProfilePicture(), recipient.getReceivedTribes());
+        viewTile.setInfo(recipient);
     }
 
     public void startRecording(String id) {
@@ -1091,6 +1091,12 @@ public class TribePagerView extends FrameLayout {
     @OnClick(R.id.imgCancelReply)
     public void stopReply() {
         closeReplyMode();
+    }
+
+    @OnClick(R.id.layoutNbTribes)
+    public void goToNext() {
+        if (tribeList.size() - tribeListSeens.size() > 0)
+            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
     }
 
     //////////////////////

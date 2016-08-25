@@ -199,10 +199,55 @@
         android:background="@color/grey.light"
         />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerViewLevel"
+    <FrameLayout
+        android:id="@+id/layoutContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        />
+        android:layout_gravity="bottom"
+        android:layout_weight="1"
+        android:background="@null">
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerViewLevel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="60dp"
+            />
+
+        <View
+            android:id="@+id/viewShadowBottom"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="60dp"
+            android:background="@drawable/shadow_top"
+            />
+
+        <FrameLayout
+            android:id="@+id/layoutNextPoints"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_gravity="bottom"
+            android:clickable="true"
+            android:background="@color/yellow"
+            android:foreground="@drawable/selectable_button_light">
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/score_points_system_button"
+                android:singleLine="true"
+                style="@style/Title.2.White"
+                />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|center_vertical"
+                android:layout_marginRight="@dimen/horizontal_margin"
+                android:src="@drawable/picto_next_white"
+                />
+        </FrameLayout>
+    </FrameLayout>
 </LinearLayout>

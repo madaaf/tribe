@@ -138,6 +138,13 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
             for (int i = this.items.size(); i < minItems; i++) {
                 this.items.add(new Friendship(Recipient.ID_EMPTY));
             }
+        } else {
+            this.items.add(new Friendship(Recipient.ID_EMPTY));
+            this.items.add(new Friendship(Recipient.ID_EMPTY));
+
+            if (this.items.size() % 2 == 1) {
+                this.items.add(new Friendship(Recipient.ID_EMPTY));
+            }
         }
 
         this.notifyDataSetChanged();

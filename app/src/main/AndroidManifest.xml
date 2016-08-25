@@ -76,6 +76,13 @@
             />
 
         <activity
+            android:name=".presentation.view.activity.PointsActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.FullScreen"
+            />
+
+        <activity
             android:name=".presentation.view.activity.DummyActivity"
             android:theme="@style/AppTheme.Transparent.Dummy"
             android:screenOrientation="portrait"

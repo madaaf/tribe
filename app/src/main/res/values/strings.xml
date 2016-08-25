@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="Common.Next">Next</string>
+    <!-- COMMON -->
+    <string name="common_next">Next</string>
+    <string name="common_delete">Delete</string>
+    <string name="common_cancel">Cancel</string>
 
     <string name="exception_message_generic">Generic error message</string>
     <string name="exception_message_no_connection">No Internet connection</string>

@@ -38,7 +38,7 @@
         android:layout_gravity="bottom"
         android:gravity="center"
         android:background="@color/palette.two.two"
-        android:text="@string/Common.Next"
+        android:text="@string/common_next"
         android:clickable="true"
         />
 

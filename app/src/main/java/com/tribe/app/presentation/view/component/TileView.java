@@ -30,6 +30,8 @@ import com.facebook.rebound.SpringSystem;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Group;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
@@ -471,19 +473,25 @@ public class TileView extends SquareFrameLayout {
         AnimationUtils.fadeIn(txtSending, 0);
     }
 
-    public void setInfo(String name, String urlAvatar, List<TribeMessage> receivedTribes) {
+    public void setInfo(Recipient recipient) {
         // WE DON'T LOAD THE AVATAR AGAIN IF THE URL IS THE SAME
         String previousAvatar = (String) avatar.getTag(R.id.profile_picture);
-        if (previousAvatar == null || !previousAvatar.equals(urlAvatar)) {
-            avatar.setTag(R.id.profile_picture, urlAvatar);
-            avatar.load(urlAvatar);
+        if (previousAvatar == null || !previousAvatar.equals(recipient.getProfilePicture())) {
+            avatar.setTag(R.id.profile_picture, recipient.getProfilePicture());
+            avatar.load(recipient.getProfilePicture());
         }
 
         if (type == TYPE_GRID) {
-            txtName.setText(name);
+            if (recipient instanceof Group) {
+                txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small, 0, 0, 0);
+            } else {
+                txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+            }
 
-            if (receivedTribes != null && receivedTribes.size() > 0) {
-                txtNbTribes.setText("" + receivedTribes.size());
+            txtName.setText(recipient.getDisplayName());
+
+            if (recipient.getReceivedTribes() != null && recipient.getReceivedTribes().size() > 0) {
+                txtNbTribes.setText("" + recipient.getReceivedTribes().size());
                 if (layoutNbTribes.getScaleX() == 0) {
                     layoutNbTribes.animate().scaleX(1).scaleY(1).setDuration(0).setStartDelay(0).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
                 }

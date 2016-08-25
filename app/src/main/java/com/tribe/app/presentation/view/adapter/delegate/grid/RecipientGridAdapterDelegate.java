@@ -69,7 +69,7 @@ public abstract class RecipientGridAdapterDelegate extends RxAdapterDelegate<Lis
 
         if (!vh.viewTile.isRecording() && !vh.viewTile.isTapToCancel()) {
             if (recipient.getTribe() == null) {
-                vh.viewTile.setInfo(recipient.getDisplayName(), recipient.getProfilePicture(), recipient.getReceivedTribes());
+                vh.viewTile.setInfo(recipient);
                 vh.viewTile.setBackground(position);
                 recipient.setPosition(position);
             } else {

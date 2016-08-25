@@ -31,6 +31,7 @@ import com.tribe.app.presentation.mvp.view.MessageView;
 import com.tribe.app.presentation.view.adapter.MessageAdapter;
 import com.tribe.app.presentation.view.adapter.manager.MessageLayoutManager;
 import com.tribe.app.presentation.view.component.ChatInputView;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -291,7 +292,11 @@ public class ChatActivity extends BaseActivity implements MessageView {
 
     @OnClick(R.id.imgTrash)
     public void deleteConversation() {
-        chatPresenter.deleteConversation(recipient.getId());
+        DialogFactory.createConfirmationDialog(this, getString(R.string.chat_erase_conversation_title),
+                    getString(R.string.chat_erase_conversation_message),
+                    getString(R.string.common_delete),
+                    (dialog, which) -> chatPresenter.deleteConversation(recipient.getId()))
+                .show();
     }
 
     @OnClick(R.id.imgBack)
@@ -700,6 +705,6 @@ public class ChatActivity extends BaseActivity implements MessageView {
     @Override
     public void finish() {
         super.finish();
-        overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
+        overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
     }
 }

@@ -55,13 +55,7 @@ public class LevelLockedAdapterDelegate extends RxAdapterDelegate<List<ScoreUtil
         LevelViewHolder vh = (LevelViewHolder) holder;
         ScoreUtils.Level level = items.get(position);
 
-        vh.txtPoints.setText(context.getString(R.string.points_suffix, ScoreUtils.format(level.getPoints(), 0)));
-
-        if (position <= 3) {
-            vh.itemView.setPadding(0, marginVertical, 0, 0);
-        } else {
-            vh.itemView.setPadding(0, 0, 0, 0);
-        }
+        vh.txtPoints.setText(context.getString(R.string.points_suffix, level.getPoints() < 1000 ? "" + level.getPoints() : ScoreUtils.format(level.getPoints(), 0)));
     }
 
     static class LevelViewHolder extends RecyclerView.ViewHolder {

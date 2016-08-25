@@ -10,6 +10,7 @@ import com.tribe.app.presentation.view.activity.ChatActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.IntroActivity;
+import com.tribe.app.presentation.view.activity.PointsActivity;
 import com.tribe.app.presentation.view.activity.ScoreActivity;
 import com.tribe.app.presentation.view.activity.TribeActivity;
 
@@ -72,7 +73,7 @@ public class Navigator {
         if (activity != null) {
             Intent intent = ChatActivity.getCallingIntent(activity, recipient);
             activity.startActivity(intent);
-            activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+            activity.overridePendingTransition(R.anim.activity_in_from_right, R.anim.activity_out_scale_down);
         }
     }
 
@@ -101,6 +102,19 @@ public class Navigator {
             Intent intent = ScoreActivity.getCallingIntent(activity);
             activity.startActivity(intent);
             activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+        }
+    }
+
+    /**
+     * Goes to the points screen.
+     *
+     * @param activity An activity needed to open the destiny activity.
+     */
+    public void navigateToPoints(Activity activity) {
+        if (activity != null) {
+            Intent intent = PointsActivity.getCallingIntent(activity);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.activity_in_from_right, R.anim.activity_out_scale_down);
         }
     }
 }

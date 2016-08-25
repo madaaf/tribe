@@ -21,49 +21,47 @@ import butterknife.ButterKnife;
 /**
  * Created by tiago on 18/05/2016.
  */
-public class LevelAdapterDelegate extends RxAdapterDelegate<List<ScoreUtils.Level>> {
+public class PointsAdapterDelegate extends RxAdapterDelegate<List<ScoreUtils.Point>> {
 
     // VARIABLES
     protected LayoutInflater layoutInflater;
     private Context context;
-    private int score;
 
-    // RESOURCES
-    private int marginVertical;
-
-    public LevelAdapterDelegate(Context context, int score) {
+    public PointsAdapterDelegate(Context context) {
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.context = context;
-        this.marginVertical = context.getResources().getDimensionPixelSize(R.dimen.vertical_margin_small);
-        this.score = score;
     }
 
     @Override
-    public boolean isForViewType(@NonNull List<ScoreUtils.Level> items, int position) {
-        ScoreUtils.Level level = items.get(position);
-        return score >= level.getPoints();
+    public boolean isForViewType(@NonNull List<ScoreUtils.Point> items, int position) {
+        ScoreUtils.Point point = items.get(position);
+        return true;
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
-        RecyclerView.ViewHolder vh = new LevelViewHolder(layoutInflater.inflate(R.layout.item_level, parent, false));
+        RecyclerView.ViewHolder vh = new LevelViewHolder(layoutInflater.inflate(R.layout.item_points, parent, false));
         return vh;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull List<ScoreUtils.Level> items, int position, @NonNull RecyclerView.ViewHolder holder) {
+    public void onBindViewHolder(@NonNull List<ScoreUtils.Point> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         LevelViewHolder vh = (LevelViewHolder) holder;
-        ScoreUtils.Level level = items.get(position);
+        ScoreUtils.Point point = items.get(position);
 
-        vh.txtPoints.setText(context.getString(R.string.points_suffix, level.getPoints() < 1000 ? "" + level.getPoints() : ScoreUtils.format(level.getPoints(), 0)));
-        vh.imgLevel.setImageResource(level.getDrawableId());
+        vh.imgPicto.setImageResource(point.getDrawableId());
+        vh.txtPoints.setText(point.getPoints() < 1000 ? "" + point.getPoints(): ScoreUtils.format(point.getPoints(), 0));
+        vh.txtTitle.setText(point.getStringLabelId());
+        vh.txtDescription.setText(point.getStringSubLabelId());
     }
 
     static class LevelViewHolder extends RecyclerView.ViewHolder {
 
+        @BindView(R.id.imgPicto) public ImageView imgPicto;
+        @BindView(R.id.txtTitle) public TextViewFont txtTitle;
+        @BindView(R.id.txtDescription) public TextViewFont txtDescription;
         @BindView(R.id.txtPoints) public TextViewFont txtPoints;
-        @BindView(R.id.imgLevel) public ImageView imgLevel;
 
         public LevelViewHolder(View itemView) {
             super(itemView);
