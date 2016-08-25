@@ -6,7 +6,7 @@ import com.tribe.app.domain.entity.User;
 
 public interface IntroView extends LoadDataView {
 
-    void goToCode();
+    void goToCode(Pin pin);
     void goToHome();
     void goToProfileInfo();
     void goToConnected();

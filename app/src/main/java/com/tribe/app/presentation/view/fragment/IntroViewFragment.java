@@ -159,9 +159,9 @@ public class IntroViewFragment extends Fragment implements IntroView {
         subscriptions.add(viewCode.codeValid().subscribe(isValid -> {
             if (isValid) {
                 // TODO: replace with valid networking code when UI is complete
-//                this.code = viewCode.getCode();
-//                introPresenter.login(phoneNumber, code, pin.getPinId());
-                introPresenter.login("", "", "");
+                this.code = viewCode.getCode();
+                introPresenter.login(phoneNumber, code, pin.getPinId());
+//                introPresenter.login("", "", "");
             }
         }));
     }
@@ -256,8 +256,8 @@ public class IntroViewFragment extends Fragment implements IntroView {
      */
 
     @Override
-    public void goToCode() {
-//        this.pin = pin;
+    public void goToCode(Pin pin) {
+        this.pin = pin;
         viewPhoneNumber.setNextEnabled(false);
         txtIntroMessage.setText(getString(R.string.onboarding_step_code));
         viewPager.setCurrentItem(PAGE_CODE, true);
