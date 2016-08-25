@@ -87,4 +87,14 @@
         app:cpv_thickness="2dp"
         />
 
+    <ImageView
+        android:id="@+id/imgConnectedIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:gravity="center"
+        android:src="@drawable/picto_connected_icon"
+        />
+
 </FrameLayout>

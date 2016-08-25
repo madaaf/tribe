@@ -78,21 +78,21 @@ public class IntroPresenter implements Presenter {
 
     public void requestCode(String phoneNumber) {
         // TODO: get pin
-                cloudGetRequestCodeUseCase.prepare(phoneNumber);
-        cloudGetRequestCodeUseCase.execute(new RequestCodeSubscriber());
+//                cloudGetRequestCodeUseCase.prepare(phoneNumber);
+//        cloudGetRequestCodeUseCase.execute(new RequestCodeSubscriber());
         showViewLoading();
-//        isActive1 = true;
-////        Handler handler = new Handler();
-////        handler.postDelayed(new Runnable() {
-////            @Override
-////            public void run() {
-////                if (isActive1) {
-////                    hideViewLoading();
-////                    goToCode();
-////                    isActive1 = false;
-////                }
-////            }
-////        }, 2000);
+        isActive1 = true;
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (isActive1) {
+                    hideViewLoading();
+                    goToCode();
+                    isActive1 = false;
+                }
+            }
+        }, 2000);
 
 
     }
@@ -104,21 +104,21 @@ public class IntroPresenter implements Presenter {
     public void login(String phoneNumber, String code, String pinId) {
         showViewLoading();
         // TODO: get user id
-//        isActive2 = true;
-//        Handler handler = new Handler();
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                if (isActive2) {
-//                    hideViewLoading();
-//                    goToConnected();
-//                    isActive2 = false;
-//                }
-//            }
-//        }, 2000);
+        isActive2 = true;
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (isActive2) {
+                    hideViewLoading();
+                    goToConnected();
+                    isActive2 = false;
+                }
+            }
+        }, 2000);
 
-        cloudLoginUseCase.prepare(phoneNumber, code, pinId);
-        cloudLoginUseCase.execute(new LoginSubscriber());
+//        cloudLoginUseCase.prepare(phoneNumber, code, pinId);
+//        cloudLoginUseCase.execute(new LoginSubscriber());
 
     }
 
@@ -134,8 +134,8 @@ public class IntroPresenter implements Presenter {
         this.introView.goToProfileInfo();
     }
 
-    public void goToCode(Pin pin) {
-        this.introView.goToCode(pin);
+    public void goToCode() {
+        this.introView.goToCode();
     }
 
     public void goToConnected() {
@@ -175,7 +175,7 @@ public class IntroPresenter implements Presenter {
 
         @Override
         public void onNext(Pin pin) {
-            goToCode(pin);
+            goToCode();
         }
     }
 
@@ -211,12 +211,11 @@ public class IntroPresenter implements Presenter {
 
         @Override
         public void onNext(User user) {
-//            if (true) {
-//                goToProfileInfo();
-//            } else {
-//                goToHome();
-//            }
-            goToHome();
+            if (true) {
+                goToProfileInfo();
+            } else {
+                goToHome();
+            }
         }
     }
 

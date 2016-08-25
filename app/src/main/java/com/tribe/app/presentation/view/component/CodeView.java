@@ -1,7 +1,10 @@
 package com.tribe.app.presentation.view.component;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.media.Image;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -49,6 +52,9 @@ public class CodeView extends FrameLayout {
     @BindView(R.id.pinCircle4)
     ImageView pinCircle4;
 
+    @BindView(R.id.imgConnectedIcon)
+    ImageView imgConnectedIcon;
+
     // OBSERVABLES
     private Unbinder unbinder;
     private PublishSubject<Boolean> codeValid = PublishSubject.create();
@@ -88,6 +94,8 @@ public class CodeView extends FrameLayout {
         unbinder = ButterKnife.bind(this);
 
         editTextCode.setLetterSpacing((float) 1.5);
+        imgConnectedIcon.setScaleX(0);
+        imgConnectedIcon.setScaleY(0);
 
         RxTextView.textChanges(editTextCode).map(CharSequence::toString)
                 .map(s -> {
@@ -156,4 +164,19 @@ public class CodeView extends FrameLayout {
         return imgBackIcon;
     }
 
+    public void animateConnectedIcon() {
+        imgConnectedIcon.animate()
+                .scaleY((float) 1.2).scaleX((float) 1.2)
+                .setDuration(150)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        imgConnectedIcon.animate()
+                                .scaleX(1).scaleY(1)
+                                .setDuration(150)
+                                .start();
+                    }
+                }).start();
+    }
 }

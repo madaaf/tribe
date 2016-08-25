@@ -31,16 +31,22 @@ import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.component.CodeView;
+import com.tribe.app.presentation.view.component.ConnectedView;
 import com.tribe.app.presentation.view.component.PhoneNumberView;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -84,6 +90,9 @@ public class IntroViewFragment extends Fragment implements IntroView {
 
     @BindView(R.id.viewCode)
     CodeView viewCode;
+
+    @BindView(R.id.viewConnected)
+    ConnectedView viewConnected;
 
     @BindView(R.id.videoViewIntro)
     IntroVideoView videoViewIntro;
@@ -144,8 +153,6 @@ public class IntroViewFragment extends Fragment implements IntroView {
     private void initUi(View view) {
         unbinder = ButterKnife.bind(this, view);
 
-//        attachKeyboardListeners();
-
         viewPhoneNumber.setNextEnabled(false);
 
         subscriptions.add(RxView.clicks(viewPhoneNumber.getImageViewNextIcon()).subscribe(aVoid -> {
@@ -159,13 +166,12 @@ public class IntroViewFragment extends Fragment implements IntroView {
         subscriptions.add(viewCode.codeValid().subscribe(isValid -> {
             if (isValid) {
                 // TODO: replace with valid networking code when UI is complete
-                this.code = viewCode.getCode();
-                introPresenter.login(phoneNumber, code, pin.getPinId());
-//                introPresenter.login("", "", "");
+//                this.code = viewCode.getCode();
+//                introPresenter.login(phoneNumber, code, pin.getPinId());
+                introPresenter.login("", "", "");
             }
         }));
     }
-
 
 
     private void initViewPager() {
@@ -180,7 +186,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
     }
 
     private void initPlayerView() {
-        videoViewIntro.createPlayer("android.resource://" + getActivity().getPackageName() +"/"+R.raw.onboarding_video);
+        videoViewIntro.createPlayer("android.resource://" + getActivity().getPackageName() + "/" + R.raw.onboarding_video);
     }
 
     private void initPhoneNumberView() {
@@ -256,8 +262,8 @@ public class IntroViewFragment extends Fragment implements IntroView {
      */
 
     @Override
-    public void goToCode(Pin pin) {
-        this.pin = pin;
+    public void goToCode() {
+//        this.pin = pin;
         viewPhoneNumber.setNextEnabled(false);
         txtIntroMessage.setText(getString(R.string.onboarding_step_code));
         viewPager.setCurrentItem(PAGE_CODE, true);
@@ -274,21 +280,35 @@ public class IntroViewFragment extends Fragment implements IntroView {
     public void goToConnected() {
         txtIntroMessage.setText("");
         hideKeyboard();
-        viewPager.setCurrentItem(PAGE_CONNECTED, true);
 
         // TODO: get user info and check if they have a picture
         // TODO: view code in camerawrapper for rxjava example observable.timer
-        isActive = true;
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (isActive) {
-                    isActive = false;
-                    ((IntroActivity) getActivity()).goToProfileInfo();
-                }
-            }
-        }, 2000);
+        Observable.timer(300, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(time -> {
+                    viewCode.animateConnectedIcon();
+
+                    Observable.timer(300, TimeUnit.MILLISECONDS)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(time1 -> {
+                                viewPager.setCurrentItem(PAGE_CONNECTED, true);
+                                viewConnected.animateConnected();
+                    });
+
+                    isActive = true;
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isActive) {
+                                isActive = false;
+                                ((IntroActivity) getActivity()).goToProfileInfo();
+                            }
+                        }
+                    }, 2000);
+                });
 
 
     }

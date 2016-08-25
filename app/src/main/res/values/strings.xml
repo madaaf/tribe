@@ -96,7 +96,7 @@
     <string name="onboarding_queue_declined_description">You need %1$s friend to\nenter. Send invites!</string>
     <string name="onboarding_queue_declined_message_button">Text friends</string>
     <string name="onboarding_queue_declined_popup_title">Get notified!</string>
-    <string name="onboarding_queue_declined_popup_description">Receive a push notification\nwhen a friend jons the app.</string>
+    <string name="onboarding_queue_declined_popup_description">Receive a push notification\nwhen a friend joins the app.</string>
     <string name="onboarding_queue_declined_popup_cancel_button">Stay alone. </string>
     <string name="onboarding_queue_declined_popup_confirm_button">Sure!</string>
     <string name="onboarding_queue_valid_title">Congrats! You\'re in. </string>
