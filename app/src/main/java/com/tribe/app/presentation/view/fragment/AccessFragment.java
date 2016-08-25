@@ -125,6 +125,9 @@ public class AccessFragment extends Fragment {
         unbinder = ButterKnife.bind(this, view);
         context = getActivity();
 
+        textFriendsView.setAlpha(0);
+        textFriendsView.setTranslationY(100);
+
         subscriptions.add(RxView.clicks(accessBottomBarView.getTxtAccessTry()).subscribe(aVoid -> {
             isActive2 = false;
             switch (viewState) {
@@ -180,6 +183,10 @@ public class AccessFragment extends Fragment {
         accessLockView.setToAccess();
         accessBottomBarView.setClickable(false);
         accessBottomBarView.animate()
+                .alpha(1)
+                .setDuration(300)
+                .translationY(0)
+                .setStartDelay(0)
                 .setDuration(300)
                 .translationY(accessBottomBarView.getHeight())
                 .setListener(new AnimatorListenerAdapter() {
@@ -211,6 +218,11 @@ public class AccessFragment extends Fragment {
         isActive = true;
 
         fadeTextInOut();
+        textFriendsView.animate()
+                .alpha(0)
+                .setDuration(100)
+                .setStartDelay(0);
+        textFriendsView.setTranslationY(100);
         accessLockView.setToHangTight(2);
         accessBottomBarView.setClickable(false);
         accessBottomBarView.animate()
@@ -259,6 +271,11 @@ public class AccessFragment extends Fragment {
         isActive = true;
 
         fadeTextInOut();
+        textFriendsView.animate()
+                .alpha(1)
+                .setDuration(300)
+                .translationY(0)
+                .setStartDelay(0);
         accessLockView.setToSorry();
         accessBottomBarView.setClickable(false);
         accessBottomBarView.animate()
