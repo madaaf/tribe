@@ -185,7 +185,7 @@ public class TribePagerView extends FrameLayout {
     private int iconSize;
     private int iconSizeMax;
     private int marginCameraTopInit;
-    private int marginCameraBottomInit;
+    private int marginCameraBounds;
 
     // TOUCH HANDLING
     private float lastDownX;
@@ -356,6 +356,7 @@ public class TribePagerView extends FrameLayout {
 
         viewTile.onTapToCancel()
                 .doOnNext(view -> {
+                    releaseCamera();
                     viewTile.cancelReplyMode();
                     inReplyMode = false;
                 })
@@ -365,6 +366,7 @@ public class TribePagerView extends FrameLayout {
                 .doOnNext(view -> {
                     viewTile.cancelReplyMode();
                     inReplyMode = false;
+                    releaseCamera();
                 })
                 .subscribe(onNotCancel);
 
@@ -395,7 +397,7 @@ public class TribePagerView extends FrameLayout {
         snoozeModeWidth = getContext().getResources().getDimensionPixelSize(R.dimen.snooze_mode_width);
         iconSize = getContext().getResources().getDimensionPixelSize(R.dimen.tribe_icon_size);
         iconSizeMax = getContext().getResources().getDimensionPixelSize(R.dimen.tribe_icon_size_max);
-        marginCameraBottomInit = getContext().getResources().getDimensionPixelOffset(R.dimen.vertical_margin_small);
+        marginCameraBounds = getContext().getResources().getDimensionPixelOffset(R.dimen.vertical_margin_small);
     }
 
     private void initCamera() {
@@ -404,7 +406,10 @@ public class TribePagerView extends FrameLayout {
         cameraWrapper.initDimens(
                 marginCameraTopInit,
                 (screenUtils.getWidthPx() >> 1) - (cameraWrapper.getWidthFromRatio() >> 1),
-                marginCameraBottomInit,
+                marginCameraBounds,
+                marginCameraBounds,
+                marginCameraBounds,
+                marginCameraBounds,
                 false
         );
 
@@ -422,14 +427,6 @@ public class TribePagerView extends FrameLayout {
                 cameraWrapper.setLayoutParams(paramsCamera);
 
                 viewCircleGradient.setAlpha(1 - value);
-            }
-
-            @Override
-            public void onSpringAtRest(Spring spring) {
-                if (spring.getEndValue() == 1f) {
-                    cameraWrapper.onPause();
-                    cameraWrapper.setVisibility(View.GONE);
-                }
             }
         });
 
@@ -1075,6 +1072,11 @@ public class TribePagerView extends FrameLayout {
         showNbTribes();
         hideExitCamera();
         currentView.resumePlayer();
+    }
+
+    private void releaseCamera() {
+        cameraWrapper.onPause();
+        cameraWrapper.setVisibility(View.GONE);
     }
 
     @OnClick(R.id.imgCancelReply)

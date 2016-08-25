@@ -183,11 +183,16 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     }
 
     private void initCamera() {
+        int marginBounds = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
+
         cameraWrapper.initDimens(
                 screenUtils.getHeightPx()
                         - getResources().getDimensionPixelSize(R.dimen.nav_layout_height)
                         - cameraWrapper.getHeightFromRatio(),
-                getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small),
+                marginBounds,
+                getResources().getDimensionPixelSize(R.dimen.nav_layout_height),
+                marginBounds,
+                marginBounds,
                 getResources().getDimensionPixelSize(R.dimen.nav_layout_height),
                 true
         );

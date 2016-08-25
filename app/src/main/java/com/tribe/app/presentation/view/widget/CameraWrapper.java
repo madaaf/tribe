@@ -83,7 +83,8 @@ public class CameraWrapper extends FrameLayout {
     private boolean canMove = true;
 
     // RESOURCES
-    private int marginTopInit, marginLeftInit, marginBottomInit, marginVerticalIcons, marginHorizontalIcons, diffTouch;
+    private int marginTopInit, marginLeftInit, marginBottomInit, marginVerticalIcons, marginHorizontalIcons, diffTouch,
+            marginTopBounds, marginLeftBounds, marginBottomBounds;
 
     // DRAG CAMERA
     private int downX, downY, xDelta, yDelta;
@@ -99,10 +100,14 @@ public class CameraWrapper extends FrameLayout {
         initUI();
     }
 
-    public void initDimens(int marginTopInit, int marginLeftInit, int marginBottomInit, boolean canMove) {
+    public void initDimens(int marginTopInit, int marginLeftInit, int marginBottomInit,
+                           int marginTopBounds, int marginLeftBounds, int marginBottomBounds, boolean canMove) {
         this.marginTopInit = marginTopInit;
         this.marginLeftInit = marginLeftInit;
         this.marginBottomInit = marginBottomInit;
+        this.marginTopBounds = marginTopBounds;
+        this.marginLeftBounds = marginLeftBounds;
+        this.marginBottomBounds = marginBottomBounds;
         marginHorizontalIcons = getContext().getResources().getDimensionPixelOffset(R.dimen.horizontal_margin);
         marginVerticalIcons = getContext().getResources().getDimensionPixelOffset(R.dimen.vertical_margin);
         diffTouch = screenUtils.dpToPx(DIFF_TOUCH);
@@ -275,15 +280,15 @@ public class CameraWrapper extends FrameLayout {
         int topMargin = 0;
 
         if (lp.leftMargin > screenUtils.getWidthPx() / 4) {
-            leftMargin = screenUtils.getWidthPx() - getWidth() - marginLeftInit;
+            leftMargin = screenUtils.getWidthPx() - getWidth() - marginLeftBounds;
         } else {
-            leftMargin = marginLeftInit;
+            leftMargin = marginLeftBounds;
         }
 
         if (lp.topMargin > screenUtils.getHeightPx() / 4) {
-            topMargin = ((View) getParent()).getHeight() - getMeasuredHeight() - marginBottomInit;
+            topMargin = ((View) getParent()).getHeight() - getMeasuredHeight() - marginBottomBounds;
         } else {
-            topMargin = marginTopInit;
+            topMargin = marginTopBounds;
         }
 
         ValueAnimator animator = ValueAnimator.ofInt(lp.leftMargin, leftMargin);

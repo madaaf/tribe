@@ -75,27 +75,27 @@ public class CloudUserDataStore implements UserDataStore {
     @Override
     public Observable<PinRealm> requestCode(String phoneNumber) {
         return this.loginApi
-                .requestCode(new LoginEntity(phoneNumber))
-                .doOnError(throwable -> {
-                    AccessToken accessToken1 = new AccessToken();
-                    accessToken1.setAccessToken("DvEZQrxOZ5LgHQE9XjWYzCNMEcSmlCMVfvm27ZTLJ72KpRpVIY");
-                    accessToken1.setTokenType("Bearer");
-                    accessToken1.setUserId("BJgkS2rN");
-                    CloudUserDataStore.this.userCache.put(accessToken1);
-                });
+                .requestCode(new LoginEntity(phoneNumber));
+                //.doOnError(throwable -> {
+                //    AccessToken accessToken1 = new AccessToken();
+                //    accessToken1.setAccessToken("DvEZQrxOZ5LgHQE9XjWYzCNMEcSmlCMVfvm27ZTLJ72KpRpVIY");
+                //    accessToken1.setTokenType("Bearer");
+                //    accessToken1.setUserId("BJgkS2rN");
+                //    CloudUserDataStore.this.userCache.put(accessToken1);
+                //});
     }
 
     @Override
     public Observable<AccessToken> loginWithPhoneNumber(String phoneNumber, String code, String pinId) {
         return this.loginApi
                 .loginWithUsername(new LoginEntity(phoneNumber, code, pinId))
-                .doOnError(throwable -> {
-                    AccessToken accessToken1 = new AccessToken();
-                    accessToken1.setAccessToken("DvEZQrxOZ5LgHQE9XjWYzCNMEcSmlCMVfvm27ZTLJ72KpRpVIY");
-                    accessToken1.setTokenType("Bearer");
-                    accessToken1.setUserId("BJgkS2rN");
-                    CloudUserDataStore.this.userCache.put(accessToken1);
-                })
+//                .doOnError(throwable -> {
+//                    AccessToken accessToken1 = new AccessToken();
+//                    accessToken1.setAccessToken("DvEZQrxOZ5LgHQE9XjWYzCNMEcSmlCMVfvm27ZTLJ72KpRpVIY");
+//                    accessToken1.setTokenType("Bearer");
+//                    accessToken1.setUserId("BJgkS2rN");
+//                    CloudUserDataStore.this.userCache.put(accessToken1);
+//                })
                 .doOnNext(saveToCacheAccessToken);
     }
 
