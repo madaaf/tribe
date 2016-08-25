@@ -8,8 +8,15 @@
     <string name="exception_message_generic">Generic error message</string>
     <string name="exception_message_no_connection">No Internet connection</string>
 
-    <string name="Login.PhoneNumber.Hint">Enter a phone number</string>
+    <string name="Login.PhoneNumber.Hint">Phone number</string>
     <string name="Login.Code.Hint">Enter a code</string>
+
+    <!-- Actions -->
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_done">Done</string>
+
 
     <!-- GRID -->
     <string name="Grid.Me.Points">Points</string>
@@ -106,5 +113,35 @@
     <string name="level_alien_title">Alien</string>
     <string name="level_unicorn_title">Unicorn</string>
     <string name="level_bot_title">Bot</string>
+
+    <!-- ONBOARDING -->
+    <string name="onboarding_step_phone">Use your phone number to connect </string>
+    <string name="onboarding_step_code">We texted you a code to verify it.</string>
+    <string name="onboarding_phone_number">Phone number</string>
+    <string name="onboarding_code">Code</string>
+    <string name="onboarding_connected">Connected</string>
+    <string name="onboarding_user_title">Hi there! Set yourself up.</string>
+    <string name="onboarding_user_avatar_library">Open camera roll</string>
+    <string name="onboarding_user_avatar_selfie">Take a selfie</string>
+    <string name="onboarding_user_displayname_placeholder">Display name</string>
+    <string name="onboarding_user_username_placeholder">Username</string>
+    <string name="onboarding_user_facebook_button_title">Or autofill profile</string>
+    <string name="onboarding_queue_title">Get access now.</string>
+    <string name="onboarding_queue_description">You need to have at\nleast 1 friend to enter.</string>
+    <string name="onboarding_queue_button_title">Try again</string>
+    <string name="onboarding_queue_loading_title">Hang tight…</string>
+    <string name="onboarding_queue_loading_description">Looking if one of your\n friends has already signed up.</string>
+    <string name="onboarding_queue_loading_friends">friends</string>
+    <string name="onboarding_queue_declined_title">Sorry, you can\'t have access.</string>
+    <string name="onboarding_queue_declined_description">You need %1$s friend to\nenter. Send invites!</string>
+    <string name="onboarding_queue_declined_message_button">Text friends</string>
+    <string name="onboarding_queue_declined_popup_title">Get notified!</string>
+    <string name="onboarding_queue_declined_popup_description">Receive a push notification\nwhen a friend jons the app.</string>
+    <string name="onboarding_queue_declined_popup_cancel_button">Stay alone. </string>
+    <string name="onboarding_queue_declined_popup_confirm_button">Sure!</string>
+    <string name="onboarding_queue_valid_title">Congrats! You\'re in. </string>
+    <string name="onboarding_queue_valid_description">Enter now, %1$s friends\nare already there.</string>
+    <string name="onboarding_queue_valid_button_title">Enter now!</string>
+    <string name="facebook_app_id">1743579545897830</string>
 
 </resources>

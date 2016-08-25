@@ -64,7 +64,7 @@ public class PhotoMessageAdapterDelegate extends BaseMessageAdapterDelegate {
         PhotoViewHolder vh = (PhotoViewHolder) super.onCreateViewHolder(parent);
 
         ViewGroup.LayoutParams params = vh.imgPhoto.getLayoutParams();
-        params.width = screenUtils.getWidth() - marginLeft - marginRight;
+        params.width = screenUtils.getWidthPx() - marginLeft - marginRight;
         params.height = params.width;
         vh.imgPhoto.setLayoutParams(params);
 

@@ -3,32 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@null"
+    android:id="@+id/introActivityRoot"
     >
 
     <com.tribe.app.presentation.view.widget.CustomViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@null"
-        >
-
-        <com.tribe.app.presentation.view.component.PhoneNumberView
-            android:id="@+id/viewPhoneNumber"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="50dp"
-            android:gravity="center"
-            android:background="@null"
             />
 
-        <com.tribe.app.presentation.view.component.CodeView
-            android:id="@+id/viewCode"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="50dp"
-            android:gravity="center"
-            android:background="@null"
-            />
     </com.tribe.app.presentation.view.widget.CustomViewPager>
 
     <com.tribe.app.presentation.view.widget.TextViewFont

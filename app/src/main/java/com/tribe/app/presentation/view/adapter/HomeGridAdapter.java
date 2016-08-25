@@ -131,7 +131,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
         this.items.clear();
         this.items.addAll(items);
 
-        double minItems = Math.ceil(((float) screenUtils.getHeight() / (screenUtils.getWidth() >> 1)) * 2);
+        double minItems = Math.ceil(((float) screenUtils.getHeightPx() / (screenUtils.getWidthPx() >> 1)) * 2);
         if (minItems % 2 != 0) minItems++;
 
         if (this.items.size() < minItems) {

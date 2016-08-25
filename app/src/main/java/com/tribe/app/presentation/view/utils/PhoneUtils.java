@@ -1,11 +1,13 @@
 package com.tribe.app.presentation.view.utils;
 
 import android.content.Context;
+import android.telephony.PhoneNumberUtils;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
+import java.lang.annotation.Retention;
 import java.util.LinkedList;
 
 import javax.inject.Inject;
@@ -49,6 +51,7 @@ public class PhoneUtils {
             if (phoneUtil.isValidNumber(phoneNumber) && (isMobile || type == PhoneNumberUtil.PhoneNumberType.UNKNOWN)) {
                 return phoneUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
             }
+//            return PhoneNumberUtils.formatNumber(number, countryCode);
         } catch (Exception e) { e.printStackTrace(); }
 
         return null;

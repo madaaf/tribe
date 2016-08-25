@@ -340,7 +340,7 @@ public class TribePagerView extends FrameLayout {
         springAlphaSwipeDownListener = new AlphaSwipeDownSpringListener();
 
         ViewGroup.LayoutParams paramsLayoutTile = viewTile.getLayoutParams();
-        paramsLayoutTile.width = screenUtils.getWidth() >> 1;
+        paramsLayoutTile.width = screenUtils.getWidthPx() >> 1;
         paramsLayoutTile.height = paramsLayoutTile.width;
         viewTile.setLayoutParams(paramsLayoutTile);
         viewTile.invalidate();

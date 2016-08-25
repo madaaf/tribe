@@ -511,7 +511,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
 
         animatorLeftMargin.start();
 
-        ValueAnimator animatorWidth = ValueAnimator.ofInt(widthImageViewClicked, screenUtils.getWidth());
+        ValueAnimator animatorWidth = ValueAnimator.ofInt(widthImageViewClicked, screenUtils.getWidthPx());
         animatorWidth.setDuration(DURATION);
         animatorWidth.setInterpolator(new OvershootInterpolator(OVERSHOOT));
         animatorWidth.addUpdateListener(animation -> {

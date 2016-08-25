@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <View
+        android:id="@+id/pulse"
+        android:layout_width="175dp"
+        android:layout_height="175dp"
+        android:background="@drawable/shape_circle_grey"
+        android:layout_gravity="center"
+        />
+
+    <View
+        android:id="@+id/whiteCircle"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:background="@drawable/shadow_circle_white"
+        android:layout_gravity="center"
+        />
+
+    <View
+        android:id="@+id/semiCircleView"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:layout_gravity="center"
+        />
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="75dp"
+        android:layout_gravity="center">
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtNumFriends"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center"
+            style="@style/Giant.1.Black"
+            android:layout_marginTop="-12dp"
+            android:alpha="0"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtFriends"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:layout_marginBottom="4dp"
+            android:alpha="0"
+            android:text="@string/onboarding_queue_loading_friends"
+            style="@style/Body.One.Black40"
+            />
+    </FrameLayout>
+
+
+
+    <ImageView
+        android:id="@+id/imgLockIcon"
+        android:layout_width="28dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/picto_lock_icon"
+        android:layout_gravity="center"
+        />
+
+
+
+</FrameLayout>

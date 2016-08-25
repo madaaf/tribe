@@ -19,5 +19,7 @@ public class TribeUserDeserializer<T> implements JsonDeserializer<T> {
             return new GsonBuilder().setDateFormat("EEE MMM dd yyyy HH:mm:ss 'GMT'Z '(UTC)'")
                     .create()
                     .fromJson(results, typeOfT);
+
+
         }
     }

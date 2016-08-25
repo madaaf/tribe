@@ -83,6 +83,7 @@ public class PlayerView extends FrameLayout implements TextureView.SurfaceTextur
         super.onAttachedToWindow();
     }
 
+
     public void createPlayer(String pathToVideo) {
         videoTextureView = new VideoTextureView(getContext());
         CardView.LayoutParams params = new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);

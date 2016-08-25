@@ -35,6 +35,7 @@ public class CustomViewPager extends ViewPager {
     protected @SwipeDirection int currentSwipeDirection;
     protected boolean isInMotion = false;
     private float downX, downY;
+    private boolean swipeable = true;
 
     public CustomViewPager(Context context) {
         super(context);
@@ -47,7 +48,12 @@ public class CustomViewPager extends ViewPager {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        return super.onTouchEvent(ev);
+        return swipeable && super.onTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        return swipeable && super.onInterceptTouchEvent(event);
     }
 
     public boolean computeSwipeDirection(MotionEvent event) {
@@ -132,5 +138,9 @@ public class CustomViewPager extends ViewPager {
 
     public int getCurrentSwipeDirection() {
         return currentSwipeDirection;
+    }
+
+    public void setSwipeable(boolean swipeable) {
+        this.swipeable = swipeable;
     }
 }

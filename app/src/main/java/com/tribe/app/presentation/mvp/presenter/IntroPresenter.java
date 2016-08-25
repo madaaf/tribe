@@ -1,29 +1,43 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.os.Handler;
+
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.Pin;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.exception.DefaultErrorBundle;
 import com.tribe.app.domain.exception.ErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
+import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetRequestCode;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.IntroView;
 import com.tribe.app.presentation.mvp.view.View;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 public class IntroPresenter implements Presenter {
 
     private final GetRequestCode cloudGetRequestCodeUseCase;
     private final DoLoginWithPhoneNumber cloudLoginUseCase;
+    private final GetCloudUserInfos cloudUserInfos;
+
+    // TODO: remove after threading is removed
+    private boolean isActive1 = false;
+    private boolean isActive2 = false;
 
     private IntroView introView;
 
     @Inject
-    public IntroPresenter(GetRequestCode cloudGetRequestCodeUseCase, DoLoginWithPhoneNumber cloudLoginUseCase) {
+    public IntroPresenter(GetRequestCode cloudGetRequestCodeUseCase,
+                          DoLoginWithPhoneNumber cloudLoginUseCase,
+                          GetCloudUserInfos cloudUserInfos) {
         this.cloudLoginUseCase = cloudLoginUseCase;
         this.cloudGetRequestCodeUseCase = cloudGetRequestCodeUseCase;
+        this.cloudUserInfos = cloudUserInfos;
     }
 
     @Override
@@ -63,23 +77,73 @@ public class IntroPresenter implements Presenter {
     }
 
     public void requestCode(String phoneNumber) {
-        showViewLoading();
-        cloudGetRequestCodeUseCase.prepare(phoneNumber);
+        // TODO: get pin
+                cloudGetRequestCodeUseCase.prepare(phoneNumber);
         cloudGetRequestCodeUseCase.execute(new RequestCodeSubscriber());
+        showViewLoading();
+//        isActive1 = true;
+////        Handler handler = new Handler();
+////        handler.postDelayed(new Runnable() {
+////            @Override
+////            public void run() {
+////                if (isActive1) {
+////                    hideViewLoading();
+////                    goToCode();
+////                    isActive1 = false;
+////                }
+////            }
+////        }, 2000);
+
+
+    }
+
+    public void backToPhoneNumber() {
+
     }
 
     public void login(String phoneNumber, String code, String pinId) {
         showViewLoading();
+        // TODO: get user id
+//        isActive2 = true;
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (isActive2) {
+//                    hideViewLoading();
+//                    goToConnected();
+//                    isActive2 = false;
+//                }
+//            }
+//        }, 2000);
+
         cloudLoginUseCase.prepare(phoneNumber, code, pinId);
         cloudLoginUseCase.execute(new LoginSubscriber());
+
     }
 
-    public void goToHome(AccessToken accessToken) {
-        this.introView.goToHome(accessToken);
+    public void getUserInfo() {
+        cloudUserInfos.execute(new UserInfoSubscriber());
+    }
+
+    public void goToHome() {
+        this.introView.goToHome();
+    }
+
+    public void goToProfileInfo() {
+        this.introView.goToProfileInfo();
     }
 
     public void goToCode(Pin pin) {
         this.introView.goToCode(pin);
+    }
+
+    public void goToConnected() {
+        this.introView.goToConnected();
+    }
+
+    public void goToAccess() {
+        this.introView.goToAccess();
     }
 
     private void showViewLoading() {
@@ -100,6 +164,7 @@ public class IntroPresenter implements Presenter {
 
         @Override
         public void onCompleted() {
+            hideViewLoading();
         }
 
         @Override
@@ -118,6 +183,7 @@ public class IntroPresenter implements Presenter {
 
         @Override
         public void onCompleted() {
+            hideViewLoading();
         }
 
         @Override
@@ -128,7 +194,30 @@ public class IntroPresenter implements Presenter {
 
         @Override
         public void onNext(AccessToken accessToken) {
-            goToHome(accessToken);
+            getUserInfo();
         }
     }
+
+    private final class UserInfoSubscriber extends DefaultSubscriber<User> {
+
+        @Override
+        public void onCompleted() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            showErrorMessage(new DefaultErrorBundle((Exception) e));
+        }
+
+        @Override
+        public void onNext(User user) {
+//            if (true) {
+//                goToProfileInfo();
+//            } else {
+//                goToHome();
+//            }
+            goToHome();
+        }
+    }
+
 }

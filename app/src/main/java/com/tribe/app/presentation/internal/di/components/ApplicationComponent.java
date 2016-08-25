@@ -46,6 +46,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.LabelButton;
+import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.PathView;
 import com.tribe.app.presentation.view.widget.PlayerView;
 
@@ -91,6 +92,7 @@ public interface ApplicationComponent {
     void inject(SendChatJob sendChatJob);
     void inject(MarkMessageListAsReadJob markMessageListAsReadJob);
     void inject(LabelButton labelButton);
+    void inject(IntroVideoView introVideoView);
 
     //Exposed to sub-graphs.
     Context context();

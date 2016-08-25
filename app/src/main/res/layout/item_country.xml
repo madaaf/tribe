@@ -11,9 +11,18 @@
         android:id="@+id/txtName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/horizontal_margin_small"
-        android:gravity="center_vertical"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:gravity="start|center_vertical"
         style="@style/Text.Grid.Me.Name"
+        />
+
+    <ImageView
+        android:id="@+id/imageCountryFlag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:layout_marginEnd="@dimen/horizontal_margin_small"
+        android:src="@drawable/picto_us_flag"
         />
 
 </FrameLayout>
