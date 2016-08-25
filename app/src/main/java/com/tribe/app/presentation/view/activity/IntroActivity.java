@@ -142,7 +142,7 @@ public class IntroActivity extends BaseActivity {
         viewPager.setScrollDurationFactor(.5);
         viewPager.setOffscreenPageLimit(4);
         viewPager.setScrollDurationFactor(2f);
-        viewPager.setCurrentItem(PAGE_ACCESS);
+        viewPager.setCurrentItem(PAGE_PROFILE_INFO);
         viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_NONE);
         viewPager.setPageTransformer(false, new IntroPageTransformer());
         viewPager.setSwipeable(false);
@@ -156,6 +156,7 @@ public class IntroActivity extends BaseActivity {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         Toast.makeText(IntroActivity.this, "Login success", Toast.LENGTH_LONG).show();
+                        profileInfoFragment.getInfoFromFacebook();
                     }
 
                     @Override

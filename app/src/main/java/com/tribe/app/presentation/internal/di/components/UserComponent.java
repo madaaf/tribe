@@ -9,6 +9,7 @@ import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.fragment.AccessFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
 import com.tribe.app.presentation.view.fragment.IntroViewFragment;
+import com.tribe.app.presentation.view.fragment.ProfileInfoFragment;
 
 import dagger.Component;
 
@@ -25,4 +26,5 @@ public interface UserComponent extends ActivityComponent {
     void inject(HomeActivity homeActivity);
     void inject(IntroViewFragment introViewFragment);
     void inject(AccessFragment accessFragment);
+    void inject(ProfileInfoFragment profileInfoFragment);
 }
