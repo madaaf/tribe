@@ -44,7 +44,7 @@
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/grey.light"
+            android:background="@drawable/shape_rect_light_grey_rounded_bottom_left"
             android:layout_weight="1"
             android:gravity="center"
             android:text="@string/onboarding_queue_declined_popup_cancel_button"
@@ -53,7 +53,7 @@
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/blue.text"
+            android:background="@drawable/shape_rect_blue_rounded_bottom_right"
             android:layout_weight="1"
             android:gravity="center"
             android:text="@string/onboarding_queue_declined_popup_confirm_button"

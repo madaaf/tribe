@@ -52,7 +52,7 @@ public class GetNotifiedDialogFragment extends DialogFragment {
                 .getWindow()
                 .getDecorView();
 
-        decorView.animate().translationY(-100)
+        decorView.animate().translationY(100)
                 .setStartDelay(300)
                 .setDuration(150)
                 .setInterpolator(new LinearInterpolator())
