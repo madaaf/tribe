@@ -5,7 +5,12 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -32,7 +37,12 @@ import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.view.fragment.AccessFragment;
 import com.tribe.app.presentation.view.fragment.IntroViewFragment;
 import com.tribe.app.presentation.view.fragment.ProfileInfoFragment;
+import com.tribe.app.presentation.view.utils.ImageUtils;
+import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -73,7 +83,8 @@ public class IntroActivity extends BaseActivity {
     private CallbackManager mCallbackManager;
 
 
-
+    @Inject
+    ScreenUtils screenUtils;
 
     @BindView(R.id.viewPager)
     CustomViewPager viewPager;
@@ -118,7 +129,40 @@ public class IntroActivity extends BaseActivity {
             introViewFragment.initPhoneNumberViewWithCountryCode(data.getStringExtra(Extras.COUNTRY_CODE));
         }
 
-        // Facebook login
+        // Load image into profile info
+
+        // Get image from Gallery
+        if (requestCode == ProfileInfoFragment.RESULT_LOAD_IMAGE && resultCode == Activity.RESULT_OK) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+            Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
+            cursor.moveToFirst();
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
+            cursor.close();
+
+            Bitmap thumbnail = BitmapFactory.decodeFile(picturePath);
+
+            if (thumbnail != null) {
+                profileInfoFragment.setImgProfilePic(profileInfoFragment.formatBitmapforView(thumbnail));
+                profileInfoFragment.profilePictureSelected = true;
+            }
+            if (profileInfoFragment.textInfoValidated) {
+                profileInfoFragment.enableNext(true);
+            }
+        }
+
+        // Capture image
+        if (requestCode == ProfileInfoFragment.CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
+            Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
+            profileInfoFragment.setImgProfilePic(profileInfoFragment.formatBitmapforView(thumbnail));
+            profileInfoFragment.profilePictureSelected = true;
+            if (profileInfoFragment.textInfoValidated) {
+                profileInfoFragment.enableNext(true);
+            }
+        }
+
+            // Facebook login
         if(mCallbackManager.onActivityResult(requestCode, resultCode, data)) {
             return;
         }
@@ -241,9 +285,5 @@ public class IntroActivity extends BaseActivity {
                 .applicationComponent(getApplicationComponent())
                 .build().inject(this);
     }
-
-
-
-
 
 }

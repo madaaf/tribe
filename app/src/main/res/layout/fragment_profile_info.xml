@@ -92,7 +92,7 @@
         android:scaleType="centerInside"
         android:background="@drawable/shape_white_rect_rounded_bottom_right"
         android:layout_gravity="bottom|end"
-        android:clickable="true"
+        android:clickable="false"
         />
 
     <View
