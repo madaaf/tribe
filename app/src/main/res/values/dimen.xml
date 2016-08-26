@@ -22,7 +22,7 @@
     <dimen name="vertical_margin_proximity">5dp</dimen>
     <dimen name="vertical_margin_reply_tile">50dp</dimen>
     <dimen name="horizontal_left_margin_chat">55dp</dimen>
-    <dimen name="horizontal_left_margin_onboarding_choose_picture_button">96dp</dimen>
+    <dimen name="horizontal_left_margin_onboarding_choose_picture_button">95dp</dimen>
     <dimen name="setting_section_title_horizontal_margin">45dp</dimen>
 
     <!-- PADDING -->
