@@ -12,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 
 import com.jakewharton.rxbinding.view.RxView;
@@ -210,7 +211,7 @@ public class AccessFragment extends Fragment {
                                     android.R.color.black,
                                     getString(R.string.onboarding_queue_description),
                                     getString(R.string.onboarding_queue_button_title),
-                                    R.color.blue_text);
+                                    R.drawable.shape_rect_blue_rounded_bottom);
 
 
                             accessBottomBarView.animate()
@@ -248,7 +249,7 @@ public class AccessFragment extends Fragment {
                                     android.R.color.black,
                                     getString(R.string.onboarding_queue_loading_description),
                                     getString(R.string.action_cancel),
-                                    R.color.grey_dark);
+                                    R.drawable.shape_rect_dark_grey_rounded_bottom);
                             accessBottomBarView.animate()
                                     .setDuration(300)
                                     .translationY(0);
@@ -300,7 +301,7 @@ public class AccessFragment extends Fragment {
                                     R.color.red_deep,
                                     getString(R.string.onboarding_queue_declined_description, "1"),
                                     getString(R.string.onboarding_queue_button_title),
-                                    R.color.blue_text);
+                                    R.drawable.shape_rect_blue_rounded_bottom);
 
 
                             setBottomMargin(txtAccessDesc, 157);
@@ -338,7 +339,7 @@ public class AccessFragment extends Fragment {
                                     R.color.blue_text_access,
                                     getString(R.string.onboarding_queue_valid_description, "3"),
                                     getString(R.string.onboarding_queue_valid_button_title),
-                                    R.color.blue_text);
+                                    R.drawable.shape_rect_blue_rounded_bottom);
                             accessLockView.setToCongrats();
 
                             accessBottomBarView.animate()
@@ -365,12 +366,12 @@ public class AccessFragment extends Fragment {
 
     }
 
-    private void changeBaseView(String titleTxt, int titleTxtColor, String descTxt, String tryAgainTxt, int tryAgainBackTextColor) {
+    private void changeBaseView(String titleTxt, int titleTxtColor, String descTxt, String tryAgainTxt, int tryAgainBackground) {
         txtAccessTitle.setText(titleTxt);
         txtAccessTitle.setTextColor(ContextCompat.getColor(context, titleTxtColor));
         txtAccessDesc.setText(descTxt);
         accessBottomBarView.setText(tryAgainTxt);
-        accessBottomBarView.setBackgroundColor(context, tryAgainBackTextColor);
+        accessBottomBarView.setBackground(ContextCompat.getDrawable(context, tryAgainBackground));
 
     }
 
@@ -421,6 +422,10 @@ public class AccessFragment extends Fragment {
                                 .start();
                     }
                 }).start();
+    }
+
+    public void fadeBigLockIn() {
+        accessLockView.fadeBigLockIn();
     }
 
     /**

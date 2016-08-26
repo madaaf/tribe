@@ -185,7 +185,7 @@ public class IntroActivity extends BaseActivity {
         viewPager.setScrollDurationFactor(.5);
         viewPager.setOffscreenPageLimit(4);
         viewPager.setScrollDurationFactor(2f);
-        viewPager.setCurrentItem(PAGE_INTRO);
+        viewPager.setCurrentItem(PAGE_ACCESS);
         viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_NONE);
         viewPager.setPageTransformer(false, new IntroPageTransformer());
         viewPager.setSwipeable(false);
@@ -227,6 +227,7 @@ public class IntroActivity extends BaseActivity {
 
     public void goToAccess() {
         viewPager.setCurrentItem(PAGE_ACCESS);
+        accessFragment.fadeBigLockIn();
     }
 
     /**
