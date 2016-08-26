@@ -313,10 +313,6 @@ public class IntroViewFragment extends Fragment implements IntroView {
 
     }
 
-    @Override
-    public void goToProfileInfo() {
-        navigator.navigateToProfileInfo(context());
-    }
 
 
     @Override

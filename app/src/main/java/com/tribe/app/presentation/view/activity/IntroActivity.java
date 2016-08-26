@@ -119,7 +119,6 @@ public class IntroActivity extends BaseActivity {
         super.onDestroy();
     }
 
-    // TODO: Fix this
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -186,7 +185,7 @@ public class IntroActivity extends BaseActivity {
         viewPager.setScrollDurationFactor(.5);
         viewPager.setOffscreenPageLimit(4);
         viewPager.setScrollDurationFactor(2f);
-        viewPager.setCurrentItem(PAGE_PROFILE_INFO);
+        viewPager.setCurrentItem(PAGE_INTRO);
         viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_NONE);
         viewPager.setPageTransformer(false, new IntroPageTransformer());
         viewPager.setSwipeable(false);

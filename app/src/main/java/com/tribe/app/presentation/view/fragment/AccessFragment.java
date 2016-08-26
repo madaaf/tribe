@@ -3,6 +3,8 @@ package com.tribe.app.presentation.view.fragment;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -149,6 +151,13 @@ public class AccessFragment extends Fragment {
                     break;
             }
         }));
+
+        subscriptions.add(RxView.clicks(textFriendsView).subscribe(aVoid -> {
+            Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+            sendIntent.setData(Uri.parse("sms:"));
+            getActivity().startActivity(sendIntent);
+        }));
+
     }
 
     private void initLockViewSize() {

@@ -103,6 +103,36 @@
     <string name="onboarding_queue_valid_description">Enter now, %1$s friends\nare already there.</string>
     <string name="onboarding_queue_valid_button_title">Enter now!</string>
 
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_profile">Profile</string>
+    <string name="settings_picture_title">Profile picture</string>
+    <string name="settings_picture_subtitle">Take a selfie or import from\ncamera roll and Facebook.</string>
+    <string name="settings_displayname_title">Display name</string>
+    <string name="settings_displayname_subtitle">How you appear for everyone.</string>
+    <string name="settings_username_title">Username</string>
+    <string name="settings_username_subtitle">How you appear for everyone.</string>
+    <string name="settings_section_messages">Messages</string>
+    <string name="settings_tribesave_title">Memories</string>
+    <string name="settings_tribesave_subtitle">Let recipients save your messages if they want to.</string>
+    <string name="settings_geolocation_title">Context</string>
+    <string name="settings_geolocation_subtitle">Let recipients get location-based context on your messages.</string>
+    <string name="settings_audio_title">Voice by default</string>
+    <string name="settings_audio_subtitle">Set voice mode by default instead of video messages.</string>
+    <string name="settings_preload_title">Preload</string>
+    <string name="settings_preload_subtitle">Download new messages in background, automatically.</string>
+    <string name="settings_section_support">Support</string>
+    <string name="settings_tweet_title">Tweet @heytribe</string>
+    <string name="settings_tweet_subtitle">We reply in less than 24 hours to every single tweet.</string>
+    <string name="settings_email_title">Email the team</string>
+    <string name="settings_email_subtitle">We reply in less than 48 hours to every single email.</string>
+    <string name="settings_rate_title">Rate the app</string>
+    <string name="settings_rate_subtitle">The easiest way to show us some love.</string>
+    <string name="settings_section_exit">Exit</string>
+    <string name="settings_logout_title">Log out</string>
+    <string name="settings_logout_subtitle">Disconnect this account from this device.</string>
+    <string name="settings_remove_title">Delete account</string>
+    <string name="settings_remove_subtitle">Say goodbye to your friendships, points and more.</string>
 
     <!-- DEPENDENDENCIES -->
     <string name="facebook_app_id">1743579545897830</string>

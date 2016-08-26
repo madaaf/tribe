@@ -130,9 +130,9 @@ public class IntroPresenter implements Presenter {
         this.introView.goToHome();
     }
 
-    public void goToProfileInfo() {
-        this.introView.goToProfileInfo();
-    }
+//    public void goToProfileInfo() {
+//        this.introView.goToProfileInfo();
+//    }
 
     public void goToCode() {
         this.introView.goToCode();
@@ -212,7 +212,7 @@ public class IntroPresenter implements Presenter {
         @Override
         public void onNext(User user) {
             if (true) {
-                goToProfileInfo();
+//                goToProfileInfo();
             } else {
                 goToHome();
             }

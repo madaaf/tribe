@@ -2,10 +2,8 @@ package com.tribe.app.presentation.view.fragment;
 
 import android.Manifest;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -111,8 +109,8 @@ public class ProfileInfoFragment extends Fragment {
     public boolean profilePictureSelected = false;
     public boolean textInfoValidated = false;
 
-    private static final String[] PERMISSIONS_CAMERA = new String[]{ Manifest.permission.CAMERA,
-            Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE };
+    private static final String[] PERMISSIONS_CAMERA = new String[]{Manifest.permission.CAMERA,
+            Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     /**
      * View Lifecycle
@@ -125,7 +123,7 @@ public class ProfileInfoFragment extends Fragment {
         initDependencyInjector();
         initUi(fragmentView);
 
-        return  fragmentView;
+        return fragmentView;
     }
 
     @Override
@@ -155,10 +153,11 @@ public class ProfileInfoFragment extends Fragment {
             RxPermissions.getInstance(getActivity())
                     .request(PERMISSIONS_CAMERA)
                     .subscribe(granted -> {
-                       if (granted) getImageFromCameraRoll();
-                       else Toast.makeText(getActivity(), "You must grant permissions to access your pictures", Toast.LENGTH_LONG).show();
+                        if (granted) getImageFromCameraRoll();
+                        else
+                            Toast.makeText(getActivity(), "You must grant permissions to access your pictures", Toast.LENGTH_LONG).show();
                     });
-                }));
+        }));
 
         subscriptions.add(RxView.clicks(txtTakeASelfie).subscribe(aVoid -> {
             getImageFromCamera();
@@ -188,6 +187,10 @@ public class ProfileInfoFragment extends Fragment {
         });
 
     }
+
+    /**
+     * Helper methods
+     */
 
     public void getInfoFromFacebook() {
         new GraphRequest(AccessToken.getCurrentAccessToken(),
@@ -224,7 +227,7 @@ public class ProfileInfoFragment extends Fragment {
     }
 
     public void getImageFromCameraRoll() {
-        Intent i = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         getActivity().startActivityForResult(i, RESULT_LOAD_IMAGE);
     }
 
@@ -276,6 +279,4 @@ public class ProfileInfoFragment extends Fragment {
                 .applicationComponent(getApplicationComponent())
                 .build().inject(this);
     }
-
-
 }
