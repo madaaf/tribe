@@ -80,19 +80,7 @@ public class IntroPresenter implements Presenter {
         // TODO: get pin
 //                cloudGetRequestCodeUseCase.prepare(phoneNumber);
 //        cloudGetRequestCodeUseCase.execute(new RequestCodeSubscriber());
-        showViewLoading();
-        isActive1 = true;
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (isActive1) {
-                    hideViewLoading();
                     goToCode();
-                    isActive1 = false;
-                }
-            }
-        }, 2000);
 
 
     }

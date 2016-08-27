@@ -1,22 +1,15 @@
 package com.tribe.app.presentation.view.fragment;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Toast;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
@@ -28,11 +21,11 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.IntroPresenter;
 import com.tribe.app.presentation.mvp.view.IntroView;
 import com.tribe.app.presentation.navigation.Navigator;
-import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.component.CodeView;
 import com.tribe.app.presentation.view.component.ConnectedView;
 import com.tribe.app.presentation.view.component.PhoneNumberView;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -156,10 +149,14 @@ public class IntroViewFragment extends Fragment implements IntroView {
         viewPhoneNumber.setNextEnabled(false);
 
         subscriptions.add(RxView.clicks(viewPhoneNumber.getImageViewNextIcon()).subscribe(aVoid -> {
+            viewPhoneNumber.fadeOutNext();
+            viewCode.setImgBackIconVisible();
             introPresenter.requestCode(phoneNumber);
         }));
 
         subscriptions.add(RxView.clicks(viewCode.getBackIcon()).subscribe(aVoid -> {
+            viewCode.fadeBackOut();
+            viewPhoneNumber.nextIconVisisble();
             viewPager.setCurrentItem(PAGE_PHONE_NUMBER, true);
         }));
 
@@ -178,7 +175,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
         introViewFragmentPagerAdapter = new IntroViewFragmentPagerAdapter();
         viewPager.setAdapter(introViewFragmentPagerAdapter);
         viewPager.setOffscreenPageLimit(3);
-        viewPager.setScrollDurationFactor(2f);
+        viewPager.setScrollDurationFactor(3.5f);
         viewPager.setCurrentItem(PAGE_PHONE_NUMBER);
         viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_NONE);
         viewPager.setPageTransformer(false, new IntroPageTransformer());
@@ -264,8 +261,10 @@ public class IntroViewFragment extends Fragment implements IntroView {
     @Override
     public void goToCode() {
 //        this.pin = pin;
-        viewPhoneNumber.setNextEnabled(false);
+//        viewPhoneNumber.setNextEnabled(false);
+        viewPhoneNumber.fadeOutNext();
         txtIntroMessage.setText(getString(R.string.onboarding_step_code));
+//        AnimationUtils.fadeOutFast(viewCode.getBackIcon());
         viewPager.setCurrentItem(PAGE_CODE, true);
     }
 
@@ -293,6 +292,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(time1 -> {
+                                viewCode.fadeConnectedOut();
                                 viewPager.setCurrentItem(PAGE_CONNECTED, true);
                                 viewConnected.animateConnected();
                     });
@@ -326,17 +326,11 @@ public class IntroViewFragment extends Fragment implements IntroView {
 
     @Override
     public void showLoading() {
-        if (viewPager.getCurrentItem() == PAGE_PHONE_NUMBER) {
-            viewPhoneNumber.setNextVisible(false);
-            viewPhoneNumber.progressViewVisible(true);
-        } else {
             viewCode.progressViewVisible(true);
-        }
     }
 
     @Override
     public void hideLoading() {
-        viewPhoneNumber.progressViewVisible(false);
         viewPhoneNumber.setNextVisible(true);
         viewPhoneNumber.setNextEnabled(true);
         viewCode.progressViewVisible(false);

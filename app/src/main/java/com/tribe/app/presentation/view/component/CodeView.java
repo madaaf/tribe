@@ -179,4 +179,25 @@ public class CodeView extends FrameLayout {
                     }
                 }).start();
     }
+
+    public void fadeConnectedOut() {
+        imgConnectedIcon.animate()
+                .setDuration(50)
+                .alpha(0)
+                .setStartDelay(0)
+                .start();
+    }
+
+    public void setImgBackIconVisible() {
+        imgBackIcon.setAlpha(1f);
+    }
+
+    public void fadeBackOut() {
+        imgBackIcon.animate()
+                .setDuration(50)
+                .alpha(0)
+                .setStartDelay(0)
+                .start();
+    }
+
 }
