@@ -50,6 +50,7 @@ import rx.subscriptions.CompositeSubscription;
  * the process of capturing the users phone number, sending, and validating their pin code.
  * Next fragment in onboarding view pager is ProfileInfoFragment.
  */
+// TODO: fix phone number validation. Refactor for maintenance
 public class IntroViewFragment extends Fragment implements IntroView {
 
     public static IntroViewFragment newInstance() {

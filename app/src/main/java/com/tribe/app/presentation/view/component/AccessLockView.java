@@ -139,6 +139,8 @@ public class AccessLockView extends FrameLayout {
         addPulsingRedCircleAnimation();
 
         semiCircleView.setVisibility(INVISIBLE);
+        imgLockIcon.setAlpha(1f);
+        imgLockIcon.setTranslationY(0);
 
 
         AnimationUtils.fadeViewDownOut(txtFriends);
@@ -214,7 +216,7 @@ public class AccessLockView extends FrameLayout {
         txtFriends.animate()
                 .alpha(0)
                 .setDuration(300)
-                .translationY(100)
+                .translationY(25)
                 .setStartDelay(0)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
@@ -227,7 +229,7 @@ public class AccessLockView extends FrameLayout {
         txtNumFriends.animate()
                 .alpha(0)
                 .setDuration(300)
-                .translationY(100)
+                .translationY(25)
                 .setStartDelay(0)
                 .start();
 

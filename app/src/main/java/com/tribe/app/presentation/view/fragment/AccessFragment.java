@@ -94,6 +94,7 @@ public class AccessFragment extends Fragment {
      * View Lifecycle
      */
 
+    // TODO: fix cancel bug
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View fragmentView = inflater.inflate(R.layout.fragment_access, container, false);
@@ -389,10 +390,13 @@ public class AccessFragment extends Fragment {
     }
 
     private void fadeTextInOut() {
+
+        int txtDistance = 100;
+
         txtAccessDesc.animate()
                 .alpha(0)
                 .setDuration(300)
-                .translationY(100)
+                .translationY(txtDistance)
                 .setStartDelay(0)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
@@ -409,7 +413,7 @@ public class AccessFragment extends Fragment {
         txtAccessTitle.animate()
                 .alpha(0)
                 .setDuration(300)
-                .translationY(100)
+                .translationY(txtDistance)
                 .setStartDelay(0)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override

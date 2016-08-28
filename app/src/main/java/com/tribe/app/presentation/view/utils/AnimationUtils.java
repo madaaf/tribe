@@ -99,7 +99,7 @@ public class AnimationUtils {
 
     public static void fadeViewDownOut(View view) {
         view.animate()
-                .translationY(100)
+                .translationY(25)
                 .alpha(0)
                 .setDuration(300)
                 .start();
