@@ -8,18 +8,27 @@
 
     <include layout="@layout/item_text_base" />
 
-    <ImageView
-        android:id="@+id/imgPhoto"
+    <FrameLayout
+        android:id="@+id/layoutContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
         android:layout_marginTop="10dp"
         android:layout_marginStart="@dimen/horizontal_left_margin_chat"
-        android:layout_marginRight="@dimen/horizontal_margin_xlarge"
-        android:foreground="@drawable/selectable_button_light"
-        android:background="@null"
-        android:scaleType="centerCrop"
-        android:clickable="true"
-        />
+        android:layout_marginEnd="@dimen/horizontal_margin_small">
 
+        <ImageView
+            android:id="@+id/imgPhoto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="@dimen/horizontal_margin_small"
+            android:foreground="@drawable/selectable_button_light"
+            android:background="@null"
+            android:scaleType="centerCrop"
+            android:clickable="true"
+            />
+
+        <include layout="@layout/item_text_status" />
+
+    </FrameLayout>
 </LinearLayout>

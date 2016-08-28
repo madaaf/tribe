@@ -5,10 +5,11 @@ import android.content.Context;
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.MessageRecipientRealm;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.view.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -29,6 +30,7 @@ public class ChatCacheImpl implements ChatCache {
     private Context context;
     private Realm realm;
     private RealmResults<ChatRealm> messages;
+    private RealmResults<ChatRealm> messagesError;
     private User currentUser;
 
     @Inject
@@ -65,17 +67,11 @@ public class ChatCacheImpl implements ChatCache {
             @Override
             public void call(final Subscriber<? super List<ChatRealm>> subscriber) {
                 messages = realm.where(ChatRealm.class)
-                        .beginGroup()
                         .equalTo("from.id", friendshipId)
-                        .endGroup()
                         .or()
-                        .beginGroup()
                         .equalTo("friendshipRealm.friend.id", friendshipId)
-                        .endGroup()
                         .or()
-                        .beginGroup()
                         .equalTo("group.id", friendshipId)
-                        .endGroup()
                         .findAllSorted("created_at", Sort.ASCENDING);
                 messages.removeChangeListeners();
                 messages.addChangeListener(messagesUpdated -> subscriber.onNext(realm.copyFromRealm(messagesUpdated)));
@@ -89,7 +85,19 @@ public class ChatCacheImpl implements ChatCache {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
 
+        Set<String> groupSet = new HashSet<>();
+        Set<String> friendshipSet = new HashSet<>();
+
         for (ChatRealm chatRealm : messageListRealm) {
+            if ((chatRealm.isToGroup() && chatRealm.getGroup() != null)) groupSet.add(chatRealm.getGroup().getId());
+            else if (!chatRealm.isToGroup()) {
+                if (chatRealm.getFrom() != null && !chatRealm.getFrom().getId().equals(currentUser.getId()))
+                    friendshipSet.add(chatRealm.getFrom().getId());
+                else if (chatRealm.getFriendshipRealm() != null) {
+                    friendshipSet.add(chatRealm.getFriendshipRealm().getFriend().getId());
+                }
+            }
+
             ChatRealm toEdit = realm.where(ChatRealm.class)
                     .equalTo("id", chatRealm.getId()).findFirst();
 
@@ -98,8 +106,18 @@ public class ChatCacheImpl implements ChatCache {
 
                 boolean shouldUpdate = false;
 
-                if (chatRealm.getMessageStatus() != null) {
-                    toEdit.setMessageStatus(chatRealm.getMessageStatus());
+                if (chatRealm.getMessageSendingStatus() != null) {
+                    toEdit.setMessageSendingStatus(chatRealm.getMessageSendingStatus());
+                    shouldUpdate = true;
+                }
+
+                if (chatRealm.getMessageDownloadingStatus() != null) {
+                    toEdit.setMessageDownloadingStatus(chatRealm.getMessageDownloadingStatus());
+                    shouldUpdate = true;
+                }
+
+                if (chatRealm.getMessageReceivingStatus() != null) {
+                    toEdit.setMessageReceivingStatus(chatRealm.getMessageReceivingStatus());
                     shouldUpdate = true;
                 }
 
@@ -111,6 +129,10 @@ public class ChatCacheImpl implements ChatCache {
                 if (chatRealm.getFrom() != null && toEdit.getFrom() == null) {
                     toEdit.setFrom(chatRealm.getFrom());
                     shouldUpdate = true;
+                } else if (chatRealm.getFrom() != null && toEdit.getFrom() != null
+                        && (toEdit.getFrom().getUpdatedAt() == null || toEdit.getFrom().getUpdatedAt().before(chatRealm.getFrom().getUpdatedAt()))) {
+                    toEdit.getFrom().setUpdatedAt(chatRealm.getFrom().getUpdatedAt());
+                    shouldUpdate = true;
                 }
 
                 if (chatRealm.getFriendshipRealm() != null && toEdit.getFriendshipRealm() == null) {
@@ -121,6 +143,10 @@ public class ChatCacheImpl implements ChatCache {
                 if (chatRealm.getGroup() != null && toEdit.getGroup() == null) {
                     toEdit.setGroup(chatRealm.getGroup());
                     shouldUpdate = true;
+                } else if (chatRealm.getGroup() != null && toEdit.getGroup() != null
+                        && (toEdit.getGroup().getUpdatedAt() == null || toEdit.getGroup().getUpdatedAt().before(chatRealm.getGroup().getUpdatedAt()))) {
+                    toEdit.getGroup().setUpdatedAt(chatRealm.getGroup().getUpdatedAt());
+                    shouldUpdate = true;
                 }
 
                 if (shouldUpdate) {
@@ -129,6 +155,72 @@ public class ChatCacheImpl implements ChatCache {
                 }
             } else if (toEdit == null) {
                 realm.copyToRealmOrUpdate(chatRealm);
+            }
+        }
+
+        for (String idTo : groupSet) {
+            RealmResults<ChatRealm> latest = realm.where(ChatRealm.class)
+                    .equalTo("group.id", idTo)
+                    .beginGroup()
+                        .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED)
+                        .or()
+                        .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED_PARTLY)
+                    .endGroup()
+                    .findAllSorted("created_at", Sort.DESCENDING);
+
+            if (latest != null && latest.size() > 0) {
+                RealmResults<ChatRealm> toRemoveStatus = realm.where(ChatRealm.class)
+                        .lessThan("created_at", latest.get(0).getCreatedAt())
+                        .equalTo("group.id", idTo)
+                        .beginGroup()
+                        .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
+                        .or()
+                        .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED)
+                        .or()
+                        .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED_PARTLY)
+                        .endGroup()
+                        .findAllSorted("created_at", Sort.DESCENDING);
+
+                for (ChatRealm chatToRemoveStatus : toRemoveStatus) {
+                    chatToRemoveStatus.setMessageReceivingStatus(null);
+                }
+            }
+        }
+
+        for (String idTo : friendshipSet) {
+            RealmResults<ChatRealm> latest = realm.where(ChatRealm.class)
+                    .beginGroup()
+                    .equalTo("friendshipRealm.friend.id", idTo)
+                    .or()
+                    .equalTo("from.id", idTo)
+                    .endGroup()
+                    .beginGroup()
+                    .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED)
+                    .or()
+                    .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED_PARTLY)
+                    .endGroup()
+                    .findAllSorted("created_at", Sort.DESCENDING);
+
+            if (latest != null && latest.size() > 0) {
+                RealmResults<ChatRealm> toRemoveStatus = realm.where(ChatRealm.class)
+                        .lessThan("created_at", latest.get(0).getCreatedAt())
+                        .beginGroup()
+                        .equalTo("friendshipRealm.friend.id", idTo)
+                        .or()
+                        .equalTo("from.id", idTo)
+                        .endGroup()
+                        .beginGroup()
+                        .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
+                        .or()
+                        .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED)
+                        .or()
+                        .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED_PARTLY)
+                        .endGroup()
+                        .findAllSorted("created_at", Sort.DESCENDING);
+
+                for (ChatRealm chatToRemoveStatus : toRemoveStatus) {
+                    chatToRemoveStatus.setMessageReceivingStatus(null);
+                }
             }
         }
 
@@ -146,10 +238,13 @@ public class ChatCacheImpl implements ChatCache {
                 obsRealm.beginTransaction();
 
                 ChatRealm obj = obsRealm.where(ChatRealm.class).equalTo("localId", chatRealm.getLocalId()).findFirst();
-                if (obj != null)
-                    obj.setMessageStatus(chatRealm.getMessageStatus());
-                else
+                if (obj != null) {
+                    obj.setMessageSendingStatus(chatRealm.getMessageSendingStatus());
+                    obj.setMessageDownloadingStatus(chatRealm.getMessageDownloadingStatus());
+                    obj.setMessageReceivingStatus(chatRealm.getMessageReceivingStatus());
+                } else {
                     obj = obsRealm.copyToRealmOrUpdate(chatRealm);
+                }
 
                 obsRealm.commitTransaction();
                 subscriber.onNext(obsRealm.copyFromRealm(obj));
@@ -166,10 +261,13 @@ public class ChatCacheImpl implements ChatCache {
         obsRealm.beginTransaction();
 
         ChatRealm obj = obsRealm.where(ChatRealm.class).equalTo("localId", chatRealm.getId()).findFirst();
-        if (obj != null)
-            obj.setMessageStatus(chatRealm.getMessageStatus());
-        else
+        if (obj != null) {
+            obj.setMessageSendingStatus(chatRealm.getMessageSendingStatus());
+            obj.setMessageDownloadingStatus(chatRealm.getMessageDownloadingStatus());
+            obj.setMessageReceivingStatus(chatRealm.getMessageReceivingStatus());
+        } else {
             obsRealm.copyToRealmOrUpdate(chatRealm);
+        }
 
         obsRealm.commitTransaction();
         obsRealm.close();
@@ -200,6 +298,35 @@ public class ChatCacheImpl implements ChatCache {
         final ChatRealm result = obsRealm.where(ChatRealm.class).equalTo("localId", local.getLocalId()).findFirst();
         result.setId(server.getId());
         result.setCreatedAt(server.getCreatedAt());
+
+        // WE GET THE OLDER SENT CHAT MESSAGES TO REMOVE THEIR STATUS
+        RealmResults<ChatRealm> sentMessages = obsRealm.where(ChatRealm.class)
+                .beginGroup()
+                .equalTo("from.id", currentUser.getId())
+                .notEqualTo("localId", result.getLocalId())
+                .endGroup()
+                .findAllSorted("created_at", Sort.ASCENDING);
+
+        if (!result.isToGroup()) {
+            sentMessages = sentMessages.where()
+                    .beginGroup()
+                    .equalTo("friendshipRealm.friend.id", result.getFriendshipRealm().getId())
+                    .endGroup()
+                    .findAllSorted("created_at", Sort.ASCENDING);
+        } else {
+            sentMessages = sentMessages.where()
+                    .beginGroup()
+                    .equalTo("group.id", result.getGroup().getId())
+                    .endGroup()
+                    .findAllSorted("created_at", Sort.ASCENDING);
+        }
+
+        for (ChatRealm message : sentMessages) {
+            if (message.getCreatedAt().before(result.getCreatedAt())) {
+                message.setMessageSendingStatus(null);
+            }
+        }
+
         resultChat = obsRealm.copyFromRealm(result);
         obsRealm.commitTransaction();
         obsRealm.close();
@@ -214,17 +341,11 @@ public class ChatCacheImpl implements ChatCache {
                 Realm obsRealm = Realm.getDefaultInstance();
                 obsRealm.beginTransaction();
                 RealmResults results = obsRealm.where(ChatRealm.class)
-                        .beginGroup()
                         .equalTo("from.id", friendshipId)
-                        .endGroup()
                         .or()
-                        .beginGroup()
                         .equalTo("friendshipRealm.friend.id", friendshipId)
-                        .endGroup()
                         .or()
-                        .beginGroup()
                         .equalTo("group.id", friendshipId)
-                        .endGroup()
                         .findAllSorted("created_at", Sort.ASCENDING);
 
                 if (results != null && results.size() > 0) results.deleteAllFromRealm();
@@ -245,12 +366,13 @@ public class ChatCacheImpl implements ChatCache {
                     .equalTo("from.id", currentUser.getId())
                     .beginGroup()
                     .equalTo("friendshipRealm.friend.id", id)
-                    .endGroup()
                     .or()
-                    .beginGroup()
                     .equalTo("group.id", id)
                     .endGroup()
-                    .equalTo("messageStatus", MessageStatus.STATUS_SENT)
+                    .beginGroup()
+                    .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
+                    .or()
+                    .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED_PARTLY)
                     .findAllSorted("created_at", Sort.ASCENDING);
 
             if (sentMessages != null && sentMessages.size() > 0) result.addAll(obsRealm.copyFromRealm(sentMessages.subList(0, 1)));
@@ -260,6 +382,46 @@ public class ChatCacheImpl implements ChatCache {
         return result;
     }
 
+    @Override
+    public List<ChatRealm> messagesPending(String recipientId) {
+        Realm obsRealm = Realm.getDefaultInstance();
+        List<ChatRealm> result = new ArrayList<>();
+
+        RealmResults<ChatRealm> sentMessages = obsRealm.where(ChatRealm.class)
+                .equalTo("from.id", currentUser.getId())
+                .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_PENDING)
+                .beginGroup()
+                .equalTo("friendshipRealm.friend.id", recipientId)
+                .or()
+                .equalTo("group.id", recipientId)
+                .endGroup()
+                .findAllSorted("created_at", Sort.ASCENDING);
+
+        if (sentMessages != null && sentMessages.size() > 0)
+            result.addAll(obsRealm.copyFromRealm(sentMessages.subList(0, 1)));
+
+        obsRealm.close();
+        return result;
+    }
+
+    @Override
+    public Observable<List<ChatRealm>> messagesError(String recipientId) {
+        return Observable.create((Observable.OnSubscribe<List<ChatRealm>>) subscriber -> {
+            messagesError = realm.where(ChatRealm.class)
+                    .equalTo("from.id", currentUser.getId())
+                    .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_ERROR)
+                    .beginGroup()
+                    .equalTo("friendshipRealm.friend.id", recipientId)
+                    .or()
+                    .equalTo("group.id", recipientId)
+                    .endGroup()
+                    .findAllSorted("created_at", Sort.ASCENDING);
+
+            messagesError.removeChangeListeners();
+            messagesError.addChangeListener(tribesPending -> subscriber.onNext(realm.copyFromRealm(tribesPending)));
+            subscriber.onNext(realm.copyFromRealm(messagesError));
+        });
+    }
 
     @Override
     public RealmList<MessageRecipientRealm> createMessageRecipientRealm(List<MessageRecipientRealm> messageRecipientRealmList) {
@@ -281,5 +443,94 @@ public class ChatCacheImpl implements ChatCache {
         results.addAll(messageRecipientRealmManaged);
 
         return results;
+    }
+
+    @Override
+    public void updateToError(List<ChatRealm> chatRealmList) {
+        Realm realmObs = Realm.getDefaultInstance();
+        realmObs.beginTransaction();
+
+        for (ChatRealm chatRealm : chatRealmList) {
+            ChatRealm dbChatRealm = realmObs.where(ChatRealm.class).equalTo("localId", chatRealm.getId()).findFirst();
+
+            if (dbChatRealm != null)
+                dbChatRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_ERROR);
+        }
+
+        realmObs.commitTransaction();
+        realmObs.close();
+    }
+
+    @Override
+    public void updateMessageStatus(String recipientId) {
+//        Realm obsRealm = Realm.getDefaultInstance();
+//        ChatRealm resultChat;
+//        obsRealm.beginTransaction();
+//        final ChatRealm result = obsRealm.where(ChatRealm.class).equalTo("localId", local.getLocalId()).findFirst();
+//        result.setId(server.getId());
+//        result.setCreatedAt(server.getCreatedAt());
+//
+//        // WE GET THE OLDER SENT CHAT MESSAGES TO REMOVE THEIR STATUS
+//        RealmResults<ChatRealm> sentMessages = obsRealm.where(ChatRealm.class)
+//                .beginGroup()
+//                .equalTo("from.id", currentUser.getId())
+//                .notEqualTo("localId", result.getLocalId())
+//                .endGroup()
+//                .findAllSorted("created_at", Sort.ASCENDING);
+//
+//        if (!result.isToGroup()) {
+//            sentMessages = sentMessages.where()
+//                    .beginGroup()
+//                    .equalTo("friendshipRealm.friend.id", result.getFriendshipRealm().getId())
+//                    .endGroup()
+//                    .findAllSorted("created_at", Sort.ASCENDING);
+//        } else {
+//            sentMessages = sentMessages.where()
+//                    .beginGroup()
+//                    .equalTo("group.id", result.getGroup().getId())
+//                    .endGroup()
+//                    .findAllSorted("created_at", Sort.ASCENDING);
+//        }
+//
+//        for (ChatRealm message : sentMessages) {
+//            if (message.getCreatedAt().before(result.getCreatedAt()))
+//                message.setMessageStatus(null);
+//        }
+//
+//        resultChat = obsRealm.copyFromRealm(result);
+//        obsRealm.commitTransaction();
+//        obsRealm.close();
+//        return resultChat;
+    }
+
+    @Override
+    public List<ChatRealm> messagesToUpdateStatus(Set<String> idsRecipient) {
+        Realm obsRealm = Realm.getDefaultInstance();
+        List<ChatRealm> result = new ArrayList<>();
+
+        for (String id : idsRecipient) {
+            RealmResults<ChatRealm> messages = obsRealm.where(ChatRealm.class)
+                    .beginGroup()
+                    .equalTo("group.id", id)
+                    .or()
+                    .equalTo("friendshipRealm.friend.id", id)
+                    .or()
+                    .equalTo("from.id", id)
+                    .endGroup()
+                    .beginGroup()
+                    .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
+                    .or()
+                    .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED)
+                    .or()
+                    .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED_PARTLY)
+                    .endGroup()
+                    .findAllSorted("created_at", Sort.DESCENDING);
+
+            if (messages != null && messages.size() > 0)
+                result.addAll(obsRealm.copyFromRealm(messages));
+        }
+
+        obsRealm.close();
+        return result;
     }
 }

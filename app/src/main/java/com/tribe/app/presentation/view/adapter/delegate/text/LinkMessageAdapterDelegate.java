@@ -49,10 +49,16 @@ public class LinkMessageAdapterDelegate extends BaseMessageAdapterDelegate {
     static class RegularViewHolder extends BaseTextViewHolder {
 
         @BindView(R.id.txtMessage) public TextViewFont txtMessage;
+        @BindView(R.id.layoutContent) public ViewGroup layoutContent;
 
         public RegularViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+        }
+
+        @Override
+        public ViewGroup getLayoutContent() {
+            return layoutContent;
         }
     }
 }

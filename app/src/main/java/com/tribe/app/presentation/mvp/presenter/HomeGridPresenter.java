@@ -4,8 +4,8 @@ import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.JobStatus;
 import com.tribe.app.data.network.job.DownloadTribeJob;
 import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
-import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateMessagesJob;
+import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
@@ -20,7 +20,7 @@ import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.SendTribeView;
 import com.tribe.app.presentation.mvp.view.View;
-import com.tribe.app.presentation.view.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 
 import java.util.List;
 
@@ -40,7 +40,8 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
 
     // USECASES
     private UseCaseDisk diskUserInfosUsecase;
-    private UseCaseDisk diskGetTribeListUsecase;
+    private UseCaseDisk diskGetTribeNotSeenListUsecase;
+    private UseCaseDisk diskGetTribeReceivedListUsecase;
     private UseCaseDisk diskGetPendingTribeListUsecase;
     private DiskMarkTribeListAsRead diskMarkTribeListAsRead;
 
@@ -52,12 +53,14 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
                              @Named("diskUserInfos") UseCaseDisk diskUserInfos,
                              @Named("diskSaveTribe") SaveTribe diskSaveTribe,
                              @Named("diskDeleteTribe") DeleteTribe diskDeleteTribe,
-                             @Named("diskGetTribes") UseCaseDisk diskGetTribeList,
+                             @Named("diskGetNotSeenTribes") UseCaseDisk diskGetNotSeenTribeList,
+                             @Named("diskGetReceivedTribes") UseCaseDisk diskGetReceivedTribeList,
                              @Named("diskGetPendingTribes") UseCaseDisk diskGetPendingTribeList,
                              @Named("diskMarkTribeListAsRead") DiskMarkTribeListAsRead diskMarkTribeListAsRead) {
         super(jobManager, diskSaveTribe, diskDeleteTribe);
         this.diskUserInfosUsecase = diskUserInfos;
-        this.diskGetTribeListUsecase = diskGetTribeList;
+        this.diskGetTribeNotSeenListUsecase = diskGetNotSeenTribeList;
+        this.diskGetTribeReceivedListUsecase = diskGetReceivedTribeList;
         this.diskGetPendingTribeListUsecase = diskGetPendingTribeList;
         this.diskMarkTribeListAsRead = diskMarkTribeListAsRead;
     }
@@ -94,7 +97,8 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         super.onDestroy();
         diskDeleteTribeUsecase.unsubscribe();
         diskSaveTribeUsecase.unsubscribe();
-        diskGetTribeListUsecase.unsubscribe();
+        diskGetTribeNotSeenListUsecase.unsubscribe();
+        diskGetTribeReceivedListUsecase.unsubscribe();
     }
 
     @Override
@@ -106,13 +110,13 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         showViewLoading();
         FriendListSubscriber subscriber = new FriendListSubscriber();
         diskUserInfosUsecase.execute(subscriber);
+        loadTribeList();
     }
 
     public void loadTribeList() {
         jobManager.addJobInBackground(new UpdateMessagesJob());
-
-        TribeListSubscriber subscriber = new TribeListSubscriber();
-        diskGetTribeListUsecase.execute(subscriber);
+        diskGetTribeReceivedListUsecase.execute(new TribeReceivedListSubscriber());
+        //diskGetTribeNotSeenListUsecase.execute(new TribeNotSeenListSubscriber());
     }
 
     public void loadPendingTribeList() {
@@ -127,13 +131,9 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         this.homeGridView.renderRecipientList(recipientList);
     }
 
-    private void updateTribes(List<TribeMessage> tribes) {
+    private void updateReceivedTribes(List<TribeMessage> tribes) {
         downloadTribes(tribes);
-        this.homeGridView.updateTribes(tribes);
-    }
-
-    private void futureUpdateTribes(List<TribeMessage> tribes) {
-        this.homeGridView.futureUpdateTribes(tribes);
+        this.homeGridView.updateReceivedTribes(tribes);
     }
 
     private void updatePendingTribes(List<TribeMessage> pendingTribes) {
@@ -147,12 +147,12 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
                 int countPreload = 0;
 
                 for (TribeMessage tribeMessage : tribes) {
-                    if (tribeMessage.getMessageStatus() != null && tribeMessage.getMessageStatus().equals(MessageStatus.STATUS_LOADING) &&
+                    if (tribeMessage.getMessageDownloadingStatus() != null && tribeMessage.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADING) &&
                             jobManager.getJobStatus(tribeMessage.getLocalId()).equals(JobStatus.UNKNOWN)) {
-                        tribeMessage.setMessageStatus(MessageStatus.STATUS_RECEIVED);
+                        tribeMessage.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
                     }
 
-                    if ((tribeMessage.getMessageStatus() == null || tribeMessage.getMessageStatus().equals(MessageStatus.STATUS_RECEIVED))
+                    if (tribeMessage.getMessageDownloadingStatus() != null && tribeMessage.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD)
                             && tribeMessage.getFrom() != null) {
                         countPreload++;
                         jobManager.addJobInBackground(new DownloadTribeJob(tribeMessage));
@@ -195,26 +195,20 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
             recipient.setFriend(user);
             recipients.add(0, recipient);
             showFriendCollectionInView(recipients);
-
-            if (recipients.size() > 1) loadTribeList();
         }
     }
 
-    private final class TribeListSubscriber extends DefaultSubscriber<List<TribeMessage>> {
+    private final class TribeReceivedListSubscriber extends DefaultSubscriber<List<TribeMessage>> {
 
         @Override
-        public void onCompleted() {
-        }
+        public void onCompleted() {}
 
         @Override
-        public void onError(Throwable e) {
-            hideViewLoading();
-            showErrorMessage(new DefaultErrorBundle((Exception) e));
-        }
+        public void onError(Throwable e) {}
 
         @Override
         public void onNext(List<TribeMessage> tribes) {
-            updateTribes(tribes);
+            updateReceivedTribes(tribes);
         }
     }
 

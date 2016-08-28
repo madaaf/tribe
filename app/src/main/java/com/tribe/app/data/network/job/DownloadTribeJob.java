@@ -12,7 +12,7 @@ import com.tribe.app.data.realm.mapper.TribeRealmDataMapper;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.utils.FileUtils;
-import com.tribe.app.presentation.view.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -60,7 +60,7 @@ public class DownloadTribeJob extends BaseJob {
     @Override
     public void onAdded() {
         TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
-        tribeRealm.setMessageStatus(MessageStatus.STATUS_LOADING);
+        tribeRealm.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_DOWNLOADING);
         tribeCache.update(tribeRealm);
     }
 
@@ -83,7 +83,7 @@ public class DownloadTribeJob extends BaseJob {
                                 Log.d(TAG, "file download was a success? " + writtenToDisk);
 
                                 TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
-                                tribeRealm.setMessageStatus(MessageStatus.STATUS_READY);
+                                tribeRealm.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_DOWNLOADED);
                                 tribeCache.update(tribeRealm);
                             })
                         .subscribeOn(Schedulers.newThread())
@@ -106,7 +106,8 @@ public class DownloadTribeJob extends BaseJob {
         File file = FileUtils.getFileEnd(tribe.getId());
 
         TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
-        tribeRealm.setMessageStatus(file.exists() && file.length() > 0 ? MessageStatus.STATUS_READY : MessageStatus.STATUS_RECEIVED);
+        tribeRealm.setMessageDownloadingStatus(file.exists() && file.length() > 0 ? MessageDownloadingStatus.STATUS_DOWNLOADED : MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
+
         tribeCache.update(tribeRealm);
     }
 

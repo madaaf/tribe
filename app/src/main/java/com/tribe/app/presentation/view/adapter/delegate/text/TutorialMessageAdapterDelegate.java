@@ -53,7 +53,7 @@ public class TutorialMessageAdapterDelegate implements AdapterDelegate<List<Chat
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
-        return new TutorialMessageViewHolder(layoutInflater.inflate(R.layout.item_chat_tutorial, parent, false));
+        return new TutorialMessageViewHolder(layoutInflater.inflate(R.layout.item_text_tutorial, parent, false));
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.tribe.app.domain.entity;
 
-import com.tribe.app.presentation.view.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
+import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
+import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -28,7 +30,9 @@ public abstract class Message implements Serializable {
     protected Date recordedAt;
     protected Date createdAt;
     protected Date updatedAt;
-    protected @MessageStatus.Status String messageStatus;
+    protected @MessageSendingStatus.Status String messageSendingStatus;
+    protected @MessageReceivingStatus.Status String messageReceivingStatus;
+    protected @MessageDownloadingStatus.Status String messageDownloadingStatus;
     protected List<MessageRecipient> recipientList;
 
     public String getId() {
@@ -87,12 +91,28 @@ public abstract class Message implements Serializable {
         this.id = id;
     }
 
-    public @MessageStatus.Status String getMessageStatus() {
-        return messageStatus;
+    public @MessageSendingStatus.Status String getMessageSendingStatus() {
+        return messageSendingStatus;
     }
 
-    public void setMessageStatus(String messageStatus) {
-        this.messageStatus = messageStatus;
+    public void setMessageSendingStatus(String messageSendingStatus) {
+        this.messageSendingStatus = messageSendingStatus;
+    }
+
+    public @MessageDownloadingStatus.Status String getMessageDownloadingStatus() {
+        return messageDownloadingStatus;
+    }
+
+    public void setMessageDownloadingStatus(String messageDownloadingStatus) {
+        this.messageDownloadingStatus = messageDownloadingStatus;
+    }
+
+    public @MessageReceivingStatus.Status String getMessageReceivingStatus() {
+        return messageReceivingStatus;
+    }
+
+    public void setMessageReceivingStatus(String messageReceivingStatus) {
+        this.messageReceivingStatus = messageReceivingStatus;
     }
 
     public Date getUpdatedAt() {

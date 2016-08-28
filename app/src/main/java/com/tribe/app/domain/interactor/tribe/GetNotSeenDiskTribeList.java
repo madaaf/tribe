@@ -1,6 +1,6 @@
-package com.tribe.app.domain.interactor.text;
+package com.tribe.app.domain.interactor.tribe;
 
-import com.tribe.app.data.repository.chat.DiskChatDataRepository;
+import com.tribe.app.data.repository.tribe.DiskTribeDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
 
@@ -11,15 +11,15 @@ import rx.Observable;
 /**
  * Created by tiago on 22/05/2016.
  */
-public class GetDiskChatMessageList extends UseCaseDisk {
+public class GetNotSeenDiskTribeList extends UseCaseDisk {
 
-    private ChatRepository chatDataRepository;
+    private TribeRepository tribeRepository;
     private String recipientId;
 
     @Inject
-    public GetDiskChatMessageList(DiskChatDataRepository chatDataRepository, PostExecutionThread postExecutionThread) {
+    public GetNotSeenDiskTribeList(DiskTribeDataRepository tribeRepository, PostExecutionThread postExecutionThread) {
         super(postExecutionThread);
-        this.chatDataRepository = chatDataRepository;
+        this.tribeRepository = tribeRepository;
     }
 
     public void setRecipientId(String recipientId) {
@@ -28,6 +28,6 @@ public class GetDiskChatMessageList extends UseCaseDisk {
 
     @Override
     protected Observable buildUseCaseObservable() {
-        return chatDataRepository.messages(recipientId);
+        return tribeRepository.tribesNotSeen(recipientId);
     }
 }

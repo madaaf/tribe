@@ -169,7 +169,6 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
     public void startPlayer() {
         setMedia();
-        //setTxtSpeed();
         if (surfaceTexture != null) prepareWithSurface();
     }
 
@@ -182,17 +181,22 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         if (mediaPlayer == null) return;
 
         isReadyToPlay = false;
-        new Thread(() -> {
-            try {
-                mediaPlayer.stop();
-                final IVLCVout vout = mediaPlayer.getVLCVout();
-                vout.removeCallback(TribeComponentView.this);
-                vout.detachViews();
-                mediaPlayer.release();
-            } catch (IllegalStateException ex) {
-                ex.printStackTrace();
-            }
-        }).start();
+        try {
+            mediaPlayer.pause();
+
+            new Thread(() -> {
+                try {
+                    final IVLCVout vout = mediaPlayer.getVLCVout();
+                    vout.removeCallback(TribeComponentView.this);
+                    vout.detachViews();
+                    mediaPlayer.release();
+                } catch (IllegalStateException ex) {
+                    ex.printStackTrace();
+                }
+            }).start();
+        } catch (IllegalStateException ex) {
+            ex.printStackTrace();
+        }
     }
 
     public void play() {

@@ -40,7 +40,39 @@ public class UserCacheImpl implements UserCache {
     public void put(UserRealm userRealm) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        realm.copyToRealmOrUpdate(userRealm);
+
+        UserRealm userDB = realm.where(UserRealm.class).equalTo("id", userRealm.getId()).findFirst();
+
+        if (userDB != null) {
+            for (GroupRealm groupRealm : userDB.getGroups()) {
+                GroupRealm groupDB = realm.where(GroupRealm.class).equalTo("id", groupRealm.getId()).findFirst();
+
+                if (groupDB != null) {
+                    groupDB.setName(groupRealm.getName());
+                    groupDB.setPicture(groupRealm.getPicture());
+                    groupDB.setMembers(groupRealm.getMembers());
+                } else {
+                    realm.copyToRealmOrUpdate(groupRealm);
+                }
+            }
+
+            for (FriendshipRealm friendshipRealm : userDB.getFriendships()) {
+                FriendshipRealm friendshipDB = realm.where(FriendshipRealm.class).equalTo("id", friendshipRealm.getId()).findFirst();
+
+                if (friendshipDB != null) {
+                    friendshipDB.setBlocked(friendshipRealm.isBlocked());
+                    friendshipDB.getFriend().setProfilePicture(friendshipRealm.getFriend().getProfilePicture());
+                    friendshipDB.getFriend().setDisplayName(friendshipRealm.getFriend().getDisplayName());
+                    friendshipDB.getFriend().setScore(friendshipRealm.getFriend().getScore());
+                    friendshipDB.getFriend().setUsername(friendshipRealm.getFriend().getUsername());
+                } else {
+                    realm.copyToRealmOrUpdate(friendshipRealm);
+                }
+            }
+        } else {
+            realm.copyToRealmOrUpdate(userRealm);
+        }
+
         realm.commitTransaction();
         realm.close();
     }
@@ -70,11 +102,11 @@ public class UserCacheImpl implements UserCache {
             @Override
             public void call(final Subscriber<? super UserRealm> subscriber) {
                 results = realm.where(UserRealm.class).equalTo("id", userId).findFirst();
-                //results.addChangeListener(element -> {
-                //    if (results != null) {
-                //        subscriber.onNext(realm.copyFromRealm(results));
-                //    }
-                //});
+                results.addChangeListener(element -> {
+                    if (results != null) {
+                        subscriber.onNext(realm.copyFromRealm(results));
+                    }
+                });
 
                 if (results != null)
                     subscriber.onNext(realm.copyFromRealm(results));

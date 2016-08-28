@@ -193,14 +193,7 @@ public class User implements Serializable {
         if (friendships != null) friendshipList.addAll(friendships);
         if (groupList != null) friendshipList.addAll(groupList);
 
-        Collections.sort(friendshipList, (lhs, rhs) -> {
-            int res = TribeMessage.nullSafeComparator(lhs.getMostRecentTribe(), rhs.getMostRecentTribe());
-            if (res != 0) {
-                return res;
-            }
-
-            return Recipient.nullSafeComparator(lhs, rhs);
-        });
+        Collections.sort(friendshipList, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
 
         return friendshipList;
     }

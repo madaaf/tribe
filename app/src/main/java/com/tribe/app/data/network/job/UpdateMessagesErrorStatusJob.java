@@ -6,8 +6,8 @@ import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.JobStatus;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
-import com.tribe.app.data.cache.TribeCache;
-import com.tribe.app.data.realm.TribeRealm;
+import com.tribe.app.data.cache.ChatCache;
+import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
@@ -20,7 +20,7 @@ import javax.inject.Inject;
 /**
  * Created by tiago on 05/07/2016.
  */
-public class UpdateTribesErrorStatusJob extends BaseJob {
+public class UpdateMessagesErrorStatusJob extends BaseJob {
 
     @Inject
     User currentUser;
@@ -29,10 +29,14 @@ public class UpdateTribesErrorStatusJob extends BaseJob {
     JobManager jobManager;
 
     @Inject
-    TribeCache tribeCache;
+    ChatCache chatCache;
 
-    public UpdateTribesErrorStatusJob() {
-        super(new Params(Priority.HIGH).groupBy("update-error-tribe").setSingleId("update-error-tribe"));
+    // VARIABLES
+    private String recipientId;
+
+    public UpdateMessagesErrorStatusJob(String recipientId) {
+        super(new Params(Priority.HIGH).groupBy("update-error-message").setSingleId("update-error-message"));
+        this.recipientId = recipientId;
     }
 
     @Override
@@ -42,17 +46,17 @@ public class UpdateTribesErrorStatusJob extends BaseJob {
 
     @Override
     public void onRun() throws Throwable {
-        List<TribeRealm> tribeRealmSent = tribeCache.tribesNotSent();
-        List<TribeRealm> tribeRealmSentFiltered = new ArrayList<>();
+        List<ChatRealm> chatRealmSent = chatCache.messagesPending(recipientId);
+        List<ChatRealm> chatRealmSentFiltered = new ArrayList<>();
 
-        for (TribeRealm tribeRealm : tribeRealmSent) {
-            if (tribeRealm.getMessageSendingStatus().equals(MessageSendingStatus.STATUS_PENDING) &&
-                    jobManager.getJobStatus(tribeRealm.getLocalId()).equals(JobStatus.UNKNOWN)) {
-                tribeRealmSentFiltered.add(tribeRealm);
+        for (ChatRealm chatRealm : chatRealmSent) {
+            if (chatRealm.getMessageSendingStatus() != null && chatRealm.getMessageSendingStatus().equals(MessageSendingStatus.STATUS_PENDING) &&
+                    jobManager.getJobStatus(chatRealm.getLocalId()).equals(JobStatus.UNKNOWN)) {
+                chatRealmSentFiltered.add(chatRealm);
             }
         }
 
-        tribeCache.updateToError(tribeRealmSentFiltered);
+        chatCache.updateToError(chatRealmSentFiltered);
     }
 
     @Override

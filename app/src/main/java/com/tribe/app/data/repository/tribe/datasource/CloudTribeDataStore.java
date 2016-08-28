@@ -11,7 +11,7 @@ import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.presentation.utils.FileUtils;
-import com.tribe.app.presentation.view.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -79,57 +79,19 @@ public class CloudTribeDataStore implements TribeDataStore {
         MultipartBody.Part body = MultipartBody.Part.createFormData("tribe", file.getName(), requestFile);
 
         return tribeApi.uploadTribe(query, body).map(tribeServer -> {
-            tribeServer.setMessageStatus(MessageStatus.STATUS_SENT);
+            tribeServer.setMessageSendingStatus(MessageSendingStatus.STATUS_SENT);
             return tribeCache.updateLocalWithServerRealm(tribeRealm, tribeServer);
         });
     }
 
     @Override
-    public Observable<List<TribeRealm>> tribes(String friendshipId) {
+    public Observable<List<TribeRealm>> tribesNotSeen(String friendshipId) {
         return null;
+    }
 
-//        return tribeApi.tribes(context.getString(R.string.tribe_infos))
-//                .flatMap(new Func1<List<TribeRealm>, Observable<List<TribeRealm>>>() {
-//                    @Override
-//                    public Observable<List<TribeRealm>> call(List<TribeRealm> messages) {
-//                        return Observable.from(messages).flatMap(new Func1<TribeRealm, Observable<TribeRealm>>() {
-//                            @Override
-//                            public Observable<TribeRealm> call(TribeRealm tribeRealm) {
-//                                return userCache.userInfos(tribeRealm.getFrom().getId())
-//                                        .onErrorResumeNext(
-//                                                tribeApi.getUserInfos(
-//                                                        context.getString(R.string.user_infos_tribe, tribeRealm.getFrom().getId())
-//                                                ).doOnNext(saveToCacheUser)
-//                                        ).map(userRealm -> {
-//                                            TribeRealm tribeRealmClone = tribeRealm.cloneTribeRealm(tribeRealm);
-//                                            tribeRealmClone.setFrom(userRealmDataMapper.transformToUserTribe(userRealm));
-//                                            System.out.println("TribeMessage : " + tribeRealmClone.getId());
-//                                            return tribeRealmClone;
-//                                        });
-//                            }
-//                        }).reduce(new ArrayList<TribeRealm>(), (list, s) -> {
-//                            list.add(s);
-//                            return list;
-//                        });
-//                    }
-//                }).doOnNext(saveToCacheTribes);
-
-
-//    return tribeApi.tribes(context.getString(R.string.tribe_infos))
-//        .flatMapIterable(tribes -> tribes)
-//                .flatMap(tribeRealm -> userCache.userInfos(tribeRealm.getFrom().getId())
-//                        .onErrorResumeNext(
-//                                this.tribeApi.getUserInfos(
-//                                        context.getString(R.string.user_infos_tribe, tribeRealm.getFrom().getId())
-//                                ).doOnNext(saveToCacheUser)
-//                        )
-//                        .map(userRealm -> {
-//                            TribeRealm tribeRealmClone = tribeRealm.cloneTribeRealm(tribeRealm);
-//                            tribeRealmClone.setFrom(userRealmDataMapper.transformToUserTribe(userRealm));
-//                            return tribeRealmClone;
-//                        }).doOnError(throwable -> System.out.println("ERROR 1")).doOnEach(notification -> System.out.println("LOL EACH 1")).doOnCompleted(() -> System.out.println("Completed 1"))
-//                        .toList().doOnError(throwable -> System.out.println("ERROR")).doOnEach(notification -> System.out.println("LOL EACH")).doOnCompleted(() -> System.out.println("Completed"))
-//                ).doOnError(throwable -> System.out.println("ERROR 2")).doOnEach(notification -> System.out.println("LOL EACH 2")).doOnCompleted(() -> System.out.println("Completed 2")).doOnNext(saveToCacheTribes);
+    @Override
+    public Observable<List<TribeRealm>> tribesReceived(String friendshipId) {
+        return null;
     }
 
     @Override

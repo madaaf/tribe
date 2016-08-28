@@ -20,7 +20,6 @@
                     name
                     picture
                     created_at
-                    updated_at
                 }
             }
         }
@@ -32,7 +31,6 @@
             displayName
             picture
             created_at
-            updated_at
         }
     </string>
 
@@ -118,13 +116,20 @@
                     recorded_at
                     lat
                     lng
+
                     weather {
                         temp_f
                         temp_c
                         icon
                     }
+
                     location {
                         city
+                    }
+
+                    recipients {
+                        to
+                        is_seen
                     }
                 }
 
@@ -141,7 +146,6 @@
             }
 
             %1$s
-            %2$s
         }
     </string>
 

@@ -5,7 +5,8 @@ import android.content.Context;
 import com.tribe.app.data.realm.MessageRecipientRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.view.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
+import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,7 +31,8 @@ public class TribeCacheImpl implements TribeCache {
     private User currentUser;
     private Realm realm;
     private RealmResults<TribeRealm> pendingTribes;
-    private RealmResults<TribeRealm> tribes;
+    private RealmResults<TribeRealm> tribesNotSeen;
+    private RealmResults<TribeRealm> tribesReceived;
 
     @Inject
     public TribeCacheImpl(Context context, Realm realm, User currentUser) {
@@ -57,10 +59,13 @@ public class TribeCacheImpl implements TribeCache {
                 obsRealm.beginTransaction();
 
                 TribeRealm obj = obsRealm.where(TribeRealm.class).equalTo("localId", tribeRealm.getLocalId()).findFirst();
-                if (obj != null)
-                    obj.setMessageStatus(tribeRealm.getMessageStatus());
-                else
+                if (obj != null) {
+                    obj.setMessageSendingStatus(tribeRealm.getMessageSendingStatus());
+                    obj.setMessageDownloadingStatus(tribeRealm.getMessageDownloadingStatus());
+                    obj.setMessageReceivingStatus(tribeRealm.getMessageReceivingStatus());
+                } else {
                     obj = obsRealm.copyToRealmOrUpdate(tribeRealm);
+                }
 
                 obsRealm.commitTransaction();
                 subscriber.onNext(obsRealm.copyFromRealm(obj));
@@ -76,10 +81,13 @@ public class TribeCacheImpl implements TribeCache {
         obsRealm.beginTransaction();
 
         TribeRealm obj = obsRealm.where(TribeRealm.class).equalTo("localId", tribeRealm.getId()).findFirst();
-        if (obj != null)
-            obj.setMessageStatus(tribeRealm.getMessageStatus());
-        else
+        if (obj != null) {
+            obj.setMessageSendingStatus(tribeRealm.getMessageSendingStatus());
+            obj.setMessageDownloadingStatus(tribeRealm.getMessageDownloadingStatus());
+            obj.setMessageReceivingStatus(tribeRealm.getMessageReceivingStatus());
+        } else {
             obsRealm.copyToRealmOrUpdate(tribeRealm);
+        }
 
         obsRealm.commitTransaction();
         obsRealm.close();
@@ -99,8 +107,13 @@ public class TribeCacheImpl implements TribeCache {
 
                 boolean shouldUpdate = false;
 
-                if (tribeRealm.getMessageStatus() != null) {
-                    toEdit.setMessageStatus(tribeRealm.getMessageStatus());
+                if (tribeRealm.getMessageSendingStatus() != null) {
+                    toEdit.setMessageSendingStatus(tribeRealm.getMessageSendingStatus());
+                    shouldUpdate = true;
+                }
+
+                if (tribeRealm.getMessageReceivingStatus() != MessageReceivingStatus.STATUS_RECEIVED) {
+                    toEdit.setMessageReceivingStatus(tribeRealm.getMessageReceivingStatus());
                     shouldUpdate = true;
                 }
 
@@ -112,6 +125,10 @@ public class TribeCacheImpl implements TribeCache {
                 if (tribeRealm.getFrom() != null && toEdit.getFrom() == null) {
                     toEdit.setFrom(tribeRealm.getFrom());
                     shouldUpdate = true;
+                } else if (tribeRealm.getFrom() != null && toEdit.getFrom() != null
+                        && (toEdit.getFrom().getUpdatedAt() == null || toEdit.getFrom().getUpdatedAt().before(tribeRealm.getFrom().getUpdatedAt()))) {
+                    toEdit.getFrom().setUpdatedAt(tribeRealm.getFrom().getUpdatedAt());
+                    shouldUpdate = true;
                 }
 
                 if (tribeRealm.getFriendshipRealm() != null && toEdit.getFriendshipRealm() == null) {
@@ -121,6 +138,10 @@ public class TribeCacheImpl implements TribeCache {
 
                 if (tribeRealm.getGroup() != null && toEdit.getGroup() == null) {
                     toEdit.setGroup(tribeRealm.getGroup());
+                    shouldUpdate = true;
+                } else if (tribeRealm.getGroup() != null && toEdit.getGroup() != null
+                        && (toEdit.getGroup().getUpdatedAt() == null || toEdit.getGroup().getUpdatedAt().before(tribeRealm.getGroup().getUpdatedAt()))) {
+                    toEdit.getGroup().setUpdatedAt(tribeRealm.getGroup().getUpdatedAt());
                     shouldUpdate = true;
                 }
 
@@ -175,26 +196,22 @@ public class TribeCacheImpl implements TribeCache {
     }
 
     @Override
-    public Observable<List<TribeRealm>> tribes(String friendshipId) {
+    public Observable<List<TribeRealm>> tribesNotSeen(String friendshipId) {
         return Observable.create(new Observable.OnSubscribe<List<TribeRealm>>() {
             @Override
             public void call(final Subscriber<? super List<TribeRealm>> subscriber) {
                 if (friendshipId == null) {
-                    tribes = realm.where(TribeRealm.class)
+                    tribesNotSeen = realm.where(TribeRealm.class)
                             .beginGroup()
-                            .notEqualTo("messageStatus", MessageStatus.STATUS_OPENED)
+                            .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_NOT_SEEN)
                             .notEqualTo("from.id", currentUser.getId())
                             .endGroup()
                             .or()
-                            .beginGroup()
                             .equalTo("from.id", currentUser.getId())
-                            .endGroup()
                             .findAllSorted("recorded_at", Sort.ASCENDING);
                 } else {
-                    tribes = realm.where(TribeRealm.class)
-                            .beginGroup()
+                    tribesNotSeen = realm.where(TribeRealm.class)
                             .equalTo("from.id", friendshipId)
-                            .endGroup()
                             .or()
                             .beginGroup()
                             .equalTo("group.id", friendshipId)
@@ -203,13 +220,50 @@ public class TribeCacheImpl implements TribeCache {
                             .findAllSorted("recorded_at", Sort.ASCENDING);
                 }
 
-                tribes.removeChangeListeners();
-                tribes.addChangeListener(tribesUpdated -> {
+                tribesNotSeen.removeChangeListeners();
+                tribesNotSeen.addChangeListener(tribesUpdated -> {
                     subscriber.onNext(realm.copyFromRealm(tribesUpdated));
                 });
-                subscriber.onNext(realm.copyFromRealm(tribes));
+                subscriber.onNext(realm.copyFromRealm(tribesNotSeen));
             }
         });
+    }
+
+    @Override
+    public Observable<List<TribeRealm>> tribesReceived(String friendshipId) {
+        return Observable.create(new Observable.OnSubscribe<List<TribeRealm>>() {
+            @Override
+            public void call(final Subscriber<? super List<TribeRealm>> subscriber) {
+                if (friendshipId == null) {
+                    tribesReceived = realm.where(TribeRealm.class)
+                            .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_RECEIVED)
+                            .notEqualTo("from.id", currentUser.getId())
+                            .findAllSorted("recorded_at", Sort.DESCENDING);
+                }
+
+                tribesReceived.removeChangeListeners();
+                tribesReceived.addChangeListener(tribesUpdated -> subscriber.onNext(realm.copyFromRealm(tribesUpdated)));
+                subscriber.onNext(realm.copyFromRealm(tribesReceived));
+            }
+        });
+    }
+
+    @Override
+    public List<TribeRealm> tribesReceivedNoObs(String friendshipId) {
+        List<TribeRealm> results = new ArrayList<>();
+        Realm tmpRealm = Realm.getDefaultInstance();
+
+        if (friendshipId == null) {
+            RealmResults realmResults = tmpRealm.where(TribeRealm.class)
+                    .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_RECEIVED)
+                    .notEqualTo("from.id", currentUser.getId())
+                    .findAllSorted("recorded_at", Sort.DESCENDING);
+
+            if (realmResults != null && realmResults.size() > 0)
+                results = tmpRealm.copyFromRealm(realmResults);
+        }
+
+        return results;
     }
 
     @Override
@@ -217,8 +271,10 @@ public class TribeCacheImpl implements TribeCache {
         return Observable.create(new Observable.OnSubscribe<List<TribeRealm>>() {
             @Override
             public void call(final Subscriber<? super List<TribeRealm>> subscriber) {
-                pendingTribes = realm.where(TribeRealm.class).equalTo("from.id", currentUser.getId())
-                        .equalTo("messageStatus", MessageStatus.STATUS_ERROR).findAllSorted("recorded_at", Sort.ASCENDING);
+                pendingTribes = realm.where(TribeRealm.class)
+                        .equalTo("from.id", currentUser.getId())
+                        .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_ERROR)
+                        .findAllSorted("recorded_at", Sort.ASCENDING);
                 pendingTribes.removeChangeListeners();
                 pendingTribes.addChangeListener(tribesPending -> subscriber.onNext(realm.copyFromRealm(tribesPending)));
                 subscriber.onNext(realm.copyFromRealm(pendingTribes));
@@ -230,7 +286,7 @@ public class TribeCacheImpl implements TribeCache {
     public List<TribeRealm> tribesNotSent() {
         Realm otherRealm = Realm.getDefaultInstance();
         RealmResults<TribeRealm> sentTribes = otherRealm.where(TribeRealm.class).equalTo("from.id", currentUser.getId())
-                .equalTo("messageStatus", MessageStatus.STATUS_PENDING).findAllSorted("recorded_at", Sort.ASCENDING);
+                .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_PENDING).findAllSorted("recorded_at", Sort.ASCENDING);
         return otherRealm.copyFromRealm(sentTribes);
     }
 
@@ -244,12 +300,10 @@ public class TribeCacheImpl implements TribeCache {
                     .equalTo("from.id", currentUser.getId())
                     .beginGroup()
                     .equalTo("friendshipRealm.friend.id", id)
-                    .endGroup()
                     .or()
-                    .beginGroup()
                     .equalTo("group.id", id)
                     .endGroup()
-                    .equalTo("messageStatus", MessageStatus.STATUS_SENT)
+                    .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
                     .findAllSorted("recorded_at", Sort.ASCENDING);
 
             if (sentMessages != null && sentMessages.size() > 0) result.addAll(obsRealm.copyFromRealm(sentMessages.subList(0, 1)));
@@ -280,7 +334,7 @@ public class TribeCacheImpl implements TribeCache {
         for (TribeRealm tribeRealm : tribeRealmList) {
             TribeRealm dbTribeRealm = realmObs.where(TribeRealm.class).equalTo("localId", tribeRealm.getId()).findFirst();
             if (dbTribeRealm != null)
-                dbTribeRealm.setMessageStatus(MessageStatus.STATUS_ERROR);
+                dbTribeRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_ERROR);
         }
 
         realmObs.commitTransaction();

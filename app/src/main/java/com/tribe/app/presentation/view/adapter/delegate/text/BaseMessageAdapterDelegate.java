@@ -8,11 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
+import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.text.SimpleDateFormat;
@@ -25,6 +27,9 @@ import butterknife.ButterKnife;
  * Created by tiago on 18/05/2016.
  */
 public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<ChatMessage>> {
+
+    private final static float ALPHA_PENDING = 0.2f;
+    private final static int DURATION = 200;
 
     // VARIABLES
     protected Context context;
@@ -65,7 +70,7 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
         holder.itemView.setTag(R.id.chat_id, chatMessage.getId());
 
         if (!chatMessage.isShouldDisplayTime() && !chatMessage.isOtherPerson()) {
-           vh.layoutInfos.setVisibility(View.GONE);
+            vh.layoutInfos.setVisibility(View.GONE);
         } else {
             vh.layoutInfos.setVisibility(View.VISIBLE);
 
@@ -81,6 +86,34 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
             vh.txtTime.setText(simpleDateFormat.format(chatMessage.getCreatedAt()));
         }
 
+        if (chatMessage.getMessageSendingStatus() != null) {
+            if (chatMessage.getMessageSendingStatus().equals(MessageSendingStatus.STATUS_PENDING)) {
+                vh.getLayoutContent().setAlpha(ALPHA_PENDING);
+                vh.viewStatus.setVisibility(View.GONE);
+                vh.circularProgressView.setVisibility(View.VISIBLE);
+            } else if (chatMessage.getMessageSendingStatus().equals(MessageSendingStatus.STATUS_SENT)) {
+                vh.viewStatus.setBackgroundResource(R.drawable.shape_status_sent);
+            } else if (chatMessage.getMessageSendingStatus().equals(MessageSendingStatus.STATUS_ERROR)) {
+                vh.viewStatus.setBackgroundResource(R.drawable.shape_status_error);
+            } else if (chatMessage.getMessageSendingStatus().equals(MessageSendingStatus.STATUS_OPENED_PARTLY)) {
+                vh.viewStatus.setBackgroundResource(R.drawable.shape_status_read_partially);
+            } else if (chatMessage.getMessageSendingStatus().equals(MessageSendingStatus.STATUS_OPENED)) {
+                vh.viewStatus.setBackgroundResource(R.drawable.shape_status_read_everyone);
+            }
+        }
+
+        if (vh.getLayoutContent().getAlpha() == ALPHA_PENDING
+                && (chatMessage.getMessageSendingStatus() == null || !chatMessage.getMessageSendingStatus().equals(MessageSendingStatus.STATUS_PENDING))) {
+            vh.getLayoutContent().animate().setDuration(DURATION).alpha(1f).start();
+            vh.circularProgressView.setVisibility(View.GONE);
+        }
+
+        if (chatMessage.getMessageSendingStatus() == null) {
+            vh.viewStatus.setVisibility(View.GONE);
+        } else if (chatMessage.getMessageSendingStatus() != null && !chatMessage.getMessageSendingStatus().equals(MessageSendingStatus.STATUS_PENDING)) {
+            vh.viewStatus.setVisibility(View.VISIBLE);
+        }
+
         if (chatMessage.isFirstOfSection() || chatMessage.isLastOfSection() || chatMessage.isOtherPerson()) {
             vh.itemView.setPadding(vh.itemView.getPaddingLeft(),
                     (chatMessage.isFirstOfSection() || chatMessage.isOtherPerson()) ? marginVerticalSmall : marginVerticalXSmall,
@@ -93,15 +126,19 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
 
     protected abstract BaseTextViewHolder getViewHolder(ViewGroup parent);
 
-    static class BaseTextViewHolder extends RecyclerView.ViewHolder {
+    static abstract class BaseTextViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.txtName) public TextViewFont txtName;
         @BindView(R.id.txtTime) public TextViewFont txtTime;
         @BindView(R.id.layoutInfos) public ViewGroup layoutInfos;
+        @BindView(R.id.circularProgressView) public CircularProgressView circularProgressView;
+        @BindView(R.id.viewStatus) View viewStatus;
 
         public BaseTextViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
+
+        protected abstract ViewGroup getLayoutContent();
     }
 }

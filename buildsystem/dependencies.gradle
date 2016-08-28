@@ -38,10 +38,11 @@ ext {
     libPhoneNumberVersion = '7.1.0'
     exoPlayerVersion = 'r1.5.9'
     vlcPlayerVersion = '1.9.8'
-    firebaseMessagingVersion = '9.2.0'
+    firebaseMessagingVersion = '9.4.0'
+    firebaseCrashReportingVersion = '9.4.0'
     circularProgressViewVersion = '2.5.0'
     rxLocationVersion = '0.9@aar'
-    googlePlayLocationVersion = '9.2.0'
+    googlePlayLocationVersion = '9.4.0'
     rxPermissionsVersion = '0.7.0@aar'
     facebookVersion = '4,5'
 
@@ -88,6 +89,7 @@ ext {
             exoplayer               : "com.google.android.exoplayer:exoplayer:${exoPlayerVersion}",
             vlcPlayer               : "de.mrmaffen:vlc-android-sdk:${vlcPlayerVersion}",
             firebaseMessaging       : "com.google.firebase:firebase-messaging:${firebaseMessagingVersion}",
+            firebaseCrashReporting  : "com.google.firebase:firebase-crash:${firebaseCrashReportingVersion}",
             circularProgressView    : "com.github.rahatarmanahmed:circularprogressview:${circularProgressViewVersion}",
             rxLocation              : "pl.charmas.android:android-reactive-location:${rxLocationVersion}",
             googlePlayLocation      : "com.google.android.gms:play-services-location:${googlePlayLocationVersion}",

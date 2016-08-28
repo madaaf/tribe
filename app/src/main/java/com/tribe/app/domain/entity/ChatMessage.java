@@ -6,7 +6,7 @@ import android.support.v4.util.Pair;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -107,14 +107,6 @@ public class ChatMessage extends Message {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public @MessageStatus.Status String getMessageStatus() {
-        return messageStatus;
-    }
-
-    public void setMessageStatus(String messageStatus) {
-        this.messageStatus = messageStatus;
     }
 
     public Date getUpdatedAt() {
@@ -226,7 +218,7 @@ public class ChatMessage extends Message {
         chatMessage.setFrom(user);
         chatMessage.setTo(recipient);
         chatMessage.setToGroup(recipient instanceof Group);
-        chatMessage.setMessageStatus(MessageStatus.STATUS_PENDING);
+        chatMessage.setMessageSendingStatus(MessageSendingStatus.STATUS_PENDING);
         chatMessage.setType(type);
         return chatMessage;
     }
@@ -402,7 +394,9 @@ public class ChatMessage extends Message {
         chatMessage.setFrom(chatMessageFrom.from);
         chatMessage.setTo(chatMessageFrom.to);
         chatMessage.setToGroup(chatMessageFrom.toGroup);
-        chatMessage.setMessageStatus(chatMessageFrom.messageStatus);
+        chatMessage.setMessageSendingStatus(chatMessageFrom.messageSendingStatus);
+        chatMessage.setMessageDownloadingStatus(chatMessageFrom.messageDownloadingStatus);
+        chatMessage.setMessageReceivingStatus(chatMessageFrom.messageReceivingStatus);
 
         if (shouldKeepState) {
             chatMessage.isOtherPerson = chatMessageFrom.isOtherPerson;

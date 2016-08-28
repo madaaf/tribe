@@ -100,4 +100,10 @@ public class DiskChatDataRepository implements ChatRepository {
         return chatDataStore.markMessageListAsRead(chatRealmDataMapper.transform(chatList))
                 .map(collection -> chatRealmDataMapper.transform(collection));
     }
+
+    @Override
+    public Observable<List<ChatMessage>> messagesError(String recipientId) {
+        ChatDataStore diskChatDataStore = chatDataStoreFactory.createDiskChatStore();
+        return diskChatDataStore.messagesError(recipientId).map(chatRealmList -> chatRealmDataMapper.transform(chatRealmList));
+    }
 }

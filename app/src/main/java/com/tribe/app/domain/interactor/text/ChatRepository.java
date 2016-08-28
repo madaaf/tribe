@@ -46,9 +46,9 @@ public interface ChatRepository {
     /**
      * Get an {@link Observable} which will emit a {@link List<ChatMessage>}.
      *
-     * @param friendshipId the friendshipId for which to get the messages for
+     * @param recipientId the recipientId for which to get the messages for
      */
-    Observable<List<ChatMessage>> messages(final String friendshipId);
+    Observable<List<ChatMessage>> messages(final String recipientId);
 
     /**
      * Get an {@link Observable} which will emit a {@link ChatMessage} containing info about the tribe.
@@ -77,4 +77,11 @@ public interface ChatRepository {
      * @param messageList the ChatMessage List to put as seen
      */
     Observable<List<ChatMessage>> markMessageListAsRead(final List<ChatMessage> messageList);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link List<ChatMessage>}.
+     *
+     * @param recipientId the recipientId for which to get the messages for
+     */
+    Observable<List<ChatMessage>> messagesError(final String recipientId);
 }

@@ -100,4 +100,9 @@ public class CloudChatDataRepository implements ChatRepository {
                 .filter(chatRealmList -> messageList != null)
                 .map(collection -> chatRealmDataMapper.transform(collection));
     }
+
+    @Override
+    public Observable<List<ChatMessage>> messagesError(String recipientId) {
+        return null;
+    }
 }

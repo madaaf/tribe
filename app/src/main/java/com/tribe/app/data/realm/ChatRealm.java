@@ -1,7 +1,9 @@
 package com.tribe.app.data.realm;
 
 import com.tribe.app.domain.entity.ChatMessage;
-import com.tribe.app.presentation.view.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
+import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
+import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import java.util.Date;
 
@@ -26,7 +28,9 @@ public class ChatRealm extends RealmObject implements MessageRealmInterface {
     private Date recorded_at;
     private Date created_at;
     private boolean to_group = false;
-    private @MessageStatus.Status String messageStatus;
+    private @MessageSendingStatus.Status String messageSendingStatus;
+    private @MessageReceivingStatus.Status String messageReceivingStatus;
+    private @MessageDownloadingStatus.Status String messageDownloadingStatus;
     private Date updated_at;
     private RealmList<MessageRecipientRealm> recipientList;
 
@@ -96,12 +100,28 @@ public class ChatRealm extends RealmObject implements MessageRealmInterface {
         this.friendshipRealm = friendshipRealm;
     }
 
-    public String getMessageStatus() {
-        return messageStatus;
+    public void setMessageSendingStatus(String messageSendingStatus) {
+        this.messageSendingStatus = messageSendingStatus;
     }
 
-    public void setMessageStatus(String messageStatus) {
-        this.messageStatus = messageStatus;
+    public String getMessageSendingStatus() {
+        return messageSendingStatus;
+    }
+
+    public String getMessageDownloadingStatus() {
+        return messageDownloadingStatus;
+    }
+
+    public void setMessageDownloadingStatus(String messageDownloadingStatus) {
+        this.messageDownloadingStatus = messageDownloadingStatus;
+    }
+
+    public String getMessageReceivingStatus() {
+        return messageReceivingStatus;
+    }
+
+    public void setMessageReceivingStatus(String messageReceivingStatus) {
+        this.messageReceivingStatus = messageReceivingStatus;
     }
 
     public Date getUpdatedAt() {
@@ -147,7 +167,9 @@ public class ChatRealm extends RealmObject implements MessageRealmInterface {
         chatRealm.setRecordedAt(fromRealm.getRecordedAt());
         chatRealm.setUpdatedAt(fromRealm.getUpdatedAt());
         chatRealm.setFrom(fromRealm.getFrom());
-        chatRealm.setMessageStatus(fromRealm.getMessageStatus());
+        chatRealm.setMessageSendingStatus(fromRealm.getMessageSendingStatus());
+        chatRealm.setMessageReceivingStatus(fromRealm.getMessageReceivingStatus());
+        chatRealm.setMessageDownloadingStatus(fromRealm.getMessageDownloadingStatus());
         chatRealm.setRecipientList(fromRealm.getRecipientList());
 
         return chatRealm;

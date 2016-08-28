@@ -284,6 +284,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
         chatPresenter.attachView(this);
         chatPresenter.loadChatMessages(recipient.getId());
         chatPresenter.loadThumbnail(radiusGalleryImg);
+        chatPresenter.updateErrorMessages(recipient.getId());
     }
 
     private void initInfos() {
@@ -346,8 +347,6 @@ public class ChatActivity extends BaseActivity implements MessageView {
                 recyclerViewText.scrollToPosition(index);
             }
         }
-
-        chatPresenter.markMessageListAsRead(recipient, chatMessageList);
     }
 
     @Override
@@ -610,8 +609,11 @@ public class ChatActivity extends BaseActivity implements MessageView {
             public void onAnimationEnd(Animator animation) {
                 recyclerViewText.setEnabled(true);
                 rootView.removeView(imageViewClicked);
-                recyclerViewImageView.setAlpha(1f);
-                recyclerViewImageView = null;
+
+                if (recyclerViewImageView != null) {
+                    recyclerViewImageView.setAlpha(1f);
+                    recyclerViewImageView = null;
+                }
             }
         });
 
@@ -690,7 +692,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_GALLERY && data.getData() != null) {
+        if (requestCode == REQUEST_GALLERY && data != null && data.getData() != null) {
             ChatMessage chatMessage = ChatMessage.createMessage(ChatMessage.PHOTO, data.getData().toString(), getCurrentUser(), recipient,  getApplicationComponent().dateUtils());
             chatPresenter.sendMessage(chatMessage);
         }

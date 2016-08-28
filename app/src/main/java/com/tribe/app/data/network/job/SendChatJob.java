@@ -13,7 +13,7 @@ import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.text.DeleteChat;
 import com.tribe.app.domain.interactor.text.SendChat;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
-import com.tribe.app.presentation.view.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -41,14 +41,14 @@ public class SendChatJob extends BaseJob {
     private ChatMessage chatMessage;
 
     public SendChatJob(ChatMessage chatMessage) {
-        super(new Params(Priority.HIGH).groupBy(chatMessage.getTo().getId()));
+        super(new Params(Priority.HIGH).groupBy(chatMessage.getTo().getId()).setSingleId(chatMessage.getLocalId()));
         this.chatMessage = chatMessage;
     }
 
     @Override
     public void onAdded() {
         ChatRealm chatRealm = chatRealmDataMapper.transform(chatMessage);
-        chatRealm.setMessageStatus(MessageStatus.STATUS_PENDING);
+        chatRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_PENDING);
         chatCache.update(chatRealm);
     }
 
@@ -85,14 +85,14 @@ public class SendChatJob extends BaseJob {
         public void onError(Throwable e) {
             e.printStackTrace();
             ChatRealm chatRealm = chatRealmDataMapper.transform(chatMessage);
-            chatRealm.setMessageStatus(MessageStatus.STATUS_ERROR);
+            chatRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_ERROR);
             chatCache.update(chatRealm);
         }
 
         @Override
         public void onNext(ChatMessage chatMessage) {
             ChatRealm chatRealm = chatRealmDataMapper.transform(chatMessage);
-            chatRealm.setMessageStatus(MessageStatus.STATUS_SENT);
+            chatRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_SENT);
             chatCache.update(chatRealm);
         }
     }

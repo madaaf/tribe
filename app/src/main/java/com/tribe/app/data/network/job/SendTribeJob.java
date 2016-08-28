@@ -13,7 +13,7 @@ import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
-import com.tribe.app.presentation.view.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -41,14 +41,14 @@ public class  SendTribeJob extends BaseJob {
     private TribeMessage tribe;
 
     public SendTribeJob(TribeMessage tribe) {
-        super(new Params(Priority.HIGH).groupBy(tribe.getTo().getId()));
+        super(new Params(Priority.HIGH).groupBy(tribe.getTo().getId()).setSingleId(tribe.getLocalId()));
         this.tribe = tribe;
     }
 
     @Override
     public void onAdded() {
         TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
-        tribeRealm.setMessageStatus(MessageStatus.STATUS_PENDING);
+        tribeRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_PENDING);
         tribeCache.update(tribeRealm);
     }
 
@@ -84,14 +84,14 @@ public class  SendTribeJob extends BaseJob {
         @Override
         public void onError(Throwable e) {
             TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
-            tribeRealm.setMessageStatus(MessageStatus.STATUS_ERROR);
+            tribeRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_ERROR);
             tribeCache.update(tribeRealm);
         }
 
         @Override
         public void onNext(TribeMessage tribe) {
             TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
-            tribeRealm.setMessageStatus(MessageStatus.STATUS_SENT);
+            tribeRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_SENT);
             tribeCache.update(tribeRealm);
         }
     }

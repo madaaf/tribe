@@ -64,12 +64,12 @@ public class TribeActivity extends BaseActivity implements TribeView {
         initializeDependencyInjector();
         initTribePagerView();
         initSubscriptions();
+        initializePresenter();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        initializePresenter();
     }
 
     @Override
@@ -92,6 +92,8 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
     @Override
     protected void onDestroy() {
+        tribePresenter.onDestroy();
+
         if (unbinder != null) unbinder.unbind();
 
         if (subscriptions != null && subscriptions.hasSubscriptions()) {

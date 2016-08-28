@@ -2,7 +2,7 @@ package com.tribe.app.data.repository.tribe.datasource;
 
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.realm.TribeRealm;
-import com.tribe.app.presentation.view.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -35,8 +35,13 @@ public class DiskTribeDataStore implements TribeDataStore {
     }
 
     @Override
-    public Observable<List<TribeRealm>> tribes(String friendshipId) {
-        return tribeCache.tribes(friendshipId).debounce(500, TimeUnit.MILLISECONDS);
+    public Observable<List<TribeRealm>> tribesNotSeen(String friendshipId) {
+        return tribeCache.tribesNotSeen(friendshipId).debounce(500, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public Observable<List<TribeRealm>> tribesReceived(String friendshipId) {
+        return tribeCache.tribesReceived(friendshipId).debounce(500, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -47,7 +52,7 @@ public class DiskTribeDataStore implements TribeDataStore {
     @Override
     public Observable<List<TribeRealm>> markTribeListAsRead(List<TribeRealm> tribeRealmList) {
         for (TribeRealm tribeRealm : tribeRealmList) {
-            tribeRealm.setMessageStatus(MessageStatus.STATUS_OPENED);
+            tribeRealm.setMessageReceivingStatus(MessageReceivingStatus.STATUS_SEEN);
         }
 
         tribeCache.put(tribeRealmList);

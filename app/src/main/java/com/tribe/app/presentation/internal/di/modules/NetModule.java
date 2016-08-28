@@ -153,7 +153,7 @@ public class NetModule {
         }
 
         return new Retrofit.Builder()
-                .baseUrl("http://api.tribe.pm/")
+                .baseUrl("http://api.dev.tribe.pm/")
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .callFactory(httpClientBuilder.build())
@@ -177,7 +177,7 @@ public class NetModule {
         }
 
         return new Retrofit.Builder()
-            .baseUrl("http://api.tribe.pm")
+            .baseUrl("http://api.dev.tribe.pm")
             .callFactory(httpClientBuilder.build())
             .build().create(FileApi.class);
     }
@@ -221,7 +221,7 @@ public class NetModule {
         }
 
         return new Retrofit.Builder()
-                .baseUrl("http://login.tribe.pm/")
+                .baseUrl("http://auth.dev.tribe.pm/")
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .callFactory(httpClientBuilder.build())

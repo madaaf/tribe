@@ -13,7 +13,9 @@ import com.tribe.app.data.network.job.MarkMessageListAsReadJob;
 import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
 import com.tribe.app.data.network.job.SendChatJob;
 import com.tribe.app.data.network.job.SendTribeJob;
+import com.tribe.app.data.network.job.UpdateMessagesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateMessagesJob;
+import com.tribe.app.data.network.job.UpdateTribeListNotSeenStatusJob;
 import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.data.realm.AccessToken;
@@ -45,8 +47,8 @@ import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
-import com.tribe.app.presentation.view.widget.LabelButton;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
+import com.tribe.app.presentation.view.widget.LabelButton;
 import com.tribe.app.presentation.view.widget.PathView;
 import com.tribe.app.presentation.view.widget.PlayerView;
 
@@ -80,19 +82,24 @@ public interface ApplicationComponent {
     void inject(TribePagerView tribePagerView);
     void inject(PlayerView playerView);
     void inject(TribeComponentView tribeComponentView);
+    void inject(TribeFirebaseInstanceIDService instanceIDService);
+    void inject(PhotoMessageAdapterDelegate photoMessageAdapterDelegate);
+    void inject(TutorialMessageAdapterDelegate tutorialMessageAdapterDelegate);
+    void inject(LabelButton labelButton);
+    void inject(IntroVideoView introVideoView);
+
+    // JOBS
     void inject(SendTribeJob sendTribeJob);
     void inject(DownloadTribeJob downloadTribeJob);
-    void inject(TribeFirebaseInstanceIDService instanceIDService);
+    void inject(SendChatJob sendChatJob);
+    void inject(MarkMessageListAsReadJob markMessageListAsReadJob);
     void inject(UpdateUserJob updateUserJob);
     void inject(UpdateMessagesJob updateMessagesJob);
     void inject(UpdateTribesErrorStatusJob updateTribesErrorStatusJob);
     void inject(MarkTribeListAsReadJob markTribeListAsReadJob);
-    void inject(PhotoMessageAdapterDelegate photoMessageAdapterDelegate);
-    void inject(TutorialMessageAdapterDelegate tutorialMessageAdapterDelegate);
-    void inject(SendChatJob sendChatJob);
-    void inject(MarkMessageListAsReadJob markMessageListAsReadJob);
-    void inject(LabelButton labelButton);
-    void inject(IntroVideoView introVideoView);
+    void inject(UpdateMessagesErrorStatusJob updateMessagesErrorStatusJob);
+    void inject(UpdateTribeListNotSeenStatusJob updateTribeListNotSeenStatusJob);
+
 
     //Exposed to sub-graphs.
     Context context();

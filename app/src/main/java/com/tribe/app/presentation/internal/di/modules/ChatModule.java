@@ -5,6 +5,7 @@ import com.tribe.app.domain.interactor.text.DeleteDiskConversation;
 import com.tribe.app.domain.interactor.text.DisconnectMQTT;
 import com.tribe.app.domain.interactor.text.DiskMarkMessageListAsRead;
 import com.tribe.app.domain.interactor.text.GetDiskChatMessageList;
+import com.tribe.app.domain.interactor.text.GetPendingMessageList;
 import com.tribe.app.domain.interactor.text.SaveChat;
 import com.tribe.app.domain.interactor.text.SubscribingMQTT;
 import com.tribe.app.domain.interactor.text.UnsubscribeMQTT;
@@ -77,5 +78,11 @@ public class ChatModule {
     @Named("diskMarkMessageListAsRead")
     DiskMarkMessageListAsRead diskMarkMessageListAsRead(DiskMarkMessageListAsRead diskMarkMessageListAsRead) {
         return diskMarkMessageListAsRead;
+    }
+
+    @Provides
+    @Named("getPendingMessageList")
+    GetPendingMessageList provideGetPendingMessageList(GetPendingMessageList getPendingMessageList) {
+        return getPendingMessageList;
     }
 }

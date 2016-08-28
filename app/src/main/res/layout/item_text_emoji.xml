@@ -8,14 +8,23 @@
 
     <include layout="@layout/item_text_base" />
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtMessage"
-        android:layout_width="wrap_content"
+    <FrameLayout
+        android:id="@+id/layoutContent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="2.5dp"
         android:layout_marginStart="@dimen/horizontal_left_margin_chat"
-        android:layout_marginEnd="@dimen/horizontal_margin_xlarge"
-        style="@style/Emoji"
-        />
+        android:layout_marginEnd="@dimen/horizontal_margin_small">
 
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/horizontal_margin_small"
+            style="@style/Emoji"
+            />
+
+        <include layout="@layout/item_text_status" />
+
+    </FrameLayout>
 </LinearLayout>

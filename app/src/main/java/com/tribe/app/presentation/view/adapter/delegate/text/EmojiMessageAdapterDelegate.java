@@ -49,10 +49,16 @@ public class EmojiMessageAdapterDelegate extends BaseMessageAdapterDelegate {
     static class EmojiTextViewHolder extends BaseTextViewHolder {
 
         @BindView(R.id.txtMessage) public TextViewFont txtMessage;
+        @BindView(R.id.layoutContent) public ViewGroup layoutContent;
 
         public EmojiTextViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+        }
+
+        @Override
+        public ViewGroup getLayoutContent() {
+            return layoutContent;
         }
     }
 }

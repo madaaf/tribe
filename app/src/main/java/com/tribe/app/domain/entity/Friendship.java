@@ -1,5 +1,7 @@
 package com.tribe.app.domain.entity;
 
+import java.util.Date;
+
 /**
  * Created by tiago on 05/08/2016.
  */
@@ -72,5 +74,10 @@ public class Friendship extends Recipient {
     @Override
     public String getUsernameDisplay() {
         return friend.getUsernameDisplay();
+    }
+
+    @Override
+    public Date getUpdatedAt() {
+        return friend.getUpdatedAt();
     }
 }

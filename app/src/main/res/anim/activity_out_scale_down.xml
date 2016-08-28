@@ -5,7 +5,7 @@
         android:toXScale="0.84"
         android:fromYScale="1.0"
         android:toYScale="0.84"
-        android:duration="300"
+        android:duration="250"
         />
 
     <translate
@@ -13,13 +13,13 @@
         android:fromXDelta="0%"
         android:toYDelta="8%"
         android:toXDelta="16%"
-        android:duration="300"
+        android:duration="250"
         />
 
     <alpha
         android:fromAlpha="1.0"
         android:toAlpha="0.25"
-        android:duration="300"
+        android:duration="250"
         />
 
 </set>

@@ -1,7 +1,7 @@
 package com.tribe.app.domain.entity;
 
 import com.tribe.app.presentation.utils.FileUtils;
-import com.tribe.app.presentation.view.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 
 import java.util.Arrays;
@@ -88,14 +88,6 @@ public class TribeMessage extends Message {
         this.id = id;
     }
 
-    public @MessageStatus.Status String getMessageStatus() {
-        return messageStatus;
-    }
-
-    public void setMessageStatus(String messageStatus) {
-        this.messageStatus = messageStatus;
-    }
-
     public Date getUpdatedAt() {
         return updatedAt;
     }
@@ -120,7 +112,7 @@ public class TribeMessage extends Message {
         tribe.setTo(recipient);
         tribe.setToGroup(recipient instanceof Group);
         tribe.setType(mode);
-        tribe.setMessageStatus(MessageStatus.STATUS_PENDING);
+        tribe.setMessageSendingStatus(MessageSendingStatus.STATUS_PENDING);
         return tribe;
     }
 

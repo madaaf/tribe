@@ -2,11 +2,12 @@ package com.tribe.app.data.repository.chat.datasource;
 
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.realm.ChatRealm;
-import com.tribe.app.presentation.view.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 
@@ -25,7 +26,6 @@ public class DiskChatDataStore implements ChatDataStore {
         this.chatCache = chatCache;
     }
 
-
     @Override
     public Observable<IMqttToken> connectAndSubscribe(String topic) {
         return null;
@@ -43,7 +43,7 @@ public class DiskChatDataStore implements ChatDataStore {
 
     @Override
     public Observable<List<ChatRealm>> messages(String recipientId) {
-        return chatCache.messages(recipientId);
+        return chatCache.messages(recipientId).debounce(500, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -64,11 +64,16 @@ public class DiskChatDataStore implements ChatDataStore {
     @Override
     public Observable<List<ChatRealm>> markMessageListAsRead(List<ChatRealm> messageRealmList) {
         for (ChatRealm chatRealm : messageRealmList) {
-            chatRealm.setMessageStatus(MessageStatus.STATUS_OPENED);
+            chatRealm.setMessageReceivingStatus(MessageReceivingStatus.STATUS_SEEN);
         }
 
         chatCache.put(messageRealmList);
 
         return Observable.just(messageRealmList);
+    }
+
+    @Override
+    public Observable<List<ChatRealm>> messagesError(String recipientId) {
+        return chatCache.messagesError(recipientId);
     }
 }

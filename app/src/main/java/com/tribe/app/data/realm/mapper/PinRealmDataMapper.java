@@ -28,7 +28,7 @@ public class PinRealmDataMapper {
 
         if (pinRealm != null) {
             pin = new Pin();
-//            pin.setPinId(pinRealm.getPinId());
+            pin.setPinId(pinRealm.getPinId());
             pin.setNcStatus(pinRealm.getNcStatus());
             pin.setSmsStatus(pinRealm.getSmsStatus());
             pin.setTo(pinRealm.getTo());

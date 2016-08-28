@@ -54,7 +54,9 @@ public class ChatRealmDataMapper {
             chatMessage.setCreatedAt(chatRealm.getCreatedAt());
             chatMessage.setUpdatedAt(chatRealm.getUpdatedAt());
             chatMessage.setToGroup(chatRealm.isToGroup());
-            chatMessage.setMessageStatus(chatRealm.getMessageStatus());
+            chatMessage.setMessageSendingStatus(chatRealm.getMessageSendingStatus());
+            chatMessage.setMessageDownloadingStatus(chatRealm.getMessageDownloadingStatus());
+            chatMessage.setMessageReceivingStatus(chatRealm.getMessageReceivingStatus());
             chatMessage.setRecipientList(messageRecipientRealmDataMapper.transform(chatRealm.getRecipientList()));
         }
 
@@ -88,7 +90,9 @@ public class ChatRealmDataMapper {
             chatRealm.setCreatedAt(chatMessage.getCreatedAt());
             chatRealm.setUpdatedAt(chatMessage.getUpdatedAt());
             chatRealm.setToGroup(chatMessage.isToGroup());
-            chatRealm.setMessageStatus(chatMessage.getMessageStatus());
+            chatRealm.setMessageSendingStatus(chatMessage.getMessageSendingStatus());
+            chatRealm.setMessageDownloadingStatus(chatMessage.getMessageDownloadingStatus());
+            chatRealm.setMessageReceivingStatus(chatMessage.getMessageReceivingStatus());
             chatRealm.setRecipientList(messageRecipientRealmDataMapper.transform(chatMessage.getRecipientList()));
         }
 

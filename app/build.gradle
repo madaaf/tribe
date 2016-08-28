@@ -36,9 +36,6 @@ android {
         testInstrumentationRunner globalConfiguration.getAt("testInstrumentationRunner")
         testApplicationId globalConfiguration.getAt("testApplicationId")
 
-        buildConfigField "String", "TRIBE_PUBLIC_KEY", "\"${tribe_public_key}\""
-        buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key}\""
-
         resValue "string", "app_name", "Tribe"
     }
 
@@ -80,6 +77,9 @@ android {
             testCoverageEnabled = "true"
             applicationIdSuffix = ".debug"
             resValue "string", "app_name", "Tribe DEBUG"
+
+            buildConfigField "String", "TRIBE_PUBLIC_KEY", "\"${tribe_public_key_debug}\""
+            buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key_debug}\""
         }
 
         beta {
@@ -123,6 +123,7 @@ dependencies {
     compile presentationDependencies.libPhoneNumber
     compile presentationDependencies.vlcPlayer
     compile presentationDependencies.firebaseMessaging
+    compile presentationDependencies.firebaseCrashReporting
     compile presentationDependencies.circularProgressView
     compile presentationDependencies.rxLocation
     compile presentationDependencies.googlePlayLocation

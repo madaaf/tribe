@@ -2,12 +2,16 @@ package com.tribe.app.data.repository.user;
 
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.mapper.ChatRealmDataMapper;
 import com.tribe.app.data.realm.mapper.TribeRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
+import com.tribe.app.data.repository.chat.datasource.ChatDataStore;
+import com.tribe.app.data.repository.chat.datasource.ChatDataStoreFactory;
 import com.tribe.app.data.repository.tribe.datasource.TribeDataStore;
 import com.tribe.app.data.repository.tribe.datasource.TribeDataStoreFactory;
 import com.tribe.app.data.repository.user.datasource.UserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
+import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Pin;
@@ -15,7 +19,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
-import com.tribe.app.presentation.view.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +39,8 @@ public class DiskUserDataRepository implements UserRepository {
     private final UserRealmDataMapper userRealmDataMapper;
     private final TribeDataStoreFactory tribeDataStoreFactory;
     private final TribeRealmDataMapper tribeRealmDataMapper;
+    private final ChatDataStoreFactory chatDataStoreFactory;
+    private final ChatRealmDataMapper chatRealmDataMapper;
 
     /**
      * Constructs a {@link UserRepository}.
@@ -46,11 +52,15 @@ public class DiskUserDataRepository implements UserRepository {
     public DiskUserDataRepository(UserDataStoreFactory dataStoreFactory,
                                   UserRealmDataMapper realmDataMapper,
                                   TribeDataStoreFactory tribeDataStoreFactory,
-                                  TribeRealmDataMapper tribeRealmDataMapper) {
+                                  TribeRealmDataMapper tribeRealmDataMapper,
+                                  ChatDataStoreFactory chatDataStoreFactory,
+                                  ChatRealmDataMapper chatRealmDataMapper) {
         this.userDataStoreFactory = dataStoreFactory;
         this.userRealmDataMapper = realmDataMapper;
         this.tribeDataStoreFactory = tribeDataStoreFactory;
         this.tribeRealmDataMapper = tribeRealmDataMapper;
+        this.chatDataStoreFactory = chatDataStoreFactory;
+        this.chatRealmDataMapper = chatRealmDataMapper;
     }
 
     @Override
@@ -66,15 +76,19 @@ public class DiskUserDataRepository implements UserRepository {
     public Observable<User> userInfos(String userId) {
         final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-        return Observable.zip(tribeDataStore.tribes(null).map(collection -> tribeRealmDataMapper.transform(collection)),
+        final ChatDataStore chatDataStore = this.chatDataStoreFactory.createDiskChatStore();
+
+        return Observable.combineLatest(tribeDataStore.tribesNotSeen(null).map(collection -> tribeRealmDataMapper.transform(collection)),
                 userDataStore.userInfos(null).map(userRealm -> userRealmDataMapper.transform(userRealm)),
-                (tribes, user) -> {
+                chatDataStore.messages(null).map(collection -> chatRealmDataMapper.transform(collection)),
+                (tribes, user, chatMessages) -> {
                     List<Recipient> result = user.getFriendshipList();
 
                     for (Recipient recipient : result) {
                         List<TribeMessage> receivedTribes = new ArrayList<>();
                         List<TribeMessage> sentTribes = new ArrayList<>();
                         List<TribeMessage> errorTribes = new ArrayList<>();
+                        List<ChatMessage> receivedChatMessage = new ArrayList<>();
 
                         for (TribeMessage tribe : tribes) {
                             if (tribe.getFrom() != null) {
@@ -83,7 +97,7 @@ public class DiskUserDataRepository implements UserRepository {
                                     receivedTribes.add(tribe);
                                 } else if (tribe.getFrom().getId().equals(user.getId())
                                         && tribe.getTo().getId().equals(recipient.getId())) {
-                                    if (tribe.getMessageStatus().equals(MessageStatus.STATUS_ERROR))
+                                    if (tribe.getMessageSendingStatus().equals(MessageSendingStatus.STATUS_ERROR))
                                         errorTribes.add(tribe);
                                     else sentTribes.add(tribe);
                                 }
@@ -93,6 +107,17 @@ public class DiskUserDataRepository implements UserRepository {
                         recipient.setErrorTribes(errorTribes);
                         recipient.setReceivedTribes(receivedTribes);
                         recipient.setSentTribes(sentTribes);
+
+                        for (ChatMessage chatMessage : chatMessages) {
+                            if (chatMessage.getFrom() != null) {
+                                if (!chatMessage.getFrom().getId().equals(user.getId()) && (chatMessage.isToGroup() && chatMessage.getTo().getId().equals(recipient.getId()))
+                                        || (!chatMessage.isToGroup() && chatMessage.getFrom().getId().equals(recipient.getId()))) {
+                                    receivedChatMessage.add(chatMessage);
+                                }
+                            }
+                        }
+
+                        recipient.setReceivedMessages(receivedChatMessage);
                     }
 
                     Friendship friendship = new Friendship(user.getId());

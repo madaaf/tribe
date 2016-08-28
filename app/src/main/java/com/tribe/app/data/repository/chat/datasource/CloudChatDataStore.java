@@ -11,7 +11,7 @@ import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.repository.tribe.datasource.TribeDataStore;
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.presentation.utils.FileUtils;
-import com.tribe.app.presentation.view.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 
@@ -87,7 +87,7 @@ public class CloudChatDataStore implements ChatDataStore {
 
         if (chatRealm.getType().equals(ChatMessage.TEXT)) {
             return tribeApi.sendChat(request).map(chatServer -> {
-                chatServer.setMessageStatus(MessageStatus.STATUS_SENT);
+                chatServer.setMessageSendingStatus(MessageSendingStatus.STATUS_SENT);
                 return chatCache.updateLocalWithServerRealm(chatRealm, chatServer);
             });
         } else {
@@ -109,7 +109,7 @@ public class CloudChatDataStore implements ChatDataStore {
                 MultipartBody.Part body = MultipartBody.Part.createFormData("content", file.getName(), requestFile);
 
                 return tribeApi.uploadMessagePhoto(query, body).map(chatServer -> {
-                    chatServer.setMessageStatus(MessageStatus.STATUS_SENT);
+                    chatServer.setMessageSendingStatus(MessageSendingStatus.STATUS_SENT);
                     return chatCache.updateLocalWithServerRealm(chatRealm, chatServer);
                 });
             }
@@ -144,5 +144,10 @@ public class CloudChatDataStore implements ChatDataStore {
         }
 
         return Observable.empty();
+    }
+
+    @Override
+    public Observable<List<ChatRealm>> messagesError(String recipientId) {
+        return null;
     }
 }

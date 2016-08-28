@@ -1,6 +1,8 @@
 package com.tribe.app.data.realm;
 
-import com.tribe.app.presentation.view.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
+import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
+import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 
 import java.util.Date;
@@ -25,7 +27,9 @@ public class TribeRealm extends RealmObject implements MessageRealmInterface {
     private GroupRealm group;
     private Date recorded_at;
     private boolean to_group = false;
-    private @MessageStatus.Status String messageStatus;
+    private @MessageSendingStatus.Status String messageSendingStatus;
+    private @MessageReceivingStatus.Status String messageReceivingStatus;
+    private @MessageDownloadingStatus.Status String messageDownloadingStatus;
     private Date updated_at;
     private Date created_at;
     private WeatherRealm weatherRealm;
@@ -106,12 +110,28 @@ public class TribeRealm extends RealmObject implements MessageRealmInterface {
         this.url = url;
     }
 
-    public String getMessageStatus() {
-        return messageStatus;
+    public void setMessageSendingStatus(String messageSendingStatus) {
+        this.messageSendingStatus = messageSendingStatus;
     }
 
-    public void setMessageStatus(String messageStatus) {
-        this.messageStatus = messageStatus;
+    public String getMessageSendingStatus() {
+        return messageSendingStatus;
+    }
+
+    public String getMessageDownloadingStatus() {
+        return messageDownloadingStatus;
+    }
+
+    public void setMessageDownloadingStatus(String messageDownloadingStatus) {
+        this.messageDownloadingStatus = messageDownloadingStatus;
+    }
+
+    public String getMessageReceivingStatus() {
+        return messageReceivingStatus;
+    }
+
+    public void setMessageReceivingStatus(String messageReceivingStatus) {
+        this.messageReceivingStatus = messageReceivingStatus;
     }
 
     public Date getUpdatedAt() {
@@ -167,7 +187,9 @@ public class TribeRealm extends RealmObject implements MessageRealmInterface {
         tribeRealm.setLocationRealm(fromRealm.getLocationRealm());
         tribeRealm.setWeatherRealm(fromRealm.getWeatherRealm());
         tribeRealm.setUrl(fromRealm.getUrl());
-        tribeRealm.setMessageStatus(fromRealm.getMessageStatus());
+        tribeRealm.setMessageSendingStatus(fromRealm.getMessageSendingStatus());
+        tribeRealm.setMessageReceivingStatus(fromRealm.getMessageReceivingStatus());
+        tribeRealm.setMessageDownloadingStatus(fromRealm.getMessageDownloadingStatus());
         tribeRealm.setRecipientList(fromRealm.getRecipientList());
 
         return tribeRealm;

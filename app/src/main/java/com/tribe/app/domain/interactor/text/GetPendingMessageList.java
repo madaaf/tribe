@@ -9,17 +9,17 @@ import javax.inject.Inject;
 import rx.Observable;
 
 /**
- * Created by tiago on 22/05/2016.
+ * Created by tiago on 08/25/2016.
  */
-public class GetDiskChatMessageList extends UseCaseDisk {
+public class GetPendingMessageList extends UseCaseDisk {
 
-    private ChatRepository chatDataRepository;
+    private ChatRepository chatRepository;
     private String recipientId;
 
     @Inject
-    public GetDiskChatMessageList(DiskChatDataRepository chatDataRepository, PostExecutionThread postExecutionThread) {
+    public GetPendingMessageList(DiskChatDataRepository chatRepository, PostExecutionThread postExecutionThread) {
         super(postExecutionThread);
-        this.chatDataRepository = chatDataRepository;
+        this.chatRepository = chatRepository;
     }
 
     public void setRecipientId(String recipientId) {
@@ -28,6 +28,6 @@ public class GetDiskChatMessageList extends UseCaseDisk {
 
     @Override
     protected Observable buildUseCaseObservable() {
-        return chatDataRepository.messages(recipientId);
+        return chatRepository.messagesError(recipientId);
     }
 }

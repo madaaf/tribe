@@ -11,13 +11,13 @@ import rx.Observable;
 /**
  * Created by tiago on 22/05/2016.
  */
-public class GetDiskTribeList extends UseCaseDisk {
+public class GetReceivedDiskTribeList extends UseCaseDisk {
 
     private TribeRepository tribeRepository;
     private String recipientId;
 
     @Inject
-    public GetDiskTribeList(DiskTribeDataRepository tribeRepository, PostExecutionThread postExecutionThread) {
+    public GetReceivedDiskTribeList(DiskTribeDataRepository tribeRepository, PostExecutionThread postExecutionThread) {
         super(postExecutionThread);
         this.tribeRepository = tribeRepository;
     }
@@ -28,6 +28,6 @@ public class GetDiskTribeList extends UseCaseDisk {
 
     @Override
     protected Observable buildUseCaseObservable() {
-        return tribeRepository.tribes(recipientId);
+        return tribeRepository.tribesReceived(recipientId);
     }
 }

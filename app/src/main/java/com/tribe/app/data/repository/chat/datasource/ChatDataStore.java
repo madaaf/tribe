@@ -64,4 +64,11 @@ public interface ChatDataStore {
      * @param messageRealmList the ChatRealm List to put as seen
      */
     Observable<List<ChatRealm>> markMessageListAsRead(final List<ChatRealm> messageRealmList);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link List< ChatRealm >}.
+     *
+     * @param recipientId the recipientId for which to get the messages in error for
+     */
+    Observable<List<ChatRealm>> messagesError(final String recipientId);
 }

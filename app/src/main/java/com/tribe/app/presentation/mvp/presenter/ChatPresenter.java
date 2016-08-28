@@ -5,8 +5,8 @@ import android.graphics.Bitmap;
 import android.provider.MediaStore;
 
 import com.birbit.android.jobqueue.JobManager;
-import com.tribe.app.data.network.job.MarkMessageListAsReadJob;
 import com.tribe.app.data.network.job.SendChatJob;
+import com.tribe.app.data.network.job.UpdateMessagesErrorStatusJob;
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
@@ -16,16 +16,15 @@ import com.tribe.app.domain.interactor.text.DeleteDiskConversation;
 import com.tribe.app.domain.interactor.text.DisconnectMQTT;
 import com.tribe.app.domain.interactor.text.DiskMarkMessageListAsRead;
 import com.tribe.app.domain.interactor.text.GetDiskChatMessageList;
+import com.tribe.app.domain.interactor.text.GetPendingMessageList;
 import com.tribe.app.domain.interactor.text.SubscribingMQTT;
 import com.tribe.app.domain.interactor.text.UnsubscribeMQTT;
 import com.tribe.app.presentation.mvp.view.MessageView;
 import com.tribe.app.presentation.mvp.view.View;
-import com.tribe.app.presentation.view.utils.MessageStatus;
 import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -47,6 +46,7 @@ public class ChatPresenter implements Presenter {
     private final GetDiskChatMessageList diskGetChatMessages;
     private final DeleteDiskConversation deleteDiskConversation;
     private final DiskMarkMessageListAsRead diskMarkMessageListAsRead;
+    private final GetPendingMessageList getPendingMessageList;
 
     private MessageView messageView;
 
@@ -55,6 +55,7 @@ public class ChatPresenter implements Presenter {
     @Inject
     public ChatPresenter(User currentUser,
                          JobManager jobManager,
+                         @Named("getPendingMessageList") GetPendingMessageList getPendingMessageList,
                          @Named("diskGetChatMessages") GetDiskChatMessageList diskGetChatMessages,
                          @Named("deleteDiskConversation") DeleteDiskConversation deleteDiskConversation,
                          @Named("diskMarkMessageListAsRead") DiskMarkMessageListAsRead diskMarkMessageListAsRead,
@@ -71,11 +72,11 @@ public class ChatPresenter implements Presenter {
         this.diskGetChatMessages = diskGetChatMessages;
         this.deleteDiskConversation = deleteDiskConversation;
         this.diskMarkMessageListAsRead = diskMarkMessageListAsRead;
+        this.getPendingMessageList = getPendingMessageList;
     }
 
     @Override
     public void onCreate() {
-
     }
 
     @Override
@@ -110,9 +111,15 @@ public class ChatPresenter implements Presenter {
         messageView = (MessageView) v;
     }
 
+    public void updateErrorMessages(String recipientId) {
+        jobManager.addJobInBackground(new UpdateMessagesErrorStatusJob(recipientId));
+    }
+
     public void loadChatMessages(String friendshipId) {
-        diskGetChatMessages.setFriendshipId(friendshipId);
+        diskGetChatMessages.setRecipientId(friendshipId);
         diskGetChatMessages.execute(new ChatMessageListSubscriber());
+        getPendingMessageList.setRecipientId(friendshipId);
+        getPendingMessageList.execute(new PendingChatMessageListSubscriber());
     }
 
     public void loadThumbnail(int radius) {
@@ -177,19 +184,19 @@ public class ChatPresenter implements Presenter {
     }
 
     public void markMessageListAsRead(Recipient recipient, List<ChatMessage> messageList) {
-        List<ChatMessage> onlyNonRead = new ArrayList<>();
-
-        for (ChatMessage message : messageList) {
-            if (!message.getFrom().equals(currentUser) && (message.getMessageStatus() == null || !message.getMessageStatus().equals(MessageStatus.STATUS_OPENED))) {
-                onlyNonRead.add(message);
-            }
-        }
-
-        if (onlyNonRead.size() > 0) {
-            diskMarkMessageListAsRead.setMessageList(onlyNonRead);
-            diskMarkMessageListAsRead.execute(new DefaultSubscriber<>());
-            jobManager.addJobInBackground(new MarkMessageListAsReadJob(recipient, onlyNonRead));
-        }
+//        List<ChatMessage> onlyNonRead = new ArrayList<>();
+//
+//        for (ChatMessage message : messageList) {
+//            if (!message.getFrom().equals(currentUser) && message.getMessageStatus() != null) {
+//                onlyNonRead.add(message);
+//            }
+//        }
+//
+//        if (onlyNonRead.size() > 0) {
+//            diskMarkMessageListAsRead.setMessageList(onlyNonRead);
+//            diskMarkMessageListAsRead.execute(new DefaultSubscriber<>());
+//            jobManager.addJobInBackground(new MarkMessageListAsReadJob(recipient, onlyNonRead));
+//        }
     }
 
     private final class ConnectAndSubscribeMQTTSubscriber extends DefaultSubscriber<IMqttToken> {
@@ -262,6 +269,23 @@ public class ChatPresenter implements Presenter {
         @Override
         public void onNext(List<ChatMessage> chatMessageList) {
             messageView.renderMessageList(chatMessageList);
+        }
+    }
+
+    private final class PendingChatMessageListSubscriber extends DefaultSubscriber<List<ChatMessage>> {
+        @Override
+        public void onCompleted() {
+            super.onCompleted();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(List<ChatMessage> chatMessageList) {
+            sendMessage(chatMessageList.toArray(new ChatMessage[chatMessageList.size()]));
         }
     }
 

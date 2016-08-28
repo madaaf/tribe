@@ -104,10 +104,16 @@ public class PhotoMessageAdapterDelegate extends BaseMessageAdapterDelegate {
     static class PhotoViewHolder extends BaseTextViewHolder {
 
         @BindView(R.id.imgPhoto) public ImageView imgPhoto;
+        @BindView(R.id.layoutContent) public ViewGroup layoutContent;
 
         public PhotoViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+        }
+
+        @Override
+        protected ViewGroup getLayoutContent() {
+            return layoutContent;
         }
     }
 }

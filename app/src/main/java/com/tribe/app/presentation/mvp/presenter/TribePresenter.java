@@ -9,7 +9,7 @@ import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.DiskMarkTribeListAsRead;
-import com.tribe.app.domain.interactor.tribe.GetDiskTribeList;
+import com.tribe.app.domain.interactor.tribe.GetNotSeenDiskTribeList;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.presentation.mvp.view.SendTribeView;
 import com.tribe.app.presentation.mvp.view.TribeView;
@@ -25,17 +25,17 @@ public class TribePresenter extends SendTribePresenter implements Presenter {
     private TribeView tribeView;
 
     // OBSERVABLES
-    private GetDiskTribeList diskGetTribeList;
+    private GetNotSeenDiskTribeList diskGetNotSeenTribeList;
     private DiskMarkTribeListAsRead diskMarkTribeListAsRead;
 
     @Inject
     public TribePresenter(JobManager jobManager,
-                          @Named("diskGetTribes") UseCaseDisk diskGetTribeList,
+                          @Named("diskGetNotSeenTribes") UseCaseDisk diskGetNotSeenTribeList,
                           @Named("diskSaveTribe") SaveTribe diskSaveTribe,
                           @Named("diskDeleteTribe") DeleteTribe diskDeleteTribe,
                           @Named("diskMarkTribeListAsRead") DiskMarkTribeListAsRead diskMarkTribeListAsRead) {
         super(jobManager, diskSaveTribe, diskDeleteTribe);
-        this.diskGetTribeList = (GetDiskTribeList) diskGetTribeList;
+        this.diskGetNotSeenTribeList = (GetNotSeenDiskTribeList) diskGetNotSeenTribeList;
         this.diskMarkTribeListAsRead = diskMarkTribeListAsRead;
     }
 
@@ -66,7 +66,7 @@ public class TribePresenter extends SendTribePresenter implements Presenter {
 
     @Override
     public void onDestroy() {
-        diskGetTribeList.unsubscribe();
+        diskGetNotSeenTribeList.unsubscribe();
         diskMarkTribeListAsRead.unsubscribe();
         super.onDestroy();
     }
@@ -82,8 +82,8 @@ public class TribePresenter extends SendTribePresenter implements Presenter {
     }
 
     public void loadTribes(String recipientId) {
-        diskGetTribeList.setRecipientId(recipientId);
-        diskGetTribeList.execute(new TribeListSubscriber());
+        diskGetNotSeenTribeList.setRecipientId(recipientId);
+        diskGetNotSeenTribeList.execute(new TribeListSubscriber());
     }
 
     public void markTribeListAsRead(Recipient recipient, List<TribeMessage> tribeList) {

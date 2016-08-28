@@ -1,5 +1,7 @@
 package com.tribe.app.domain.entity;
 
+import java.util.Date;
+
 /**
  * Created by tiago on 30/05/2016.
  */
@@ -44,5 +46,10 @@ public class Group extends Recipient {
     @Override
     public String getUsernameDisplay() {
         return "";
+    }
+
+    @Override
+    public Date getUpdatedAt() {
+        return updated_at;
     }
 }

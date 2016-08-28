@@ -8,8 +8,7 @@ import java.util.List;
 public interface HomeGridView extends SendTribeView {
 
     void renderRecipientList(List<Recipient> recipientCollection);
-    void updateTribes(List<TribeMessage> tribes);
-    void futureUpdateTribes(List<TribeMessage> tribes);
+    void updateReceivedTribes(List<TribeMessage> tribes);
     void updatePendingTribes(List<TribeMessage> pendingTribes);
     void showPendingTribesMenu();
     void scrollToTop();

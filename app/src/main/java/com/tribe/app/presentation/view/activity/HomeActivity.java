@@ -37,7 +37,6 @@ import com.tribe.app.presentation.view.widget.CustomViewPager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -45,8 +44,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class HomeActivity extends BaseActivity implements HasComponent<UserComponent>, HomeView {
@@ -91,6 +88,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @BindView(R.id.layoutNavGrid)
     ViewGroup layoutNavGrid;
+
+    @BindView(R.id.layoutNavGridMain)
+    ViewGroup layoutNavGridMain;
 
     @BindView(R.id.layoutNavNewTribes)
     ViewGroup layoutNavNewTribes;
@@ -143,7 +143,11 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     protected void onResume() {
         super.onResume();
 
-        subscriptions.add(Observable.from(PERMISSIONS_CAMERA).map(permission -> RxPermissions.getInstance(HomeActivity.this).isGranted(permission)).toList()
+        subscriptions.add(Observable.
+                from(PERMISSIONS_CAMERA)
+                .map(permission -> RxPermissions.getInstance(HomeActivity.this)
+                        .isGranted(permission))
+                .toList()
             .subscribe(grantedList -> {
                 boolean areAllGranted = true;
 
@@ -276,8 +280,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     public void initNewTribes(Observable<List<TribeMessage>> observable) {
         subscriptions.add(observable.subscribe(newTribes -> {
+            this.newTribes = newTribes;
+
             if (newTribes.size() > 0) {
-                txtNewTribes.setText("" + newTribes);
+                txtNewTribes.setText("" + newTribes.size());
                 showLayoutNewTribes();
             } else {
                 txtNewTribes.setText("");
@@ -351,15 +357,13 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @OnClick(R.id.layoutNavNewTribes)
     public void updateGrid() {
+        homePresenter.updateTribesToNotSeen(newTribes);
         AnimationUtils.replaceView(this, txtNewTribes, progressBarNewTribes, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                subscriptions.add(Observable.timer(DELAY_DISMISS_NEW_TRIBES, TimeUnit.MILLISECONDS)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeOn(Schedulers.io())
-                        .subscribe(time -> {
-                            hideLayoutNewTribes();
-                        }));
+                txtNewTribes.animate().setListener(null).start();
+                progressBarNewTribes.animate().setListener(null).start();
+                hideLayoutNewTribes();
             }
         });
     }
@@ -527,27 +531,23 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     }
 
     private void hideLayoutNewTribes() {
-        if (layoutNavNewTribes.getVisibility() == View.VISIBLE) {
-            layoutNavNewTribes.animate().alpha(0).setDuration(DURATION).setListener(new AnimatorListenerAdapter() {
+        if (layoutNavNewTribes.getTranslationY() == 0) {
+            layoutNavNewTribes.animate().translationY(translationBackToTop).setDuration(DURATION).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    layoutNavNewTribes.setVisibility(View.GONE);
-                    layoutNavNewTribes.setAlpha(1);
+                    AnimationUtils.replaceView(HomeActivity.this, progressBarNewTribes, txtNewTribes, null);
+                    layoutNavNewTribes.animate().setListener(null).start();
                 }
-            }).start();
+            });
+            layoutNavGridMain.animate().translationY(0).setDuration(DURATION).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
         }
     }
 
     private void showLayoutNewTribes() {
-        if (layoutNavNewTribes.getVisibility() == View.GONE) {
-            layoutNavGrid.animate().translationY(translationBackToTop).setDuration(DURATION).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    layoutNavGrid.animate().translationY(0).setDuration(DURATION)
-                            .setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
-                    layoutNavNewTribes.setVisibility(View.VISIBLE);
-                }
-            }).start();
+        if (layoutNavNewTribes.getTranslationY() > 0) {
+            layoutNavNewTribes.setTranslationY(translationBackToTop);
+            layoutNavGridMain.animate().translationY(translationBackToTop).setDuration(DURATION).start();
+            layoutNavNewTribes.animate().translationY(0).setDuration(DURATION).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
         }
     }
 }

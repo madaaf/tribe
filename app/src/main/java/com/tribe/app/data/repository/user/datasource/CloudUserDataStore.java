@@ -156,7 +156,6 @@ public class CloudUserDataStore implements UserDataStore {
     @Override
     public Observable<List<MessageRealmInterface>> messages() {
         StringBuffer idsTribes = new StringBuffer();
-        StringBuffer idsMessages = new StringBuffer();
 
         Set<String> toIds = new HashSet<>();
 
@@ -171,7 +170,6 @@ public class CloudUserDataStore implements UserDataStore {
         }
 
         List<TribeRealm> lastTribesSent = tribeCache.tribesSent(toIds);
-        List<ChatRealm> lastMessageSent = chatCache.messagesSent(toIds);
 
         int countTribes = 0;
         for (TribeRealm tribeRealm : lastTribesSent) {
@@ -181,17 +179,8 @@ public class CloudUserDataStore implements UserDataStore {
             }
         }
 
-        int countMessages = 0;
-        for (ChatRealm chatRealm : lastMessageSent) {
-            if (!StringUtils.isEmpty(chatRealm.getId())) {
-                idsMessages.append((countMessages > 0 ? "," : "") + "\"" + chatRealm.getId() + "\"");
-                countMessages++;
-            }
-        }
-
         String req = context.getString(R.string.messages_infos,
-                !StringUtils.isEmpty(idsTribes.toString()) ? context.getString(R.string.tribe_sent_infos, idsTribes) : "",
-                !StringUtils.isEmpty(idsMessages.toString()) ? context.getString(R.string.message_sent_infos, idsMessages) : "");
+                !StringUtils.isEmpty(idsTribes.toString()) ? context.getString(R.string.tribe_sent_infos, idsTribes) : "");
 
 
         return tribeApi.messages(req).flatMap(messageRealmInterfaceList -> {

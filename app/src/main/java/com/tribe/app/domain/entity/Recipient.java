@@ -3,7 +3,7 @@ package com.tribe.app.domain.entity;
 import android.content.Context;
 
 import com.tribe.app.R;
-import com.tribe.app.presentation.view.utils.MessageStatus;
+import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,6 +25,7 @@ public abstract class Recipient implements Serializable {
     protected List<TribeMessage> receivedTribes = new ArrayList<>();
     protected List<TribeMessage> sentTribes = new ArrayList<>();
     protected List<TribeMessage> errorTribes = new ArrayList<>();
+    protected List<ChatMessage> receivedMessages = new ArrayList<>();
 
     public Date getCreatedAt() {
         return created_at;
@@ -32,10 +33,6 @@ public abstract class Recipient implements Serializable {
 
     public void setCreatedAt(Date createdAt) {
         this.created_at = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updated_at;
     }
 
     public void setUpdatedAt(Date updatedAt) {
@@ -62,7 +59,10 @@ public abstract class Recipient implements Serializable {
         if (!(receivedTribes != null && receivedTribes.size() > 0)) return false;
 
         for (TribeMessage tribe : receivedTribes) {
-            if (tribe.getMessageStatus() != null && tribe.getMessageStatus().equals(MessageStatus.STATUS_READY)) return true;
+            if (tribe.getMessageDownloadingStatus() != null
+                    && tribe.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADED)) {
+                return true;
+            }
         }
 
         return false;
@@ -95,33 +95,24 @@ public abstract class Recipient implements Serializable {
         this.sentTribes.addAll(tribes);
     }
 
-    public TribeMessage getMostRecentTribe() {
-        return receivedTribes != null && receivedTribes.size() > 0 ? receivedTribes.get(receivedTribes.size() - 1) : null;
+    public List<ChatMessage> getReceivedMessages() {
+        return receivedMessages;
+    }
+
+    public void setReceivedMessages(List<ChatMessage> receivedMessages) {
+        this.receivedMessages = receivedMessages;
     }
 
     public static int nullSafeComparator(final Recipient one, final Recipient two) {
         if (one.getUpdatedAt() == null ^ two.getUpdatedAt() == null) {
-            return (one.getUpdatedAt() == null) ? -1 : 1;
+            return (one.getUpdatedAt() == null) ? 1 : -1;
         }
 
         if (one.getUpdatedAt() == null && two.getUpdatedAt() == null) {
             return 0;
         }
 
-        return one.getUpdatedAt().compareTo(two.getUpdatedAt());
-    }
-
-    public static TribeMessage getMostRecentTribe(List<Recipient> recipientList) {
-        TribeMessage tribe = null;
-
-        for (Recipient recipient : recipientList) {
-            if (tribe == null) tribe = recipient.getMostRecentTribe();
-            else if (recipient.getMostRecentTribe() != null) {
-                if (recipient.getMostRecentTribe().getRecordedAt().after(tribe.getRecordedAt())) tribe = recipient.getMostRecentTribe();
-            }
-        }
-
-        return tribe;
+        return two.getUpdatedAt().compareTo(one.getUpdatedAt());
     }
 
     public List<PendingType> createPendingTribeItems(Context context, boolean withName) {
@@ -140,6 +131,7 @@ public abstract class Recipient implements Serializable {
     public abstract String getUsernameDisplay();
     public abstract String getProfilePicture();
     public abstract String getId();
+    public abstract Date getUpdatedAt();
 
     @Override
     public int hashCode() {

@@ -60,7 +60,9 @@ public class TribeRealmDataMapper {
             tribe.setToGroup(tribeRealm.isToGroup());
             tribe.setLocation(locationRealmDataMapper.transform(tribeRealm.getLocationRealm()));
             tribe.setContent(tribeRealm.getUrl());
-            tribe.setMessageStatus(tribeRealm.getMessageStatus());
+            tribe.setMessageSendingStatus(tribeRealm.getMessageSendingStatus());
+            tribe.setMessageDownloadingStatus(tribeRealm.getMessageDownloadingStatus());
+            tribe.setMessageReceivingStatus(tribeRealm.getMessageReceivingStatus());
             tribe.setWeather(weatherRealmDataMapper.transform(tribeRealm.getWeatherRealm()));
             tribe.setRecipientList(messageRecipientRealmDataMapper.transform(tribeRealm.getRecipientList()));
         }
@@ -95,7 +97,9 @@ public class TribeRealmDataMapper {
             tribeRealm.setFrom(userRealmDataMapper.transform(tribe.getFrom()));
             tribeRealm.setLocationRealm(locationRealmDataMapper.transform(tribe.getLocation()));
             tribeRealm.setUrl(tribe.getContent());
-            tribeRealm.setMessageStatus(tribe.getMessageStatus());
+            tribeRealm.setMessageSendingStatus(tribe.getMessageSendingStatus());
+            tribeRealm.setMessageDownloadingStatus(tribe.getMessageDownloadingStatus());
+            tribeRealm.setMessageReceivingStatus(tribe.getMessageReceivingStatus());
             tribeRealm.setWeatherRealm(weatherRealmDataMapper.transform(tribe.getWeather()));
             tribeRealm.setRecipientList(messageRecipientRealmDataMapper.transform(tribe.getRecipientList()));
         }
