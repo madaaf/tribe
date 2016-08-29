@@ -3,6 +3,8 @@ package com.tribe.app.presentation.view.fragment;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -10,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 
 import com.jakewharton.rxbinding.view.RxView;
@@ -91,6 +94,7 @@ public class AccessFragment extends Fragment {
      * View Lifecycle
      */
 
+    // TODO: fix cancel bug
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View fragmentView = inflater.inflate(R.layout.fragment_access, container, false);
@@ -125,6 +129,9 @@ public class AccessFragment extends Fragment {
         unbinder = ButterKnife.bind(this, view);
         context = getActivity();
 
+        textFriendsView.setAlpha(0);
+        textFriendsView.setTranslationY(100);
+
         subscriptions.add(RxView.clicks(accessBottomBarView.getTxtAccessTry()).subscribe(aVoid -> {
             isActive2 = false;
             switch (viewState) {
@@ -146,6 +153,13 @@ public class AccessFragment extends Fragment {
                     break;
             }
         }));
+
+        subscriptions.add(RxView.clicks(textFriendsView).subscribe(aVoid -> {
+            Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+            sendIntent.setData(Uri.parse("sms:"));
+            getActivity().startActivity(sendIntent);
+        }));
+
     }
 
     private void initLockViewSize() {
@@ -180,6 +194,10 @@ public class AccessFragment extends Fragment {
         accessLockView.setToAccess();
         accessBottomBarView.setClickable(false);
         accessBottomBarView.animate()
+                .alpha(1)
+                .setDuration(300)
+                .translationY(0)
+                .setStartDelay(0)
                 .setDuration(300)
                 .translationY(accessBottomBarView.getHeight())
                 .setListener(new AnimatorListenerAdapter() {
@@ -194,7 +212,7 @@ public class AccessFragment extends Fragment {
                                     android.R.color.black,
                                     getString(R.string.onboarding_queue_description),
                                     getString(R.string.onboarding_queue_button_title),
-                                    R.color.blue_text);
+                                    R.drawable.shape_rect_blue_rounded_bottom);
 
 
                             accessBottomBarView.animate()
@@ -211,6 +229,11 @@ public class AccessFragment extends Fragment {
         isActive = true;
 
         fadeTextInOut();
+        textFriendsView.animate()
+                .alpha(0)
+                .setDuration(100)
+                .setStartDelay(0);
+        textFriendsView.setTranslationY(100);
         accessLockView.setToHangTight(2);
         accessBottomBarView.setClickable(false);
         accessBottomBarView.animate()
@@ -227,7 +250,7 @@ public class AccessFragment extends Fragment {
                                     android.R.color.black,
                                     getString(R.string.onboarding_queue_loading_description),
                                     getString(R.string.action_cancel),
-                                    R.color.grey_darker);
+                                    R.drawable.shape_rect_dark_grey_rounded_bottom);
                             accessBottomBarView.animate()
                                     .setDuration(300)
                                     .translationY(0);
@@ -259,6 +282,11 @@ public class AccessFragment extends Fragment {
         isActive = true;
 
         fadeTextInOut();
+        textFriendsView.animate()
+                .alpha(1)
+                .setDuration(300)
+                .translationY(0)
+                .setStartDelay(0);
         accessLockView.setToSorry();
         accessBottomBarView.setClickable(false);
         accessBottomBarView.animate()
@@ -274,7 +302,7 @@ public class AccessFragment extends Fragment {
                                     R.color.red_deep,
                                     getString(R.string.onboarding_queue_declined_description, "1"),
                                     getString(R.string.onboarding_queue_button_title),
-                                    R.color.blue_text);
+                                    R.drawable.shape_rect_blue_rounded_bottom);
 
 
                             setBottomMargin(txtAccessDesc, 157);
@@ -312,7 +340,7 @@ public class AccessFragment extends Fragment {
                                     R.color.blue_text_access,
                                     getString(R.string.onboarding_queue_valid_description, "3"),
                                     getString(R.string.onboarding_queue_valid_button_title),
-                                    R.color.blue_text);
+                                    R.drawable.shape_rect_blue_rounded_bottom);
                             accessLockView.setToCongrats();
 
                             accessBottomBarView.animate()
@@ -339,12 +367,12 @@ public class AccessFragment extends Fragment {
 
     }
 
-    private void changeBaseView(String titleTxt, int titleTxtColor, String descTxt, String tryAgainTxt, int tryAgainBackTextColor) {
+    private void changeBaseView(String titleTxt, int titleTxtColor, String descTxt, String tryAgainTxt, int tryAgainBackground) {
         txtAccessTitle.setText(titleTxt);
         txtAccessTitle.setTextColor(ContextCompat.getColor(context, titleTxtColor));
         txtAccessDesc.setText(descTxt);
         accessBottomBarView.setText(tryAgainTxt);
-        accessBottomBarView.setBackgroundColor(context, tryAgainBackTextColor);
+        accessBottomBarView.setBackground(ContextCompat.getDrawable(context, tryAgainBackground));
 
     }
 
@@ -362,10 +390,13 @@ public class AccessFragment extends Fragment {
     }
 
     private void fadeTextInOut() {
+
+        int txtDistance = 100;
+
         txtAccessDesc.animate()
                 .alpha(0)
                 .setDuration(300)
-                .translationY(100)
+                .translationY(txtDistance)
                 .setStartDelay(0)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
@@ -382,7 +413,7 @@ public class AccessFragment extends Fragment {
         txtAccessTitle.animate()
                 .alpha(0)
                 .setDuration(300)
-                .translationY(100)
+                .translationY(txtDistance)
                 .setStartDelay(0)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
@@ -395,6 +426,10 @@ public class AccessFragment extends Fragment {
                                 .start();
                     }
                 }).start();
+    }
+
+    public void fadeBigLockIn() {
+        accessLockView.fadeBigLockIn();
     }
 
     /**

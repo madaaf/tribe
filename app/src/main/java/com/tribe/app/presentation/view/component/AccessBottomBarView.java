@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.component;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -86,5 +87,9 @@ public class AccessBottomBarView extends FrameLayout {
     public void setImgRedFbVisibility(boolean isVisible) {
         if (isVisible) imgRedFb.setVisibility(VISIBLE);
         else imgRedFb.setVisibility(INVISIBLE);
+    }
+
+    public void setBackground(Drawable drawable) {
+        txtAccessTry.setBackground(drawable);
     }
 }

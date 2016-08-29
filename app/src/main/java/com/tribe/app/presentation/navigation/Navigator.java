@@ -12,6 +12,7 @@ import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.activity.PointsActivity;
 import com.tribe.app.presentation.view.activity.ScoreActivity;
+import com.tribe.app.presentation.view.activity.SettingActivity;
 import com.tribe.app.presentation.view.activity.TribeActivity;
 
 import javax.inject.Inject;
@@ -52,18 +53,6 @@ public class Navigator {
         }
     }
 
-    /**
-     * Goes to the screen to fill out the users profile info when they login for the first time.
-     *
-     * @param activity An activity needed to open the destiny activity.
-     */
-
-    public void navigateToProfileInfo(Context context) {
-//        if (context != null) {
-//            Intent intent = ProfileInfoActivity.getCallingIntent(context);
-//            context.startActivity(intent);
-//        }
-    }
 
     /**
      * Goes to the main grid.
@@ -129,6 +118,13 @@ public class Navigator {
             Intent intent = PointsActivity.getCallingIntent(activity);
             activity.startActivity(intent);
             activity.overridePendingTransition(R.anim.activity_in_from_right, R.anim.activity_out_scale_down);
+        }
+    }
+
+    public void navigateToSettings(Context context) {
+        if (context != null) {
+            Intent intent = SettingActivity.getCallingIntent(context);
+            context.startActivity(intent);
         }
     }
 }

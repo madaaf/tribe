@@ -29,7 +29,7 @@
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtOpenCameraRoll"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/onboarding_choose_picture_button_height"
+        android:layout_height="49dp"
         android:layout_gravity="top"
         android:layout_marginTop="86dp"
         android:layout_marginStart="@dimen/horizontal_left_margin_onboarding_choose_picture_button"
@@ -92,7 +92,7 @@
         android:scaleType="centerInside"
         android:background="@drawable/shape_white_rect_rounded_bottom_right"
         android:layout_gravity="bottom|end"
-        android:clickable="true"
+        android:clickable="false"
         />
 
     <View

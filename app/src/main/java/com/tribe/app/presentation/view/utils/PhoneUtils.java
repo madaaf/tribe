@@ -44,14 +44,14 @@ public class PhoneUtils {
 
     public String formatMobileNumber(String number, String countryCode) {
         try {
-            Phonenumber.PhoneNumber phoneNumber = phoneUtil.parse(number, countryCode);
-            PhoneNumberUtil.PhoneNumberType type = phoneUtil.getNumberType(phoneNumber);
-            boolean isMobile = type == PhoneNumberUtil.PhoneNumberType.MOBILE || type == PhoneNumberUtil.PhoneNumberType.FIXED_LINE_OR_MOBILE;
-
-            if (phoneUtil.isValidNumber(phoneNumber) && (isMobile || type == PhoneNumberUtil.PhoneNumberType.UNKNOWN)) {
-                return phoneUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
-            }
-//            return PhoneNumberUtils.formatNumber(number, countryCode);
+//            Phonenumber.PhoneNumber phoneNumber = phoneUtil.parse(number, countryCode);
+//            PhoneNumberUtil.PhoneNumberType type = phoneUtil.getNumberType(phoneNumber);
+//            boolean isMobile = type == PhoneNumberUtil.PhoneNumberType.MOBILE || type == PhoneNumberUtil.PhoneNumberType.FIXED_LINE_OR_MOBILE;
+//
+//            if (phoneUtil.isValidNumber(phoneNumber) && (isMobile || type == PhoneNumberUtil.PhoneNumberType.UNKNOWN)) {
+//                return phoneUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
+//            }
+            return PhoneNumberUtils.formatNumber(number, countryCode);
         } catch (Exception e) { e.printStackTrace(); }
 
         return null;

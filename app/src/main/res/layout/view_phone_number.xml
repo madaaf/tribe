@@ -34,12 +34,11 @@
 
         <ImageView
             android:id="@+id/imageViewNextIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/icons_end"
+            android:layout_height="match_parent"
             android:src="@drawable/picto_next_icon"
-            android:layout_gravity="end|bottom"
-            android:layout_marginBottom="@dimen/vertical_margin"
-            android:layout_marginEnd="@dimen/horizontal_margin"
+            android:layout_gravity="end"
+            android:scaleType="centerInside"
             />
 
         <com.github.rahatarmanahmed.cpv.CircularProgressView

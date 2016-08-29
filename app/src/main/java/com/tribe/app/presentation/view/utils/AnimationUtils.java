@@ -98,11 +98,27 @@ public class AnimationUtils {
     }
 
     public static void fadeViewDownOut(View view) {
-        view.animate().translationY(100).alpha(0).setDuration(300).start();
+        view.animate()
+                .translationY(25)
+                .alpha(0)
+                .setDuration(300)
+                .start();
     }
 
     public static void fadeViewUpIn(View view) {
-        view.animate().translationY(0).alpha(1).setDuration(300).start();
+        view.animate()
+                .translationY(0)
+                .alpha(1).
+                setDuration(300)
+                .start();
+    }
+
+    public static void fadeOutFast(View view) {
+        view.animate()
+                .setStartDelay(0)
+                .alpha(0)
+                .setDuration(50)
+                .start();
     }
 
     /**
