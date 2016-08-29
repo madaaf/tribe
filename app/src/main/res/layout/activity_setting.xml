@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollSetting"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black"
@@ -161,6 +162,77 @@
                 android:layout_gravity="end"
                 style="@style/Title.2.Black"
                 android:text="\@placeholder"
+                />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/setting_section_bar_height"
+            android:layout_marginTop="335dp"
+            android:background="@drawable/shape_white_rect_grey_border"
+            >
+
+            <ImageView
+                android:layout_width="@dimen/tribe_icon_size"
+                android:layout_height="@dimen/tribe_icon_size"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/horizontal_margin_small"
+                android:src="@drawable/picto_setting_message_icon"
+                />
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                style="@style/Body.One.Black40"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/setting_section_title_horizontal_margin"
+                android:text="@string/settings_section_messages"
+                />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/horizontal_margin_small"
+            android:layout_marginEnd="@dimen/horizontal_margin_small"
+            android:layout_marginTop="375dp"
+            >
+
+            <com.tribe.app.presentation.view.component.SettingMessageView
+                android:id="@+id/messageSettingMemories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                />
+
+            <com.tribe.app.presentation.view.component.SettingMessageView
+                android:id="@+id/messageSettingContext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="110dp"
+                />
+
+            <com.tribe.app.presentation.view.component.SettingMessageView
+                android:id="@+id/messageSettingVoice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="216dp"
+                />
+
+            <com.tribe.app.presentation.view.component.SettingMessageView
+                android:id="@+id/messageSettingPreload"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="302dp"
+                />
+
+            <com.tribe.app.presentation.view.component.SettingMessageView
+                android:id="@+id/messageSettingFahrenheit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="390dp"
                 />
 
         </FrameLayout>
