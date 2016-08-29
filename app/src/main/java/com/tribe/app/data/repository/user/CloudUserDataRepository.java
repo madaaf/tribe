@@ -88,4 +88,13 @@ public class CloudUserDataRepository implements UserRepository {
             return messageList;
         });
     }
+
+    /***
+     *
+     * NOT USED
+     */
+    @Override
+    public Observable<List<Message>> messagesReceived(String friendshipId) {
+        return null;
+    }
 }

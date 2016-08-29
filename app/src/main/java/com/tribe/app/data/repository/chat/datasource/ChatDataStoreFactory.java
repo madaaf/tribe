@@ -3,6 +3,7 @@ package com.tribe.app.data.repository.chat.datasource;
 import android.content.Context;
 
 import com.tribe.app.data.cache.ChatCache;
+import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.mapper.MQTTMessageDataMapper;
@@ -25,6 +26,7 @@ public class ChatDataStoreFactory {
 
     private final Context context;
     private final ChatCache chatCache;
+    private final UserCache userCache;
     private final TribeApi tribeApi;
     private final AccessToken accessToken;
     private final SimpleDateFormat simpleDateFormat;
@@ -32,7 +34,7 @@ public class ChatDataStoreFactory {
     private final MQTTMessageDataMapper mqttMessageDataMapper;
 
     @Inject
-    public ChatDataStoreFactory(Context context, ChatCache chatCache, TribeApi tribeApi,
+    public ChatDataStoreFactory(Context context, ChatCache chatCache, UserCache userCache, TribeApi tribeApi,
                                 AccessToken accessToken, @Named("utcSimpleDate") SimpleDateFormat simpleDateFormat,
                                 MQTTMessageDataMapper mqttMessageDataMapper) {
         if (context == null || chatCache == null) {
@@ -40,6 +42,7 @@ public class ChatDataStoreFactory {
         }
         this.context = context.getApplicationContext();
         this.chatCache = chatCache;
+        this.userCache = userCache;
         this.tribeApi = tribeApi;
         this.accessToken = accessToken;
         this.simpleDateFormat = simpleDateFormat;
@@ -70,6 +73,6 @@ public class ChatDataStoreFactory {
     }
 
     public ChatDataStore createCloudChatStore() {
-        return new CloudChatDataStore(this.chatCache, this.tribeApi, this.accessToken, this.context, this.simpleDateFormat);
+        return new CloudChatDataStore(this.chatCache, this.userCache, this.tribeApi, this.accessToken, this.context, this.simpleDateFormat);
     }
 }

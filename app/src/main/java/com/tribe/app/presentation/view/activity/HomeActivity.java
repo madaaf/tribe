@@ -20,6 +20,7 @@ import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -92,14 +93,14 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @BindView(R.id.layoutNavGridMain)
     ViewGroup layoutNavGridMain;
 
-    @BindView(R.id.layoutNavNewTribes)
-    ViewGroup layoutNavNewTribes;
+    @BindView(R.id.layoutNavNewMessages)
+    ViewGroup layoutNavNewMessages;
 
-    @BindView(R.id.txtNewTribes)
-    TextViewFont txtNewTribes;
+    @BindView(R.id.txtNewMessages)
+    TextViewFont txtNewMessages;
 
-    @BindView(R.id.progressBarNewTribes)
-    CircularProgressView progressBarNewTribes;
+    @BindView(R.id.progressBarNewMessages)
+    CircularProgressView progressBarNewMessages;
 
     @BindView(R.id.progressBarReload)
     CircularProgressView progressBarReload;
@@ -121,7 +122,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     // VARIABLES
     private HomeViewPagerAdapter homeViewPagerAdapter;
-    private List<TribeMessage> newTribes;
+    private List<Message> newMessages;
     private int pendingTribeCount;
 
     // DIMEN
@@ -278,16 +279,20 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     }
 
     @Override
-    public void initNewTribes(Observable<List<TribeMessage>> observable) {
-        subscriptions.add(observable.subscribe(newTribes -> {
-            this.newTribes = newTribes;
+    public void initNewMessages(Observable<List<Message>> observable) {
+        subscriptions.add(observable.subscribe(newMessages -> {
+            boolean shouldUpdateNewMessages = !newMessages.equals(this.newMessages);
 
-            if (newTribes.size() > 0) {
-                txtNewTribes.setText("" + newTribes.size());
-                showLayoutNewTribes();
-            } else {
-                txtNewTribes.setText("");
-                hideLayoutNewTribes();
+            if (shouldUpdateNewMessages) {
+                this.newMessages = newMessages;
+
+                if (newMessages.size() > 0) {
+                    txtNewMessages.setText("" + newMessages.size());
+                    showLayoutNewTribes();
+                } else {
+                    txtNewMessages.setText("");
+                    hideLayoutNewMessages();
+                }
             }
         }));
     }
@@ -355,15 +360,17 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         homeViewPagerAdapter.getHomeGridFragment().showPendingTribesMenu();
     }
 
-    @OnClick(R.id.layoutNavNewTribes)
+    @OnClick(R.id.layoutNavNewMessages)
     public void updateGrid() {
-        homePresenter.updateTribesToNotSeen(newTribes);
-        AnimationUtils.replaceView(this, txtNewTribes, progressBarNewTribes, new AnimatorListenerAdapter() {
+        homePresenter.updateMessagesToNotSeen(newMessages);
+        homeViewPagerAdapter.getHomeGridFragment().reloadGrid();
+
+        AnimationUtils.replaceView(this, txtNewMessages, progressBarNewMessages, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                txtNewTribes.animate().setListener(null).start();
-                progressBarNewTribes.animate().setListener(null).start();
-                hideLayoutNewTribes();
+                txtNewMessages.animate().setListener(null).start();
+                progressBarNewMessages.animate().setListener(null).start();
+                hideLayoutNewMessages();
             }
         });
     }
@@ -391,6 +398,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @Override
     public void hideLoading() {
+        homeViewPagerAdapter.getHomeGridFragment().reloadGrid();
         imgNavGrid.setVisibility(View.VISIBLE);
         progressBarReload.setVisibility(View.GONE);
     }
@@ -530,13 +538,16 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         }
     }
 
-    private void hideLayoutNewTribes() {
-        if (layoutNavNewTribes.getTranslationY() == 0) {
-            layoutNavNewTribes.animate().translationY(translationBackToTop).setDuration(DURATION).setListener(new AnimatorListenerAdapter() {
+    private void hideLayoutNewMessages() {
+        if (layoutNavNewMessages.getTranslationY() == 0) {
+            System.out.println("ANIMATING HIDE");
+            layoutNavNewMessages.animate().translationY(translationBackToTop).setDuration(DURATION).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    AnimationUtils.replaceView(HomeActivity.this, progressBarNewTribes, txtNewTribes, null);
-                    layoutNavNewTribes.animate().setListener(null).start();
+                    AnimationUtils.replaceView(HomeActivity.this, progressBarNewMessages, txtNewMessages, null);
+                    layoutNavNewMessages.animate().setListener(null).start();
+
+                    System.out.println("END ANIMATING HIDE");
                 }
             });
             layoutNavGridMain.animate().translationY(0).setDuration(DURATION).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
@@ -544,10 +555,11 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     }
 
     private void showLayoutNewTribes() {
-        if (layoutNavNewTribes.getTranslationY() > 0) {
-            layoutNavNewTribes.setTranslationY(translationBackToTop);
+        if (layoutNavNewMessages.getTranslationY() > 0) {
+            System.out.println("ANIMATING SHOW");
+            layoutNavNewMessages.setTranslationY(translationBackToTop);
             layoutNavGridMain.animate().translationY(translationBackToTop).setDuration(DURATION).start();
-            layoutNavNewTribes.animate().translationY(0).setDuration(DURATION).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
+            layoutNavNewMessages.animate().translationY(0).setDuration(DURATION).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
         }
     }
 }

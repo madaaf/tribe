@@ -84,4 +84,10 @@ public interface ChatRepository {
      * @param recipientId the recipientId for which to get the messages for
      */
     Observable<List<ChatMessage>> messagesError(final String recipientId);
+
+    /**
+     *
+     * @param friendshipId the friendshipId for which to update the statuses for
+     */
+    Observable<Void> updateStatuses(final String friendshipId);
 }

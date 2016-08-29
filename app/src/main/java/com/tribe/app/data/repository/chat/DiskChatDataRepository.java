@@ -106,4 +106,9 @@ public class DiskChatDataRepository implements ChatRepository {
         ChatDataStore diskChatDataStore = chatDataStoreFactory.createDiskChatStore();
         return diskChatDataStore.messagesError(recipientId).map(chatRealmList -> chatRealmDataMapper.transform(chatRealmList));
     }
+
+    @Override
+    public Observable<Void> updateStatuses(String friendshipId) {
+        return null;
+    }
 }

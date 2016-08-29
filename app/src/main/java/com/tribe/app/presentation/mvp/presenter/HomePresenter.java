@@ -1,8 +1,9 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
+import com.tribe.app.data.network.job.UpdateTribeListNotSeenStatusJob;
 import com.tribe.app.data.realm.Installation;
-import com.tribe.app.domain.entity.TribeMessage;
+import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
@@ -75,8 +76,8 @@ public class HomePresenter implements Presenter {
         cloudUserInfos.execute(friendListSubscriber);
     }
 
-    public void updateTribesToNotSeen(List<TribeMessage> tribeList) {
-        //jobManager.addJobInBackground(new UpdateTribeListNotSeenStatusJob(tribeList));
+    public void updateMessagesToNotSeen(List<Message> messageList) {
+        jobManager.addJobInBackground(new UpdateTribeListNotSeenStatusJob(messageList));
     }
 
     @Override

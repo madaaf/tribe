@@ -5,12 +5,18 @@ import android.net.Uri;
 
 import com.tribe.app.R;
 import com.tribe.app.data.cache.ChatCache;
+import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ChatRealm;
+import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.data.realm.GroupRealm;
+import com.tribe.app.data.realm.MessageRealmInterface;
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.repository.tribe.datasource.TribeDataStore;
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import org.eclipse.paho.client.mqttv3.IMqttToken;
@@ -20,12 +26,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import rx.Observable;
+import rx.functions.Action1;
 
 /**
  * {@link ChatDataStore} implementation based on the cloud api.
@@ -34,6 +44,7 @@ public class CloudChatDataStore implements ChatDataStore {
 
     private final TribeApi tribeApi;
     private final ChatCache chatCache;
+    private final UserCache userCache;
     private final Context context;
     private final AccessToken accessToken;
     private final SimpleDateFormat simpleDateFormat;
@@ -45,9 +56,10 @@ public class CloudChatDataStore implements ChatDataStore {
      * @param context the context
      * @param accessToken the access token
      */
-    public CloudChatDataStore(ChatCache chatCache, TribeApi tribeApi, AccessToken accessToken,
+    public CloudChatDataStore(ChatCache chatCache, UserCache userCache, TribeApi tribeApi, AccessToken accessToken,
                               Context context, SimpleDateFormat simpleDateFormat) {
         this.chatCache = chatCache;
+        this.userCache = userCache;
         this.tribeApi = tribeApi;
         this.context = context;
         this.accessToken = accessToken;
@@ -150,4 +162,57 @@ public class CloudChatDataStore implements ChatDataStore {
     public Observable<List<ChatRealm>> messagesError(String recipientId) {
         return null;
     }
+
+    @Override
+    public Observable<List<ChatRealm>> messagesReceived(String recipientId) {
+        return null;
+    }
+
+    @Override
+    public Observable<Void> updateStatuses(String friendshipId) {
+        StringBuffer idsMessages = new StringBuffer();
+
+        Set<String> toIds = new HashSet<>();
+
+        UserRealm user = userCache.userInfosNoObs(accessToken.getUserId());
+
+        for (FriendshipRealm fr : user.getFriendships()) {
+            toIds.add(fr.getFriend().getId());
+        }
+
+        for (GroupRealm gr : user.getGroups()) {
+            toIds.add(gr.getId());
+        }
+
+        List<ChatRealm> statusToUpdate = chatCache.messagesToUpdateStatus(toIds);
+
+        int countMessages = 0;
+        for (ChatRealm chatRealm : statusToUpdate) {
+            if (!StringUtils.isEmpty(chatRealm.getId())) {
+                idsMessages.append((countMessages > 0 ? "," : "") + "\"" + chatRealm.getId() + "\"");
+                countMessages++;
+            }
+        }
+
+        if (countMessages > 0) {
+            String req = context.getString(R.string.messages_status,
+                    !StringUtils.isEmpty(idsMessages.toString()) ? context.getString(R.string.message_sent_infos, idsMessages) : "");
+
+            return tribeApi.messages(req).doOnNext(saveToCacheMessages).map(messageRealmInterfaces -> null);
+        }
+
+        return Observable.empty();
+    }
+
+    private final Action1<List<MessageRealmInterface>> saveToCacheMessages = messageRealmList -> {
+        if (messageRealmList != null && messageRealmList.size() > 0) {
+            List<ChatRealm> chatRealmList = new ArrayList<>();
+
+            for (MessageRealmInterface message : messageRealmList) {
+                if (message instanceof ChatRealm) chatRealmList.add((ChatRealm) message);
+            }
+
+            CloudChatDataStore.this.chatCache.put(chatRealmList);
+        }
+    };
 }

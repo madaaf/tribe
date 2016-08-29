@@ -58,7 +58,7 @@
             </FrameLayout>
 
             <FrameLayout
-                android:id="@+id/layoutNavNewTribes"
+                android:id="@+id/layoutNavNewMessages"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
@@ -69,7 +69,7 @@
                 android:translationY="@dimen/transition_grid_back_to_top">
 
                 <com.tribe.app.presentation.view.widget.TextViewFont
-                    android:id="@+id/txtNewTribes"
+                    android:id="@+id/txtNewMessages"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -78,7 +78,7 @@
                     />
 
                 <com.github.rahatarmanahmed.cpv.CircularProgressView
-                    android:id="@+id/progressBarNewTribes"
+                    android:id="@+id/progressBarNewMessages"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_gravity="center"

@@ -6,12 +6,12 @@ import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.DiskMarkTribeListAsRead;
 import com.tribe.app.domain.interactor.tribe.GetNotSeenDiskTribeList;
 import com.tribe.app.domain.interactor.tribe.GetPendingTribeList;
-import com.tribe.app.domain.interactor.tribe.GetReceivedDiskTribeList;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
+import com.tribe.app.domain.interactor.user.GetReceivedDiskMessageList;
 import com.tribe.app.domain.interactor.user.GetRequestCode;
 import com.tribe.app.domain.interactor.user.SendToken;
 import com.tribe.app.presentation.internal.di.scope.PerActivity;
@@ -86,9 +86,9 @@ public class UserModule {
 
     @Provides
     @PerActivity
-    @Named("diskGetReceivedTribes")
-    UseCaseDisk provideDiskGetReceivedTribes(GetReceivedDiskTribeList getReceivedDiskTribeList) {
-        return getReceivedDiskTribeList;
+    @Named("diskGetReceivedMessages")
+    UseCaseDisk provideDiskGetReceivedMessages(GetReceivedDiskMessageList getReceivedDiskMessageList) {
+        return getReceivedDiskMessageList;
     }
 
     @Provides

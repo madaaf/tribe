@@ -142,4 +142,20 @@ public class DiskUserDataRepository implements UserRepository {
     public Observable<List<Message>> messages() {
         return null;
     }
+
+    @Override
+    public Observable<List<Message>> messagesReceived(String friendshipId) {
+        final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
+        final ChatDataStore chatDataStore = this.chatDataStoreFactory.createDiskChatStore();
+
+        return Observable.combineLatest(tribeDataStore.tribesReceived(null).map(collection -> tribeRealmDataMapper.transform(collection)),
+                chatDataStore.messagesReceived(null).map(collection -> chatRealmDataMapper.transform(collection)),
+                (tribes, chatMessages) -> {
+                    List<Message> messageList = new ArrayList<>();
+                    messageList.addAll(tribes);
+                    messageList.addAll(chatMessages);
+                    return messageList;
+                }
+        );
+    }
 }

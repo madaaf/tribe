@@ -53,7 +53,7 @@ public class UpdateTribeListNotSeenStatusJob extends BaseJob {
         List<TribeMessage> tribeMessageList = new ArrayList<>();
         List<ChatMessage> chatMessageList = new ArrayList<>();
 
-        for (Message message : tribeMessageList) {
+        for (Message message : messageList) {
             if (message instanceof TribeMessage) tribeMessageList.add((TribeMessage) message);
             if (message instanceof ChatMessage) chatMessageList.add((ChatMessage) message);
         }

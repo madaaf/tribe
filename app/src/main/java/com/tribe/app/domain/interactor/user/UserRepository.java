@@ -63,4 +63,10 @@ public interface UserRepository {
      * about the tribes received and sent.
      */
     Observable<List<Message>> messages();
+
+    /**
+     * Get an {@link Observable} which will emit a {@link List <Message>} containing infos
+     * about the messages (tribe / chat) received.
+     */
+    Observable<List<Message>> messagesReceived(String friendshipId);
 }

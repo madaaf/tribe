@@ -44,7 +44,7 @@ public class UserCacheImpl implements UserCache {
         UserRealm userDB = realm.where(UserRealm.class).equalTo("id", userRealm.getId()).findFirst();
 
         if (userDB != null) {
-            for (GroupRealm groupRealm : userDB.getGroups()) {
+            for (GroupRealm groupRealm : userRealm.getGroups()) {
                 GroupRealm groupDB = realm.where(GroupRealm.class).equalTo("id", groupRealm.getId()).findFirst();
 
                 if (groupDB != null) {
@@ -52,11 +52,11 @@ public class UserCacheImpl implements UserCache {
                     groupDB.setPicture(groupRealm.getPicture());
                     groupDB.setMembers(groupRealm.getMembers());
                 } else {
-                    realm.copyToRealmOrUpdate(groupRealm);
+                    userDB.getGroups().add(groupDB);
                 }
             }
 
-            for (FriendshipRealm friendshipRealm : userDB.getFriendships()) {
+            for (FriendshipRealm friendshipRealm : userRealm.getFriendships()) {
                 FriendshipRealm friendshipDB = realm.where(FriendshipRealm.class).equalTo("id", friendshipRealm.getId()).findFirst();
 
                 if (friendshipDB != null) {
@@ -66,7 +66,7 @@ public class UserCacheImpl implements UserCache {
                     friendshipDB.getFriend().setScore(friendshipRealm.getFriend().getScore());
                     friendshipDB.getFriend().setUsername(friendshipRealm.getFriend().getUsername());
                 } else {
-                    realm.copyToRealmOrUpdate(friendshipRealm);
+                    userDB.getFriendships().add(friendshipRealm);
                 }
             }
         } else {
@@ -102,11 +102,12 @@ public class UserCacheImpl implements UserCache {
             @Override
             public void call(final Subscriber<? super UserRealm> subscriber) {
                 results = realm.where(UserRealm.class).equalTo("id", userId).findFirst();
-                results.addChangeListener(element -> {
-                    if (results != null) {
-                        subscriber.onNext(realm.copyFromRealm(results));
-                    }
-                });
+//                results.removeChangeListeners();
+//                results.addChangeListener(element -> {
+//                    if (results != null) {
+//                        subscriber.onNext(realm.copyFromRealm(results));
+//                    }
+//                });
 
                 if (results != null)
                     subscriber.onNext(realm.copyFromRealm(results));

@@ -142,9 +142,20 @@
                     content
                     recorded_at
                     created_at
+
+                    recipients {
+                        to
+                        is_seen
+                    }
                 }
             }
 
+            %1$s
+        }
+    </string>
+
+    <string name="messages.status">
+        {
             %1$s
         }
     </string>

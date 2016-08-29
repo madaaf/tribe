@@ -71,4 +71,17 @@ public interface ChatDataStore {
      * @param recipientId the recipientId for which to get the messages in error for
      */
     Observable<List<ChatRealm>> messagesError(final String recipientId);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link List< ChatRealm >}.
+     *
+     * @param recipientId the recipientId for which to get the messages in error for
+     */
+    Observable<List<ChatRealm>> messagesReceived(final String recipientId);
+
+    /**
+     *
+     * @param friendshipId the friendshipId for which to update the statuses for
+     */
+    Observable<Void> updateStatuses(final String friendshipId);
 }

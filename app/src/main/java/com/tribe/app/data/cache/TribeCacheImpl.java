@@ -125,7 +125,7 @@ public class TribeCacheImpl implements TribeCache {
                 if (tribeRealm.getFrom() != null && toEdit.getFrom() == null) {
                     toEdit.setFrom(tribeRealm.getFrom());
                     shouldUpdate = true;
-                } else if (tribeRealm.getFrom() != null && toEdit.getFrom() != null
+                } else if (!tribeRealm.isToGroup() && tribeRealm.getFrom() != null && toEdit.getFrom() != null
                         && (toEdit.getFrom().getUpdatedAt() == null || toEdit.getFrom().getUpdatedAt().before(tribeRealm.getFrom().getUpdatedAt()))) {
                     toEdit.getFrom().setUpdatedAt(tribeRealm.getFrom().getUpdatedAt());
                     shouldUpdate = true;
@@ -200,6 +200,8 @@ public class TribeCacheImpl implements TribeCache {
         return Observable.create(new Observable.OnSubscribe<List<TribeRealm>>() {
             @Override
             public void call(final Subscriber<? super List<TribeRealm>> subscriber) {
+                realm.setAutoRefresh(true);
+
                 if (friendshipId == null) {
                     tribesNotSeen = realm.where(TribeRealm.class)
                             .beginGroup()
@@ -211,6 +213,7 @@ public class TribeCacheImpl implements TribeCache {
                             .findAllSorted("recorded_at", Sort.ASCENDING);
                 } else {
                     tribesNotSeen = realm.where(TribeRealm.class)
+                            .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_NOT_SEEN)
                             .equalTo("from.id", friendshipId)
                             .or()
                             .beginGroup()
@@ -242,7 +245,9 @@ public class TribeCacheImpl implements TribeCache {
                 }
 
                 tribesReceived.removeChangeListeners();
-                tribesReceived.addChangeListener(tribesUpdated -> subscriber.onNext(realm.copyFromRealm(tribesUpdated)));
+                tribesReceived.addChangeListener(tribesUpdated -> {
+                    subscriber.onNext(realm.copyFromRealm(tribesUpdated));
+                });
                 subscriber.onNext(realm.copyFromRealm(tribesReceived));
             }
         });

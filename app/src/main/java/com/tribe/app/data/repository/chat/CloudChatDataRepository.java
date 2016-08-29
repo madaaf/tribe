@@ -73,7 +73,8 @@ public class CloudChatDataRepository implements ChatRepository {
 
     @Override
     public Observable<List<ChatMessage>> messages(String friendshipId) {
-        return null;
+        ChatDataStore cloudDataStore = chatDataStoreFactory.createCloudChatStore();
+        return cloudDataStore.messages(friendshipId).map(collection -> chatRealmDataMapper.transform(collection));
     }
 
     @Override
@@ -104,5 +105,11 @@ public class CloudChatDataRepository implements ChatRepository {
     @Override
     public Observable<List<ChatMessage>> messagesError(String recipientId) {
         return null;
+    }
+
+    @Override
+    public Observable<Void> updateStatuses(String friendshipId) {
+        final ChatDataStore chatDataStore = this.chatDataStoreFactory.createCloudChatStore();
+        return chatDataStore.updateStatuses(friendshipId);
     }
 }

@@ -27,6 +27,17 @@
         android:clickable="true"
         />
 
+    <View
+        android:id="@+id/viewNewText"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="@dimen/vertical_margin_large"
+        android:background="@drawable/shape_circle_red"
+        android:visibility="gone"
+        />
+
     <ImageView
         android:id="@+id/btnMore"
         android:layout_width="@dimen/button_size"
@@ -116,7 +127,7 @@
         android:layout_height="@dimen/notif_size"
         android:layout_marginLeft="37.5dp"
         android:layout_gravity="center"
-        android:background="@drawable/shape_oval_red"
+        android:background="@drawable/shape_circle_red"
         android:scaleX="0"
         android:scaleY="0"
         >

@@ -88,5 +88,15 @@ public class MQTTChatDataStore implements ChatDataStore {
     public Observable<List<ChatRealm>> messagesError(String recipientId) {
         return null;
     }
+
+    @Override
+    public Observable<List<ChatRealm>> messagesReceived(String recipientId) {
+        return null;
+    }
+
+    @Override
+    public Observable<Void> updateStatuses(String friendshipId) {
+        return null;
+    }
 }
 

@@ -36,7 +36,7 @@ public class DiskTribeDataStore implements TribeDataStore {
 
     @Override
     public Observable<List<TribeRealm>> tribesNotSeen(String friendshipId) {
-        return tribeCache.tribesNotSeen(friendshipId).debounce(500, TimeUnit.MILLISECONDS);
+        return tribeCache.tribesNotSeen(friendshipId);
     }
 
     @Override

@@ -155,7 +155,7 @@ public class GlPreview extends GLSurfaceView implements Preview, Camera.PictureC
 
     void onStartPreviewFinished() {
         synchronized (this) {
-            if (!previewing && cameraHelper.isOpened()) {
+            if (!previewing && cameraHelper != null && cameraHelper.isOpened()) {
                 cameraHelper.startPreview();
                 previewing = true;
 

@@ -30,6 +30,7 @@ import com.facebook.rebound.SpringSystem;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
@@ -83,6 +84,7 @@ public class TileView extends SquareFrameLayout {
 
     @Nullable @BindView(R.id.txtName) public TextViewFont txtName;
     @Nullable @BindView(R.id.btnText) public ImageView btnText;
+    @Nullable @BindView(R.id.viewNewText) public View viewNewText;
     @Nullable @BindView(R.id.btnMore) public ImageView btnMore;
     @Nullable @BindView(R.id.txtStatus) public TextViewFont txtStatus;
     @Nullable @BindView(R.id.txtStatusError) public TextViewFont txtStatusError;
@@ -507,7 +509,8 @@ public class TileView extends SquareFrameLayout {
         }
     }
 
-    public void setStatus(List<TribeMessage> receivedTribes, List<TribeMessage> sentTribes, List<TribeMessage> errorTribes) {
+    public void setStatus(List<TribeMessage> receivedTribes, List<TribeMessage> sentTribes,
+                          List<TribeMessage> errorTribes, List<ChatMessage> receivedMessages) {
         TribeMessage lastSentTribe = computeMostRecentSentTribe(sentTribes);
 
         boolean isFinalStatus = false, isLoading = false;
@@ -544,7 +547,7 @@ public class TileView extends SquareFrameLayout {
             int nbUnseenReceived = 0;
 
             for (TribeMessage message : receivedTribes) {
-                if (message.getMessageSendingStatus() != null && message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADED)) {
+                if (message.getMessageDownloadingStatus() != null && message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADED)) {
                     nbUnseenReceived++;
                 }
             }
@@ -582,6 +585,8 @@ public class TileView extends SquareFrameLayout {
                 circularProgressView.setVisibility(View.GONE);
             }
         }
+
+        viewNewText.setVisibility(receivedMessages != null && receivedMessages.size() > 0 ? View.VISIBLE : View.GONE);
     }
 
     public void setBackground(int position) {

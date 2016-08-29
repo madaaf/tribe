@@ -5,7 +5,9 @@ import android.graphics.Bitmap;
 import android.provider.MediaStore;
 
 import com.birbit.android.jobqueue.JobManager;
+import com.tribe.app.data.network.job.MarkMessageListAsReadJob;
 import com.tribe.app.data.network.job.SendChatJob;
+import com.tribe.app.data.network.job.UpdateChatMessagesJob;
 import com.tribe.app.data.network.job.UpdateMessagesErrorStatusJob;
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.Recipient;
@@ -21,10 +23,12 @@ import com.tribe.app.domain.interactor.text.SubscribingMQTT;
 import com.tribe.app.domain.interactor.text.UnsubscribeMQTT;
 import com.tribe.app.presentation.mvp.view.MessageView;
 import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -115,10 +119,11 @@ public class ChatPresenter implements Presenter {
         jobManager.addJobInBackground(new UpdateMessagesErrorStatusJob(recipientId));
     }
 
-    public void loadChatMessages(String friendshipId) {
-        diskGetChatMessages.setRecipientId(friendshipId);
+    public void loadChatMessages(String recipientId) {
+        jobManager.addJobInBackground(new UpdateChatMessagesJob(recipientId));
+        diskGetChatMessages.setRecipientId(recipientId);
         diskGetChatMessages.execute(new ChatMessageListSubscriber());
-        getPendingMessageList.setRecipientId(friendshipId);
+        getPendingMessageList.setRecipientId(recipientId);
         getPendingMessageList.execute(new PendingChatMessageListSubscriber());
     }
 
@@ -184,19 +189,20 @@ public class ChatPresenter implements Presenter {
     }
 
     public void markMessageListAsRead(Recipient recipient, List<ChatMessage> messageList) {
-//        List<ChatMessage> onlyNonRead = new ArrayList<>();
-//
-//        for (ChatMessage message : messageList) {
-//            if (!message.getFrom().equals(currentUser) && message.getMessageStatus() != null) {
-//                onlyNonRead.add(message);
-//            }
-//        }
-//
-//        if (onlyNonRead.size() > 0) {
-//            diskMarkMessageListAsRead.setMessageList(onlyNonRead);
-//            diskMarkMessageListAsRead.execute(new DefaultSubscriber<>());
-//            jobManager.addJobInBackground(new MarkMessageListAsReadJob(recipient, onlyNonRead));
-//        }
+        List<ChatMessage> onlyNonRead = new ArrayList<>();
+
+        for (ChatMessage message : messageList) {
+            if (!message.getFrom().equals(currentUser) && message.getMessageReceivingStatus() != null
+                    && message.getMessageReceivingStatus().equals(MessageReceivingStatus.STATUS_NOT_SEEN)) {
+                onlyNonRead.add(message);
+            }
+        }
+
+        if (onlyNonRead.size() > 0) {
+            diskMarkMessageListAsRead.setMessageList(onlyNonRead);
+            diskMarkMessageListAsRead.execute(new DefaultSubscriber<>());
+            jobManager.addJobInBackground(new MarkMessageListAsReadJob(recipient, onlyNonRead));
+        }
     }
 
     private final class ConnectAndSubscribeMQTTSubscriber extends DefaultSubscriber<IMqttToken> {

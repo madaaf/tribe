@@ -34,4 +34,5 @@ public interface ChatCache {
     public RealmList<MessageRecipientRealm> createMessageRecipientRealm(List<MessageRecipientRealm> messageRecipientRealmList);
     public void updateToError(List<ChatRealm> chatRealmList);
     public void updateMessageStatus(String recipientId);
+    public Observable<List<ChatRealm>> messagesReceived(String friendshipId);
 }

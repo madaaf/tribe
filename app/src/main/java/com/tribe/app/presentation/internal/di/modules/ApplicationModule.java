@@ -30,6 +30,7 @@ import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.text.ChatRepository;
 import com.tribe.app.domain.interactor.text.CloudMarkMessageListAsRead;
+import com.tribe.app.domain.interactor.text.CloudUpdateStatuses;
 import com.tribe.app.domain.interactor.text.DeleteChat;
 import com.tribe.app.domain.interactor.text.GetDiskChatMessageList;
 import com.tribe.app.domain.interactor.text.SendChat;
@@ -287,6 +288,12 @@ public class ApplicationModule {
     @Named("cloudMarkMessageListAsRead")
     CloudMarkMessageListAsRead cloudMarkMessageListAsRead(CloudMarkMessageListAsRead cloudMarkMessageListAsRead) {
         return cloudMarkMessageListAsRead;
+    }
+
+    @Provides
+    @Named("updateStatuses")
+    CloudUpdateStatuses provideUpdateStatuses(CloudUpdateStatuses cloudUpdateStatuses) {
+        return cloudUpdateStatuses;
     }
 
     @Provides

@@ -77,7 +77,7 @@ public abstract class RecipientGridAdapterDelegate extends RxAdapterDelegate<Lis
             }
         }
 
-        vh.viewTile.setStatus(recipient.getReceivedTribes(), recipient.getSentTribes(), recipient.getErrorTribes());
+        vh.viewTile.setStatus(recipient.getReceivedTribes(), recipient.getSentTribes(), recipient.getErrorTribes(), recipient.getReceivedMessages());
     }
 
     public Observable<View> onOpenTribes() {

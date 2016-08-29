@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
+import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.entity.PendingType;
 import com.tribe.app.domain.entity.Recipient;
@@ -63,7 +64,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private PublishSubject<Recipient> onRecordEnd = PublishSubject.create();
     private PublishSubject<Integer> onPendingTribes = PublishSubject.create();
     private PublishSubject<List<TribeMessage>> onPendingTribesSelected = PublishSubject.create();
-    private PublishSubject<List<TribeMessage>> onNewTribes = PublishSubject.create();
+    private PublishSubject<List<Message>> onNewMessages = PublishSubject.create();
     private PublishSubject<View> clickOpenPoints = PublishSubject.create();
 
     // VARIABLES
@@ -182,8 +183,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     }
 
     @Override
-    public void updateReceivedTribes(List<TribeMessage> tribes) {
-        onNewTribes.onNext(tribes);
+    public void updateReceivedMessages(List<Message> messages) {
+        onNewMessages.onNext(messages);
     }
 
     @Override
@@ -226,6 +227,10 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         this.tribeMode = tribeMode;
     }
 
+    public void reloadGrid() {
+        this.homeGridPresenter.loadFriendList();
+    }
+
 //    public void prepareTapToCancel(String localId) {
 //        if (currentRecipient != null) {
 //            TileView tileView = (TileView) layoutManager.findViewByPosition(currentRecipient.getPosition());
@@ -263,7 +268,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                             && recipient.getReceivedTribes().size() > 0
                             && recipient.hasLoadedTribes();
 
-                    if (!filter) homeGridPresenter.downloadTribes(recipient.getReceivedTribes());
+                    if (!filter) homeGridPresenter.downloadMessages(new ArrayList<>(recipient.getReceivedTribes()));
 
                     return filter;
                 })
@@ -337,7 +342,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         if (homeView != null) homeView.initScrollOnGrid(scrollDetector);
         if (homeView != null) homeView.initPendingTribes(onPendingTribes);
         if (homeView != null) homeView.initPendingTribeItemSelected(onPendingTribesSelected);
-        if (homeView != null) homeView.initNewTribes(onNewTribes);
+        if (homeView != null) homeView.initNewMessages(onNewMessages);
         if (homeView != null) homeView.initClickOnPoints(clickOpenPoints);
     }
 

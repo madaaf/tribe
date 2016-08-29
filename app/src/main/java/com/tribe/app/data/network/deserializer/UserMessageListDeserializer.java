@@ -20,6 +20,7 @@ import com.tribe.app.data.realm.WeatherRealm;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
+import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import java.lang.reflect.Type;
 import java.text.ParseException;
@@ -49,57 +50,62 @@ public class UserMessageListDeserializer<T> implements JsonDeserializer<T> {
                                JsonDeserializationContext context) throws JsonParseException {
 
         JsonObject user = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("user");
-        JsonArray resultsTribes = user.getAsJsonArray("tribes");
-        JsonArray resultsChatMessages = user.getAsJsonArray("unSeenMessages");
-        JsonArray resultsTribesSent = je.getAsJsonObject().getAsJsonObject("data").getAsJsonArray("tribes");
-        JsonArray resultsMessagesSent = je.getAsJsonObject().getAsJsonObject("data").getAsJsonArray("messages");
-
         List<MessageRealmInterface> messages = new ArrayList<>();
 
-        List<TribeRealm> tribeRealmList = new ArrayList<>();
-        for (JsonElement obj : resultsTribes) {
-            TribeRealm tribeRealm = parseTribe(obj);
-            if (((tribeRealm.isToGroup() && tribeRealm.getGroup() != null) || !tribeRealm.isToGroup()))
-                tribeRealmList.add(tribeRealm);
-        }
+        if (user != null) {
+            JsonArray resultsTribes = user.getAsJsonArray("tribes");
+            JsonArray resultsChatMessages = user.getAsJsonArray("unSeenMessages");
 
-        for (TribeRealm tribeRealm : tribeRealmList) {
-            if (tribeRealm.getRecipientList() != null) {
-                int countSeen = 0;
-
-                for (MessageRecipientRealm recipient : tribeRealm.getRecipientList()) {
-                    if (recipient.isSeen()) countSeen++;
-                }
-
-                //if (countSeen == tribeRealm.getRecipientList().size()) tribeRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_OPENED);
-                //else tribeRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_OPENED_PARTLY);
+            List<TribeRealm> tribeRealmList = new ArrayList<>();
+            for (JsonElement obj : resultsTribes) {
+                TribeRealm tribeRealm = parseTribe(obj);
+                if (((tribeRealm.isToGroup() && tribeRealm.getGroup() != null) || !tribeRealm.isToGroup()))
+                    tribeRealmList.add(tribeRealm);
             }
+
+            for (TribeRealm tribeRealm : tribeRealmList) {
+                if (tribeRealm.getRecipientList() != null) {
+                    int countSeen = 0;
+
+                    for (MessageRecipientRealm recipient : tribeRealm.getRecipientList()) {
+                        if (recipient.isSeen()) countSeen++;
+                    }
+
+                    //if (countSeen == tribeRealm.getRecipientList().size()) tribeRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_OPENED);
+                    //else tribeRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_OPENED_PARTLY);
+                }
+            }
+
+            messages.addAll(tribeRealmList);
+
+            List<ChatRealm> chatRealmList = new ArrayList<>();
+            for (JsonElement obj : resultsChatMessages) {
+                ChatRealm chatRealm = parseChat(obj);
+
+                if (((chatRealm.isToGroup() && chatRealm.getGroup() != null) || !chatRealm.isToGroup()))
+                    chatRealmList.add(chatRealm);
+            }
+
+            for (ChatRealm chatRealm : chatRealmList) {
+                if (chatRealm.getRecipientList() != null) {
+                    int countSeen = 0;
+
+                    for (MessageRecipientRealm recipient : chatRealm.getRecipientList()) {
+                        if (recipient.getTo().equals(currentUser.getId())) recipient.setIsSeen(true);
+
+                        if (recipient.isSeen()) countSeen++;
+                    }
+
+                    if (countSeen == chatRealm.getRecipientList().size()) chatRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_OPENED);
+                    else chatRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_OPENED_PARTLY);
+                }
+            }
+
+            messages.addAll(chatRealmList);
         }
 
-        messages.addAll(tribeRealmList);
-
-        List<ChatRealm> chatRealmList = new ArrayList<>();
-        for (JsonElement obj : resultsChatMessages) {
-            ChatRealm chatRealm = parseChat(obj);
-
-            if (((chatRealm.isToGroup() && chatRealm.getGroup() != null) || !chatRealm.isToGroup()))
-                chatRealmList.add(chatRealm);
-        }
-
-//        for (ChatRealm chatRealm : chatRealmList) {
-//            if (chatRealm.getRecipientList() != null) {
-//                int countSeen = 0;
-//
-//                for (MessageRecipientRealm recipient : chatRealm.getRecipientList()) {
-//                    if (recipient.isSeen()) countSeen++;
-//                }
-//
-//                if (countSeen == chatRealm.getRecipientList().size()) chatRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_OPENED);
-//                else chatRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_OPENED_PARTLY);
-//            }
-//        }
-
-        messages.addAll(chatRealmList);
+        JsonArray resultsTribesSent = je.getAsJsonObject().getAsJsonObject("data").getAsJsonArray("tribes");
+        JsonArray resultsMessagesSent = je.getAsJsonObject().getAsJsonObject("data").getAsJsonArray("messages");
 
         if (resultsTribesSent != null) {
             for (JsonElement obj : resultsTribesSent) {
@@ -113,17 +119,17 @@ public class UserMessageListDeserializer<T> implements JsonDeserializer<T> {
             }
         }
 
-//        if (resultsMessagesSent != null) {
-//            for (JsonElement obj : resultsMessagesSent) {
-//                if (!(obj instanceof JsonNull)) {
-//                    ChatRealm chatRealm = new ChatRealm();
-//                    JsonObject json = obj.getAsJsonObject();
-//                    chatRealm.setId(json.get("id").getAsString());
-//                    chatRealm.setRecipientList(chatCache.createMessageRecipientRealm(parseRecipients(chatRealm.getId(), json.getAsJsonArray("recipients"))));
-//                    messages.add(chatRealm);
-//                }
-//            }
-//        }
+        if (resultsMessagesSent != null) {
+            for (JsonElement obj : resultsMessagesSent) {
+                if (!(obj instanceof JsonNull)) {
+                    ChatRealm chatRealm = new ChatRealm();
+                    JsonObject json = obj.getAsJsonObject();
+                    chatRealm.setId(json.get("id").getAsString());
+                    chatRealm.setRecipientList(chatCache.createMessageRecipientRealm(parseRecipients(chatRealm.getId(), json.getAsJsonArray("recipients"))));
+                    messages.add(chatRealm);
+                }
+            }
+        }
 
         return (T) messages;
     }
@@ -211,7 +217,7 @@ public class UserMessageListDeserializer<T> implements JsonDeserializer<T> {
         chatRealm.setMessageReceivingStatus(MessageReceivingStatus.STATUS_RECEIVED);
         chatRealm.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
 
-//        chatRealm.setRecipientList(chatCache.createMessageRecipientRealm(parseRecipients(chatRealm.getId(), json.getAsJsonArray("recipients"))));
+        chatRealm.setRecipientList(chatCache.createMessageRecipientRealm(parseRecipients(chatRealm.getId(), json.getAsJsonArray("recipients"))));
 
         try {
             chatRealm.setRecordedAt(utcSimpleDate.parse(json.get("recorded_at").getAsString()));

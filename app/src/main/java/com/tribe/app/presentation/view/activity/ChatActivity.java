@@ -347,6 +347,8 @@ public class ChatActivity extends BaseActivity implements MessageView {
                 recyclerViewText.scrollToPosition(index);
             }
         }
+
+        chatPresenter.markMessageListAsRead(recipient, chatMessageList);
     }
 
     @Override

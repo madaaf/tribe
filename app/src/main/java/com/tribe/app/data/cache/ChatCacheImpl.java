@@ -5,6 +5,7 @@ import android.content.Context;
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.MessageRecipientRealm;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import java.util.ArrayList;
@@ -29,8 +30,10 @@ public class ChatCacheImpl implements ChatCache {
 
     private Context context;
     private Realm realm;
+    private RealmResults<ChatRealm> messagesNotSeen;
     private RealmResults<ChatRealm> messages;
     private RealmResults<ChatRealm> messagesError;
+    private RealmResults<ChatRealm> messagesReceived;
     private User currentUser;
 
     @Inject
@@ -53,10 +56,7 @@ public class ChatCacheImpl implements ChatCache {
         return Observable.create(new Observable.OnSubscribe<List<ChatRealm>>() {
             @Override
             public void call(final Subscriber<? super List<ChatRealm>> subscriber) {
-                Realm obsRealm = Realm.getDefaultInstance();
-                final RealmResults<ChatRealm> results = obsRealm.where(ChatRealm.class).findAll();
-                subscriber.onNext(obsRealm.copyFromRealm(results));
-                obsRealm.close();
+
             }
         });
     }
@@ -66,16 +66,28 @@ public class ChatCacheImpl implements ChatCache {
         return Observable.create(new Observable.OnSubscribe<List<ChatRealm>>() {
             @Override
             public void call(final Subscriber<? super List<ChatRealm>> subscriber) {
-                messages = realm.where(ChatRealm.class)
-                        .equalTo("from.id", friendshipId)
-                        .or()
-                        .equalTo("friendshipRealm.friend.id", friendshipId)
-                        .or()
-                        .equalTo("group.id", friendshipId)
-                        .findAllSorted("created_at", Sort.ASCENDING);
-                messages.removeChangeListeners();
-                messages.addChangeListener(messagesUpdated -> subscriber.onNext(realm.copyFromRealm(messagesUpdated)));
-                subscriber.onNext(realm.copyFromRealm(messages));
+                if (friendshipId == null) {
+                    Realm obsRealm = Realm.getDefaultInstance();
+                    messagesNotSeen = realm.where(ChatRealm.class)
+                            .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_NOT_SEEN)
+                            .notEqualTo("from.id", currentUser.getId())
+                            .findAllSorted("created_at", Sort.DESCENDING);
+                    subscriber.onNext(obsRealm.copyFromRealm(messagesNotSeen));
+                    messagesNotSeen.removeChangeListeners();
+                    messagesNotSeen.addChangeListener(messagesUpdated -> subscriber.onNext(realm.copyFromRealm(messagesUpdated)));
+                    subscriber.onNext(realm.copyFromRealm(messagesNotSeen));
+                } else {
+                    messages = realm.where(ChatRealm.class)
+                            .equalTo("from.id", friendshipId)
+                            .or()
+                            .equalTo("friendshipRealm.friend.id", friendshipId)
+                            .or()
+                            .equalTo("group.id", friendshipId)
+                            .findAllSorted("created_at", Sort.ASCENDING);
+                    messages.removeChangeListeners();
+                    messages.addChangeListener(messagesUpdated -> subscriber.onNext(realm.copyFromRealm(messagesUpdated)));
+                    subscriber.onNext(realm.copyFromRealm(messages));
+                }
             }
         });
     }
@@ -111,12 +123,7 @@ public class ChatCacheImpl implements ChatCache {
                     shouldUpdate = true;
                 }
 
-                if (chatRealm.getMessageDownloadingStatus() != null) {
-                    toEdit.setMessageDownloadingStatus(chatRealm.getMessageDownloadingStatus());
-                    shouldUpdate = true;
-                }
-
-                if (chatRealm.getMessageReceivingStatus() != null) {
+                if (chatRealm.getMessageReceivingStatus() != MessageReceivingStatus.STATUS_RECEIVED) {
                     toEdit.setMessageReceivingStatus(chatRealm.getMessageReceivingStatus());
                     shouldUpdate = true;
                 }
@@ -219,7 +226,7 @@ public class ChatCacheImpl implements ChatCache {
                         .findAllSorted("created_at", Sort.DESCENDING);
 
                 for (ChatRealm chatToRemoveStatus : toRemoveStatus) {
-                    chatToRemoveStatus.setMessageReceivingStatus(null);
+                    chatToRemoveStatus.setMessageSendingStatus(null);
                 }
             }
         }
@@ -520,8 +527,6 @@ public class ChatCacheImpl implements ChatCache {
                     .beginGroup()
                     .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
                     .or()
-                    .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED)
-                    .or()
                     .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED_PARTLY)
                     .endGroup()
                     .findAllSorted("created_at", Sort.DESCENDING);
@@ -532,5 +537,26 @@ public class ChatCacheImpl implements ChatCache {
 
         obsRealm.close();
         return result;
+    }
+
+    @Override
+    public Observable<List<ChatRealm>> messagesReceived(String friendshipId) {
+        return Observable.create(new Observable.OnSubscribe<List<ChatRealm>>() {
+            @Override
+            public void call(final Subscriber<? super List<ChatRealm>> subscriber) {
+                if (friendshipId == null) {
+                    messagesReceived = realm.where(ChatRealm.class)
+                            .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_RECEIVED)
+                            .notEqualTo("from.id", currentUser.getId())
+                            .findAllSorted("recorded_at", Sort.DESCENDING);
+                }
+
+                messagesReceived.removeChangeListeners();
+                messagesReceived.addChangeListener(messagesUpdated -> {
+                    subscriber.onNext(realm.copyFromRealm(messagesUpdated));
+                });
+                subscriber.onNext(realm.copyFromRealm(messagesReceived));
+            }
+        });
     }
 }

@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.mvp.view;
 
+import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 
@@ -16,6 +17,6 @@ public interface HomeView extends LoadDataView {
     void initScrollOnGrid(Observable<Integer> observable);
     void initPendingTribes(Observable<Integer> observable);
     void initPendingTribeItemSelected(Observable<List<TribeMessage>> observable);
-    void initNewTribes(Observable<List<TribeMessage>> observable);
+    void initNewMessages(Observable<List<Message>> observable);
     void initClickOnPoints(Observable<android.view.View> observable);
 }
