@@ -122,6 +122,7 @@ dependencies {
     compile presentationDependencies.rxSharedPreferences
     compile presentationDependencies.libPhoneNumber
     compile presentationDependencies.vlcPlayer
+    compile presentationDependencies.exoPlayer
     compile presentationDependencies.firebaseMessaging
     compile presentationDependencies.firebaseCrashReporting
     compile presentationDependencies.circularProgressView

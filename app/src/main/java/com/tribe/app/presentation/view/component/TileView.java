@@ -372,6 +372,14 @@ public class TileView extends SquareFrameLayout {
                         && (spring.getCurrentValue() == TAP_TO_CANCEL_SPRING_VALUE || spring.getCurrentValue() == REPLY_TAP_TO_CANCEL)
                         && currentTribeMode.equals(CameraWrapper.VIDEO)) {
                     playerView.createPlayer(FileUtils.getPathForId(currentTribe.getLocalId()));
+
+                    if (currentTribeMode.equals(CameraWrapper.VIDEO)) {
+                        subscriptionVideoStarted = playerView.videoStarted()
+                                .subscribe(view -> {
+                                    subscriptionVideoStarted.unsubscribe();
+                                    animateTapToCancel();
+                                });
+                    }
                 } else if (currentTribe != null
                         && (spring.getCurrentValue() == TAP_TO_CANCEL_SPRING_VALUE || spring.getCurrentValue() == REPLY_TAP_TO_CANCEL)) {
                     animateTapToCancel();
@@ -620,14 +628,6 @@ public class TileView extends SquareFrameLayout {
 
         setTag(R.id.is_tap_to_cancel, true);
         isTapToCancel = true;
-
-        if (tribeMode.equals(CameraWrapper.VIDEO)) {
-            subscriptionVideoStarted = playerView.videoStarted()
-                    .subscribe(view -> {
-                        subscriptionVideoStarted.unsubscribe();
-                        animateTapToCancel();
-                    });
-        }
     }
 
     private void animateTapToCancel() {

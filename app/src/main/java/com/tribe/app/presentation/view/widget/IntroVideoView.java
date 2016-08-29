@@ -2,55 +2,40 @@ package com.tribe.app.presentation.view.widget;
 
 import android.content.Context;
 import android.graphics.SurfaceTexture;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.Surface;
 import android.view.TextureView;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.Toast;
-import android.widget.VideoView;
 
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import com.tribe.app.presentation.view.video.TribeMediaPlayer;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import rx.Observable;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by horatiothomas on 8/15/16.
  */
-
-// TODO: refactor with playerview
-public class IntroVideoView extends FrameLayout implements TextureView.SurfaceTextureListener,
-        MediaPlayer.OnVideoSizeChangedListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener {
+public class IntroVideoView extends FrameLayout implements TextureView.SurfaceTextureListener {
 
     @BindView(R.id.textureViewLayout)
     CardView textureViewLayout;
 
     // VARIABLES
     private VideoTextureView videoTextureView;
-    private String pathToVideo;
-    private MediaPlayer mediaPlayer = null;
-    private int videoWidth;
-    private int videoHeight;
-    private SurfaceTexture surfaceTexture;
-    private boolean hasSentStarted = false;
+    private TribeMediaPlayer mediaPlayer;
 
     // OBSERVABLES
     private Unbinder unbinder;
-    private final PublishSubject<View> videoStarted = PublishSubject.create();
+    private final PublishSubject<Boolean> videoStarted = PublishSubject.create();
+    private CompositeSubscription subscriptions = new CompositeSubscription();
 
     public IntroVideoView(Context context) {
         this(context, null);
@@ -70,125 +55,74 @@ public class IntroVideoView extends FrameLayout implements TextureView.SurfaceTe
     }
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        if (getWidth() != 0 && getHeight() != 0) {
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) textureViewLayout.getLayoutParams();
+            params.width = getWidth();
+            params.height = getHeight();
+            textureViewLayout.setLayoutParams(params);
+        }
+    }
+
+    @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
     }
 
-
-    public void createPlayer(String pathToVideo) {
+    public void createPlayer(String media) {
         videoTextureView = new VideoTextureView(getContext());
         CardView.LayoutParams params = new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         textureViewLayout.addView(videoTextureView, params);
         videoTextureView.setScaleType(ScalableTextureView.ScaleType.CENTER_CROP);
         videoTextureView.setSurfaceTextureListener(this);
 
-        this.pathToVideo = pathToVideo;
-        hasSentStarted = false;
+        mediaPlayer = new TribeMediaPlayer.TribeMediaPlayerBuilder(getContext(), media)
+                .autoStart(true)
+                .looping(true)
+                .mute(true)
+                .build();
 
-        try {
-            if (mediaPlayer != null) {
-                mediaPlayer.reset();
-                mediaPlayer.stop();
-                mediaPlayer.release();
-                mediaPlayer = null;
+        subscriptions.add(mediaPlayer.onVideoStarted().subscribe(videoStarted));
+
+        subscriptions.add(mediaPlayer.onPreparedPlayer().subscribe(prepared -> {
+
+        }));
+
+        subscriptions.add(mediaPlayer.onVideoSizeChanged().subscribe(videoSize -> {
+            if (videoTextureView != null && videoTextureView.getContentHeight() != videoSize.getHeight()) {
+                videoTextureView.setContentWidth(videoSize.getWidth());
+                videoTextureView.setContentHeight(videoSize.getHeight());
+                videoTextureView.updateTextureViewSize();
             }
 
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setOnVideoSizeChangedListener(this);
-            mediaPlayer.setOnPreparedListener(this);
-            mediaPlayer.setOnErrorListener(this);
-            mediaPlayer.setVolume(0, 0);
-            mediaPlayer.setLooping(true);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(getContext(), "Error creating player!", Toast.LENGTH_LONG).show();
-        }
+            subscriptions.add(mediaPlayer.onErrorPlayer().subscribe(error -> {
+                System.out.println("MEDIA PLAYER ERROR");
+            }));
+        }));
     }
 
     public void releasePlayer() {
-        if (mediaPlayer == null) return;
-        mediaPlayer.release();
-//        new Thread(() -> {
-//            try {
-//                if (mediaPlayer != null) {
-//                    mediaPlayer.reset();
-//                    mediaPlayer.stop();
-//                    mediaPlayer.release();
-//                    mediaPlayer = null;
-//                }
-//            } catch (IllegalStateException ex) {
-//                ex.printStackTrace();
-//            }
-//        }).start();
+        mediaPlayer.releasePlayer();
+        if (subscriptions != null && subscriptions.hasSubscriptions()) {
+            subscriptions.clear();
+        }
     }
 
     public void hideVideo() {
         releasePlayer();
-        surfaceTexture = null;
         textureViewLayout.removeView(videoTextureView);
         videoTextureView = null;
     }
 
     public void play() {
-        //mediaPlayer.start();
-    }
-
-    private void prepareWithSurface() {
-        Surface s = new Surface(surfaceTexture);
-
-        try {
-            mediaPlayer.setSurface(s);
-            mediaPlayer.setDataSource(getContext(), Uri.parse(pathToVideo));
-            mediaPlayer.prepareAsync();
-        } catch (IllegalStateException ex) {
-            try {
-                mediaPlayer.reset();
-                mediaPlayer.setDataSource(getContext(), Uri.parse(pathToVideo));
-                mediaPlayer.prepareAsync();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    @Override
-    public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
-        if (width * height == 0)
-            return;
-
-        videoWidth = width;
-        videoHeight = height;
-
-        if (videoTextureView != null && videoTextureView.getContentHeight() != height) {
-            videoTextureView.setContentWidth(width);
-            videoTextureView.setContentHeight(height);
-            videoTextureView.updateTextureViewSize();
-        }
-    }
-
-    @Override
-    public void onPrepared(MediaPlayer mp) {
-        mediaPlayer.start();
-        videoStarted.onNext(this);
-    }
-
-    @Override
-    public boolean onError(MediaPlayer mp, int what, int extra) {
-        return false;
+        mediaPlayer.resumePlayer();
     }
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        surfaceTexture = surface;
-
-        if (mediaPlayer != null) {
-            prepareWithSurface();
-        }
+        mediaPlayer.setSurface(surface);
     }
 
     @Override
@@ -206,7 +140,7 @@ public class IntroVideoView extends FrameLayout implements TextureView.SurfaceTe
 
     }
 
-    public Observable<View> videoStarted() {
+    public Observable<Boolean> videoStarted() {
         return videoStarted;
     }
 }
