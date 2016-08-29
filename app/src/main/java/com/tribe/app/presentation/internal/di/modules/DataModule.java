@@ -52,4 +52,5 @@ public class DataModule {
     Preference<String> provideWeatherUnits(RxSharedPreferences prefs) {
         return prefs.getString(PreferencesConstants.WEATHER_UNITS, com.tribe.app.presentation.view.utils.Weather.CELSIUS);
     }
+
 }
