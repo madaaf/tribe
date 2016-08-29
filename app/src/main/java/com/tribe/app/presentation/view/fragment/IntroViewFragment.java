@@ -25,7 +25,6 @@ import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.component.CodeView;
 import com.tribe.app.presentation.view.component.ConnectedView;
 import com.tribe.app.presentation.view.component.PhoneNumberView;
-import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -184,7 +183,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
     }
 
     private void initPlayerView() {
-        videoViewIntro.createPlayer("android.resource://" + getActivity().getPackageName() + "/" + R.raw.onboarding_video);
+        videoViewIntro.createPlayer("asset:///video/onboarding_video.mp4");
     }
 
     private void initPhoneNumberView() {
