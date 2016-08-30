@@ -30,7 +30,6 @@
     </FrameLayout>
 
 
-
     <!-- Main Scroll View -->
 
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -40,369 +39,105 @@
         android:layout_marginTop="50dp"
         android:background="@android:color/black">
 
-        <FrameLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/shape_rect_white_rounded_corners">
-
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/setting_section_bar_height"
-                android:background="@drawable/shape_white_rect_grey_border">
-
-
-                <ImageView
-                    android:layout_width="@dimen/tribe_icon_size"
-                    android:layout_height="@dimen/tribe_icon_size"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/horizontal_margin_small"
-                    android:src="@drawable/picto_profile_icon" />
-
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Body.One.Black40"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/setting_section_title_horizontal_margin"
-                    android:text="@string/settings_section_profile" />
-
-            </FrameLayout>
+            android:background="@drawable/shape_rect_white_rounded_corners"
+            android:orientation="vertical">
 
             <!-- Profile Settings -->
 
-            <FrameLayout
-                android:id="@+id/frameProfPic"
+            <com.tribe.app.presentation.view.component.SettingSectionView
+                android:id="@+id/profileSection"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingEnd="@dimen/horizontal_margin_small"
-                android:paddingStart="@dimen/horizontal_margin_small"
-                android:layout_marginTop="65dp"
-                android:clickable="true"
-                android:foreground="@drawable/selectable_button">
+                android:layout_height="wrap_content"/>
 
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Title.1.Black"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/settings_picture_title" />
+            <com.tribe.app.presentation.view.component.SettingView
+                android:id="@+id/settingsPicture"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Body.One.Black40"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:text="@string/settings_picture_subtitle" />
+            <com.tribe.app.presentation.view.component.SettingView
+                android:id="@+id/settingsDisplayName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-                <ImageView
-                    android:layout_width="@dimen/setting_pic_size"
-                    android:layout_height="@dimen/setting_pic_size"
-                    android:layout_gravity="end" />
-
-            </FrameLayout>
-
-            <FrameLayout
-                android:id="@+id/frameDisplayName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/horizontal_margin_small"
-                android:layout_marginStart="@dimen/horizontal_margin_small"
-                android:layout_marginTop="150dp"
-                android:clickable="true">
-
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Title.1.Black"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/settings_displayname_title" />
-
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Body.One.Black40"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:text="@string/settings_displayname_subtitle" />
-
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Title.2.Black"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:text="Place Holder" />
-
-            </FrameLayout>
-
-            <FrameLayout
-                android:id="@+id/frameUsername"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/horizontal_margin_small"
-                android:layout_marginStart="@dimen/horizontal_margin_small"
-                android:layout_marginTop="215dp"
-                android:clickable="true">
-
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Title.1.Black"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/settings_username_title" />
-
-
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Body.One.Black40"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:text="@string/settings_username_subtitle" />
-
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Title.2.Black"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:text="\@placeholder" />
-
-            </FrameLayout>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/setting_section_bar_height"
-                android:layout_marginTop="285dp"
-                android:background="@drawable/shape_white_rect_grey_border">
-
-                <ImageView
-                    android:layout_width="@dimen/tribe_icon_size"
-                    android:layout_height="@dimen/tribe_icon_size"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/horizontal_margin_small"
-                    android:src="@drawable/picto_setting_message_icon" />
-
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Body.One.Black40"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/setting_section_title_horizontal_margin"
-                    android:text="@string/settings_section_messages" />
-
-            </FrameLayout>
+            <com.tribe.app.presentation.view.component.SettingView
+                android:id="@+id/settingsUsername"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
             <!-- Message Settings -->
 
-            <FrameLayout
+            <com.tribe.app.presentation.view.component.SettingSectionView
+                android:id="@+id/messageSection"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/horizontal_margin_small"
-                android:layout_marginStart="@dimen/horizontal_margin_small"
-                android:layout_marginTop="325dp">
+                android:layout_height="wrap_content" />
 
-                <com.tribe.app.presentation.view.component.SettingMessageView
-                    android:id="@+id/messageSettingMemories"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="25dp" />
 
-                <com.tribe.app.presentation.view.component.SettingMessageView
-                    android:id="@+id/messageSettingContext"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="110dp" />
-
-                <com.tribe.app.presentation.view.component.SettingMessageView
-                    android:id="@+id/messageSettingVoice"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="216dp" />
-
-                <com.tribe.app.presentation.view.component.SettingMessageView
-                    android:id="@+id/messageSettingPreload"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="302dp" />
-
-                <com.tribe.app.presentation.view.component.SettingMessageView
-                    android:id="@+id/messageSettingFahrenheit"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="390dp" />
-
-            </FrameLayout>
-
-            <FrameLayout
+            <com.tribe.app.presentation.view.component.SettingView
+                android:id="@+id/messageSettingMemories"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/setting_section_bar_height"
-                android:layout_marginTop="800dp"
-                android:background="@drawable/shape_white_rect_grey_border">
+                android:layout_height="wrap_content" />
 
-                <ImageView
-                    android:layout_width="@dimen/tribe_icon_size"
-                    android:layout_height="@dimen/tribe_icon_size"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/horizontal_margin_small"
-                    android:src="@drawable/picto_setting_support_icon" />
+            <com.tribe.app.presentation.view.component.SettingView
+                android:id="@+id/messageSettingContext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Body.One.Black40"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/setting_section_title_horizontal_margin"
-                    android:text="@string/settings_section_support" />
+            <com.tribe.app.presentation.view.component.SettingView
+                android:id="@+id/messageSettingVoice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-            </FrameLayout>
+            <com.tribe.app.presentation.view.component.SettingView
+                android:id="@+id/messageSettingPreload"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <com.tribe.app.presentation.view.component.SettingView
+                android:id="@+id/messageSettingFahrenheit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
             <!-- Support Settings -->
 
-            <FrameLayout
-                android:id="@+id/frameTweet"
+            <com.tribe.app.presentation.view.component.SettingSectionView
+                android:id="@+id/supportSection"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/horizontal_margin_small"
-                android:layout_marginStart="@dimen/horizontal_margin_small"
-                android:layout_marginTop="865dp"
-                android:clickable="true">
+                android:layout_height="wrap_content" />
 
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Title.1.Black"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/settings_tweet_title" />
+            <com.tribe.app.presentation.view.component.SettingView
+                android:id="@+id/settingsTweet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
+            <com.tribe.app.presentation.view.component.SettingView
+                android:id="@+id/settingsEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Body.One.Black40"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:text="@string/settings_tweet_subtitle" />
+            <com.tribe.app.presentation.view.component.SettingView
+                android:id="@+id/settingsRateApp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-            </FrameLayout>
-
-            <FrameLayout
-                android:id="@+id/frameEmail"
+            <com.tribe.app.presentation.view.component.SettingSectionView
+                android:id="@+id/exitSection"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/horizontal_margin_small"
-                android:layout_marginStart="@dimen/horizontal_margin_small"
-                android:layout_marginTop="950dp"
-                android:clickable="true">
+                android:layout_height="wrap_content" />
 
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Title.1.Black"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/settings_email_title" />
+            <com.tribe.app.presentation.view.component.SettingView
+                android:id="@+id/settingsLogOut"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
+            <com.tribe.app.presentation.view.component.SettingView
+                android:id="@+id/settingsRemove"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Body.One.Black40"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:text="@string/settings_email_subtitle" />
-
-            </FrameLayout>
-
-            <FrameLayout
-                android:id="@+id/frameRateApp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/horizontal_margin_small"
-                android:layout_marginStart="@dimen/horizontal_margin_small"
-                android:layout_marginTop="1035dp"
-                android:clickable="true">
-
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Title.1.Black"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/settings_rate_title" />
-
-
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Body.One.Black40"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:text="@string/settings_rate_subtitle" />
-
-            </FrameLayout>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/setting_section_bar_height"
-                android:layout_marginTop="1120dp"
-                android:background="@drawable/shape_white_rect_grey_border">
-
-                <ImageView
-                    android:layout_width="@dimen/tribe_icon_size"
-                    android:layout_height="@dimen/tribe_icon_size"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/horizontal_margin_small"
-                    android:src="@drawable/picto_setting_exit_icon" />
-
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Body.One.Black40"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/setting_section_title_horizontal_margin"
-                    android:text="@string/settings_section_exit" />
-
-            </FrameLayout>
-
-            <FrameLayout
-                android:id="@+id/frameLogOut"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/horizontal_margin_small"
-                android:layout_marginStart="@dimen/horizontal_margin_small"
-                android:layout_marginTop="1185dp"
-                android:clickable="true">
-
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Title.1.Black"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/settings_logout_title" />
-
-
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Body.One.Black40"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:text="@string/settings_logout_subtitle" />
-
-            </FrameLayout>
-
-            <FrameLayout
-                android:id="@+id/frameDeleteAccount"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/horizontal_margin_small"
-                android:layout_marginStart="@dimen/horizontal_margin_small"
-                android:layout_marginTop="1280dp"
-                android:layout_marginBottom="25dp"
-                android:clickable="true">
-
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Title.1.Red"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/settings_remove_title" />
-
-
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Body.One.Black40"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:text="@string/settings_remove_subtitle" />
-
-            </FrameLayout>
-
-        </FrameLayout>
+        </LinearLayout>
 
     </ScrollView>
 

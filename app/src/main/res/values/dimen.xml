@@ -31,6 +31,7 @@
     <!-- PADDING -->
     <dimen name="icons_padding">3.75dp</dimen>
     <dimen name="text_padding">15dp</dimen>
+    <dimen name="section_button_vertical_padding">12dp</dimen>
 
     <!-- HEIGHTS -->
     <dimen name="chat_bar_height">50dp</dimen>
