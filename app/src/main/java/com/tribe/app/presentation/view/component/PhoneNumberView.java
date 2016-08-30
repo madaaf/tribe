@@ -147,9 +147,10 @@ public class PhoneNumberView extends FrameLayout {
                     public void call(String s) {
                         if (editable) {
                             currentPhoneNumber = phoneUtils.formatMobileNumber(PhoneNumberView.this.getPhoneNumberInput(), countryCode);
-                            if (currentPhoneNumber != null) {
+                            String viewPhoneNumber = phoneUtils.formatPhoneNumberForView(PhoneNumberView.this.getPhoneNumberInput(), countryCode);
+                            if (viewPhoneNumber != null) {
                                 editable = false;
-                                editTextPhoneNumber.setText(currentPhoneNumber);
+                                editTextPhoneNumber.setText(viewPhoneNumber);
                                 editTextPhoneNumber.setSelection(editTextPhoneNumber.getText().length());
                                 editable = true;
                             }
