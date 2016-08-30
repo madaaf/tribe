@@ -1,0 +1,294 @@
+<resources>
+	
+	<!-- App -->
+	<string name="app_name">Tribe</string>
+	
+	<!-- Actions -->
+	<string name="action_ok">OK</string>
+	<string name="action_cancel">Annuler</string>
+	<string name="action_delete">Supprimer</string>
+	<string name="action_done">Terminé</string>
+	
+	<!-- Group -->
+	<string name="group_member">membre</string>
+	<string name="group_members">membres</string>
+	
+	<!-- Errors -->
+	<string name="error_unknown">Désolé, une erreur inconnue est survenue</string>
+	
+	<!-- Image Picker -->
+	<string name="image_picker_camera">Appareil photo</string>
+	<string name="image_picker_library">Librairie photo</string>
+	
+	<!-- Contacts -->
+	<string name="contacts_search_placeholder">Nom, téléphone or @handle</string>
+	<string name="contacts_share_profile_button">Partage ton profile</string>
+	<string name="contacts_section_facebook_sync_disabled">Amis Facebook non synchronisés</string>
+	<string name="contacts_section_facebook_sync_enabled">Amis Facebook synchronisés</string>
+	<string name="contacts_section_facebook_sync_title">Synchronisation Facebook automatique</string>
+	<string name="contacts_section_facebook_sync_description">Synchronise automatiquement tes amis Facebook</string>
+	<string name="contacts_section_facebook_syncing_title">Synchronisation</string>
+	<string name="contacts_section_addressbook_sync_disabled">Contacts non synchronisés</string>
+	<string name="contacts_section_addressbook_sync_enabled">Contacts synchronisés</string>
+	<string name="contacts_section_addressbook_sync_title">Synchronisation automatique des contacts</string>
+	<string name="contacts_section_addressbook_sync_description">Synchronise automatiquement\ntes contacts</string>
+	<string name="contacts_section_addressbook_syncing">Synchronisation</string>
+	<string name="contacts_section_addressbook_empty">Plus aucun contact à inviter</string>
+	<string name="contacts_section_addressbook_friends_in_app">amis sur Tribe</string>
+	<string name="contacts_section_search_usernames">Nom d\'utilisateur</string>
+	<string name="contacts_section_search_searching">Recherche</string>
+	<string name="contacts_section_search_friends">Amis</string>
+	
+	<!-- Permissions -->
+	<string name="permission_contacts_disabled_alert_title">L\'accès aux Contacts a été désactivé.</string>
+	<string name="permission_contacts_disabled_alert_description">Veuillez activer l\'accès aux Contacts depuis l\'application Settings</string>
+	<string name="permission_contacts_disabled_alert_redirect">Activer</string>
+	<string name="permission_contacts_disabled_alert_cancel">Plus tard</string>
+	<string name="permission_camera_enable_button_title">Activer\ncamera</string>
+	<string name="permission_popup_push_onboarding_title">Sois notifié</string>
+	<string name="permission_popup_push_onboarding_description">Sois notifé quand tes\namis rejoigner l\'app.</string>
+	<string name="permission_popup_push_onboarding_points">Autoriser les notifications</string>
+	<string name="permission_popup_push_onboarding_no">Rester seul!</string>
+	<string name="permission_popup_push_onboarding_yes">Oui!</string>
+	<string name="permission_popup_push_home_title">Réponses arrivent!</string>
+	<string name="permission_popup_push_home_description">Sois notifé quand tes\namis t\'envoient des messages.</string>
+	<string name="permission_popup_push_home_points">Autoriser les notifications</string>
+	<string name="permission_popup_push_home_no">Pas maintenant</string>
+	<string name="permission_popup_push_home_yes">Autoriser!</string>
+	<string name="permission_popup_location_home_title">Meilleurs messages!</string>
+	<string name="permission_popup_location_home_description">Utiliser la location vous permettra\nd\'avoir des meilleurs messages</string>
+	<string name="permission_popup_location_home_points">Autoriser la location</string>
+	<string name="permission_popup_location_home_no">Pas maintenant</string>
+	<string name="permission_popup_location_home_yes">Autoriser!</string>
+	
+	<!-- Invitations -->
+	<string name="invitation_sms_error_parse_number_title">Le numéro de téléphone du contact semble incorrect</string>
+	<string name="invitation_sms_error_parse_number_message">%@\n\nLe numéro de téléphone du contact n\'a pas de code pays. Nous avons essayé d\'ajouter %@ mais ça n\'a pas marché. Voulez-vous l\'éditer?</string>
+	<string name="invitation_sms_error_parse_number_action_edit">Éditer le numéro</string>
+	<string name="invitation_sms_error_parse_number_action_use">Utiliser ce numéro</string>
+	<string name="invitation_sms_invite_friend"></string>
+	
+	<!-- Tribe -->
+	<string name="tribe_gesture_close_text">Swipe vers bas pour fermer</string>
+	<string name="tribe_gesture_reply_text"></string>
+	<string name="tribe_gesture_reply_close_text">Retour au message</string>
+	<string name="tribe_distance_nearby">Proche</string>
+	<string name="tribe_snooze_title">Reporter le message</string>
+	<string name="tribe_snooze_1_hour_title">Dans 1 heure</string>
+	<string name="tribe_snooze_6_hours_title">Dans 6 heures</string>
+	<string name="tribe_snooze_tomorrow_title">Demain</string>
+	<string name="tribe_snooze_this_weekend_title">Ce week-end</string>
+	<string name="tribe_empty_list">Ooops, les tribes n\'ont pas pu être chargés</string>
+	<string name="tribe_more_add_friend">Ajouter en ami</string>
+	<string name="tribe_more_add_friend_success">Ajouté aux amis</string>
+	<string name="tribe_more_save">Sauvegarder dans la librairie</string>
+	<string name="tribe_more_save_success">Message sauvegardé dans la librairie</string>
+	<string name="tribe_more_report">Reporter</string>
+	<string name="tribe_distance_menu_directions">Montre moi le chemin</string>
+	<string name="tribe_metadata_activate_location">Location</string>
+	<string name="tribe_metadata_get_directions">Itinéraire</string>
+	
+	<!-- Grid -->
+	<string name="grid_user_points">Points</string>
+	<string name="grid_friendship_status_default">Tap &amp; hold!</string>
+	<string name="grid_friendship_status_sending">Sending</string>
+	<string name="grid_friendship_status_sent">Sent</string>
+	<string name="grid_friendship_status_opened">Opened</string>
+	<string name="grid_friendship_status_opened_plural">Opened</string>
+	<string name="grid_friendship_status_new_messages">Tap to view!</string>
+	<string name="grid_friendship_status_loading">Loading</string>
+	<string name="grid_ghost">Has not joined yet</string>
+	<string name="grid_friendship_recording_tap_to_cancel">Wrapping up</string>
+	<string name="grid_friendship_recording_validated">Ready to send!</string>
+	<string name="grid_unsent_tribes_action_resend">Renvoyer</string>
+	<string name="grid_unsent_tribes_action_delete">Supprimer</string>
+	<string name="grid_unsent_tribes_action_resend_all">Renvoyer tous</string>
+	<string name="grid_unsent_tribes_action_delete_all">Supprimer tous</string>
+	<string name="grid_menu_group_infos">Informations</string>
+	<string name="grid_menu_group_leave">Quitter le groupe</string>
+	<string name="grid_menu_group_leave_last_admin_error">Pour quitter le groupe il faut nommer un nouvel administrateur</string>
+	<string name="grid_menu_group_delete">Supprimer le groupe</string>
+	<string name="grid_menu_friendship_hide">Cacher l\'ami</string>
+	<string name="grid_menu_friendship_block">Bloquer l\'ami</string>
+	<string name="grid_menu_friendship_report">Reporter l\'ami</string>
+	<string name="grid_menu_friendship_clear_tribes">Effacer les Tribes</string>
+	
+	<!-- Chat -->
+	<string name="chat_tutorial_content">Discutez ici quand vous ne pouvez pas parler, ou pour partager une adresse, un numéro de téléphone, un handle, etc.</string>
+	<string name="chat_tutorial_statuses_title">Statut d\'un message</string>
+	<string name="chat_status_sending">Envoi en cours</string>
+	<string name="chat_status_sent">Envoyé</string>
+	<string name="chat_status_read_partly">Lu par une partie des destinataires</string>
+	<string name="chat_status_read">Lu par tout le monde</string>
+	<string name="chat_status_error">Pas de réseau</string>
+	<string name="chat_caption_photo">Image de l\'album photo</string>
+	<string name="chat_caption_video">Vidéo de l\'album photo</string>
+	<string name="chat_text_placeholder">Message...</string>
+	<string name="chat_date_today">Aujourd\'hui</string>
+	<string name="chat_author_you">Vous</string>
+	<string name="chat_erase_conversation_title">Supprimer tous les messages</string>
+	<string name="chat_erase_conversation_message">Êtes-vous sûr ?</string>
+	<string name="chat_is_typing">est en train d\'écrire</string>
+	<string name="chat_are_typing">sont en train d\'écrire</string>
+	<string name="chat_and">et</string>
+	
+	<!-- Group -->
+	<string name="group_family_title">&#127969; Famille</string>
+	<string name="group_roomies_title">&#127829; Collocataires</string>
+	<string name="group_bffs_title">&#128293; BFFs</string>
+	<string name="group_abroad_title">&#9992;&#65039; Étranger</string>
+	<string name="group_work_title">&#128188; Travail</string>
+	<string name="group_classmates_title">&#127891; Classe</string>
+	<string name="group_teammates_title">&#127942; Équipe</string>
+	<string name="group_baddest_title">&#128029; Les terreurs</string>
+	<string name="group_not_allowed_title">&#128274; Privé!</string>
+	
+	<!-- Create group -->
+	<string name="group_create_title">Créer un groupe</string>
+	<string name="group_private_name_placeholder">Nom du groupe privé</string>
+	<string name="group_public_name_placeholder">Nom du group public</string>
+	<string name="group_pick_avatar_title">Choisis une photo pour le groupe</string>
+	<string name="group_suggestions_title">Ou choisis un groupe suggéré</string>
+	<string name="group_private_title">Privé</string>
+	<string name="group_private_popup_title">Pars à l\'aventure\navec les groupes privés !</string>
+	<string name="group_private_popup_title_description">Chat about hot topics, current, events, sports, music, and more !</string>
+	<string name="group_private_popup_done">Super!</string>
+	<string name="group_public_title">Public</string>
+	<string name="group_public_popup_title">Pars à l\'aventure\navec les groupes publics !</string>
+	<string name="group_public_popup_title_description">Chat about hot topics, current, events, sports, music, and more !</string>
+	<string name="group_public_popup_done">Super!</string>
+	<string name="group_search_friends_placeholder">Recherche des membres</string>
+	<string name="group_private_link_description">Ce lien expire au bout d\'1h</string>
+	<string name="group_private_link_popup_title">Il reste seulement 59:32 !</string>
+	<string name="group_private_link_popup_description">Choisis où envoyer ce lien\ntemporaire à tes amis !</string>
+	<string name="group_public_link_description">Astuce : Vous pouvez ajouter des emojis</string>
+	<string name="group_button_create">Créer</string>
+	<string name="group_empty_list">Pas d\'amis à ajouter au groupe</string>
+	
+	<!-- Group Infos -->
+	<string name="group_infos_title">Info du groupe</string>
+	<string name="group_infos_add_new_members_placeholder">Ajouter de nouveaux membres</string>
+	<string name="group_infos_empty_list">Pas d\'autres amis à ajouter au groupe</string>
+	<string name="group_infos_error_edit_not_admin">Vous devez être admin pour éditer les informations</string>
+	
+	<!-- Group Members -->
+	<string name="group_members_search_placeholder">Recherche des members du groupe</string>
+	<string name="group_members_action_add_admin">Nommer admin</string>
+	<string name="group_members_action_remove_admin">Supprimer des admins</string>
+	<string name="group_members_action_remove_admin_last_admin_error">Ajoute un nouvel admin avant d\'enlever celui-là</string>
+	<string name="group_members_action_remove_member">Supprimer du groupe</string>
+	<string name="group_members_action_add_friend">Ajouter en ami</string>
+	<string name="group_members_action_remove_friend">Supprimer des amis</string>
+	<string name="group_members_remove_member_alert_title">Supprimer le membre</string>
+	<string name="group_members_remove_member_alert_message">Voulez-vous supprimer le membre du group?</string>
+	<string name="group_members_remove_member_alert_confirm">Supprimer le membre</string>
+	
+	<!-- Settings -->
+	<string name="settings_title">Settings</string>
+	<string name="settings_section_profile">Profile</string>
+	<string name="settings_picture_title">Profile picture</string>
+	<string name="settings_picture_subtitle">Take a selfie or import from camera roll and Facebook.</string>
+	<string name="settings_displayname_title">Display name</string>
+	<string name="settings_displayname_subtitle">How you appear for everyone.</string>
+	<string name="settings_username_title">Username</string>
+	<string name="settings_username_subtitle">How you appear for everyone.</string>
+	<string name="settings_section_messages">Messages</string>
+	<string name="settings_tribesave_title">Memories</string>
+	<string name="settings_tribesave_subtitle">Let recipients save your messages if they want to.</string>
+	<string name="settings_geolocation_title">Context</string>
+	<string name="settings_geolocation_subtitle">Let recipients get location-based context on your messages.</string>
+	<string name="settings_audio_title">Voice by default</string>
+	<string name="settings_audio_subtitle">Set voice mode by default instead of video messages.</string>
+	<string name="settings_preload_title">Preload</string>
+	<string name="settings_preload_subtitle">Load new messages in background, automatically.</string>
+	<string name="settings_section_support">Support</string>
+	<string name="settings_tweet_title">Tweet @heytribe</string>
+	<string name="settings_tweet_subtitle">We reply in less than 24 hours to every single tweet.</string>
+	<string name="settings_email_title">Email the team</string>
+	<string name="settings_email_subtitle">We reply in less than 48 hours to every single email.</string>
+	<string name="settings_rate_title">Rate the app</string>
+	<string name="settings_rate_subtitle">The easiest way to show us some love.</string>
+	<string name="settings_section_exit">Exit</string>
+	<string name="settings_logout_title">Log out</string>
+	<string name="settings_logout_subtitle">Disconnect this account from this device.</string>
+	<string name="settings_remove_title">Delete account</string>
+	<string name="settings_remove_subtitle">Say goodbye to your friendships, points and more.</string>
+	
+	<!-- Onboarding -->
+	<string name="onboarding_step_phone">Entre ton numéro de téléphone pour démarrer.</string>
+	<string name="onboarding_step_code">Nous venons de t\'envoyer un code afin de le vérifier.</string>
+	<string name="onboarding_phone_number">Numéro de téléphone</string>
+	<string name="onboarding_code">Code</string>
+	<string name="onboarding_connected">Connecté</string>
+	<string name="onboarding_user_title">Remplissez quelques informations à propos de vous !</string>
+	<string name="onboarding_user_avatar_library">Photo depuis la librairie</string>
+	<string name="onboarding_user_avatar_selfie">Prendre un selfie</string>
+	<string name="onboarding_user_displayname_placeholder">Votre nom</string>
+	<string name="onboarding_user_username_placeholder">Nom d\'utilisateur</string>
+	<string name="onboarding_user_facebook_button_title">Remplir depuis Facebook</string>
+	<string name="onboarding_queue_title">Rentre maintenant.</string>
+	<string name="onboarding_queue_description">Vous devez avoir un ami\npour pouvoir rentrer</string>
+	<string name="onboarding_queue_button_title">Voyons ça!</string>
+	<string name="onboarding_queue_loading_title">Attention...</string>
+	<string name="onboarding_queue_loading_description">Recherche d\'un contact dans\nnotre base de données</string>
+	<string name="onboarding_queue_loading_friends">friends</string>
+	<string name="onboarding_queue_declined_title">Pas encore!</string>
+	<string name="onboarding_queue_declined_description">Demande à des amis\nde venir</string>
+	<string name="onboarding_queue_declined_message_button">Text friends</string>
+	<string name="onboarding_queue_declined_button_title">Alert moi</string>
+	<string name="onboarding_queue_declined_popup_title">Get notified!</string>
+	<string name="onboarding_queue_declined_popup_description">Receive a push notification\nwhen a friend joins the app.</string>
+	<string name="onboarding_queue_declined_popup_cancel_button">Stay alone.</string>
+	<string name="onboarding_queue_declined_popup_confirm_button">Sure!</string>
+	<string name="onboarding_queue_valid_title">C\'est bon!</string>
+	<string name="onboarding_queue_valid_description">Rentre maintenant, %i amis\nsont déjà là!</string>
+	<string name="onboarding_queue_valid_button_title">Rentre maintenant!</string>
+	
+	<!-- Pull to search -->
+	<string name="pull_to_search_swipe_down_action">Continue à tirer pour rechercher</string>
+	<string name="pull_to_search_title">Trie ta grille par lettre</string>
+	
+	<!-- Score -->
+	<string name="score_current_level">Niveau</string>
+	<string name="score_next_level">Prochain niveau dans</string>
+	<string name="score_points_system_button">Comment avoir des points ?</string>
+	
+	<!-- Points System -->
+	<string name="points_system_title">Gagne des points</string>
+	<string name="points_AppOpened_title">Reste sur l\'application</string>
+	<string name="points_AppOpened_description">Toutes les 15 sec</string>
+	<string name="points_SendReceiveChat_title">Envoie ou reçois des messages</string>
+	<string name="points_SendReceiveChat_description">Message texte</string>
+	<string name="points_SendReceiveTribe_title">Envoie ou reçois des messages</string>
+	<string name="points_SendReceiveTribe_description">Message video ou audio</string>
+	<string name="points_NewFriendship_title">Nouvelle amitié</string>
+	<string name="points_NewFriendship_description">Swipe à gauche depuis la grille</string>
+	<string name="points_InviteTribe_title">Invite un ami</string>
+	<string name="points_InviteTribe_description">Swipe à gauche depuis la grille</string>
+	<string name="points_CreateGroup_title">Créé un groupe</string>
+	<string name="points_CreateGroup_description">Swipe à droite depuis la grille</string>
+	<string name="points_RateApp_title">Note l\'application</string>
+	<string name="points_RateApp_description">Rends-toi sur l\'App Store</string>
+	<string name="points_ShareProfile_title">Partage ton profile</string>
+	<string name="points_ShareProfile_description">Swipe à gauche depuis la grille</string>
+	<string name="points_LocationPermission_title">TODO</string>
+	<string name="points_LocationPermission_description">TODO</string>
+	<string name="points_PushPermission_title">TODO</string>
+	<string name="points_PushPermission_description">TODO</string>
+	<string name="points_InviteFacebookFriends_title">Invite tes amis Facebook</string>
+	<string name="points_InviteFacebookFriends_description">Swipe à gauche depuis la grille</string>
+	<string name="points_HundredGroupMembers_title">Groupe à 100 membres</string>
+	<string name="points_HundredGroupMembers_description">À chaque 100 members dans un publique groupe</string>
+	
+	<!-- Level -->
+	<string name="level_noob_title">Noob</string>
+	<string name="level_rookie_title">Rookie</string>
+	<string name="level_coolkid_title">Coolkid</string>
+	<string name="level_champ_title">Champ</string>
+	<string name="level_rockstar_title">Rockstar</string>
+	<string name="level_legend_title">Legend</string>
+	<string name="level_king_title">King</string>
+	<string name="level_alien_title">Alien</string>
+	<string name="level_unicorn_title">Unicorn</string>
+	<string name="level_bot_title">Bot</string>
+</resources>

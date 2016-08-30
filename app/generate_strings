@@ -1,0 +1,205 @@
+#!/usr/bin/php
+<?php
+
+// Configuration
+
+$config = new stdClass();
+$config->platform = 'android';
+$config->url = 'https://docs.google.com/spreadsheets/u/0/d/16cSTGj1HUnhNqlEAPcxR6TuMe7FnitbYb-Tuqy9yJxk/export?format=csv';
+$config->columnForSections = 0;
+$config->columnForKeys     = 1;
+$config->columnsForLangs = array(
+	'src/main/res/values-en/strings.xml' => 2,
+	'src/main/res/values-fr/strings.xml' => 3,
+);
+
+// Exports
+
+function export_ios($config, $lines) {
+
+	function cleanup_value($value) {
+		return str_replace('#@@##@@#', '\"', str_replace('"', '', str_replace('""', '#@@##@@#', trim($value))));
+	}
+
+	$files = array();
+	foreach ($config->langs as $lang) {
+		$files[$lang] = array();
+	}
+
+	foreach ($lines as $i => $line) {
+
+		// Skip headers
+		if ($i > 2) {
+
+			$section = $line[$config->columnForSections];
+			$key 	 = $line[$config->columnForKeys];
+	 
+			// SECTION
+
+			if (!empty($section)) {
+				foreach ($config->langs as $lang) {
+
+					if (!empty($files[$lang])) {
+						$files[$lang][] = '';
+					}
+
+					$files[$lang][] = '// ' . trim($section);
+				}
+			}
+
+			// KEY
+
+			if (!empty($key)) {
+				foreach ($config->columnsForLangs as $lang => $columnForLang) {
+					$files[$lang][] = '"' . trim($key) . '" = "' . cleanup_value($line[$columnForLang]) . '";';
+				}
+			}
+		}
+	}
+
+	foreach ($config->langs as $lang) {
+		$files[$lang][] = '';
+	}
+
+	return $files;
+}
+
+function export_android($config, $lines) {
+
+	if (!file_exists('build/php-emoji.php')) {
+		file_put_contents('build/php-emoji.php', file_get_contents('https://raw.githubusercontent.com/iamcal/php-emoji/master/lib/emoji.php'));
+	}
+
+	include 'build/php-emoji.php';
+
+	function cleanup_value($value) {
+
+		$value = str_replace(
+			array('\'', '&'), 
+			array('\\\'', '&amp;'), 
+			str_replace('#@@##@@#', '"', str_replace('"', '', str_replace('""', '#@@##@@#', trim($value))))
+		);
+
+		$value = entities($value);
+
+		echo $value . PHP_EOL;
+
+		return $value;
+	}
+
+	$files = array();
+	foreach ($config->langs as $lang) {
+		$files[$lang] = array('<resources>');
+	}
+
+	foreach ($lines as $i => $line) {
+
+		// Skip headers
+		if ($i > 2) {
+
+			$section = $line[$config->columnForSections];
+			$key 	 = $line[$config->columnForKeys];
+	 
+			// SECTION
+
+			if (!empty($section)) {
+				foreach ($config->langs as $lang) {
+					$files[$lang][] = '	';
+					$files[$lang][] = '	<!-- ' . trim($section) . ' -->';
+				}
+			}
+
+			// KEY
+
+			if (!empty($key)) {
+				foreach ($config->columnsForLangs as $lang => $columnForLang) {
+					$files[$lang][] = '	<string name="' . trim($key) . '">' . cleanup_value($line[$columnForLang]) . '</string>';
+				}
+			}
+		}
+	}
+
+	foreach ($config->langs as $lang) {
+		$files[$lang][] = '</resources>';
+		$files[$lang][] = '';
+	}
+
+	return $files;
+}
+
+// Execution
+
+$config->langs = array_keys($config->columnsForLangs);
+
+$contents = @file_get_contents($config->url);
+
+if ($contents !== false) {
+
+	$lines = array_map(
+		'str_getcsv',
+		explode(PHP_EOL, $contents)
+	);
+
+	$method = 'export_' . $config->platform;
+	$files = $method($config, $lines);
+
+	foreach ($files as $lang => $file) {
+		@mkdir(dirname($lang));
+		file_put_contents($lang, implode(PHP_EOL, $file));
+	}
+
+	echo 'Strings generated.' . PHP_EOL;
+
+} else {
+	echo 'No connection, skipping generation of strings.' . PHP_EOL;
+}
+
+function entities( $string ) {
+    $stringBuilder = "";
+    $offset = 0;
+
+    if ( empty( $string ) ) {
+        return "";
+    }
+
+    while ( $offset >= 0 ) {
+        $decValue = ordutf8( $string, $offset );
+        $char = unichr($decValue);
+
+        $htmlEntited = htmlentities( $char );
+        if( $char != $htmlEntited ){
+            $stringBuilder .= $char;
+        } elseif( $decValue >= 128 ){
+            $stringBuilder .= "&#" . $decValue . ";";
+        } else {
+            $stringBuilder .= $char;
+        }
+    }
+
+    return $stringBuilder;
+}
+
+// source - http://php.net/manual/en/function.ord.php#109812
+function ordutf8($string, &$offset) {
+    $code = ord(substr($string, $offset,1));
+    if ($code >= 128) {        //otherwise 0xxxxxxx
+        if ($code < 224) $bytesnumber = 2;                //110xxxxx
+        else if ($code < 240) $bytesnumber = 3;        //1110xxxx
+        else if ($code < 248) $bytesnumber = 4;    //11110xxx
+        $codetemp = $code - 192 - ($bytesnumber > 2 ? 32 : 0) - ($bytesnumber > 3 ? 16 : 0);
+        for ($i = 2; $i <= $bytesnumber; $i++) {
+            $offset ++;
+            $code2 = ord(substr($string, $offset, 1)) - 128;        //10xxxxxx
+            $codetemp = $codetemp*64 + $code2;
+        }
+        $code = $codetemp;
+    }
+    $offset += 1;
+    if ($offset >= strlen($string)) $offset = -1;
+    return $code;
+}
+
+// source - http://php.net/manual/en/function.chr.php#88611
+function unichr($u) {
+    return mb_convert_encoding('&#' . intval($u) . ';', 'UTF-8', 'HTML-ENTITIES');
+}
