@@ -201,6 +201,8 @@
 	<string name="settings_audio_subtitle">Set voice mode by default instead of video messages.</string>
 	<string name="settings_preload_title">Preload</string>
 	<string name="settings_preload_subtitle">Load new messages in background, automatically.</string>
+	<string name="settings_weatherunits_title"></string>
+	<string name="settings_weatherunits_subtitle"></string>
 	<string name="settings_section_support">Support</string>
 	<string name="settings_tweet_title">Tweet @heytribe</string>
 	<string name="settings_tweet_subtitle">We reply in less than 24 hours to every single tweet.</string>

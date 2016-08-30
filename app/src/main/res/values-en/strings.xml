@@ -26,44 +26,44 @@
 	<string name="contacts_section_facebook_sync_disabled">Facebook friends aren’t synced</string>
 	<string name="contacts_section_facebook_sync_enabled">Facebook friends are synced</string>
 	<string name="contacts_section_facebook_sync_title">Facebook Auto-Sync</string>
-	<string name="contacts_section_facebook_sync_description">Sync your friends from Facebook\automatically when they joined</string>
+	<string name="contacts_section_facebook_sync_description">Automatically sync your Facebook friends when they join</string>
 	<string name="contacts_section_facebook_syncing_title">Syncing</string>
 	<string name="contacts_section_addressbook_sync_disabled">Address book isn’t synced</string>
 	<string name="contacts_section_addressbook_sync_enabled">Address book is synced</string>
 	<string name="contacts_section_addressbook_sync_title">Address book Auto-Sync</string>
-	<string name="contacts_section_addressbook_sync_description">Sync contacts from your Address Book\nautomatically when they joined</string>
+	<string name="contacts_section_addressbook_sync_description">Automatically sync your Address Book contacts when they join</string>
 	<string name="contacts_section_addressbook_syncing">Syncing</string>
 	<string name="contacts_section_addressbook_empty">No more contacts to invite</string>
-	<string name="contacts_section_addressbook_friends_in_app">friends on Tribe</string>
+	<string name="contacts_section_addressbook_friends_in_app">Friends on Tribe</string>
 	<string name="contacts_section_search_usernames">Username</string>
 	<string name="contacts_section_search_searching">Searching</string>
 	<string name="contacts_section_search_friends">People you know</string>
 	
 	<!-- Permissions -->
-	<string name="permission_contacts_disabled_alert_title">Permission for AddressBook was denied.</string>
-	<string name="permission_contacts_disabled_alert_description">Please enable access to AddressBook in the Settings app</string>
+	<string name="permission_contacts_disabled_alert_title">Permission for Address Book was denied</string>
+	<string name="permission_contacts_disabled_alert_description">Please enable access to Address Book in Settings</string>
 	<string name="permission_contacts_disabled_alert_redirect">Show me</string>
 	<string name="permission_contacts_disabled_alert_cancel">OK</string>
-	<string name="permission_camera_enable_button_title">Enable\ncamera</string>
-	<string name="permission_popup_push_onboarding_title">Get notified!</string>
-	<string name="permission_popup_push_onboarding_description">Receive a push notification\nwhen a friend join the app!</string>
+	<string name="permission_camera_enable_button_title">Enable Camera</string>
+	<string name="permission_popup_push_onboarding_title">Get notified</string>
+	<string name="permission_popup_push_onboarding_description">Receive a push notification when friends join Tribe</string>
 	<string name="permission_popup_push_onboarding_points">Enabling notifications</string>
-	<string name="permission_popup_push_onboarding_no">Stay Alone!</string>
-	<string name="permission_popup_push_onboarding_yes">Sure!</string>
-	<string name="permission_popup_push_home_title">Replies coming!</string>
-	<string name="permission_popup_push_home_description">Get notified when your\nfriends send you messages.</string>
+	<string name="permission_popup_push_onboarding_no">Stay Alone</string>
+	<string name="permission_popup_push_onboarding_yes">Yes!</string>
+	<string name="permission_popup_push_home_title">Responses are coming!</string>
+	<string name="permission_popup_push_home_description">Get notified when your friends send you messages.</string>
 	<string name="permission_popup_push_home_points">Enabling notifications</string>
 	<string name="permission_popup_push_home_no">Not now</string>
-	<string name="permission_popup_push_home_yes">Enable!</string>
-	<string name="permission_popup_location_home_title">Better messages!</string>
-	<string name="permission_popup_location_home_description">Using location will allow \nyour messages to be\nmore epic than ever.</string>
+	<string name="permission_popup_push_home_yes">Enable</string>
+	<string name="permission_popup_location_home_title">Receive better messages!</string>
+	<string name="permission_popup_location_home_description">Using location will allow your messages to be more epic than ever!</string>
 	<string name="permission_popup_location_home_points">Enabling “Location”</string>
 	<string name="permission_popup_location_home_no">Not now</string>
 	<string name="permission_popup_location_home_yes">Enable!</string>
 	
 	<!-- Invitations -->
 	<string name="invitation_sms_error_parse_number_title">The phone number of this contact doesn\'t look right</string>
-	<string name="invitation_sms_error_parse_number_message">%@\n\nThe number of this contact didn\'t have a country prefix. We tried to add %@ but it didn\'t work. You might want to edit it yourself</string>
+	<string name="invitation_sms_error_parse_number_message">%@\n\nThis contact didn\'t have a country prefix. We tried to add %@ but it didn\'t work. Please manually edit</string>
 	<string name="invitation_sms_error_parse_number_action_edit">Edit the number</string>
 	<string name="invitation_sms_error_parse_number_action_use">Use this number</string>
 	<string name="invitation_sms_invite_friend"></string>
@@ -78,7 +78,7 @@
 	<string name="tribe_snooze_6_hours_title">In 6 hours</string>
 	<string name="tribe_snooze_tomorrow_title">Tomorrow</string>
 	<string name="tribe_snooze_this_weekend_title">This weekend</string>
-	<string name="tribe_empty_list">Ooops, the tribes couldn\'t be loaded</string>
+	<string name="tribe_empty_list">Ooops, tribes couldn\'t be loaded</string>
 	<string name="tribe_more_add_friend">Add as friend</string>
 	<string name="tribe_more_add_friend_success">Added as a friend</string>
 	<string name="tribe_more_save">Save in Library</string>
@@ -90,21 +90,21 @@
 	
 	<!-- Grid -->
 	<string name="grid_user_points">Points</string>
-	<string name="grid_friendship_status_default">Tap &amp; hold!</string>
+	<string name="grid_friendship_status_default">Tap &amp; hold</string>
 	<string name="grid_friendship_status_sending">Sending</string>
 	<string name="grid_friendship_status_sent">Sent</string>
 	<string name="grid_friendship_status_opened">Opened</string>
 	<string name="grid_friendship_status_opened_plural">Opened</string>
-	<string name="grid_friendship_status_new_messages">Tap to view!</string>
+	<string name="grid_friendship_status_new_messages">Tap to view</string>
 	<string name="grid_friendship_status_loading">Loading</string>
 	<string name="grid_ghost">Has not joined yet</string>
 	<string name="grid_friendship_recording_tap_to_cancel">Wrapping up</string>
-	<string name="grid_friendship_recording_validated">Ready to send!</string>
+	<string name="grid_friendship_recording_validated">Ready to send</string>
 	<string name="grid_unsent_tribes_action_resend">Resend</string>
 	<string name="grid_unsent_tribes_action_delete">Delete</string>
 	<string name="grid_unsent_tribes_action_resend_all">Resend all</string>
 	<string name="grid_unsent_tribes_action_delete_all">Delete all</string>
-	<string name="grid_menu_group_infos">Group Infos</string>
+	<string name="grid_menu_group_infos">Group Info</string>
 	<string name="grid_menu_group_leave">Leave group</string>
 	<string name="grid_menu_group_leave_last_admin_error">To leave a group you must set a new admin</string>
 	<string name="grid_menu_group_delete">Delete group</string>
@@ -114,11 +114,11 @@
 	<string name="grid_menu_friendship_clear_tribes">Clear tribes</string>
 	
 	<!-- Chat -->
-	<string name="chat_tutorial_content">This is where you can chat when you can’t speak or to share an address, a phone number, a handle, etc..</string>
+	<string name="chat_tutorial_content">This is where you aren\'t able to send a video or need to send something with text, such as an address or phone #</string>
 	<string name="chat_tutorial_statuses_title">Message status</string>
 	<string name="chat_status_sending">Sending</string>
 	<string name="chat_status_sent">Sent</string>
-	<string name="chat_status_read_partly">Read by a part of the recipients</string>
+	<string name="chat_status_read_partly">Read by part of the recipients</string>
 	<string name="chat_status_read">Read by everyone</string>
 	<string name="chat_status_error">No network</string>
 	<string name="chat_caption_photo">Image from camera roll</string>
@@ -151,14 +151,14 @@
 	<string name="group_suggestions_title">Or tap a suggested name</string>
 	<string name="group_private_title">Private</string>
 	<string name="group_private_popup_title">Go into the wild\nwith Private Groups!</string>
-	<string name="group_private_popup_title_description">Chat about hot topics, current, events, sports, music, and more!</string>
+	<string name="group_private_popup_title_description">Chat about hot topics, current events, sports, music, and more!</string>
 	<string name="group_private_popup_done">Exciting!</string>
 	<string name="group_public_title">Public</string>
 	<string name="group_public_popup_title">Go into the wild\nwith Public Groups!</string>
-	<string name="group_public_popup_title_description">Chat about hot topics, current, events, sports, music, and more!</string>
+	<string name="group_public_popup_title_description">Chat about hot topics, current events, sports, music, and more!</string>
 	<string name="group_public_popup_done">Exciting!</string>
 	<string name="group_search_friends_placeholder">Search for members</string>
-	<string name="group_private_link_description">This link will expire in 1h</string>
+	<string name="group_private_link_description">This link will expire in 1 hr</string>
 	<string name="group_private_link_popup_title">Only 59:32 min left!</string>
 	<string name="group_private_link_popup_description">Select where to send this\ntemporary link to your friends!</string>
 	<string name="group_public_link_description">Tips: You can even include emojis</string>
@@ -194,25 +194,27 @@
 	<string name="settings_username_subtitle">How you appear for everyone.</string>
 	<string name="settings_section_messages">Messages</string>
 	<string name="settings_tribesave_title">Memories</string>
-	<string name="settings_tribesave_subtitle">Allow your friends to save your messages if they want to.</string>
+	<string name="settings_tribesave_subtitle">Allow your friends to save your\nmessages if they want to.</string>
 	<string name="settings_geolocation_title">Context</string>
-	<string name="settings_geolocation_subtitle">Allow your friends to get location-based context on your messages.</string>
+	<string name="settings_geolocation_subtitle">Let recipients get location\n-based context on your\nmessages.</string>
 	<string name="settings_audio_title">Voice by default</string>
-	<string name="settings_audio_subtitle">Set voice mode by default instead of video messages.</string>
+	<string name="settings_audio_subtitle">Set voice mode by default\ninstead of video messages.</string>
 	<string name="settings_preload_title">Preload</string>
-	<string name="settings_preload_subtitle">Load new messages in background, automatically.</string>
+	<string name="settings_preload_subtitle">Download new messages in\nbackground, automatically.</string>
+	<string name="settings_weatherunits_title">Fahrenheit</string>
+	<string name="settings_weatherunits_subtitle">Display temperature on message\nin Fahrenheit instead of Celsius.</string>
 	<string name="settings_section_support">Support</string>
 	<string name="settings_tweet_title">Tweet @heytribe</string>
-	<string name="settings_tweet_subtitle">We reply in less than 24 hours to every single tweet.</string>
+	<string name="settings_tweet_subtitle">We reply in less than 24 hours\nto every single tweet.</string>
 	<string name="settings_email_title">Email the team</string>
-	<string name="settings_email_subtitle">We reply in less than 48 hours to every single email.</string>
+	<string name="settings_email_subtitle">We reply in less than 48 hours\nto every single email.</string>
 	<string name="settings_rate_title">Rate the app</string>
-	<string name="settings_rate_subtitle">The easiest way to show us some love.</string>
+	<string name="settings_rate_subtitle">The easiest way to show us\nsome love.</string>
 	<string name="settings_section_exit">Exit</string>
 	<string name="settings_logout_title">Log out</string>
-	<string name="settings_logout_subtitle">Disconnect this account from this device.</string>
+	<string name="settings_logout_subtitle">Disconnect this account from\nthis device.</string>
 	<string name="settings_remove_title">Delete account</string>
-	<string name="settings_remove_subtitle">Say goodbye to your friendships, points and more.</string>
+	<string name="settings_remove_subtitle">Say goodbye to your\nfriendships, points and more.</string>
 	
 	<!-- Onboarding -->
 	<string name="onboarding_step_phone">Use your phone number to connect</string>
