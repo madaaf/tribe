@@ -8,12 +8,10 @@
 
     <ImageView
         android:id="@+id/imgBackIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start|bottom"
-        android:layout_marginStart="@dimen/horizontal_margin_small"
-        android:layout_marginBottom="@dimen/vertical_margin"
-        android:gravity="center"
+        android:layout_width="@dimen/icons_end"
+        android:layout_height="@dimen/icons_end"
+        android:layout_gravity="bottom"
+        android:scaleType="centerInside"
         android:clickable="true"
         android:src="@drawable/picto_next_icon_black"
         android:scaleX="-1"
@@ -85,6 +83,16 @@
         app:cpv_indeterminate="true"
         app:cpv_color="@android:color/black"
         app:cpv_thickness="2dp"
+        />
+
+    <ImageView
+        android:id="@+id/imgConnectedIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:gravity="center"
+        android:src="@drawable/picto_connected_icon"
         />
 
 </FrameLayout>

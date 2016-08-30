@@ -13,6 +13,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -92,6 +93,8 @@ public class AccessLockView extends FrameLayout {
     private boolean isRed = true;
     int oldSemiCircleBackground;
     int newSemiCircleBackground;
+    int pulsingDuration = 1200;
+
 
     /**
      * Lifecycle methods
@@ -136,16 +139,20 @@ public class AccessLockView extends FrameLayout {
         addPulsingRedCircleAnimation();
 
         semiCircleView.setVisibility(INVISIBLE);
+        imgLockIcon.setAlpha(1f);
+        imgLockIcon.setTranslationY(0);
 
-        // Fade big lock in
-        imgLockIcon.setScaleX(5);
-        imgLockIcon.setScaleY(5);
-        imgLockIcon.animate().alpha(1).setDuration(0).setStartDelay(0).translationY(0).start();
-        imgLockIcon.animate().scaleX(1).scaleY(1).setStartDelay(0).setDuration(300).setInterpolator(new DecelerateInterpolator()).start();
+
         AnimationUtils.fadeViewDownOut(txtFriends);
         AnimationUtils.fadeViewDownOut(txtNumFriends);
 
+    }
 
+    public void fadeBigLockIn() {
+        imgLockIcon.setScaleX(10);
+        imgLockIcon.setScaleY(10);
+        imgLockIcon.animate().alpha(1).setDuration(0).setStartDelay(0).translationY(0).start();
+        imgLockIcon.animate().scaleX(1).scaleY(1).setStartDelay(0).setDuration(600).setInterpolator(new DecelerateInterpolator()).start();
     }
 
 
@@ -180,14 +187,22 @@ public class AccessLockView extends FrameLayout {
 
         subscriptions.clear();
         viewPulse.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.shape_circle_grey, null));
-        subscriptions.add(Observable.interval(600, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+        subscriptions.add(Observable.interval(pulsingDuration, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .subscribe(aVoid -> {
                     if (isRed) {
                         isRed = false;
-                        viewPulse.animate().scaleY((float) 1).scaleX((float) 1).setDuration(600).start();
+                        viewPulse.animate()
+                                .scaleY((float) 1)
+                                .scaleX((float) 1)
+                                .setDuration(pulsingDuration)
+                                .start();
                     } else {
                         isRed = true;
-                        viewPulse.animate().scaleY((float) 1.2).scaleX((float) 1.2).setDuration(600).start();
+                        viewPulse.animate().
+                                scaleY((float) 1.2)
+                                .scaleX((float) 1.2)
+                                .setDuration(pulsingDuration)
+                                .start();
                     }
                 }));
 
@@ -201,7 +216,7 @@ public class AccessLockView extends FrameLayout {
         txtFriends.animate()
                 .alpha(0)
                 .setDuration(300)
-                .translationY(100)
+                .translationY(25)
                 .setStartDelay(0)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
@@ -214,7 +229,7 @@ public class AccessLockView extends FrameLayout {
         txtNumFriends.animate()
                 .alpha(0)
                 .setDuration(300)
-                .translationY(100)
+                .translationY(25)
                 .setStartDelay(0)
                 .start();
 
@@ -281,6 +296,7 @@ public class AccessLockView extends FrameLayout {
         setNewWidthAndHeight(viewPulse, pulseWidth, pulseWidth);
     }
 
+
     private void removePulsingCircleAnimation() {
         Drawable backgrounds[] = new Drawable[2];
         backgrounds[0] = ResourcesCompat.getDrawable(getResources(), R.drawable.shape_circle_grey, null);
@@ -300,18 +316,29 @@ public class AccessLockView extends FrameLayout {
 
         TransitionDrawable crossfader = new TransitionDrawable(backgrounds);
         viewPulse.setBackground(crossfader);
-        crossfader.startTransition(2400);
+        crossfader.startTransition(pulsingDuration * 2);
 
-        subscriptions.add(Observable.interval(1200, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+
+        subscriptions.add(Observable.interval(pulsingDuration, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .subscribe(aVoid -> {
                     if (isRed) {
                         isRed = false;
-                        crossfader.reverseTransition(1200);
-                        viewPulse.animate().scaleY((float) 1).scaleX((float) 1).setDuration(600).start();
+                        crossfader.reverseTransition(pulsingDuration);
+                        viewPulse.animate()
+                                .scaleY((float) 1)
+                                .scaleX((float) 1)
+                                .setStartDelay(0)
+                                .setDuration(pulsingDuration)
+                                .start();
                     } else {
                         isRed = true;
-                        crossfader.startTransition(2400);
-                        viewPulse.animate().scaleY((float) 1.2).scaleX((float) 1.2).setDuration(600).start();
+                        crossfader.startTransition(pulsingDuration * 2);
+                        viewPulse.animate()
+                                .scaleY((float) 1.2)
+                                .scaleX((float) 1.2)
+                                .setStartDelay(0)
+                                .setDuration(pulsingDuration)
+                                .start();
                     }
                 }));
     }

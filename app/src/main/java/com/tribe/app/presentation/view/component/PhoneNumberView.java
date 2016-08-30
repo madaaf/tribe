@@ -15,6 +15,7 @@ import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import java.util.Locale;
@@ -176,12 +177,16 @@ public class PhoneNumberView extends FrameLayout {
         }
     }
 
-    public void progressViewVisible(boolean visible) {
-        if (visible) {
-            circularProgressViewPhoneNumber.setVisibility(VISIBLE);
-        } else {
-            circularProgressViewPhoneNumber.setVisibility(INVISIBLE);
-        }
+    public void fadeOutNext() {
+        AnimationUtils.fadeOutFast(imageViewNextIcon);
+    }
+
+    public void nextIconFadeOut() {
+        AnimationUtils.fadeOutFast(imageViewNextIcon);
+    }
+
+    public void nextIconVisisble() {
+        imageViewNextIcon.setAlpha(1f);
     }
 
 }

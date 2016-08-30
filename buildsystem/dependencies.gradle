@@ -36,7 +36,7 @@ ext {
     reboundVersion = '0.3.8'
     rxSharedPreferencesVersion = '1.0.1'
     libPhoneNumberVersion = '7.1.0'
-    exoPlayerVersion = 'r1.5.9'
+    exoPlayerVersion = 'r1.5.10'
     vlcPlayerVersion = '1.9.8'
     firebaseMessagingVersion = '9.4.0'
     firebaseCrashReportingVersion = '9.4.0'
@@ -45,6 +45,7 @@ ext {
     googlePlayLocationVersion = '9.4.0'
     rxPermissionsVersion = '0.7.0@aar'
     facebookVersion = '4,5'
+    plattysoftVersion = '1.3.1'
 
     //Testing
     robolectricVersion = '3.0'
@@ -86,7 +87,7 @@ ext {
             rebound                 : "com.facebook.rebound:rebound:${reboundVersion}",
             rxSharedPreferences     : "com.f2prateek.rx.preferences:rx-preferences:${rxSharedPreferencesVersion}",
             libPhoneNumber          : "com.googlecode.libphonenumber:libphonenumber:${libPhoneNumberVersion}",
-            exoplayer               : "com.google.android.exoplayer:exoplayer:${exoPlayerVersion}",
+            exoPlayer               : "com.google.android.exoplayer:exoplayer:${exoPlayerVersion}",
             vlcPlayer               : "de.mrmaffen:vlc-android-sdk:${vlcPlayerVersion}",
             firebaseMessaging       : "com.google.firebase:firebase-messaging:${firebaseMessagingVersion}",
             firebaseCrashReporting  : "com.google.firebase:firebase-crash:${firebaseCrashReportingVersion}",
@@ -94,7 +95,9 @@ ext {
             rxLocation              : "pl.charmas.android:android-reactive-location:${rxLocationVersion}",
             googlePlayLocation      : "com.google.android.gms:play-services-location:${googlePlayLocationVersion}",
             rxPermissions           : "com.tbruyelle.rxpermissions:rxpermissions:${rxPermissionsVersion}",
-            facebook                : "com.facebook.android:facebook-android-sdk:[${facebookVersion})"
+            facebook                : "com.facebook.android:facebook-android-sdk:[${facebookVersion})",
+            plattysoft              : "com.plattysoft.leonids:LeonidsLib:${plattysoftVersion}"
+
     ]
 
     presentationTestDependencies = [

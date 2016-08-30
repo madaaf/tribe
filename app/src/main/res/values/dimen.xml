@@ -25,7 +25,8 @@
     <dimen name="vertical_margin_proximity">5dp</dimen>
     <dimen name="vertical_margin_reply_tile">50dp</dimen>
     <dimen name="horizontal_left_margin_chat">71dp</dimen>
-    <dimen name="horizontal_left_margin_onboarding_choose_picture_button">96dp</dimen>
+    <dimen name="horizontal_left_margin_onboarding_choose_picture_button">95dp</dimen>
+    <dimen name="setting_section_title_horizontal_margin">45dp</dimen>
 
     <!-- PADDING -->
     <dimen name="icons_padding">3.75dp</dimen>
@@ -43,6 +44,7 @@
     <dimen name="onboarding_top_bar_height">80dp</dimen>
     <dimen name="onboarding_choose_picture_button_height">48dp</dimen>
     <dimen name="onboarding_choose_name_height">64dp</dimen>
+    <dimen name="setting_section_bar_height">40dp</dimen>
 
     <!-- WIDTHS -->
     <dimen name="snooze_mode_width">93dp</dimen>
@@ -78,6 +80,7 @@
     <dimen name="avatar_size_reply_full">98dp</dimen>
     <dimen name="reply_tap_to_cancel">82dp</dimen>
     <dimen name="score_circle_size">40dp</dimen>
+    <dimen name="setting_pic_size">40dp</dimen>
 
     <!-- THRESHOLDS -->
     <dimen name="threshold_dismiss">100dp</dimen>

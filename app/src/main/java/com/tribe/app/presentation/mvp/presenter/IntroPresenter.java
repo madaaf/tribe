@@ -80,19 +80,7 @@ public class IntroPresenter implements Presenter {
         // TODO: get pin
                 cloudGetRequestCodeUseCase.prepare(phoneNumber);
         cloudGetRequestCodeUseCase.execute(new RequestCodeSubscriber());
-        showViewLoading();
-//        isActive1 = true;
-////        Handler handler = new Handler();
-////        handler.postDelayed(new Runnable() {
-////            @Override
-////            public void run() {
-////                if (isActive1) {
-////                    hideViewLoading();
-////                    goToCode();
-////                    isActive1 = false;
-////                }
-////            }
-////        }, 2000);
+//                    goToCode(pin);
 
 
     }
@@ -104,18 +92,18 @@ public class IntroPresenter implements Presenter {
     public void login(String phoneNumber, String code, String pinId) {
         showViewLoading();
         // TODO: get user id
-//        isActive2 = true;
-//        Handler handler = new Handler();
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                if (isActive2) {
-//                    hideViewLoading();
-//                    goToConnected();
-//                    isActive2 = false;
-//                }
-//            }
-//        }, 2000);
+        isActive2 = true;
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (isActive2) {
+                    hideViewLoading();
+                    goToConnected();
+                    isActive2 = false;
+                }
+            }
+        }, 2000);
 
         cloudLoginUseCase.prepare(phoneNumber, code, pinId);
         cloudLoginUseCase.execute(new LoginSubscriber());
@@ -130,9 +118,9 @@ public class IntroPresenter implements Presenter {
         this.introView.goToHome();
     }
 
-    public void goToProfileInfo() {
-        this.introView.goToProfileInfo();
-    }
+//    public void goToProfileInfo() {
+//        this.introView.goToProfileInfo();
+//    }
 
     public void goToCode(Pin pin) {
         this.introView.goToCode(pin);
@@ -212,11 +200,10 @@ public class IntroPresenter implements Presenter {
         @Override
         public void onNext(User user) {
 //            if (true) {
-//                goToProfileInfo();
+////                goToProfileInfo();
 //            } else {
-//                goToHome();
+                goToHome();
 //            }
-            goToHome();
         }
     }
 

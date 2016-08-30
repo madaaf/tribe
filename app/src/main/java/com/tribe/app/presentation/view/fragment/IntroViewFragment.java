@@ -23,16 +23,22 @@ import com.tribe.app.presentation.mvp.view.IntroView;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.component.CodeView;
+import com.tribe.app.presentation.view.component.ConnectedView;
 import com.tribe.app.presentation.view.component.PhoneNumberView;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -43,6 +49,7 @@ import rx.subscriptions.CompositeSubscription;
  * the process of capturing the users phone number, sending, and validating their pin code.
  * Next fragment in onboarding view pager is ProfileInfoFragment.
  */
+// TODO: fix phone number validation. Refactor for maintenance
 public class IntroViewFragment extends Fragment implements IntroView {
 
     public static IntroViewFragment newInstance() {
@@ -76,6 +83,9 @@ public class IntroViewFragment extends Fragment implements IntroView {
 
     @BindView(R.id.viewCode)
     CodeView viewCode;
+
+    @BindView(R.id.viewConnected)
+    ConnectedView viewConnected;
 
     @BindView(R.id.videoViewIntro)
     IntroVideoView videoViewIntro;
@@ -125,6 +135,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
             subscriptions.clear();
         }
 
+
         super.onDestroy();
     }
 
@@ -135,15 +146,17 @@ public class IntroViewFragment extends Fragment implements IntroView {
     private void initUi(View view) {
         unbinder = ButterKnife.bind(this, view);
 
-//        attachKeyboardListeners();
-
         viewPhoneNumber.setNextEnabled(false);
 
         subscriptions.add(RxView.clicks(viewPhoneNumber.getImageViewNextIcon()).subscribe(aVoid -> {
+            viewPhoneNumber.fadeOutNext();
+            viewCode.setImgBackIconVisible();
             introPresenter.requestCode(phoneNumber);
         }));
 
         subscriptions.add(RxView.clicks(viewCode.getBackIcon()).subscribe(aVoid -> {
+            viewCode.fadeBackOut();
+            viewPhoneNumber.nextIconVisisble();
             viewPager.setCurrentItem(PAGE_PHONE_NUMBER, true);
         }));
 
@@ -157,11 +170,12 @@ public class IntroViewFragment extends Fragment implements IntroView {
         }));
     }
 
+
     private void initViewPager() {
         introViewFragmentPagerAdapter = new IntroViewFragmentPagerAdapter();
         viewPager.setAdapter(introViewFragmentPagerAdapter);
         viewPager.setOffscreenPageLimit(3);
-        viewPager.setScrollDurationFactor(2f);
+        viewPager.setScrollDurationFactor(3.5f);
         viewPager.setCurrentItem(PAGE_PHONE_NUMBER);
         viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_NONE);
         viewPager.setPageTransformer(false, new IntroPageTransformer());
@@ -169,7 +183,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
     }
 
     private void initPlayerView() {
-        videoViewIntro.createPlayer("android.resource://" + getActivity().getPackageName() +"/"+R.raw.onboarding_video);
+        videoViewIntro.createPlayer("asset:///video/onboarding_video.mp4");
     }
 
     private void initPhoneNumberView() {
@@ -247,8 +261,10 @@ public class IntroViewFragment extends Fragment implements IntroView {
     @Override
     public void goToCode(Pin pin) {
         this.pin = pin;
-        viewPhoneNumber.setNextEnabled(false);
+//        viewPhoneNumber.setNextEnabled(false);
+        viewPhoneNumber.fadeOutNext();
         txtIntroMessage.setText(getString(R.string.onboarding_step_code));
+//        AnimationUtils.fadeOutFast(viewCode.getBackIcon());
         viewPager.setCurrentItem(PAGE_CODE, true);
     }
 
@@ -263,29 +279,40 @@ public class IntroViewFragment extends Fragment implements IntroView {
     public void goToConnected() {
         txtIntroMessage.setText("");
         hideKeyboard();
-        viewPager.setCurrentItem(PAGE_CONNECTED, true);
 
         // TODO: get user info and check if they have a picture
         // TODO: view code in camerawrapper for rxjava example observable.timer
-        isActive = true;
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (isActive) {
-                    isActive = false;
-                    ((IntroActivity) getActivity()).goToProfileInfo();
-                }
-            }
-        }, 2000);
+        Observable.timer(300, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(time -> {
+                    viewCode.animateConnectedIcon();
+
+                    Observable.timer(300, TimeUnit.MILLISECONDS)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(time1 -> {
+                                viewCode.fadeConnectedOut();
+                                viewPager.setCurrentItem(PAGE_CONNECTED, true);
+                                viewConnected.animateConnected();
+                    });
+
+                    isActive = true;
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isActive) {
+                                isActive = false;
+                                ((IntroActivity) getActivity()).goToProfileInfo();
+                            }
+                        }
+                    }, 2000);
+                });
 
 
     }
 
-    @Override
-    public void goToProfileInfo() {
-        navigator.navigateToProfileInfo(context());
-    }
 
 
     @Override
@@ -299,17 +326,11 @@ public class IntroViewFragment extends Fragment implements IntroView {
 
     @Override
     public void showLoading() {
-        if (viewPager.getCurrentItem() == PAGE_PHONE_NUMBER) {
-            viewPhoneNumber.setNextVisible(false);
-            viewPhoneNumber.progressViewVisible(true);
-        } else {
             viewCode.progressViewVisible(true);
-        }
     }
 
     @Override
     public void hideLoading() {
-        viewPhoneNumber.progressViewVisible(false);
         viewPhoneNumber.setNextVisible(true);
         viewPhoneNumber.setNextEnabled(true);
         viewCode.progressViewVisible(false);
