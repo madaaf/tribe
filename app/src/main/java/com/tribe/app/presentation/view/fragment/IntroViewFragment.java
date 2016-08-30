@@ -183,7 +183,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
     }
 
     private void initPlayerView() {
-        videoViewIntro.createPlayer("asset:///video/onboarding_video.mp4");
+        videoViewIntro.createPlayer("android.resource://" + getActivity().getPackageName() + "/" + R.raw.onboarding_video);
     }
 
     private void initPhoneNumberView() {

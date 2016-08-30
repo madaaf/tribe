@@ -46,6 +46,9 @@ public class PhoneNumberView extends FrameLayout {
     @BindView(R.id.imageViewNextIcon)
     ImageView imageViewNextIcon;
 
+    @BindView(R.id.countryButton)
+    View countryButton;
+
     @BindView(R.id.circularProgressViewPhoneNumber)
     CircularProgressView circularProgressViewPhoneNumber;
 
@@ -90,7 +93,7 @@ public class PhoneNumberView extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.view_phone_number, this);
         unbinder = ButterKnife.bind(this);
 
-        RxView.clicks(imgCountryCode)
+        RxView.clicks(countryButton)
                 .subscribe(countryClickEventSubject);
 
 

@@ -281,7 +281,7 @@ public class AccessLockView extends FrameLayout {
         AnimationDrawable animationDrawable = new AnimationDrawable();
         animationDrawable.setOneShot(true);
         newSemiCircleBackground = circleRadiusFriends;
-        // TODO: fix this
+
         for (int i = oldSemiCircleBackground; i <= newSemiCircleBackground; i++) {
             animationDrawable.addFrame(new SemiCircleDrawable(ContextCompat.getColor(getContext(), R.color.blue_text),
                     semiCircleView.getWidth(),
@@ -318,7 +318,10 @@ public class AccessLockView extends FrameLayout {
 
         TransitionDrawable crossfader = new TransitionDrawable(backgrounds);
         viewPulse.setBackground(crossfader);
-        viewPulse.animate().scaleX(1.2f).scaleY(1.2f).setDuration(600).start();
+        viewPulse.animate()
+                .scaleX(1.2f).scaleY(1.2f)
+                .setDuration(600)
+                .start();
         crossfader.startTransition(1200);
 
     }
