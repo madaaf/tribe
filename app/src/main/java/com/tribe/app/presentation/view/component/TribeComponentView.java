@@ -11,7 +11,6 @@ import android.view.TextureView;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
@@ -24,16 +23,12 @@ import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
 import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.view.video.TribeMediaPlayer;
 import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.LabelButton;
 import com.tribe.app.presentation.view.widget.ScalableTextureView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.VideoTextureView;
-
-import org.videolan.libvlc.IVLCVout;
-import org.videolan.libvlc.LibVLC;
-import org.videolan.libvlc.Media;
-import org.videolan.libvlc.MediaPlayer;
 
 import java.util.Date;
 
@@ -45,14 +40,14 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import rx.Observable;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by tiago on 10/06/2016.
  */
-public class TribeComponentView extends FrameLayout implements TextureView.SurfaceTextureListener, IVLCVout.Callback {
+public class TribeComponentView extends FrameLayout implements TextureView.SurfaceTextureListener {
 
     @Inject User currentUser;
-    @Inject LibVLC libVLC;
     @Inject @SpeedPlayback Preference<Float> speedPlayack;
     @Inject @DistanceUnits Preference<String> distanceUnits;
     @Inject @WeatherUnits Preference<String> weatherUnits;
@@ -86,16 +81,11 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
     // OBSERVABLES
     private Unbinder unbinder;
+    private CompositeSubscription subscriptions = new CompositeSubscription();
     private final PublishSubject<View> clickEnableLocation = PublishSubject.create();
 
     // PLAYER
-    private boolean isPaused = false;
-    private boolean isReadyToPlay = false;
-    private boolean shouldAutoPlay = false;
-    private MediaPlayer mediaPlayer = null;
-    private MediaPlayer.EventListener playerListener;
-    private int videoWidth, videoHeight;
-    private SurfaceTexture surfaceTexture;
+    private TribeMediaPlayer mediaPlayer;
     private TribeMessage tribe;
 
     public TribeComponentView(Context context) {
@@ -122,15 +112,6 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         LayoutInflater.from(getContext()).inflate(R.layout.view_tribe, this);
         unbinder = ButterKnife.bind(this);
         ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
-
-        try {
-            mediaPlayer = new MediaPlayer(libVLC);
-            playerListener = new PlayerListener();
-            mediaPlayer.setEventListener(playerListener);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(getContext(), "Error creating player!", Toast.LENGTH_LONG).show();
-        }
 
         videoTextureView.setScaleType(ScalableTextureView.ScaleType.CENTER_CROP_FILL);
         videoTextureView.setSurfaceTextureListener(this);
@@ -167,63 +148,45 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         }
     }
 
-    public void startPlayer() {
-        setMedia();
-        if (surfaceTexture != null) prepareWithSurface();
-    }
+    public void preparePlayer(boolean autoStart) {
+        mediaPlayer = new TribeMediaPlayer.TribeMediaPlayerBuilder(getContext(), FileUtils.getPathForId(tribe.getId()))
+                .autoStart(autoStart)
+                .looping(true)
+                .mute(false)
+                .canChangeSpeed(true)
+                .build();
 
-    public void setMedia() {
-        Media media = new Media(libVLC, FileUtils.getPathForId(tribe.getId()));
-        mediaPlayer.setMedia(media);
+        subscriptions.add(mediaPlayer.onPreparedPlayer().subscribe(prepared -> {
+
+        }));
+
+        subscriptions.add(mediaPlayer.onVideoSizeChanged().subscribe(videoSize -> {
+            if (videoTextureView != null && videoTextureView.getContentHeight() != videoSize.getHeight()) {
+                videoTextureView.setContentWidth(videoSize.getWidth());
+                videoTextureView.setContentHeight(videoSize.getHeight());
+                videoTextureView.updateTextureViewSize();
+            }
+
+            subscriptions.add(mediaPlayer.onErrorPlayer().subscribe(error -> {
+                System.out.println("MEDIA PLAYER ERROR");
+            }));
+        }));
     }
 
     public void releasePlayer() {
-        if (mediaPlayer == null) return;
+        mediaPlayer.release();
 
-        isReadyToPlay = false;
-        try {
-            mediaPlayer.pause();
-
-            new Thread(() -> {
-                try {
-                    final IVLCVout vout = mediaPlayer.getVLCVout();
-                    vout.removeCallback(TribeComponentView.this);
-                    vout.detachViews();
-                    mediaPlayer.release();
-                } catch (IllegalStateException ex) {
-                    ex.printStackTrace();
-                }
-            }).start();
-        } catch (IllegalStateException ex) {
-            ex.printStackTrace();
+        if (subscriptions != null && subscriptions.hasSubscriptions()) {
+            subscriptions.clear();
         }
     }
 
     public void play() {
-        shouldAutoPlay = true;
-
-        if (isReadyToPlay) {
-            isPaused = false;
-            mediaPlayer.play();
-        }
+        mediaPlayer.play();
     }
 
     public void pausePlayer() {
-        if (mediaPlayer != null && !isPaused) {
-            isPaused = true;
-            mediaPlayer.pause();
-        }
-    }
-
-    public void resumePlayer() {
-        if (mediaPlayer != null && isPaused) {
-            isPaused = false;
-            mediaPlayer.play();
-        }
-    }
-
-    public boolean isPaused() {
-        return isPaused;
+        mediaPlayer.pause();
     }
 
     public void setIconsAlpha(float alpha) {
@@ -245,9 +208,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     }
 
     public void changeSpeed() {
-        if (mediaPlayer.isPlaying()) {
-            mediaPlayer.setRate(speedPlayack.get());
-        }
+        mediaPlayer.setPlaybackRate();
     }
 
     @OnClick(R.id.labelDistance)
@@ -277,8 +238,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        this.surfaceTexture = surface;
-        if (mediaPlayer != null) prepareWithSurface();
+        mediaPlayer.setSurface(surface);
     }
 
     @Override
@@ -294,82 +254,5 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     @Override
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
 
-    }
-
-    @Override
-    public void onNewLayout(IVLCVout vlcVout, int width, int height, int visibleWidth, int visibleHeight, int sarNum, int sarDen) {
-        if (width * height == 0)
-            return;
-
-        videoWidth = width;
-        videoHeight = height;
-
-        if (videoTextureView != null && videoTextureView.getContentHeight() != height) {
-            videoTextureView.setContentWidth(width);
-            videoTextureView.setContentHeight(height);
-            videoTextureView.updateTextureViewSize();
-        }
-    }
-
-    @Override
-    public void onSurfacesCreated(IVLCVout vlcVout) {
-
-    }
-
-    @Override
-    public void onSurfacesDestroyed(IVLCVout vlcVout) {
-
-    }
-
-    @Override
-    public void onHardwareAccelerationError(IVLCVout vlcVout) {
-        this.releasePlayer();
-        Toast.makeText(getContext(), "Error with hardware acceleration", Toast.LENGTH_LONG).show();
-    }
-
-    private void prepareWithSurface() {
-        if (mediaPlayer != null && isPaused()) {
-            mediaPlayer.play();
-        } else if (mediaPlayer.getMedia() != null) {
-            final IVLCVout vout = mediaPlayer.getVLCVout();
-            vout.setVideoSurface(surfaceTexture);
-            vout.addCallback(this);
-            vout.attachViews();
-            isReadyToPlay = true;
-
-            if (shouldAutoPlay) {
-                play();
-            } else {
-                //play();
-                //pausePlayer();
-            }
-        }
-    }
-
-    private class PlayerListener implements MediaPlayer.EventListener {
-
-        public PlayerListener() {
-
-        }
-
-        @Override
-        public void onEvent(MediaPlayer.Event event) {
-            switch(event.type) {
-                case MediaPlayer.Event.EndReached:
-                    setMedia();
-                    mediaPlayer.play();
-                    break;
-                case MediaPlayer.Event.Vout:
-                    if (mediaPlayer != null && mediaPlayer.getRate() != speedPlayack.get()) {
-                        mediaPlayer.setRate(speedPlayack.get());
-                    }
-                    break;
-                case MediaPlayer.Event.Playing:
-                case MediaPlayer.Event.Paused:
-                case MediaPlayer.Event.Stopped:
-                default:
-                    break;
-            }
-        }
     }
 }

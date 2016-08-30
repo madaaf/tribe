@@ -2,17 +2,28 @@ package com.tribe.app.presentation.view.video;
 
 import android.graphics.SurfaceTexture;
 import android.media.MediaPlayer;
+import android.media.PlaybackParams;
 import android.view.Surface;
+
+import com.f2prateek.rx.preferences.Preference;
+import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+
+import javax.inject.Inject;
 
 /**
  * Created by tiago on 28/08/2016.
  */
 public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.OnVideoSizeChangedListener,
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener {
+
+    @Inject
+    @SpeedPlayback
+    Preference<Float> speedPlayback;
 
     // VARIABLES
     private MediaPlayer mediaPlayer = null;
@@ -23,6 +34,9 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
         this.looping = builder.isLooping();
         this.mute = builder.isMute();
         this.autoStart = builder.isAutoStart();
+        this.changeSpeed = builder.isChangeSpeed();
+
+        ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
 
         setup();
     }
@@ -38,7 +52,7 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
         onPreparedPlayer.onNext(true);
 
         if (autoStart) {
-            mediaPlayer.start();
+            play();
             onVideoStarted.onNext(true);
         }
     }
@@ -101,17 +115,18 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
     }
 
     @Override
-    public void pausePlayer() {
+    public void pause() {
         mediaPlayer.pause();
     }
 
     @Override
-    public void resumePlayer() {
+    public void play() {
         mediaPlayer.start();
+        setPlaybackRate();
     }
 
     @Override
-    public void releasePlayer() {
+    public void release() {
         if (mediaPlayer == null) return;
 
         new Thread(() -> {
@@ -128,5 +143,16 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
         }).start();
 
         videoSize = null;
+    }
+
+    @Override
+    public void setPlaybackRate() {
+        if (android.os.Build.VERSION.SDK_INT >= 23 && mediaPlayer != null) {
+            try {
+                PlaybackParams myPlayBackParams = new PlaybackParams();
+                myPlayBackParams.setSpeed(speedPlayback.get());
+                mediaPlayer.setPlaybackParams(myPlayBackParams);
+            } catch (IllegalStateException ex) {}
+        }
     }
 }

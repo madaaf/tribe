@@ -2,9 +2,11 @@ package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.JobStatus;
+import com.birbit.android.jobqueue.TagConstraint;
 import com.tribe.app.data.network.job.DownloadTribeJob;
 import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
 import com.tribe.app.data.network.job.UpdateMessagesJob;
+import com.tribe.app.data.network.job.UpdateTribeDownloadedJob;
 import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.domain.entity.Friendship;
@@ -21,8 +23,10 @@ import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.SendTribeView;
 import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 
+import java.io.File;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -66,6 +70,7 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
 
     @Override
     public void onCreate() {
+        jobManager.addJobInBackground(new UpdateTribeDownloadedJob());
         jobManager.addJobInBackground(new UpdateTribesErrorStatusJob());
         jobManager.addJobInBackground(new UpdateUserJob());
         loadFriendList();
@@ -146,23 +151,27 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         Observable
             .just("")
             .doOnNext(o -> {
-                int countPreload = 0;
-
                 for (Message message : messageList) {
-                    if (message instanceof TribeMessage && message.getMessageDownloadingStatus() != null
-                            && message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADING)
-                            && jobManager.getJobStatus(message.getLocalId()).equals(JobStatus.UNKNOWN)) {
-                        message.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
-                    }
+                    if (message instanceof TribeMessage) {
+                        boolean shouldDownload = false;
 
-                    if (message instanceof TribeMessage && message.getMessageDownloadingStatus() != null
-                            && message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD)
-                            && message.getFrom() != null) {
-                        countPreload++;
-                        jobManager.addJobInBackground(new DownloadTribeJob((TribeMessage) message));
-                    }
+                        JobStatus jobStatus = jobManager.getJobStatus(message.getLocalId());
+                        File file = FileUtils.getFileEnd(message.getId());
 
-                    if (countPreload == PRELOAD_MAX) break;
+                        if (jobStatus.equals(JobStatus.UNKNOWN) && (!file.exists() || file.length() == 0)
+                                && (message.getMessageDownloadingStatus() == null || message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD))) {
+                            shouldDownload = true;
+                            message.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
+                            jobManager.cancelJobsInBackground(null, TagConstraint.ALL, message.getId());
+                        }
+
+                        if (shouldDownload
+                                && message.getMessageDownloadingStatus() != null
+                                && message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD)
+                                && message.getFrom() != null) {
+                            jobManager.addJobInBackground(new DownloadTribeJob((TribeMessage) message));
+                        }
+                    }
                 }
             }).subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())

@@ -32,28 +32,34 @@ import static android.content.Context.MODE_PRIVATE;
 public class DataModule {
 
     @Provides
-    @PerApplication
+    @Singleton
     SharedPreferences provideSharedPreferences(Context context) {
         return context.getSharedPreferences("TRIBE", MODE_PRIVATE);
     }
 
     @Provides
-    @PerApplication
+    @Singleton
     RxSharedPreferences provideRxSharedPreferences(SharedPreferences prefs) {
         return RxSharedPreferences.create(prefs);
     }
 
-    @Provides @Singleton @SpeedPlayback
+    @Provides
+    @Singleton
+    @SpeedPlayback
     Preference<Float> provideSpeedRate(RxSharedPreferences prefs) {
         return prefs.getFloat(PreferencesConstants.SPEED_PLAYBACK, TribePagerView.SPEED_NORMAL);
     }
 
-    @Provides @Singleton @DistanceUnits
+    @Provides
+    @Singleton
+    @DistanceUnits
     Preference<String> provideDistanceUnits(RxSharedPreferences prefs) {
         return prefs.getString(PreferencesConstants.DISTANCE_UNITS, Distance.METERS);
     }
 
-    @Provides @Singleton @WeatherUnits
+    @Provides
+    @Singleton
+    @WeatherUnits
     Preference<String> provideWeatherUnits(RxSharedPreferences prefs) {
         return prefs.getString(PreferencesConstants.WEATHER_UNITS, com.tribe.app.presentation.view.utils.Weather.CELSIUS);
     }
@@ -78,6 +84,10 @@ public class DataModule {
         return prefs.getBoolean(PreferencesConstants.AUDIO_DEFAULT, false);
     }
 
-
-
+    @Provides
+    @Singleton
+    @LastMessageRequest
+    Preference<String> provideLastMessageRequest(RxSharedPreferences prefs) {
+        return prefs.getString(PreferencesConstants.LAST_MESSAGE_REQUEST, "");
+    }
 }

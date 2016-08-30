@@ -16,7 +16,7 @@ public class UserRealm extends RealmObject {
 
     private Date created_at;
     private Date updated_at;
-    private String displayName;
+    private String display_name;
     private String username;
     private String phone;
     private String picture;
@@ -58,11 +58,11 @@ public class UserRealm extends RealmObject {
     }
 
     public String getDisplayName() {
-        return displayName;
+        return display_name;
     }
 
     public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+        this.display_name = displayName;
     }
 
     public String getProfilePicture() {
