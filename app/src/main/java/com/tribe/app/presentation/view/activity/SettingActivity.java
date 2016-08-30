@@ -26,6 +26,7 @@ import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.component.SettingSectionView;
 import com.tribe.app.presentation.view.component.SettingView;
+import com.tribe.app.presentation.view.utils.Weather;
 
 import java.util.List;
 import java.util.Set;
@@ -105,21 +106,21 @@ public class SettingActivity extends BaseActivity {
     @BindView(R.id.exitSection)
     SettingSectionView exitSection;
 
-//    @Inject
-//    @WeatherUnits
-//    Preference<String> weatherUnits;
-//    @Inject
-//    @Memories
-//    Preference<Boolean> memories;
-//    @Inject
-//    @LocationContext
-//    Preference<Boolean> locationContext;
-//    @Inject
-//    @AudioDefault
-//    Preference<Boolean> audioDefault;
-//    @Inject
-//    @Preload
-//    Preference<Boolean> preload;
+    @Inject
+    @WeatherUnits
+    Preference<String> weatherUnits;
+    @Inject
+    @Memories
+    Preference<Boolean> memories;
+    @Inject
+    @LocationContext
+    Preference<Boolean> locationContext;
+    @Inject
+    @AudioDefault
+    Preference<Boolean> audioDefault;
+    @Inject
+    @Preload
+    Preference<Boolean> preload;
 
     @Inject
     Navigator navigator;
@@ -130,7 +131,7 @@ public class SettingActivity extends BaseActivity {
 
         initUi();
         initDependencyInjector();
-        initMessageSettings();
+        initSettings();
     }
 
     @Override
@@ -145,14 +146,31 @@ public class SettingActivity extends BaseActivity {
         super.onDestroy();
     }
 
-    private void initMessageSettings() {
+    private void initSettings() {
 
         subscriptions.add(messageSettingMemories.checkedSwitch().subscribe(isChecked -> {
-            if (isChecked) {
-                Toast.makeText(this, "Checked", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(this, "Not checked", Toast.LENGTH_LONG).show();
-            }
+            if (isChecked) memories.set(true);
+            else memories.set(false);
+        }));
+
+        subscriptions.add(messageSettingContext.checkedSwitch().subscribe(isChecked -> {
+            if (isChecked) locationContext.set(true);
+            else locationContext.set(false);
+        }));
+
+        subscriptions.add(messageSettingVoice.checkedSwitch().subscribe(isChecked -> {
+            if (isChecked) audioDefault.set(true);
+            else audioDefault.set(false);
+        }));
+
+        subscriptions.add(messageSettingPreload.checkedSwitch().subscribe(isChecked -> {
+            if (isChecked) preload.set(true);
+            else preload.set(false);
+        }));
+
+        subscriptions.add(messageSettingFahrenheit.checkedSwitch().subscribe(isChecked -> {
+            if (isChecked) weatherUnits.set(Weather.FAHRENHEIT);
+            else weatherUnits.set(Weather.CELSIUS);
         }));
 
         subscriptions.add(RxView.clicks(settingsTweet).subscribe(aVoid -> {

@@ -33,9 +33,13 @@ import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
 import com.tribe.app.presentation.internal.di.modules.NetModule;
+import com.tribe.app.presentation.internal.di.scope.AudioDefault;
 import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
+import com.tribe.app.presentation.internal.di.scope.LocationContext;
+import com.tribe.app.presentation.internal.di.scope.Memories;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
+import com.tribe.app.presentation.internal.di.scope.Preload;
 import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.service.TribeFirebaseInstanceIDService;
@@ -167,6 +171,18 @@ public interface ApplicationComponent {
 
     @WeatherUnits
     Preference<String> weatherUnits();
+
+    @Memories
+    Preference<Boolean> memories();
+
+    @AudioDefault
+    Preference<Boolean> audioDefault();
+
+    @LocationContext
+    Preference<Boolean> locationContext();
+
+    @Preload
+    Preference<Boolean> preload();
 
     @LastMessageRequest
     Preference<String> lastMessageRequest();
