@@ -313,28 +313,30 @@ public class IntroViewFragment extends Fragment implements IntroView {
 
     }
 
-
-
-    @Override
-    public void goToAccess() {
-        // TODO: figure out if needed
-    }
-
     /**
      * Manage view pager transition methods
      */
 
     @Override
     public void showLoading() {
+        if (viewPager.getCurrentItem() == PAGE_PHONE_NUMBER) {
+            viewPhoneNumber.setNextVisible(false);
+            viewPhoneNumber.progressViewVisible(true);
+        } else {
             viewCode.progressViewVisible(true);
+        }
     }
 
     @Override
     public void hideLoading() {
-        viewPhoneNumber.setNextVisible(true);
-        viewPhoneNumber.setNextEnabled(true);
-        viewCode.progressViewVisible(false);
-
+//        if (viewPager.getCurrentItem() == PAGE_PHONE_NUMBER) {
+            viewPhoneNumber.setNextVisible(true);
+            viewPhoneNumber.setNextEnabled(true);
+            viewPhoneNumber.progressViewVisible(false);
+//        } else {
+            viewCode.progressViewVisible(false);
+//        }
+        
     }
 
     @Override

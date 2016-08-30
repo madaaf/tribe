@@ -193,4 +193,13 @@ public class PhoneNumberView extends FrameLayout {
         imageViewNextIcon.setAlpha(1f);
     }
 
+    public void progressViewVisible(boolean visible) {
+        if (visible) {
+            circularProgressViewPhoneNumber.setVisibility(VISIBLE);
+        } else {
+            circularProgressViewPhoneNumber.setVisibility(INVISIBLE);
+        }
+
+    }
+
 }

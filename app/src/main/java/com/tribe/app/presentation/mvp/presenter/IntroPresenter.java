@@ -77,11 +77,9 @@ public class IntroPresenter implements Presenter {
     }
 
     public void requestCode(String phoneNumber) {
-        // TODO: get pin
-                cloudGetRequestCodeUseCase.prepare(phoneNumber);
+        showViewLoading();
+        cloudGetRequestCodeUseCase.prepare(phoneNumber);
         cloudGetRequestCodeUseCase.execute(new RequestCodeSubscriber());
-//                    goToCode(pin);
-
 
     }
 
@@ -118,20 +116,12 @@ public class IntroPresenter implements Presenter {
         this.introView.goToHome();
     }
 
-//    public void goToProfileInfo() {
-//        this.introView.goToProfileInfo();
-//    }
-
     public void goToCode(Pin pin) {
         this.introView.goToCode(pin);
     }
 
     public void goToConnected() {
         this.introView.goToConnected();
-    }
-
-    public void goToAccess() {
-        this.introView.goToAccess();
     }
 
     private void showViewLoading() {
