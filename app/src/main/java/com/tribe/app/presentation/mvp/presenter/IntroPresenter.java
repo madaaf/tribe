@@ -202,7 +202,7 @@ public class IntroPresenter implements Presenter {
 //            if (true) {
 ////                goToProfileInfo();
 //            } else {
-                goToHome();
+//                goToHome();
 //            }
         }
     }

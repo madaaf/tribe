@@ -2,10 +2,14 @@ package com.tribe.app.presentation.internal.di.modules;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceGroup;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
+import com.tribe.app.presentation.internal.di.scope.AudioDefault;
 import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
+import com.tribe.app.presentation.internal.di.scope.LocationContext;
+import com.tribe.app.presentation.internal.di.scope.Memories;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
 import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
@@ -52,5 +56,22 @@ public class DataModule {
     Preference<String> provideWeatherUnits(RxSharedPreferences prefs) {
         return prefs.getString(PreferencesConstants.WEATHER_UNITS, com.tribe.app.presentation.view.utils.Weather.CELSIUS);
     }
+
+    @Provides @Singleton @Memories
+    Preference<Boolean> provideMemories(RxSharedPreferences prefs) {
+        return prefs.getBoolean(PreferencesConstants.MEMORIES, false);
+    }
+
+    @Provides @Singleton @LocationContext
+    Preference<Boolean> provideLocationContext(RxSharedPreferences prefs) {
+        return prefs.getBoolean(PreferencesConstants.LOCATION_CONTEXT, false);
+    }
+
+    @Provides @Singleton @AudioDefault
+    Preference<Boolean> provideAudioDefault(RxSharedPreferences prefs) {
+        return prefs.getBoolean(PreferencesConstants.PRELOAD, false);
+    }
+
+
 
 }
