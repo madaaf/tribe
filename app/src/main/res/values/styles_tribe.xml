@@ -112,6 +112,10 @@
         <item name="android:textColor">@color/blue.facebook</item>
     </style>
 
+    <style name="Title.1.Red" parent="@style/Title.1">
+        <item name="android:textColor">@color/red.circle</item>
+    </style>
+
     <style name="Headline">
         <item name="android:textSize">19sp</item>
     </style>

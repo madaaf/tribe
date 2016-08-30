@@ -169,12 +169,12 @@
     <string name="settings_email_title">Email the team</string>
     <string name="settings_email_subtitle">We reply in less than 48 hours\nto every single email.</string>
     <string name="settings_rate_title">Rate the app</string>
-    <string name="settings_rate_subtitle">The easiest way to show us some love.</string>
+    <string name="settings_rate_subtitle">The easiest way to show us\nsome love.</string>
     <string name="settings_section_exit">Exit</string>
     <string name="settings_logout_title">Log out</string>
-    <string name="settings_logout_subtitle">Disconnect this account from this device.</string>
+    <string name="settings_logout_subtitle">Disconnect this account from\nthis device.</string>
     <string name="settings_remove_title">Delete account</string>
-    <string name="settings_remove_subtitle">Say goodbye to your friendships, points and more.</string>
+    <string name="settings_remove_subtitle">Say goodbye to your\nfriendships, points and more.</string>
 
     <string name="facebook_app_id">1743579545897830</string>
 </resources>
