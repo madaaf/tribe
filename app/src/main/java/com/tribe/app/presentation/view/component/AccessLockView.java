@@ -245,8 +245,11 @@ public class AccessLockView extends FrameLayout {
         txtNumFriends.setText("3");
 
         subscriptions.clear();
-
-        removePulsingCircleAnimation();
+        bluePulse();
+        subscriptions.add(Observable.interval(600, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                .subscribe(aVoid -> {
+                    removePulsingCircleAnimation();
+                }));
 
         resetSemiCircle(3);
     }
@@ -306,6 +309,18 @@ public class AccessLockView extends FrameLayout {
         viewPulse.setBackground(crossfader);
         viewPulse.animate().scaleX(0).scaleY(0).setDuration(600).start();
         crossfader.startTransition(1200);
+    }
+
+    private void bluePulse() {
+        Drawable backgrounds[] = new Drawable[2];
+        backgrounds[0] = ResourcesCompat.getDrawable(getResources(), R.drawable.shape_circle_grey, null);
+        backgrounds[1] = ResourcesCompat.getDrawable(getResources(), R.drawable.shape_circle_blue, null);
+
+        TransitionDrawable crossfader = new TransitionDrawable(backgrounds);
+        viewPulse.setBackground(crossfader);
+        viewPulse.animate().scaleX(1.2f).scaleY(1.2f).setDuration(600).start();
+        crossfader.startTransition(1200);
+
     }
 
     private void addPulsingRedCircleAnimation() {
