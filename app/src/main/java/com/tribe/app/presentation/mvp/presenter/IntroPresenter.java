@@ -8,6 +8,7 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.exception.DefaultErrorBundle;
 import com.tribe.app.domain.exception.ErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetRequestCode;
@@ -16,6 +17,7 @@ import com.tribe.app.presentation.mvp.view.IntroView;
 import com.tribe.app.presentation.mvp.view.View;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 public class IntroPresenter implements Presenter {
 
@@ -76,9 +78,11 @@ public class IntroPresenter implements Presenter {
 
     public void requestCode(String phoneNumber) {
         // TODO: get pin
-//                cloudGetRequestCodeUseCase.prepare(phoneNumber);
-//        cloudGetRequestCodeUseCase.execute(new RequestCodeSubscriber());
-                    goToCode();
+                cloudGetRequestCodeUseCase.prepare(phoneNumber);
+        cloudGetRequestCodeUseCase.execute(new RequestCodeSubscriber());
+//                    goToCode(pin);
+
+
     }
 
     public void backToPhoneNumber() {
@@ -101,8 +105,8 @@ public class IntroPresenter implements Presenter {
             }
         }, 2000);
 
-//        cloudLoginUseCase.prepare(phoneNumber, code, pinId);
-//        cloudLoginUseCase.execute(new LoginSubscriber());
+        cloudLoginUseCase.prepare(phoneNumber, code, pinId);
+        cloudLoginUseCase.execute(new LoginSubscriber());
 
     }
 
@@ -118,8 +122,8 @@ public class IntroPresenter implements Presenter {
 //        this.introView.goToProfileInfo();
 //    }
 
-    public void goToCode() {
-        this.introView.goToCode();
+    public void goToCode(Pin pin) {
+        this.introView.goToCode(pin);
     }
 
     public void goToConnected() {
@@ -159,7 +163,7 @@ public class IntroPresenter implements Presenter {
 
         @Override
         public void onNext(Pin pin) {
-            goToCode();
+            goToCode(pin);
         }
     }
 
@@ -195,11 +199,11 @@ public class IntroPresenter implements Presenter {
 
         @Override
         public void onNext(User user) {
-            if (true) {
-//                goToProfileInfo();
-            } else {
+//            if (true) {
+////                goToProfileInfo();
+//            } else {
                 goToHome();
-            }
+//            }
         }
     }
 
