@@ -49,7 +49,7 @@ public class TribePagerAdapter extends PagerAdapter {
         tribeComponentView.setTag(position);
         tribeComponentView.setTribe(tribeList.get(position));
         tribeComponentView.onClickEnableLocation().subscribe(clickEnableLocation);
-        tribeComponentView.startPlayer();
+        tribeComponentView.preparePlayer(position == currentPosition);
 
         if (position == currentPosition) {
             tribeComponentView.play();

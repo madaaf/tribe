@@ -53,8 +53,6 @@ import com.tribe.app.presentation.view.widget.LabelButton;
 import com.tribe.app.presentation.view.widget.PathView;
 import com.tribe.app.presentation.view.widget.PlayerView;
 
-import org.videolan.libvlc.LibVLC;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
@@ -137,8 +135,6 @@ public interface ApplicationComponent {
     UserCache userCache();
 
     ChatCache chatCache();
-
-    LibVLC libVLC();
 
     JobManager jobManager();
 

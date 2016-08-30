@@ -8,7 +8,6 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.exception.DefaultErrorBundle;
 import com.tribe.app.domain.exception.ErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
-import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetRequestCode;
@@ -17,7 +16,6 @@ import com.tribe.app.presentation.mvp.view.IntroView;
 import com.tribe.app.presentation.mvp.view.View;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 public class IntroPresenter implements Presenter {
 
@@ -81,8 +79,6 @@ public class IntroPresenter implements Presenter {
 //                cloudGetRequestCodeUseCase.prepare(phoneNumber);
 //        cloudGetRequestCodeUseCase.execute(new RequestCodeSubscriber());
                     goToCode();
-
-
     }
 
     public void backToPhoneNumber() {

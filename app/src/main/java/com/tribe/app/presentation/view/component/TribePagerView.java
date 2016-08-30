@@ -904,7 +904,7 @@ public class TribePagerView extends FrameLayout {
                 }));
         }
 
-        if (currentView != null) currentView.resumePlayer();
+        if (currentView != null) currentView.play();
     }
 
     @OnClick({R.id.layoutLater, R.id.layoutTomorrow, R.id.layoutWeekend, R.id.layoutWeek})
@@ -1077,7 +1077,7 @@ public class TribePagerView extends FrameLayout {
         showSpeed();
         showNbTribes();
         hideExitCamera();
-        currentView.resumePlayer();
+        currentView.play();
     }
 
     @OnClick(R.id.imgCancelReply)
