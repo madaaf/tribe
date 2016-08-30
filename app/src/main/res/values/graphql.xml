@@ -28,7 +28,7 @@
             id
             score
             username
-            displayName
+            display_name
             picture
             created_at
         }
@@ -45,7 +45,7 @@
             id
             score
             username
-            displayName
+            display_name
             picture
             created_at
             updated_at
@@ -64,11 +64,11 @@
     <string name="user.mutate.name">
         mutation {
             updateUser(id: \"%1$s\", user:{
-                displayName : "Tiago"
+                display_name : "Tiago"
             })
 
             {
-                displayName
+                display_name
             }
         }
     </string>
@@ -107,7 +107,7 @@
     <string name="messages.infos">
         {
             user {
-                tribes {
+                tribes %1$s {
                     id
                     from
                     to
@@ -150,7 +150,7 @@
                 }
             }
 
-            %1$s
+            %2$s
         }
     </string>
 
@@ -158,6 +158,10 @@
         {
             %1$s
         }
+    </string>
+
+    <string name="messages.start">
+        (start : \"%1$s\")
     </string>
 
     <string name="tribe.sent.infos">

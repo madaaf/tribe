@@ -3,17 +3,17 @@ package com.tribe.app.presentation.view.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.widget.ScrollView;
+
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.MessageSetting;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.view.component.SettingMessageView;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -32,9 +32,9 @@ public class SettingActivity extends BaseActivity {
         return new Intent(context, SettingActivity.class);
     }
 
-//    @Inject
-//    Preference<Boolean> shareLocation;
-
+    @Inject
+    @SpeedPlayback
+    Preference<Float> speedPlayback;
 
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -107,6 +107,4 @@ public class SettingActivity extends BaseActivity {
                 .build()
                 .inject(this);
     }
-
-
 }

@@ -241,9 +241,9 @@ public class TribePagerView extends FrameLayout {
         springAlphaSwipeDown.addListener(springAlphaSwipeDownListener);
 
         if (currentView == null)
-            ((TribeComponentView) viewPager.findViewWithTag(viewPager.getCurrentItem())).releasePlayer();
-        else
-            currentView.releasePlayer();
+            computeCurrentView();
+
+        currentView.releasePlayer();
 
         tribePagerAdapter.onDestroy();
 
@@ -713,15 +713,6 @@ public class TribePagerView extends FrameLayout {
                 scrollLeft(value);
             }
         }
-
-        @Override
-        public void onSpringAtRest(Spring spring) {
-            if (currentView != null && spring.getEndValue() == -getWidth()) {
-                currentView.releasePlayer();
-            }
-
-            super.onSpringAtRest(spring);
-        }
     }
 
     private class RightSpringListener extends SimpleSpringListener {
@@ -777,15 +768,6 @@ public class TribePagerView extends FrameLayout {
                 float value = (float) spring.getCurrentValue();
                 scrollBottom(value);
             }
-        }
-
-        @Override
-        public void onSpringAtRest(Spring spring) {
-            if (currentView != null && spring.getEndValue() == getHeight()) {
-                currentView.releasePlayer();
-            }
-
-            super.onSpringAtRest(spring);
         }
     }
 
@@ -904,7 +886,7 @@ public class TribePagerView extends FrameLayout {
                 }));
         }
 
-        if (currentView != null) currentView.resumePlayer();
+        if (currentView != null) currentView.play();
     }
 
     @OnClick({R.id.layoutLater, R.id.layoutTomorrow, R.id.layoutWeekend, R.id.layoutWeek})
@@ -1077,7 +1059,7 @@ public class TribePagerView extends FrameLayout {
         showSpeed();
         showNbTribes();
         hideExitCamera();
-        currentView.resumePlayer();
+        currentView.play();
     }
 
     @OnClick(R.id.imgCancelReply)

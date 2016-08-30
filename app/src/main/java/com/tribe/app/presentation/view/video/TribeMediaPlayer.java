@@ -24,6 +24,7 @@ public abstract class TribeMediaPlayer {
     protected boolean mute;
     protected boolean looping;
     protected boolean autoStart;
+    protected boolean changeSpeed;
     protected VideoSize videoSize;
 
     // OBSERVABLES
@@ -51,9 +52,10 @@ public abstract class TribeMediaPlayer {
     protected abstract void setup();
     public abstract void setMedia(String media);
     public abstract void setSurface(SurfaceTexture surfaceTexture);
-    public abstract void pausePlayer();
-    public abstract void resumePlayer();
-    public abstract void releasePlayer();
+    public abstract void setPlaybackRate();
+    public abstract void pause();
+    public abstract void play();
+    public abstract void release();
 
     public static class TribeMediaPlayerBuilder {
         private final Context context;
@@ -61,6 +63,7 @@ public abstract class TribeMediaPlayer {
         private boolean mute = false;
         private boolean looping = false;
         private boolean autoStart = false;
+        private boolean changeSpeed = false;
 
         public TribeMediaPlayerBuilder(Context context, String media) {
             this.context = context;
@@ -82,8 +85,13 @@ public abstract class TribeMediaPlayer {
             return this;
         }
 
+        public TribeMediaPlayerBuilder canChangeSpeed(boolean changeSpeed) {
+            this.changeSpeed = changeSpeed;
+            return this;
+        }
+
         public TribeMediaPlayer build() {
-            return !DeviceUtils.supportsExoPlayer(context) ? new LegacyMediaPlayer(this) : new ExoMediaPlayer(this);
+            return (!DeviceUtils.supportsExoPlayer(context) || changeSpeed) ? new LegacyMediaPlayer(this) : new ExoMediaPlayer(this);
         }
 
         public String getMedia() {
@@ -104,6 +112,10 @@ public abstract class TribeMediaPlayer {
 
         public Context getContext() {
             return context;
+        }
+
+        public boolean isChangeSpeed() {
+            return changeSpeed;
         }
     }
 }

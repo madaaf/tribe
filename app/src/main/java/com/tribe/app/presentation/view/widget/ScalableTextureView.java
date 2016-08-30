@@ -61,7 +61,7 @@ public abstract class ScalableTextureView extends TextureView {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        if (SHOW_LOGS) Log.v(TAG, "onMeasure, mContentoWidth " + mContentWidth + ", mContentHeight " + mContentHeight);
+        if (SHOW_LOGS) Log.v(TAG, "onMeasure, mContentWidth " + mContentWidth + ", mContentHeight " + mContentHeight);
 
         if (mContentWidth != null && mContentHeight != null) {
             updateTextureViewSize();

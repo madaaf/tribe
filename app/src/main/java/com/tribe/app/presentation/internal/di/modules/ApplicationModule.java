@@ -49,11 +49,8 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
-import org.videolan.libvlc.LibVLC;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.TimeZone;
 
 import javax.inject.Named;
@@ -225,16 +222,6 @@ public class ApplicationModule {
     @Provides
     @Singleton
     ReactiveLocationProvider provideReactiveLocationProvider(Context context) { return new ReactiveLocationProvider(context); }
-
-    @Provides
-    @Singleton
-    LibVLC provideLibVLC() {
-        ArrayList<String> options = new ArrayList<>();
-        options.add("--aout=opensles");
-        options.add("--audio-time-stretch");
-        //options.add("-vvv");
-        return new LibVLC(options);
-    }
 
     @Provides
     @Named("cloudSendTribe")

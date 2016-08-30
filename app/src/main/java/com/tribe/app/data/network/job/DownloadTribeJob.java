@@ -53,7 +53,7 @@ public class DownloadTribeJob extends BaseJob {
     public DownloadTribeJob(TribeMessage tribe) {
         super(new Params(Priority.HIGH).requireNetwork().groupBy(
                 (tribe.isToGroup() ? tribe.getTo().getId() : tribe.getFrom().getId())
-        ).setSingleId(tribe.getId()));
+        ).setSingleId(tribe.getId()).addTags(tribe.getId()));
 
         this.tribe = tribe;
     }
@@ -114,7 +114,7 @@ public class DownloadTribeJob extends BaseJob {
 
     @Override
     protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount, int maxRunCount) {
-        return null;
+        return RetryConstraint.CANCEL;
     }
 
     @Override

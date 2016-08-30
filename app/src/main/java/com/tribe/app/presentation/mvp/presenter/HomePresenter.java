@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
+import com.tribe.app.data.network.job.UpdateMessagesJob;
 import com.tribe.app.data.network.job.UpdateTribeListNotSeenStatusJob;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.domain.entity.Message;
@@ -89,15 +90,18 @@ public class HomePresenter implements Presenter {
 
         @Override
         public void onCompleted() {
+            homeView.hideLoading();
         }
 
         @Override
         public void onError(Throwable e) {
+            homeView.hideLoading();
         }
 
         @Override
         public void onNext(User user) {
             homeView.hideLoading();
+            jobManager.addJobInBackground(new UpdateMessagesJob());
         }
     }
 

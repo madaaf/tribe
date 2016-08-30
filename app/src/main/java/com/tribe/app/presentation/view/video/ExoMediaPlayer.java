@@ -22,7 +22,7 @@ import com.google.android.exoplayer.upstream.DefaultUriDataSource;
 /**
  * Created by tiago on 28/08/2016.
  */
-public class ExoMediaPlayer extends TribeMediaPlayer {
+public class ExoMediaPlayer extends TribeMediaPlayer implements MediaCodecVideoTrackRenderer.EventListener {
 
     private static final int RENDERER_COUNT = 4;
     private static final int MIN_BUFFER_MS = 250000;
@@ -40,6 +40,7 @@ public class ExoMediaPlayer extends TribeMediaPlayer {
         this.looping = builder.isLooping();
         this.mute = builder.isMute();
         this.autoStart = builder.isAutoStart();
+        this.changeSpeed = builder.isChangeSpeed();
 
         setup();
     }
@@ -75,40 +76,14 @@ public class ExoMediaPlayer extends TribeMediaPlayer {
         });
 
         Allocator allocator = new DefaultAllocator(MIN_BUFFER_MS);
-        DataSource dataSource;
-
-        //if (media.contains("android.resource"))
-        //    dataSource = new AssetDataSource(context);
-        //else
-            dataSource = new DefaultUriDataSource(context, "Android");
+        DataSource dataSource = new DefaultUriDataSource(context, "Android");
 
         ExtractorSampleSource sampleSource = new ExtractorSampleSource(Uri.parse(media), dataSource, allocator,
                 BUFFER_SEGMENT_COUNT * BUFFER_SEGMENT_SIZE, new Mp4Extractor());
 
         videoRenderer = new MediaCodecVideoTrackRenderer(
                 context, sampleSource, MediaCodecSelector.DEFAULT, MediaCodec.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING,
-                1, new Handler(), new MediaCodecVideoTrackRenderer.EventListener() {
-            @Override
-            public void onDroppedFrames(int count, long elapsed) {}
-
-            @Override
-            public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
-                videoSize = new VideoSize(width, height);
-                onVideoSizeChanged.onNext(videoSize);
-            }
-
-            @Override
-            public void onDrawnToSurface(Surface surface) {}
-
-            @Override
-            public void onDecoderInitializationError(MediaCodecTrackRenderer.DecoderInitializationException e) {}
-
-            @Override
-            public void onCryptoError(MediaCodec.CryptoException e) {}
-
-            @Override
-            public void onDecoderInitialized(String decoderName, long elapsedRealtimeMs, long initializationDurationMs) {}
-        }, 1);
+                1, new Handler(), this, 1);
 
         audioRenderer = new MediaCodecAudioTrackRenderer(sampleSource, MediaCodecSelector.DEFAULT);
         exoPlayer.prepare(videoRenderer, audioRenderer);
@@ -118,7 +93,7 @@ public class ExoMediaPlayer extends TribeMediaPlayer {
     @Override
     public void setMedia(String media) {
         this.media = media;
-        releasePlayer();
+        release();
         setup();
     }
 
@@ -130,17 +105,17 @@ public class ExoMediaPlayer extends TribeMediaPlayer {
     }
 
     @Override
-    public void pausePlayer() {
-        exoPlayer.stop();
+    public void pause() {
+        exoPlayer.setPlayWhenReady(false);
     }
 
     @Override
-    public void resumePlayer() {
+    public void play() {
         exoPlayer.setPlayWhenReady(true);
     }
 
     @Override
-    public void releasePlayer() {
+    public void release() {
         if (exoPlayer == null) return;
 
         exoPlayer.stop();
@@ -153,4 +128,30 @@ public class ExoMediaPlayer extends TribeMediaPlayer {
             }
         }).start();
     }
+
+    @Override
+    public void setPlaybackRate() {
+
+    }
+
+    @Override
+    public void onDroppedFrames(int count, long elapsed) {}
+
+    @Override
+    public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
+        videoSize = new VideoSize(width, height);
+        onVideoSizeChanged.onNext(videoSize);
+    }
+
+    @Override
+    public void onDrawnToSurface(Surface surface) {}
+
+    @Override
+    public void onDecoderInitializationError(MediaCodecTrackRenderer.DecoderInitializationException e) {}
+
+    @Override
+    public void onCryptoError(MediaCodec.CryptoException e) {}
+
+    @Override
+    public void onDecoderInitialized(String decoderName, long elapsedRealtimeMs, long initializationDurationMs) {}
 }

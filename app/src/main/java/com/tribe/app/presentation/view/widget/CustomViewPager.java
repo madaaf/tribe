@@ -36,6 +36,7 @@ public class CustomViewPager extends ViewPager {
     protected boolean isInMotion = false;
     private float downX, downY;
     private boolean swipeable = true;
+    private int swipingThreshold;
 
     public CustomViewPager(Context context) {
         super(context);
@@ -72,7 +73,7 @@ public class CustomViewPager extends ViewPager {
                 float diffY = event.getY() - downY;
                 float diffX = event.getX() - downX;
 
-                final boolean isSwipingHorizontally = Math.abs(diffX) > Math.abs(diffY);
+                final boolean isSwipingHorizontally = Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > swipingThreshold;
                 final boolean isSwipingVertically = Math.abs(diffY) > Math.abs(diffX);
 
                 if (isSwipingHorizontally && (!isInMotion || currentSwipeDirection == SWIPE_MODE_RIGHT || currentSwipeDirection == SWIPE_MODE_LEFT)) {
@@ -114,6 +115,7 @@ public class CustomViewPager extends ViewPager {
      */
     protected void postInitViewPager() {
         screenUtils = ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().screenUtils();
+        swipingThreshold = screenUtils.dpToPx(SWIPING_THRESHOLD);
 
         try {
             Field rScroller = ViewPager.class.getDeclaredField("mScroller");

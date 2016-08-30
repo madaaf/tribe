@@ -2,6 +2,7 @@ package com.tribe.app.data.repository.user.datasource;
 
 import android.content.Context;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
@@ -9,8 +10,12 @@ import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
+
+import java.text.SimpleDateFormat;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
@@ -30,12 +35,16 @@ public class UserDataStoreFactory {
     private final AccessToken accessToken;
     private final Installation installation;
     private final ReactiveLocationProvider reactiveLocationProvider;
+    private final Preference<String> lastMessageRequest;
+    private final SimpleDateFormat utcSimpleDate;
 
     @Inject
     public UserDataStoreFactory(Context context, UserCache userCache,
                                 TribeCache tribeCache, ChatCache chatCache,
                                 TribeApi tribeApi, LoginApi loginApi, AccessToken accessToken,
-                                Installation installation, ReactiveLocationProvider reactiveLocationProvider) {
+                                Installation installation, ReactiveLocationProvider reactiveLocationProvider,
+                                @LastMessageRequest Preference<String> lastMessageRequest,
+                                @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate) {
         if (context == null || userCache == null) {
             throw new IllegalArgumentException("Constructor parameters cannot be null!");
         }
@@ -49,6 +58,8 @@ public class UserDataStoreFactory {
         this.accessToken = accessToken;
         this.installation = installation;
         this.reactiveLocationProvider = reactiveLocationProvider;
+        this.lastMessageRequest = lastMessageRequest;
+        this.utcSimpleDate = utcSimpleDate;
     }
 
     /**
@@ -61,6 +72,7 @@ public class UserDataStoreFactory {
      */
     public UserDataStore createCloudDataStore() {
         return new CloudUserDataStore(this.userCache, this.tribeCache, this.chatCache, this.tribeApi, this.loginApi,
-                this.accessToken, this.installation, this.reactiveLocationProvider, this.context);
+                this.accessToken, this.installation, this.reactiveLocationProvider, this.context,
+                this.lastMessageRequest, this.utcSimpleDate);
     }
 }
