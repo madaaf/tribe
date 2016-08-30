@@ -104,7 +104,7 @@ public class IntroVideoView extends FrameLayout implements TextureView.SurfaceTe
     }
 
     public void releasePlayer() {
-        mediaPlayer.releasePlayer();
+        mediaPlayer.release();
         if (subscriptions != null && subscriptions.hasSubscriptions()) {
             subscriptions.clear();
         }
@@ -117,7 +117,7 @@ public class IntroVideoView extends FrameLayout implements TextureView.SurfaceTe
     }
 
     public void play() {
-        mediaPlayer.resumePlayer();
+        mediaPlayer.play();
     }
 
     @Override

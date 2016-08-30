@@ -3,6 +3,7 @@ package com.tribe.app.presentation.internal.di.components;
 import android.content.Context;
 
 import com.birbit.android.jobqueue.JobManager;
+import com.f2prateek.rx.preferences.Preference;
 import com.squareup.picasso.Picasso;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.TribeCache;
@@ -16,6 +17,7 @@ import com.tribe.app.data.network.job.SendTribeJob;
 import com.tribe.app.data.network.job.UpdateChatMessagesJob;
 import com.tribe.app.data.network.job.UpdateMessagesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateMessagesJob;
+import com.tribe.app.data.network.job.UpdateTribeDownloadedJob;
 import com.tribe.app.data.network.job.UpdateTribeListNotSeenStatusJob;
 import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
@@ -31,7 +33,11 @@ import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
 import com.tribe.app.presentation.internal.di.modules.NetModule;
+import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
+import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
+import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
+import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.service.TribeFirebaseInstanceIDService;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.view.activity.BaseActivity;
@@ -46,6 +52,7 @@ import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.video.LegacyMediaPlayer;
 import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
@@ -86,6 +93,7 @@ public interface ApplicationComponent {
     void inject(TutorialMessageAdapterDelegate tutorialMessageAdapterDelegate);
     void inject(LabelButton labelButton);
     void inject(IntroVideoView introVideoView);
+    void inject(LegacyMediaPlayer legacyMediaPlayer);
 
     // JOBS
     void inject(SendTribeJob sendTribeJob);
@@ -99,7 +107,7 @@ public interface ApplicationComponent {
     void inject(UpdateMessagesErrorStatusJob updateMessagesErrorStatusJob);
     void inject(UpdateTribeListNotSeenStatusJob updateTribeListNotSeenStatusJob);
     void inject(UpdateChatMessagesJob updateChatMessagesJob);
-
+    void inject(UpdateTribeDownloadedJob updateTribeDownloadedJob);
 
     //Exposed to sub-graphs.
     Context context();
@@ -149,4 +157,16 @@ public interface ApplicationComponent {
     DateUtils dateUtils();
 
     PaletteGrid paletteGrid();
+
+    @SpeedPlayback
+    Preference<Float> speedPlayblack();
+
+    @DistanceUnits
+    Preference<String> distanceUnits();
+
+    @WeatherUnits
+    Preference<String> weatherUnits();
+
+    @LastMessageRequest
+    Preference<String> lastMessageRequest();
 }

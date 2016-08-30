@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.TribeCache;
@@ -25,7 +26,9 @@ import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.utils.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,6 +51,8 @@ public class CloudUserDataStore implements UserDataStore {
     private AccessToken accessToken = null;
     private final Installation installation;
     private final ReactiveLocationProvider reactiveLocationProvider;
+    private Preference<String> lastMessageRequest;
+    private SimpleDateFormat utcSimpleDate = null;
 
     /**
      * Construct a {@link UserDataStore} based on connections to the api (Cloud).
@@ -60,7 +65,8 @@ public class CloudUserDataStore implements UserDataStore {
     public CloudUserDataStore(UserCache userCache, TribeCache tribeCache, ChatCache chatCache,
                               TribeApi tribeApi, LoginApi loginApi,
                               AccessToken accessToken, Installation installation,
-                              ReactiveLocationProvider reactiveLocationProvider, Context context) {
+                              ReactiveLocationProvider reactiveLocationProvider, Context context,
+                              Preference<String> lastMessageRequest, SimpleDateFormat utcSimpleDate) {
         this.userCache = userCache;
         this.tribeCache = tribeCache;
         this.chatCache = chatCache;
@@ -70,6 +76,8 @@ public class CloudUserDataStore implements UserDataStore {
         this.accessToken = accessToken;
         this.installation = installation;
         this.reactiveLocationProvider = reactiveLocationProvider;
+        this.lastMessageRequest = lastMessageRequest;
+        this.utcSimpleDate = utcSimpleDate;
     }
 
     @Override
@@ -89,13 +97,13 @@ public class CloudUserDataStore implements UserDataStore {
     public Observable<AccessToken> loginWithPhoneNumber(String phoneNumber, String code, String pinId) {
         return this.loginApi
                 .loginWithUsername(new LoginEntity(phoneNumber, code, pinId))
-//                .doOnError(throwable -> {
-//                    AccessToken accessToken1 = new AccessToken();
-//                    accessToken1.setAccessToken("DvEZQrxOZ5LgHQE9XjWYzCNMEcSmlCMVfvm27ZTLJ72KpRpVIY");
-//                    accessToken1.setTokenType("Bearer");
-//                    accessToken1.setUserId("BJgkS2rN");
-//                    CloudUserDataStore.this.userCache.put(accessToken1);
-//                })
+                .doOnError(throwable -> {
+                    AccessToken accessToken1 = new AccessToken();
+                    accessToken1.setAccessToken("gI1J6AWUKIg6bTXOm9KNTCD3cI52o8qoQloGcGLD7RUj0i0RUx");
+                    accessToken1.setTokenType("Bearer");
+                    accessToken1.setUserId("BJAYhzzo");
+                    CloudUserDataStore.this.userCache.put(accessToken1);
+                })
                 .doOnNext(saveToCacheAccessToken);
     }
 
@@ -180,8 +188,8 @@ public class CloudUserDataStore implements UserDataStore {
         }
 
         String req = context.getString(R.string.messages_infos,
+                !StringUtils.isEmpty(lastMessageRequest.get()) ? context.getString(R.string.messages_start, lastMessageRequest.get()) : "",
                 !StringUtils.isEmpty(idsTribes.toString()) ? context.getString(R.string.tribe_sent_infos, idsTribes) : "");
-
 
         return tribeApi.messages(req).flatMap(messageRealmInterfaceList -> {
                     Set<String> idsFrom = new HashSet<>();
@@ -259,6 +267,8 @@ public class CloudUserDataStore implements UserDataStore {
     };
 
     private final Action1<List<MessageRealmInterface>> saveToCacheMessages = messageRealmList -> {
+        this.lastMessageRequest.set(utcSimpleDate.format(new Date()));
+
         if (messageRealmList != null && messageRealmList.size() > 0) {
             List<TribeRealm> tribeRealmList = new ArrayList<>();
             List<ChatRealm> chatRealmList = new ArrayList<>();

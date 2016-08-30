@@ -153,6 +153,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
                 .autoStart(autoStart)
                 .looping(true)
                 .mute(false)
+                .canChangeSpeed(true)
                 .build();
 
         subscriptions.add(mediaPlayer.onPreparedPlayer().subscribe(prepared -> {
@@ -173,7 +174,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     }
 
     public void releasePlayer() {
-        mediaPlayer.releasePlayer();
+        mediaPlayer.release();
 
         if (subscriptions != null && subscriptions.hasSubscriptions()) {
             subscriptions.clear();
@@ -181,11 +182,11 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     }
 
     public void play() {
-        mediaPlayer.resumePlayer();
+        mediaPlayer.play();
     }
 
     public void pausePlayer() {
-        mediaPlayer.pausePlayer();
+        mediaPlayer.pause();
     }
 
     public void setIconsAlpha(float alpha) {
@@ -207,9 +208,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     }
 
     public void changeSpeed() {
-        //if (mediaPlayer.isPlaying()) {
-        //    mediaPlayer.setRate(speedPlayack.get());
-        //}
+        mediaPlayer.setPlaybackRate();
     }
 
     @OnClick(R.id.labelDistance)

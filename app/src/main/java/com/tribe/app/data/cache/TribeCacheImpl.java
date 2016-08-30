@@ -5,6 +5,7 @@ import android.content.Context;
 import com.tribe.app.data.realm.MessageRecipientRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
@@ -112,8 +113,13 @@ public class TribeCacheImpl implements TribeCache {
                     shouldUpdate = true;
                 }
 
-                if (tribeRealm.getMessageReceivingStatus() != MessageReceivingStatus.STATUS_RECEIVED) {
+                if (tribeRealm.getMessageReceivingStatus() != null && !tribeRealm.getMessageReceivingStatus().equals(MessageReceivingStatus.STATUS_RECEIVED)) {
                     toEdit.setMessageReceivingStatus(tribeRealm.getMessageReceivingStatus());
+                    shouldUpdate = true;
+                }
+
+                if (tribeRealm.getMessageDownloadingStatus() != null && !tribeRealm.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD)) {
+                    toEdit.setMessageDownloadingStatus(tribeRealm.getMessageDownloadingStatus());
                     shouldUpdate = true;
                 }
 
@@ -214,11 +220,13 @@ public class TribeCacheImpl implements TribeCache {
                 } else {
                     tribesNotSeen = realm.where(TribeRealm.class)
                             .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_NOT_SEEN)
-                            .equalTo("from.id", friendshipId)
-                            .or()
                             .beginGroup()
                             .equalTo("group.id", friendshipId)
                             .notEqualTo("from.id", currentUser.getId())
+                            .endGroup()
+                            .or()
+                            .beginGroup()
+                            .equalTo("from.id", friendshipId)
                             .endGroup()
                             .findAllSorted("recorded_at", Sort.ASCENDING);
                 }
@@ -230,6 +238,42 @@ public class TribeCacheImpl implements TribeCache {
                 subscriber.onNext(realm.copyFromRealm(tribesNotSeen));
             }
         });
+    }
+
+    @Override
+    public List<TribeRealm> tribesNotSeenNoObs(String friendshipId) {
+        List<TribeRealm> tribeRealmList = new ArrayList<>();
+        RealmResults<TribeRealm> realmResults;
+        Realm obsRealm = Realm.getDefaultInstance();
+
+        if (friendshipId == null) {
+            realmResults = obsRealm.where(TribeRealm.class)
+                    .beginGroup()
+                    .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_NOT_SEEN)
+                    .notEqualTo("from.id", currentUser.getId())
+                    .endGroup()
+                    .or()
+                    .equalTo("from.id", currentUser.getId())
+                    .findAllSorted("recorded_at", Sort.ASCENDING);
+        } else {
+            realmResults = obsRealm.where(TribeRealm.class)
+                    .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_NOT_SEEN)
+                    .beginGroup()
+                    .equalTo("group.id", friendshipId)
+                    .notEqualTo("from.id", currentUser.getId())
+                    .endGroup()
+                    .or()
+                    .beginGroup()
+                    .equalTo("from.id", friendshipId)
+                    .endGroup()
+                    .findAllSorted("recorded_at", Sort.ASCENDING);
+        }
+
+        if (realmResults != null && realmResults.size() > 0) {
+            tribeRealmList = obsRealm.copyFromRealm(realmResults);
+        }
+
+        return tribeRealmList;
     }
 
     @Override
