@@ -50,35 +50,43 @@
             <com.tribe.app.presentation.view.component.SettingSectionView
                 android:id="@+id/profileSection"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                />
 
             <com.tribe.app.presentation.view.component.SettingView
                 android:id="@+id/settingsPicture"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/section_button_vertical_padding"
+                />
 
             <com.tribe.app.presentation.view.component.SettingView
                 android:id="@+id/settingsDisplayName"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <com.tribe.app.presentation.view.component.SettingView
                 android:id="@+id/settingsUsername"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/section_button_vertical_padding"
+                />
 
             <!-- Message Settings -->
 
             <com.tribe.app.presentation.view.component.SettingSectionView
                 android:id="@+id/messageSection"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                />
 
 
             <com.tribe.app.presentation.view.component.SettingView
                 android:id="@+id/messageSettingMemories"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/section_button_vertical_padding"
+                />
 
             <com.tribe.app.presentation.view.component.SettingView
                 android:id="@+id/messageSettingContext"
@@ -98,29 +106,34 @@
             <com.tribe.app.presentation.view.component.SettingView
                 android:id="@+id/messageSettingFahrenheit"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/section_button_vertical_padding"/>
 
             <!-- Support Settings -->
 
             <com.tribe.app.presentation.view.component.SettingSectionView
                 android:id="@+id/supportSection"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+               />
 
             <com.tribe.app.presentation.view.component.SettingView
                 android:id="@+id/settingsTweet"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/section_button_vertical_padding"
+                />
 
             <com.tribe.app.presentation.view.component.SettingView
                 android:id="@+id/settingsEmail"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <com.tribe.app.presentation.view.component.SettingView
                 android:id="@+id/settingsRateApp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/section_button_vertical_padding"/>
 
             <com.tribe.app.presentation.view.component.SettingSectionView
                 android:id="@+id/exitSection"
@@ -129,13 +142,15 @@
 
             <com.tribe.app.presentation.view.component.SettingView
                 android:id="@+id/settingsLogOut"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/section_button_vertical_padding"/>
 
             <com.tribe.app.presentation.view.component.SettingView
                 android:id="@+id/settingsRemove"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/section_button_vertical_padding"/>
 
         </LinearLayout>
 

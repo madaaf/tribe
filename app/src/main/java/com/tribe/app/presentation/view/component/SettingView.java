@@ -54,6 +54,9 @@ public class SettingView extends FrameLayout {
     @BindView(R.id.txtNameSetting)
     TextViewFont txtNameSetting;
 
+    @BindView(R.id.settingFrame)
+    FrameLayout settingFrame;
+
     int viewType;
 
     public static final int PICTURE = 0, NAME = 1, SWITCH = 2, SIMPLE = 4, DELETE = 5;
@@ -98,22 +101,31 @@ public class SettingView extends FrameLayout {
         switch (viewType) {
             case PICTURE:
                 imageSetting.setVisibility(VISIBLE);
+                setFrameClickable();
                 break;
             case NAME:
                 txtNameSetting.setVisibility(VISIBLE);
+                setFrameClickable();
                 break;
             case SWITCH:
                 switchMessage.setVisibility(VISIBLE);
                 break;
             case SIMPLE:
+                setFrameClickable();
                 break;
             case DELETE:
                 txtSectionTitle.setTextColor(ContextCompat.getColor(getContext(), R.color.red_circle));
+                setFrameClickable();
                 break;
             default:
                 break;
         }
 
+    }
+
+    private void setFrameClickable() {
+        settingFrame.setClickable(true);
+        settingFrame.setForeground(ContextCompat.getDrawable(getContext(), R.drawable.selectable_button));
     }
 
 }
