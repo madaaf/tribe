@@ -1,8 +1,13 @@
 package com.tribe.app.presentation.navigation;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
+import android.widget.Toast;
 
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
@@ -14,6 +19,8 @@ import com.tribe.app.presentation.view.activity.PointsActivity;
 import com.tribe.app.presentation.view.activity.ScoreActivity;
 import com.tribe.app.presentation.view.activity.SettingActivity;
 import com.tribe.app.presentation.view.activity.TribeActivity;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -121,10 +128,91 @@ public class Navigator {
         }
     }
 
+    /**
+     * Goes to the settings screen.
+     *
+     * @param context context needed to open the destiny activity.
+     */
     public void navigateToSettings(Context context) {
         if (context != null) {
             Intent intent = SettingActivity.getCallingIntent(context);
             context.startActivity(intent);
         }
     }
+
+    /**
+     * Goes to the app page in the playstore so the user may rate the app.
+     *
+     * @param context context needed to open the destiny activity.
+     */
+    public void rateApp(Context context) {
+
+        String appPackage = "com.tribe.app";
+        // http://stackoverflow.com/questions/10816757/rate-this-app-link-in-google-play-store-app-on-the-phone
+        Uri uri = Uri.parse("market://details?id=" + appPackage);
+        Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+        // To count with Play market backstack, After pressing back button,
+        // to taken back to our application, we need to add following flags to intent.
+        goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
+                Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
+                Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        try {
+            context.startActivity(goToMarket);
+        } catch (ActivityNotFoundException e) {
+            context.startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("http://play.google.com/store/apps/details?id=" + appPackage)));
+        }
+
+    }
+
+    /**
+     * Composes a tweet to post and opens Twitter app.
+     * @param context context needed to open the intent.
+     * @param tweet the pre-filled tweet.
+     */
+
+    public void tweet(Context context, String tweet) {
+        // http://stackoverflow.com/questions/21088250/android-launch-twitter-intent
+        Intent tweetIntent = new Intent(Intent.ACTION_SEND);
+        tweetIntent.putExtra(Intent.EXTRA_TEXT, tweet);
+        tweetIntent.setType("text/plain");
+
+        PackageManager packManager =  context.getPackageManager();
+        List<ResolveInfo> resolvedInfoList = packManager.queryIntentActivities(tweetIntent,  PackageManager.MATCH_DEFAULT_ONLY);
+
+        boolean resolved = false;
+        for(ResolveInfo resolveInfo: resolvedInfoList){
+            if(resolveInfo.activityInfo.packageName.startsWith("com.twitter.android")){
+                tweetIntent.setClassName(
+                        resolveInfo.activityInfo.packageName,
+                        resolveInfo.activityInfo.name );
+                resolved = true;
+                break;
+            }
+        }
+        if(resolved){
+           context.startActivity(tweetIntent);
+        }else{
+            Toast.makeText(context, "Twitter app not found", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * Intent to send an email
+     * @param context context to start activity
+     * @param addresses addresses to send email to
+     * @param subject the subject of the email
+     */
+
+    public void composeEmail(Context context, String[] addresses, String subject) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_EMAIL, addresses);
+        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        if (intent.resolveActivity(context.getPackageManager()) != null) {
+            context.startActivity(intent);
+        }
+    }
+
+
 }

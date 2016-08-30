@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -13,9 +14,13 @@ import android.widget.Toast;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by horatiothomas on 8/29/16.
@@ -37,8 +42,6 @@ public class SettingView extends FrameLayout {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    Unbinder unbinder;
-
     @BindView(R.id.txtSectionTitle)
     TextViewFont txtSectionTitle;
 
@@ -54,12 +57,15 @@ public class SettingView extends FrameLayout {
     @BindView(R.id.txtNameSetting)
     TextViewFont txtNameSetting;
 
-    @BindView(R.id.settingFrame)
-    FrameLayout settingFrame;
+    Unbinder unbinder;
+
 
     int viewType;
 
     public static final int PICTURE = 0, NAME = 1, SWITCH = 2, SIMPLE = 4, DELETE = 5;
+
+    private PublishSubject<Boolean> checkedSwitch = PublishSubject.create();
+
 
     @Override
     protected void onFinishInflate() {
@@ -88,9 +94,14 @@ public class SettingView extends FrameLayout {
         switchMessage.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                Toast.makeText(getContext(), txtSectionTitle.getText() + " selected", Toast.LENGTH_LONG).show();
+                checkedSwitch.onNext(b);
+
             }
         });
+    }
+
+    public Observable<Boolean> checkedSwitch() {
+        return checkedSwitch;
     }
 
     public void setTitleBodyViewType(String title, String body, int viewType) {
@@ -124,8 +135,8 @@ public class SettingView extends FrameLayout {
     }
 
     private void setFrameClickable() {
-        settingFrame.setClickable(true);
-        settingFrame.setForeground(ContextCompat.getDrawable(getContext(), R.drawable.selectable_button));
+        setClickable(true);
+        setForeground(ContextCompat.getDrawable(getContext(), R.drawable.selectable_button));
     }
 
 }
