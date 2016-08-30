@@ -11,6 +11,7 @@ import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
 import com.tribe.app.presentation.internal.di.scope.Memories;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
+import com.tribe.app.presentation.internal.di.scope.Preload;
 import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.utils.PreferencesConstants;
@@ -69,7 +70,12 @@ public class DataModule {
 
     @Provides @Singleton @AudioDefault
     Preference<Boolean> provideAudioDefault(RxSharedPreferences prefs) {
-        return prefs.getBoolean(PreferencesConstants.PRELOAD, false);
+        return prefs.getBoolean(PreferencesConstants.AUDIO_DEFAULT, false);
+    }
+
+    @Provides @Singleton @Preload
+    Preference<Boolean> providePreload(RxSharedPreferences prefs) {
+        return prefs.getBoolean(PreferencesConstants.AUDIO_DEFAULT, false);
     }
 
 
