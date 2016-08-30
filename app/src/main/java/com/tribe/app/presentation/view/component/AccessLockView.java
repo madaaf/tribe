@@ -296,6 +296,7 @@ public class AccessLockView extends FrameLayout {
         setNewWidthAndHeight(viewPulse, pulseWidth, pulseWidth);
     }
 
+
     private void removePulsingCircleAnimation() {
         Drawable backgrounds[] = new Drawable[2];
         backgrounds[0] = ResourcesCompat.getDrawable(getResources(), R.drawable.shape_circle_grey, null);

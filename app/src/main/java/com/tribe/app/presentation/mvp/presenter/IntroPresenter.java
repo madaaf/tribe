@@ -78,9 +78,9 @@ public class IntroPresenter implements Presenter {
 
     public void requestCode(String phoneNumber) {
         // TODO: get pin
-//                cloudGetRequestCodeUseCase.prepare(phoneNumber);
-//        cloudGetRequestCodeUseCase.execute(new RequestCodeSubscriber());
-                    goToCode();
+                cloudGetRequestCodeUseCase.prepare(phoneNumber);
+        cloudGetRequestCodeUseCase.execute(new RequestCodeSubscriber());
+//                    goToCode(pin);
 
 
     }
@@ -105,8 +105,8 @@ public class IntroPresenter implements Presenter {
             }
         }, 2000);
 
-//        cloudLoginUseCase.prepare(phoneNumber, code, pinId);
-//        cloudLoginUseCase.execute(new LoginSubscriber());
+        cloudLoginUseCase.prepare(phoneNumber, code, pinId);
+        cloudLoginUseCase.execute(new LoginSubscriber());
 
     }
 
@@ -122,8 +122,8 @@ public class IntroPresenter implements Presenter {
 //        this.introView.goToProfileInfo();
 //    }
 
-    public void goToCode() {
-        this.introView.goToCode();
+    public void goToCode(Pin pin) {
+        this.introView.goToCode(pin);
     }
 
     public void goToConnected() {
@@ -163,7 +163,7 @@ public class IntroPresenter implements Presenter {
 
         @Override
         public void onNext(Pin pin) {
-            goToCode();
+            goToCode(pin);
         }
     }
 
@@ -199,11 +199,11 @@ public class IntroPresenter implements Presenter {
 
         @Override
         public void onNext(User user) {
-            if (true) {
-//                goToProfileInfo();
-            } else {
+//            if (true) {
+////                goToProfileInfo();
+//            } else {
                 goToHome();
-            }
+//            }
         }
     }
 
