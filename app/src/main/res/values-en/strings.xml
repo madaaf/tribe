@@ -232,7 +232,7 @@
 	<string name="onboarding_user_facebook_button_title">Or autofill profile</string>
 	<string name="onboarding_queue_title">Get access now.</string>
 	<string name="onboarding_queue_description">You need to have at\nleast 1 friend to enter.</string>
-	<string name="onboarding_queue_button_title">Try again</string>
+	<string name="onboarding_queue_button_title">Let\'s find out!</string>
 	<string name="onboarding_queue_loading_title">Hang tight…</string>
 	<string name="onboarding_queue_loading_description">Looking if one of your\n friends is already on Tribe.</string>
 	<string name="onboarding_queue_loading_friends">friends</string>

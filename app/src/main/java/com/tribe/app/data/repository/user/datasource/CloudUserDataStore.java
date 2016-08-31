@@ -97,13 +97,13 @@ public class CloudUserDataStore implements UserDataStore {
     public Observable<AccessToken> loginWithPhoneNumber(String phoneNumber, String code, String pinId) {
         return this.loginApi
                 .loginWithUsername(new LoginEntity(phoneNumber, code, pinId))
-                .doOnError(throwable -> {
-                    AccessToken accessToken1 = new AccessToken();
-                    accessToken1.setAccessToken("gI1J6AWUKIg6bTXOm9KNTCD3cI52o8qoQloGcGLD7RUj0i0RUx");
-                    accessToken1.setTokenType("Bearer");
-                    accessToken1.setUserId("BJAYhzzo");
-                    CloudUserDataStore.this.userCache.put(accessToken1);
-                })
+//                .doOnError(throwable -> {
+//                    AccessToken accessToken1 = new AccessToken();
+//                    accessToken1.setAccessToken("gI1J6AWUKIg6bTXOm9KNTCD3cI52o8qoQloGcGLD7RUj0i0RUx");
+//                    accessToken1.setTokenType("Bearer");
+//                    accessToken1.setUserId("BJAYhzzo");
+//                    CloudUserDataStore.this.userCache.put(accessToken1);
+//                })
                 .doOnNext(saveToCacheAccessToken);
     }
 

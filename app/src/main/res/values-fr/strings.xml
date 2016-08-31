@@ -232,7 +232,7 @@
 	<string name="onboarding_user_facebook_button_title">Remplir depuis Facebook</string>
 	<string name="onboarding_queue_title">Rentre maintenant.</string>
 	<string name="onboarding_queue_description">Vous devez avoir un ami\npour pouvoir rentrer</string>
-	<string name="onboarding_queue_button_title">Voyons ça!</string>
+	<string name="onboarding_queue_button_title">Voyons ça !</string>
 	<string name="onboarding_queue_loading_title">Attention...</string>
 	<string name="onboarding_queue_loading_description">Recherche d\'un contact dans\nnotre base de données</string>
 	<string name="onboarding_queue_loading_friends">friends</string>
