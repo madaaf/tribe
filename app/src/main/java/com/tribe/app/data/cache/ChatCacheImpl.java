@@ -53,20 +53,17 @@ public class ChatCacheImpl implements ChatCache {
 
     @Override
     public Observable<List<ChatRealm>> messages() {
-        return Observable.create(new Observable.OnSubscribe<List<ChatRealm>>() {
-            @Override
-            public void call(final Subscriber<? super List<ChatRealm>> subscriber) {
+        return Observable.create((Observable.OnSubscribe<List<ChatRealm>>) subscriber -> {
 
-            }
         });
     }
 
     @Override
-    public Observable<List<ChatRealm>> messages(String friendshipId) {
+    public Observable<List<ChatRealm>> messages(String recipientId) {
         return Observable.create(new Observable.OnSubscribe<List<ChatRealm>>() {
             @Override
             public void call(final Subscriber<? super List<ChatRealm>> subscriber) {
-                if (friendshipId == null) {
+                if (recipientId == null) {
                     Realm obsRealm = Realm.getDefaultInstance();
                     messagesNotSeen = realm.where(ChatRealm.class)
                             .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_NOT_SEEN)
@@ -77,16 +74,34 @@ public class ChatCacheImpl implements ChatCache {
                     messagesNotSeen.addChangeListener(messagesUpdated -> subscriber.onNext(realm.copyFromRealm(messagesUpdated)));
                     subscriber.onNext(realm.copyFromRealm(messagesNotSeen));
                 } else {
-                    messages = realm.where(ChatRealm.class)
-                            .equalTo("from.id", friendshipId)
+                    try {
+                        messages =
+                            realm.where(ChatRealm.class)
+                            .beginGroup()
+                                .beginGroup()
+                                    .beginGroup()
+                                        .equalTo("from.id", recipientId)
+                                        .isNull("friendshipRealm")
+                                        .isNull("group")
+                                    .endGroup()
+                                    .or()
+                                    .beginGroup()
+                                        .equalTo("friendshipRealm.friend.id", recipientId)
+                                        .isNull("group")
+                                    .endGroup()
+                                .endGroup()
+                            .endGroup()
                             .or()
-                            .equalTo("friendshipRealm.friend.id", friendshipId)
-                            .or()
-                            .equalTo("group.id", friendshipId)
+                            .beginGroup()
+                                .equalTo("group.id", recipientId)
+                            .endGroup()
                             .findAllSorted("created_at", Sort.ASCENDING);
-                    messages.removeChangeListeners();
-                    messages.addChangeListener(messagesUpdated -> subscriber.onNext(realm.copyFromRealm(messagesUpdated)));
-                    subscriber.onNext(realm.copyFromRealm(messages));
+                        messages.removeChangeListeners();
+                        messages.addChangeListener(messagesUpdated -> subscriber.onNext(realm.copyFromRealm(messagesUpdated)));
+                        subscriber.onNext(realm.copyFromRealm(messages));
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         });
@@ -197,14 +212,23 @@ public class ChatCacheImpl implements ChatCache {
         for (String idTo : friendshipSet) {
             RealmResults<ChatRealm> latest = realm.where(ChatRealm.class)
                     .beginGroup()
-                    .equalTo("friendshipRealm.friend.id", idTo)
-                    .or()
-                    .equalTo("from.id", idTo)
+                        .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED)
+                        .or()
+                        .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED_PARTLY)
                     .endGroup()
                     .beginGroup()
-                    .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED)
-                    .or()
-                    .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED_PARTLY)
+                        .beginGroup()
+                            .beginGroup()
+                                .equalTo("from.id", idTo)
+                                .isNull("friendshipRealm")
+                                .isNull("group")
+                            .endGroup()
+                            .or()
+                            .beginGroup()
+                                .equalTo("friendshipRealm.friend.id", idTo)
+                                .isNull("group")
+                            .endGroup()
+                        .endGroup()
                     .endGroup()
                     .findAllSorted("created_at", Sort.DESCENDING);
 
@@ -212,16 +236,29 @@ public class ChatCacheImpl implements ChatCache {
                 RealmResults<ChatRealm> toRemoveStatus = realm.where(ChatRealm.class)
                         .lessThan("created_at", latest.get(0).getCreatedAt())
                         .beginGroup()
-                        .equalTo("friendshipRealm.friend.id", idTo)
-                        .or()
-                        .equalTo("from.id", idTo)
+                            .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
+                            .or()
+                            .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED)
+                            .or()
+                            .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED_PARTLY)
                         .endGroup()
                         .beginGroup()
-                        .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
-                        .or()
-                        .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED)
-                        .or()
-                        .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED_PARTLY)
+                            .beginGroup()
+                                .beginGroup()
+                                    .beginGroup()
+                                        .equalTo("from.id", idTo)
+                                        .isNull("friendshipRealm")
+                                        .isNull("group")
+                                    .endGroup()
+                                    .or()
+                                    .beginGroup()
+                                        .equalTo("friendshipRealm.friend.id", idTo)
+                                        .isNull("group")
+                                    .endGroup()
+                                .endGroup()
+                            .endGroup()
+                            .or()
+                            .equalTo("group.id", idTo)
                         .endGroup()
                         .findAllSorted("created_at", Sort.DESCENDING);
 
@@ -317,7 +354,7 @@ public class ChatCacheImpl implements ChatCache {
         if (!result.isToGroup()) {
             sentMessages = sentMessages.where()
                     .beginGroup()
-                    .equalTo("friendshipRealm.friend.id", result.getFriendshipRealm().getId())
+                    .equalTo("friendshipRealm.friend.id", result.getFriendshipRealm().getFriend().getId())
                     .endGroup()
                     .findAllSorted("created_at", Sort.ASCENDING);
         } else {
@@ -341,21 +378,33 @@ public class ChatCacheImpl implements ChatCache {
     }
 
     @Override
-    public Observable<Void> deleteConversation(String friendshipId) {
+    public Observable<Void> deleteConversation(String recipientId) {
         return Observable.create(new Observable.OnSubscribe<Void>() {
             @Override
             public void call(final Subscriber<? super Void> subscriber) {
                 Realm obsRealm = Realm.getDefaultInstance();
                 obsRealm.beginTransaction();
                 RealmResults results = obsRealm.where(ChatRealm.class)
-                        .equalTo("from.id", friendshipId)
+                        .beginGroup()
+                            .beginGroup()
+                                .beginGroup()
+                                    .equalTo("from.id", recipientId)
+                                    .isNull("friendshipRealm")
+                                    .isNull("group")
+                                .endGroup()
+                                .or()
+                                .beginGroup()
+                                    .equalTo("friendshipRealm.friend.id", recipientId)
+                                    .isNull("group")
+                                .endGroup()
+                            .endGroup()
+                        .endGroup()
                         .or()
-                        .equalTo("friendshipRealm.friend.id", friendshipId)
-                        .or()
-                        .equalTo("group.id", friendshipId)
+                        .equalTo("group.id", recipientId)
                         .findAllSorted("created_at", Sort.ASCENDING);
 
                 if (results != null && results.size() > 0) results.deleteAllFromRealm();
+
                 obsRealm.commitTransaction();
                 subscriber.onCompleted();
                 obsRealm.close();
@@ -370,16 +419,29 @@ public class ChatCacheImpl implements ChatCache {
 
         for (String id : idsTo) {
             RealmResults<ChatRealm> sentMessages = obsRealm.where(ChatRealm.class)
-                    .equalTo("from.id", currentUser.getId())
                     .beginGroup()
-                    .equalTo("friendshipRealm.friend.id", id)
-                    .or()
-                    .equalTo("group.id", id)
+                        .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
+                        .or()
+                        .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED_PARTLY)
                     .endGroup()
                     .beginGroup()
-                    .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
-                    .or()
-                    .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED_PARTLY)
+                        .beginGroup()
+                            .beginGroup()
+                                .beginGroup()
+                                    .equalTo("from.id", id)
+                                    .isNull("friendshipRealm")
+                                    .isNull("group")
+                                .endGroup()
+                                .or()
+                                .beginGroup()
+                                    .equalTo("friendshipRealm.friend.id", id)
+                                    .isNull("group")
+                                .endGroup()
+                            .endGroup()
+                        .endGroup()
+                        .or()
+                        .equalTo("group.id", id)
+                    .endGroup()
                     .findAllSorted("created_at", Sort.ASCENDING);
 
             if (sentMessages != null && sentMessages.size() > 0) result.addAll(obsRealm.copyFromRealm(sentMessages.subList(0, 1)));
@@ -394,13 +456,26 @@ public class ChatCacheImpl implements ChatCache {
         Realm obsRealm = Realm.getDefaultInstance();
         List<ChatRealm> result = new ArrayList<>();
 
-        RealmResults<ChatRealm> sentMessages = obsRealm.where(ChatRealm.class)
-                .equalTo("from.id", currentUser.getId())
+        RealmResults<ChatRealm> sentMessages =
+                obsRealm.where(ChatRealm.class)
                 .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_PENDING)
                 .beginGroup()
-                .equalTo("friendshipRealm.friend.id", recipientId)
-                .or()
-                .equalTo("group.id", recipientId)
+                    .beginGroup()
+                        .beginGroup()
+                            .beginGroup()
+                                .equalTo("from.id", recipientId)
+                                .isNull("friendshipRealm")
+                                .isNull("group")
+                            .endGroup()
+                            .or()
+                            .beginGroup()
+                                .equalTo("friendshipRealm.friend.id", recipientId)
+                                .isNull("group")
+                            .endGroup()
+                        .endGroup()
+                    .endGroup()
+                    .or()
+                    .equalTo("group.id", recipientId)
                 .endGroup()
                 .findAllSorted("created_at", Sort.ASCENDING);
 
@@ -415,12 +490,24 @@ public class ChatCacheImpl implements ChatCache {
     public Observable<List<ChatRealm>> messagesError(String recipientId) {
         return Observable.create((Observable.OnSubscribe<List<ChatRealm>>) subscriber -> {
             messagesError = realm.where(ChatRealm.class)
-                    .equalTo("from.id", currentUser.getId())
                     .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_ERROR)
                     .beginGroup()
-                    .equalTo("friendshipRealm.friend.id", recipientId)
-                    .or()
-                    .equalTo("group.id", recipientId)
+                        .beginGroup()
+                            .beginGroup()
+                                .beginGroup()
+                                    .equalTo("from.id", recipientId)
+                                    .isNull("friendshipRealm")
+                                    .isNull("group")
+                                .endGroup()
+                                .or()
+                                .beginGroup()
+                                    .equalTo("friendshipRealm.friend.id", recipientId)
+                                    .isNull("group")
+                                .endGroup()
+                            .endGroup()
+                        .endGroup()
+                        .or()
+                        .equalTo("group.id", recipientId)
                     .endGroup()
                     .findAllSorted("created_at", Sort.ASCENDING);
 
@@ -518,16 +605,27 @@ public class ChatCacheImpl implements ChatCache {
         for (String id : idsRecipient) {
             RealmResults<ChatRealm> messages = obsRealm.where(ChatRealm.class)
                     .beginGroup()
-                    .equalTo("group.id", id)
-                    .or()
-                    .equalTo("friendshipRealm.friend.id", id)
-                    .or()
-                    .equalTo("from.id", id)
+                        .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
+                        .or()
+                        .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED_PARTLY)
                     .endGroup()
                     .beginGroup()
-                    .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
-                    .or()
-                    .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED_PARTLY)
+                        .beginGroup()
+                            .beginGroup()
+                                .beginGroup()
+                                    .equalTo("from.id", id)
+                                    .isNull("friendshipRealm")
+                                    .isNull("group")
+                                .endGroup()
+                                .or()
+                                .beginGroup()
+                                    .equalTo("friendshipRealm.friend.id", id)
+                                    .isNull("group")
+                                .endGroup()
+                            .endGroup()
+                        .endGroup()
+                        .or()
+                        .equalTo("group.id", id)
                     .endGroup()
                     .findAllSorted("created_at", Sort.DESCENDING);
 

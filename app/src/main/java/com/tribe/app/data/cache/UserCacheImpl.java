@@ -6,6 +6,7 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.LocationRealm;
 import com.tribe.app.data.realm.UserRealm;
 
 import javax.inject.Inject;
@@ -62,7 +63,9 @@ public class UserCacheImpl implements UserCache {
                         if (groupRealmDB.getId().equals(groupRealm.getId())) found = true;
                     }
 
-                    if (!found) userDB.getGroups().add(groupRealm);
+                    if (!found) {
+                        userDB.getGroups().add(groupRealm);
+                    }
                 }
 
                 for (FriendshipRealm friendshipRealm : userRealm.getFriendships()) {
@@ -84,13 +87,20 @@ public class UserCacheImpl implements UserCache {
                         if (friendshipRealmDB.getId().equals(friendshipRealm.getId())) found = true;
                     }
 
-                    if (!found) userDB.getFriendships().add(friendshipRealm);
+                    if (!found) {
+                        userDB.getFriendships().add(friendshipRealm);
+                    }
                 }
 
                 userDB.setUsername(userRealm.getUsername());
                 userDB.setScore(userRealm.getScore());
                 userDB.setDisplayName(userRealm.getDisplayName());
                 userDB.setProfilePicture(userRealm.getProfilePicture());
+
+                if (userRealm.getLocation() != null) {
+                    LocationRealm locationRealm = obsRealm.copyToRealmOrUpdate(userRealm.getLocation());
+                    userDB.setLocation(locationRealm);
+                }
             } else {
                 obsRealm.copyToRealmOrUpdate(userRealm);
             }

@@ -75,7 +75,7 @@ public class FriendshipRealmDataMapper {
         FriendshipRealm friendshipRealm = null;
         if (friendship != null) {
             friendshipRealm = new FriendshipRealm();
-            friendshipRealm.setId(friendship.getId());
+            friendshipRealm.setId(friendship.getFriendshipId());
             friendshipRealm.setFriend(userRealmDataMapper.transform(friendship.getFriend()));
             friendshipRealm.setBlocked(friendship.isBlocked());
             friendshipRealm.setCategory(friendship.getCategory());

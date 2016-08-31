@@ -6,7 +6,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -52,7 +51,9 @@ public class ConnectedView extends FrameLayout {
 
     @Override
     protected void onDetachedFromWindow() {
-        unbinder.unbind();
+        if (unbinder != null)
+            unbinder.unbind();
+
         super.onDetachedFromWindow();
     }
 

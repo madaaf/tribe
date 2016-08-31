@@ -7,7 +7,6 @@ import android.provider.MediaStore;
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.MarkMessageListAsReadJob;
 import com.tribe.app.data.network.job.SendChatJob;
-import com.tribe.app.data.network.job.UpdateChatMessagesJob;
 import com.tribe.app.data.network.job.UpdateMessagesErrorStatusJob;
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.Recipient;
@@ -120,7 +119,7 @@ public class ChatPresenter implements Presenter {
     }
 
     public void loadChatMessages(String recipientId) {
-        jobManager.addJobInBackground(new UpdateChatMessagesJob(recipientId));
+        //jobManager.addJobInBackground(new UpdateChatMessagesJob(recipientId));
         diskGetChatMessages.setRecipientId(recipientId);
         diskGetChatMessages.execute(new ChatMessageListSubscriber());
         getPendingMessageList.setRecipientId(recipientId);

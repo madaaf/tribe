@@ -49,6 +49,10 @@ public class Friendship extends Recipient {
         this.friend = friend;
     }
 
+    public String getFriendshipId() {
+        return id;
+    }
+
     @Override
     public String getDisplayName() {
         return friend.getDisplayName();

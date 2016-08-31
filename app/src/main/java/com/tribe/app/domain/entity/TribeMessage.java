@@ -113,6 +113,7 @@ public class TribeMessage extends Message {
         tribe.setToGroup(recipient instanceof Group);
         tribe.setType(mode);
         tribe.setMessageSendingStatus(MessageSendingStatus.STATUS_PENDING);
+        tribe.setLocation(user.getLocation());
         return tribe;
     }
 
