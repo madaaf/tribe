@@ -63,7 +63,7 @@
 	
 	<!-- Invitations -->
 	<string name="invitation_sms_error_parse_number_title">Le numéro de téléphone du contact semble incorrect</string>
-	<string name="invitation_sms_error_parse_number_message">%@\n\nLe numéro de téléphone du contact n\'a pas de code pays. Nous avons essayé d\'ajouter %@ mais ça n\'a pas marché. Voulez-vous l\'éditer?</string>
+	<string name="invitation_sms_error_parse_number_message">%1$s\n\nLe numéro de téléphone du contact n\'a pas de code pays. Nous avons essayé d\'ajouter %2$s mais ça n\'a pas marché. Voulez-vous l\'éditer?</string>
 	<string name="invitation_sms_error_parse_number_action_edit">Éditer le numéro</string>
 	<string name="invitation_sms_error_parse_number_action_use">Utiliser ce numéro</string>
 	<string name="invitation_sms_invite_friend"></string>
@@ -208,6 +208,8 @@
 	<string name="settings_tweet_subtitle">We reply in less than 24 hours to every single tweet.</string>
 	<string name="settings_email_title">Email the team</string>
 	<string name="settings_email_subtitle">We reply in less than 48 hours to every single email.</string>
+	<string name="settings_email_address">cyril@tribe.pm</string>
+	<string name="settings_email_subject"></string>
 	<string name="settings_rate_title">Rate the app</string>
 	<string name="settings_rate_subtitle">The easiest way to show us some love.</string>
 	<string name="settings_section_exit">Exit</string>
@@ -243,7 +245,7 @@
 	<string name="onboarding_queue_declined_popup_cancel_button">Stay alone.</string>
 	<string name="onboarding_queue_declined_popup_confirm_button">Sure!</string>
 	<string name="onboarding_queue_valid_title">C\'est bon!</string>
-	<string name="onboarding_queue_valid_description">Rentre maintenant, %i amis\nsont déjà là!</string>
+	<string name="onboarding_queue_valid_description">Rentre maintenant, tes amis\nsont déjà là!</string>
 	<string name="onboarding_queue_valid_button_title">Rentre maintenant!</string>
 	
 	<!-- Pull to search -->

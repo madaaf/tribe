@@ -63,7 +63,7 @@
 	
 	<!-- Invitations -->
 	<string name="invitation_sms_error_parse_number_title">The phone number of this contact doesn\'t look right</string>
-	<string name="invitation_sms_error_parse_number_message">%@\n\nThis contact didn\'t have a country prefix. We tried to add %@ but it didn\'t work. Please manually edit</string>
+	<string name="invitation_sms_error_parse_number_message">%1$s\n\nThis contact didn\'t have a country prefix. We tried to add %2$s but it didn\'t work. Please manually edit</string>
 	<string name="invitation_sms_error_parse_number_action_edit">Edit the number</string>
 	<string name="invitation_sms_error_parse_number_action_use">Use this number</string>
 	<string name="invitation_sms_invite_friend"></string>
@@ -208,6 +208,8 @@
 	<string name="settings_tweet_subtitle">We reply in less than 24 hours\nto every single tweet.</string>
 	<string name="settings_email_title">Email the team</string>
 	<string name="settings_email_subtitle">We reply in less than 48 hours\nto every single email.</string>
+	<string name="settings_email_address">cyril@tribe.pm</string>
+	<string name="settings_email_subject">Something about Tribe</string>
 	<string name="settings_rate_title">Rate the app</string>
 	<string name="settings_rate_subtitle">The easiest way to show us\nsome love.</string>
 	<string name="settings_section_exit">Exit</string>
