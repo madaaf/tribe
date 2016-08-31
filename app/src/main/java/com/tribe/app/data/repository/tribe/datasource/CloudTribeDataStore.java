@@ -64,7 +64,7 @@ public class CloudTribeDataStore implements TribeDataStore {
     public Observable<TribeRealm> sendTribe(TribeRealm tribeRealm) {
         String request = context.getString(R.string.tribe_send,
                 tribeRealm.getFrom().getId(),
-                tribeRealm.isToGroup() ?  tribeRealm.getGroup().getId() : tribeRealm.getFriendshipRealm().getId(),
+                tribeRealm.isToGroup() ?  tribeRealm.getGroup().getId() : tribeRealm.getFriendshipRealm().getFriend().getId(),
                 tribeRealm.isToGroup(),
                 tribeRealm.getType(),
                 simpleDateFormat.format(tribeRealm.getRecordedAt()),

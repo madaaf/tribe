@@ -25,6 +25,7 @@ public abstract class TribeMediaPlayer {
     protected boolean looping;
     protected boolean autoStart;
     protected boolean changeSpeed;
+    protected boolean isLocal;
     protected VideoSize videoSize;
 
     // OBSERVABLES
@@ -64,6 +65,8 @@ public abstract class TribeMediaPlayer {
         private boolean looping = false;
         private boolean autoStart = false;
         private boolean changeSpeed = false;
+        private boolean forceLegacy = false;
+        private boolean isLocal = false;
 
         public TribeMediaPlayerBuilder(Context context, String media) {
             this.context = context;
@@ -90,8 +93,18 @@ public abstract class TribeMediaPlayer {
             return this;
         }
 
+        public TribeMediaPlayerBuilder forceLegacy(boolean forceLegacy) {
+            this.forceLegacy = forceLegacy;
+            return this;
+        }
+
+        public TribeMediaPlayerBuilder isLocal(boolean isLocal) {
+            this.isLocal = isLocal;
+            return this;
+        }
+
         public TribeMediaPlayer build() {
-            return (!DeviceUtils.supportsExoPlayer(context) || changeSpeed) ? new LegacyMediaPlayer(this) : new ExoMediaPlayer(this);
+            return (!DeviceUtils.supportsExoPlayer(context) || changeSpeed || forceLegacy) ? new LegacyMediaPlayer(this) : new ExoMediaPlayer(this);
         }
 
         public String getMedia() {
@@ -117,5 +130,7 @@ public abstract class TribeMediaPlayer {
         public boolean isChangeSpeed() {
             return changeSpeed;
         }
+
+        public boolean isLocal() { return isLocal; }
     }
 }

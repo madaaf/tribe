@@ -1,11 +1,15 @@
 package com.tribe.app.data.realm;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by tiago on 06/05/2016.
  */
 public class LocationRealm extends RealmObject {
+
+    @PrimaryKey
+    private String id;
 
     private double longitude;
     private double latitude;
@@ -51,5 +55,13 @@ public class LocationRealm extends RealmObject {
 
     public void setHasLocation(boolean hasLocation) {
         this.hasLocation = hasLocation;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 }

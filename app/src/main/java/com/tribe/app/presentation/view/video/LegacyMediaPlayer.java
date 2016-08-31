@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.video;
 import android.graphics.SurfaceTexture;
 import android.media.MediaPlayer;
 import android.media.PlaybackParams;
+import android.net.Uri;
 import android.view.Surface;
 
 import com.f2prateek.rx.preferences.Preference;
@@ -35,6 +36,7 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
         this.mute = builder.isMute();
         this.autoStart = builder.isAutoStart();
         this.changeSpeed = builder.isChangeSpeed();
+        this.isLocal = builder.isLocal();
 
         ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
 
@@ -95,8 +97,13 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
         mediaPlayer.setSurface(new Surface(surfaceTexture));
 
         try {
-            RandomAccessFile raf = new RandomAccessFile(media, "r");
-            mediaPlayer.setDataSource(raf.getFD(), 0, raf.length());
+            if (!isLocal) {
+                RandomAccessFile raf = new RandomAccessFile(media, "r");
+                mediaPlayer.setDataSource(raf.getFD(), 0, raf.length());
+            } else {
+                mediaPlayer.setDataSource(context, Uri.parse(media));
+            }
+
             mediaPlayer.prepareAsync();
         } catch (IllegalStateException ex) {
             try {

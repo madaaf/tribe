@@ -84,7 +84,7 @@ public class DownloadTribeJob extends BaseJob {
                                 Log.d(TAG, "file download was a success? " + writtenToDisk);
 
                                 TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
-                                tribeRealm.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_DOWNLOADED);
+                                tribeRealm.setMessageDownloadingStatus(writtenToDisk ? MessageDownloadingStatus.STATUS_DOWNLOADED : MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
                                 tribeCache.update(tribeRealm);
                             })
                         .subscribeOn(Schedulers.newThread())

@@ -125,6 +125,7 @@ public class CloudUserDataStore implements UserDataStore {
                         locationRealm.setLatitude(location.getLatitude());
                         locationRealm.setLongitude(location.getLongitude());
                         locationRealm.setHasLocation(true);
+                        locationRealm.setId(userRealm.getId());
                         userRealm.setLocation(locationRealm);
                     }
 

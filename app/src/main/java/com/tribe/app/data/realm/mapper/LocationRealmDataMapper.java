@@ -29,6 +29,7 @@ public class LocationRealmDataMapper {
             location = new Location(locationRealm.getLongitude(), locationRealm.getLatitude());
             location.setCity(locationRealm.getCity());
             location.setHasLocation(locationRealm.hasLocation());
+            location.setId(locationRealm.getId());
         }
 
         return location;
@@ -45,6 +46,7 @@ public class LocationRealmDataMapper {
 
         if (location != null) {
             locationRealm = new LocationRealm();
+            locationRealm.setId(location.getId());
             locationRealm.setLongitude(location.getLongitude());
             locationRealm.setLatitude(location.getLatitude());
             locationRealm.setCity(location.getCity());

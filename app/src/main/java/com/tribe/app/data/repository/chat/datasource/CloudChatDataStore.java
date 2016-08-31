@@ -90,7 +90,7 @@ public class CloudChatDataStore implements ChatDataStore {
     public Observable<ChatRealm> sendMessage(ChatRealm chatRealm) {
         String request = context.getString(R.string.chat_send,
                     chatRealm.getFrom().getId(),
-                    chatRealm.isToGroup() ? chatRealm.getGroup().getId() : chatRealm.getFriendshipRealm().getId(),
+                    chatRealm.isToGroup() ? chatRealm.getGroup().getId() : chatRealm.getFriendshipRealm().getFriend().getId(),
                     chatRealm.isToGroup(),
                     chatRealm.getType(),
                     simpleDateFormat.format(chatRealm.getRecordedAt()),

@@ -157,6 +157,7 @@ public class UserMessageListDeserializer<T> implements JsonDeserializer<T> {
         tribeRealm.setFrom(from);
 
         LocationRealm locationRealm = new LocationRealm();
+        locationRealm.setId(from.getId());
         locationRealm.setLatitude(json.get("lat") instanceof JsonNull ? 0.0D : json.get("lat").getAsDouble());
         locationRealm.setLongitude(json.get("lng") instanceof JsonNull ? 0.0D : json.get("lng").getAsDouble());
         locationRealm.setCity(!(json.get("location") instanceof JsonNull) ? json.getAsJsonObject("location").get("city").getAsString() : null);
