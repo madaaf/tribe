@@ -311,6 +311,7 @@ public class AccessLockView extends FrameLayout {
         crossfader.startTransition(1200);
     }
 
+    //TODO: Tiago -> call this method every time a friend is found
     private void bluePulse() {
         Drawable backgrounds[] = new Drawable[2];
         backgrounds[0] = ResourcesCompat.getDrawable(getResources(), R.drawable.shape_circle_grey, null);

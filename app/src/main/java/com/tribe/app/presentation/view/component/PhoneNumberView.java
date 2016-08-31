@@ -34,7 +34,6 @@ import rx.subjects.PublishSubject;
  * Component used in IntroViewFragment.java for a user to input their phone number, country code, and verify that it is a valid phone number.
  */
 
-// TODO: fix loading view size
 public class PhoneNumberView extends FrameLayout {
 
     @BindView(R.id.editTextPhoneNumber)
@@ -101,8 +100,7 @@ public class PhoneNumberView extends FrameLayout {
 
     public void initWithCodeCountry(String codeCountry) {
         countryCode = codeCountry;
-        String countryName = (new Locale("", codeCountry).getDisplayCountry()).toUpperCase();
-        String countryCode = "+" + phoneUtils.getCountryCodeForRegion(codeCountry);
+
         try {
             Drawable countryFlagImg = context.getDrawable(R.drawable.class.getField("picto_flag_" + codeCountry.toLowerCase()).getInt(null));
             imgCountryCode.setImageDrawable(countryFlagImg);
@@ -111,8 +109,7 @@ public class PhoneNumberView extends FrameLayout {
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
-//        txtCountryCode.setText(countryName + " (" + countryCode + ")");
-//        txtCountryCode.setText(countryCode);
+
     }
 
     public ImageView getImageViewNextIcon() {
@@ -182,10 +179,6 @@ public class PhoneNumberView extends FrameLayout {
     }
 
     public void fadeOutNext() {
-        AnimationUtils.fadeOutFast(imageViewNextIcon);
-    }
-
-    public void nextIconFadeOut() {
         AnimationUtils.fadeOutFast(imageViewNextIcon);
     }
 

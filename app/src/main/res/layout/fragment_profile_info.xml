@@ -67,7 +67,8 @@
         android:hint="@string/onboarding_user_displayname_placeholder"
         style="@style/Title.1.Black"
         android:textColorHint="@color/black.opacity.40"
-        android:maxLines="1"
+        android:singleLine="true"
+        android:imeOptions="actionDone"
         />
 
     <com.tribe.app.presentation.view.widget.EditTextFont
@@ -81,7 +82,8 @@
         android:hint="@string/onboarding_user_username_placeholder"
         style="@style/Title.1.Black"
         android:textColorHint="@color/black.opacity.40"
-        android:maxLines="1"
+        android:singleLine="true"
+        android:imeOptions="actionDone"
         />
     
     <ImageView

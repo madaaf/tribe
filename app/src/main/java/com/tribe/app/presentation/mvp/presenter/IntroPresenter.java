@@ -116,6 +116,9 @@ public class IntroPresenter implements Presenter {
         this.introView.goToHome();
     }
 
+    public void goToProfileInfo() { this.introView.goToProfileInfo();
+    }
+
     public void goToCode(Pin pin) {
         this.introView.goToCode(pin);
     }
@@ -190,9 +193,9 @@ public class IntroPresenter implements Presenter {
         @Override
         public void onNext(User user) {
 //            if (true) {
-////                goToProfileInfo();
+                goToProfileInfo();
 //            } else {
-                goToHome();
+//                goToHome();
 //            }
         }
     }

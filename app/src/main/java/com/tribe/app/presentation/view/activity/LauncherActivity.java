@@ -20,11 +20,11 @@ public class LauncherActivity extends BaseActivity {
 
 //        navigator.navigateToSettings(this);
 
-        if (accessToken == null || accessToken.getAccessToken() == null) {
+//        if (accessToken == null || accessToken.getAccessToken() == null) {
             navigator.navigateToLogin(this);
-        } else {
-            navigator.navigateToHome(this);
-        }
+//        } else {
+//            navigator.navigateToHome(this);
+//        }
 
         finish();
     }
