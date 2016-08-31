@@ -153,9 +153,14 @@ public class IntroViewFragment extends Fragment implements IntroView {
 
         subscriptions.add(viewCode.codeValid().subscribe(isValid -> {
             if (isValid) {
-                this.code = viewCode.getCode();
-                introPresenter.login(phoneNumber, code, pin.getPinId());
-//                introPresenter.login("", "", "");
+                if (IntroActivity.uiOnlyMode = true) {
+                    introPresenter.login("", "", "");
+                } else {
+                    this.code = viewCode.getCode();
+                    introPresenter.login(phoneNumber, code, pin.getPinId());
+                }
+
+
             }
         }));
     }

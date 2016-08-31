@@ -59,9 +59,9 @@ public class IntroActivity extends BaseActivity {
      * Globals
      */
 
-    private static final int PAGE_INTRO = 0;
-    private static final int PAGE_PROFILE_INFO = 1;
-    private static final int PAGE_ACCESS = 2;
+    private static final int PAGE_INTRO = 0,
+            PAGE_PROFILE_INFO = 1,
+            PAGE_ACCESS = 2;
 
     private IntroViewFragment introViewFragment;
     private ProfileInfoFragment profileInfoFragment;
@@ -70,6 +70,9 @@ public class IntroActivity extends BaseActivity {
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private CallbackManager mCallbackManager;
+
+    // for ui testing
+    public static boolean uiOnlyMode = true;
 
     @Inject
     ScreenUtils screenUtils;
@@ -189,7 +192,7 @@ public class IntroActivity extends BaseActivity {
         viewPager.setAdapter(introViewPagerAdapter);
         viewPager.setOffscreenPageLimit(4);
         viewPager.setScrollDurationFactor(2f);
-        viewPager.setCurrentItem(PAGE_ACCESS);
+        viewPager.setCurrentItem(PAGE_INTRO);
         viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_NONE);
         viewPager.setPageTransformer(false, new IntroPageTransformer());
         viewPager.setSwipeable(false);

@@ -15,9 +15,10 @@ import com.tribe.app.domain.interactor.user.GetRequestCode;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.IntroView;
 import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.view.activity.IntroActivity;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+
 
 public class IntroPresenter implements Presenter {
 
@@ -77,9 +78,13 @@ public class IntroPresenter implements Presenter {
     }
 
     public void requestCode(String phoneNumber) {
-        showViewLoading();
-        cloudGetRequestCodeUseCase.prepare(phoneNumber);
-        cloudGetRequestCodeUseCase.execute(new RequestCodeSubscriber());
+        if (IntroActivity.uiOnlyMode) {
+            goToCode(new Pin());
+        } else {
+            showViewLoading();
+            cloudGetRequestCodeUseCase.prepare(phoneNumber);
+            cloudGetRequestCodeUseCase.execute(new RequestCodeSubscriber());
+        }
 
     }
 
