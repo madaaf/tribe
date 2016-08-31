@@ -9,6 +9,7 @@ import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.activity.PointsActivity;
 import com.tribe.app.presentation.view.activity.ScoreActivity;
 import com.tribe.app.presentation.view.activity.SettingActivity;
+import com.tribe.app.presentation.view.component.SettingView;
 import com.tribe.app.presentation.view.fragment.AccessFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
 import com.tribe.app.presentation.view.fragment.IntroViewFragment;
@@ -33,4 +34,5 @@ public interface UserComponent extends ActivityComponent {
     void inject(AccessFragment accessFragment);
     void inject(ProfileInfoFragment profileInfoFragment);
     void inject(SettingActivity settingActivity);
+    void inject(SettingView settingView);
 }

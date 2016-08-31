@@ -11,7 +11,14 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
+import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.view.activity.BaseActivity;
+import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import javax.inject.Inject;
@@ -57,6 +64,9 @@ public class SettingView extends FrameLayout {
     @BindView(R.id.txtNameSetting)
     TextViewFont txtNameSetting;
 
+    @Inject
+    Picasso picasso;
+
     Unbinder unbinder;
 
 
@@ -74,6 +84,7 @@ public class SettingView extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.view_setting, this);
         unbinder = ButterKnife.bind(this);
 
+        initDependencyInjector();
         setupSwitch();
 
     }
@@ -137,6 +148,37 @@ public class SettingView extends FrameLayout {
     private void setFrameClickable() {
         setClickable(true);
         setForeground(ContextCompat.getDrawable(getContext(), R.drawable.selectable_button));
+    }
+
+    public void setPicture(String picUrl) {
+        picasso.load(picUrl)
+                .fit()
+                .centerCrop()
+                .transform(new RoundedCornersTransformation(R.dimen.setting_pic_size >> 1, 0, RoundedCornersTransformation.CornerType.ALL))
+                .into(imageSetting);
+    }
+
+    public void setName(String name) {
+        txtNameSetting.setText(name);
+    }
+
+    /**
+     * Begin Dagger setup
+     */
+
+    protected ApplicationComponent getApplicationComponent() {
+        return ((AndroidApplication) ((BaseActivity) getContext()).getApplication()).getApplicationComponent();
+    }
+
+    protected ActivityModule getActivityModule() {
+        return new ActivityModule(((BaseActivity) getContext()));
+    }
+
+    private void initDependencyInjector() {
+        DaggerUserComponent.builder()
+                .activityModule(getActivityModule())
+                .applicationComponent(getApplicationComponent())
+                .build().inject(this);
     }
 
 }

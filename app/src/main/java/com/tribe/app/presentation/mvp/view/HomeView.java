@@ -19,4 +19,5 @@ public interface HomeView extends LoadDataView {
     void initPendingTribeItemSelected(Observable<List<TribeMessage>> observable);
     void initNewMessages(Observable<List<Message>> observable);
     void initClickOnPoints(Observable<android.view.View> observable);
+    void initClickOnSettings(Observable<android.view.View> observable);
 }

@@ -66,6 +66,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private PublishSubject<List<TribeMessage>> onPendingTribesSelected = PublishSubject.create();
     private PublishSubject<List<Message>> onNewMessages = PublishSubject.create();
     private PublishSubject<View> clickOpenPoints = PublishSubject.create();
+    private PublishSubject<View> clickOpenSettings = PublishSubject.create();
 
     // VARIABLES
     private HomeView homeView;
@@ -335,6 +336,9 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         subscriptions.add(homeGridAdapter.onClickOpenPoints()
                 .subscribe(clickOpenPoints));
 
+        subscriptions.add(homeGridAdapter.onClickOpenSettings()
+        .subscribe(clickOpenSettings));
+
         if (homeView != null) homeView.initOpenTribes(clickOpenTribes);
         if (homeView != null) homeView.initClicksOnChat(clickChatViewSubject);
         if (homeView != null) homeView.initOnRecordStart(onRecordStart);
@@ -344,6 +348,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         if (homeView != null) homeView.initPendingTribeItemSelected(onPendingTribesSelected);
         if (homeView != null) homeView.initNewMessages(onNewMessages);
         if (homeView != null) homeView.initClickOnPoints(clickOpenPoints);
+        if (homeView != null) homeView.initClickOnSettings(clickOpenSettings);
     }
 
     private void setupBottomSheetMore(Recipient recipient) {

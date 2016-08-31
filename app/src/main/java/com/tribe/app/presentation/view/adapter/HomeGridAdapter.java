@@ -127,6 +127,10 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
         return meGridAdapterDelegate.clickOpenPoints();
     }
 
+    public Observable<View> onClickOpenSettings() {
+        return meGridAdapterDelegate.clickOpenSettings();
+    }
+
     public void setItems(List<Recipient> items) {
         this.items.clear();
         this.items.addAll(items);

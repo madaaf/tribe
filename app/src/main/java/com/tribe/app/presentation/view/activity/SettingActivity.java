@@ -5,16 +5,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.data.cache.UserCache;
+import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.MessageSetting;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -47,10 +52,6 @@ public class SettingActivity extends BaseActivity {
     public static Intent getCallingIntent(Context context) {
         return new Intent(context, SettingActivity.class);
     }
-
-//    @Inject
-//    Preference<Boolean> shareLocation;
-
 
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -106,6 +107,9 @@ public class SettingActivity extends BaseActivity {
     @BindView(R.id.exitSection)
     SettingSectionView exitSection;
 
+    @BindView(R.id.imgDone)
+    ImageView imgDone;
+
     @Inject
     @WeatherUnits
     Preference<String> weatherUnits;
@@ -124,6 +128,8 @@ public class SettingActivity extends BaseActivity {
 
     @Inject
     Navigator navigator;
+
+    User user;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -186,6 +192,12 @@ public class SettingActivity extends BaseActivity {
             navigator.composeEmail(this, addresses, getString(R.string.settings_email_subject));
         }));
 
+        subscriptions.add(RxView.clicks(imgDone).subscribe(aVoid -> {
+            Intent resultIntent = new Intent();
+            setResult(BaseActivity.RESULT_OK, resultIntent);
+            finish();
+        }));
+
     }
 
     private void initUi() {
@@ -238,6 +250,14 @@ public class SettingActivity extends BaseActivity {
         settingsRemove.setTitleBodyViewType(getString(R.string.settings_logout_title),
                 getString(R.string.settings_logout_subtitle),
                 SettingView.DELETE);
+
+        user = getCurrentUser();
+
+        settingsPicture.setPicture(user.getProfilePicture());
+        settingsUsername.setName(user.getUsername());
+        settingsDisplayName.setName(user.getDisplayName());
+
+
 
     }
 

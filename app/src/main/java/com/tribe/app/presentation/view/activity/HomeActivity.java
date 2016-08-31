@@ -320,6 +320,13 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         }));
     }
 
+    @Override
+    public void initClickOnSettings(Observable<View> observable) {
+        subscriptions.add(observable.subscribe(view -> {
+            HomeActivity.this.navigator.navigateToSettings(HomeActivity.this);
+        }));
+    }
+
     private void initRegistrationToken() {
         String token = FirebaseInstanceId.getInstance().getToken();
 

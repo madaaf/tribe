@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.squareup.picasso.Picasso;
@@ -48,6 +49,7 @@ public class MeGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>> {
 
     // OBSERVABLES
     protected final PublishSubject<View> clickOpenPoints = PublishSubject.create();
+    protected final PublishSubject<View> clickOpenSettings = PublishSubject.create();
 
     public MeGridAdapterDelegate(Context context) {
         this.context = context;
@@ -72,6 +74,11 @@ public class MeGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>> {
             .map(aVoid -> vh.layoutPoints)
             .subscribe(clickOpenPoints));
 
+        subscriptions.add(RxView.clicks(vh.layoutSettings)
+        .takeUntil(RxView.detaches(parent))
+        .map(aVoid -> vh.layoutSettings)
+        .subscribe(clickOpenSettings));
+
         return vh;
     }
 
@@ -95,6 +102,10 @@ public class MeGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>> {
         return clickOpenPoints;
     }
 
+    public PublishSubject<View> clickOpenSettings() {
+        return clickOpenSettings;
+    }
+
     static class MeGridViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.layoutContent) public ViewGroup layoutContent;
@@ -103,6 +114,7 @@ public class MeGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>> {
         @BindView(R.id.txtPoints) public TextViewFont txtPoints;
         @BindView(R.id.imgLevel) public ImageView imgLevel;
         @BindView(R.id.layoutPoints) public ViewGroup layoutPoints;
+        @BindView(R.id.btnSettings) public RelativeLayout layoutSettings;
 
         public MeGridViewHolder(View itemView) {
             super(itemView);
