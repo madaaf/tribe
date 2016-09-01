@@ -39,6 +39,11 @@ public class Group extends Recipient {
     }
 
     @Override
+    public String getFriendshipId() {
+        return id;
+    }
+
+    @Override
     public String getUsername() {
         return "";
     }

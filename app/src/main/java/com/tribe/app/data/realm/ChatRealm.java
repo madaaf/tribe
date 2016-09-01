@@ -155,23 +155,4 @@ public class ChatRealm extends RealmObject implements MessageRealmInterface {
     public void setCreatedAt(Date createdAt) {
         this.created_at = createdAt;
     }
-
-    public ChatRealm cloneMessageRealm(ChatRealm fromRealm) {
-        ChatRealm chatRealm = new ChatRealm();
-        chatRealm.setId(fromRealm.getId());
-        chatRealm.setLocalId(fromRealm.getLocalId());
-        chatRealm.setContent(fromRealm.getContent());
-        chatRealm.setGroup(fromRealm.getGroup());
-        chatRealm.setFriendshipRealm(fromRealm.getFriendshipRealm());
-        chatRealm.setType(fromRealm.getType());
-        chatRealm.setRecordedAt(fromRealm.getRecordedAt());
-        chatRealm.setUpdatedAt(fromRealm.getUpdatedAt());
-        chatRealm.setFrom(fromRealm.getFrom());
-        chatRealm.setMessageSendingStatus(fromRealm.getMessageSendingStatus());
-        chatRealm.setMessageReceivingStatus(fromRealm.getMessageReceivingStatus());
-        chatRealm.setMessageDownloadingStatus(fromRealm.getMessageDownloadingStatus());
-        chatRealm.setRecipientList(fromRealm.getRecipientList());
-
-        return chatRealm;
-    }
 }

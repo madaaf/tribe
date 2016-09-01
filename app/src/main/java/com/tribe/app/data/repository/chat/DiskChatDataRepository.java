@@ -111,4 +111,9 @@ public class DiskChatDataRepository implements ChatRepository {
     public Observable<Void> updateStatuses(String friendshipId) {
         return null;
     }
+
+    @Override
+    public Observable<List<ChatMessage>> manageChatHistory(String recipientId) {
+        return null;
+    }
 }

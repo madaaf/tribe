@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.widget;
 
 import android.content.Context;
 import android.graphics.Matrix;
+import android.support.annotation.IntDef;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.TextureView;
@@ -10,6 +11,15 @@ import android.view.TextureView;
  * This extension of {@link TextureView} is created to isolate scaling of this view.
  */
 public abstract class ScalableTextureView extends TextureView {
+
+    public static final int TOP = 0;
+    public static final int BOTTOM = 1;
+    public static final int FILL = 2;
+    public static final int CENTER_CROP = 3;
+    public static final int CENTER_CROP_FILL = 4;
+
+    @IntDef({TOP, BOTTOM, FILL, CENTER_CROP, CENTER_CROP_FILL})
+    public @interface ScaleVideoType{}
 
     private static final boolean SHOW_LOGS = false;
     private static final String TAG = ScalableTextureView.class.getSimpleName();
@@ -32,11 +42,7 @@ public abstract class ScalableTextureView extends TextureView {
 
     private final Matrix mTransformMatrix = new Matrix();
 
-    private ScaleType mScaleType;
-
-    public enum ScaleType {
-        CENTER_CROP, TOP, BOTTOM, FILL, CENTER_CROP_FILL
-    }
+    private int mScaleType;
 
     public ScalableTextureView(Context context) {
         super(context);
@@ -54,7 +60,7 @@ public abstract class ScalableTextureView extends TextureView {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public void setScaleType(ScaleType scaleType) {
+    public void setScaleType(int scaleType) {
         mScaleType = scaleType;
     }
 

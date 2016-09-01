@@ -112,4 +112,10 @@ public class CloudChatDataRepository implements ChatRepository {
         final ChatDataStore chatDataStore = this.chatDataStoreFactory.createCloudChatStore();
         return chatDataStore.updateStatuses(friendshipId);
     }
+
+    @Override
+    public Observable<List<ChatMessage>> manageChatHistory(String recipientId) {
+        final ChatDataStore chatDataStore = this.chatDataStoreFactory.createCloudChatStore();
+        return chatDataStore.manageChatHistory(recipientId).map(collection -> chatRealmDataMapper.transform(collection));
+    }
 }

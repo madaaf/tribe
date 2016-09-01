@@ -1,6 +1,7 @@
 package com.tribe.app.data.repository.chat.datasource;
 
 import com.tribe.app.data.realm.ChatRealm;
+import com.tribe.app.domain.entity.ChatMessage;
 
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 
@@ -84,4 +85,11 @@ public interface ChatDataStore {
      * @param friendshipId the friendshipId for which to update the statuses for
      */
     Observable<Void> updateStatuses(final String friendshipId);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link List< ChatMessage >}.
+     *
+     * @param recipientId the recipientId for which to get the history for
+     */
+    Observable<List<ChatRealm>> manageChatHistory(final String recipientId);
 }

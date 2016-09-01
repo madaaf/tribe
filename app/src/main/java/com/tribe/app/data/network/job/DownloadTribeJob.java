@@ -1,40 +1,21 @@
 package com.tribe.app.data.network.job;
 
-import android.support.annotation.Nullable;
-import android.util.Log;
-
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.network.FileApi;
-import com.tribe.app.data.network.exception.FileAlreadyExists;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.mapper.TribeRealmDataMapper;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
-import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import javax.inject.Inject;
-
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by tiago on 05/07/2016.
  */
-public class DownloadTribeJob extends BaseJob {
+public class DownloadTribeJob extends DownloadVideoJob {
 
     private static final String TAG = "DownloadTribeJob";
 
@@ -60,6 +41,7 @@ public class DownloadTribeJob extends BaseJob {
 
     @Override
     public void onAdded() {
+<<<<<<< HEAD
         TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
         tribeRealm.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_DOWNLOADING);
         tribeCache.update(tribeRealm);
@@ -110,6 +92,9 @@ public class DownloadTribeJob extends BaseJob {
         tribeRealm.setMessageDownloadingStatus(file.exists() && file.length() > 0 ? MessageDownloadingStatus.STATUS_DOWNLOADED : MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
 
         tribeCache.update(tribeRealm);
+=======
+        setStatus(MessageDownloadingStatus.STATUS_DOWNLOADING);
+>>>>>>> 38493649d184eaa26b8dfa06f73cb247ba524768
     }
 
     @Override
@@ -123,52 +108,30 @@ public class DownloadTribeJob extends BaseJob {
         appComponent.inject(this);
     }
 
-    private boolean writeResponseBodyToDisk(ResponseBody body) {
-        try {
-            File file = FileUtils.getFileEnd(tribe.getId());
+    @Override
+    protected String getFileId() {
+        return tribe.getId();
+    }
 
-            InputStream inputStream = null;
-            OutputStream outputStream = null;
+    @Override
+    protected String getTag() {
+        return TAG;
+    }
 
-            try {
-                byte[] fileReader = new byte[4096];
+    @Override
+    protected String getUrl() {
+        return tribe.getContent();
+    }
 
-                long fileSize = body.contentLength();
-                long fileSizeDownloaded = 0;
+    @Override
+    protected void saveResult(boolean writtenToDisk) {
+        setStatus(writtenToDisk ? MessageDownloadingStatus.STATUS_DOWNLOADED : MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
+    }
 
-                inputStream = body.byteStream();
-                outputStream = new FileOutputStream(file);
-
-                while (true) {
-                    int read = inputStream.read(fileReader);
-
-                    if (read == -1) {
-                        break;
-                    }
-
-                    outputStream.write(fileReader, 0, read);
-
-                    fileSizeDownloaded += read;
-
-                    Log.d(TAG, "file download: " + fileSizeDownloaded + " of " + fileSize);
-                }
-
-                outputStream.flush();
-
-                return true;
-            } catch (IOException e) {
-                return false;
-            } finally {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-
-                if (outputStream != null) {
-                    outputStream.close();
-                }
-            }
-        } catch (IOException e) {
-            return false;
-        }
+    @Override
+    protected void setStatus(@MessageDownloadingStatus.Status String status) {
+        TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
+        tribeRealm.setMessageDownloadingStatus(status);
+        tribeCache.update(tribeRealm);
     }
 }

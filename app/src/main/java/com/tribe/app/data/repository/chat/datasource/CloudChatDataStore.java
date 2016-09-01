@@ -42,6 +42,8 @@ import rx.functions.Action1;
  */
 public class CloudChatDataStore implements ChatDataStore {
 
+    private final static int LIMIT = 50;
+
     private final TribeApi tribeApi;
     private final ChatCache chatCache;
     private final UserCache userCache;
@@ -117,10 +119,18 @@ public class CloudChatDataStore implements ChatDataStore {
             }
 
             if (file != null && file.exists() && file.length() > 0) {
-                RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), file);
-                MultipartBody.Part body = MultipartBody.Part.createFormData("content", file.getName(), requestFile);
+                RequestBody requestFile = null;
+                MultipartBody.Part body = null;
 
-                return tribeApi.uploadMessagePhoto(query, body).map(chatServer -> {
+                if (chatRealm.getType().equals(ChatMessage.PHOTO)) {
+                    requestFile = RequestBody.create(MediaType.parse("image/*"), file);
+                    body = MultipartBody.Part.createFormData("content", file.getName(), requestFile);
+                } else {
+                    requestFile = RequestBody.create(MediaType.parse("video/mp4"), file);
+                    body = MultipartBody.Part.createFormData("content", file.getName(), requestFile);
+                }
+
+                return tribeApi.uploadMessageMedia(query, body).map(chatServer -> {
                     chatServer.setMessageSendingStatus(MessageSendingStatus.STATUS_SENT);
                     return chatCache.updateLocalWithServerRealm(chatRealm, chatServer);
                 });
@@ -204,6 +214,37 @@ public class CloudChatDataStore implements ChatDataStore {
         return Observable.empty();
     }
 
+    @Override
+    public Observable<List<ChatRealm>> manageChatHistory(String recipientId) {
+        String request = context.getString(R.string.chat_history, recipientId, LIMIT);
+
+        return tribeApi.chatHistory(request).flatMap(chatRealmList -> {
+            Set<String> messageIds = new HashSet<>();
+
+            for (ChatRealm chatRealm : chatRealmList) {
+                if (!chatCache.isCached(chatRealm.getId())) messageIds.add(chatRealm.getId());
+            }
+
+            if (messageIds.size() > 0) {
+                StringBuilder result = new StringBuilder();
+
+                for (String string : messageIds) {
+                    result.append("\"" + string + "\"");
+                    result.append(",");
+                }
+
+                String idsStr = result.length() > 0 ? result.substring(0, result.length() - 1): "";
+
+                String reqIds = context.getString(R.string.messages_infos_short, idsStr);
+                return tribeApi.messagesById(reqIds);
+            } else {
+                return Observable.just(new ArrayList<ChatRealm>());
+            }
+        }, (chatRealmList1, chatRealmListNew) -> {
+            return chatRealmListNew;
+        }).doOnNext(saveToCacheChatMessages);
+    }
+
     private final Action1<List<MessageRealmInterface>> saveToCacheMessages = messageRealmList -> {
         if (messageRealmList != null && messageRealmList.size() > 0) {
             List<ChatRealm> chatRealmList = new ArrayList<>();
@@ -213,6 +254,12 @@ public class CloudChatDataStore implements ChatDataStore {
             }
 
             CloudChatDataStore.this.chatCache.put(chatRealmList);
+        }
+    };
+
+    private final Action1<List<ChatRealm>> saveToCacheChatMessages = messageRealmList -> {
+        if (messageRealmList != null && messageRealmList.size() > 0) {
+            CloudChatDataStore.this.chatCache.put(messageRealmList);
         }
     };
 }

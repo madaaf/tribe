@@ -15,6 +15,7 @@ import com.tribe.app.presentation.view.adapter.delegate.text.PhotoMessageAdapter
 import com.tribe.app.presentation.view.adapter.delegate.text.RegularMessageAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.text.TodayHeaderMessageAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.text.TutorialMessageAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.text.VideoMessageAdapterDelegate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
     // DELEGATES
     private PhotoMessageAdapterDelegate photoMessageAdapterDelegate;
+    private VideoMessageAdapterDelegate videoMessageAdapterDelegate;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -52,6 +54,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
         photoMessageAdapterDelegate = new PhotoMessageAdapterDelegate(inflater, context);
         delegatesManager.addDelegate(photoMessageAdapterDelegate);
+
+        videoMessageAdapterDelegate = new VideoMessageAdapterDelegate(inflater, context);
+        delegatesManager.addDelegate(videoMessageAdapterDelegate);
 
         items = new ArrayList<>();
 
@@ -126,5 +131,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
     public Observable<ImageView> clickPhoto() {
         return photoMessageAdapterDelegate.clickPhoto();
+    }
+
+    public Observable<ImageView> clickVideo() {
+        return videoMessageAdapterDelegate.clickVideo();
     }
 }

@@ -113,7 +113,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         unbinder = ButterKnife.bind(this);
         ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
 
-        videoTextureView.setScaleType(ScalableTextureView.ScaleType.CENTER_CROP_FILL);
+        videoTextureView.setScaleType(ScalableTextureView.CENTER_CROP_FILL);
         videoTextureView.setSurfaceTextureListener(this);
         super.onFinishInflate();
     }

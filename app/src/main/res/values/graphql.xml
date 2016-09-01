@@ -102,6 +102,16 @@
         }
     </string>
 
+    <string name="chat.history">
+        {
+            friendships(ids: [\"%1$s\"]) {
+                messages(limit: %2$d) {
+                    id
+                }
+            }
+        }
+    </string>
+
     <string name="messages.infos">
         {
             user {
@@ -188,6 +198,26 @@
             recipients {
                 to
                 is_seen
+            }
+        }
+    </string>
+
+    <string name="messages.infos.short">
+        {
+            messages (ids: [%1$s]) {
+                id
+                from
+                to
+                to_group
+                type
+                content
+                recorded_at
+                created_at
+
+                recipients {
+                    to
+                    is_seen
+                }
             }
         }
     </string>

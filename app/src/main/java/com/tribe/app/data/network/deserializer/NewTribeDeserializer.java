@@ -11,11 +11,8 @@ import java.lang.reflect.Type;
 public class NewTribeDeserializer<T> implements JsonDeserializer<T> {
 
     @Override
-    public T deserialize(JsonElement je, Type typeOfT,
-                               JsonDeserializationContext context) throws JsonParseException {
-
-            JsonElement results = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("newTribe");
-
-            return new Gson().fromJson(results, typeOfT);
-        }
+    public T deserialize(JsonElement je, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        JsonElement results = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("newTribe");
+        return new Gson().fromJson(results, typeOfT);
     }
+}

@@ -98,5 +98,10 @@ public class MQTTChatDataStore implements ChatDataStore {
     public Observable<Void> updateStatuses(String friendshipId) {
         return null;
     }
+
+    @Override
+    public Observable<List<ChatRealm>> manageChatHistory(String recipientId) {
+        return null;
+    }
 }
 
