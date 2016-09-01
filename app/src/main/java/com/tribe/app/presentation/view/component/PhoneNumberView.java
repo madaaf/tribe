@@ -34,7 +34,6 @@ import rx.subjects.PublishSubject;
  * Component used in IntroViewFragment.java for a user to input their phone number, country code, and verify that it is a valid phone number.
  */
 
-// TODO: fix loading view size
 public class PhoneNumberView extends FrameLayout {
 
     @BindView(R.id.editTextPhoneNumber)
@@ -45,6 +44,9 @@ public class PhoneNumberView extends FrameLayout {
 
     @BindView(R.id.imageViewNextIcon)
     ImageView imageViewNextIcon;
+
+    @BindView(R.id.countryButton)
+    View countryButton;
 
     @BindView(R.id.circularProgressViewPhoneNumber)
     CircularProgressView circularProgressViewPhoneNumber;
@@ -90,7 +92,7 @@ public class PhoneNumberView extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.view_phone_number, this);
         unbinder = ButterKnife.bind(this);
 
-        RxView.clicks(imgCountryCode)
+        RxView.clicks(countryButton)
                 .subscribe(countryClickEventSubject);
 
 
@@ -98,8 +100,7 @@ public class PhoneNumberView extends FrameLayout {
 
     public void initWithCodeCountry(String codeCountry) {
         countryCode = codeCountry;
-        String countryName = (new Locale("", codeCountry).getDisplayCountry()).toUpperCase();
-        String countryCode = "+" + phoneUtils.getCountryCodeForRegion(codeCountry);
+
         try {
             Drawable countryFlagImg = context.getDrawable(R.drawable.class.getField("picto_flag_" + codeCountry.toLowerCase()).getInt(null));
             imgCountryCode.setImageDrawable(countryFlagImg);
@@ -108,8 +109,7 @@ public class PhoneNumberView extends FrameLayout {
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
-//        txtCountryCode.setText(countryName + " (" + countryCode + ")");
-//        txtCountryCode.setText(countryCode);
+
     }
 
     public ImageView getImageViewNextIcon() {
@@ -144,9 +144,10 @@ public class PhoneNumberView extends FrameLayout {
                     public void call(String s) {
                         if (editable) {
                             currentPhoneNumber = phoneUtils.formatMobileNumber(PhoneNumberView.this.getPhoneNumberInput(), countryCode);
-                            if (currentPhoneNumber != null) {
+                            String viewPhoneNumber = phoneUtils.formatPhoneNumberForView(PhoneNumberView.this.getPhoneNumberInput(), countryCode);
+                            if (viewPhoneNumber != null) {
                                 editable = false;
-                                editTextPhoneNumber.setText(currentPhoneNumber);
+                                editTextPhoneNumber.setText(viewPhoneNumber);
                                 editTextPhoneNumber.setSelection(editTextPhoneNumber.getText().length());
                                 editable = true;
                             }
@@ -181,12 +182,17 @@ public class PhoneNumberView extends FrameLayout {
         AnimationUtils.fadeOutFast(imageViewNextIcon);
     }
 
-    public void nextIconFadeOut() {
-        AnimationUtils.fadeOutFast(imageViewNextIcon);
-    }
-
     public void nextIconVisisble() {
         imageViewNextIcon.setAlpha(1f);
+    }
+
+    public void progressViewVisible(boolean visible) {
+        if (visible) {
+            circularProgressViewPhoneNumber.setVisibility(VISIBLE);
+        } else {
+            circularProgressViewPhoneNumber.setVisibility(INVISIBLE);
+        }
+
     }
 
 }

@@ -16,16 +16,6 @@
         android:src="@drawable/picto_tribe_onboarding_logo"
         />
 
-    <View
-        android:id="@+id/blackOpaqueOverlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="75dp"
-        android:background="@color/black.opacity.40"
-        android:visibility="invisible"
-        />
-
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtIntroMessage"
         android:layout_width="244dp"

@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/bottom_bar_height"
     android:background="@color/white.opacity.100"
-    android:layout_gravity="bottom">
+    android:layout_gravity="bottom"
+    >
 
         <ImageView
             android:id="@+id/imgCountryCode"
@@ -15,8 +16,14 @@
             android:layout_marginStart="@dimen/horizontal_margin_small"
             android:layout_marginBottom="@dimen/vertical_margin"
             android:gravity="center"
-            android:clickable="true"
             android:src="@drawable/picto_us_flag"/>
+
+        <View
+            android:id="@+id/countryButton"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:clickable="true"
+            />
 
         <com.tribe.app.presentation.view.widget.EditTextFont
             android:id="@+id/editTextPhoneNumber"

@@ -20,9 +20,6 @@ import rx.Observable;
  */
 
 // TODO: add ripples
-
-    // TODO: country misaligned
-    // TODO: fix icon
 public class CountryPhoneNumberAdapter extends RecyclerView.Adapter {
 
     private RxAdapterDelegatesManager<List<Country>> delegatesManager;

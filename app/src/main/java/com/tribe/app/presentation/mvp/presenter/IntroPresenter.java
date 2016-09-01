@@ -15,9 +15,10 @@ import com.tribe.app.domain.interactor.user.GetRequestCode;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.IntroView;
 import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.view.activity.IntroActivity;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+
 
 public class IntroPresenter implements Presenter {
 
@@ -77,10 +78,14 @@ public class IntroPresenter implements Presenter {
     }
 
     public void requestCode(String phoneNumber) {
-        // TODO: get pin
-        cloudGetRequestCodeUseCase.prepare(phoneNumber);
-        cloudGetRequestCodeUseCase.execute(new RequestCodeSubscriber());
-//                    goToCode(pin);
+
+        if (IntroActivity.uiOnlyMode) {
+            goToCode(new Pin());
+        } else {
+            showViewLoading();
+            cloudGetRequestCodeUseCase.prepare(phoneNumber);
+            cloudGetRequestCodeUseCase.execute(new RequestCodeSubscriber());
+        }
 
 
     }
@@ -118,9 +123,8 @@ public class IntroPresenter implements Presenter {
         this.introView.goToHome();
     }
 
-//    public void goToProfileInfo() {
-//        this.introView.goToProfileInfo();
-//    }
+    public void goToProfileInfo() { this.introView.goToProfileInfo();
+    }
 
     public void goToCode(Pin pin) {
         this.introView.goToCode(pin);
@@ -128,10 +132,6 @@ public class IntroPresenter implements Presenter {
 
     public void goToConnected() {
         this.introView.goToConnected();
-    }
-
-    public void goToAccess() {
-        this.introView.goToAccess();
     }
 
     private void showViewLoading() {
@@ -200,9 +200,9 @@ public class IntroPresenter implements Presenter {
         @Override
         public void onNext(User user) {
 //            if (true) {
-////                goToProfileInfo();
+                goToProfileInfo();
 //            } else {
-                goToHome();
+//                goToHome();
 //            }
         }
     }

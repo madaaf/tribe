@@ -51,10 +51,14 @@ public class PhoneUtils {
             if (phoneUtil.isValidNumber(phoneNumber) && (isMobile || type == PhoneNumberUtil.PhoneNumberType.UNKNOWN)) {
                 return phoneUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
             }
-//            return PhoneNumberUtils.formatNumber(number, countryCode);
+
         } catch (Exception e) { e.printStackTrace(); }
 
         return null;
+    }
+
+    public String formatPhoneNumberForView(String number, String countryCode) {
+        return PhoneNumberUtils.formatNumber(number, countryCode);
     }
 
     public String prepareForScope(String phoneNumber) {

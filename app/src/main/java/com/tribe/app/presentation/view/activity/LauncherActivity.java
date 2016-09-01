@@ -19,7 +19,6 @@ public class LauncherActivity extends BaseActivity {
         this.getApplicationComponent().inject(this);
 
 
-
         if (accessToken == null || accessToken.getAccessToken() == null) {
             navigator.navigateToLogin(this);
         } else {

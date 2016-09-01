@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.view.activity;
 
 import android.app.Activity;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 
@@ -14,14 +13,9 @@ import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -37,8 +31,6 @@ import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.view.fragment.AccessFragment;
 import com.tribe.app.presentation.view.fragment.IntroViewFragment;
 import com.tribe.app.presentation.view.fragment.ProfileInfoFragment;
-import com.tribe.app.presentation.view.utils.ImageUtils;
-import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
 
@@ -57,7 +49,6 @@ import rx.subscriptions.CompositeSubscription;
  * The first fragment in the view pager is IntroViewFragment.java
  */
 
-// TODO: fix keyboard overlapping issue in full screen
 public class IntroActivity extends BaseActivity {
 
     public static Intent getCallingIntent(Context context) {
@@ -68,20 +59,20 @@ public class IntroActivity extends BaseActivity {
      * Globals
      */
 
-    private static final int PAGE_INTRO = 0;
-    private static final int PAGE_PROFILE_INFO = 1;
-    private static final int PAGE_ACCESS = 2;
+    private static final int PAGE_INTRO = 0,
+            PAGE_PROFILE_INFO = 1,
+            PAGE_ACCESS = 2;
 
     private IntroViewFragment introViewFragment;
     private ProfileInfoFragment profileInfoFragment;
     private AccessFragment accessFragment;
 
-    private IntroViewPagerAdapter introViewPagerAdapter;
-
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private CallbackManager mCallbackManager;
 
+    // for ui testing
+    public static boolean uiOnlyMode = true;
 
     @Inject
     ScreenUtils screenUtils;
@@ -119,18 +110,36 @@ public class IntroActivity extends BaseActivity {
         super.onDestroy();
     }
 
+    /**
+     * onActivityResult here handles four different scenarios:
+     * 1. Country code selector
+     *    In IntroviewFragment.java, when a user changes their country they are brought to a new activity
+     *    and then returned to the fragment, where the results are handled here.
+     *
+     * 2. Get image from Gallery
+     *    In ProfileInfoFragment.java, when a user chooses a photo from their camera for a profile picture,
+     *    their picture is setup here
+     *
+     * 3. Capture image
+     *    In ProfileInfoFragment.java a user can take a picture for their profile picture.
+     *    The result is handled here.
+     *
+     * 4. Facebook Login
+     *    This handles the Facebook login in ProfileInfoFragment.java.
+     */
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Country code selector
+        // 1. Country code selector
         if (requestCode == Navigator.REQUEST_COUNTRY && resultCode == Activity.RESULT_OK) {
             introViewFragment.initPhoneNumberViewWithCountryCode(data.getStringExtra(Extras.COUNTRY_CODE));
         }
 
         // Load image into profile info
 
-        // Get image from Gallery
+        // 2. Get image from Gallery
         if (requestCode == ProfileInfoFragment.RESULT_LOAD_IMAGE && resultCode == Activity.RESULT_OK) {
             Uri selectedImage = data.getData();
             String[] filePathColumn = { MediaStore.Images.Media.DATA };
@@ -151,7 +160,7 @@ public class IntroActivity extends BaseActivity {
             }
         }
 
-        // Capture image
+        // 3. Capture image
         if (requestCode == ProfileInfoFragment.CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
             Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
             profileInfoFragment.setImgProfilePic(profileInfoFragment.formatBitmapforView(thumbnail));
@@ -161,7 +170,7 @@ public class IntroActivity extends BaseActivity {
             }
         }
 
-            // Facebook login
+        // 4. Facebook login
         if(mCallbackManager.onActivityResult(requestCode, resultCode, data)) {
             return;
         }
@@ -179,9 +188,8 @@ public class IntroActivity extends BaseActivity {
     }
 
     private void initViewPager() {
-        introViewPagerAdapter = new IntroViewPagerAdapter(getSupportFragmentManager());
+        IntroViewPagerAdapter introViewPagerAdapter = new IntroViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(introViewPagerAdapter);
-        // TODO: fix duration
         viewPager.setOffscreenPageLimit(4);
         viewPager.setScrollDurationFactor(2f);
         viewPager.setCurrentItem(PAGE_INTRO);
@@ -190,6 +198,10 @@ public class IntroActivity extends BaseActivity {
         viewPager.setSwipeable(false);
     }
 
+    /**
+     * initFacebookLogin() sets up a callback for when the user logs in in ProfileInfoFragment.java
+     */
+
     private void initFacebookLogin() {
         mCallbackManager = CallbackManager.Factory.create();
 
@@ -197,13 +209,12 @@ public class IntroActivity extends BaseActivity {
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-                        Toast.makeText(IntroActivity.this, "Login success", Toast.LENGTH_LONG).show();
                         profileInfoFragment.getInfoFromFacebook();
                     }
 
                     @Override
                     public void onCancel() {
-                        Toast.makeText(IntroActivity.this, "Login Cancel", Toast.LENGTH_LONG).show();
+                        Toast.makeText(IntroActivity.this, "Login Canceled", Toast.LENGTH_LONG).show();
                     }
 
                     @Override
