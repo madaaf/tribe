@@ -153,7 +153,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
 
         subscriptions.add(viewCode.codeValid().subscribe(isValid -> {
             if (isValid) {
-                if (IntroActivity.uiOnlyMode = true) {
+                if (IntroActivity.uiOnlyMode) {
                     introPresenter.login("", "", "");
                 } else {
                     this.code = viewCode.getCode();
@@ -297,7 +297,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(time2 -> {
-                                ((IntroActivity) getActivity()).goToProfileInfo();
+                                if (IntroActivity.uiOnlyMode) ((IntroActivity) getActivity()).goToProfileInfo();
                             });
 
                 });

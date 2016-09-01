@@ -77,7 +77,7 @@ public class IntroActivity extends BaseActivity {
     private CallbackManager mCallbackManager;
 
     // for ui testing
-    public static boolean uiOnlyMode = true;
+    public static final boolean uiOnlyMode = false;
 
     @Inject
     ScreenUtils screenUtils;
@@ -197,7 +197,7 @@ public class IntroActivity extends BaseActivity {
         viewPager.setAdapter(introViewPagerAdapter);
         viewPager.setOffscreenPageLimit(4);
         viewPager.setScrollDurationFactor(2f);
-        viewPager.setCurrentItem(PAGE_PROFILE_INFO);
+        viewPager.setCurrentItem(PAGE_INTRO);
         viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_NONE);
         viewPager.setPageTransformer(false, new IntroPageTransformer());
         viewPager.setSwipeable(false);

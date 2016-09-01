@@ -19,13 +19,11 @@ public class LauncherActivity extends BaseActivity {
         this.getApplicationComponent().inject(this);
 
 
-//        if (accessToken == null || accessToken.getAccessToken() == null) {
+        if (accessToken == null || accessToken.getAccessToken() == null) {
             navigator.navigateToLogin(this);
-//        } else {
-//            navigator.navigateToSettings(this);
-//        }
-//            navigator.navigateToHome(this);
-//        }
+        } else {
+            navigator.navigateToHome(this);
+        }
 
         finish();
     }

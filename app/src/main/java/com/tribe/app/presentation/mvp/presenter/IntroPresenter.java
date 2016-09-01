@@ -199,11 +199,12 @@ public class IntroPresenter implements Presenter {
 
         @Override
         public void onNext(User user) {
-//            if (true) {
+            // TODO: check if users first time logging in
+            if (IntroActivity.uiOnlyMode) {
                 goToProfileInfo();
-//            } else {
-//                goToHome();
-//            }
+            } else {
+                goToHome();
+            }
         }
     }
 
