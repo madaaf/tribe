@@ -402,7 +402,7 @@ public class AccessFragment extends Fragment {
 
     private void fadeTextInOut() {
 
-        int txtDistance = 100;
+        int txtDistance = 25;
 
         txtAccessDesc.animate()
                 .alpha(0)
