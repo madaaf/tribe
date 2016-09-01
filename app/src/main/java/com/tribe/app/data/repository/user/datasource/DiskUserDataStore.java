@@ -62,7 +62,7 @@ public class DiskUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<UserRealm> setUsername(String username) {
+    public Observable<UserRealm> updateUser(String key, String value) {
         return null;
 
     }

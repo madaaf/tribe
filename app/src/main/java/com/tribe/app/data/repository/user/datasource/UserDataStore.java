@@ -61,9 +61,10 @@ public interface UserDataStore {
 
     /**
      *
-     * @param username
+     * @param key
+     * @param value
      * @return
      */
-    Observable<UserRealm> setUsername(String username);
+    Observable<UserRealm> updateUser(String key, String value);
 
 }

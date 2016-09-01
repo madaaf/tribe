@@ -12,23 +12,25 @@ import rx.Observable;
 /**
  * Created by horatiothomas on 8/31/16.
  */
-public class SetUsername extends UseCase {
+public class UpdateUser extends UseCase {
 
     private UserRepository userRepository;
-    private String username;
+    private String key;
+    private String value;
 
     @Inject
-    protected SetUsername(CloudUserDataRepository userDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+    protected UpdateUser(CloudUserDataRepository userDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
         super(threadExecutor, postExecutionThread);
         this.userRepository = userDataRepository;
     }
 
-    public void prepare(String username) {
-        this.username = username;
+    public void prepare(String key, String value) {
+        this.key = key;
+        this.value = value;
     }
 
     @Override
     protected Observable buildUseCaseObservable() {
-        return this.userRepository.setUsername(username);
+        return this.userRepository.updateUser(key, value);
     }
 }

@@ -154,11 +154,11 @@ public class SettingActivity extends BaseActivity implements SettingView {
         }));
 
         subscriptions.add(RxView.clicks(settingsDisplayName).subscribe(aVoid -> {
-
+            settingPresenter.updateUser("display_name", "Horatio Thomas 1000");
         }));
 
         subscriptions.add(RxView.clicks(settingsUsername).subscribe(aVoid -> {
-            settingPresenter.updateUsername("HoratioTribe7");
+            settingPresenter.updateUser("username", "HoratioTribe9999");
         }));
 
         subscriptions.add(messageSettingMemories.checkedSwitch().subscribe(isChecked -> {
@@ -283,6 +283,11 @@ public class SettingActivity extends BaseActivity implements SettingView {
     @Override
     public void changeUsername(String username) {
         settingsUsername.setName(username);
+    }
+
+    @Override
+    public void changeDisplayName(String displayName) {
+        settingsDisplayName.setName(displayName);
     }
 
     @Override

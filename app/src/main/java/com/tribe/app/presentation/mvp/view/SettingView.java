@@ -6,5 +6,6 @@ package com.tribe.app.presentation.mvp.view;
 public interface SettingView extends LoadDataView {
 
     void changeUsername(String username);
+    void changeDisplayName(String displayName);
 
 }

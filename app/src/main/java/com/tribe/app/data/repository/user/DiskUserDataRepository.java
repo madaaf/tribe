@@ -130,7 +130,7 @@ public class DiskUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<User> setUsername(String username) {
+    public Observable<User> updateUser(String key, String username) {
         final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
         final ChatDataStore chatDataStore = this.chatDataStoreFactory.createDiskChatStore();

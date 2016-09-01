@@ -5,27 +5,26 @@ import android.widget.Toast;
 
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
-import com.tribe.app.domain.interactor.user.SetUsername;
+import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.presentation.mvp.view.SettingView;
 import com.tribe.app.presentation.mvp.view.View;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  * Created by horatiothomas on 8/31/16.
  */
 public class SettingPresenter implements Presenter {
 
-    private final SetUsername setUsername;
+    private final UpdateUser updateUser;
     private final Context context;
 
     private SettingView settingView;
 
     @Inject
-    SettingPresenter(SetUsername setUsername, Context context) {
+    SettingPresenter(UpdateUser updateUser, Context context) {
         this.context = context;
-        this.setUsername = setUsername;
+        this.updateUser = updateUser;
     }
 
     @Override
@@ -67,12 +66,17 @@ public class SettingPresenter implements Presenter {
         this.settingView.changeUsername(username);
     }
 
-    public void updateUsername(String username) {
-        setUsername.prepare(username);
-        setUsername.execute(new SetUsernameSubscriber());
+    public void changeDisplayName(String displayName) {
+        this.settingView.changeDisplayName(displayName);
     }
 
-    private final class SetUsernameSubscriber extends DefaultSubscriber<User> {
+    public void updateUser(String key, String value) {
+        updateUser.prepare(key, value);
+        if (key == "username") updateUser.execute(new UpdateUsernameSubscriber());
+        if (key == "display_name") updateUser.execute(new UpdateDisplayNameSubscriber());
+    }
+
+    private final class UpdateUsernameSubscriber extends DefaultSubscriber<User> {
         @Override
         public void onCompleted() {
         }
@@ -86,6 +90,23 @@ public class SettingPresenter implements Presenter {
         @Override
         public void onNext(User user) {
             if (user != null) changeUsername(user.getUsername());
+        }
+    }
+
+    private final class UpdateDisplayNameSubscriber extends DefaultSubscriber<User> {
+        @Override
+        public void onCompleted() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+
+        }
+
+        @Override
+        public void onNext(User user) {
+            if (user != null) changeDisplayName(user.getDisplayName());
         }
     }
 

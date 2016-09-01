@@ -242,11 +242,13 @@ public class CloudUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<UserRealm> setUsername(String username) {
-        return this.tribeApi.setUsername(context.getString(R.string.user_mutate_username, username))
+    public Observable<UserRealm> updateUser(String key, String value) {
+        return this.tribeApi.updateUser(context.getString(R.string.user_mutate_username, key, value))
                 .doOnNext(userRealm -> {
+                    // TODO: check key here
                     UserRealm dbUser = userCache.userInfosNoObs(accessToken.getUserId());
-                    dbUser.setUsername(userRealm.getUsername());
+                    if (key == "username") dbUser.setUsername(userRealm.getUsername());
+                    if (key == "display_name") dbUser.setDisplayName(userRealm.getDisplayName());
                     userCache.put(dbUser);
                 });
     }

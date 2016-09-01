@@ -57,5 +57,5 @@ public interface TribeApi {
 
     @FormUrlEncoded
     @POST("/graphql")
-    Observable<UserRealm> setUsername(@Field("query") String query);
+    Observable<UserRealm> updateUser(@Field("query") String query);
 }

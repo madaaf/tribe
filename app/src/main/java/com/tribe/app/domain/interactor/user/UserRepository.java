@@ -70,6 +70,6 @@ public interface UserRepository {
      */
     Observable<List<Message>> messagesReceived(String friendshipId);
 
-    Observable<User> setUsername(String username);
+    Observable<User> updateUser(String key, String value);
 
 }

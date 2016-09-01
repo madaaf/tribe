@@ -14,7 +14,7 @@ import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.GetReceivedDiskMessageList;
 import com.tribe.app.domain.interactor.user.GetRequestCode;
 import com.tribe.app.domain.interactor.user.SendToken;
-import com.tribe.app.domain.interactor.user.SetUsername;
+import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.presentation.internal.di.scope.PerActivity;
 
 import javax.inject.Named;
@@ -45,8 +45,8 @@ public class UserModule {
 
     @Provides
     @PerActivity
-    UseCase provideSetUsername(SetUsername setUsername) {
-        return setUsername;
+    UseCase provideUpdateUser(UpdateUser updateUser) {
+        return updateUser;
     }
 
     @Provides
