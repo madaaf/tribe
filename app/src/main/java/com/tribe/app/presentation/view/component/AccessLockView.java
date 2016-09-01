@@ -146,8 +146,12 @@ public class AccessLockView extends FrameLayout {
     public void fadeBigLockIn() {
         imgLockIcon.setScaleX(10);
         imgLockIcon.setScaleY(10);
-        imgLockIcon.animate().alpha(1).setDuration(0).setStartDelay(0).translationY(0).start();
-        imgLockIcon.animate().scaleX(1).scaleY(1).setStartDelay(0).setDuration(600).setInterpolator(new DecelerateInterpolator()).start();
+        imgLockIcon.setAlpha(1f);
+        imgLockIcon.animate()
+                .scaleX(1).scaleY(1)
+                .setStartDelay(0)
+                .setDuration(600)
+                .start();
     }
 
 

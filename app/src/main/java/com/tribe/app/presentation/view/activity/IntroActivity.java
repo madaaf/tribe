@@ -34,12 +34,17 @@ import com.tribe.app.presentation.view.fragment.ProfileInfoFragment;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -192,7 +197,7 @@ public class IntroActivity extends BaseActivity {
         viewPager.setAdapter(introViewPagerAdapter);
         viewPager.setOffscreenPageLimit(4);
         viewPager.setScrollDurationFactor(2f);
-        viewPager.setCurrentItem(PAGE_ACCESS);
+        viewPager.setCurrentItem(PAGE_PROFILE_INFO);
         viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_NONE);
         viewPager.setPageTransformer(false, new IntroPageTransformer());
         viewPager.setSwipeable(false);
@@ -236,8 +241,14 @@ public class IntroActivity extends BaseActivity {
     }
 
     public void goToAccess() {
-        viewPager.setCurrentItem(PAGE_ACCESS);
         accessFragment.fadeBigLockIn();
+        Observable.timer(250, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(time -> {
+                    viewPager.setCurrentItem(PAGE_ACCESS);
+                });
+
     }
 
     /**
