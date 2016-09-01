@@ -41,60 +41,7 @@ public class DownloadTribeJob extends DownloadVideoJob {
 
     @Override
     public void onAdded() {
-<<<<<<< HEAD
-        TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
-        tribeRealm.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_DOWNLOADING);
-        tribeCache.update(tribeRealm);
-    }
-
-    @Override
-    public void onRun() throws Throwable {
-        File file = FileUtils.getFileEnd(tribe.getId());
-
-        if (file.exists() && file.length() > 0) throw new FileAlreadyExists();
-
-        Call<ResponseBody> call = fileApi.downloadFileWithUrl(tribe.getContent());
-
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    Observable.just("")
-                            .doOnNext(s -> {
-                                Log.d(TAG, "server contacted and has file");
-                                boolean writtenToDisk = writeResponseBodyToDisk(response.body());
-                                Log.d(TAG, "file download was a success? " + writtenToDisk);
-
-                                TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
-                                tribeRealm.setMessageDownloadingStatus(writtenToDisk ? MessageDownloadingStatus.STATUS_DOWNLOADED : MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
-                                tribeCache.update(tribeRealm);
-                            })
-                        .subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(s -> {});
-                } else {
-                    Log.d(TAG, "server contact failed");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e(TAG, "error : " + t.getMessage());
-            }
-        });
-    }
-
-    @Override
-    protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
-        File file = FileUtils.getFileEnd(tribe.getId());
-
-        TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
-        tribeRealm.setMessageDownloadingStatus(file.exists() && file.length() > 0 ? MessageDownloadingStatus.STATUS_DOWNLOADED : MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
-
-        tribeCache.update(tribeRealm);
-=======
         setStatus(MessageDownloadingStatus.STATUS_DOWNLOADING);
->>>>>>> 38493649d184eaa26b8dfa06f73cb247ba524768
     }
 
     @Override

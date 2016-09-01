@@ -10,11 +10,8 @@ import com.birbit.android.jobqueue.TagConstraint;
 import com.tribe.app.data.network.job.DownloadChatVideoJob;
 import com.tribe.app.data.network.job.MarkMessageListAsReadJob;
 import com.tribe.app.data.network.job.SendChatJob;
-<<<<<<< HEAD
-=======
 import com.tribe.app.data.network.job.UpdateChatHistoryJob;
 import com.tribe.app.data.network.job.UpdateChatMessagesJob;
->>>>>>> 38493649d184eaa26b8dfa06f73cb247ba524768
 import com.tribe.app.data.network.job.UpdateMessagesErrorStatusJob;
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.Recipient;
@@ -129,16 +126,10 @@ public class ChatPresenter implements Presenter {
         jobManager.addJobInBackground(new UpdateMessagesErrorStatusJob(recipientId));
     }
 
-<<<<<<< HEAD
-    public void loadChatMessages(String recipientId) {
-        //jobManager.addJobInBackground(new UpdateChatMessagesJob(recipientId));
-        diskGetChatMessages.setRecipientId(recipientId);
-=======
     public void loadChatMessages(Recipient recipient) {
         jobManager.addJobInBackground(new UpdateChatHistoryJob(recipient.getFriendshipId()));
         jobManager.addJobInBackground(new UpdateChatMessagesJob(recipient.getId()));
         diskGetChatMessages.setRecipientId(recipient.getId());
->>>>>>> 38493649d184eaa26b8dfa06f73cb247ba524768
         diskGetChatMessages.execute(new ChatMessageListSubscriber());
         getPendingMessageList.setRecipientId(recipient.getId());
         getPendingMessageList.execute(new PendingChatMessageListSubscriber());

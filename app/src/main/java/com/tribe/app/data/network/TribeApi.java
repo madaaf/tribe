@@ -62,4 +62,8 @@ public interface TribeApi {
     @FormUrlEncoded
     @POST("/graphql")
     Observable<List<ChatRealm>> messagesById(@Field("query") String query);
+
+    @FormUrlEncoded
+    @POST("/graphql")
+    Observable<UserRealm> updateUser(@Field("query") String query);
 }

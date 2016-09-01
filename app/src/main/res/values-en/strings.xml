@@ -109,7 +109,9 @@
 	<string name="grid_menu_group_leave_last_admin_error">To leave a group you must set a new admin</string>
 	<string name="grid_menu_group_delete">Delete group</string>
 	<string name="grid_menu_friendship_hide">Hide friendship</string>
+	<string name="grid_menu_friendship_unhide">Unhide friendship</string>
 	<string name="grid_menu_friendship_block">Block friendship</string>
+	<string name="grid_menu_friendship_unblock">Unblock friendship</string>
 	<string name="grid_menu_friendship_report">Report friendship</string>
 	<string name="grid_menu_friendship_clear_tribes">Clear tribes</string>
 	
