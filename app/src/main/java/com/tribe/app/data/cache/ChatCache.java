@@ -18,7 +18,7 @@ import rx.Observable;
 public interface ChatCache {
 
     public boolean isExpired();
-    public boolean isCached(int messageId);
+    public boolean isCached(String messageId);
     public Observable<ChatRealm> put(ChatRealm chatRealm);
     public void update(ChatRealm chatRealm);
     public void put(List<ChatRealm> messageListRealm);

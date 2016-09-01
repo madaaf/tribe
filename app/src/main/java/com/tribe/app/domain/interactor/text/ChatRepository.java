@@ -90,4 +90,11 @@ public interface ChatRepository {
      * @param friendshipId the friendshipId for which to update the statuses for
      */
     Observable<Void> updateStatuses(final String friendshipId);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link List<ChatMessage>}.
+     *
+     * @param recipientId the recipientId for which to get the history for
+     */
+    Observable<List<ChatMessage>> manageChatHistory(final String recipientId);
 }

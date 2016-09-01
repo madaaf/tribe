@@ -47,7 +47,14 @@ public class ChatCacheImpl implements ChatCache {
         return true;
     }
 
-    public boolean isCached(int userId) {
+    public boolean isCached(String messageId) {
+        Realm obsRealm = Realm.getDefaultInstance();
+        ChatRealm obj = obsRealm.where(ChatRealm.class).equalTo("id", messageId).findFirst();
+
+        if (obj != null) {
+            return true;
+        }
+
         return false;
     }
 
@@ -138,7 +145,7 @@ public class ChatCacheImpl implements ChatCache {
                     shouldUpdate = true;
                 }
 
-                if (chatRealm.getMessageReceivingStatus() != MessageReceivingStatus.STATUS_RECEIVED) {
+                if (chatRealm.getMessageReceivingStatus() != null && !chatRealm.getMessageReceivingStatus().equals(MessageReceivingStatus.STATUS_RECEIVED)) {
                     toEdit.setMessageReceivingStatus(chatRealm.getMessageReceivingStatus());
                     shouldUpdate = true;
                 }
@@ -204,7 +211,7 @@ public class ChatCacheImpl implements ChatCache {
                         .findAllSorted("created_at", Sort.DESCENDING);
 
                 for (ChatRealm chatToRemoveStatus : toRemoveStatus) {
-                    chatToRemoveStatus.setMessageReceivingStatus(null);
+                    chatToRemoveStatus.setMessageSendingStatus(null);
                 }
             }
         }

@@ -29,6 +29,7 @@ import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.text.ChatRepository;
+import com.tribe.app.domain.interactor.text.CloudManageChatHistory;
 import com.tribe.app.domain.interactor.text.CloudMarkMessageListAsRead;
 import com.tribe.app.domain.interactor.text.CloudUpdateStatuses;
 import com.tribe.app.domain.interactor.text.DeleteChat;
@@ -281,6 +282,12 @@ public class ApplicationModule {
     @Named("updateStatuses")
     CloudUpdateStatuses provideUpdateStatuses(CloudUpdateStatuses cloudUpdateStatuses) {
         return cloudUpdateStatuses;
+    }
+
+    @Provides
+    @Named("manageChatHistory")
+    CloudManageChatHistory provideManageChatHistory(CloudManageChatHistory cloudManageChatHistory) {
+        return cloudManageChatHistory;
     }
 
     @Provides

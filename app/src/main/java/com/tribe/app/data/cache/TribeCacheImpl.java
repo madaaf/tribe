@@ -222,15 +222,18 @@ public class TribeCacheImpl implements TribeCache {
                             .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_NOT_SEEN)
                             .beginGroup()
                                 .beginGroup()
-                                    .equalTo("from.id", friendshipId)
-                                    .isNull("friendshipRealm")
-                                    .isNull("group")
+                                    .beginGroup()
+                                        .equalTo("from.id", friendshipId)
+                                        .isNull("friendshipRealm")
+                                        .isNull("group")
+                                    .endGroup()
+                                    .or()
+                                    .beginGroup()
+                                        .equalTo("friendshipRealm.friend.id", friendshipId)
+                                        .isNull("group")
+                                    .endGroup()
                                 .endGroup()
                                 .or()
-                                .equalTo("friendshipRealm.friend.id", friendshipId)
-                            .endGroup()
-                            .or()
-                            .beginGroup()
                                 .equalTo("group.id", friendshipId)
                             .endGroup()
                             .findAllSorted("recorded_at", Sort.ASCENDING);
@@ -246,12 +249,12 @@ public class TribeCacheImpl implements TribeCache {
     }
 
     @Override
-    public List<TribeRealm> tribesNotSeenNoObs(String friendshipId) {
+    public List<TribeRealm> tribesNotSeenNoObs(String recipientId) {
         List<TribeRealm> tribeRealmList = new ArrayList<>();
         RealmResults<TribeRealm> realmResults;
         Realm obsRealm = Realm.getDefaultInstance();
 
-        if (friendshipId == null) {
+        if (recipientId == null) {
             realmResults = obsRealm.where(TribeRealm.class)
                     .beginGroup()
                     .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_NOT_SEEN)
@@ -262,19 +265,22 @@ public class TribeCacheImpl implements TribeCache {
                     .findAllSorted("recorded_at", Sort.ASCENDING);
         } else {
             realmResults = obsRealm.where(TribeRealm.class)
-                    .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_NOT_SEEN)
+                    .equalTo("messageSendingStatus", MessageReceivingStatus.STATUS_NOT_SEEN)
                     .beginGroup()
                         .beginGroup()
-                            .equalTo("from.id", friendshipId)
-                            .isNull("friendshipRealm")
-                            .isNull("group")
+                            .beginGroup()
+                                .equalTo("from.id", recipientId)
+                                .isNull("friendshipRealm")
+                                .isNull("group")
+                            .endGroup()
+                            .or()
+                            .beginGroup()
+                                .equalTo("friendshipRealm.friend.id", recipientId)
+                                .isNull("group")
+                            .endGroup()
+                            .or()
+                            .equalTo("group.id", recipientId)
                         .endGroup()
-                        .or()
-                        .equalTo("friendshipRealm.friend.id", friendshipId)
-                    .endGroup()
-                    .or()
-                    .beginGroup()
-                        .equalTo("group.id", friendshipId)
                     .endGroup()
                     .findAllSorted("recorded_at", Sort.ASCENDING);
         }
@@ -356,20 +362,23 @@ public class TribeCacheImpl implements TribeCache {
 
         for (String id : idsTo) {
             RealmResults<TribeRealm> sentMessages = obsRealm.where(TribeRealm.class)
+                    .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
                     .beginGroup()
                         .beginGroup()
-                            .equalTo("from.id", id)
-                            .isNull("friendshipRealm")
-                            .isNull("group")
+                            .beginGroup()
+                                .equalTo("from.id", id)
+                                .isNull("friendshipRealm")
+                                .isNull("group")
+                            .endGroup()
+                            .or()
+                            .beginGroup()
+                                .equalTo("friendshipRealm.friend.id", id)
+                                .isNull("group")
+                            .endGroup()
                         .endGroup()
                         .or()
-                        .equalTo("friendshipRealm.friend.id", id)
+                        .equalTo("group.id", id)
                     .endGroup()
-                    .or()
-                        .beginGroup()
-                            .equalTo("group.id", id)
-                        .endGroup()
-                    .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
                     .findAllSorted("recorded_at", Sort.ASCENDING);
 
             if (sentMessages != null && sentMessages.size() > 0) result.addAll(obsRealm.copyFromRealm(sentMessages.subList(0, 1)));

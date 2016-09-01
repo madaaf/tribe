@@ -5,8 +5,13 @@ import android.graphics.Bitmap;
 import android.provider.MediaStore;
 
 import com.birbit.android.jobqueue.JobManager;
+import com.birbit.android.jobqueue.JobStatus;
+import com.birbit.android.jobqueue.TagConstraint;
+import com.tribe.app.data.network.job.DownloadChatVideoJob;
 import com.tribe.app.data.network.job.MarkMessageListAsReadJob;
 import com.tribe.app.data.network.job.SendChatJob;
+import com.tribe.app.data.network.job.UpdateChatHistoryJob;
+import com.tribe.app.data.network.job.UpdateChatMessagesJob;
 import com.tribe.app.data.network.job.UpdateMessagesErrorStatusJob;
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.Recipient;
@@ -22,11 +27,14 @@ import com.tribe.app.domain.interactor.text.SubscribingMQTT;
 import com.tribe.app.domain.interactor.text.UnsubscribeMQTT;
 import com.tribe.app.presentation.mvp.view.MessageView;
 import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -118,11 +126,12 @@ public class ChatPresenter implements Presenter {
         jobManager.addJobInBackground(new UpdateMessagesErrorStatusJob(recipientId));
     }
 
-    public void loadChatMessages(String recipientId) {
-        //jobManager.addJobInBackground(new UpdateChatMessagesJob(recipientId));
-        diskGetChatMessages.setRecipientId(recipientId);
+    public void loadChatMessages(Recipient recipient) {
+        jobManager.addJobInBackground(new UpdateChatHistoryJob(recipient.getFriendshipId()));
+        jobManager.addJobInBackground(new UpdateChatMessagesJob(recipient.getId()));
+        diskGetChatMessages.setRecipientId(recipient.getId());
         diskGetChatMessages.execute(new ChatMessageListSubscriber());
-        getPendingMessageList.setRecipientId(recipientId);
+        getPendingMessageList.setRecipientId(recipient.getId());
         getPendingMessageList.execute(new PendingChatMessageListSubscriber());
     }
 
@@ -169,6 +178,33 @@ public class ChatPresenter implements Presenter {
     public void deleteConversation(String friendshipId) {
         deleteDiskConversation.setFriendshipId(friendshipId);
         deleteDiskConversation.execute(new DeleteConversationSubscriber());
+    }
+
+    public void loadVideo(ChatMessage message) {
+        Observable
+            .just("")
+            .doOnNext(o -> {
+                boolean shouldDownload = false;
+
+                JobStatus jobStatus = jobManager.getJobStatus(message.getLocalId());
+                File file = FileUtils.getFileEnd(message.getId());
+
+                if (jobStatus.equals(JobStatus.UNKNOWN) && (!file.exists() || file.length() == 0)
+                        && (message.getMessageDownloadingStatus() == null || message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD))) {
+                    shouldDownload = true;
+                    message.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
+                    jobManager.cancelJobsInBackground(null, TagConstraint.ALL, message.getId());
+                }
+
+                if (shouldDownload
+                        && message.getMessageDownloadingStatus() != null
+                        && message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD)
+                        && message.getFrom() != null) {
+                    jobManager.addJobInBackground(new DownloadChatVideoJob(message));
+                }
+            }).subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe();
     }
 
     public void subscribe(String id) {

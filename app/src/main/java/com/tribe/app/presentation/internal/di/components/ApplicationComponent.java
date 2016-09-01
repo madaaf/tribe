@@ -9,11 +9,13 @@ import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
+import com.tribe.app.data.network.job.DownloadChatVideoJob;
 import com.tribe.app.data.network.job.DownloadTribeJob;
 import com.tribe.app.data.network.job.MarkMessageListAsReadJob;
 import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
 import com.tribe.app.data.network.job.SendChatJob;
 import com.tribe.app.data.network.job.SendTribeJob;
+import com.tribe.app.data.network.job.UpdateChatHistoryJob;
 import com.tribe.app.data.network.job.UpdateChatMessagesJob;
 import com.tribe.app.data.network.job.UpdateMessagesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateMessagesJob;
@@ -46,6 +48,7 @@ import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelega
 import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.text.PhotoMessageAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.text.TutorialMessageAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.text.VideoMessageAdapterDelegate;
 import com.tribe.app.presentation.view.camera.view.HistogramVisualizerView;
 import com.tribe.app.presentation.view.component.TribeComponentView;
 import com.tribe.app.presentation.view.component.TribePagerView;
@@ -59,6 +62,7 @@ import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.LabelButton;
 import com.tribe.app.presentation.view.widget.PathView;
 import com.tribe.app.presentation.view.widget.PlayerView;
+import com.tribe.app.presentation.view.widget.TribeVideoView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -94,6 +98,9 @@ public interface ApplicationComponent {
     void inject(LabelButton labelButton);
     void inject(IntroVideoView introVideoView);
     void inject(LegacyMediaPlayer legacyMediaPlayer);
+    void inject(VideoMessageAdapterDelegate videoMessageAdapterDelegate);
+    void inject(TribeVideoView tribeVideoView);
+    void inject(UpdateChatHistoryJob updateChatHistoryJob);
 
     // JOBS
     void inject(SendTribeJob sendTribeJob);
@@ -108,6 +115,7 @@ public interface ApplicationComponent {
     void inject(UpdateTribeListNotSeenStatusJob updateTribeListNotSeenStatusJob);
     void inject(UpdateChatMessagesJob updateChatMessagesJob);
     void inject(UpdateTribeDownloadedJob updateTribeDownloadedJob);
+    void inject(DownloadChatVideoJob downloadChatVideoJob);
 
     //Exposed to sub-graphs.
     Context context();

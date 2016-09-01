@@ -20,6 +20,7 @@ import com.tribe.app.data.network.FileApi;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
+import com.tribe.app.data.network.deserializer.ChatHistoryDeserializer;
 import com.tribe.app.data.network.deserializer.CollectionAdapter;
 import com.tribe.app.data.network.deserializer.DateDeserializer;
 import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
@@ -95,6 +96,7 @@ public class NetModule {
                 .registerTypeAdapter(Installation.class, new NewInstallDeserializer<>())
                 .registerTypeAdapter(Date.class, new DateDeserializer(utcSimpleDateFull))
                 .registerTypeAdapter(new TypeToken<List<UserRealm>>() {}.getType(), new UserListDeserializer<>())
+                .registerTypeAdapter(new TypeToken<List<ChatRealm>>() {}.getType(), new ChatHistoryDeserializer(utcSimpleDate, userCache, tribeCache, chatCache, currentUser))
                 .registerTypeHierarchyAdapter(Collection.class, new CollectionAdapter())
                 .create();
     }

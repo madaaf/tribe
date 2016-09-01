@@ -76,7 +76,7 @@ public class PlayerView extends FrameLayout implements TextureView.SurfaceTextur
         videoTextureView = new VideoTextureView(getContext());
         CardView.LayoutParams params = new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         textureViewLayout.addView(videoTextureView, params);
-        videoTextureView.setScaleType(ScalableTextureView.ScaleType.CENTER_CROP);
+        videoTextureView.setScaleType(ScalableTextureView.CENTER_CROP);
         videoTextureView.setSurfaceTextureListener(this);
 
         mediaPlayer = new TribeMediaPlayer.TribeMediaPlayerBuilder(getContext(), media)
