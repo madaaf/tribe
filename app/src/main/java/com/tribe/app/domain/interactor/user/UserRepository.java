@@ -69,4 +69,7 @@ public interface UserRepository {
      * about the messages (tribe / chat) received.
      */
     Observable<List<Message>> messagesReceived(String friendshipId);
+
+    Observable<User> setUsername(String username);
+
 }

@@ -60,4 +60,10 @@ public class DiskUserDataStore implements UserDataStore {
     public Observable<List<MessageRealmInterface>> messages() {
         return null;
     }
+
+    @Override
+    public Observable<UserRealm> setUsername(String username) {
+        return null;
+
+    }
 }

@@ -10,6 +10,7 @@ import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
 
 import java.text.SimpleDateFormat;

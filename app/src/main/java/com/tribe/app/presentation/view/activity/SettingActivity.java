@@ -1,40 +1,26 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.media.Image;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.widget.ImageView;
-import android.widget.ScrollView;
-import android.widget.Toast;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
-import com.tribe.app.data.cache.UserCache;
-import com.tribe.app.data.realm.AccessToken;
-import com.tribe.app.domain.entity.MessageSetting;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
 import com.tribe.app.presentation.internal.di.scope.Memories;
 import com.tribe.app.presentation.internal.di.scope.Preload;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
+import com.tribe.app.presentation.mvp.presenter.SettingPresenter;
+import com.tribe.app.presentation.mvp.view.SettingView;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.component.SettingSectionView;
-import com.tribe.app.presentation.view.component.SettingView;
+import com.tribe.app.presentation.view.component.SettingItemView;
 import com.tribe.app.presentation.view.utils.Weather;
-
-import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -47,7 +33,7 @@ import rx.subscriptions.CompositeSubscription;
  * SettingActivity.java
  * Created by horatiothomas on 8/26/16.
  */
-public class SettingActivity extends BaseActivity {
+public class SettingActivity extends BaseActivity implements SettingView {
 
     public static Intent getCallingIntent(Context context) {
         return new Intent(context, SettingActivity.class);
@@ -57,43 +43,43 @@ public class SettingActivity extends BaseActivity {
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
     @BindView(R.id.settingsPicture)
-    SettingView settingsPicture;
+    SettingItemView settingsPicture;
 
     @BindView(R.id.settingsDisplayName)
-    SettingView settingsDisplayName;
+    SettingItemView settingsDisplayName;
 
     @BindView(R.id.settingsUsername)
-    SettingView settingsUsername;
+    SettingItemView settingsUsername;
 
     @BindView(R.id.messageSettingMemories)
-    SettingView messageSettingMemories;
+    SettingItemView messageSettingMemories;
 
     @BindView(R.id.messageSettingContext)
-    SettingView messageSettingContext;
+    SettingItemView messageSettingContext;
 
     @BindView(R.id.messageSettingVoice)
-    SettingView messageSettingVoice;
+    SettingItemView messageSettingVoice;
 
     @BindView(R.id.messageSettingPreload)
-    SettingView messageSettingPreload;
+    SettingItemView messageSettingPreload;
 
     @BindView(R.id.messageSettingFahrenheit)
-    SettingView messageSettingFahrenheit;
+    SettingItemView messageSettingFahrenheit;
 
     @BindView(R.id.settingsTweet)
-    SettingView settingsTweet;
+    SettingItemView settingsTweet;
 
     @BindView(R.id.settingsEmail)
-    SettingView settingsEmail;
+    SettingItemView settingsEmail;
 
     @BindView(R.id.settingsRateApp)
-    SettingView settingsRateApp;
+    SettingItemView settingsRateApp;
 
     @BindView(R.id.settingsLogOut)
-    SettingView settingsLogOut;
+    SettingItemView settingsLogOut;
 
     @BindView(R.id.settingsRemove)
-    SettingView settingsRemove;
+    SettingItemView settingsRemove;
 
     @BindView(R.id.profileSection)
     SettingSectionView profileSection;
@@ -129,6 +115,9 @@ public class SettingActivity extends BaseActivity {
     @Inject
     Navigator navigator;
 
+    @Inject
+    SettingPresenter settingPresenter;
+
     User user;
 
     @Override
@@ -138,6 +127,7 @@ public class SettingActivity extends BaseActivity {
         initUi();
         initDependencyInjector();
         initSettings();
+        initPresenter();
     }
 
     @Override
@@ -152,7 +142,24 @@ public class SettingActivity extends BaseActivity {
         super.onDestroy();
     }
 
+    private void initPresenter() {
+        settingPresenter.attachView(this);
+    }
+
     private void initSettings() {
+
+        subscriptions.add(RxView.clicks(settingsPicture).subscribe(aVoid -> {
+            // Get picture and set
+
+        }));
+
+        subscriptions.add(RxView.clicks(settingsDisplayName).subscribe(aVoid -> {
+
+        }));
+
+        subscriptions.add(RxView.clicks(settingsUsername).subscribe(aVoid -> {
+            settingPresenter.updateUsername("HoratioTribe7");
+        }));
 
         subscriptions.add(messageSettingMemories.checkedSwitch().subscribe(isChecked -> {
             if (isChecked) memories.set(true);
@@ -211,45 +218,45 @@ public class SettingActivity extends BaseActivity {
 
         settingsPicture.setTitleBodyViewType(getString(R.string.settings_picture_title),
                 getString(R.string.settings_picture_subtitle),
-                SettingView.PICTURE);
+                SettingItemView.PICTURE);
         settingsDisplayName.setTitleBodyViewType(getString(R.string.settings_displayname_title),
                 getString(R.string.settings_displayname_subtitle),
-                SettingView.NAME);
+                SettingItemView.NAME);
         settingsUsername.setTitleBodyViewType(getString(R.string.settings_username_title),
                 getString(R.string.settings_username_subtitle),
-                SettingView.NAME);
+                SettingItemView.NAME);
 
         messageSettingMemories.setTitleBodyViewType(getString(R.string.settings_tribesave_title),
                 getString(R.string.settings_tribesave_subtitle),
-                SettingView.SWITCH);
+                SettingItemView.SWITCH);
         messageSettingContext.setTitleBodyViewType(getString(R.string.settings_geolocation_title),
                 getString(R.string.settings_geolocation_subtitle),
-                SettingView.SWITCH);
+                SettingItemView.SWITCH);
         messageSettingVoice.setTitleBodyViewType(getString(R.string.settings_audio_title),
                 getString(R.string.settings_audio_subtitle),
-                SettingView.SWITCH);
+                SettingItemView.SWITCH);
         messageSettingPreload.setTitleBodyViewType(getString(R.string.settings_preload_title),
                 getString(R.string.settings_preload_subtitle),
-                SettingView.SWITCH);
+                SettingItemView.SWITCH);
         messageSettingFahrenheit.setTitleBodyViewType(getString(R.string.settings_weatherunits_title),
                 getString(R.string.settings_weatherunits_subtitle),
-                SettingView.SWITCH);
+                SettingItemView.SWITCH);
 
         settingsTweet.setTitleBodyViewType(getString(R.string.settings_tweet_title),
                 getString(R.string.settings_tweet_subtitle),
-                SettingView.SIMPLE);
+                SettingItemView.SIMPLE);
         settingsEmail.setTitleBodyViewType(getString(R.string.settings_email_title),
                 getString(R.string.settings_email_subtitle),
-                SettingView.SIMPLE);
+                SettingItemView.SIMPLE);
         settingsRateApp.setTitleBodyViewType(getString(R.string.settings_rate_title),
                 getString(R.string.settings_rate_subtitle),
-                SettingView.SIMPLE);
+                SettingItemView.SIMPLE);
         settingsLogOut.setTitleBodyViewType(getString(R.string.settings_logout_title),
                 getString(R.string.settings_logout_subtitle),
-                SettingView.SIMPLE);
+                SettingItemView.SIMPLE);
         settingsRemove.setTitleBodyViewType(getString(R.string.settings_logout_title),
                 getString(R.string.settings_logout_subtitle),
-                SettingView.DELETE);
+                SettingItemView.DELETE);
 
         user = getCurrentUser();
 
@@ -257,10 +264,7 @@ public class SettingActivity extends BaseActivity {
         settingsUsername.setName(user.getUsername());
         settingsDisplayName.setName(user.getDisplayName());
 
-
-
     }
-
 
 
     /**
@@ -273,8 +277,41 @@ public class SettingActivity extends BaseActivity {
                 .activityModule(getActivityModule())
                 .build()
                 .inject(this);
-
     }
 
 
+    @Override
+    public void changeUsername(String username) {
+        settingsUsername.setName(username);
+    }
+
+    @Override
+    public void showLoading() {
+
+    }
+
+    @Override
+    public void hideLoading() {
+
+    }
+
+    @Override
+    public void showRetry() {
+
+    }
+
+    @Override
+    public void hideRetry() {
+
+    }
+
+    @Override
+    public void showError(String message) {
+
+    }
+
+    @Override
+    public Context context() {
+        return this;
+    }
 }

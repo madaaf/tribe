@@ -54,4 +54,8 @@ public interface TribeApi {
     @Multipart
     @POST("/graphql")
     Observable<ChatRealm> uploadMessagePhoto(@Part("query") RequestBody query, @Part MultipartBody.Part file);
+
+    @FormUrlEncoded
+    @POST("/graphql")
+    Observable<UserRealm> setUsername(@Field("query") String query);
 }

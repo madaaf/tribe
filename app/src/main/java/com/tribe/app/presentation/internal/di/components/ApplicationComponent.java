@@ -31,6 +31,7 @@ import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
+import com.tribe.app.domain.interactor.user.SetUsername;
 import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
 import com.tribe.app.presentation.internal.di.modules.NetModule;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;

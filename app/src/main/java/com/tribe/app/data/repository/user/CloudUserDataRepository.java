@@ -89,6 +89,13 @@ public class CloudUserDataRepository implements UserRepository {
         });
     }
 
+    @Override
+    public Observable<User> setUsername(String username) {
+        final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
+        return userDataStore.setUsername(username)
+                .map(userRealm -> this.userRealmDataMapper.transform(userRealm));
+    }
+
     /***
      *
      * NOT USED
@@ -97,4 +104,6 @@ public class CloudUserDataRepository implements UserRepository {
     public Observable<List<Message>> messagesReceived(String friendshipId) {
         return null;
     }
+
+
 }

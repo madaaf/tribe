@@ -57,4 +57,13 @@ public interface UserDataStore {
      * about the messages received and sent.
      */
     Observable<List<MessageRealmInterface>> messages();
+
+
+    /**
+     *
+     * @param username
+     * @return
+     */
+    Observable<UserRealm> setUsername(String username);
+
 }

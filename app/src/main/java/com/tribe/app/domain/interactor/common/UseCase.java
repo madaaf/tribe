@@ -55,7 +55,7 @@ public abstract class UseCase implements Serializable {
     /**
      * Executes the current use case.
      *
-     * @param UseCaseSubscriber The guy who will be listen to the observable build
+     * @param UseCaseSubscriber The guy who will listen to the observable build
      * with {@link #buildUseCaseObservable()}.
      */
     @SuppressWarnings("unchecked")

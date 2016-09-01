@@ -24,6 +24,7 @@ import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.StringUtils;
 
 import java.text.SimpleDateFormat;
@@ -240,6 +241,16 @@ public class CloudUserDataStore implements UserDataStore {
                 }).doOnNext(saveToCacheMessages);
     }
 
+    @Override
+    public Observable<UserRealm> setUsername(String username) {
+        return this.tribeApi.setUsername(context.getString(R.string.user_mutate_username, username))
+                .doOnNext(userRealm -> {
+                    UserRealm dbUser = userCache.userInfosNoObs(accessToken.getUserId());
+                    dbUser.setUsername(userRealm.getUsername());
+                    userCache.put(dbUser);
+                });
+    }
+
     private final Action1<AccessToken> saveToCacheAccessToken = accessToken -> {
         if (accessToken != null && accessToken.getAccessToken() != null) {
             if (this.accessToken == null) {
@@ -283,4 +294,7 @@ public class CloudUserDataStore implements UserDataStore {
             CloudUserDataStore.this.chatCache.put(chatRealmList);
         }
     };
+
+
+
 }

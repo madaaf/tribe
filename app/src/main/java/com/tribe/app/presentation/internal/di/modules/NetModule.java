@@ -228,6 +228,8 @@ public class NetModule {
                 .build().create(LoginApi.class);
     }
 
+
+
     @Provides
     @Singleton
     Picasso providePicasso(Context context, @Named("picassoOkHttp") OkHttpClient client) {

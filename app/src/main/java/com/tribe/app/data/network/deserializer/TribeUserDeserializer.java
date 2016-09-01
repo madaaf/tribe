@@ -15,6 +15,7 @@ public class TribeUserDeserializer<T> implements JsonDeserializer<T> {
                                JsonDeserializationContext context) throws JsonParseException {
 
             JsonElement results = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("user");
+            if (results == null) results =  je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("updateUser");
 
             return new GsonBuilder().setDateFormat("EEE MMM dd yyyy HH:mm:ss 'GMT'Z '(UTC)'")
                     .create()

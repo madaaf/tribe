@@ -78,7 +78,7 @@ public class IntroPresenter implements Presenter {
 
     public void requestCode(String phoneNumber) {
         // TODO: get pin
-                cloudGetRequestCodeUseCase.prepare(phoneNumber);
+        cloudGetRequestCodeUseCase.prepare(phoneNumber);
         cloudGetRequestCodeUseCase.execute(new RequestCodeSubscriber());
 //                    goToCode(pin);
 

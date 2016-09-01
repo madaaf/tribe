@@ -130,6 +130,63 @@ public class DiskUserDataRepository implements UserRepository {
     }
 
     @Override
+    public Observable<User> setUsername(String username) {
+        final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
+        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+        final ChatDataStore chatDataStore = this.chatDataStoreFactory.createDiskChatStore();
+
+        return Observable.combineLatest(tribeDataStore.tribesNotSeen(null).map(collection -> tribeRealmDataMapper.transform(collection)),
+                userDataStore.userInfos(null).map(userRealm -> userRealmDataMapper.transform(userRealm)),
+                chatDataStore.messages(null).map(collection -> chatRealmDataMapper.transform(collection)),
+                (tribes, user, chatMessages) -> {
+                    List<Recipient> result = user.getFriendshipList();
+
+                    for (Recipient recipient : result) {
+                        List<TribeMessage> receivedTribes = new ArrayList<>();
+                        List<TribeMessage> sentTribes = new ArrayList<>();
+                        List<TribeMessage> errorTribes = new ArrayList<>();
+                        List<ChatMessage> receivedChatMessage = new ArrayList<>();
+
+                        for (TribeMessage tribe : tribes) {
+                            if (tribe.getFrom() != null) {
+                                if (!tribe.getFrom().getId().equals(user.getId()) && (tribe.isToGroup() && tribe.getTo().getId().equals(recipient.getId()))
+                                        || (!tribe.isToGroup() && tribe.getFrom().getId().equals(recipient.getId()))) {
+                                    receivedTribes.add(tribe);
+                                } else if (tribe.getFrom().getId().equals(user.getId())
+                                        && tribe.getTo().getId().equals(recipient.getId())) {
+                                    if (tribe.getMessageSendingStatus().equals(MessageSendingStatus.STATUS_ERROR))
+                                        errorTribes.add(tribe);
+                                    else sentTribes.add(tribe);
+                                }
+                            }
+                        }
+
+                        recipient.setErrorTribes(errorTribes);
+                        recipient.setReceivedTribes(receivedTribes);
+                        recipient.setSentTribes(sentTribes);
+
+                        for (ChatMessage chatMessage : chatMessages) {
+                            if (chatMessage.getFrom() != null) {
+                                if (!chatMessage.getFrom().getId().equals(user.getId()) && (chatMessage.isToGroup() && chatMessage.getTo().getId().equals(recipient.getId()))
+                                        || (!chatMessage.isToGroup() && chatMessage.getFrom().getId().equals(recipient.getId()))) {
+                                    receivedChatMessage.add(chatMessage);
+                                }
+                            }
+                        }
+
+                        recipient.setReceivedMessages(receivedChatMessage);
+                    }
+
+                    Friendship friendship = new Friendship(user.getId());
+                    friendship.setFriend(user);
+                    result.add(0, friendship);
+
+                    return user;
+                }
+        );
+    }
+
+    @Override
     public Observable<Installation> createOrUpdateInstall(String token) {
         return null;
     }

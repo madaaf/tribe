@@ -4,24 +4,13 @@ import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Switch;
-import android.widget.Toast;
 
-import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
-import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
-import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
-import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.view.activity.BaseActivity;
-import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,20 +21,20 @@ import rx.subjects.PublishSubject;
 /**
  * Created by horatiothomas on 8/29/16.
  */
-public class SettingView extends FrameLayout {
-    public SettingView(Context context) {
+public class SettingItemView extends FrameLayout {
+    public SettingItemView(Context context) {
         super(context);
     }
 
-    public SettingView(Context context, AttributeSet attrs) {
+    public SettingItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public SettingView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public SettingItemView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public SettingView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public SettingItemView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
@@ -64,8 +53,8 @@ public class SettingView extends FrameLayout {
     @BindView(R.id.txtNameSetting)
     TextViewFont txtNameSetting;
 
-    @Inject
-    Picasso picasso;
+//    @Inject
+//    Picasso picasso;
 
     Unbinder unbinder;
 
@@ -81,10 +70,10 @@ public class SettingView extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        LayoutInflater.from(getContext()).inflate(R.layout.view_setting, this);
+        LayoutInflater.from(getContext()).inflate(R.layout.view_setting_item, this);
         unbinder = ButterKnife.bind(this);
 
-        initDependencyInjector();
+//        initDependencyInjector();
         setupSwitch();
 
     }
@@ -151,11 +140,11 @@ public class SettingView extends FrameLayout {
     }
 
     public void setPicture(String picUrl) {
-        picasso.load(picUrl)
-                .fit()
-                .centerCrop()
-                .transform(new RoundedCornersTransformation(R.dimen.setting_pic_size >> 1, 0, RoundedCornersTransformation.CornerType.ALL))
-                .into(imageSetting);
+//        picasso.load(picUrl)
+//                .fit()
+//                .centerCrop()
+//                .transform(new RoundedCornersTransformation(R.dimen.setting_pic_size >> 1, 0, RoundedCornersTransformation.CornerType.ALL))
+//                .into(imageSetting);
     }
 
     public void setName(String name) {
@@ -165,20 +154,20 @@ public class SettingView extends FrameLayout {
     /**
      * Begin Dagger setup
      */
-
-    protected ApplicationComponent getApplicationComponent() {
-        return ((AndroidApplication) ((BaseActivity) getContext()).getApplication()).getApplicationComponent();
-    }
-
-    protected ActivityModule getActivityModule() {
-        return new ActivityModule(((BaseActivity) getContext()));
-    }
-
-    private void initDependencyInjector() {
-        DaggerUserComponent.builder()
-                .activityModule(getActivityModule())
-                .applicationComponent(getApplicationComponent())
-                .build().inject(this);
-    }
+//
+//    protected ApplicationComponent getApplicationComponent() {
+//        return ((AndroidApplication) ((BaseActivity) getContext()).getApplication()).getApplicationComponent();
+//    }
+//
+//    protected ActivityModule getActivityModule() {
+//        return new ActivityModule(((BaseActivity) getContext()));
+//    }
+//
+//    private void initDependencyInjector() {
+//        DaggerUserComponent.builder()
+//                .activityModule(getActivityModule())
+//                .applicationComponent(getApplicationComponent())
+//                .build().inject(this);
+//    }
 
 }

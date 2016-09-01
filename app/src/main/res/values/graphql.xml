@@ -61,15 +61,41 @@
             ...UserInfos
         }
     } -->
-    <string name="user.mutate.name">
-        mutation {
-            updateUser(id: \"%1$s\", user:{
-                display_name : "Tiago"
-            })
-
-            {
+    <string name="user.mutate.username">
+        mutation{
+            updateUser(user: {
+                username: \"%1$s\"
+            }) {
+                id
+                score
+                username
                 display_name
-            }
+                picture
+                created_at
+
+                friendships {
+                id
+                tag
+                blocked
+                category
+                friend {
+                  id
+                  score
+                  username
+                  display_name
+                  picture
+                  created_at
+
+                }
+                }
+
+                groups {
+                id
+                name
+                picture
+                created_at
+                }
+        }
         }
     </string>
 

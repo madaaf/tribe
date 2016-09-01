@@ -3,13 +3,14 @@ package com.tribe.app.presentation.internal.di.components;
 import com.tribe.app.presentation.internal.di.scope.PerActivity;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.internal.di.modules.UserModule;
+import com.tribe.app.presentation.mvp.presenter.SettingPresenter;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.activity.PointsActivity;
 import com.tribe.app.presentation.view.activity.ScoreActivity;
 import com.tribe.app.presentation.view.activity.SettingActivity;
-import com.tribe.app.presentation.view.component.SettingView;
+import com.tribe.app.presentation.view.component.SettingItemView;
 import com.tribe.app.presentation.view.fragment.AccessFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
 import com.tribe.app.presentation.view.fragment.IntroViewFragment;
@@ -34,5 +35,6 @@ public interface UserComponent extends ActivityComponent {
     void inject(AccessFragment accessFragment);
     void inject(ProfileInfoFragment profileInfoFragment);
     void inject(SettingActivity settingActivity);
-    void inject(SettingView settingView);
+    void inject(SettingItemView settingItemView);
+    void inject(SettingPresenter settingPresenter);
 }
