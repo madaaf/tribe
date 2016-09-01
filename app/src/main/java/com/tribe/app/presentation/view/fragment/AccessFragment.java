@@ -20,6 +20,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.component.AccessBottomBarView;
 import com.tribe.app.presentation.view.component.AccessLockView;
 import com.tribe.app.presentation.view.component.TextFriendsView;
@@ -27,11 +28,16 @@ import com.tribe.app.presentation.view.dialog_fragment.GetNotifiedDialogFragment
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -384,8 +390,14 @@ public class AccessFragment extends Fragment {
     }
 
     private void showGetNotifiedDialog() {
-        GetNotifiedDialogFragment getNotifiedDialogFragment = GetNotifiedDialogFragment.newInstance();
-        getNotifiedDialogFragment.show(getFragmentManager(), GetNotifiedDialogFragment.class.getName());
+        Observable.timer(4000, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(time -> {
+                    GetNotifiedDialogFragment getNotifiedDialogFragment = GetNotifiedDialogFragment.newInstance();
+                    getNotifiedDialogFragment.show(getFragmentManager(), GetNotifiedDialogFragment.class.getName());
+                });
+
     }
 
     private void fadeTextInOut() {
