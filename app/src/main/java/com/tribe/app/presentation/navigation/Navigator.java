@@ -131,12 +131,12 @@ public class Navigator {
     /**
      * Goes to the settings screen.
      *
-     * @param context context needed to open the destiny activity.
+     * @param activity activity needed to open the destiny activity.
      */
-    public void navigateToSettings(Context context) {
-        if (context != null) {
-            Intent intent = SettingActivity.getCallingIntent(context);
-            context.startActivity(intent);
+    public void navigateToSettings(Activity activity, int result) {
+        if (activity != null) {
+            Intent intent = SettingActivity.getCallingIntent(activity);
+            activity.startActivityForResult(intent, result);
         }
     }
 

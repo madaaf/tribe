@@ -77,7 +77,7 @@ public class IntroActivity extends BaseActivity {
     private CallbackManager mCallbackManager;
 
     // for ui testing
-    public static final boolean uiOnlyMode = false;
+    public static final boolean uiOnlyMode = true;
 
     @Inject
     ScreenUtils screenUtils;
