@@ -155,6 +155,7 @@ public class ProfileInfoFragment extends Fragment {
                     .subscribe(granted -> {
                         if (granted) getImageFromCameraRoll();
                         else
+                            // TODO: get string from laurent
                             Toast.makeText(getActivity(), "You must grant permissions to access your pictures", Toast.LENGTH_LONG).show();
                     });
         }));

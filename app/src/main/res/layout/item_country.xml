@@ -4,24 +4,27 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/bottom_bar_height"
-    android:background="@null"
+    android:background="@drawable/selectable_button"
     >
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtName"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="22dp"
         android:layout_marginStart="@dimen/horizontal_margin_small"
-        android:gravity="start|center_vertical"
+        android:layout_marginBottom="@dimen/vertical_margin"
+        android:layout_gravity="bottom"
+        android:gravity="bottom"
         style="@style/Text.Grid.Me.Name"
         />
 
     <ImageView
         android:id="@+id/imageCountryFlag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|center_vertical"
+        android:layout_width="25dp"
+        android:layout_height="18dp"
+        android:layout_gravity="end|bottom"
         android:layout_marginEnd="@dimen/horizontal_margin_small"
+        android:layout_marginBottom="@dimen/vertical_margin"
         android:src="@drawable/picto_us_flag"
         />
 

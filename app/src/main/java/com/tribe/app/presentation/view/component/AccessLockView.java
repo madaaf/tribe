@@ -146,8 +146,12 @@ public class AccessLockView extends FrameLayout {
     public void fadeBigLockIn() {
         imgLockIcon.setScaleX(10);
         imgLockIcon.setScaleY(10);
-        imgLockIcon.animate().alpha(1).setDuration(0).setStartDelay(0).translationY(0).start();
-        imgLockIcon.animate().scaleX(1).scaleY(1).setStartDelay(0).setDuration(600).setInterpolator(new DecelerateInterpolator()).start();
+        imgLockIcon.setAlpha(1f);
+        imgLockIcon.animate()
+                .scaleX(1).scaleY(1)
+                .setStartDelay(0)
+                .setDuration(600)
+                .start();
     }
 
 
@@ -240,8 +244,11 @@ public class AccessLockView extends FrameLayout {
         txtNumFriends.setText("3");
 
         subscriptions.clear();
-
-        removePulsingCircleAnimation();
+        bluePulse();
+        subscriptions.add(Observable.interval(600, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                .subscribe(aVoid -> {
+                    removePulsingCircleAnimation();
+                }));
 
         resetSemiCircle(3);
     }
@@ -273,7 +280,7 @@ public class AccessLockView extends FrameLayout {
         AnimationDrawable animationDrawable = new AnimationDrawable();
         animationDrawable.setOneShot(true);
         newSemiCircleBackground = circleRadiusFriends;
-        // TODO: fix this
+
         for (int i = oldSemiCircleBackground; i <= newSemiCircleBackground; i++) {
             animationDrawable.addFrame(new SemiCircleDrawable(ContextCompat.getColor(getContext(), R.color.blue_text),
                     semiCircleView.getWidth(),
@@ -301,6 +308,22 @@ public class AccessLockView extends FrameLayout {
         viewPulse.setBackground(crossfader);
         viewPulse.animate().scaleX(0).scaleY(0).setDuration(600).start();
         crossfader.startTransition(1200);
+    }
+
+    //TODO: Tiago -> call this method every time a friend is found
+    private void bluePulse() {
+        Drawable backgrounds[] = new Drawable[2];
+        backgrounds[0] = ResourcesCompat.getDrawable(getResources(), R.drawable.shape_circle_grey, null);
+        backgrounds[1] = ResourcesCompat.getDrawable(getResources(), R.drawable.shape_circle_blue, null);
+
+        TransitionDrawable crossfader = new TransitionDrawable(backgrounds);
+        viewPulse.setBackground(crossfader);
+        viewPulse.animate()
+                .scaleX(1.2f).scaleY(1.2f)
+                .setDuration(600)
+                .start();
+        crossfader.startTransition(1200);
+
     }
 
     private void addPulsingRedCircleAnimation() {
