@@ -177,6 +177,18 @@ public class CloudUserDataStore implements UserDataStore {
     }
 
     @Override
+    public Observable<Installation> removeInstall() {
+        return this.tribeApi.removeInstall(context.getString(R.string.install_remove, installation.getId())).doOnNext(aVoid -> {
+    //                    accessToken.setAccessToken(null);
+    //                    installation.setId(null);
+    //                    userCache.put((UserRealm) null);
+                    // TODO: remove all files and clear databasee
+
+                }
+        );
+    }
+
+    @Override
     public Observable<List<MessageRealmInterface>> messages() {
         StringBuffer idsTribes = new StringBuffer();
 

@@ -58,6 +58,8 @@ public interface UserRepository {
      */
     Observable<Installation> createOrUpdateInstall(final String token);
 
+    Observable<Installation> removeInstall();
+
     /**
      * Get an {@link Observable} which will emit a {@link List <Message>} containing infos
      * about the tribes received and sent.

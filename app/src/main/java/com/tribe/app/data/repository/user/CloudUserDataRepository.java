@@ -76,6 +76,12 @@ public class CloudUserDataRepository implements UserRepository {
         return userDataStore.createOrUpdateInstall(token);
     }
 
+    @Override
+    public Observable<Installation> removeInstall() {
+        final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
+        return userDataStore.removeInstall();
+    }
+
     /***
      *
      * @return is not used as it's just for sync

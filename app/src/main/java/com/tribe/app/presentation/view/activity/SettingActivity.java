@@ -210,6 +210,8 @@ public class SettingActivity extends BaseActivity implements SettingView {
             settingPresenter.updateUser("username", "Horatio T");
         }));
 
+
+
         subscriptions.add(messageSettingMemories.checkedSwitch().subscribe(isChecked -> {
             if (isChecked) memories.set(true);
             else memories.set(false);
@@ -252,6 +254,10 @@ public class SettingActivity extends BaseActivity implements SettingView {
             Intent resultIntent = new Intent();
             setResult(BaseActivity.RESULT_OK, resultIntent);
             finish();
+        }));
+
+        subscriptions.add(RxView.clicks(settingsLogOut).subscribe(aVoid -> {
+            settingPresenter.logout();
         }));
 
     }
@@ -334,6 +340,11 @@ public class SettingActivity extends BaseActivity implements SettingView {
     @Override
     public void changeDisplayName(String displayName) {
         settingsDisplayName.setName(displayName);
+    }
+
+    @Override
+    public void goToLauncher() {
+        navigator.navigateToLauncher(this);
     }
 
     @Override

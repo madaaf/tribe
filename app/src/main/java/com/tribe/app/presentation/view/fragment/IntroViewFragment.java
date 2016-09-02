@@ -180,6 +180,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
 
     private void initPlayerView() {
         videoViewIntro.createPlayer("asset:///video/onboarding_video.mp4");
+
     }
 
     private void initPhoneNumberView() {

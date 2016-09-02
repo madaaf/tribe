@@ -101,6 +101,7 @@
 	<string name="grid_friendship_status_opened_plural">Opened</string>
 	<string name="grid_friendship_status_new_messages">Tap to view!</string>
 	<string name="grid_friendship_status_loading">Loading</string>
+	<string name="grid_friendship_status_reply">Reply</string>
 	<string name="grid_ghost">Has not joined yet</string>
 	<string name="grid_friendship_recording_tap_to_cancel">Wrapping up</string>
 	<string name="grid_friendship_recording_validated">Ready to send!</string>

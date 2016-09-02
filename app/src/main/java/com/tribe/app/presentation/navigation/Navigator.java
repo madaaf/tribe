@@ -15,6 +15,7 @@ import com.tribe.app.presentation.view.activity.ChatActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.IntroActivity;
+import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.PointsActivity;
 import com.tribe.app.presentation.view.activity.ScoreActivity;
 import com.tribe.app.presentation.view.activity.SettingActivity;
@@ -34,6 +35,13 @@ public class Navigator {
     @Inject
     public Navigator() {
 
+    }
+
+    public void navigateToLauncher(Context context) {
+        if (context != null) {
+            Intent intent = LauncherActivity.getCallingIntent(context);
+            context.startActivity(intent);
+        }
     }
 
     /**

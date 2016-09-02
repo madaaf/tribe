@@ -53,6 +53,12 @@ public interface UserDataStore {
     Observable<Installation> createOrUpdateInstall(final String token);
 
     /**
+     * Remove the install from the server
+     * @return
+     */
+    Observable<Installation> removeInstall();
+
+    /**
      * Get an {@link Observable} which will emit a {@link List <MessageRealmInterface>} containing infos
      * about the messages received and sent.
      */
@@ -61,9 +67,9 @@ public interface UserDataStore {
 
     /**
      *
-     * @param key
-     * @param value
-     * @return
+     * @param key The type of user info to be updated
+     * @param value what the user info will be updated to
+     * @return the new user value
      */
     Observable<UserRealm> updateUser(String key, String value);
 

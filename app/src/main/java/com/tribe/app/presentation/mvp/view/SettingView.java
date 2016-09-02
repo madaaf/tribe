@@ -7,5 +7,6 @@ public interface SettingView extends LoadDataView {
 
     void changeUsername(String username);
     void changeDisplayName(String displayName);
+    void goToLauncher();
 
 }
