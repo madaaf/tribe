@@ -34,6 +34,8 @@ public abstract class Message implements Serializable {
     protected @MessageReceivingStatus.Status String messageReceivingStatus;
     protected @MessageDownloadingStatus.Status String messageDownloadingStatus;
     protected List<MessageRecipient> recipientList;
+    protected long progress = 0L;
+    protected long totalSize = 0L;
 
     public String getId() {
         return id;
@@ -137,6 +139,22 @@ public abstract class Message implements Serializable {
 
     public List<MessageRecipient> getRecipientList() {
         return recipientList;
+    }
+
+    public long getProgress() {
+        return progress;
+    }
+
+    public void setProgress(long progress) {
+        this.progress = progress;
+    }
+
+    public long getTotalSize() {
+        return totalSize;
+    }
+
+    public void setTotalSize(long totalSize) {
+        this.totalSize = totalSize;
     }
 
     @Override

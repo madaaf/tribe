@@ -58,6 +58,8 @@ public class ChatRealmDataMapper {
             chatMessage.setMessageDownloadingStatus(chatRealm.getMessageDownloadingStatus());
             chatMessage.setMessageReceivingStatus(chatRealm.getMessageReceivingStatus());
             chatMessage.setRecipientList(messageRecipientRealmDataMapper.transform(chatRealm.getRecipientList()));
+            chatMessage.setProgress(chatRealm.getProgress());
+            chatMessage.setTotalSize(chatRealm.getTotalSize());
         }
 
         return chatMessage;
@@ -94,6 +96,8 @@ public class ChatRealmDataMapper {
             chatRealm.setMessageDownloadingStatus(chatMessage.getMessageDownloadingStatus());
             chatRealm.setMessageReceivingStatus(chatMessage.getMessageReceivingStatus());
             chatRealm.setRecipientList(messageRecipientRealmDataMapper.transform(chatMessage.getRecipientList()));
+            chatRealm.setProgress(chatMessage.getProgress());
+            chatRealm.setTotalSize(chatMessage.getTotalSize());
         }
 
         return chatRealm;

@@ -30,6 +30,7 @@ public class DownloadTribeJob extends DownloadVideoJob {
 
     // VARIABLES
     private TribeMessage tribe;
+    private TribeRealm tribeRealm;
 
     public DownloadTribeJob(TribeMessage tribe) {
         super(new Params(Priority.HIGH).requireNetwork().groupBy(
@@ -41,6 +42,7 @@ public class DownloadTribeJob extends DownloadVideoJob {
 
     @Override
     public void onAdded() {
+        tribeRealm = tribeRealmDataMapper.transform(tribe);
         setStatus(MessageDownloadingStatus.STATUS_DOWNLOADING);
     }
 
@@ -77,8 +79,17 @@ public class DownloadTribeJob extends DownloadVideoJob {
 
     @Override
     protected void setStatus(@MessageDownloadingStatus.Status String status) {
-        TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
         tribeRealm.setMessageDownloadingStatus(status);
         tribeCache.update(tribeRealm);
+    }
+
+    @Override
+    protected void setProgress(long progress) {
+
+    }
+
+    @Override
+    protected void setTotalSize(long totalSize) {
+
     }
 }

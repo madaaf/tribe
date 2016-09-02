@@ -40,14 +40,12 @@ public class UpdateUserJob extends BaseJob {
 
     @Override
     protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
-        System.out.println("Cancel Reason : " + cancelReason);
         throwable.printStackTrace();
     }
 
     @Override
     protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount, int maxRunCount) {
-        System.out.println("Cancel Reason : " + throwable.getMessage());
-        return RetryConstraint.RETRY;
+        return RetryConstraint.createExponentialBackoff(runCount, 1000);
     }
 
     @Override

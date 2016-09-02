@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 import com.tribe.app.domain.entity.ChatMessage;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.text.CloudManageChatHistory;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -26,11 +27,11 @@ public class UpdateChatHistoryJob extends BaseJob {
     CloudManageChatHistory manageChatHistory;
 
     // VARIABLES
-    private String recipientId;
+    private Recipient recipient;
 
-    public UpdateChatHistoryJob(String recipientId) {
+    public UpdateChatHistoryJob(Recipient recipient) {
         super(new Params(Priority.HIGH).requireNetwork().singleInstanceBy(TAG).groupBy(TAG));
-        this.recipientId = recipientId;
+        this.recipient = recipient;
     }
 
     @Override
@@ -40,7 +41,7 @@ public class UpdateChatHistoryJob extends BaseJob {
 
     @Override
     public void onRun() throws Throwable {
-        manageChatHistory.setRecipientId(recipientId);
+        manageChatHistory.setRecipientId(recipient.getFriendshipId());
         manageChatHistory.execute(new UpdateChatHistorySubscriber());
     }
 

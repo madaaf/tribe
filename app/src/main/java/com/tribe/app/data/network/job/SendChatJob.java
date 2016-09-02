@@ -39,6 +39,7 @@ public class SendChatJob extends BaseJob {
 
     // VARIABLES
     private ChatMessage chatMessage;
+    private ChatRealm chatRealm;
 
     public SendChatJob(ChatMessage chatMessage) {
         super(new Params(Priority.HIGH).groupBy(chatMessage.getTo().getId()).setSingleId(chatMessage.getLocalId()));
@@ -47,9 +48,8 @@ public class SendChatJob extends BaseJob {
 
     @Override
     public void onAdded() {
-        ChatRealm chatRealm = chatRealmDataMapper.transform(chatMessage);
-        chatRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_PENDING);
-        chatCache.update(chatRealm);
+        chatRealm = chatRealmDataMapper.transform(chatMessage);
+        setStatus(MessageSendingStatus.STATUS_PENDING);
     }
 
     @Override
@@ -65,13 +65,18 @@ public class SendChatJob extends BaseJob {
 
     @Override
     protected RetryConstraint shouldReRunOnThrowable(@NonNull Throwable throwable, int runCount, int maxRunCount) {
-        return null;
+        return RetryConstraint.createExponentialBackoff(runCount, 1000);
     }
 
     @Override
     public void inject(ApplicationComponent appComponent) {
         super.inject(appComponent);
         appComponent.inject(this);
+    }
+
+    protected void setStatus(@MessageSendingStatus.Status String status) {
+        chatRealm.setMessageSendingStatus(status);
+        chatCache.update(chatRealm);
     }
 
     private final class ChatSendSubscriber extends DefaultSubscriber<ChatMessage> {
@@ -84,16 +89,12 @@ public class SendChatJob extends BaseJob {
         @Override
         public void onError(Throwable e) {
             e.printStackTrace();
-            ChatRealm chatRealm = chatRealmDataMapper.transform(chatMessage);
-            chatRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_ERROR);
-            chatCache.update(chatRealm);
+            setStatus(MessageSendingStatus.STATUS_ERROR);
         }
 
         @Override
         public void onNext(ChatMessage chatMessage) {
-            ChatRealm chatRealm = chatRealmDataMapper.transform(chatMessage);
-            chatRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_SENT);
-            chatCache.update(chatRealm);
+            setStatus(MessageSendingStatus.STATUS_SENT);
         }
     }
 }

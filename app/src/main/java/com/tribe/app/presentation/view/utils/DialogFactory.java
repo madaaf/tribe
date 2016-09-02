@@ -4,12 +4,21 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
+import android.view.ContextThemeWrapper;
 
 public final class DialogFactory {
 
     public static Dialog createConfirmationDialog(Context context, String title,
                                                   String message, String positiveMessage, DialogInterface.OnClickListener listener) {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(context)
+        ContextThemeWrapper themedContext;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            themedContext = new ContextThemeWrapper(context, android.R.style.Theme_Material_Light_Dialog_NoActionBar);
+        } else {
+            themedContext = new ContextThemeWrapper(context, android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
+        }
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(themedContext)
                 .setTitle(title)
                 .setMessage(message)
                 .setPositiveButton(positiveMessage, listener);

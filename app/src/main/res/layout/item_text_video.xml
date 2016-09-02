@@ -27,15 +27,32 @@
             android:src="@drawable/cage"
             />
 
-        <ImageView
-            android:id="@+id/imgPlay"
+        <FrameLayout
+            android:id="@+id/viewPlay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginRight="@dimen/horizontal_margin_small"
-            android:scaleType="centerInside"
-            android:src="@drawable/picto_play"
-            />
+            android:layout_gravity="center"
+            android:layout_marginRight="@dimen/horizontal_margin_small">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="@dimen/avatar_size"
+                android:layout_height="@dimen/avatar_size"
+                android:layout_gravity="center"
+                android:progressDrawable="@drawable/progress_circular"
+                android:background="@drawable/shape_oval_black40"
+                />
+
+            <ImageView
+                android:id="@+id/imgPlay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:scaleType="centerInside"
+                android:src="@drawable/picto_play"
+                />
+        </FrameLayout>
 
         <include layout="@layout/item_text_status" />
 

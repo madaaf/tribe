@@ -35,6 +35,7 @@ public class DownloadChatVideoJob extends DownloadVideoJob {
 
     // VARIABLES
     private ChatMessage chatMessage;
+    private ChatRealm chatRealm;
 
     public DownloadChatVideoJob(ChatMessage chatMessage) {
         super(new Params(Priority.HIGH).requireNetwork().groupBy(
@@ -46,6 +47,7 @@ public class DownloadChatVideoJob extends DownloadVideoJob {
 
     @Override
     public void onAdded() {
+        this.chatRealm = chatRealmDataMapper.transform(chatMessage);
         setStatus(MessageDownloadingStatus.STATUS_DOWNLOADING);
     }
 
@@ -89,8 +91,19 @@ public class DownloadChatVideoJob extends DownloadVideoJob {
 
     @Override
     protected void setStatus(@MessageDownloadingStatus.Status String status) {
-        ChatRealm chatRealm = chatRealmDataMapper.transform(chatMessage);
         chatRealm.setMessageDownloadingStatus(status);
+        chatCache.update(chatRealm);
+    }
+
+    @Override
+    protected void setProgress(long progress) {
+        chatRealm.setProgress(progress);
+        chatCache.update(chatRealm);
+    }
+
+    @Override
+    protected void setTotalSize(long totalSize) {
+        chatRealm.setTotalSize(totalSize);
         chatCache.update(chatRealm);
     }
 }

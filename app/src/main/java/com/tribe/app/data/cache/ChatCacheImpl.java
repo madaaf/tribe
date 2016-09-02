@@ -316,6 +316,8 @@ public class ChatCacheImpl implements ChatCache {
             obj.setMessageSendingStatus(chatRealm.getMessageSendingStatus());
             obj.setMessageDownloadingStatus(chatRealm.getMessageDownloadingStatus());
             obj.setMessageReceivingStatus(chatRealm.getMessageReceivingStatus());
+            obj.setProgress(chatRealm.getProgress());
+            obj.setTotalSize(chatRealm.getTotalSize());
         } else {
             obsRealm.copyToRealmOrUpdate(chatRealm);
         }
