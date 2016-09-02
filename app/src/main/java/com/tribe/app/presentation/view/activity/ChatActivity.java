@@ -551,7 +551,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
     private void animateFullScreen(View viewToAnimate) {
         int targetHeight = viewToAnimate ==
                 imageViewClicked ?
-                (int) (screenUtils.getWidthPx() * ((float) widthViewClicked / heightViewClicked))
+                (widthViewClicked > heightViewClicked ? (int) (screenUtils.getWidthPx() * ((float) widthViewClicked / heightViewClicked)) : screenUtils.getHeightPx())
                 : screenUtils.getHeightPx();
 
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) viewToAnimate.getLayoutParams();
