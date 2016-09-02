@@ -214,5 +214,14 @@ public class Navigator {
         }
     }
 
+    public void getImageFromCameraRoll(Activity activity, int result) {
+        Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        activity.startActivityForResult(i, result);
+    }
+
+    public void getImageFromCamera(Activity activity, int result) {
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        activity.startActivityForResult(cameraIntent, result);
+    }
 
 }

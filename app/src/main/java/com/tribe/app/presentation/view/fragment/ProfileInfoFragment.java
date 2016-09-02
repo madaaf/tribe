@@ -26,6 +26,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.utils.FacebookUtils;
 import com.tribe.app.presentation.view.utils.ImageUtils;
@@ -80,6 +81,9 @@ public class ProfileInfoFragment extends Fragment {
 
     @Inject
     Picasso picasso;
+
+    @Inject
+    Navigator navigator;
 
     @BindView(R.id.imgProfilePic)
     ImageView imgProfilePic;
@@ -153,7 +157,7 @@ public class ProfileInfoFragment extends Fragment {
             RxPermissions.getInstance(getActivity())
                     .request(PERMISSIONS_CAMERA)
                     .subscribe(granted -> {
-                        if (granted) getImageFromCameraRoll();
+                        if (granted) navigator.getImageFromCameraRoll(getActivity(), RESULT_LOAD_IMAGE);
                         else
                             // TODO: get string from laurent
                             Toast.makeText(getActivity(), "You must grant permissions to access your pictures", Toast.LENGTH_LONG).show();
@@ -161,7 +165,7 @@ public class ProfileInfoFragment extends Fragment {
         }));
 
         subscriptions.add(RxView.clicks(txtTakeASelfie).subscribe(aVoid -> {
-            getImageFromCamera();
+            navigator.getImageFromCamera(getActivity(), CAMERA_REQUEST);
         }));
 
         subscriptions.add(RxView.clicks(facebookView).subscribe(aVoid -> {
@@ -225,16 +229,6 @@ public class ProfileInfoFragment extends Fragment {
         editDisplayName.setText(realName);
         editUsername.setText(username);
 
-    }
-
-    public void getImageFromCameraRoll() {
-        Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        getActivity().startActivityForResult(i, RESULT_LOAD_IMAGE);
-    }
-
-    public void getImageFromCamera() {
-        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        getActivity().startActivityForResult(cameraIntent, CAMERA_REQUEST);
     }
 
     public void setImgProfilePic(Bitmap bitmap) {

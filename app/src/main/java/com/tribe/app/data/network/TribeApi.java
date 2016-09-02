@@ -66,4 +66,8 @@ public interface TribeApi {
     @FormUrlEncoded
     @POST("/graphql")
     Observable<UserRealm> updateUser(@Field("query") String query);
+
+    @Multipart
+    @POST("/graphql")
+    Observable<UserRealm> updateUserMedia(@Part("query") RequestBody query, @Part MultipartBody.Part file);
 }

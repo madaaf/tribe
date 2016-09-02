@@ -65,7 +65,9 @@
             updateUser(user: {
                 %1$s: \"%2$s\"
             }) {
-                %1$s
+                picture
+                username
+                display_name
             }
         }
     </string>

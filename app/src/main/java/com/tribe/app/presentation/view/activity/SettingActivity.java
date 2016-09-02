@@ -1,12 +1,23 @@
 package com.tribe.app.presentation.view.activity;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.jakewharton.rxbinding.view.RxView;
+import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -18,9 +29,18 @@ import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.mvp.presenter.SettingPresenter;
 import com.tribe.app.presentation.mvp.view.SettingView;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.component.SettingSectionView;
 import com.tribe.app.presentation.view.component.SettingItemView;
+import com.tribe.app.presentation.view.fragment.ProfileInfoFragment;
 import com.tribe.app.presentation.view.utils.Weather;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 import javax.inject.Inject;
 
@@ -118,7 +138,12 @@ public class SettingActivity extends BaseActivity implements SettingView {
     @Inject
     SettingPresenter settingPresenter;
 
+    @Inject
+    Picasso picasso;
+
     User user;
+
+    private static final int CAMERA_REQUEST = 6;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -142,6 +167,56 @@ public class SettingActivity extends BaseActivity implements SettingView {
         super.onDestroy();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
+            Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
+
+
+            String imageUri = Uri.fromFile(bitmapToFile(thumbnail)).toString();
+
+            InputStream image_stream = null;
+            try {
+                image_stream = getContentResolver().openInputStream(Uri.parse(imageUri));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            thumbnail = BitmapFactory.decodeStream(image_stream );
+
+            settingsPicture.setPictureBitmap(thumbnail);
+            settingPresenter.updateUser("picture", imageUri);
+        }
+
+    }
+
+    private File bitmapToFile(Bitmap bitmap) {
+        File f = new File(this.getCacheDir(), "avatar");
+        try {
+            f.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //Convert bitmap to byte array
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+        byte[] bitmapdata = bos.toByteArray();
+
+        //write the bytes in file
+        try {
+            FileOutputStream fos = new FileOutputStream(f);
+            fos.write(bitmapdata);
+            fos.close();
+            fos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return f;
+    }
+
+
     private void initPresenter() {
         settingPresenter.attachView(this);
     }
@@ -150,6 +225,7 @@ public class SettingActivity extends BaseActivity implements SettingView {
 
         subscriptions.add(RxView.clicks(settingsPicture).subscribe(aVoid -> {
             // Get picture and set
+            navigator.getImageFromCamera(this, CAMERA_REQUEST);
 
         }));
 
@@ -263,6 +339,8 @@ public class SettingActivity extends BaseActivity implements SettingView {
         settingsPicture.setPicture(user.getProfilePicture());
         settingsUsername.setName(user.getUsername());
         settingsDisplayName.setName(user.getDisplayName());
+
+        Log.d("pic url", user.getProfilePicture());
 
     }
 
