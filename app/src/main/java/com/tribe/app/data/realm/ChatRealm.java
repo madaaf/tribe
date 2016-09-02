@@ -33,6 +33,8 @@ public class ChatRealm extends RealmObject implements MessageRealmInterface {
     private @MessageDownloadingStatus.Status String messageDownloadingStatus;
     private Date updated_at;
     private RealmList<MessageRecipientRealm> recipientList;
+    private long progress = 0L;
+    private long totalSize = 0L;
 
     public void setId(String id) {
         this.id = id;
@@ -154,5 +156,21 @@ public class ChatRealm extends RealmObject implements MessageRealmInterface {
 
     public void setCreatedAt(Date createdAt) {
         this.created_at = createdAt;
+    }
+
+    public long getProgress() {
+        return progress;
+    }
+
+    public void setProgress(long progress) {
+        this.progress = progress;
+    }
+
+    public long getTotalSize() {
+        return totalSize;
+    }
+
+    public void setTotalSize(long totalSize) {
+        this.totalSize = totalSize;
     }
 }

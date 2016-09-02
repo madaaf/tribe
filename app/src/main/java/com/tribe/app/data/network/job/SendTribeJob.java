@@ -39,6 +39,7 @@ public class  SendTribeJob extends BaseJob {
 
     // VARIABLES
     private TribeMessage tribe;
+    private TribeRealm tribeRealm;
 
     public SendTribeJob(TribeMessage tribe) {
         super(new Params(Priority.HIGH).groupBy(tribe.getTo().getId()).setSingleId(tribe.getLocalId()));
@@ -47,9 +48,8 @@ public class  SendTribeJob extends BaseJob {
 
     @Override
     public void onAdded() {
-        TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
-        tribeRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_PENDING);
-        tribeCache.update(tribeRealm);
+        tribeRealm = tribeRealmDataMapper.transform(tribe);
+        setStatus(MessageSendingStatus.STATUS_PENDING);
     }
 
     @Override
@@ -65,13 +65,18 @@ public class  SendTribeJob extends BaseJob {
 
     @Override
     protected RetryConstraint shouldReRunOnThrowable(@NonNull Throwable throwable, int runCount, int maxRunCount) {
-        return null;
+        return RetryConstraint.createExponentialBackoff(runCount, 1000);
     }
 
     @Override
     public void inject(ApplicationComponent appComponent) {
         super.inject(appComponent);
         appComponent.inject(this);
+    }
+
+    protected void setStatus(@MessageSendingStatus.Status String status) {
+        tribeRealm.setMessageSendingStatus(status);
+        tribeCache.update(tribeRealm);
     }
 
     private final class TribeSendSubscriber extends DefaultSubscriber<TribeMessage> {
@@ -83,16 +88,12 @@ public class  SendTribeJob extends BaseJob {
 
         @Override
         public void onError(Throwable e) {
-            TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
-            tribeRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_ERROR);
-            tribeCache.update(tribeRealm);
+            setStatus(MessageSendingStatus.STATUS_ERROR);
         }
 
         @Override
         public void onNext(TribeMessage tribe) {
-            TribeRealm tribeRealm = tribeRealmDataMapper.transform(tribe);
-            tribeRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_SENT);
-            tribeCache.update(tribeRealm);
+            setStatus(MessageSendingStatus.STATUS_SENT);
         }
     }
 }

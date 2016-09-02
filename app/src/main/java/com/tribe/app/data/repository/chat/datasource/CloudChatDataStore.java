@@ -17,6 +17,7 @@ import com.tribe.app.data.repository.tribe.datasource.TribeDataStore;
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import org.eclipse.paho.client.mqttv3.IMqttToken;
@@ -241,7 +242,27 @@ public class CloudChatDataStore implements ChatDataStore {
                 return Observable.just(new ArrayList<ChatRealm>());
             }
         }, (chatRealmList1, chatRealmListNew) -> {
-            return chatRealmListNew;
+            List<ChatRealm> chatRealmListMappedUsers = new ArrayList<ChatRealm>();
+
+            for (ChatRealm message : chatRealmListNew) {
+                if (message.getFrom() != null) {
+                    UserRealm userRealm = userCache.userInfosNoObs(message.getFrom().getId());
+
+                    if (userRealm != null) {
+                        message.setFrom(userRealm);
+
+                        File file = FileUtils.getFileEnd(message.getId());
+
+                        if (file.exists() && file.length() > 0) {
+                            message.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_DOWNLOADED);
+                        }
+
+                        chatRealmListMappedUsers.add(message);
+                    }
+                }
+            }
+
+            return chatRealmListMappedUsers;
         }).doOnNext(saveToCacheChatMessages);
     }
 

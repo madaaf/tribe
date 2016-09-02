@@ -127,7 +127,7 @@ public class ChatPresenter implements Presenter {
     }
 
     public void loadChatMessages(Recipient recipient) {
-        jobManager.addJobInBackground(new UpdateChatHistoryJob(recipient.getFriendshipId()));
+        jobManager.addJobInBackground(new UpdateChatHistoryJob(recipient));
         jobManager.addJobInBackground(new UpdateChatMessagesJob(recipient.getId()));
         diskGetChatMessages.setRecipientId(recipient.getId());
         diskGetChatMessages.execute(new ChatMessageListSubscriber());

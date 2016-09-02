@@ -49,7 +49,6 @@ public class UpdateChatMessagesJob extends BaseJob {
 
     @Override
     protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount, int maxRunCount) {
-        System.out.println("Cancel Reason : " + throwable.getMessage());
         return RetryConstraint.CANCEL;
     }
 

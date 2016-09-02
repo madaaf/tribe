@@ -144,11 +144,6 @@ public class ChatActivity extends BaseActivity implements MessageView {
         initSubscriptions();
         initRecyclerView();
         initInfos();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
         initPresenter();
     }
 

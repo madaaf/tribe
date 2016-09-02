@@ -23,10 +23,11 @@
 	<!-- Contacts -->
 	<string name="contacts_search_placeholder">Nom, téléphone or @handle</string>
 	<string name="contacts_share_profile_button">Partage ton profile</string>
+	<string name="contacts_share_profile_description">Sur Whatsapp, Messenger, etc..</string>
 	<string name="contacts_section_facebook_sync_disabled">Amis Facebook non synchronisés</string>
 	<string name="contacts_section_facebook_sync_enabled">Amis Facebook synchronisés</string>
-	<string name="contacts_section_facebook_sync_title">Synchronisation Facebook automatique</string>
-	<string name="contacts_section_facebook_sync_description">Synchronise automatiquement tes amis Facebook</string>
+	<string name="contacts_section_facebook_sync_title">Synchronise automatique tes amis</string>
+	<string name="contacts_section_facebook_sync_description">Connecte toi avec Facebook</string>
 	<string name="contacts_section_facebook_syncing_title">Synchronisation</string>
 	<string name="contacts_section_addressbook_sync_disabled">Contacts non synchronisés</string>
 	<string name="contacts_section_addressbook_sync_enabled">Contacts synchronisés</string>
@@ -34,7 +35,7 @@
 	<string name="contacts_section_addressbook_sync_description">Synchronise automatiquement\ntes contacts</string>
 	<string name="contacts_section_addressbook_syncing">Synchronisation</string>
 	<string name="contacts_section_addressbook_empty">Plus aucun contact à inviter</string>
-	<string name="contacts_section_addressbook_friends_in_app">amis sur Tribe</string>
+	<string name="contacts_section_addressbook_friends_in_app">Aurait %1$d amis sur Tribe</string>
 	<string name="contacts_section_search_usernames">Nom d\'utilisateur</string>
 	<string name="contacts_section_search_searching">Recherche</string>
 	<string name="contacts_section_search_friends">Amis</string>

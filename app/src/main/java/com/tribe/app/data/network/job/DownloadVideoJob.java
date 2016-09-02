@@ -94,6 +94,8 @@ public abstract class DownloadVideoJob extends BaseJob {
                 byte[] fileReader = new byte[4096];
 
                 long fileSize = body.contentLength();
+                setTotalSize(fileSize);
+
                 long fileSizeDownloaded = 0;
 
                 inputStream = body.byteStream();
@@ -108,6 +110,7 @@ public abstract class DownloadVideoJob extends BaseJob {
 
                     outputStream.write(fileReader, 0, read);
                     fileSizeDownloaded += read;
+                    setProgress(fileSizeDownloaded);
                     Log.d(getTag(), "file download: " + fileSizeDownloaded + " of " + fileSize);
                 }
 
@@ -135,4 +138,6 @@ public abstract class DownloadVideoJob extends BaseJob {
     protected abstract String getTag();
     protected abstract void saveResult(boolean writtenToDisk);
     protected abstract void setStatus(@MessageDownloadingStatus.Status String status);
+    protected abstract void setProgress(long progress);
+    protected abstract void setTotalSize(long totalSize);
 }
