@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.component;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -145,6 +146,14 @@ public class SettingItemView extends FrameLayout {
 //                .centerCrop()
 //                .transform(new RoundedCornersTransformation(R.dimen.setting_pic_size >> 1, 0, RoundedCornersTransformation.CornerType.ALL))
 //                .into(imageSetting);
+    }
+
+    public ImageView getPictureImageView() {
+        return imageSetting;
+    }
+
+    public void setPictureBitmap(Bitmap bitmap) {
+        imageSetting.setImageBitmap(bitmap);
     }
 
     public void setName(String name) {

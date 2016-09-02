@@ -74,6 +74,7 @@ public class SettingPresenter implements Presenter {
         updateUser.prepare(key, value);
         if (key == "username") updateUser.execute(new UpdateUsernameSubscriber());
         if (key == "display_name") updateUser.execute(new UpdateDisplayNameSubscriber());
+        if (key == "picture") updateUser.execute(new UpdatePictureSubscriber());
     }
 
     private final class UpdateUsernameSubscriber extends DefaultSubscriber<User> {
@@ -107,6 +108,23 @@ public class SettingPresenter implements Presenter {
         @Override
         public void onNext(User user) {
             if (user != null) changeDisplayName(user.getDisplayName());
+        }
+    }
+
+    private final class UpdatePictureSubscriber extends DefaultSubscriber<User> {
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+
+        }
+
+        @Override
+        public void onNext(User user) {
+
         }
     }
 

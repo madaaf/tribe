@@ -1,7 +1,12 @@
 package com.tribe.app.presentation.utils;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -38,6 +43,7 @@ public class FileUtils {
 
         return generateOutputFile(videoDir, id).getAbsolutePath();
     }
+
 
     public static String generateFileEnd(String id) {
         File endDir = new File(pathOrigin + pathEnd);

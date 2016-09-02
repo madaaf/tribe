@@ -3,8 +3,10 @@ package com.tribe.app.data.repository.user.datasource;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
@@ -24,9 +26,15 @@ import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,6 +42,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 import rx.Observable;
 import rx.functions.Action1;
@@ -243,14 +254,45 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<UserRealm> updateUser(String key, String value) {
-        return this.tribeApi.updateUser(context.getString(R.string.user_mutate_username, key, value))
-                .doOnNext(userRealm -> {
-                    // TODO: check key here
-                    UserRealm dbUser = userCache.userInfosNoObs(accessToken.getUserId());
-                    if (key == "username") dbUser.setUsername(userRealm.getUsername());
-                    if (key == "display_name") dbUser.setDisplayName(userRealm.getDisplayName());
-                    userCache.put(dbUser);
-                });
+
+        if (key == "picture") {
+            String request = context.getString(R.string.user_mutate_username, "username", userCache.userInfosNoObs(accessToken.getUserId()).getUsername());
+            RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
+
+            File file = new File(Uri.parse(value).getPath());
+
+            if (file != null && file.exists() && file.length() > 0) {
+
+                RequestBody requestFile = null;
+                MultipartBody.Part body = null;
+
+                requestFile = RequestBody.create(MediaType.parse("image/jpeg"), file);
+                body = MultipartBody.Part.createFormData("user_pic", "user_pic.jpg", requestFile);
+
+                return tribeApi.updateUserMedia(query, body)
+                        .doOnNext(userRealm -> {
+                            UserRealm dbUser = userCache.userInfosNoObs(accessToken.getUserId());
+                            dbUser.setProfilePicture(userRealm.getProfilePicture());
+                            userCache.put(dbUser);
+                        });
+
+            }
+
+            return null;
+
+        } else {
+            String request = context.getString(R.string.user_mutate_username, key, value);
+
+            return this.tribeApi.updateUser(request)
+                    .doOnNext(userRealm -> {
+                        UserRealm dbUser = userCache.userInfosNoObs(accessToken.getUserId());
+                        if (key == "username") dbUser.setUsername(userRealm.getUsername());
+                        if (key == "display_name")
+                            dbUser.setDisplayName(userRealm.getDisplayName());
+                        userCache.put(dbUser);
+                    });
+
+        }
     }
 
     private final Action1<AccessToken> saveToCacheAccessToken = accessToken -> {

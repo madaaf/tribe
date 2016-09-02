@@ -23,10 +23,11 @@
 	<!-- Contacts -->
 	<string name="contacts_search_placeholder">Name, phone or @handle</string>
 	<string name="contacts_share_profile_button">Share your profile</string>
+	<string name="contacts_share_profile_description">On Whatsapp, Messenger, etc..</string>
 	<string name="contacts_section_facebook_sync_disabled">Facebook friends aren’t synced</string>
 	<string name="contacts_section_facebook_sync_enabled">Facebook friends are synced</string>
-	<string name="contacts_section_facebook_sync_title">Facebook Auto-Sync</string>
-	<string name="contacts_section_facebook_sync_description">Automatically sync your Facebook friends when they join</string>
+	<string name="contacts_section_facebook_sync_title">Auto-sync Friends</string>
+	<string name="contacts_section_facebook_sync_description">Connect with Facebook</string>
 	<string name="contacts_section_facebook_syncing_title">Syncing</string>
 	<string name="contacts_section_addressbook_sync_disabled">Address book isn’t synced</string>
 	<string name="contacts_section_addressbook_sync_enabled">Address book is synced</string>
@@ -34,10 +35,10 @@
 	<string name="contacts_section_addressbook_sync_description">Automatically sync your Address Book contacts when they join</string>
 	<string name="contacts_section_addressbook_syncing">Syncing</string>
 	<string name="contacts_section_addressbook_empty">No more contacts to invite</string>
-	<string name="contacts_section_addressbook_friends_in_app">Friends on Tribe</string>
+	<string name="contacts_section_addressbook_friends_in_app">Would have %1$d friends on Tribe</string>
 	<string name="contacts_section_search_usernames">Username</string>
 	<string name="contacts_section_search_searching">Searching</string>
-	<string name="contacts_section_search_friends">People you know</string>
+	<string name="contacts_section_search_friends">People that you know</string>
 	
 	<!-- Permissions -->
 	<string name="permission_contacts_disabled_alert_title">Permission for Address Book was denied</string>
