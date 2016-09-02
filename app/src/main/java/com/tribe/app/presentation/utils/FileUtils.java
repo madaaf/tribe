@@ -100,4 +100,30 @@ public class FileUtils {
         out.close();
         in.close();
     }
+
+    public static File bitmapToFile(Bitmap bitmap, Context context) {
+        File f = new File(context.getCacheDir(), "avatar");
+        try {
+            f.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //Convert bitmap to byte array
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+        byte[] bitmapdata = bos.toByteArray();
+
+        //write the bytes in file
+        try {
+            FileOutputStream fos = new FileOutputStream(f);
+            fos.write(bitmapdata);
+            fos.close();
+            fos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return f;
+    }
+
 }

@@ -61,6 +61,7 @@ public class CloudUserDataStore implements UserDataStore {
     private final ChatCache chatCache;
     private final Context context;
     private AccessToken accessToken = null;
+    private User user = null;
     private final Installation installation;
     private final ReactiveLocationProvider reactiveLocationProvider;
     private Preference<String> lastMessageRequest;
@@ -75,7 +76,7 @@ public class CloudUserDataStore implements UserDataStore {
      * @param accessToken the access token
      */
     public CloudUserDataStore(UserCache userCache, TribeCache tribeCache, ChatCache chatCache,
-                              TribeApi tribeApi, LoginApi loginApi,
+                              TribeApi tribeApi, LoginApi loginApi, User user,
                               AccessToken accessToken, Installation installation,
                               ReactiveLocationProvider reactiveLocationProvider, Context context,
                               Preference<String> lastMessageRequest, SimpleDateFormat utcSimpleDate) {
@@ -85,6 +86,7 @@ public class CloudUserDataStore implements UserDataStore {
         this.tribeApi = tribeApi;
         this.loginApi = loginApi;
         this.context = context;
+        this.user = user;
         this.accessToken = accessToken;
         this.installation = installation;
         this.reactiveLocationProvider = reactiveLocationProvider;
@@ -274,6 +276,8 @@ public class CloudUserDataStore implements UserDataStore {
                             UserRealm dbUser = userCache.userInfosNoObs(accessToken.getUserId());
                             dbUser.setProfilePicture(userRealm.getProfilePicture());
                             userCache.put(dbUser);
+                            user.setProfilePicture(userRealm.getProfilePicture());
+
                         });
 
             }
@@ -286,9 +290,15 @@ public class CloudUserDataStore implements UserDataStore {
             return this.tribeApi.updateUser(request)
                     .doOnNext(userRealm -> {
                         UserRealm dbUser = userCache.userInfosNoObs(accessToken.getUserId());
-                        if (key == "username") dbUser.setUsername(userRealm.getUsername());
-                        if (key == "display_name")
+                        if (key == "username") {
+                            dbUser.setUsername(userRealm.getUsername());
+                            user.setUsername(userRealm.getUsername());
+                        }
+                        if (key == "display_name") {
                             dbUser.setDisplayName(userRealm.getDisplayName());
+                            user.setDisplayName(userRealm.getDisplayName());
+                        }
+
                         userCache.put(dbUser);
                     });
 
