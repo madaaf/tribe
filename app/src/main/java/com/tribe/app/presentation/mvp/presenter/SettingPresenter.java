@@ -5,6 +5,7 @@ import android.widget.Toast;
 
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.user.RemoveInstall;
 import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.presentation.mvp.view.SettingView;
 import com.tribe.app.presentation.mvp.view.View;
@@ -17,14 +18,16 @@ import javax.inject.Inject;
 public class SettingPresenter implements Presenter {
 
     private final UpdateUser updateUser;
+    private final RemoveInstall removeInstall;
     private final Context context;
 
     private SettingView settingView;
 
     @Inject
-    SettingPresenter(UpdateUser updateUser, Context context) {
+    SettingPresenter(UpdateUser updateUser, RemoveInstall removeInstall, Context context) {
         this.context = context;
         this.updateUser = updateUser;
+        this.removeInstall = removeInstall;
     }
 
     @Override
@@ -70,11 +73,20 @@ public class SettingPresenter implements Presenter {
         this.settingView.changeDisplayName(displayName);
     }
 
+
     public void updateUser(String key, String value) {
         updateUser.prepare(key, value);
         if (key == "username") updateUser.execute(new UpdateUsernameSubscriber());
         if (key == "display_name") updateUser.execute(new UpdateDisplayNameSubscriber());
         if (key == "picture") updateUser.execute(new UpdatePictureSubscriber());
+    }
+
+    public void logout() {
+        removeInstall.execute(new RemoveInstallSubscriber());
+    }
+
+    public void goToLauncher() {
+        this.settingView.goToLauncher();
     }
 
     private final class UpdateUsernameSubscriber extends DefaultSubscriber<User> {
@@ -125,6 +137,23 @@ public class SettingPresenter implements Presenter {
         @Override
         public void onNext(User user) {
 
+        }
+    }
+
+    private final class RemoveInstallSubscriber extends DefaultSubscriber<User> {
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+
+        }
+
+        @Override
+        public void onNext(User user) {
+            goToLauncher();
         }
     }
 

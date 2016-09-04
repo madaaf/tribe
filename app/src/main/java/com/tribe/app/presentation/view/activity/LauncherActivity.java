@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.view.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.tribe.app.data.realm.AccessToken;
@@ -11,6 +13,10 @@ public class LauncherActivity extends BaseActivity {
     @Inject
     AccessToken accessToken;
 
+    public static Intent getCallingIntent(Context context) {
+        return new Intent(context, LauncherActivity.class);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -18,11 +24,14 @@ public class LauncherActivity extends BaseActivity {
 
         this.getApplicationComponent().inject(this);
 
-
-        if (accessToken == null || accessToken.getAccessToken() == null) {
+        if (IntroActivity.uiOnlyMode) {
             navigator.navigateToLogin(this);
         } else {
-            navigator.navigateToHome(this);
+            if (accessToken == null || accessToken.getAccessToken() == null) {
+                navigator.navigateToLogin(this);
+            } else {
+                navigator.navigateToHome(this);
+            }
         }
 
         finish();

@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import android.os.Handler;
+import android.widget.Toast;
 
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.Pin;
@@ -17,7 +18,13 @@ import com.tribe.app.presentation.mvp.view.IntroView;
 import com.tribe.app.presentation.mvp.view.View;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
+
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 
 public class IntroPresenter implements Presenter {
@@ -97,21 +104,23 @@ public class IntroPresenter implements Presenter {
     public void login(String phoneNumber, String code, String pinId) {
         showViewLoading();
         // TODO: get user id
-        isActive2 = true;
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (isActive2) {
-                    hideViewLoading();
-                    goToConnected();
-                    isActive2 = false;
+        if (IntroActivity.uiOnlyMode) {
+            isActive2 = true;
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (isActive2) {
+                        hideViewLoading();
+                        goToConnected();
+                        isActive2 = false;
+                    }
                 }
-            }
-        }, 2000);
-
-        cloudLoginUseCase.prepare(phoneNumber, code, pinId);
-        cloudLoginUseCase.execute(new LoginSubscriber());
+            }, 2000);
+        } else {
+            cloudLoginUseCase.prepare(phoneNumber, code, pinId);
+            cloudLoginUseCase.execute(new LoginSubscriber());
+        }
 
     }
 
@@ -177,12 +186,22 @@ public class IntroPresenter implements Presenter {
         @Override
         public void onError(Throwable e) {
             hideViewLoading();
-            showErrorMessage(new DefaultErrorBundle((Exception) e));
+            // TODO: get error message from laurent
+            introView.showError("You have entered the wrong pin. Please try again");
         }
 
         @Override
         public void onNext(AccessToken accessToken) {
+
+            hideViewLoading();
+            goToConnected();
             getUserInfo();
+            Observable.timer(300, TimeUnit.MILLISECONDS)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(time -> {
+                        goToHome();
+                    });
         }
     }
 
@@ -194,7 +213,7 @@ public class IntroPresenter implements Presenter {
 
         @Override
         public void onError(Throwable e) {
-            showErrorMessage(new DefaultErrorBundle((Exception) e));
+
         }
 
         @Override

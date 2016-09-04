@@ -38,6 +38,7 @@ import com.tribe.app.presentation.view.widget.CustomViewPager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -124,6 +125,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private HomeViewPagerAdapter homeViewPagerAdapter;
     private List<Message> newMessages;
     private int pendingTribeCount;
+    private final int SETTINGS_RESULT = 101;
 
     // DIMEN
     private int sizeNavMax, sizeNavSmall, marginHorizontalSmall, translationBackToTop;
@@ -173,6 +175,12 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
         homePresenter.onDestroy();
         super.onDestroy();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SETTINGS_RESULT) reloadGrid();
     }
 
     private void initUi() {
@@ -323,7 +331,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     public void initClickOnSettings(Observable<View> observable) {
         subscriptions.add(observable.subscribe(view -> {
-            HomeActivity.this.navigator.navigateToSettings(HomeActivity.this);
+            HomeActivity.this.navigator.navigateToSettings(HomeActivity.this, SETTINGS_RESULT);
         }));
     }
 

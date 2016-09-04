@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
@@ -179,6 +180,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
 
     private void initPlayerView() {
         videoViewIntro.createPlayer("asset:///video/onboarding_video.mp4");
+
     }
 
     private void initPhoneNumberView() {
@@ -339,7 +341,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
 
     @Override
     public void showError(String message) {
-
+        Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
     }
 
     @Override

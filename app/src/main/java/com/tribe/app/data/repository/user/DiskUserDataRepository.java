@@ -191,6 +191,11 @@ public class DiskUserDataRepository implements UserRepository {
         return null;
     }
 
+    @Override
+    public Observable<Installation> removeInstall() {
+        return null;
+    }
+
     /***
      * NOT USED
      * @return

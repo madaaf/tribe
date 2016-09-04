@@ -33,6 +33,7 @@ public class UserDataStoreFactory {
     private final ChatCache chatCache;
     private final TribeApi tribeApi;
     private final LoginApi loginApi;
+    private final User user;
     private final AccessToken accessToken;
     private final Installation installation;
     private final ReactiveLocationProvider reactiveLocationProvider;
@@ -42,7 +43,7 @@ public class UserDataStoreFactory {
     @Inject
     public UserDataStoreFactory(Context context, UserCache userCache,
                                 TribeCache tribeCache, ChatCache chatCache,
-                                TribeApi tribeApi, LoginApi loginApi, AccessToken accessToken,
+                                TribeApi tribeApi, LoginApi loginApi, User user, AccessToken accessToken,
                                 Installation installation, ReactiveLocationProvider reactiveLocationProvider,
                                 @LastMessageRequest Preference<String> lastMessageRequest,
                                 @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate) {
@@ -56,6 +57,7 @@ public class UserDataStoreFactory {
         this.chatCache = chatCache;
         this.tribeApi = tribeApi;
         this.loginApi = loginApi;
+        this.user = user;
         this.accessToken = accessToken;
         this.installation = installation;
         this.reactiveLocationProvider = reactiveLocationProvider;
@@ -73,7 +75,7 @@ public class UserDataStoreFactory {
      */
     public UserDataStore createCloudDataStore() {
         return new CloudUserDataStore(this.userCache, this.tribeCache, this.chatCache, this.tribeApi, this.loginApi,
-                this.accessToken, this.installation, this.reactiveLocationProvider, this.context,
+                this.user, this.accessToken, this.installation, this.reactiveLocationProvider, this.context,
                 this.lastMessageRequest, this.utcSimpleDate);
     }
 }

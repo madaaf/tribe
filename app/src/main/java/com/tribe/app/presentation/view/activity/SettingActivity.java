@@ -19,6 +19,7 @@ import com.f2prateek.rx.preferences.Preference;
 import com.jakewharton.rxbinding.view.RxView;
 import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;
@@ -98,9 +99,6 @@ public class SettingActivity extends BaseActivity implements SettingView {
     @BindView(R.id.settingsLogOut)
     SettingItemView settingsLogOut;
 
-    @BindView(R.id.settingsRemove)
-    SettingItemView settingsRemove;
-
     @BindView(R.id.profileSection)
     SettingSectionView profileSection;
 
@@ -141,8 +139,6 @@ public class SettingActivity extends BaseActivity implements SettingView {
     @Inject
     Picasso picasso;
 
-    User user;
-
     private static final int CAMERA_REQUEST = 6;
 
     @Override
@@ -175,7 +171,7 @@ public class SettingActivity extends BaseActivity implements SettingView {
             Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
 
 
-            String imageUri = Uri.fromFile(bitmapToFile(thumbnail)).toString();
+            String imageUri = Uri.fromFile(FileUtils.bitmapToFile(thumbnail, this)).toString();
 
             InputStream image_stream = null;
             try {
@@ -191,30 +187,7 @@ public class SettingActivity extends BaseActivity implements SettingView {
 
     }
 
-    private File bitmapToFile(Bitmap bitmap) {
-        File f = new File(this.getCacheDir(), "avatar");
-        try {
-            f.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        //Convert bitmap to byte array
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-        byte[] bitmapdata = bos.toByteArray();
-
-        //write the bytes in file
-        try {
-            FileOutputStream fos = new FileOutputStream(f);
-            fos.write(bitmapdata);
-            fos.close();
-            fos.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return f;
-    }
 
 
     private void initPresenter() {
@@ -230,12 +203,14 @@ public class SettingActivity extends BaseActivity implements SettingView {
         }));
 
         subscriptions.add(RxView.clicks(settingsDisplayName).subscribe(aVoid -> {
-            settingPresenter.updateUser("display_name", "Horatio Thomas 1001");
+            settingPresenter.updateUser("display_name", "Horatio 101");
         }));
 
         subscriptions.add(RxView.clicks(settingsUsername).subscribe(aVoid -> {
-            settingPresenter.updateUser("username", "HoratioTribe9");
+            settingPresenter.updateUser("username", "Horatio T");
         }));
+
+
 
         subscriptions.add(messageSettingMemories.checkedSwitch().subscribe(isChecked -> {
             if (isChecked) memories.set(true);
@@ -279,6 +254,10 @@ public class SettingActivity extends BaseActivity implements SettingView {
             Intent resultIntent = new Intent();
             setResult(BaseActivity.RESULT_OK, resultIntent);
             finish();
+        }));
+
+        subscriptions.add(RxView.clicks(settingsLogOut).subscribe(aVoid -> {
+            settingPresenter.logout();
         }));
 
     }
@@ -330,17 +309,12 @@ public class SettingActivity extends BaseActivity implements SettingView {
         settingsLogOut.setTitleBodyViewType(getString(R.string.settings_logout_title),
                 getString(R.string.settings_logout_subtitle),
                 SettingItemView.SIMPLE);
-        settingsRemove.setTitleBodyViewType(getString(R.string.settings_logout_title),
-                getString(R.string.settings_logout_subtitle),
-                SettingItemView.DELETE);
 
-        user = getCurrentUser();
+        User user = getCurrentUser();
 
         settingsPicture.setPicture(user.getProfilePicture());
         settingsUsername.setName(user.getUsername());
         settingsDisplayName.setName(user.getDisplayName());
-
-        Log.d("pic url", user.getProfilePicture());
 
     }
 
@@ -366,6 +340,11 @@ public class SettingActivity extends BaseActivity implements SettingView {
     @Override
     public void changeDisplayName(String displayName) {
         settingsDisplayName.setName(displayName);
+    }
+
+    @Override
+    public void goToLauncher() {
+        navigator.navigateToLauncher(this);
     }
 
     @Override

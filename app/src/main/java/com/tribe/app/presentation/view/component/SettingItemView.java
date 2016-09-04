@@ -10,7 +10,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Switch;
 
+import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
+import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import butterknife.BindView;
@@ -141,11 +143,12 @@ public class SettingItemView extends FrameLayout {
     }
 
     public void setPicture(String picUrl) {
-//        picasso.load(picUrl)
-//                .fit()
-//                .centerCrop()
-//                .transform(new RoundedCornersTransformation(R.dimen.setting_pic_size >> 1, 0, RoundedCornersTransformation.CornerType.ALL))
-//                .into(imageSetting);
+        Picasso.with(getContext())
+                .load(picUrl)
+                .fit()
+                .centerCrop()
+                .transform(new RoundedCornersTransformation(R.dimen.setting_pic_size >> 1, 0, RoundedCornersTransformation.CornerType.ALL))
+                .into(imageSetting);
     }
 
     public ImageView getPictureImageView() {

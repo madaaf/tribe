@@ -13,9 +13,11 @@ import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.GetReceivedDiskMessageList;
 import com.tribe.app.domain.interactor.user.GetRequestCode;
+import com.tribe.app.domain.interactor.user.RemoveInstall;
 import com.tribe.app.domain.interactor.user.SendToken;
 import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.presentation.internal.di.scope.PerActivity;
+import com.tribe.app.presentation.internal.di.scope.PerApplication;
 
 import javax.inject.Named;
 
@@ -48,6 +50,7 @@ public class UserModule {
     UseCase provideUpdateUser(UpdateUser updateUser) {
         return updateUser;
     }
+
 
     @Provides
     @PerActivity
@@ -103,6 +106,12 @@ public class UserModule {
     @Named("sendToken")
     SendToken provideSendToken(SendToken sendToken) {
         return sendToken;
+    }
+
+    @Provides
+    @PerActivity
+    UseCase providesRemoveInstall(RemoveInstall removeInstall) {
+        return removeInstall;
     }
 
     @Provides

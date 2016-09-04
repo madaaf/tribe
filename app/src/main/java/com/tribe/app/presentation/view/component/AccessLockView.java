@@ -337,27 +337,11 @@ public class AccessLockView extends FrameLayout {
         crossfader.startTransition(pulsingDuration * 2);
 
 
+        expandAndContract(crossfader);
+
         subscriptions.add(Observable.interval(pulsingDuration, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .subscribe(aVoid -> {
-                    if (isRed) {
-                        isRed = false;
-                        crossfader.reverseTransition(pulsingDuration);
-                        viewPulse.animate()
-                                .scaleY((float) 1)
-                                .scaleX((float) 1)
-                                .setStartDelay(0)
-                                .setDuration(pulsingDuration)
-                                .start();
-                    } else {
-                        isRed = true;
-                        crossfader.startTransition(pulsingDuration * 2);
-                        viewPulse.animate()
-                                .scaleY((float) 1.2)
-                                .scaleX((float) 1.2)
-                                .setStartDelay(0)
-                                .setDuration(pulsingDuration)
-                                .start();
-                    }
+                    expandAndContract(crossfader);
                 }));
     }
 
@@ -368,4 +352,27 @@ public class AccessLockView extends FrameLayout {
         viewLayoutParams.gravity = Gravity.CENTER;
         view.setLayoutParams(viewLayoutParams);
     }
+
+    private void expandAndContract(TransitionDrawable crossfader) {
+        if (isRed) {
+            isRed = false;
+            crossfader.reverseTransition(pulsingDuration);
+            viewPulse.animate()
+                    .scaleY((float) 1)
+                    .scaleX((float) 1)
+                    .setStartDelay(0)
+                    .setDuration(pulsingDuration)
+                    .start();
+        } else {
+            isRed = true;
+            crossfader.startTransition(pulsingDuration * 2);
+            viewPulse.animate()
+                    .scaleY((float) 1.2)
+                    .scaleX((float) 1.2)
+                    .setStartDelay(0)
+                    .setDuration(pulsingDuration)
+                    .start();
+        }
+    }
+
 }
