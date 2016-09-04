@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.widget.ActionEditText;
 
 import butterknife.BindView;
@@ -106,6 +107,7 @@ public class ChatInputView extends FrameLayout {
 
         RxTextView.editorActions(editTextMessage).filter(action -> action.equals(EditorInfo.IME_ACTION_SEND))
                 .map(action -> editTextMessage.getText().toString())
+                .filter(s -> !StringUtils.isEmpty(s.trim()))
                 .doOnNext(s -> clearText())
                 .subscribe(sendClickEventSubject);
     }
