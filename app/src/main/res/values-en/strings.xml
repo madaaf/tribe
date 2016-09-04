@@ -205,6 +205,7 @@
 	<string name="settings_username_subtitle">How you appear for everyone.</string>
 	<string name="settings_section_messages">Messages</string>
 	<string name="settings_filter_title">Pick a filter</string>
+	<string name="settings_theme_title">Pick a theme</string>
 	<string name="settings_tribesave_title">Memories</string>
 	<string name="settings_tribesave_subtitle">Allow your friends to save your\nmessages if they want to.</string>
 	<string name="settings_geolocation_title">Context</string>
@@ -215,7 +216,11 @@
 	<string name="settings_preload_subtitle">Download new messages in\nbackground, automatically.</string>
 	<string name="settings_weatherunits_title">Fahrenheit</string>
 	<string name="settings_weatherunits_subtitle">Display temperature on message\nin Fahrenheit instead of Celsius.</string>
+	<string name="settings_invisible_title">Invisible mode</string>
+	<string name="settings_invisible_subtitle">Only you can add friends. Nobody can add you.</string>
 	<string name="settings_section_support">Support</string>
+	<string name="settings_support_title">Send us messages on Tribe</string>
+	<string name="settings_support_subtitle">We reply in less than 12 hours to every single message.</string>
 	<string name="settings_tweet_title">Tweet @heytribe</string>
 	<string name="settings_tweet_subtitle">We reply in less than 24 hours\nto every single tweet.</string>
 	<string name="settings_email_title">Email the team</string>
@@ -224,6 +229,8 @@
 	<string name="settings_email_subject">Something about Tribe</string>
 	<string name="settings_rate_title">Rate the app</string>
 	<string name="settings_rate_subtitle">The easiest way to show us\nsome love.</string>
+	<string name="settings_blocked_title">Blocked contacts</string>
+	<string name="settings_blocked_subtitle">Get access to the list of contacts you blocked.</string>
 	<string name="settings_section_exit">Exit</string>
 	<string name="settings_logout_title">Log out</string>
 	<string name="settings_logout_subtitle">Disconnect this account from\nthis device.</string>
@@ -244,7 +251,7 @@
 	<string name="onboarding_user_facebook_button_title">Or autofill profile</string>
 	<string name="onboarding_queue_title">Get access now.</string>
 	<string name="onboarding_queue_description">You need to have at\nleast 1 friend to enter.</string>
-	<string name="onboarding_queue_button_title">Let\'s find out!</string>
+	<string name="onboarding_queue_button_title">Look in my contacts</string>
 	<string name="onboarding_queue_loading_title">Hang tight…</string>
 	<string name="onboarding_queue_loading_description">Looking if one of your\n friends is already on Tribe.</string>
 	<string name="onboarding_queue_loading_friends">friends</string>
@@ -257,7 +264,7 @@
 	<string name="onboarding_queue_declined_popup_cancel_button">Stay alone.</string>
 	<string name="onboarding_queue_declined_popup_confirm_button">Sure!</string>
 	<string name="onboarding_queue_valid_title">Congrats! You\'re in.</string>
-	<string name="onboarding_queue_valid_description">Enter now, your friends\nare already there.</string>
+	<string name="onboarding_queue_valid_description">Your friends\nare already there.</string>
 	<string name="onboarding_queue_valid_button_title">Enter now!</string>
 	
 	<!-- Pull to search -->

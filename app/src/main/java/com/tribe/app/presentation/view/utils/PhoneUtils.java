@@ -7,7 +7,6 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
-import java.lang.annotation.Retention;
 import java.util.LinkedList;
 
 import javax.inject.Inject;
@@ -52,13 +51,49 @@ public class PhoneUtils {
                 return phoneUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
             }
 
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return null;
     }
 
     public String formatPhoneNumberForView(String number, String countryCode) {
         return PhoneNumberUtils.formatNumber(number, countryCode);
+    }
+
+    public String formatNumber(String number, int countryCode) {
+        Phonenumber.PhoneNumber numberProto = getPhoneNumber(number, countryCode);
+
+        if (numberProto != null) {
+            number = phoneUtil.format(numberProto, PhoneNumberUtil.PhoneNumberFormat.E164);
+        }
+
+        return number;
+    }
+
+    public Phonenumber.PhoneNumber getPhoneNumber(String number, int codeCountry) {
+        try {
+            Phonenumber.PhoneNumber numberProto = phoneUtil.parse(number, "");
+
+            if (phoneUtil.isPossibleNumber(numberProto)) {
+                return numberProto;
+            }
+        } catch (NumberParseException e) {
+            try {
+                Phonenumber.PhoneNumber numberProto = phoneUtil.parse(number, phoneUtil.getRegionCodeForCountryCode(codeCountry));
+
+                if (phoneUtil.isPossibleNumber(numberProto)) {
+                    return numberProto;
+                } else {
+                    System.out.println("WARNING : formatNumber - number(" + numberProto + ") is NOT PossibleNumber");
+                }
+            } catch (NumberParseException e2) {
+                e2.printStackTrace();
+            }
+        }
+
+        return null;
     }
 
     public String prepareForScope(String phoneNumber) {
@@ -71,6 +106,18 @@ public class PhoneUtils {
         }
 
         return "+" + numberProto.getCountryCode() + " " + numberProto.getNationalNumber();
+    }
+
+    public int getCountryCode(String phoneNumber) {
+        Phonenumber.PhoneNumber numberProto = null;
+
+        try {
+            numberProto = phoneUtil.parse(phoneNumber, "");
+        } catch (NumberParseException e) {
+            System.err.println("NumberParseException was thrown: " + e.toString());
+        }
+
+        return numberProto.getCountryCode();
     }
 
     public int getCountryCodeForRegion(String codeCountry) {

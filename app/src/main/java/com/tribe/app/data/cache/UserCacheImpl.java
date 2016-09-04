@@ -94,6 +94,7 @@ public class UserCacheImpl implements UserCache {
 
                 userDB.setUsername(userRealm.getUsername());
                 userDB.setScore(userRealm.getScore());
+                userDB.setPhone(userRealm.getPhone());
                 userDB.setDisplayName(userRealm.getDisplayName());
                 userDB.setProfilePicture(userRealm.getProfilePicture());
 

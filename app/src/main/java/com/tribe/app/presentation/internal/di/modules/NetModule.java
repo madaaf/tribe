@@ -30,6 +30,7 @@ import com.tribe.app.data.network.deserializer.TribeAccessTokenDeserializer;
 import com.tribe.app.data.network.deserializer.TribeUserDeserializer;
 import com.tribe.app.data.network.deserializer.UserListDeserializer;
 import com.tribe.app.data.network.deserializer.UserMessageListDeserializer;
+import com.tribe.app.data.network.entity.RefreshEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.Installation;
@@ -56,6 +57,7 @@ import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -122,7 +124,7 @@ public class NetModule {
 
     @Provides
     @PerApplication
-    TribeApi provideTribeApi(Gson gson, OkHttpClient okHttpClient, TribeAuthorizer tribeAuthorizer) {
+    TribeApi provideTribeApi(Gson gson, OkHttpClient okHttpClient, TribeAuthorizer tribeAuthorizer, final LoginApi loginApi, final AccessToken accessToken) {
         OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
         httpClientBuilder.addInterceptor(chain -> {
@@ -145,6 +147,18 @@ public class NetModule {
 
             Request request = requestBuilder.build();
             return chain.proceed(request);
+        });
+
+        httpClientBuilder.authenticator((route, response) -> {
+            Call<AccessToken> newAccessTokenReq = loginApi.refreshToken(new RefreshEntity(accessToken.getRefreshToken()));
+            AccessToken newAccessToken = newAccessTokenReq.execute().body();
+            accessToken.setAccessToken(newAccessToken.getAccessToken());
+            accessToken.setRefreshToken(newAccessToken.getRefreshToken());
+
+            return response.request().newBuilder()
+                    .header("Authorization", accessToken.getTokenType()
+                            + " " + accessToken.getAccessToken())
+                    .build();
         });
 
         if (BuildConfig.DEBUG) {

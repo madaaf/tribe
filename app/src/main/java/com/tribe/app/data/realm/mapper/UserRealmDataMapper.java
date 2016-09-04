@@ -50,6 +50,7 @@ public class UserRealmDataMapper {
             user.setEmailVerified(userRealm.isEmailVerified());
             user.setReal(userRealm.isReal());
             user.setInvited(userRealm.isInvited());
+            user.setPhone(userRealm.getPhone());
             if (userRealm.getLocation() != null) user.setLocation(locationRealmDataMapper.transform(userRealm.getLocation()));
             user.setDisableSaveTribe(userRealm.isDisableSaveTribe());
             if (userRealm.getGroups() != null) user.setGroupList(groupRealmDataMapper.transform(userRealm.getGroups()));
@@ -101,6 +102,7 @@ public class UserRealmDataMapper {
             userRealm.setEmailVerified(user.isEmailVerified());
             userRealm.setReal(user.isReal());
             userRealm.setInvited(user.isInvited());
+            userRealm.setPhone(user.getPhone());
             if (user.getLocation() != null) userRealm.setLocation(locationRealmDataMapper.transform(user.getLocation()));
             userRealm.setDisableSaveTribe(user.isDisableSaveTribe());
             if (user.getGroupList() != null) userRealm.setGroups(groupRealmDataMapper.transformGroups(user.getGroupList()));

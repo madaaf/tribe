@@ -205,6 +205,7 @@
 	<string name="settings_username_subtitle">How you appear for everyone.</string>
 	<string name="settings_section_messages">Messages</string>
 	<string name="settings_filter_title">Choisis un filtre</string>
+	<string name="settings_theme_title">Choisis un theme</string>
 	<string name="settings_tribesave_title">Memories</string>
 	<string name="settings_tribesave_subtitle">Let recipients save your messages if they want to.</string>
 	<string name="settings_geolocation_title">Context</string>
@@ -215,7 +216,11 @@
 	<string name="settings_preload_subtitle">Load new messages in background, automatically.</string>
 	<string name="settings_weatherunits_title"></string>
 	<string name="settings_weatherunits_subtitle"></string>
+	<string name="settings_invisible_title">Mode invisible</string>
+	<string name="settings_invisible_subtitle">Vous seul pouvez ajouter des members. Vous ne pouvez pas être ajouté</string>
 	<string name="settings_section_support">Support</string>
+	<string name="settings_support_title">Envoyer nous des messages sur Tribe</string>
+	<string name="settings_support_subtitle">Nous répondons en moins de 12h a chaque message</string>
 	<string name="settings_tweet_title">Tweet @heytribe</string>
 	<string name="settings_tweet_subtitle">We reply in less than 24 hours to every single tweet.</string>
 	<string name="settings_email_title">Email the team</string>
@@ -224,6 +229,8 @@
 	<string name="settings_email_subject"></string>
 	<string name="settings_rate_title">Rate the app</string>
 	<string name="settings_rate_subtitle">The easiest way to show us some love.</string>
+	<string name="settings_blocked_title">Contacts bloqués</string>
+	<string name="settings_blocked_subtitle">Retrouvez les contacts que vous avez bloqué</string>
 	<string name="settings_section_exit">Exit</string>
 	<string name="settings_logout_title">Log out</string>
 	<string name="settings_logout_subtitle">Disconnect this account from this device.</string>
@@ -244,7 +251,7 @@
 	<string name="onboarding_user_facebook_button_title">Remplir depuis Facebook</string>
 	<string name="onboarding_queue_title">Rentre maintenant.</string>
 	<string name="onboarding_queue_description">Vous devez avoir un ami\npour pouvoir rentrer</string>
-	<string name="onboarding_queue_button_title">Voyons ça !</string>
+	<string name="onboarding_queue_button_title">Regarder dans mes contacts</string>
 	<string name="onboarding_queue_loading_title">Attention...</string>
 	<string name="onboarding_queue_loading_description">Recherche d\'un contact dans\nnotre base de données</string>
 	<string name="onboarding_queue_loading_friends">friends</string>
@@ -257,7 +264,7 @@
 	<string name="onboarding_queue_declined_popup_cancel_button">Stay alone.</string>
 	<string name="onboarding_queue_declined_popup_confirm_button">Sure!</string>
 	<string name="onboarding_queue_valid_title">C\'est bon!</string>
-	<string name="onboarding_queue_valid_description">Rentre maintenant, tes amis\nsont déjà là!</string>
+	<string name="onboarding_queue_valid_description">Tes amis\nsont déjà là!</string>
 	<string name="onboarding_queue_valid_button_title">Rentre maintenant!</string>
 	
 	<!-- Pull to search -->

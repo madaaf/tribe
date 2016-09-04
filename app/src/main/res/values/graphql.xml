@@ -25,6 +25,7 @@
 
         fragment UserInfos on User {
             id
+            phone
             score
             username
             display_name

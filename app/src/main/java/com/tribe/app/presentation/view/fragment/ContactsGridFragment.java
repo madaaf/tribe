@@ -1,12 +1,16 @@
 package com.tribe.app.presentation.view.fragment;
 
+import android.Manifest;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
@@ -16,6 +20,10 @@ import com.tribe.app.presentation.mvp.view.HomeView;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.ContactsGridAdapter;
 import com.tribe.app.presentation.view.adapter.manager.ContactsLayoutManager;
+import com.tribe.app.presentation.view.contact.Filter;
+import com.tribe.app.presentation.view.contact.RxContacts;
+import com.tribe.app.presentation.view.contact.Sorter;
+import com.tribe.app.presentation.view.utils.PhoneUtils;
 
 import java.util.ArrayList;
 
@@ -24,6 +32,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -36,6 +46,9 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
 
     @Inject
     ContactsGridAdapter contactsGridAdapter;
+
+    @Inject
+    PhoneUtils phoneUtils;
 
     @BindView(R.id.recyclerViewContacts)
     RecyclerView recyclerViewContacts;
@@ -82,8 +95,14 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         this.contactsGridPresenter.attachView(this);
+
         if (savedInstanceState == null) {
-            this.loadData();
+            RxPermissions.getInstance(getContext())
+                    .request(Manifest.permission.READ_CONTACTS)
+                    .filter(hasPermission -> hasPermission)
+                    .subscribe(hasPermission -> {
+                        loadData();
+                    });
         }
     }
 
@@ -165,6 +184,20 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
      * Loads all contacts.
      */
     private void loadData() {
+        subscriptions.add(RxContacts.getInstance(getContext(), phoneUtils)
+                .withPhones()
+                .formatToCountryCode(currentUser.getPhone())
+                .sort(Sorter.LAST_TIME_CONTACTED)
+                .filter(Filter.HAS_PHONE)
+                .getContacts()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(it -> {
+                    Log.v("contact", it.toString());
+                }, Throwable::printStackTrace, () -> {
+                    Toast.makeText(getContext(), "ERROR", Toast.LENGTH_SHORT).show();
+                }));
+
         this.contactsGridPresenter.onCreate();
     }
 }

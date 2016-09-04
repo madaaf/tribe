@@ -10,6 +10,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -81,6 +82,19 @@ public class ChatInputView extends FrameLayout {
     public void clearText() {
         editTextMessage.setText("", TextView.BufferType.EDITABLE);
     }
+
+    /**
+     * Requests the focus for the input text
+     */
+    public void showKeyboard() {
+        editTextMessage.requestFocus();
+        editTextMessage.postDelayed(() -> {
+            InputMethodManager keyboard = (InputMethodManager)
+                    getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            keyboard.showSoftInput(editTextMessage, 0);
+        }, 200);
+    }
+
 
     public void setImageGallery(Bitmap bitmap) {
         imgGallery.setImageBitmap(bitmap);
