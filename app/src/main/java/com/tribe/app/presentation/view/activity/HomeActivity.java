@@ -38,7 +38,6 @@ import com.tribe.app.presentation.view.widget.CustomViewPager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -379,6 +378,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     public void updateGrid() {
         homePresenter.updateMessagesToNotSeen(newMessages);
         homeViewPagerAdapter.getHomeGridFragment().reloadGrid();
+        homeViewPagerAdapter.getHomeGridFragment().scrollToTop();
 
         AnimationUtils.replaceView(this, txtNewMessages, progressBarNewMessages, new AnimatorListenerAdapter() {
             @Override
