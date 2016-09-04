@@ -159,6 +159,7 @@ public class ChatCacheImpl implements ChatCache {
                     toEdit.setFrom(chatRealm.getFrom());
                     shouldUpdate = true;
                 } else if (chatRealm.getFrom() != null && toEdit.getFrom() != null
+                        && chatRealm.getFrom().getUpdatedAt() != null
                         && (toEdit.getFrom().getUpdatedAt() == null || toEdit.getFrom().getUpdatedAt().before(chatRealm.getFrom().getUpdatedAt()))) {
                     toEdit.getFrom().setUpdatedAt(chatRealm.getFrom().getUpdatedAt());
                     shouldUpdate = true;
@@ -173,6 +174,7 @@ public class ChatCacheImpl implements ChatCache {
                     toEdit.setGroup(chatRealm.getGroup());
                     shouldUpdate = true;
                 } else if (chatRealm.getGroup() != null && toEdit.getGroup() != null
+                        && toEdit.getGroup().getUpdatedAt() != null
                         && (toEdit.getGroup().getUpdatedAt() == null || toEdit.getGroup().getUpdatedAt().before(chatRealm.getGroup().getUpdatedAt()))) {
                     toEdit.getGroup().setUpdatedAt(chatRealm.getGroup().getUpdatedAt());
                     shouldUpdate = true;
@@ -311,7 +313,7 @@ public class ChatCacheImpl implements ChatCache {
         Realm obsRealm = Realm.getDefaultInstance();
         obsRealm.beginTransaction();
 
-        ChatRealm obj = obsRealm.where(ChatRealm.class).equalTo("localId", chatRealm.getId()).findFirst();
+        ChatRealm obj = obsRealm.where(ChatRealm.class).equalTo("localId", chatRealm.getLocalId()).findFirst();
         if (obj != null) {
             obj.setMessageSendingStatus(chatRealm.getMessageSendingStatus());
             obj.setMessageDownloadingStatus(chatRealm.getMessageDownloadingStatus());
@@ -554,7 +556,7 @@ public class ChatCacheImpl implements ChatCache {
         realmObs.beginTransaction();
 
         for (ChatRealm chatRealm : chatRealmList) {
-            ChatRealm dbChatRealm = realmObs.where(ChatRealm.class).equalTo("localId", chatRealm.getId()).findFirst();
+            ChatRealm dbChatRealm = realmObs.where(ChatRealm.class).equalTo("localId", chatRealm.getLocalId()).findFirst();
 
             if (dbChatRealm != null)
                 dbChatRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_ERROR);

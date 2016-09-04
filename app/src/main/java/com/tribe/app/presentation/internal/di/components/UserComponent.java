@@ -12,6 +12,7 @@ import com.tribe.app.presentation.view.activity.ScoreActivity;
 import com.tribe.app.presentation.view.activity.SettingActivity;
 import com.tribe.app.presentation.view.component.SettingItemView;
 import com.tribe.app.presentation.view.fragment.AccessFragment;
+import com.tribe.app.presentation.view.fragment.ContactsGridFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
 import com.tribe.app.presentation.view.fragment.IntroViewFragment;
 import com.tribe.app.presentation.view.fragment.ProfileInfoFragment;
@@ -28,6 +29,7 @@ public interface UserComponent extends ActivityComponent {
     void inject(IntroActivity introActivity);
     void inject(CountryActivity countryActivity);
     void inject(HomeGridFragment homeGridFragment);
+    void inject(ContactsGridFragment contactsGridFragment);
     void inject(HomeActivity homeActivity);
     void inject(ScoreActivity scoreActivity);
     void inject(PointsActivity pointsActivity);

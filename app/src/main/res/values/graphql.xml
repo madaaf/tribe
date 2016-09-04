@@ -72,40 +72,70 @@
         }
     </string>
 
-    <string name="tribe.send">
+    <string name="tribe.send.solo">
         mutation {
-            newTribe(
-                tribe: {
-                    from: \"%1$s\",
-                    to: \"%2$s\",
-                    to_group: %3$s,
-                    type: \"%4$s\",
-                    recorded_at: \"%5$s\",
-                    lat: %6$s,
-                    lng: %7$s
-                }
+            sendTribeToUser(
+                %1$s
             ) { id, recorded_at }
         }
     </string>
 
-    <string name="chat.send">
+    <string name="tribe.send.group">
         mutation {
-            newMessage(
-                message: {
-                    from: \"%1$s\",
-                    to: \"%2$s\",
-                    to_group: %3$s,
-                    type: \"%4$s\",
-                    recorded_at: \"%5$s\",
-                    content : \"%6$s\"
-                }
+            sendTribeToGroup(
+                %1$s
+            ) { id, recorded_at }
+        }
+    </string>
+
+    <string name="tribe.input">
+        tribe : {
+            to: \"%1$s\",
+            type: \"%2$s\",
+            recorded_at: \"%3$s\",
+            lat: %4$s,
+            lng: %5$s
+        }
+    </string>
+
+    <string name="message.send.solo">
+        mutation {
+            sendMessageToUser(
+                %1$s
             ) { id, created_at, recorded_at }
         }
     </string>
 
-    <string name="chat.history">
+    <string name="message.send.group">
+        mutation {
+            sendMessageToGroup(
+                %1$s
+            ) { id, created_at, recorded_at }
+        }
+    </string>
+
+    <string name="message.input">
+        message : {
+            to: \"%1$s\",
+            type: \"%2$s\",
+            recorded_at: \"%3$s\",
+            content : \"%4$s\"
+        }
+    </string>
+
+    <string name="chat.history.friendships">
         {
             friendships(ids: [\"%1$s\"]) {
+                messages(limit: %2$d) {
+                    id
+                }
+            }
+        }
+    </string>
+
+    <string name="chat.history.groups">
+        {
+            groups(ids: [\"%1$s\"]) {
                 messages(limit: %2$d) {
                     id
                 }

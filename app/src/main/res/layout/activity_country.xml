@@ -6,7 +6,6 @@
     android:background="@drawable/shape_rect_white_rounded_corners"
     >
 
-
     <ImageView
         android:id="@+id/searchIconImageView"
         android:layout_width="@dimen/icons_end"

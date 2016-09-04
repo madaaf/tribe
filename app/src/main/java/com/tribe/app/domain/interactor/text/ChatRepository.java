@@ -87,14 +87,15 @@ public interface ChatRepository {
 
     /**
      *
-     * @param friendshipId the friendshipId for which to update the statuses for
+     * @param recipientId the recipientId for which to update the statuses for
      */
-    Observable<Void> updateStatuses(final String friendshipId);
+    Observable<Void> updateStatuses(final String recipientId);
 
     /**
      * Get an {@link Observable} which will emit a {@link List<ChatMessage>}.
      *
+     * @param toGroup whether or not the recipient is a group
      * @param recipientId the recipientId for which to get the history for
      */
-    Observable<List<ChatMessage>> manageChatHistory(final String recipientId);
+    Observable<List<ChatMessage>> manageChatHistory(final boolean toGroup, final String recipientId);
 }

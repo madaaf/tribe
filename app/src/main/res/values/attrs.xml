@@ -45,4 +45,18 @@
         <attr name="mute" format="boolean" />
         <attr name="speedControl" format="boolean" />
     </declare-styleable>
+
+    <declare-styleable name="ButtonPointsView">
+        <attr name="buttonDrawable" format="integer" />
+        <attr name="buttonType" format="enum">
+            <enum name="profile" value="0" />
+            <enum name="fb_active" value="1" />
+            <enum name="fb_progress" value="2" />
+            <enum name="fb_disabled" value="3" />
+        </attr>
+        <attr name="buttonLabel" format="string" />
+        <attr name="buttonSubLabel" format="string" />
+        <attr name="buttonPoints" format="integer" />
+        <attr name="buttonBGColor" format="integer" />
+    </declare-styleable>
 </resources>

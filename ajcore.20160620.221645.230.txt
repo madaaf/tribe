@@ -747,7 +747,7 @@ info woven class com.tribe.app.presentation.view.fragment.HomeGridFragment_Membe
 info woven class com.tribe.app.R$layout (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/R$layout.class)
 info woven class com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/adapter/manager/HomeLayoutManager.class)
 info woven class com.tribe.app.presentation.view.widget.PathView (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/PathView.class)
-info woven class com.tribe.app.presentation.view.fragment.FriendsGridFragment (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/fragment/FriendsGridFragment.class)
+info woven class com.tribe.app.presentation.view.fragment.ContactsGridFragment (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/fragment/FriendsGridFragment.class)
 info woven class com.tribe.app.data.repository.chat.datasource.ChatDataStore (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/data/repository/chat/datasource/ChatDataStore.class)
 info woven class com.tribe.app.presentation.view.camera.gles.Texture (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/camera/gles/Texture.class)
 info woven class com.tribe.app.presentation.view.widget.CameraWrapper (from /Users/tiago/Dev/Tribe2/app/build/retrolambda/debug/com/tribe/app/presentation/view/widget/CameraWrapper.class)

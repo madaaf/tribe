@@ -84,10 +84,6 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private RecyclerView recyclerViewPending;
     private LabelSheetAdapter labelSheetAdapter;
 
-    public HomeGridFragment() {
-        setRetainInstance(true);
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

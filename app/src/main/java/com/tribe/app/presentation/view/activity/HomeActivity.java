@@ -28,7 +28,7 @@ import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.mvp.presenter.HomePresenter;
 import com.tribe.app.presentation.mvp.view.HomeView;
-import com.tribe.app.presentation.view.fragment.FriendsGridFragment;
+import com.tribe.app.presentation.view.fragment.ContactsGridFragment;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
@@ -58,7 +58,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private static final int DELAY_DISMISS_NEW_TRIBES = 1000;
     private static final float OVERSHOOT = 1f;
 
-    public static final int FRIENDS_FRAGMENT_PAGE = 0;
+    public static final int CONTACTS_FRAGMENT_PAGE = 0;
     public static final int GRID_FRAGMENT_PAGE = 1;
     public static final int GROUPS_FRAGMENT_PAGE = 2;
 
@@ -359,7 +359,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @OnClick(R.id.imgNavFriends)
     public void goToFriends() {
-        viewPager.setCurrentItem(FRIENDS_FRAGMENT_PAGE, true);
+        viewPager.setCurrentItem(CONTACTS_FRAGMENT_PAGE, true);
     }
 
     @OnClick(R.id.layoutNavPending)
@@ -434,7 +434,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
         public String[] pagers = new String[] {"Discover", "Home", "Media"};
         public HomeGridFragment homeGridFragment;
-        public FriendsGridFragment friendsGridFragment;
+        public ContactsGridFragment contactsGridFragment;
         public GroupsGridFragment groupsGridFragment;
 
         public HomeViewPagerAdapter(FragmentManager fragmentManager) {
@@ -443,7 +443,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
         @Override
         public Fragment getItem(int position) {
-            if (position == 0) return new FriendsGridFragment();
+            if (position == 0) return new ContactsGridFragment();
             else if (position == 1) return new HomeGridFragment();
             else return new GroupsGridFragment();
         }
@@ -464,7 +464,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             // Save the appropriate reference depending on position
             switch (position) {
                 case 0:
-                    friendsGridFragment = (FriendsGridFragment) createdFragment;
+                    contactsGridFragment = (ContactsGridFragment) createdFragment;
                     break;
                 case 1:
                     homeGridFragment = (HomeGridFragment) createdFragment;

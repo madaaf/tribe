@@ -82,14 +82,14 @@ public interface ChatDataStore {
 
     /**
      *
-     * @param friendshipId the friendshipId for which to update the statuses for
+     * @param recipientId the recipient for which to update the statuses for
      */
-    Observable<Void> updateStatuses(final String friendshipId);
+    Observable<Void> updateStatuses(final String recipientId);
 
     /**
      * Get an {@link Observable} which will emit a {@link List< ChatMessage >}.
      *
      * @param recipientId the recipientId for which to get the history for
      */
-    Observable<List<ChatRealm>> manageChatHistory(final String recipientId);
+    Observable<List<ChatRealm>> manageChatHistory(final boolean toGroup, final String recipientId);
 }

@@ -28,7 +28,11 @@
 	<string name="contacts_section_facebook_sync_enabled">Amis Facebook synchronisés</string>
 	<string name="contacts_section_facebook_sync_title">Synchronise automatique tes amis</string>
 	<string name="contacts_section_facebook_sync_description">Connecte toi avec Facebook</string>
-	<string name="contacts_section_facebook_syncing_title">Synchronisation</string>
+	<string name="contacts_section_facebook_invite_title">Notifier mes amis</string>
+	<string name="contacts_section_facebook_invite_description">Préviens tes amis une fois par jour</string>
+	<string name="contacts_section_facebook_syncing">Synchronisation</string>
+	<string name="contacts_section_facebook_notifying">Notification</string>
+	<string name="contacts_section_facebook_next_sync">Notifier dans %1$s</string>
 	<string name="contacts_section_addressbook_sync_disabled">Contacts non synchronisés</string>
 	<string name="contacts_section_addressbook_sync_enabled">Contacts synchronisés</string>
 	<string name="contacts_section_addressbook_sync_title">Synchronisation automatique des contacts</string>
@@ -98,6 +102,7 @@
 	<string name="grid_friendship_status_opened_plural">Opened</string>
 	<string name="grid_friendship_status_new_messages">Tap to view!</string>
 	<string name="grid_friendship_status_loading">Loading</string>
+	<string name="grid_friendship_status_reply">Reply</string>
 	<string name="grid_ghost">Has not joined yet</string>
 	<string name="grid_friendship_recording_tap_to_cancel">Wrapping up</string>
 	<string name="grid_friendship_recording_validated">Ready to send!</string>
@@ -114,6 +119,7 @@
 	<string name="grid_menu_friendship_block">Bloquer l\'ami</string>
 	<string name="grid_menu_friendship_unblock">Débloquer l\'ami</string>
 	<string name="grid_menu_friendship_report">Reporter l\'ami</string>
+	<string name="grid_menu_friendship_report_success">Ami reporté</string>
 	<string name="grid_menu_friendship_clear_tribes">Effacer les Tribes</string>
 	
 	<!-- Chat -->
@@ -189,6 +195,8 @@
 	<!-- Settings -->
 	<string name="settings_title">Settings</string>
 	<string name="settings_section_profile">Profile</string>
+	<string name="settings_profile_title">Profile</string>
+	<string name="settings_profile_subtitle">Change l\'avatar, le displayname et l\'username.</string>
 	<string name="settings_picture_title">Profile picture</string>
 	<string name="settings_picture_subtitle">Take a selfie or import from camera roll and Facebook.</string>
 	<string name="settings_displayname_title">Display name</string>
@@ -196,6 +204,7 @@
 	<string name="settings_username_title">Username</string>
 	<string name="settings_username_subtitle">How you appear for everyone.</string>
 	<string name="settings_section_messages">Messages</string>
+	<string name="settings_filter_title">Choisis un filtre</string>
 	<string name="settings_tribesave_title">Memories</string>
 	<string name="settings_tribesave_subtitle">Let recipients save your messages if they want to.</string>
 	<string name="settings_geolocation_title">Context</string>
@@ -282,6 +291,8 @@
 	<string name="points_LocationPermission_description">TODO</string>
 	<string name="points_PushPermission_title">TODO</string>
 	<string name="points_PushPermission_description">TODO</string>
+	<string name="points_ConnectFacebook_title">Connecte toi avec Facebook</string>
+	<string name="points_ConnectFacebook_description">Auto-synchronise tes contacts</string>
 	<string name="points_InviteFacebookFriends_title">Invite tes amis Facebook</string>
 	<string name="points_InviteFacebookFriends_description">Swipe à gauche depuis la grille</string>
 	<string name="points_HundredGroupMembers_title">Groupe à 100 membres</string>
