@@ -156,6 +156,7 @@
                     recorded_at
                     lat
                     lng
+                    transcript
 
                     weather {
                         temp_f

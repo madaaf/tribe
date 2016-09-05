@@ -182,6 +182,10 @@ public class MessageRealmListDeserializer {
             tribeRealm.setWeatherRealm(weatherRealm);
         }
 
+        if (json.has("transcript")) {
+            tribeRealm.setTranscript(json.get("transcript").getAsString());
+        }
+
         try {
             tribeRealm.setRecordedAt(utcSimpleDate.parse(json.get("recorded_at").getAsString()));
         } catch (ParseException e) {

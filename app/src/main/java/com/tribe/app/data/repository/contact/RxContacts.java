@@ -1,74 +1,44 @@
-package com.tribe.app.presentation.view.contact;
+package com.tribe.app.data.repository.contact;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import rx.Observable;
 import rx.Subscriber;
 
+@Singleton
 public class RxContacts {
 
-    private static RxContacts instance;
-
-    boolean withPhones;
+    private Context context;
+    private String phone;
+    private int countryCode;
+    private boolean withPhones;
     private Sorter sorter;
     private Filter[] filter;
     private PhoneUtils phoneUtils;
-    private int countryCode = 0;
-
-    public static RxContacts getInstance(Context ctx, PhoneUtils phoneUtils) {
-        if (instance == null)
-            instance = new RxContacts(ctx);
-
-        instance.phoneUtils = phoneUtils;
-        instance.withPhones = false;
-        instance.sorter = null;
-        instance.filter = null;
-        instance.countryCode = 0;
-
-        return instance;
-    }
-
     private ContactsHelper helper;
 
-    private Observable<Contact> profileObservable;
+    @Inject
+    public RxContacts(Context context, UserRealm userRealm, PhoneUtils phoneUtils) {
+        this.context = context;
+        this.phoneUtils = phoneUtils;
+        this.phone = userRealm.getPhone();
+        withPhones = true;
+        sorter = Sorter.LAST_TIME_CONTACTED;
+        filter = new Filter[] { Filter.HAS_PHONE };
+        helper = new ContactsHelper(context, phoneUtils);
+    }
+
     private Observable<Contact> contactsObservable;
-
-    private RxContacts(Context ctx) {
-        helper = new ContactsHelper(ctx);
-    }
-
-    /**
-     * Emits device owner if available
-     * @return
-     */
-    public Observable<Contact> getProfile() {
-        if (profileObservable == null) {
-            profileObservable = Observable.create(subscriber -> {
-                Contact c = helper.getProfileContact();
-                if (c != null)
-                    subscriber.onNext(c);
-
-                subscriber.onCompleted();
-            });
-            profileObservable = profileObservable.cache();
-        }
-
-        return profileObservable;
-    }
-
-    /**
-     * Use it if you need low level access to the library methods
-     * @return
-     */
-    public ContactsHelper getContactsHelper() {
-        return helper;
-    }
 
     /**
      * Run ContentResolver query and emit results to the Observable
@@ -92,7 +62,6 @@ public class RxContacts {
         return Observable.create((Subscriber<? super Contact> subscriber) -> {
             emitFast(subscriber);
         }).onBackpressureBuffer().serialize();
-
     }
 
     /**

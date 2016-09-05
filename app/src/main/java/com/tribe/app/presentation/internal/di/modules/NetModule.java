@@ -58,6 +58,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -124,7 +125,9 @@ public class NetModule {
 
     @Provides
     @PerApplication
-    TribeApi provideTribeApi(Gson gson, OkHttpClient okHttpClient, TribeAuthorizer tribeAuthorizer, final LoginApi loginApi, final AccessToken accessToken) {
+    TribeApi provideTribeApi(Gson gson, OkHttpClient okHttpClient, TribeAuthorizer tribeAuthorizer,
+                             final LoginApi loginApi, final AccessToken accessToken,
+                             final UserCache userCache) {
         OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
         httpClientBuilder.addInterceptor(chain -> {
@@ -133,15 +136,8 @@ public class NetModule {
             Request.Builder requestBuilder = original.newBuilder()
                     .header("Content-type", "application/json");
 
-            if (tribeAuthorizer.getAccessToken() != null && tribeAuthorizer.getAccessToken().getAccessToken() != null) {
-                        requestBuilder.header("Authorization", tribeAuthorizer.getAccessToken().getTokenType()
+            requestBuilder.header("Authorization", tribeAuthorizer.getAccessToken().getTokenType()
                                 + " " + tribeAuthorizer.getAccessToken().getAccessToken());
-            } else {
-                byte[] data = (tribeAuthorizer.getApiClient() + ":" + tribeAuthorizer.getApiSecret()).getBytes("UTF-8");
-                String base64 = Base64.encodeToString(data, Base64.DEFAULT).replace("\n", "");
-
-                requestBuilder.header("Authorization", "Basic " + base64);
-            }
 
             requestBuilder.method(original.method(), original.body());
 
@@ -151,9 +147,17 @@ public class NetModule {
 
         httpClientBuilder.authenticator((route, response) -> {
             Call<AccessToken> newAccessTokenReq = loginApi.refreshToken(new RefreshEntity(accessToken.getRefreshToken()));
-            AccessToken newAccessToken = newAccessTokenReq.execute().body();
-            accessToken.setAccessToken(newAccessToken.getAccessToken());
-            accessToken.setRefreshToken(newAccessToken.getRefreshToken());
+            Response<AccessToken> responseRefresh = newAccessTokenReq.execute();
+
+            if (responseRefresh.isSuccessful() && responseRefresh.body() != null) {
+                AccessToken newAccessToken = responseRefresh.body();
+                accessToken.setAccessToken(newAccessToken.getAccessToken());
+                accessToken.setRefreshToken(newAccessToken.getRefreshToken());
+                userCache.put(accessToken);
+                tribeAuthorizer.setAccessToken(accessToken);
+            }
+
+            //responseRefresh.errorBody().close();
 
             return response.request().newBuilder()
                     .header("Authorization", accessToken.getTokenType()
@@ -213,15 +217,10 @@ public class NetModule {
             Request.Builder requestBuilder = original.newBuilder()
                     .header("Content-type", "application/json");
 
-            if (tribeAuthorizer.getAccessToken() != null && tribeAuthorizer.getAccessToken().getAccessToken() != null) {
-                requestBuilder.header("Authorization", tribeAuthorizer.getAccessToken().getTokenType()
-                        + " " + tribeAuthorizer.getAccessToken().getAccessToken());
-            } else {
-                byte[] data = (tribeAuthorizer.getApiClient() + ":" + tribeAuthorizer.getApiSecret()).getBytes("UTF-8");
-                String base64 = Base64.encodeToString(data, Base64.DEFAULT).replace("\n", "");
+            byte[] data = (tribeAuthorizer.getApiClient() + ":" + tribeAuthorizer.getApiSecret()).getBytes("UTF-8");
+            String base64 = Base64.encodeToString(data, Base64.DEFAULT).replace("\n", "");
 
-                requestBuilder.header("Authorization", "Basic " + base64);
-            }
+            requestBuilder.header("Authorization", "Basic " + base64);
 
             requestBuilder.method(original.method(), original.body());
 

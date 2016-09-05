@@ -4,11 +4,9 @@ import android.Manifest;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
@@ -20,9 +18,6 @@ import com.tribe.app.presentation.mvp.view.HomeView;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.ContactsGridAdapter;
 import com.tribe.app.presentation.view.adapter.manager.ContactsLayoutManager;
-import com.tribe.app.presentation.view.contact.Filter;
-import com.tribe.app.presentation.view.contact.RxContacts;
-import com.tribe.app.presentation.view.contact.Sorter;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 
 import java.util.ArrayList;
@@ -32,8 +27,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -184,19 +177,19 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
      * Loads all contacts.
      */
     private void loadData() {
-        subscriptions.add(RxContacts.getInstance(getContext(), phoneUtils)
-                .withPhones()
-                .formatToCountryCode(currentUser.getPhone())
-                .sort(Sorter.LAST_TIME_CONTACTED)
-                .filter(Filter.HAS_PHONE)
-                .getContacts()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(it -> {
-                    Log.v("contact", it.toString());
-                }, Throwable::printStackTrace, () -> {
-                    Toast.makeText(getContext(), "ERROR", Toast.LENGTH_SHORT).show();
-                }));
+//        subscriptions.add(RxContacts.getInstance(getContext(), phoneUtils)
+//                .withPhones()
+//                .formatToCountryCode(currentUser.getPhone())
+//                .sort(Sorter.LAST_TIME_CONTACTED)
+//                .filter(Filter.HAS_PHONE)
+//                .getContacts()
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(it -> {
+//                    Log.v("contact", it.toString());
+//                }, Throwable::printStackTrace, () -> {
+//                    Toast.makeText(getContext(), "ERROR", Toast.LENGTH_SHORT).show();
+//                }));
 
         this.contactsGridPresenter.onCreate();
     }

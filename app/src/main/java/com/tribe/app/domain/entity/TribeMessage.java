@@ -23,6 +23,7 @@ public class TribeMessage extends Message {
     private @CameraWrapper.TribeMode String type;
     private Location location;
     private Weather weather;
+    private String transcript;
 
     public String getId() {
         return id;
@@ -102,6 +103,14 @@ public class TribeMessage extends Message {
 
     public void setWeather(Weather weather) {
         this.weather = weather;
+    }
+
+    public void setTranscript(String transcript) {
+        this.transcript = transcript;
+    }
+
+    public String getTranscript() {
+        return transcript;
     }
 
     public static TribeMessage createTribe(User user, Recipient recipient, @CameraWrapper.TribeMode String mode) {

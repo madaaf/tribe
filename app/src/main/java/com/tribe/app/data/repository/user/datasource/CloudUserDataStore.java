@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
@@ -19,22 +18,16 @@ import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.FriendshipRealm;
-import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.LocationRealm;
 import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -198,10 +191,6 @@ public class CloudUserDataStore implements UserDataStore {
 
         for (FriendshipRealm fr : user.getFriendships()) {
             toIds.add(fr.getFriend().getId());
-        }
-
-        for (GroupRealm gr : user.getGroups()) {
-            toIds.add(gr.getId());
         }
 
         List<TribeRealm> lastTribesSent = tribeCache.tribesSent(toIds);

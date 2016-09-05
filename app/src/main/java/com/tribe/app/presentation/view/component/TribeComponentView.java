@@ -23,6 +23,7 @@ import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
 import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.video.TribeMediaPlayer;
 import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.LabelButton;
@@ -78,6 +79,9 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
     @BindView(R.id.labelWeather)
     LabelButton labelWeather;
+
+    @BindView(R.id.txtTranscript)
+    TextViewFont txtTranscript;
 
     // OBSERVABLES
     private Unbinder unbinder;
@@ -145,6 +149,10 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
             labelCity.setVisibility(View.GONE);
             labelDistance.setVisibility(View.GONE);
             labelWeather.setVisibility(View.GONE);
+        }
+
+        if (!StringUtils.isEmpty(tribe.getTranscript())) {
+            txtTranscript.setText(tribe.getTranscript());
         }
     }
 

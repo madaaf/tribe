@@ -153,6 +153,11 @@ public class TribeCacheImpl implements TribeCache {
                         shouldUpdate = true;
                     }
 
+                    if (tribeRealm.getTranscript() != null && toEdit.getTranscript() == null) {
+                        toEdit.setTranscript(tribeRealm.getTranscript());
+                        shouldUpdate = true;
+                    }
+
                     if (shouldUpdate) {
                         toEdit.setUpdatedAt(new Date());
                         realm.copyToRealmOrUpdate(toEdit);

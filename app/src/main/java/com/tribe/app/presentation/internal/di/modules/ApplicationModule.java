@@ -199,6 +199,17 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
+    UserRealm provideCurrentUserRealm(Realm realm, AccessToken accessToken) {
+        UserRealm user = new UserRealm();
+
+        final UserRealm userRealm = realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
+        if (userRealm != null) return userRealm;
+
+        return user;
+    }
+
+    @Provides
+    @Singleton
     Realm provideRealm() {
         Realm realm = Realm.getDefaultInstance();
         return realm;

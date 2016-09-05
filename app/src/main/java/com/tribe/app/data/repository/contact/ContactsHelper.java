@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.contact;
+package com.tribe.app.data.repository.contact;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -59,9 +59,10 @@ public class ContactsHelper {
     PhoneUtils phoneUtils;
     int countryCode;
 
-    public ContactsHelper(Context ctx) {
+    public ContactsHelper(Context ctx, PhoneUtils phoneUtils) {
         context = ctx;
         resolver = context.getContentResolver();
+        this.phoneUtils = phoneUtils;
     }
 
     /**
@@ -150,7 +151,7 @@ public class ContactsHelper {
             uri = Uri.withAppendedPath(Contacts.CONTENT_FILTER_URI, query);
         }
 
-        String order = sorter != null ? sorter.raw : null;
+        //String order = sorter != null ? sorter.raw : null;
         String where = filter != null ? TextUtils.join(" AND ", filter) : null;
 
         return resolver.query(
@@ -158,7 +159,7 @@ public class ContactsHelper {
                 CONTACTS_PROJECTION,
                 where,
                 null,
-                order
+                null
         );
     }
 
