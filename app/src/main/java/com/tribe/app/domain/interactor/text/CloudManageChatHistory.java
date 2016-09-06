@@ -16,6 +16,7 @@ public class CloudManageChatHistory extends UseCase {
 
     private ChatRepository chatDataRepository;
     private String recipientId;
+    private boolean toGroup;
 
     @Inject
     public CloudManageChatHistory(CloudChatDataRepository chatDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
@@ -23,12 +24,13 @@ public class CloudManageChatHistory extends UseCase {
         this.chatDataRepository = chatDataRepository;
     }
 
-    public void setRecipientId(String recipientId) {
+    public void prepare(boolean toGroup, String recipientId) {
+        this.toGroup = toGroup;
         this.recipientId = recipientId;
     }
 
     @Override
     protected Observable buildUseCaseObservable() {
-        return chatDataRepository.manageChatHistory(recipientId);
+        return chatDataRepository.manageChatHistory(toGroup, recipientId);
     }
 }

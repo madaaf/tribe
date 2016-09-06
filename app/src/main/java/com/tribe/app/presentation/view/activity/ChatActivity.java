@@ -148,6 +148,12 @@ public class ChatActivity extends BaseActivity implements MessageView {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        chatInputView.showKeyboard();
+    }
+
+    @Override
     protected void onStop() {
         chatPresenter.onStop();
         super.onStop();

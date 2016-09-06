@@ -10,12 +10,14 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.widget.ActionEditText;
 
 import butterknife.BindView;
@@ -81,6 +83,19 @@ public class ChatInputView extends FrameLayout {
         editTextMessage.setText("", TextView.BufferType.EDITABLE);
     }
 
+    /**
+     * Requests the focus for the input text
+     */
+    public void showKeyboard() {
+        editTextMessage.requestFocus();
+        editTextMessage.postDelayed(() -> {
+            InputMethodManager keyboard = (InputMethodManager)
+                    getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            keyboard.showSoftInput(editTextMessage, 0);
+        }, 500);
+    }
+
+
     public void setImageGallery(Bitmap bitmap) {
         imgGallery.setImageBitmap(bitmap);
     }
@@ -106,6 +121,7 @@ public class ChatInputView extends FrameLayout {
 
         RxTextView.editorActions(editTextMessage).filter(action -> action.equals(EditorInfo.IME_ACTION_SEND))
                 .map(action -> editTextMessage.getText().toString())
+                .filter(s -> !StringUtils.isEmpty(s.trim()))
                 .doOnNext(s -> clearText())
                 .subscribe(sendClickEventSubject);
     }

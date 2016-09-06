@@ -1,5 +1,6 @@
 package com.tribe.app.data.network;
 
+import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MessageRealmInterface;
@@ -74,4 +75,8 @@ public interface TribeApi {
     @Multipart
     @POST("/graphql")
     Observable<UserRealm> updateUserMedia(@Part("query") RequestBody query, @Part MultipartBody.Part file);
+
+    @FormUrlEncoded
+    @POST("/graphql")
+    Observable<LookupEntity> lookup(@Field("query") String query);
 }

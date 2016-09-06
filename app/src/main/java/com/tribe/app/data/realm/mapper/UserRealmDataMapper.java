@@ -50,6 +50,7 @@ public class UserRealmDataMapper {
             user.setEmailVerified(userRealm.isEmailVerified());
             user.setReal(userRealm.isReal());
             user.setInvited(userRealm.isInvited());
+            user.setPhone(userRealm.getPhone());
             if (userRealm.getLocation() != null) user.setLocation(locationRealmDataMapper.transform(userRealm.getLocation()));
             user.setDisableSaveTribe(userRealm.isDisableSaveTribe());
             if (userRealm.getGroups() != null) user.setGroupList(groupRealmDataMapper.transform(userRealm.getGroups()));
@@ -69,10 +70,12 @@ public class UserRealmDataMapper {
     public List<User> transform(Collection<UserRealm> userRealmCollection) {
         List<User> userList = new ArrayList<>();
         User user;
-        for (UserRealm userRealm : userRealmCollection) {
-            user = transform(userRealm);
-            if (user != null) {
-                userList.add(user);
+        if (userRealmCollection != null) {
+            for (UserRealm userRealm : userRealmCollection) {
+                user = transform(userRealm);
+                if (user != null) {
+                    userList.add(user);
+                }
             }
         }
 
@@ -101,6 +104,7 @@ public class UserRealmDataMapper {
             userRealm.setEmailVerified(user.isEmailVerified());
             userRealm.setReal(user.isReal());
             userRealm.setInvited(user.isInvited());
+            userRealm.setPhone(user.getPhone());
             if (user.getLocation() != null) userRealm.setLocation(locationRealmDataMapper.transform(user.getLocation()));
             userRealm.setDisableSaveTribe(user.isDisableSaveTribe());
             if (user.getGroupList() != null) userRealm.setGroups(groupRealmDataMapper.transformGroups(user.getGroupList()));
@@ -120,10 +124,13 @@ public class UserRealmDataMapper {
     public RealmList<UserRealm> transformList(Collection<User> userCollection) {
         RealmList<UserRealm> userRealmList = new RealmList<>();
         UserRealm userRealm;
-        for (User user : userCollection) {
-            userRealm = transform(user);
-            if (userRealm != null) {
-                userRealmList.add(userRealm);
+
+        if (userCollection != null) {
+            for (User user : userCollection) {
+                userRealm = transform(user);
+                if (userRealm != null) {
+                    userRealmList.add(userRealm);
+                }
             }
         }
 

@@ -2,12 +2,9 @@ package com.tribe.app.presentation.view.component;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.provider.ContactsContract;
-import android.telephony.PhoneNumberUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -18,13 +15,11 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import rx.Observable;
-import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 
 /**
@@ -136,21 +131,16 @@ public class PhoneNumberView extends FrameLayout {
         this.phoneUtils = phoneUtils;
 
         RxTextView.textChanges(editTextPhoneNumber).map((charSequence) -> charSequence.toString())
-                .filter(s -> {
-                    return s != null && !s.isEmpty();
-                })
-                .doOnNext(new Action1<String>() {
-                    @Override
-                    public void call(String s) {
-                        if (editable) {
-                            currentPhoneNumber = phoneUtils.formatMobileNumber(PhoneNumberView.this.getPhoneNumberInput(), countryCode);
-                            String viewPhoneNumber = phoneUtils.formatPhoneNumberForView(PhoneNumberView.this.getPhoneNumberInput(), countryCode);
-                            if (viewPhoneNumber != null) {
-                                editable = false;
-                                editTextPhoneNumber.setText(viewPhoneNumber);
-                                editTextPhoneNumber.setSelection(editTextPhoneNumber.getText().length());
-                                editable = true;
-                            }
+                .filter(s -> s != null && !s.isEmpty())
+                .doOnNext(s -> {
+                    if (editable) {
+                        currentPhoneNumber = phoneUtils.formatMobileNumber(PhoneNumberView.this.getPhoneNumberInput(), countryCode);
+                        String viewPhoneNumber = phoneUtils.formatPhoneNumberForView(PhoneNumberView.this.getPhoneNumberInput(), countryCode);
+                        if (viewPhoneNumber != null) {
+                            editable = false;
+                            editTextPhoneNumber.setText(viewPhoneNumber);
+                            editTextPhoneNumber.setSelection(editTextPhoneNumber.getText().length());
+                            editable = true;
                         }
                     }
                 })

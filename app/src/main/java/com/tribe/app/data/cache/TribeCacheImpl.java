@@ -81,7 +81,7 @@ public class TribeCacheImpl implements TribeCache {
         Realm obsRealm = Realm.getDefaultInstance();
         obsRealm.beginTransaction();
 
-        TribeRealm obj = obsRealm.where(TribeRealm.class).equalTo("localId", tribeRealm.getId()).findFirst();
+        TribeRealm obj = obsRealm.where(TribeRealm.class).equalTo("localId", tribeRealm.getLocalId()).findFirst();
         if (obj != null) {
             obj.setMessageSendingStatus(tribeRealm.getMessageSendingStatus());
             obj.setMessageDownloadingStatus(tribeRealm.getMessageDownloadingStatus());
@@ -97,71 +97,87 @@ public class TribeCacheImpl implements TribeCache {
     @Override
     public void put(List<TribeRealm> tribeRealmList) {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
 
-        for (TribeRealm tribeRealm : tribeRealmList) {
-            TribeRealm toEdit = realm.where(TribeRealm.class)
-                    .equalTo("id", tribeRealm.getId()).findFirst();
+        try {
+            realm.beginTransaction();
 
-            if (toEdit != null) {
-                toEdit = realm.copyFromRealm(toEdit);
+            for (TribeRealm tribeRealm : tribeRealmList) {
+                TribeRealm toEdit = realm.where(TribeRealm.class)
+                        .equalTo("id", tribeRealm.getId()).findFirst();
 
-                boolean shouldUpdate = false;
+                if (toEdit != null) {
+                    toEdit = realm.copyFromRealm(toEdit);
 
-                if (tribeRealm.getMessageSendingStatus() != null) {
-                    toEdit.setMessageSendingStatus(tribeRealm.getMessageSendingStatus());
-                    shouldUpdate = true;
+                    boolean shouldUpdate = false;
+
+                    if (tribeRealm.getMessageSendingStatus() != null) {
+                        toEdit.setMessageSendingStatus(tribeRealm.getMessageSendingStatus());
+                        shouldUpdate = true;
+                    }
+
+                    if (tribeRealm.getMessageReceivingStatus() != null && !tribeRealm.getMessageReceivingStatus().equals(MessageReceivingStatus.STATUS_RECEIVED)) {
+                        toEdit.setMessageReceivingStatus(tribeRealm.getMessageReceivingStatus());
+                        shouldUpdate = true;
+                    }
+
+                    if (tribeRealm.getMessageDownloadingStatus() != null && !tribeRealm.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD)) {
+                        toEdit.setMessageDownloadingStatus(tribeRealm.getMessageDownloadingStatus());
+                        shouldUpdate = true;
+                    }
+
+                    if (tribeRealm.getRecipientList() != null && tribeRealm.getRecipientList().size() > 0) {
+                        toEdit.setRecipientList(tribeRealm.getRecipientList());
+                        shouldUpdate = true;
+                    }
+
+                    if (tribeRealm.getFrom() != null && toEdit.getFrom() == null) {
+                        toEdit.setFrom(tribeRealm.getFrom());
+                        shouldUpdate = true;
+                    } else if (!tribeRealm.isToGroup() && tribeRealm.getFrom() != null && toEdit.getFrom() != null
+                            && (toEdit.getFrom().getUpdatedAt() == null || toEdit.getFrom().getUpdatedAt().before(tribeRealm.getFrom().getUpdatedAt()))) {
+                        toEdit.getFrom().setUpdatedAt(tribeRealm.getFrom().getUpdatedAt());
+                        shouldUpdate = true;
+                    }
+
+                    if (tribeRealm.getFriendshipRealm() != null && toEdit.getFriendshipRealm() == null) {
+                        toEdit.setFriendshipRealm(tribeRealm.getFriendshipRealm());
+                        shouldUpdate = true;
+                    }
+
+                    if (tribeRealm.getGroup() != null && toEdit.getGroup() == null) {
+                        toEdit.setGroup(tribeRealm.getGroup());
+                        shouldUpdate = true;
+                    } else if (tribeRealm.getGroup() != null && toEdit.getGroup() != null
+                            && (toEdit.getGroup().getUpdatedAt() == null || toEdit.getGroup().getUpdatedAt().before(tribeRealm.getGroup().getUpdatedAt()))) {
+                        toEdit.getGroup().setUpdatedAt(tribeRealm.getGroup().getUpdatedAt());
+                        shouldUpdate = true;
+                    }
+
+                    if (tribeRealm.getTranscript() != null && toEdit.getTranscript() == null) {
+                        toEdit.setTranscript(tribeRealm.getTranscript());
+                        shouldUpdate = true;
+                    }
+
+                    if (shouldUpdate) {
+                        toEdit.setUpdatedAt(new Date());
+                        realm.copyToRealmOrUpdate(toEdit);
+                    }
+                } else if (toEdit == null) {
+                    realm.copyToRealmOrUpdate(tribeRealm);
                 }
-
-                if (tribeRealm.getMessageReceivingStatus() != null && !tribeRealm.getMessageReceivingStatus().equals(MessageReceivingStatus.STATUS_RECEIVED)) {
-                    toEdit.setMessageReceivingStatus(tribeRealm.getMessageReceivingStatus());
-                    shouldUpdate = true;
-                }
-
-                if (tribeRealm.getMessageDownloadingStatus() != null && !tribeRealm.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD)) {
-                    toEdit.setMessageDownloadingStatus(tribeRealm.getMessageDownloadingStatus());
-                    shouldUpdate = true;
-                }
-
-                if (tribeRealm.getRecipientList() != null && tribeRealm.getRecipientList().size() > 0) {
-                    toEdit.setRecipientList(tribeRealm.getRecipientList());
-                    shouldUpdate = true;
-                }
-
-                if (tribeRealm.getFrom() != null && toEdit.getFrom() == null) {
-                    toEdit.setFrom(tribeRealm.getFrom());
-                    shouldUpdate = true;
-                } else if (!tribeRealm.isToGroup() && tribeRealm.getFrom() != null && toEdit.getFrom() != null
-                        && (toEdit.getFrom().getUpdatedAt() == null || toEdit.getFrom().getUpdatedAt().before(tribeRealm.getFrom().getUpdatedAt()))) {
-                    toEdit.getFrom().setUpdatedAt(tribeRealm.getFrom().getUpdatedAt());
-                    shouldUpdate = true;
-                }
-
-                if (tribeRealm.getFriendshipRealm() != null && toEdit.getFriendshipRealm() == null) {
-                    toEdit.setFriendshipRealm(tribeRealm.getFriendshipRealm());
-                    shouldUpdate = true;
-                }
-
-                if (tribeRealm.getGroup() != null && toEdit.getGroup() == null) {
-                    toEdit.setGroup(tribeRealm.getGroup());
-                    shouldUpdate = true;
-                } else if (tribeRealm.getGroup() != null && toEdit.getGroup() != null
-                        && (toEdit.getGroup().getUpdatedAt() == null || toEdit.getGroup().getUpdatedAt().before(tribeRealm.getGroup().getUpdatedAt()))) {
-                    toEdit.getGroup().setUpdatedAt(tribeRealm.getGroup().getUpdatedAt());
-                    shouldUpdate = true;
-                }
-
-                if (shouldUpdate) {
-                    toEdit.setUpdatedAt(new Date());
-                    realm.copyToRealmOrUpdate(toEdit);
-                }
-            } else if (toEdit == null) {
-                realm.copyToRealmOrUpdate(tribeRealm);
             }
-        }
 
-        realm.commitTransaction();
-        realm.close();
+            if (realm.isInTransaction()) {
+                realm.commitTransaction();
+            }
+        } catch (IllegalStateException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (realm.isInTransaction()) {
+                realm.cancelTransaction();
+            }
+            realm.close();
+        }
     }
 
     @Override
@@ -407,7 +423,7 @@ public class TribeCacheImpl implements TribeCache {
         realmObs.beginTransaction();
 
         for (TribeRealm tribeRealm : tribeRealmList) {
-            TribeRealm dbTribeRealm = realmObs.where(TribeRealm.class).equalTo("localId", tribeRealm.getId()).findFirst();
+            TribeRealm dbTribeRealm = realmObs.where(TribeRealm.class).equalTo("localId", tribeRealm.getLocalId()).findFirst();
             if (dbTribeRealm != null)
                 dbTribeRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_ERROR);
         }

@@ -35,7 +35,7 @@
             android:layout_marginBottom="@dimen/vertical_margin"
             android:layout_gravity="bottom|center"
             android:hint="@string/onboarding_phone_number"
-            style="@style/Text.PhoneNumber.Input"
+            style="@style/Text.Input.PhoneNumber"
             android:inputType="phone"
             />
 

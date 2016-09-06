@@ -2,10 +2,12 @@ package com.tribe.app.data.repository.user;
 
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
 import com.tribe.app.data.realm.mapper.PinRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.user.datasource.UserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.User;
@@ -28,6 +30,7 @@ public class CloudUserDataRepository implements UserRepository {
     private final UserDataStoreFactory userDataStoreFactory;
     private final UserRealmDataMapper userRealmDataMapper;
     private final PinRealmDataMapper pinRealmDataMapper;
+    private final ContactRealmDataMapper contactRealmDataMapper;
 
     /**
      * Constructs a {@link UserRepository}.
@@ -39,10 +42,12 @@ public class CloudUserDataRepository implements UserRepository {
     @Inject
     public CloudUserDataRepository(UserDataStoreFactory dataStoreFactory,
                                    UserRealmDataMapper realmDataMapper,
-                                   PinRealmDataMapper pinRealmDataMapper) {
+                                   PinRealmDataMapper pinRealmDataMapper,
+                                   ContactRealmDataMapper contactRealmDataMapper) {
         this.userDataStoreFactory = dataStoreFactory;
         this.userRealmDataMapper = realmDataMapper;
         this.pinRealmDataMapper = pinRealmDataMapper;
+        this.contactRealmDataMapper = contactRealmDataMapper;
     }
 
     @Override
@@ -111,5 +116,9 @@ public class CloudUserDataRepository implements UserRepository {
         return null;
     }
 
-
+    @Override
+    public Observable<List<Contact>> contacts() {
+        final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
+        return userDataStore.contacts().map(collection -> this.contactRealmDataMapper.transform(new ArrayList<>(collection)));
+    }
 }

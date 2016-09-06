@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    android:id="@+id/layoutContent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:foreground="@drawable/selectable_button"
+    android:background="@null"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="@dimen/horizontal_margin_small"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical">
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            style="@style/Title.1.Black"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_below="@id/txtName"
+            android:singleLine="true"
+            style="@style/Body.One.Black40"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtPoints"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/txtName"
+            android:singleLine="true"
+            style="@style/Points.Reg.Yellow"
+            />
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/imgPicto"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_gravity="right|center_vertical"
+        android:background="@drawable/shape_oval_green"
+        android:src="@drawable/picto_message_icon"
+        android:scaleType="centerInside"
+        />
+
+</FrameLayout>

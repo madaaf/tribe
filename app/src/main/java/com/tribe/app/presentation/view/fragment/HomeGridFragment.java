@@ -89,6 +89,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private RecyclerView recyclerViewPending;
     private LabelSheetAdapter labelSheetAdapter;
 
+<<<<<<< HEAD
     // TOUCH HANDLING
     private int activePointerId;
     private float lastDownY, lastDownYTr;
@@ -107,6 +108,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         setRetainInstance(true);
     }
 
+=======
+>>>>>>> 26e5c48013df1e7bae508b92e360e2c45b609265
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

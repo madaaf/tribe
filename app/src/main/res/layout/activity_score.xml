@@ -83,7 +83,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/bg_score_share"
+            android:background="@drawable/bg_button"
             android:clickable="true"
             android:foreground="@drawable/selectable_button">
 

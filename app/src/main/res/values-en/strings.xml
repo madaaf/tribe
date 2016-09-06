@@ -21,7 +21,7 @@
 	<string name="image_picker_library">Photo Library</string>
 	
 	<!-- Contacts -->
-	<string name="contacts_search_placeholder">Name, phone or @handle</string>
+	<string name="contacts_search_placeholder">Search for a friend</string>
 	<string name="contacts_share_profile_button">Share your profile</string>
 	<string name="contacts_share_profile_description">On Whatsapp, Messenger, etc..</string>
 	<string name="contacts_section_facebook_sync_disabled">Facebook friends aren’t synced</string>
@@ -49,7 +49,7 @@
 	<string name="permission_contacts_disabled_alert_description">Please enable access to Address Book in Settings</string>
 	<string name="permission_contacts_disabled_alert_redirect">Show me</string>
 	<string name="permission_contacts_disabled_alert_cancel">OK</string>
-	<string name="permission_camera_enable_button_title">Enable Camera</string>
+	<string name="permission_camera_enable_button_title">Enable\ncamera</string>
 	<string name="permission_popup_push_onboarding_title">Get notified</string>
 	<string name="permission_popup_push_onboarding_description">Receive a push notification when friends join Tribe</string>
 	<string name="permission_popup_push_onboarding_points">Enabling notifications</string>
@@ -59,7 +59,7 @@
 	<string name="permission_popup_push_home_description">Get notified when your friends send you messages.</string>
 	<string name="permission_popup_push_home_points">Enabling notifications</string>
 	<string name="permission_popup_push_home_no">Not now</string>
-	<string name="permission_popup_push_home_yes">Enable</string>
+	<string name="permission_popup_push_home_yes">Get notified!</string>
 	<string name="permission_popup_location_home_title">Receive better messages!</string>
 	<string name="permission_popup_location_home_description">Using location will allow your messages to be more epic than ever!</string>
 	<string name="permission_popup_location_home_points">Enabling “Location”</string>
@@ -207,7 +207,7 @@
 	<string name="settings_profile_subtitle">Change avatar, display name and username.</string>
 	<string name="settings_picture_title">Profile picture</string>
 	<string name="settings_picture_subtitle">Take a selfie or import from\ncamera roll and Facebook.</string>
-	<string name="settings_displayname_title">Display name</string>
+	<string name="settings_displayname_title">Full name</string>
 	<string name="settings_displayname_subtitle">How you appear for everyone.</string>
 	<string name="settings_username_title">Username</string>
 	<string name="settings_username_subtitle">How you appear for everyone.</string>
@@ -257,7 +257,7 @@
 	<string name="onboarding_user_title">Hi there! Set yourself up.</string>
 	<string name="onboarding_user_avatar_library">Open camera roll</string>
 	<string name="onboarding_user_avatar_selfie">Take a selfie</string>
-	<string name="onboarding_user_displayname_placeholder">Display name</string>
+	<string name="onboarding_user_displayname_placeholder">Full name</string>
 	<string name="onboarding_user_username_placeholder">username</string>
 	<string name="onboarding_user_facebook_button_title">Or autofill profile</string>
 	<string name="onboarding_queue_title">Get access now.</string>
@@ -327,4 +327,9 @@
 	<string name="level_alien_title">Alien</string>
 	<string name="level_unicorn_title">Unicorn</string>
 	<string name="level_bot_title">Bot</string>
+	
+	<!-- Notification -->
+	<string name="notification_pending">A pending message. Swipe to resend &#11013;&#65039;</string>
+	<string name="notification_pending_plural">%1$d pending messages. Swipe to resend &#11013;&#65039;</string>
+	<string name="notification_snoozed">Your snoozed message from %1$s is back !</string>
 </resources>

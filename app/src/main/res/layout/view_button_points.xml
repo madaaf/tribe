@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="115dp"
+    android:background="@android:color/black"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/viewBG"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:clickable="true"
+        android:foreground="@drawable/selectable_button">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/points_ShareProfile_title"
+            android:singleLine="true"
+            style="@style/Title.2.White"
+            />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/vertical_margin_small">
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtSubLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginLeft="5dp"
+            android:singleLine="true"
+            style="@style/Body.One.Black40"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtPoints"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginRight="5dp"
+            android:text="@string/points_ShareProfile_title"
+            android:singleLine="true"
+            style="@style/Points.Reg.Yellow"
+            />
+
+    </FrameLayout>
+</merge>

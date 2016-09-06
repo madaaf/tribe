@@ -15,6 +15,7 @@ import com.tribe.app.data.network.job.MarkMessageListAsReadJob;
 import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
 import com.tribe.app.data.network.job.SendChatJob;
 import com.tribe.app.data.network.job.SendTribeJob;
+import com.tribe.app.data.network.job.SynchroContactsJob;
 import com.tribe.app.data.network.job.UpdateChatHistoryJob;
 import com.tribe.app.data.network.job.UpdateChatMessagesJob;
 import com.tribe.app.data.network.job.UpdateMessagesErrorStatusJob;
@@ -61,6 +62,7 @@ import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.video.LegacyMediaPlayer;
 import com.tribe.app.presentation.view.widget.AvatarView;
+import com.tribe.app.presentation.view.widget.ButtonPointsView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.LabelButton;
@@ -104,7 +106,7 @@ public interface ApplicationComponent {
     void inject(LegacyMediaPlayer legacyMediaPlayer);
     void inject(VideoMessageAdapterDelegate videoMessageAdapterDelegate);
     void inject(TribeVideoView tribeVideoView);
-    void inject(UpdateChatHistoryJob updateChatHistoryJob);
+    void inject(ButtonPointsView buttonPointsView);
 
     // JOBS
     void inject(SendTribeJob sendTribeJob);
@@ -120,6 +122,8 @@ public interface ApplicationComponent {
     void inject(UpdateChatMessagesJob updateChatMessagesJob);
     void inject(UpdateTribeDownloadedJob updateTribeDownloadedJob);
     void inject(DownloadChatVideoJob downloadChatVideoJob);
+    void inject(UpdateChatHistoryJob updateChatHistoryJob);
+    void inject(SynchroContactsJob synchroContactsJob);
 
     //Exposed to sub-graphs.
     Context context();

@@ -78,7 +78,7 @@ public class UserCacheImpl implements UserCache {
                         friendshipDB.getFriend().setScore(friendshipRealm.getFriend().getScore());
                         friendshipDB.getFriend().setUsername(friendshipRealm.getFriend().getUsername());
                     } else {
-                        FriendshipRealm addedFriendship = obsRealm.copyToRealmOrUpdate(friendshipDB);
+                        FriendshipRealm addedFriendship = obsRealm.copyToRealmOrUpdate(friendshipRealm);
                         userDB.getFriendships().add(addedFriendship);
                     }
 
@@ -94,6 +94,7 @@ public class UserCacheImpl implements UserCache {
 
                 userDB.setUsername(userRealm.getUsername());
                 userDB.setScore(userRealm.getScore());
+                userDB.setPhone(userRealm.getPhone());
                 userDB.setDisplayName(userRealm.getDisplayName());
                 userDB.setProfilePicture(userRealm.getProfilePicture());
 

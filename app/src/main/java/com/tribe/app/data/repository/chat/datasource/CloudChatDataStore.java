@@ -91,14 +91,19 @@ public class CloudChatDataStore implements ChatDataStore {
 
     @Override
     public Observable<ChatRealm> sendMessage(ChatRealm chatRealm) {
-        String request = context.getString(R.string.chat_send,
-                    chatRealm.getFrom().getId(),
-                    chatRealm.isToGroup() ? chatRealm.getGroup().getId() : chatRealm.getFriendshipRealm().getFriend().getId(),
-                    chatRealm.isToGroup(),
-                    chatRealm.getType(),
-                    simpleDateFormat.format(chatRealm.getRecordedAt()),
-                    chatRealm.getType().equals(ChatMessage.PHOTO) ? "" : chatRealm.getContent()
-            );
+        String messageInput = context.getString(R.string.message_input,
+                chatRealm.isToGroup() ? chatRealm.getGroup().getId() : chatRealm.getFriendshipRealm().getFriend().getId(),
+                chatRealm.getType(),
+                simpleDateFormat.format(chatRealm.getRecordedAt()),
+                chatRealm.getContent().replaceAll("\"", "\\\"")
+        );
+
+        String request;
+
+        if (chatRealm.isToGroup())
+            request = context.getString(R.string.message_send_group, messageInput);
+        else
+            request = context.getString(R.string.message_send_solo, messageInput);
 
         if (chatRealm.getType().equals(ChatMessage.TEXT)) {
             return tribeApi.sendChat(request).map(chatServer -> {
@@ -216,8 +221,8 @@ public class CloudChatDataStore implements ChatDataStore {
     }
 
     @Override
-    public Observable<List<ChatRealm>> manageChatHistory(String recipientId) {
-        String request = context.getString(R.string.chat_history, recipientId, LIMIT);
+    public Observable<List<ChatRealm>> manageChatHistory(boolean toGroup, String recipientId) {
+        String request = context.getString(toGroup ? R.string.chat_history_groups : R.string.chat_history_friendships, recipientId, LIMIT);
 
         return tribeApi.chatHistory(request).flatMap(chatRealmList -> {
             Set<String> messageIds = new HashSet<>();

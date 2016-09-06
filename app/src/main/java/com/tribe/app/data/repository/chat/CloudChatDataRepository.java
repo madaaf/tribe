@@ -108,14 +108,14 @@ public class CloudChatDataRepository implements ChatRepository {
     }
 
     @Override
-    public Observable<Void> updateStatuses(String friendshipId) {
+    public Observable<Void> updateStatuses(String recipientId) {
         final ChatDataStore chatDataStore = this.chatDataStoreFactory.createCloudChatStore();
-        return chatDataStore.updateStatuses(friendshipId);
+        return chatDataStore.updateStatuses(recipientId);
     }
 
     @Override
-    public Observable<List<ChatMessage>> manageChatHistory(String recipientId) {
+    public Observable<List<ChatMessage>> manageChatHistory(boolean toGroup, String recipientId) {
         final ChatDataStore chatDataStore = this.chatDataStoreFactory.createCloudChatStore();
-        return chatDataStore.manageChatHistory(recipientId).map(collection -> chatRealmDataMapper.transform(collection));
+        return chatDataStore.manageChatHistory(toGroup, recipientId).map(collection -> chatRealmDataMapper.transform(collection));
     }
 }

@@ -14,6 +14,7 @@ import com.tribe.app.domain.entity.User;
 
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,12 +32,19 @@ public class ChatHistoryDeserializer extends MessageRealmListDeserializer implem
         JsonObject data = je.getAsJsonObject().getAsJsonObject("data");
         JsonElement results = null;
 
-        if (data.getAsJsonArray("friendships") == null) {
-            results = data.getAsJsonArray("messages");
-            return deserializeChatRealmArray(results.getAsJsonArray());
-        } else {
-            results = data.getAsJsonArray("friendships").get(0).getAsJsonObject().getAsJsonArray("messages");
-            return new Gson().fromJson(results, typeOfT);
+        if (data != null) {
+            if (data.getAsJsonArray("friendships") == null && data.getAsJsonArray("groups") == null) {
+                results = data.getAsJsonArray("messages");
+                return deserializeChatRealmArray(results.getAsJsonArray());
+            } else if (data.getAsJsonArray("groups") != null) {
+                results = data.getAsJsonArray("groups").get(0).getAsJsonObject().getAsJsonArray("messages");
+                return new Gson().fromJson(results, typeOfT);
+            } else if (data.getAsJsonArray("friendships") != null) {
+                results = data.getAsJsonArray("friendships").get(0).getAsJsonObject().getAsJsonArray("messages");
+                return new Gson().fromJson(results, typeOfT);
+            }
         }
+
+        return new ArrayList<>();
     }
 }

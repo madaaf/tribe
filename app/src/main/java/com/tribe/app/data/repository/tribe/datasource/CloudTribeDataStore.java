@@ -62,15 +62,20 @@ public class CloudTribeDataStore implements TribeDataStore {
 
     @Override
     public Observable<TribeRealm> sendTribe(TribeRealm tribeRealm) {
-        String request = context.getString(R.string.tribe_send,
-                tribeRealm.getFrom().getId(),
+        String tribeInput = context.getString(R.string.tribe_input,
                 tribeRealm.isToGroup() ?  tribeRealm.getGroup().getId() : tribeRealm.getFriendshipRealm().getFriend().getId(),
-                tribeRealm.isToGroup(),
                 tribeRealm.getType(),
                 simpleDateFormat.format(tribeRealm.getRecordedAt()),
                 0.0,
                 0.0
         );
+
+        String request;
+
+        if (tribeRealm.isToGroup())
+            request = context.getString(R.string.tribe_send_group, tribeInput);
+        else
+            request = context.getString(R.string.tribe_send_solo, tribeInput);
 
         RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
 

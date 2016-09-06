@@ -100,7 +100,7 @@ public class MQTTChatDataStore implements ChatDataStore {
     }
 
     @Override
-    public Observable<List<ChatRealm>> manageChatHistory(String recipientId) {
+    public Observable<List<ChatRealm>> manageChatHistory(boolean toGroup, String recipientId) {
         return null;
     }
 }

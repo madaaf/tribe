@@ -35,6 +35,7 @@ public class TribeRealm extends RealmObject implements MessageRealmInterface {
     private WeatherRealm weatherRealm;
     private LocationRealm locationRealm;
     private RealmList<MessageRecipientRealm> recipientList;
+    private String transcript;
 
     public void setId(String id) {
         this.id = id;
@@ -172,6 +173,14 @@ public class TribeRealm extends RealmObject implements MessageRealmInterface {
 
     public RealmList<MessageRecipientRealm> getRecipientList() {
         return recipientList;
+    }
+
+    public String getTranscript() {
+        return transcript;
+    }
+
+    public void setTranscript(String transcript) {
+        this.transcript = transcript;
     }
 
     public TribeRealm cloneTribeRealm(TribeRealm fromRealm) {

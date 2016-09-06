@@ -327,4 +327,9 @@
 	<string name="level_alien_title">Alien</string>
 	<string name="level_unicorn_title">Unicorn</string>
 	<string name="level_bot_title">Bot</string>
+	
+	<!-- Notification -->
+	<string name="notification_pending">A pending message. Swipe to resend &#11013;&#65039;</string>
+	<string name="notification_pending_plural">%1$d pending messages. Swipe to resend &#11013;&#65039;</string>
+	<string name="notification_snoozed">Your snoozed message from %1$s is back !</string>
 </resources>
