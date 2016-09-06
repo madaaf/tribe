@@ -108,6 +108,26 @@
                     android:background="@color/grey.background.profile_info"
                     />
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/shape_white_rect_grey_border">
+
+                    <com.tribe.app.presentation.view.component.SettingThemeView
+                        android:id="@+id/settingsTheme"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/section_button_vertical_padding"/>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp"
+                    android:background="@color/grey.background.profile_info"
+                    />
+
             <com.tribe.app.presentation.view.component.SettingItemView
                 android:id="@+id/messageSettingMemories"
                 android:layout_width="match_parent"
