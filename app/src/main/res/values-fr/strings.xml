@@ -222,6 +222,12 @@
 	<string name="settings_audio_subtitle">Set voice mode by default instead of video messages.</string>
 	<string name="settings_preload_title">Preload</string>
 	<string name="settings_preload_subtitle">Load new messages in background, automatically.</string>
+	<string name="settings_facebook_sync_title">Amis Facebook</string>
+	<string name="settings_facebook_not_synced_description">Pas encore synchronisé</string>
+	<string name="settings_facebook_synced_description">%1$d amis syncronisés</string>
+	<string name="settings_addressbook_sync_title">Carnet d\'adresse</string>
+	<string name="settings_addressbook_not_synced_description">Pas encore synchronisé</string>
+	<string name="settings_addressbook_synced_description">%1$d amis syncronisés</string>
 	<string name="settings_weatherunits_title"></string>
 	<string name="settings_weatherunits_subtitle"></string>
 	<string name="settings_invisible_title">Mode invisible</string>
@@ -247,6 +253,7 @@
 	
 	<!-- HiddenBlocked -->
 	<string name="hiddenblocked_title">%1$d membres cachés/bloqués</string>
+	<string name="hiddenblocked_empty_title">Aucun membre cachés/bloqués</string>
 	
 	<!-- Onboarding -->
 	<string name="onboarding_step_phone">Entre ton numéro de téléphone pour démarrer.</string>

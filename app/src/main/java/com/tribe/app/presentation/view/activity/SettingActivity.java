@@ -63,14 +63,17 @@ public class SettingActivity extends BaseActivity implements SettingView {
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
-    @BindView(R.id.settingsPicture)
-    SettingItemView settingsPicture;
+//    @BindView(R.id.settingsPicture)
+//    SettingItemView settingsPicture;
+//
+//    @BindView(R.id.settingsDisplayName)
+//    SettingItemView settingsDisplayName;
+//
+//    @BindView(R.id.settingsUsername)
+//    SettingItemView settingsUsername;
 
-    @BindView(R.id.settingsDisplayName)
-    SettingItemView settingsDisplayName;
-
-    @BindView(R.id.settingsUsername)
-    SettingItemView settingsUsername;
+    @BindView(R.id.settingsProfile)
+    SettingItemView settingsProfile;
 
     @BindView(R.id.messageSettingMemories)
     SettingItemView messageSettingMemories;
@@ -87,6 +90,15 @@ public class SettingActivity extends BaseActivity implements SettingView {
     @BindView(R.id.messageSettingFahrenheit)
     SettingItemView messageSettingFahrenheit;
 
+    @BindView(R.id.settingsFacebook)
+    SettingItemView settingsFacebook;
+
+    @BindView(R.id.settingsAddress)
+    SettingItemView settingsAddress;
+
+    @BindView(R.id.settingsInvisible)
+    SettingItemView settingsInvisible;
+
     @BindView(R.id.settingsTweet)
     SettingItemView settingsTweet;
 
@@ -96,20 +108,23 @@ public class SettingActivity extends BaseActivity implements SettingView {
     @BindView(R.id.settingsRateApp)
     SettingItemView settingsRateApp;
 
+    @BindView(R.id.settingsBlocked)
+    SettingItemView settingsBlocked;
+
     @BindView(R.id.settingsLogOut)
     SettingItemView settingsLogOut;
 
-    @BindView(R.id.profileSection)
-    SettingSectionView profileSection;
+//    @BindView(R.id.profileSection)
+//    SettingSectionView profileSection;
 
-    @BindView(R.id.messageSection)
-    SettingSectionView messageSection;
-
-    @BindView(R.id.supportSection)
-    SettingSectionView supportSection;
-
-    @BindView(R.id.exitSection)
-    SettingSectionView exitSection;
+//    @BindView(R.id.messageSection)
+//    SettingSectionView messageSection;
+//
+//    @BindView(R.id.supportSection)
+//    SettingSectionView supportSection;
+//
+//    @BindView(R.id.exitSection)
+//    SettingSectionView exitSection;
 
     @BindView(R.id.imgDone)
     ImageView imgDone;
@@ -181,7 +196,7 @@ public class SettingActivity extends BaseActivity implements SettingView {
             }
             thumbnail = BitmapFactory.decodeStream(image_stream );
 
-            settingsPicture.setPictureBitmap(thumbnail);
+//            settingsPicture.setPictureBitmap(thumbnail);
             settingPresenter.updateUser("picture", imageUri);
         }
 
@@ -196,19 +211,19 @@ public class SettingActivity extends BaseActivity implements SettingView {
 
     private void initSettings() {
 
-        subscriptions.add(RxView.clicks(settingsPicture).subscribe(aVoid -> {
-            // Get picture and set
-            navigator.getImageFromCamera(this, CAMERA_REQUEST);
-
-        }));
-
-        subscriptions.add(RxView.clicks(settingsDisplayName).subscribe(aVoid -> {
-            settingPresenter.updateUser("display_name", "Horatio 101");
-        }));
-
-        subscriptions.add(RxView.clicks(settingsUsername).subscribe(aVoid -> {
-            settingPresenter.updateUser("username", "Horatio T");
-        }));
+//        subscriptions.add(RxView.clicks(settingsPicture).subscribe(aVoid -> {
+//            // Get picture and set
+//            navigator.getImageFromCamera(this, CAMERA_REQUEST);
+//
+//        }));
+//
+//        subscriptions.add(RxView.clicks(settingsDisplayName).subscribe(aVoid -> {
+//            settingPresenter.updateUser("display_name", "Horatio 101");
+//        }));
+//
+//        subscriptions.add(RxView.clicks(settingsUsername).subscribe(aVoid -> {
+//            settingPresenter.updateUser("username", "Horatio T");
+//        }));
 
 
 
@@ -266,20 +281,28 @@ public class SettingActivity extends BaseActivity implements SettingView {
         setContentView(R.layout.activity_setting);
         unbinder = ButterKnife.bind(this);
 
-        profileSection.setTitleIcon(R.string.settings_section_profile, R.drawable.picto_profile_icon);
-        messageSection.setTitleIcon(R.string.settings_section_messages, R.drawable.picto_setting_message_icon);
-        supportSection.setTitleIcon(R.string.settings_section_support, R.drawable.picto_setting_support_icon);
-        exitSection.setTitleIcon(R.string.settings_section_exit, R.drawable.picto_setting_exit_icon);
+//        profileSection.setTitleIcon(R.string.settings_section_profile, R.drawable.picto_profile_icon);
+//        messageSection.setTitleIcon(R.string.settings_section_messages, R.drawable.picto_setting_message_icon);
+//        supportSection.setTitleIcon(R.string.settings_section_support, R.drawable.picto_setting_support_icon);
+//        exitSection.setTitleIcon(R.string.settings_section_exit, R.drawable.picto_setting_exit_icon);
 
-        settingsPicture.setTitleBodyViewType(getString(R.string.settings_picture_title),
-                getString(R.string.settings_picture_subtitle),
-                SettingItemView.PICTURE);
-        settingsDisplayName.setTitleBodyViewType(getString(R.string.settings_displayname_title),
-                getString(R.string.settings_displayname_subtitle),
-                SettingItemView.NAME);
-        settingsUsername.setTitleBodyViewType(getString(R.string.settings_username_title),
-                getString(R.string.settings_username_subtitle),
-                SettingItemView.NAME);
+//        settingsPicture.setTitleBodyViewType(getString(R.string.settings_picture_title),
+//                getString(R.string.settings_picture_subtitle),
+//                SettingItemView.PICTURE);
+//        settingsDisplayName.setTitleBodyViewType(getString(R.string.settings_displayname_title),
+//                getString(R.string.settings_displayname_subtitle),
+//                SettingItemView.NAME);
+//        settingsUsername.setTitleBodyViewType(getString(R.string.settings_username_title),
+//                getString(R.string.settings_username_subtitle),
+//                SettingItemView.NAME);
+
+        User user = getCurrentUser();
+
+        settingsProfile.setTitleBodyViewType(getString(R.string.settings_profile_title),
+                getString(R.string.settings_profile_subtitle),
+                SettingItemView.MORE);
+
+        settingsProfile.setPicture(user.getProfilePicture());
 
         messageSettingMemories.setTitleBodyViewType(getString(R.string.settings_tribesave_title),
                 getString(R.string.settings_tribesave_subtitle),
@@ -297,6 +320,24 @@ public class SettingActivity extends BaseActivity implements SettingView {
                 getString(R.string.settings_weatherunits_subtitle),
                 SettingItemView.SWITCH);
 
+        // TODO: setup based on sync status
+        settingsFacebook.setTitleBodyViewType(getString(R.string.settings_facebook_sync_title),
+                getString(R.string.settings_facebook_not_synced_description),
+                SettingItemView.SWITCH);
+
+        settingsFacebook.setSyncUp(R.color.red_circle, R.drawable.picto_black_facebook_icon);
+
+        settingsAddress.setTitleBodyViewType(getString(R.string.settings_addressbook_sync_title),
+                getString(R.string.contacts_section_addressbook_sync_description),
+                SettingItemView.SIMPLE);
+
+        settingsAddress.setSyncUp(R.color.blue_text, R.drawable.picto_phone_icon);
+
+
+        settingsInvisible.setTitleBodyViewType(getString(R.string.settings_invisible_title),
+                getString(R.string.settings_invisible_subtitle),
+                SettingItemView.SWITCH);
+
         settingsTweet.setTitleBodyViewType(getString(R.string.settings_tweet_title),
                 getString(R.string.settings_tweet_subtitle),
                 SettingItemView.SIMPLE);
@@ -306,15 +347,18 @@ public class SettingActivity extends BaseActivity implements SettingView {
         settingsRateApp.setTitleBodyViewType(getString(R.string.settings_rate_title),
                 getString(R.string.settings_rate_subtitle),
                 SettingItemView.SIMPLE);
+
+        settingsBlocked.setTitleBodyViewType(getString(R.string.settings_blocked_title),
+                getString(R.string.settings_blocked_subtitle),
+                SettingItemView.MORE);
+
         settingsLogOut.setTitleBodyViewType(getString(R.string.settings_logout_title),
                 getString(R.string.settings_logout_subtitle),
                 SettingItemView.SIMPLE);
 
-        User user = getCurrentUser();
 
-        settingsPicture.setPicture(user.getProfilePicture());
-        settingsUsername.setName(user.getUsername());
-        settingsDisplayName.setName(user.getDisplayName());
+//        settingsUsername.setName(user.getUsername());
+//        settingsDisplayName.setName(user.getDisplayName());
 
     }
 
@@ -334,12 +378,12 @@ public class SettingActivity extends BaseActivity implements SettingView {
 
     @Override
     public void changeUsername(String username) {
-        settingsUsername.setName(username);
+//        settingsUsername.setName(username);
     }
 
     @Override
     public void changeDisplayName(String displayName) {
-        settingsDisplayName.setName(displayName);
+//        settingsDisplayName.setName(displayName);
     }
 
     @Override

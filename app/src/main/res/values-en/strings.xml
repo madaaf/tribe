@@ -222,6 +222,12 @@
 	<string name="settings_audio_subtitle">Set voice mode by default\ninstead of video messages.</string>
 	<string name="settings_preload_title">Preload</string>
 	<string name="settings_preload_subtitle">Download new messages in\nbackground, automatically.</string>
+	<string name="settings_facebook_sync_title">Facebook friends</string>
+	<string name="settings_facebook_not_synced_description">Not synced at all</string>
+	<string name="settings_facebook_synced_description">%1$d friends perfectly synced</string>
+	<string name="settings_addressbook_sync_title">Address Book</string>
+	<string name="settings_addressbook_not_synced_description">Not synced at all</string>
+	<string name="settings_addressbook_synced_description">%1$d friends perfectly synced</string>
 	<string name="settings_weatherunits_title">Fahrenheit</string>
 	<string name="settings_weatherunits_subtitle">Display temperature on message\nin Fahrenheit instead of Celsius.</string>
 	<string name="settings_invisible_title">Invisible mode</string>
@@ -247,6 +253,7 @@
 	
 	<!-- HiddenBlocked -->
 	<string name="hiddenblocked_title">%1$d blocked/hidden members</string>
+	<string name="hiddenblocked_empty_title">No blocked/hidden members</string>
 	
 	<!-- Onboarding -->
 	<string name="onboarding_step_phone">Use your phone number to connect</string>

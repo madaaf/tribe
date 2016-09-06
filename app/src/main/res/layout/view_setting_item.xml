@@ -18,7 +18,7 @@
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtSectionBody"
         style="@style/Body.One.Black40"
-        android:layout_width="wrap_content"
+        android:layout_width="195dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         />
@@ -29,13 +29,30 @@
         android:layout_height="30dp"
         android:layout_gravity="end"
         android:visibility="invisible"
+        android:theme="@style/SCBSwitch"
         />
 
     <ImageView
-        android:id="@+id/imageSetting"
+        android:id="@+id/imageProf"
         android:layout_width="@dimen/setting_pic_size"
         android:layout_height="@dimen/setting_pic_size"
-        android:layout_gravity="end"
+        android:visibility="invisible"/>
+
+    <ImageView
+        android:id="@+id/imageSyncIcon"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:visibility="invisible"
+        />
+
+    <ImageView
+        android:id="@+id/imageCancelIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|end"
+        android:layout_marginEnd="20dp"
+        android:src="@drawable/picto_back"
+        android:scaleX="-1"
         android:visibility="invisible"/>
 
     <com.tribe.app.presentation.view.widget.TextViewFont
