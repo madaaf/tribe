@@ -89,7 +89,6 @@ public class PhoneUtils {
                     System.out.println("WARNING : formatNumber - number(" + numberProto + ") is NOT PossibleNumber");
                 }
             } catch (NumberParseException e2) {
-                e2.printStackTrace();
             }
         }
 
@@ -117,7 +116,10 @@ public class PhoneUtils {
             System.err.println("NumberParseException was thrown: " + e.toString());
         }
 
-        return numberProto.getCountryCode();
+        if (numberProto != null)
+            return numberProto.getCountryCode();
+
+        return 0;
     }
 
     public int getCountryCodeForRegion(String codeCountry) {

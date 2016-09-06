@@ -10,6 +10,7 @@ import android.telephony.TelephonyManager;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.ChatCache;
+import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.LoginApi;
@@ -17,13 +18,16 @@ import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ChatRealm;
+import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.LocationRealm;
 import com.tribe.app.data.realm.MessageRealmInterface;
+import com.tribe.app.data.realm.PhoneRealm;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.StringUtils;
 
@@ -52,6 +56,8 @@ public class CloudUserDataStore implements UserDataStore {
     private final UserCache userCache;
     private final TribeCache tribeCache;
     private final ChatCache chatCache;
+    private final ContactCache contactCache;
+    private final RxContacts rxContacts;
     private final Context context;
     private AccessToken accessToken = null;
     private User user = null;
@@ -69,6 +75,7 @@ public class CloudUserDataStore implements UserDataStore {
      * @param accessToken the access token
      */
     public CloudUserDataStore(UserCache userCache, TribeCache tribeCache, ChatCache chatCache,
+                              ContactCache contactCache, RxContacts rxContacts,
                               TribeApi tribeApi, LoginApi loginApi, User user,
                               AccessToken accessToken, Installation installation,
                               ReactiveLocationProvider reactiveLocationProvider, Context context,
@@ -76,6 +83,8 @@ public class CloudUserDataStore implements UserDataStore {
         this.userCache = userCache;
         this.tribeCache = tribeCache;
         this.chatCache = chatCache;
+        this.contactCache = contactCache;
+        this.rxContacts = rxContacts;
         this.tribeApi = tribeApi;
         this.loginApi = loginApi;
         this.context = context;
@@ -302,8 +311,49 @@ public class CloudUserDataStore implements UserDataStore {
 
                         userCache.put(dbUser);
                     });
-
         }
+    }
+
+
+    @Override
+    public Observable<List<ContactABRealm>> contacts() {
+        return rxContacts.getContacts().toList().flatMap(contactABRealmList -> {
+            Set<String> phones = new HashSet<>();
+
+            for (ContactABRealm contactABRealm : contactABRealmList) {
+                for (PhoneRealm phoneRealm : contactABRealm.getPhones()) {
+                    if (phoneRealm.isInternational())
+                        phones.add(phoneRealm.getPhone());
+                }
+            }
+
+            UserRealm currentUser = userCache.userInfosNoObs(accessToken.getUserId());
+
+            // WE REMOVE ALL THE PHONE NUMBERS THAT WE'RE ALREADY FRIENDS WITH
+            for (FriendshipRealm fr : currentUser.getFriendships()) {
+                phones.remove(fr.getFriend().getPhone());
+            }
+
+            phones.remove(currentUser.getPhone());
+
+            if (phones.size() > 0) {
+                StringBuilder result = new StringBuilder();
+
+                for (String string : phones) {
+                    result.append("\"" + string + "\"");
+                    result.append(",");
+                }
+
+                String phonesStr = result.length() > 0 ? result.substring(0, result.length() - 1): "";
+
+                String reqLookup = context.getString(R.string.lookup, context.getString(R.string.lookup_phone, phonesStr), "");
+                return tribeApi.lookup(reqLookup);
+            }
+
+            return null;
+        }, (contactABRealmList, lookupEntity) -> {
+            return contactABRealmList;
+        }).doOnNext(saveToCacheABContacts);
     }
 
     private final Action1<AccessToken> saveToCacheAccessToken = accessToken -> {
@@ -350,6 +400,9 @@ public class CloudUserDataStore implements UserDataStore {
         }
     };
 
-
-
+    private final Action1<List<ContactABRealm>> saveToCacheABContacts = contactABRealmList -> {
+        if (contactABRealmList != null && contactABRealmList.size() > 0) {
+            CloudUserDataStore.this.contactCache.insertAddressBook(contactABRealmList);
+        }
+    };
 }

@@ -70,10 +70,12 @@ public class UserRealmDataMapper {
     public List<User> transform(Collection<UserRealm> userRealmCollection) {
         List<User> userList = new ArrayList<>();
         User user;
-        for (UserRealm userRealm : userRealmCollection) {
-            user = transform(userRealm);
-            if (user != null) {
-                userList.add(user);
+        if (userRealmCollection != null) {
+            for (UserRealm userRealm : userRealmCollection) {
+                user = transform(userRealm);
+                if (user != null) {
+                    userList.add(user);
+                }
             }
         }
 
@@ -122,10 +124,13 @@ public class UserRealmDataMapper {
     public RealmList<UserRealm> transformList(Collection<User> userCollection) {
         RealmList<UserRealm> userRealmList = new RealmList<>();
         UserRealm userRealm;
-        for (User user : userCollection) {
-            userRealm = transform(user);
-            if (userRealm != null) {
-                userRealmList.add(userRealm);
+
+        if (userCollection != null) {
+            for (User user : userCollection) {
+                userRealm = transform(user);
+                if (userRealm != null) {
+                    userRealmList.add(userRealm);
+                }
             }
         }
 

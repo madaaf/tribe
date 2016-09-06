@@ -10,14 +10,15 @@ import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
+import com.tribe.app.domain.interactor.user.GetDiskContactList;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.GetReceivedDiskMessageList;
 import com.tribe.app.domain.interactor.user.GetRequestCode;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
 import com.tribe.app.domain.interactor.user.SendToken;
+import com.tribe.app.domain.interactor.user.SynchroContactList;
 import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.presentation.internal.di.scope.PerActivity;
-import com.tribe.app.presentation.internal.di.scope.PerApplication;
 
 import javax.inject.Named;
 
@@ -125,5 +126,19 @@ public class UserModule {
     @Named("diskMarkTribeListAsRead")
     DiskMarkTribeListAsRead diskMarkTribeListAsRead(DiskMarkTribeListAsRead diskMarkTribeListAsRead) {
         return diskMarkTribeListAsRead;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("synchroContactList")
+    UseCase provideSynchroContactList(SynchroContactList synchroContactList) {
+        return synchroContactList;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("diskContactList")
+    UseCaseDisk provideGetContactList(GetDiskContactList getDiskContactList) {
+        return getDiskContactList;
     }
 }

@@ -1,7 +1,5 @@
 package com.tribe.app.domain.entity;
 
-import android.support.annotation.Nullable;
-
 import java.util.List;
 
 /**
@@ -9,32 +7,47 @@ import java.util.List;
  */
 public class Contact implements Comparable<Contact> {
 
-    public String id;
-    public String name;
-    public List<String> phones;
-    public long lastTimeContacted;
+    protected String id;
+    protected String name;
+    protected List<User> userList;
 
     public Contact(String id) {
         this.id = id;
     }
 
-    /**
-     * Get first phone if available
-     * @return
-     */
-    @Nullable
-    public String getPhone() {
-        return !phones.isEmpty() ? phones.get(0) : null;
-    }
-
     @Override
-    public String toString() {
-        return String.format("[%s] %s\tphones=%s",
-                id, String.valueOf(name), String.valueOf(phones));
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (getId() != null ? getId().hashCode() : 0);
+        return result;
     }
 
     @Override
     public int compareTo(Contact another) {
         return name != null && another.name != null ? name.compareToIgnoreCase(another.name) : -1;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<User> getUserList() {
+        return userList;
+    }
+
+    public void setUserList(List<User> userList) {
+        this.userList = userList;
     }
 }

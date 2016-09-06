@@ -6,6 +6,7 @@ package com.tribe.app.domain.interactor.user;
 
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.User;
@@ -72,6 +73,15 @@ public interface UserRepository {
      */
     Observable<List<Message>> messagesReceived(String friendshipId);
 
+    /**
+     * Get an {@link Observable} which will emit a {@link User} containing infos
+     * about the user updated.
+     */
     Observable<User> updateUser(String key, String value);
 
+    /**
+     * Get an {@link Observable} which will emit a {@link List <Contact>} containing infos
+     * about the contacts from all sources (AddressBook / Facebook).
+     */
+    Observable<List<Contact>> contacts();
 }

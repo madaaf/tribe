@@ -65,7 +65,7 @@ public class SendChatJob extends BaseJob {
 
     @Override
     protected RetryConstraint shouldReRunOnThrowable(@NonNull Throwable throwable, int runCount, int maxRunCount) {
-        return RetryConstraint.createExponentialBackoff(runCount, 1000);
+        return RetryConstraint.CANCEL;
     }
 
     @Override

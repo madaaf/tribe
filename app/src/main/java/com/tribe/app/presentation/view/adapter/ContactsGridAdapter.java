@@ -83,7 +83,6 @@ public class ContactsGridAdapter extends RecyclerView.Adapter {
 
     public void setItems(List<Contact> items) {
         this.items.clear();
-        this.items.addAll(items);
 
         ButtonPoints shareProfile = new ButtonPoints(ButtonPointsView.PROFILE, R.string.contacts_share_profile_button,
                 R.string.contacts_share_profile_description, ScoreUtils.Point.SHARE_PROFILE.getPoints());
@@ -93,11 +92,11 @@ public class ContactsGridAdapter extends RecyclerView.Adapter {
                 R.string.contacts_section_facebook_sync_description, ScoreUtils.Point.INVITE_FACEBOOK.getPoints());
         syncFB.setDrawable(R.drawable.picto_facebook_logo);
 
-        this.items.add(new String());
         this.items.add(shareProfile);
         this.items.add(new String());
         this.items.add(syncFB);
         this.items.add(new String());
+        this.items.addAll(items);
 
         this.notifyDataSetChanged();
     }

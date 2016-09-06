@@ -1,12 +1,12 @@
-package com.tribe.app.data.repository.contact;
+package com.tribe.app.data.repository.user.contact;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
+import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Contact;
-import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 
 import javax.inject.Inject;
@@ -32,21 +32,23 @@ public class RxContacts {
         this.context = context;
         this.phoneUtils = phoneUtils;
         this.phone = userRealm.getPhone();
+        this.countryCode = phoneUtils.getCountryCode(phone);
         withPhones = true;
         sorter = Sorter.LAST_TIME_CONTACTED;
         filter = new Filter[] { Filter.HAS_PHONE };
         helper = new ContactsHelper(context, phoneUtils);
+        helper.setCountryCode(countryCode);
     }
 
-    private Observable<Contact> contactsObservable;
+    private Observable<ContactABRealm> contactsObservable;
 
     /**
      * Run ContentResolver query and emit results to the Observable
      * @return
      */
-    public Observable<Contact> getContacts() {
+    public Observable<ContactABRealm> getContacts() {
         if (contactsObservable == null)
-            contactsObservable = Observable.create((Subscriber<? super Contact> subscriber) -> {
+            contactsObservable = Observable.create((Subscriber<? super ContactABRealm> subscriber) -> {
                 emit(null, withPhones, sorter, filter, subscriber);
             }).onBackpressureBuffer().serialize();
 
@@ -64,55 +66,12 @@ public class RxContacts {
         }).onBackpressureBuffer().serialize();
     }
 
-    /**
-     * Format all found numbers with the same country code as the input Phone number
-     * @return
-     */
-    public RxContacts formatToCountryCode(String phoneNumber) {
-        if (!StringUtils.isEmpty(phoneNumber)) {
-            countryCode = phoneUtils.getCountryCode(phoneNumber);
-            helper.setCountryCode(countryCode);
-            helper.setPhoneUtils(phoneUtils);
-        }
-
-        return this;
-    }
-
-    /**
-     * Run extra query on Phones table if needed
-     * @return
-     */
-    public RxContacts withPhones() {
-        withPhones = true;
-        return this;
-    }
-
-    /**
-     * Sort emitted contacts. This sort runs on sqlite query.
-     * @param sorter
-     * @return
-     */
-    public RxContacts sort(Sorter sorter) {
-        this.sorter = sorter;
-        return this;
-    }
-
-    /**
-     * Filter contacts with specific conditions
-     * @param filter
-     * @return
-     */
-    public RxContacts filter(Filter... filter) {
-        this.filter = filter;
-        return this;
-    }
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private void emit(String query, boolean withPhones, Sorter sorter, Filter[] filter, Subscriber<? super Contact> subscriber) {
+    private void emit(String query, boolean withPhones, Sorter sorter, Filter[] filter, Subscriber<? super ContactABRealm> subscriber) {
         Cursor c = helper.getContactsCursor(query, sorter, filter);
         while (c.moveToNext()) {
-            Contact contact = helper.fetchContact(c, withPhones);
+            ContactABRealm contact = helper.fetchContact(c, withPhones);
             if (!subscriber.isUnsubscribed())
                 subscriber.onNext(contact);
             else

@@ -57,4 +57,13 @@
         android:background="@android:color/white"
         />
 
+    <View
+        android:id="@+id/viewShadowTop"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_gravity="top"
+        android:layout_marginTop="@dimen/top_bar_height"
+        android:background="@drawable/shadow_bottom"
+        />
+
 </FrameLayout>

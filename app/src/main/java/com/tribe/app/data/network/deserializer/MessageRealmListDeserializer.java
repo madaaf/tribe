@@ -182,7 +182,7 @@ public class MessageRealmListDeserializer {
             tribeRealm.setWeatherRealm(weatherRealm);
         }
 
-        if (json.has("transcript")) {
+        if (json.has("transcript") && !(json.get("transcript") instanceof JsonNull)) {
             tribeRealm.setTranscript(json.get("transcript").getAsString());
         }
 

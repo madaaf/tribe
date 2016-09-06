@@ -1,4 +1,4 @@
-package com.tribe.app.data.repository.contact;
+package com.tribe.app.data.repository.user.contact;
 
 import android.provider.ContactsContract.Contacts;
 

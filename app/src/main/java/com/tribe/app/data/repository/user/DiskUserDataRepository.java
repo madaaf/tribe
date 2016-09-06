@@ -1,8 +1,10 @@
 package com.tribe.app.data.repository.user;
 
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.mapper.ChatRealmDataMapper;
+import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
 import com.tribe.app.data.realm.mapper.TribeRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.chat.datasource.ChatDataStore;
@@ -12,6 +14,7 @@ import com.tribe.app.data.repository.tribe.datasource.TribeDataStoreFactory;
 import com.tribe.app.data.repository.user.datasource.UserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
 import com.tribe.app.domain.entity.ChatMessage;
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Pin;
@@ -41,6 +44,7 @@ public class DiskUserDataRepository implements UserRepository {
     private final TribeRealmDataMapper tribeRealmDataMapper;
     private final ChatDataStoreFactory chatDataStoreFactory;
     private final ChatRealmDataMapper chatRealmDataMapper;
+    private final ContactRealmDataMapper contactRealmDataMapper;
 
     /**
      * Constructs a {@link UserRepository}.
@@ -54,13 +58,15 @@ public class DiskUserDataRepository implements UserRepository {
                                   TribeDataStoreFactory tribeDataStoreFactory,
                                   TribeRealmDataMapper tribeRealmDataMapper,
                                   ChatDataStoreFactory chatDataStoreFactory,
-                                  ChatRealmDataMapper chatRealmDataMapper) {
+                                  ChatRealmDataMapper chatRealmDataMapper,
+                                  ContactRealmDataMapper contactRealmDataMapper) {
         this.userDataStoreFactory = dataStoreFactory;
         this.userRealmDataMapper = realmDataMapper;
         this.tribeDataStoreFactory = tribeDataStoreFactory;
         this.tribeRealmDataMapper = tribeRealmDataMapper;
         this.chatDataStoreFactory = chatDataStoreFactory;
         this.chatRealmDataMapper = chatRealmDataMapper;
+        this.contactRealmDataMapper = contactRealmDataMapper;
     }
 
     @Override
@@ -219,5 +225,11 @@ public class DiskUserDataRepository implements UserRepository {
                     return messageList;
                 }
         );
+    }
+
+    @Override
+    public Observable<List<Contact>> contacts() {
+        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+        return userDataStore.contacts().map(collection -> contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection)));
     }
 }

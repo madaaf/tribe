@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.ContactsGridPresenter;
@@ -21,6 +22,7 @@ import com.tribe.app.presentation.view.adapter.manager.ContactsLayoutManager;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -177,20 +179,11 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
      * Loads all contacts.
      */
     private void loadData() {
-//        subscriptions.add(RxContacts.getInstance(getContext(), phoneUtils)
-//                .withPhones()
-//                .formatToCountryCode(currentUser.getPhone())
-//                .sort(Sorter.LAST_TIME_CONTACTED)
-//                .filter(Filter.HAS_PHONE)
-//                .getContacts()
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(it -> {
-//                    Log.v("contact", it.toString());
-//                }, Throwable::printStackTrace, () -> {
-//                    Toast.makeText(getContext(), "ERROR", Toast.LENGTH_SHORT).show();
-//                }));
+        this.contactsGridPresenter.loadContactList();
+    }
 
-        this.contactsGridPresenter.onCreate();
+    @Override
+    public void renderContactList(List<Contact> contactList) {
+        contactsGridAdapter.setItems(contactList);
     }
 }

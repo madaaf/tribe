@@ -11,6 +11,7 @@ import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
+import com.tribe.app.presentation.view.utils.ScoreUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
@@ -55,8 +56,8 @@ public class ContactsGridAdapterDelegate extends RxAdapterDelegate<List<Object>>
         ContactViewHolder vh = (ContactViewHolder) holder;
         Contact contact = (Contact) items.get(position);
 
-        vh.txtName.setText("Hey");
-        vh.txtPoints.setText(context.getString(R.string.points_suffix, "50"));
+        vh.txtName.setText(contact.getName());
+        vh.txtPoints.setText(context.getString(R.string.points_suffix, ScoreUtils.Point.INVITE.getPoints()));
         vh.txtDescription.setText("Hey lol trop bien");
     }
 

@@ -44,6 +44,7 @@
         fragment UserInfos on User {
             id
             score
+            phone
             username
             display_name
             picture
@@ -293,6 +294,36 @@
             client_id : \"%8$s\",
             lang : \"%9$s\",
             carrier : \"%10$s\"
+        }
+    </string>
+
+    <string name="lookup">
+        {
+            %1$s
+            %2$s
+        }
+
+        fragment UserInfos on User {
+            id
+            score
+            username
+            phone
+            display_name
+            picture
+            created_at
+            updated_at
+        }
+    </string>
+
+    <string name="lookup.phone">
+        lookupByPhone (phones: [%1$s]) {
+            ...UserInfos
+        }
+    </string>
+
+    <string name="lookup.facebook">
+        lookupByFbid (fbids: [%1$s]) {
+            ...UserInfos
         }
     </string>
 </resources>

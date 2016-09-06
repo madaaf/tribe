@@ -8,6 +8,8 @@ import com.birbit.android.jobqueue.config.Configuration;
 import com.birbit.android.jobqueue.log.CustomLogger;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.ChatCacheImpl;
+import com.tribe.app.data.cache.ContactCache;
+import com.tribe.app.data.cache.ContactCacheImpl;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.TribeCacheImpl;
 import com.tribe.app.data.cache.UserCache;
@@ -24,6 +26,7 @@ import com.tribe.app.data.repository.tribe.CloudTribeDataRepository;
 import com.tribe.app.data.repository.tribe.DiskTribeDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.data.repository.user.DiskUserDataRepository;
+import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
@@ -41,6 +44,7 @@ import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.domain.interactor.tribe.TribeRepository;
 import com.tribe.app.domain.interactor.user.GetCloudMessageList;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
+import com.tribe.app.domain.interactor.user.SynchroContactList;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.UIThread;
@@ -127,6 +131,18 @@ public class ApplicationModule {
     @Singleton
     TribeCache provideTribeCache(TribeCacheImpl tribeCache) {
         return tribeCache;
+    }
+
+    @Provides
+    @Singleton
+    ContactCache provideContactCache(ContactCacheImpl contactCache) {
+        return contactCache;
+    }
+
+    @Provides
+    @Singleton
+    RxContacts provideRxContacts(Context context, UserRealm userRealm, PhoneUtils phoneUtils) {
+        return new RxContacts(context, userRealm, phoneUtils);
     }
 
     @Provides
@@ -271,6 +287,12 @@ public class ApplicationModule {
     @Named("cloudUserInfos")
     UseCase provideCloudGetUserInfos(GetCloudUserInfos getCloudUserInfos) {
         return getCloudUserInfos;
+    }
+
+    @Provides
+    @Named("synchroContactList")
+    UseCase provideSynchroContactList(SynchroContactList synchroContactList) {
+        return synchroContactList;
     }
 
     @Provides

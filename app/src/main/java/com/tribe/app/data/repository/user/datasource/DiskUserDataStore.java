@@ -1,7 +1,9 @@
 package com.tribe.app.data.repository.user.datasource;
 
+import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
@@ -17,16 +19,19 @@ import rx.Observable;
 public class DiskUserDataStore implements UserDataStore {
 
     private final UserCache userCache;
+    private final ContactCache contactCache;
     private final AccessToken accessToken;
 
     /**
      * Construct a {@link UserDataStore} based on the database.
      * @param userCache A {@link UserCache} to retrieve the data.
      * @param accessToken A {@link AccessToken} that contains the current user id.
+     * @param contactCache A {@link ContactCache} that contains the cached data of the user's possible contacts
      */
-    public DiskUserDataStore(UserCache userCache, AccessToken accessToken) {
+    public DiskUserDataStore(UserCache userCache, AccessToken accessToken, ContactCache contactCache) {
         this.userCache = userCache;
         this.accessToken = accessToken;
+        this.contactCache = contactCache;
     }
 
     @Override
@@ -69,6 +74,10 @@ public class DiskUserDataStore implements UserDataStore {
     @Override
     public Observable<UserRealm> updateUser(String key, String value) {
         return null;
+    }
 
+    @Override
+    public Observable<List<ContactABRealm>> contacts() {
+        return contactCache.contacts();
     }
 }
