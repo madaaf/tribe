@@ -31,6 +31,7 @@
 	<string name="contacts_section_facebook_invite_title">Notify missing friends</string>
 	<string name="contacts_section_facebook_invite_description">Ping friends once every 24h</string>
 	<string name="contacts_section_facebook_syncing">Syncing</string>
+	<string name="contacts_section_facebook_notifying">Notifying</string>
 	<string name="contacts_section_facebook_next_sync">Notify again in %1$s</string>
 	<string name="contacts_section_addressbook_sync_disabled">Address book isn’t synced</string>
 	<string name="contacts_section_addressbook_sync_enabled">Address book is synced</string>
@@ -118,6 +119,7 @@
 	<string name="grid_menu_friendship_block">Block friendship</string>
 	<string name="grid_menu_friendship_unblock">Unblock friendship</string>
 	<string name="grid_menu_friendship_report">Report friendship</string>
+	<string name="grid_menu_friendship_report_success">Friendship reported</string>
 	<string name="grid_menu_friendship_clear_tribes">Clear tribes</string>
 	
 	<!-- Chat -->
@@ -157,10 +159,14 @@
 	<string name="group_pick_avatar_title">Pick an avatar for the group</string>
 	<string name="group_suggestions_title">Or tap a suggested name</string>
 	<string name="group_private_title">Private</string>
+	<string name="group_private_description">Closed chats with close friends &amp; family</string>
+	<string name="group_private_create">Create private group</string>
 	<string name="group_private_popup_title">Go into the wild\nwith Private Groups!</string>
 	<string name="group_private_popup_title_description">Chat about hot topics, current events, sports, music, and more!</string>
 	<string name="group_private_popup_done">Exciting!</string>
 	<string name="group_public_title">Public</string>
+	<string name="group_public_description">Opened chats where anyone can join</string>
+	<string name="group_public_create">Create public group</string>
 	<string name="group_public_popup_title">Go into the wild\nwith Public Groups!</string>
 	<string name="group_public_popup_title_description">Chat about hot topics, current events, sports, music, and more!</string>
 	<string name="group_public_popup_done">Exciting!</string>
@@ -169,6 +175,10 @@
 	<string name="group_private_link_popup_title">Only 59:32 min left!</string>
 	<string name="group_private_link_popup_description">Select where to send this\ntemporary link to your friends!</string>
 	<string name="group_public_link_description">Tips: You can even include emojis</string>
+	<string name="group_invalid_infos_error_message">Add group details to create a group</string>
+	<string name="group_valid_infos_message">Add members after creating the group</string>
+	<string name="group_button_share">Invite members via...</string>
+	<string name="group_share_description">Add easily your friends that aren’t on Tribe yet.</string>
 	<string name="group_button_create">Create</string>
 	<string name="group_empty_list">No friends to add to the group</string>
 	
@@ -193,6 +203,8 @@
 	<!-- Settings -->
 	<string name="settings_title">Settings</string>
 	<string name="settings_section_profile">Profile</string>
+	<string name="settings_profile_title">Profile</string>
+	<string name="settings_profile_subtitle">Change avatar, display name and username.</string>
 	<string name="settings_picture_title">Profile picture</string>
 	<string name="settings_picture_subtitle">Take a selfie or import from\ncamera roll and Facebook.</string>
 	<string name="settings_displayname_title">Display name</string>
@@ -200,6 +212,8 @@
 	<string name="settings_username_title">Username</string>
 	<string name="settings_username_subtitle">How you appear for everyone.</string>
 	<string name="settings_section_messages">Messages</string>
+	<string name="settings_filter_title">Pick a filter</string>
+	<string name="settings_theme_title">Pick a theme</string>
 	<string name="settings_tribesave_title">Memories</string>
 	<string name="settings_tribesave_subtitle">Allow your friends to save your\nmessages if they want to.</string>
 	<string name="settings_geolocation_title">Context</string>
@@ -210,7 +224,11 @@
 	<string name="settings_preload_subtitle">Download new messages in\nbackground, automatically.</string>
 	<string name="settings_weatherunits_title">Fahrenheit</string>
 	<string name="settings_weatherunits_subtitle">Display temperature on message\nin Fahrenheit instead of Celsius.</string>
+	<string name="settings_invisible_title">Invisible mode</string>
+	<string name="settings_invisible_subtitle">Only you can add friends. Nobody can add you.</string>
 	<string name="settings_section_support">Support</string>
+	<string name="settings_support_title">Send us messages on Tribe</string>
+	<string name="settings_support_subtitle">We reply in less than 12 hours to every single message.</string>
 	<string name="settings_tweet_title">Tweet @heytribe</string>
 	<string name="settings_tweet_subtitle">We reply in less than 24 hours\nto every single tweet.</string>
 	<string name="settings_email_title">Email the team</string>
@@ -219,11 +237,16 @@
 	<string name="settings_email_subject">Something about Tribe</string>
 	<string name="settings_rate_title">Rate the app</string>
 	<string name="settings_rate_subtitle">The easiest way to show us\nsome love.</string>
+	<string name="settings_blocked_title">Blocked contacts</string>
+	<string name="settings_blocked_subtitle">Get access to the list of contacts you blocked.</string>
 	<string name="settings_section_exit">Exit</string>
 	<string name="settings_logout_title">Log out</string>
 	<string name="settings_logout_subtitle">Disconnect this account from\nthis device.</string>
 	<string name="settings_remove_title">Delete account</string>
 	<string name="settings_remove_subtitle">Say goodbye to your\nfriendships, points and more.</string>
+	
+	<!-- HiddenBlocked -->
+	<string name="hiddenblocked_title">%1$d blocked/hidden members</string>
 	
 	<!-- Onboarding -->
 	<string name="onboarding_step_phone">Use your phone number to connect</string>
@@ -239,7 +262,7 @@
 	<string name="onboarding_user_facebook_button_title">Or autofill profile</string>
 	<string name="onboarding_queue_title">Get access now.</string>
 	<string name="onboarding_queue_description">You need to have at\nleast 1 friend to enter.</string>
-	<string name="onboarding_queue_button_title">Let\'s find out!</string>
+	<string name="onboarding_queue_button_title">Look in my contacts</string>
 	<string name="onboarding_queue_loading_title">Hang tight…</string>
 	<string name="onboarding_queue_loading_description">Looking if one of your\n friends is already on Tribe.</string>
 	<string name="onboarding_queue_loading_friends">friends</string>
@@ -252,7 +275,7 @@
 	<string name="onboarding_queue_declined_popup_cancel_button">Stay alone.</string>
 	<string name="onboarding_queue_declined_popup_confirm_button">Sure!</string>
 	<string name="onboarding_queue_valid_title">Congrats! You\'re in.</string>
-	<string name="onboarding_queue_valid_description">Enter now, your friends\nare already there.</string>
+	<string name="onboarding_queue_valid_description">Your friends\nare already there.</string>
 	<string name="onboarding_queue_valid_button_title">Enter now!</string>
 	
 	<!-- Pull to search -->
