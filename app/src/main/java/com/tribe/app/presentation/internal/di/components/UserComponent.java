@@ -10,6 +10,7 @@ import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.activity.PointsActivity;
 import com.tribe.app.presentation.view.activity.ScoreActivity;
 import com.tribe.app.presentation.view.activity.SettingActivity;
+import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.component.SettingItemView;
 import com.tribe.app.presentation.view.fragment.AccessFragment;
 import com.tribe.app.presentation.view.fragment.ContactsGridFragment;
@@ -41,4 +42,5 @@ public interface UserComponent extends ActivityComponent {
     void inject(SettingItemView settingItemView);
     void inject(SettingFragment settingFragment);
     void inject(SettingPresenter settingPresenter);
+    void inject(ProfileInfoView profileInfoView);
 }

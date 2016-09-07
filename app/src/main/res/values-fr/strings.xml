@@ -43,6 +43,7 @@
 	<string name="contacts_section_search_usernames">Nom d\'utilisateur</string>
 	<string name="contacts_section_search_searching">Recherche</string>
 	<string name="contacts_section_search_friends">Amis</string>
+	<string name="contacts_section_addressbook_title">Combien d\'amis ont-ils ?</string>
 	
 	<!-- Permissions -->
 	<string name="permission_contacts_disabled_alert_title">L\'accès aux Contacts a été désactivé.</string>
@@ -55,8 +56,8 @@
 	<string name="permission_popup_push_onboarding_points">Autoriser les notifications</string>
 	<string name="permission_popup_push_onboarding_no">Rester seul!</string>
 	<string name="permission_popup_push_onboarding_yes">Oui!</string>
-	<string name="permission_popup_push_home_title">Réponses arrivent!</string>
-	<string name="permission_popup_push_home_description">Sois notifé quand tes\namis t\'envoient des messages.</string>
+	<string name="permission_popup_push_home_title">Sois prévenu</string>
+	<string name="permission_popup_push_home_description">quand tes amis t\'envoient des messages.</string>
 	<string name="permission_popup_push_home_points">Autoriser les notifications</string>
 	<string name="permission_popup_push_home_no">Pas maintenant</string>
 	<string name="permission_popup_push_home_yes">Autoriser!</string>
@@ -170,15 +171,15 @@
 	<string name="group_public_popup_title">Pars à l\'aventure\navec les groupes publics !</string>
 	<string name="group_public_popup_title_description">Chat about hot topics, current, events, sports, music, and more !</string>
 	<string name="group_public_popup_done">Super!</string>
-	<string name="group_search_friends_placeholder">Recherche des membres</string>
+	<string name="group_search_friends_placeholder">Invitez vos amis à rejoindre ce groupe</string>
 	<string name="group_private_link_description">Ce lien expire au bout d\'1h</string>
 	<string name="group_private_link_popup_title">Il reste seulement 59:32 !</string>
 	<string name="group_private_link_popup_description">Choisis où envoyer ce lien\ntemporaire à tes amis !</string>
 	<string name="group_public_link_description">Astuce : Vous pouvez ajouter des emojis</string>
-	<string name="group_invalid_infos_error_message">Ajoutez des informations au groupe</string>
+	<string name="group_invalid_infos_error_message">N\'oubliez pas de nommer votre groupe</string>
 	<string name="group_valid_infos_message">Ajoutez des members une fois le groupe créé</string>
-	<string name="group_button_share">Invitez des membres via...</string>
-	<string name="group_share_description">Ajoutez simplement vos amis qui ne sont pas encore sur Tribe</string>
+	<string name="group_button_share">Lien pour inviter des amis</string>
+	<string name="group_share_description">Ajoutez vos amis qui ne sont pas encore sur Tribe</string>
 	<string name="group_button_create">Créer</string>
 	<string name="group_empty_list">Pas d\'amis à ajouter au groupe</string>
 	

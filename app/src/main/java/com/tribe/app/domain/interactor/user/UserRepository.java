@@ -77,7 +77,7 @@ public interface UserRepository {
      * Get an {@link Observable} which will emit a {@link User} containing infos
      * about the user updated.
      */
-    Observable<User> updateUser(String key, String value);
+    Observable<User> updateUser(String username, String displayName, String pictureUri);
 
     /**
      * Get an {@link Observable} which will emit a {@link List <Contact>} containing infos

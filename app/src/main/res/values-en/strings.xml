@@ -43,6 +43,7 @@
 	<string name="contacts_section_search_usernames">Username</string>
 	<string name="contacts_section_search_searching">Searching</string>
 	<string name="contacts_section_search_friends">People that you know</string>
+	<string name="contacts_section_addressbook_title">How much friends would they have?</string>
 	
 	<!-- Permissions -->
 	<string name="permission_contacts_disabled_alert_title">Permission for Address Book was denied</string>
@@ -55,8 +56,8 @@
 	<string name="permission_popup_push_onboarding_points">Enabling notifications</string>
 	<string name="permission_popup_push_onboarding_no">Stay Alone</string>
 	<string name="permission_popup_push_onboarding_yes">Yes!</string>
-	<string name="permission_popup_push_home_title">Responses are coming!</string>
-	<string name="permission_popup_push_home_description">Get notified when your friends send you messages.</string>
+	<string name="permission_popup_push_home_title">Get notified</string>
+	<string name="permission_popup_push_home_description">when your friends send you messages.</string>
 	<string name="permission_popup_push_home_points">Enabling notifications</string>
 	<string name="permission_popup_push_home_no">Not now</string>
 	<string name="permission_popup_push_home_yes">Get notified!</string>
@@ -159,10 +160,10 @@
 	<string name="group_pick_avatar_title">Pick an avatar for the group</string>
 	<string name="group_suggestions_title">Or tap a suggested name</string>
 	<string name="group_private_title">Private</string>
-	<string name="group_private_description">Closed chats with close friends &amp; family</string>
+	<string name="group_private_description">Closed conversations with friends</string>
 	<string name="group_private_create">Create private group</string>
 	<string name="group_private_popup_title">Go into the wild\nwith Private Groups!</string>
-	<string name="group_private_popup_title_description">Chat about hot topics, current events, sports, music, and more!</string>
+	<string name="group_private_popup_title_description">Open conversations that anyone can join</string>
 	<string name="group_private_popup_done">Exciting!</string>
 	<string name="group_public_title">Public</string>
 	<string name="group_public_description">Opened chats where anyone can join</string>
@@ -170,15 +171,15 @@
 	<string name="group_public_popup_title">Go into the wild\nwith Public Groups!</string>
 	<string name="group_public_popup_title_description">Chat about hot topics, current events, sports, music, and more!</string>
 	<string name="group_public_popup_done">Exciting!</string>
-	<string name="group_search_friends_placeholder">Search for members</string>
+	<string name="group_search_friends_placeholder">Invite your friends to join this group</string>
 	<string name="group_private_link_description">This link will expire in 1 hr</string>
 	<string name="group_private_link_popup_title">Only 59:32 min left!</string>
 	<string name="group_private_link_popup_description">Select where to send this\ntemporary link to your friends!</string>
 	<string name="group_public_link_description">Tips: You can even include emojis</string>
-	<string name="group_invalid_infos_error_message">Add group details to create a group</string>
+	<string name="group_invalid_infos_error_message">Be sure to name your group</string>
 	<string name="group_valid_infos_message">Add members after creating the group</string>
-	<string name="group_button_share">Invite members via...</string>
-	<string name="group_share_description">Add easily your friends that aren’t on Tribe yet.</string>
+	<string name="group_button_share">Link to invite friends</string>
+	<string name="group_share_description">Add your friends that currently aren\'t on Tribe</string>
 	<string name="group_button_create">Create</string>
 	<string name="group_empty_list">No friends to add to the group</string>
 	

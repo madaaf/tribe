@@ -91,11 +91,15 @@ public class MeGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>> {
         vh.txtPoints.setText(me.getScoreStr());
         vh.imgLevel.setImageResource(ScoreUtils.getLevelForScore(me.getScore()).getDrawableId());
 
-        picasso.load(me.getProfilePicture())
-                .fit()
-                .centerCrop()
-                .transform(new RoundedCornersTransformation(avatarSize >> 1, 0, RoundedCornersTransformation.CornerType.ALL))
-                .into(vh.avatar);
+        try {
+            picasso.load(me.getProfilePicture())
+                    .fit()
+                    .centerCrop()
+                    .transform(new RoundedCornersTransformation(avatarSize >> 1, 0, RoundedCornersTransformation.CornerType.ALL))
+                    .into(vh.avatar);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
     }
 
     public PublishSubject<View> clickOpenPoints() {

@@ -28,6 +28,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.activity.IntroActivity;
+import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.utils.FacebookUtils;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
@@ -85,36 +86,20 @@ public class ProfileInfoFragment extends Fragment {
     @Inject
     Navigator navigator;
 
-    @BindView(R.id.imgProfilePic)
-    ImageView imgProfilePic;
-
-    @BindView(R.id.txtOpenCameraRoll)
-    TextViewFont txtOpenCameraRoll;
-
-    @BindView(R.id.txtTakeASelfie)
-    TextViewFont txtTakeASelfie;
-
-    @BindView(R.id.editDisplayName)
-    EditTextFont editDisplayName;
-
-    @BindView(R.id.editUsername)
-    EditTextFont editUsername;
-
     @BindView(R.id.imgNextIcon)
     ImageView imgNextIcon;
+
+    @BindView(R.id.profileInfoView)
+    ProfileInfoView profileInfoView;
 
     @BindView(R.id.facebookView)
     FacebookView facebookView;
 
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
-    public final static int RESULT_LOAD_IMAGE = 5;
-    public final static int CAMERA_REQUEST = 6;
+
     public boolean profilePictureSelected = false;
     public boolean textInfoValidated = false;
-
-    private static final String[] PERMISSIONS_CAMERA = new String[]{Manifest.permission.CAMERA,
-            Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     /**
      * View Lifecycle
@@ -153,20 +138,7 @@ public class ProfileInfoFragment extends Fragment {
             ((IntroActivity) getActivity()).goToAccess();
         }));
 
-        subscriptions.add(RxView.clicks(txtOpenCameraRoll).subscribe(aVoid -> {
-            RxPermissions.getInstance(getActivity())
-                    .request(PERMISSIONS_CAMERA)
-                    .subscribe(granted -> {
-                        if (granted) navigator.getImageFromCameraRoll(getActivity(), RESULT_LOAD_IMAGE);
-                        else
-                            // TODO: get string from laurent
-                            Toast.makeText(getActivity(), "You must grant permissions to access your pictures", Toast.LENGTH_LONG).show();
-                    });
-        }));
 
-        subscriptions.add(RxView.clicks(txtTakeASelfie).subscribe(aVoid -> {
-            navigator.getImageFromCamera(getActivity(), CAMERA_REQUEST);
-        }));
 
         subscriptions.add(RxView.clicks(facebookView).subscribe(aVoid -> {
             if (FacebookUtils.isLoggedIn()) {
@@ -176,26 +148,18 @@ public class ProfileInfoFragment extends Fragment {
             }
         }));
 
-        Observable.combineLatest(RxTextView.textChanges(editDisplayName).filter(charSequence -> editDisplayName.length() > 1),
-                RxTextView.textChanges(editUsername).filter(charSequence -> editUsername.length() > 1),
-                (charSequence1, charSequence2) -> {
-                    textInfoValidated = true;
-                    enableNext(profilePictureSelected);
-                    return profilePictureSelected;
-                }).subscribe();
+        subscriptions.add(profileInfoView.infoValid().subscribe(this::enableNext));
 
-
-        Observable.merge(RxTextView.textChanges(editDisplayName).filter(charSequence -> editDisplayName.length() < 2),
-                RxTextView.textChanges(editUsername).filter(charSequence -> editUsername.length() < 2)).subscribe(charSequence1 -> {
-            textInfoValidated = false;
-            enableNext(false);
-        });
 
     }
 
     /**
      * Helper methods
      */
+
+    public void setImgProfilePic(Bitmap bitmap) {
+         profileInfoView.setImgProfilePic(bitmap);
+    }
 
     public void getInfoFromFacebook() {
         new GraphRequest(AccessToken.getCurrentAccessToken(),
@@ -211,7 +175,7 @@ public class ProfileInfoFragment extends Fragment {
                             String username = name.replaceAll("\\s", "").toLowerCase();
                             String facebookId = jsonResponse.getString("id");
                             String profilePictureLink = "https://graph.facebook.com/" + facebookId + "/picture?type=large";
-                            setInfoFromFacebook(profilePictureLink, username, name);
+                            profileInfoView.setInfoFromFacebook(profilePictureLink, username, name);
                         } catch (JSONException e) {
                             Log.e("JSON exception:", e.toString());
                         }
@@ -219,29 +183,11 @@ public class ProfileInfoFragment extends Fragment {
                 }).executeAsync();
     }
 
-    public void setInfoFromFacebook(String profilePicLink, String username, String realName) {
-        picasso.load(profilePicLink)
-                .transform(new RoundedCornersTransformation(screenUtils.dpToPx(100), 0))
-                .resize(screenUtils.dpToPx(65), screenUtils.dpToPx(65))
-                .centerInside()
-                .into(imgProfilePic);
-        profilePictureSelected = true;
-        editDisplayName.setText(realName);
-        editUsername.setText(username);
 
-    }
 
-    public void setImgProfilePic(Bitmap bitmap) {
-        imgProfilePic.setImageBitmap(bitmap);
-    }
 
-    public Bitmap formatBitmapforView(Bitmap thumbnail) {
-        RoundedCornersTransformation roundedCornersTransformation = new RoundedCornersTransformation(screenUtils.dpToPx(100), 0, RoundedCornersTransformation.CornerType.ALL);
-        thumbnail = ImageUtils.centerCropBitmap(thumbnail);
-        thumbnail = Bitmap.createScaledBitmap(thumbnail, screenUtils.dpToPx(65), screenUtils.dpToPx(65), false);
-        thumbnail = roundedCornersTransformation.transform(thumbnail);
-        return thumbnail;
-    }
+
+
 
     public void enableNext(boolean enabled) {
 

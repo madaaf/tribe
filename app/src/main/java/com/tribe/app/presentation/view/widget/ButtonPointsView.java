@@ -145,9 +145,14 @@ public class ButtonPointsView extends LinearLayout {
     public void setDrawable(String url) {
         if (type == PROFILE) {
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            picasso.load(url).fit().centerCrop()
-                    .transform(new RoundedCornersTransformation(radiusImage, 0, RoundedCornersTransformation.CornerType.LEFT))
-                    .into(imageView);
+            try {
+                picasso.load(url).fit().centerCrop()
+                        .transform(new RoundedCornersTransformation(radiusImage, 0, RoundedCornersTransformation.CornerType.LEFT))
+                        .into(imageView);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 

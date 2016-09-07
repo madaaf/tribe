@@ -167,12 +167,17 @@ public class SettingItemView extends FrameLayout {
 
         imageProf.setVisibility(VISIBLE);
 
-        Picasso.with(getContext())
-                .load(picUrl)
-                .fit()
-                .centerCrop()
-                .transform(new RoundedCornersTransformation(R.dimen.setting_pic_size >> 1, 0, RoundedCornersTransformation.CornerType.ALL))
-                .into(imageProf);
+        try {
+            Picasso.with(getContext())
+                    .load(picUrl)
+                    .fit()
+                    .centerCrop()
+                    .transform(new RoundedCornersTransformation(R.dimen.setting_pic_size >> 1, 0, RoundedCornersTransformation.CornerType.ALL))
+                    .into(imageProf);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+
 
         FrameLayout.LayoutParams titleViewLayoutParams = (FrameLayout.LayoutParams) txtSectionTitle.getLayoutParams();
         titleViewLayoutParams.setMarginStart(dpToPx(55));

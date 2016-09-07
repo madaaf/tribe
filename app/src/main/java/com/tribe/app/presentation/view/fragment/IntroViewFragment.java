@@ -160,8 +160,6 @@ public class IntroViewFragment extends Fragment implements IntroView {
                     this.code = viewCode.getCode();
                     introPresenter.login(phoneNumber, code, pin.getPinId());
                 }
-
-
             }
         }));
     }

@@ -29,9 +29,13 @@ import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -68,10 +72,11 @@ public class CloudUserDataStore implements UserDataStore {
 
     /**
      * Construct a {@link UserDataStore} based on connections to the api (Cloud).
-     * @param userCache A {@link UserCache} to cache data retrieved from the api.
-     * @param tribeApi an implementation of the api
-     * @param loginApi an implementation of the login api
-     * @param context the context
+     *
+     * @param userCache   A {@link UserCache} to cache data retrieved from the api.
+     * @param tribeApi    an implementation of the api
+     * @param loginApi    an implementation of the login api
+     * @param context     the context
      * @param accessToken the access token
      */
     public CloudUserDataStore(UserCache userCache, TribeCache tribeCache, ChatCache chatCache,
@@ -100,13 +105,13 @@ public class CloudUserDataStore implements UserDataStore {
     public Observable<PinRealm> requestCode(String phoneNumber) {
         return this.loginApi
                 .requestCode(new LoginEntity(phoneNumber));
-                //.doOnError(throwable -> {
-                //    AccessToken accessToken1 = new AccessToken();
-                //    accessToken1.setAccessToken("DvEZQrxOZ5LgHQE9XjWYzCNMEcSmlCMVfvm27ZTLJ72KpRpVIY");
-                //    accessToken1.setTokenType("Bearer");
-                //    accessToken1.setUserId("BJgkS2rN");
-                //    CloudUserDataStore.this.userCache.put(accessToken1);
-                //});
+        //.doOnError(throwable -> {
+        //    AccessToken accessToken1 = new AccessToken();
+        //    accessToken1.setAccessToken("DvEZQrxOZ5LgHQE9XjWYzCNMEcSmlCMVfvm27ZTLJ72KpRpVIY");
+        //    accessToken1.setTokenType("Bearer");
+        //    accessToken1.setUserId("BJgkS2rN");
+        //    CloudUserDataStore.this.userCache.put(accessToken1);
+        //});
     }
 
     @Override
@@ -162,17 +167,17 @@ public class CloudUserDataStore implements UserDataStore {
         }
 
         String base = context.getString(R.string.install_base,
-                    accessToken.getUserId(),
-                    token,
-                    "android",
-                    Build.VERSION.RELEASE,
-                    Build.MANUFACTURER,
-                    Build.MODEL,
-                    info != null ? info.versionName : "UNKNOWN",
-                    context.getPackageName(),
-                    context.getResources().getConfiguration().locale.toString(),
-                    operatorName
-                );
+                accessToken.getUserId(),
+                token,
+                "android",
+                Build.VERSION.RELEASE,
+                Build.MANUFACTURER,
+                Build.MODEL,
+                info != null ? info.versionName : "UNKNOWN",
+                context.getPackageName(),
+                context.getResources().getConfiguration().locale.toString(),
+                operatorName
+        );
 
         String req = installation == null || installation.getId() == null ? context.getString(R.string.install_create, base) : context.getString(R.string.install_update, installation.getId(), base);
         return this.tribeApi.createOrUpdateInstall(req).doOnNext(saveToCacheInstall);
@@ -181,9 +186,9 @@ public class CloudUserDataStore implements UserDataStore {
     @Override
     public Observable<Installation> removeInstall() {
         return this.tribeApi.removeInstall(context.getString(R.string.install_remove, installation.getId())).doOnNext(aVoid -> {
-    //                    accessToken.setAccessToken(null);
-    //                    installation.setId(null);
-    //                    userCache.put((UserRealm) null);
+                    //                    accessToken.setAccessToken(null);
+                    //                    installation.setId(null);
+                    //                    userCache.put((UserRealm) null);
                     // TODO: remove all files and clear databasee
 
                 }
@@ -239,7 +244,7 @@ public class CloudUserDataStore implements UserDataStore {
                             result.append(",");
                         }
 
-                        String idsFromStr = result.length() > 0 ? result.substring(0, result.length() - 1): "";
+                        String idsFromStr = result.length() > 0 ? result.substring(0, result.length() - 1) : "";
 
                         String reqUserList = context.getString(R.string.user_infos_list, idsFromStr);
                         return tribeApi.getUserListInfos(reqUserList);
@@ -265,52 +270,68 @@ public class CloudUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<UserRealm> updateUser(String key, String value) {
+    public Observable<UserRealm> updateUser(String username, String displayName, String pictureUri) {
+        String usernameParam;
+        String displayNameParam;
 
-        if (key == "picture") {
-            String request = context.getString(R.string.user_mutate_username, "username", userCache.userInfosNoObs(accessToken.getUserId()).getUsername());
-            RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
+        if (username == null)
+            usernameParam = userCache.userInfosNoObs(accessToken.getUserId()).getUsername();
+        else usernameParam = username;
 
-            File file = new File(Uri.parse(value).getPath());
+        if (displayName == null)
+            displayNameParam = userCache.userInfosNoObs(accessToken.getUserId()).getDisplayName();
+        else displayNameParam = displayName;
 
-            if (file != null && file.exists() && file.length() > 0) {
 
-                RequestBody requestFile = null;
-                MultipartBody.Part body = null;
-
-                requestFile = RequestBody.create(MediaType.parse("image/jpeg"), file);
-                body = MultipartBody.Part.createFormData("user_pic", "user_pic.jpg", requestFile);
-
-                return tribeApi.updateUserMedia(query, body)
-                        .doOnNext(userRealm -> {
-                            UserRealm dbUser = userCache.userInfosNoObs(accessToken.getUserId());
-                            dbUser.setProfilePicture(userRealm.getProfilePicture());
-                            userCache.put(dbUser);
-                            user.setProfilePicture(userRealm.getProfilePicture());
-
-                        });
-
-            }
-
-            return null;
-
-        } else {
-            String request = context.getString(R.string.user_mutate_username, key, value);
+        if (pictureUri == null) {
+            String request = context.getString(R.string.user_mutate_username, usernameParam, displayNameParam);
 
             return this.tribeApi.updateUser(request)
                     .doOnNext(userRealm -> {
                         UserRealm dbUser = userCache.userInfosNoObs(accessToken.getUserId());
-                        if (key == "username") {
-                            dbUser.setUsername(userRealm.getUsername());
-                            user.setUsername(userRealm.getUsername());
-                        }
-                        if (key == "display_name") {
-                            dbUser.setDisplayName(userRealm.getDisplayName());
-                            user.setDisplayName(userRealm.getDisplayName());
-                        }
-
+                        dbUser.setUsername(userRealm.getUsername());
+                        user.setUsername(userRealm.getUsername());
+                        dbUser.setDisplayName(userRealm.getDisplayName());
+                        user.setDisplayName(userRealm.getDisplayName());
                         userCache.put(dbUser);
                     });
+        } else {
+            String request = context.getString(R.string.user_mutate_username, usernameParam, displayNameParam);
+            RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
+
+            File file = new File(Uri.parse(pictureUri).getPath());
+
+            if (!(file != null && file.exists() && file.length() > 0)) {
+                InputStream inputStream = null;
+                file = FileUtils.getFileEnd(FileUtils.generateIdForMessage());
+                try {
+                    inputStream = context.getContentResolver().openInputStream(Uri.parse(pictureUri));
+                    FileUtils.copyInputStreamToFile(inputStream, file);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            RequestBody requestFile = null;
+            MultipartBody.Part body = null;
+
+            requestFile = RequestBody.create(MediaType.parse("image/jpeg"), file);
+            body = MultipartBody.Part.createFormData("user_pic", "user_pic.jpg", requestFile);
+
+            return tribeApi.updateUserMedia(query, body)
+                    .doOnNext(userRealm -> {
+                        UserRealm dbUser = userCache.userInfosNoObs(accessToken.getUserId());
+                        dbUser.setProfilePicture(userRealm.getProfilePicture());
+                        dbUser.setUsername(userRealm.getUsername());
+                        user.setUsername(userRealm.getUsername());
+                        dbUser.setDisplayName(userRealm.getDisplayName());
+                        user.setDisplayName(userRealm.getDisplayName());
+                        userCache.put(dbUser);
+                        user.setProfilePicture(userRealm.getProfilePicture());
+                    });
+
         }
     }
 
@@ -344,7 +365,7 @@ public class CloudUserDataStore implements UserDataStore {
                     result.append(",");
                 }
 
-                String phonesStr = result.length() > 0 ? result.substring(0, result.length() - 1): "";
+                String phonesStr = result.length() > 0 ? result.substring(0, result.length() - 1) : "";
 
                 String reqLookup = context.getString(R.string.lookup, context.getString(R.string.lookup_phone, phonesStr), "");
                 return tribeApi.lookup(reqLookup);

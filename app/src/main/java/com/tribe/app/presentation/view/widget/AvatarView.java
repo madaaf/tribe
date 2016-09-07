@@ -88,11 +88,16 @@ public class AvatarView extends RoundedCornerLayout {
     }
 
     public void load(String url) {
-        picasso.load(url)
-                .fit()
-                .noFade()
-                .centerCrop()
-                .into(imgAvatar);
+        try {
+            picasso.load(url)
+                    .fit()
+                    .noFade()
+                    .centerCrop()
+                    .into(imgAvatar);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void setHasBorder(boolean hasBorder) {
