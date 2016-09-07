@@ -111,7 +111,6 @@ public class IntroActivity extends BaseActivity {
             subscriptions.clear();
         }
 
-
         super.onDestroy();
     }
 

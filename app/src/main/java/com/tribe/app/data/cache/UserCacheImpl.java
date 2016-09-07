@@ -178,4 +178,14 @@ public class UserCacheImpl implements UserCache {
         else
             return null;
     }
+
+    @Override
+    public void removeFriendship(String friendshipId) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        FriendshipRealm friendshipRealm = realm.where(FriendshipRealm.class).equalTo("id", friendshipId).findFirst();
+        if (friendshipRealm != null) friendshipRealm.deleteFromRealm();
+        realm.commitTransaction();
+        realm.close();
+    }
 }

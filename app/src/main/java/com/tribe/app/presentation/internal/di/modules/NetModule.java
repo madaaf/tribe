@@ -22,7 +22,10 @@ import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.deserializer.ChatHistoryDeserializer;
 import com.tribe.app.data.network.deserializer.CollectionAdapter;
+import com.tribe.app.data.network.deserializer.CreateFriendshipDeserializer;
 import com.tribe.app.data.network.deserializer.DateDeserializer;
+import com.tribe.app.data.network.deserializer.HowManyFriendsDeserializer;
+import com.tribe.app.data.network.deserializer.LookupDeserializer;
 import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
 import com.tribe.app.data.network.deserializer.NewMessageDeserializer;
 import com.tribe.app.data.network.deserializer.NewTribeDeserializer;
@@ -30,6 +33,8 @@ import com.tribe.app.data.network.deserializer.TribeAccessTokenDeserializer;
 import com.tribe.app.data.network.deserializer.TribeUserDeserializer;
 import com.tribe.app.data.network.deserializer.UserListDeserializer;
 import com.tribe.app.data.network.deserializer.UserMessageListDeserializer;
+import com.tribe.app.data.network.entity.CreateFriendshipEntity;
+import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.network.entity.RefreshEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ChatRealm;
@@ -95,11 +100,14 @@ public class NetModule {
                 .registerTypeAdapter(AccessToken.class, new TribeAccessTokenDeserializer())
                 .registerTypeAdapter(TribeRealm.class, new NewTribeDeserializer<>())
                 .registerTypeAdapter(ChatRealm.class, new NewMessageDeserializer<>())
-                .registerTypeAdapter(new TypeToken<List<MessageRealmInterface>>() {}.getType(), new UserMessageListDeserializer<>(utcSimpleDate, userCache, tribeCache, chatCache, currentUser))
+                .registerTypeAdapter(new TypeToken<List<MessageRealmInterface>>(){}.getType(), new UserMessageListDeserializer<>(utcSimpleDate, userCache, tribeCache, chatCache, currentUser))
                 .registerTypeAdapter(Installation.class, new NewInstallDeserializer<>())
                 .registerTypeAdapter(Date.class, new DateDeserializer(utcSimpleDateFull))
-                .registerTypeAdapter(new TypeToken<List<UserRealm>>() {}.getType(), new UserListDeserializer<>())
-                .registerTypeAdapter(new TypeToken<List<ChatRealm>>() {}.getType(), new ChatHistoryDeserializer(utcSimpleDate, userCache, tribeCache, chatCache, currentUser))
+                .registerTypeAdapter(new TypeToken<List<UserRealm>>(){}.getType(), new UserListDeserializer<>())
+                .registerTypeAdapter(new TypeToken<List<ChatRealm>>(){}.getType(), new ChatHistoryDeserializer(utcSimpleDate, userCache, tribeCache, chatCache, currentUser))
+                .registerTypeAdapter(LookupEntity.class, new LookupDeserializer())
+                .registerTypeAdapter(CreateFriendshipEntity.class, new CreateFriendshipDeserializer())
+                .registerTypeAdapter(new TypeToken<List<Integer>>(){}.getType(), new HowManyFriendsDeserializer())
                 .registerTypeHierarchyAdapter(Collection.class, new CollectionAdapter())
                 .create();
     }

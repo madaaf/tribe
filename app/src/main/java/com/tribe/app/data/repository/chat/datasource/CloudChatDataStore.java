@@ -167,7 +167,7 @@ public class CloudChatDataStore implements ChatDataStore {
         }
 
         if (buffer.length() > 0) {
-            String req = context.getString(R.string.message_markAsSeen, buffer.toString());
+            String req = context.getString(R.string.mutation, buffer.toString());
             return this.tribeApi.markMessageListAsSeen(req);
         }
 

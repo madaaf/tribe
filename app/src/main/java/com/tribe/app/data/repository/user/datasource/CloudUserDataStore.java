@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.telephony.TelephonyManager;
+import android.util.Pair;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
@@ -16,9 +17,11 @@ import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.entity.LoginEntity;
+import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.ContactABRealm;
+import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.LocationRealm;
@@ -35,8 +38,10 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import okhttp3.MediaType;
@@ -50,6 +55,8 @@ import rx.functions.Action1;
  * {@link UserDataStore} implementation based on connections to the api (Cloud).
  */
 public class CloudUserDataStore implements UserDataStore {
+
+    private static final int LOOKUP_LIMIT = 50;
 
     private final TribeApi tribeApi;
     private final LoginApi loginApi;
@@ -133,7 +140,7 @@ public class CloudUserDataStore implements UserDataStore {
     @Override
     public Observable<UserRealm> userInfos(String userId) {
 //        return this.tribeApi.getUserInfos(context.getString(R.string.user_infos)).doOnNext(saveToCacheUser);
-        return Observable.zip(this.tribeApi.getUserInfos(context.getString(R.string.user_infos)),
+        return Observable.zip(this.tribeApi.getUserInfos(context.getString(R.string.user_infos, context.getString(R.string.userfragment_infos))),
                 reactiveLocationProvider.getLastKnownLocation().onErrorReturn(throwable -> null).defaultIfEmpty(null),
                 (userRealm, location) -> {
                     if (location != null) {
@@ -241,7 +248,7 @@ public class CloudUserDataStore implements UserDataStore {
 
                         String idsFromStr = result.length() > 0 ? result.substring(0, result.length() - 1): "";
 
-                        String reqUserList = context.getString(R.string.user_infos_list, idsFromStr);
+                        String reqUserList = context.getString(R.string.user_infos_list, idsFromStr, context.getString(R.string.userfragment_infos));
                         return tribeApi.getUserListInfos(reqUserList);
                     } else {
                         return Observable.just(new ArrayList<UserRealm>());
@@ -316,14 +323,31 @@ public class CloudUserDataStore implements UserDataStore {
 
 
     @Override
-    public Observable<List<ContactABRealm>> contacts() {
-        return rxContacts.getContacts().toList().flatMap(contactABRealmList -> {
-            Set<String> phones = new HashSet<>();
+    public Observable<List<ContactInterface>> contacts() {
+        userCache.removeFriendship("BkfMWfBGs");
 
-            for (ContactABRealm contactABRealm : contactABRealmList) {
-                for (PhoneRealm phoneRealm : contactABRealm.getPhones()) {
-                    if (phoneRealm.isInternational())
-                        phones.add(phoneRealm.getPhone());
+        return Observable.zip(
+                rxContacts.getContacts().toList(),
+                Observable.just(new ArrayList<>()),
+                (contactABRealmList, contactFBRealmList) -> {
+                    List<ContactInterface> contactList = new ArrayList<>();
+
+                    for (ContactABRealm contactABRealm : contactABRealmList) {
+                        contactList.add(contactABRealm);
+                    }
+
+                    return contactList;
+                }
+        ).flatMap(contactList -> {
+            Map<String, ContactInterface> phones = new HashMap<>();
+
+            for (ContactInterface contactI : contactList) {
+                if (contactI instanceof ContactABRealm) {
+                    ContactABRealm contactABRealm = (ContactABRealm) contactI;
+                    for (PhoneRealm phoneRealm : contactABRealm.getPhones()) {
+                        if (phoneRealm.isInternational())
+                            phones.put(phoneRealm.getPhone(), contactABRealm);
+                    }
                 }
             }
 
@@ -337,23 +361,139 @@ public class CloudUserDataStore implements UserDataStore {
             phones.remove(currentUser.getPhone());
 
             if (phones.size() > 0) {
+                StringBuffer buffer = new StringBuffer();
                 StringBuilder result = new StringBuilder();
 
-                for (String string : phones) {
-                    result.append("\"" + string + "\"");
+                int count = 0;
+                int loopCount = 0;
+                for (String phone : phones.keySet()) {
+                    result.append("\"" + phone + "\"");
                     result.append(",");
+                    count++;
+
+                    if (count % LOOKUP_LIMIT == 0) {
+                        buffer.append(context.getString(R.string.lookup_phone, loopCount, result.length() > 0 ? result.substring(0, result.length() - 1) : ""));
+                        loopCount++;
+                        result = new StringBuilder();
+                    }
                 }
 
-                String phonesStr = result.length() > 0 ? result.substring(0, result.length() - 1): "";
+                buffer.append(context.getString(R.string.lookup_phone, loopCount, result.length() > 0 ? result.substring(0, result.length() - 1) : ""));
 
-                String reqLookup = context.getString(R.string.lookup, context.getString(R.string.lookup_phone, phonesStr), "");
-                return tribeApi.lookup(reqLookup);
+                String reqLookup = context.getString(R.string.lookup, buffer.toString(), "", context.getString(R.string.userfragment_infos));
+
+                return Observable.zip(
+                        Observable.just(phones),
+                        tribeApi.lookup(reqLookup),
+                        (stringContactInterfaceMap, lookupEntity)
+                                -> {
+                            for (UserRealm userRealm : lookupEntity.getLookup()) {
+                                for (String phone : phones.keySet()) {
+                                    if (userRealm.getPhone().equals(phone)) {
+                                        phones.get(phone).addUser(userRealm);
+                                    }
+                                }
+                            }
+                            return Pair.create(stringContactInterfaceMap, lookupEntity);
+                        }
+                );
             }
 
-            return null;
-        }, (contactABRealmList, lookupEntity) -> {
-            return contactABRealmList;
-        }).doOnNext(saveToCacheABContacts);
+            return Observable.just(Pair.create(phones, null));
+        }, (contactList, entityPair) -> {
+            StringBuffer buffer = new StringBuffer();
+            String mutationCreateFriendship = null;
+            String reqHowManyFriends = null;
+            LookupEntity lookupEntity = entityPair.second != null ? (LookupEntity) entityPair.second : null;
+            Map<String, ContactInterface> phonesHowManyFriends = new HashMap<>(entityPair.first);
+            Map<String, ContactInterface> phonesNewFriendships = new HashMap<>(entityPair.first);
+
+            if (lookupEntity != null && lookupEntity.getLookup() != null && lookupEntity.getLookup().size() > 0) {
+                int count = 0;
+                Set<String> phonesFound = new HashSet<>();
+
+                for (UserRealm userRealmLookup : lookupEntity.getLookup()) {
+                    phonesFound.add(userRealmLookup.getPhone());
+                    buffer.append(context.getString(R.string.createFriendship_input, count, userRealmLookup.getId(), context.getString(R.string.friendships_infos)));
+                }
+
+                phonesHowManyFriends.keySet().removeAll(phonesFound);
+                phonesNewFriendships.keySet().removeAll(phonesHowManyFriends.keySet());
+
+                mutationCreateFriendship = context.getString(R.string.createFriendship_mutation, buffer.toString(), context.getString(R.string.userfragment_infos));
+            }
+
+            if (phonesHowManyFriends.size() > 0) {
+                StringBuffer bufferHowManyFriends = new StringBuffer();
+                StringBuilder resultHowManyFriends = new StringBuilder();
+
+                int count = 0;
+                int loopCount = 0;
+                for (String phone : phonesHowManyFriends.keySet()) {
+                    resultHowManyFriends.append("\"" + phone + "\"");
+                    resultHowManyFriends.append(",");
+                    count++;
+
+                    if (count % LOOKUP_LIMIT == 0) {
+                        bufferHowManyFriends.append(context.getString(R.string.howManyFriends_part, loopCount,
+                                resultHowManyFriends.length() > 0 ? resultHowManyFriends.substring(0, resultHowManyFriends.length() - 1) : ""));
+                        loopCount++;
+                        resultHowManyFriends = new StringBuilder();
+                    }
+                }
+
+                bufferHowManyFriends.append(context.getString(R.string.howManyFriends_part, loopCount,
+                        resultHowManyFriends.length() > 0 ? resultHowManyFriends.substring(0, resultHowManyFriends.length() - 1) : ""));
+
+                reqHowManyFriends = context.getString(R.string.mutation, bufferHowManyFriends.toString());
+            }
+
+            Observable.zip(
+                    tribeApi.howManyFriends(reqHowManyFriends),
+                    StringUtils.isEmpty(mutationCreateFriendship) ? Observable.empty() : tribeApi.createFriendship(mutationCreateFriendship),
+                    (howManyFriendsResult, createFriendshipEntity) -> {
+                        int indexHowMany = 0;
+
+                        for (ContactInterface contactInterface : phonesHowManyFriends.values()) {
+                            contactInterface.setHowManyFriends(howManyFriendsResult.get(indexHowMany));
+                            indexHowMany++;
+                        }
+
+                        UserRealm currentUser = userCache.userInfosNoObs(accessToken.getUserId());
+                        currentUser.getFriendships().addAll(createFriendshipEntity.getNewFriendshipList());
+                        userCache.put(currentUser);
+
+                        return phonesHowManyFriends;
+                    }).subscribe(stringContactInterfaceMap -> {
+                System.out.println("LOL");
+            });
+
+            //return Pair.create(contactABRealmList, tribeApi.createFriendship(mutationCreateFriendship));
+
+            return contactList;
+        });
+
+
+
+//        }, (contactABRealmList, lookupEntity) -> {
+//            StringBuffer buffer = new StringBuffer();
+//            String mutationCreateFriendship = null;
+//            Set<String> createdPhones = new HashSet<String>();
+//
+//            if (lookupEntity != null && lookupEntity.getLookup() != null && lookupEntity.getLookup().size() > 0) {
+//                int count = 0;
+//
+//                for (UserRealm userRealmLookup : lookupEntity.getLookup()) {
+//                    buffer.append(context.getString(R.string.createFriendship_input, count, userRealmLookup.getId(), context.getString(R.string.friendships_infos)));
+//                }
+//
+//                mutationCreateFriendship = context.getString(R.string.createFriendship_mutation, buffer.toString(), context.getString(R.string.userfragment_infos));
+//            }
+//
+//            return Pair.create(contactABRealmList, tribeApi.createFriendship(mutationCreateFriendship));
+//        }).flatMap(listPair -> {
+//            return Observable.just(listPair.first);
+//        });
     }
 
     private final Action1<AccessToken> saveToCacheAccessToken = accessToken -> {

@@ -1,7 +1,7 @@
 package com.tribe.app.data.repository.user.datasource;
 
 import com.tribe.app.data.realm.AccessToken;
-import com.tribe.app.data.realm.ContactABRealm;
+import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
@@ -75,8 +75,8 @@ public interface UserDataStore {
     Observable<UserRealm> updateUser(String key, String value);
 
     /**
-     * Get an {@link Observable} which will emit a {@link List <ContactABRealm>} containing infos
+     * Get an {@link Observable} which will emit a {@link List <ContactInterface>} containing infos
      * about the contacts from address book.
      */
-    Observable<List<ContactABRealm>> contacts();
+    Observable<List<ContactInterface>> contacts();
 }

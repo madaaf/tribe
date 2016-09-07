@@ -5,4 +5,7 @@ package com.tribe.app.data.realm;
  */
 public interface ContactInterface {
 
+    public void setHowManyFriends(int friends);
+    public int getHowManyFriends();
+    public void addUser(UserRealm userRealm);
 }

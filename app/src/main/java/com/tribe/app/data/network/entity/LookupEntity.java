@@ -9,22 +9,13 @@ import java.util.List;
  */
 public class LookupEntity {
 
-    private List<UserRealm> lookupByPhone;
-    private List<UserRealm> lookupByFbid;
+    private List<UserRealm> lookupList;
 
-    public List<UserRealm> getLookupByFbid() {
-        return lookupByFbid;
+    public List<UserRealm> getLookup() {
+        return lookupList;
     }
 
-    public List<UserRealm> getLookupByPhone() {
-        return lookupByPhone;
-    }
-
-    public void setLookupByFbid(List<UserRealm> lookupByFbid) {
-        this.lookupByFbid = lookupByFbid;
-    }
-
-    public void setLookupByPhone(List<UserRealm> lookupByPhone) {
-        this.lookupByPhone = lookupByPhone;
+    public void setLookup(List<UserRealm> lookupList) {
+        this.lookupList = lookupList;
     }
 }

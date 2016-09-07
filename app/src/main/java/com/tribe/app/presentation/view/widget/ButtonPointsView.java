@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
@@ -145,9 +146,12 @@ public class ButtonPointsView extends LinearLayout {
     public void setDrawable(String url) {
         if (type == PROFILE) {
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            picasso.load(url).fit().centerCrop()
-                    .transform(new RoundedCornersTransformation(radiusImage, 0, RoundedCornersTransformation.CornerType.LEFT))
-                    .into(imageView);
+
+            if (!StringUtils.isEmpty(url)) {
+                picasso.load(url).fit().centerCrop()
+                        .transform(new RoundedCornersTransformation(radiusImage, 0, RoundedCornersTransformation.CornerType.LEFT))
+                        .into(imageView);
+            }
         }
     }
 
