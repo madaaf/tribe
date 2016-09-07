@@ -10,12 +10,16 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.facebook.rebound.Spring;
+import com.facebook.rebound.SpringSystem;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.tbruyelle.rxpermissions.RxPermissions;
@@ -245,6 +249,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 .applicationComponent(getApplicationComponent())
                 .build().inject(this);
     }
+
+
 
     private void initPresenter() {
         this.homePresenter.attachView(this);
@@ -577,4 +583,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             layoutNavNewMessages.animate().translationY(0).setDuration(DURATION).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
         }
     }
+
+
+
 }

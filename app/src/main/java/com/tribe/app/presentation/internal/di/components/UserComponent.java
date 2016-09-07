@@ -16,6 +16,7 @@ import com.tribe.app.presentation.view.fragment.ContactsGridFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
 import com.tribe.app.presentation.view.fragment.IntroViewFragment;
 import com.tribe.app.presentation.view.fragment.ProfileInfoFragment;
+import com.tribe.app.presentation.view.fragment.SettingFragment;
 
 import dagger.Component;
 
@@ -38,5 +39,6 @@ public interface UserComponent extends ActivityComponent {
     void inject(ProfileInfoFragment profileInfoFragment);
     void inject(SettingActivity settingActivity);
     void inject(SettingItemView settingItemView);
+    void inject(SettingFragment settingFragment);
     void inject(SettingPresenter settingPresenter);
 }

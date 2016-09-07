@@ -11,7 +11,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -33,8 +38,14 @@ import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.component.SettingSectionView;
 import com.tribe.app.presentation.view.component.SettingItemView;
+import com.tribe.app.presentation.view.fragment.AccessFragment;
+import com.tribe.app.presentation.view.fragment.IntroViewFragment;
 import com.tribe.app.presentation.view.fragment.ProfileInfoFragment;
+import com.tribe.app.presentation.view.fragment.SettingBlockFragment;
+import com.tribe.app.presentation.view.fragment.SettingFragment;
+import com.tribe.app.presentation.view.fragment.SettingUpdateProfileFragment;
 import com.tribe.app.presentation.view.utils.Weather;
+import com.tribe.app.presentation.view.widget.CustomViewPager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -54,7 +65,7 @@ import rx.subscriptions.CompositeSubscription;
  * SettingActivity.java
  * Created by horatiothomas on 8/26/16.
  */
-public class SettingActivity extends BaseActivity implements SettingView {
+public class SettingActivity extends BaseActivity {
 
     public static Intent getCallingIntent(Context context) {
         return new Intent(context, SettingActivity.class);
@@ -63,78 +74,18 @@ public class SettingActivity extends BaseActivity implements SettingView {
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
-    @BindView(R.id.settingsPicture)
-    SettingItemView settingsPicture;
-
-    @BindView(R.id.settingsDisplayName)
-    SettingItemView settingsDisplayName;
-
-    @BindView(R.id.settingsUsername)
-    SettingItemView settingsUsername;
-
-    @BindView(R.id.messageSettingMemories)
-    SettingItemView messageSettingMemories;
-
-    @BindView(R.id.messageSettingContext)
-    SettingItemView messageSettingContext;
-
-    @BindView(R.id.messageSettingVoice)
-    SettingItemView messageSettingVoice;
-
-    @BindView(R.id.messageSettingPreload)
-    SettingItemView messageSettingPreload;
-
-    @BindView(R.id.messageSettingFahrenheit)
-    SettingItemView messageSettingFahrenheit;
-
-    @BindView(R.id.settingsTweet)
-    SettingItemView settingsTweet;
-
-    @BindView(R.id.settingsEmail)
-    SettingItemView settingsEmail;
-
-    @BindView(R.id.settingsRateApp)
-    SettingItemView settingsRateApp;
-
-    @BindView(R.id.settingsLogOut)
-    SettingItemView settingsLogOut;
-
-    @BindView(R.id.profileSection)
-    SettingSectionView profileSection;
-
-    @BindView(R.id.messageSection)
-    SettingSectionView messageSection;
-
-    @BindView(R.id.supportSection)
-    SettingSectionView supportSection;
-
-    @BindView(R.id.exitSection)
-    SettingSectionView exitSection;
 
     @BindView(R.id.imgDone)
     ImageView imgDone;
 
-    @Inject
-    @WeatherUnits
-    Preference<String> weatherUnits;
-    @Inject
-    @Memories
-    Preference<Boolean> memories;
-    @Inject
-    @LocationContext
-    Preference<Boolean> locationContext;
-    @Inject
-    @AudioDefault
-    Preference<Boolean> audioDefault;
-    @Inject
-    @Preload
-    Preference<Boolean> preload;
+    private SettingFragment settingFragment;
+    private SettingUpdateProfileFragment settingUpdateProfileFragment;
+    private SettingBlockFragment settingBlockFragment;
 
-    @Inject
-    Navigator navigator;
+    private final static int PAGE_MAIN = 0, PAGE_UPDATE = 1, PAGE_BLOCK = 2;
 
-    @Inject
-    SettingPresenter settingPresenter;
+    @BindView(R.id.viewPager)
+    CustomViewPager viewPager;
 
     @Inject
     Picasso picasso;
@@ -146,21 +97,26 @@ public class SettingActivity extends BaseActivity implements SettingView {
         super.onCreate(savedInstanceState);
 
         initUi();
+        initViewPager();
         initDependencyInjector();
-        initSettings();
-        initPresenter();
     }
 
     @Override
     protected void onDestroy() {
         if (unbinder != null) unbinder.unbind();
 
-        if (subscriptions.hasSubscriptions()) {
-            subscriptions.unsubscribe();
-            subscriptions.clear();
-        }
-
         super.onDestroy();
+    }
+
+    private void initViewPager() {
+        IntroViewPagerAdapter introViewPagerAdapter = new IntroViewPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(introViewPagerAdapter);
+        viewPager.setOffscreenPageLimit(4);
+        viewPager.setScrollDurationFactor(2f);
+        viewPager.setCurrentItem(PAGE_MAIN);
+        viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_NONE);
+        viewPager.setPageTransformer(false, new SetttingPageTransformer());
+        viewPager.setSwipeable(false);
     }
 
     @Override
@@ -181,74 +137,16 @@ public class SettingActivity extends BaseActivity implements SettingView {
             }
             thumbnail = BitmapFactory.decodeStream(image_stream );
 
-            settingsPicture.setPictureBitmap(thumbnail);
-            settingPresenter.updateUser("picture", imageUri);
+//            settingsPicture.setPictureBitmap(thumbnail);
+//            settingPresenter.updateUser("picture", imageUri);
         }
 
     }
 
 
-
-
-    private void initPresenter() {
-        settingPresenter.attachView(this);
-    }
-
-    private void initSettings() {
-
-        subscriptions.add(RxView.clicks(settingsPicture).subscribe(aVoid -> {
-            // Get picture and set
-            navigator.getImageFromCamera(this, CAMERA_REQUEST);
-
-        }));
-
-        subscriptions.add(RxView.clicks(settingsDisplayName).subscribe(aVoid -> {
-            settingPresenter.updateUser("display_name", "Horatio 101");
-        }));
-
-        subscriptions.add(RxView.clicks(settingsUsername).subscribe(aVoid -> {
-            settingPresenter.updateUser("username", "Horatio T");
-        }));
-
-
-
-        subscriptions.add(messageSettingMemories.checkedSwitch().subscribe(isChecked -> {
-            if (isChecked) memories.set(true);
-            else memories.set(false);
-        }));
-
-        subscriptions.add(messageSettingContext.checkedSwitch().subscribe(isChecked -> {
-            if (isChecked) locationContext.set(true);
-            else locationContext.set(false);
-        }));
-
-        subscriptions.add(messageSettingVoice.checkedSwitch().subscribe(isChecked -> {
-            if (isChecked) audioDefault.set(true);
-            else audioDefault.set(false);
-        }));
-
-        subscriptions.add(messageSettingPreload.checkedSwitch().subscribe(isChecked -> {
-            if (isChecked) preload.set(true);
-            else preload.set(false);
-        }));
-
-        subscriptions.add(messageSettingFahrenheit.checkedSwitch().subscribe(isChecked -> {
-            if (isChecked) weatherUnits.set(Weather.FAHRENHEIT);
-            else weatherUnits.set(Weather.CELSIUS);
-        }));
-
-        subscriptions.add(RxView.clicks(settingsTweet).subscribe(aVoid -> {
-            navigator.tweet(this, "@HeyTribe");
-        }));
-
-        subscriptions.add(RxView.clicks(settingsRateApp).subscribe(aVoid -> {
-            navigator.rateApp(this);
-        }));
-
-        subscriptions.add(RxView.clicks(settingsEmail).subscribe(aVoid -> {
-            String[] addresses = {getString(R.string.settings_email_address)};
-            navigator.composeEmail(this, addresses, getString(R.string.settings_email_subject));
-        }));
+    private void initUi() {
+        setContentView(R.layout.activity_setting);
+        unbinder = ButterKnife.bind(this);
 
         subscriptions.add(RxView.clicks(imgDone).subscribe(aVoid -> {
             Intent resultIntent = new Intent();
@@ -256,68 +154,73 @@ public class SettingActivity extends BaseActivity implements SettingView {
             finish();
         }));
 
-        subscriptions.add(RxView.clicks(settingsLogOut).subscribe(aVoid -> {
-            settingPresenter.logout();
-        }));
+//        profileSection.setTitleIcon(R.string.settings_section_profile, R.drawable.picto_profile_icon);
+//        messageSection.setTitleIcon(R.string.settings_section_messages, R.drawable.picto_setting_message_icon);
+//        supportSection.setTitleIcon(R.string.settings_section_support, R.drawable.picto_setting_support_icon);
+//        exitSection.setTitleIcon(R.string.settings_section_exit, R.drawable.picto_setting_exit_icon);
+
+//        settingsPicture.setTitleBodyViewType(getString(R.string.settings_picture_title),
+//                getString(R.string.settings_picture_subtitle),
+//                SettingItemView.PICTURE);
+//        settingsDisplayName.setTitleBodyViewType(getString(R.string.settings_displayname_title),
+//                getString(R.string.settings_displayname_subtitle),
+//                SettingItemView.NAME);
+//        settingsUsername.setTitleBodyViewType(getString(R.string.settings_username_title),
+//                getString(R.string.settings_username_subtitle),
+//                SettingItemView.NAME);
+
+
+
+//        settingsUsername.setName(user.getUsername());
+//        settingsDisplayName.setName(user.getDisplayName());
 
     }
 
-    private void initUi() {
-        setContentView(R.layout.activity_setting);
-        unbinder = ButterKnife.bind(this);
 
-        profileSection.setTitleIcon(R.string.settings_section_profile, R.drawable.picto_profile_icon);
-        messageSection.setTitleIcon(R.string.settings_section_messages, R.drawable.picto_setting_message_icon);
-        supportSection.setTitleIcon(R.string.settings_section_support, R.drawable.picto_setting_support_icon);
-        exitSection.setTitleIcon(R.string.settings_section_exit, R.drawable.picto_setting_exit_icon);
+    /**
+     * Initialize fragment view pager adapter
+     */
 
-        settingsPicture.setTitleBodyViewType(getString(R.string.settings_picture_title),
-                getString(R.string.settings_picture_subtitle),
-                SettingItemView.PICTURE);
-        settingsDisplayName.setTitleBodyViewType(getString(R.string.settings_displayname_title),
-                getString(R.string.settings_displayname_subtitle),
-                SettingItemView.NAME);
-        settingsUsername.setTitleBodyViewType(getString(R.string.settings_username_title),
-                getString(R.string.settings_username_subtitle),
-                SettingItemView.NAME);
+    private class IntroViewPagerAdapter extends FragmentPagerAdapter {
 
-        messageSettingMemories.setTitleBodyViewType(getString(R.string.settings_tribesave_title),
-                getString(R.string.settings_tribesave_subtitle),
-                SettingItemView.SWITCH);
-        messageSettingContext.setTitleBodyViewType(getString(R.string.settings_geolocation_title),
-                getString(R.string.settings_geolocation_subtitle),
-                SettingItemView.SWITCH);
-        messageSettingVoice.setTitleBodyViewType(getString(R.string.settings_audio_title),
-                getString(R.string.settings_audio_subtitle),
-                SettingItemView.SWITCH);
-        messageSettingPreload.setTitleBodyViewType(getString(R.string.settings_preload_title),
-                getString(R.string.settings_preload_subtitle),
-                SettingItemView.SWITCH);
-        messageSettingFahrenheit.setTitleBodyViewType(getString(R.string.settings_weatherunits_title),
-                getString(R.string.settings_weatherunits_subtitle),
-                SettingItemView.SWITCH);
+        private static final int NUM_ITEMS = 3;
 
-        settingsTweet.setTitleBodyViewType(getString(R.string.settings_tweet_title),
-                getString(R.string.settings_tweet_subtitle),
-                SettingItemView.SIMPLE);
-        settingsEmail.setTitleBodyViewType(getString(R.string.settings_email_title),
-                getString(R.string.settings_email_subtitle),
-                SettingItemView.SIMPLE);
-        settingsRateApp.setTitleBodyViewType(getString(R.string.settings_rate_title),
-                getString(R.string.settings_rate_subtitle),
-                SettingItemView.SIMPLE);
-        settingsLogOut.setTitleBodyViewType(getString(R.string.settings_logout_title),
-                getString(R.string.settings_logout_subtitle),
-                SettingItemView.SIMPLE);
+        public IntroViewPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
 
-        User user = getCurrentUser();
+        @Override
+        public int getCount() {
+            return NUM_ITEMS;
+        }
 
-        settingsPicture.setPicture(user.getProfilePicture());
-        settingsUsername.setName(user.getUsername());
-        settingsDisplayName.setName(user.getDisplayName());
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0:
+                    settingFragment = SettingFragment.newInstance();
+                    return settingFragment;
+                case 1:
+                    settingUpdateProfileFragment = SettingUpdateProfileFragment.newInstance();
+                    return settingUpdateProfileFragment;
+                case 2:
+                    settingBlockFragment = SettingBlockFragment.newInstance();
+                    return settingBlockFragment;
+                default:
+                    settingFragment = SettingFragment.newInstance();
+                    return settingFragment;
+            }
+        }
 
     }
 
+    private class SetttingPageTransformer implements ViewPager.PageTransformer {
+
+        @Override
+        public void transformPage(View page, float position) {
+
+        }
+    }
 
     /**
      * Dagger Setup
@@ -332,48 +235,5 @@ public class SettingActivity extends BaseActivity implements SettingView {
     }
 
 
-    @Override
-    public void changeUsername(String username) {
-        settingsUsername.setName(username);
-    }
 
-    @Override
-    public void changeDisplayName(String displayName) {
-        settingsDisplayName.setName(displayName);
-    }
-
-    @Override
-    public void goToLauncher() {
-        navigator.navigateToLauncher(this);
-    }
-
-    @Override
-    public void showLoading() {
-
-    }
-
-    @Override
-    public void hideLoading() {
-
-    }
-
-    @Override
-    public void showRetry() {
-
-    }
-
-    @Override
-    public void hideRetry() {
-
-    }
-
-    @Override
-    public void showError(String message) {
-
-    }
-
-    @Override
-    public Context context() {
-        return this;
-    }
 }

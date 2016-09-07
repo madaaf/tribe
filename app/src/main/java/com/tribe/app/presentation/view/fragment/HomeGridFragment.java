@@ -6,9 +6,13 @@ import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.facebook.rebound.Spring;
+import com.facebook.rebound.SpringSystem;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
@@ -28,6 +32,7 @@ import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
+import com.tribe.app.presentation.view.widget.CustomViewPager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,6 +89,24 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private RecyclerView recyclerViewPending;
     private LabelSheetAdapter labelSheetAdapter;
 
+    // TOUCH HANDLING
+    private int activePointerId;
+    private float lastDownY, lastDownYTr;
+    private static final float DRAG_RATE = 0.5f;
+    private float currentDragPercent;
+    private int currentOffsetBottom;
+    private int thresholdAlphaEnd;
+    private int thresholdEnd;
+    private Spring springAlpha;
+    private Spring springAlphaSwipeDown;
+    private SpringSystem springSystem = null;
+    private VelocityTracker velocityTracker;
+
+
+    public HomeGridFragment() {
+        setRetainInstance(true);
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -109,6 +132,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
 
         init();
         initRecyclerView();
+//        initPullToSearch();
         return fragmentView;
     }
 
@@ -236,6 +260,101 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
 //    }
 
     private void init() {
+    }
+
+    private void initPullToSearch() {
+
+
+
+        thresholdEnd = getResources().getDimensionPixelSize(R.dimen.threshold_dismiss);
+        thresholdAlphaEnd = thresholdEnd >> 1;
+
+        springSystem = SpringSystem.create();
+
+        springAlpha = springSystem.createSpring();
+        springAlphaSwipeDown = springSystem.createSpring();
+
+        velocityTracker = VelocityTracker.obtain();
+
+        recyclerViewFriends.setOnTouchListener((view, event) -> {
+
+            if (layoutManager.findFirstVisibleItemPosition() == 0) {
+
+                final int action = event.getAction();
+
+                switch (action) {
+
+
+                    case MotionEvent.ACTION_DOWN:
+                        lastDownY = event.getRawY();
+                        lastDownYTr = view.getTranslationY();
+                        break;
+
+                    case MotionEvent.ACTION_MOVE:
+
+                        activePointerId = event.getPointerId(0);
+
+//                        if (currentSwipeDirection == CustomViewPager.SWIPE_MODE_DOWN) {
+                            final int pointerIndex = event.findPointerIndex(activePointerId);
+
+                            if (pointerIndex != -1) {
+                                final int location[] = {0, 0};
+                                view.getLocationOnScreen(location);
+
+                                float y = event.getY(pointerIndex) + location[1];
+
+                                float offsetY = y - lastDownY + lastDownYTr;
+
+                                if (offsetY >= 0) {
+                                    return applyOffsetBottomWithTension(offsetY, view);
+                                }
+
+                            }
+
+//                        }
+                        velocityTracker.addMovement(event);
+                    default:
+                        break;
+                }
+            }
+
+            return false;
+        });
+    }
+
+
+    private boolean applyOffsetBottomWithTension(float offsetY, View view) {
+        float totalDragDistance = view.getHeight() / 3;
+        final float scrollTop = offsetY * DRAG_RATE;
+        currentDragPercent = scrollTop / totalDragDistance;
+
+        if (currentDragPercent < 0) {
+            return false;
+        }
+
+        currentOffsetBottom = computeOffsetWithTension(scrollTop, totalDragDistance);
+        scrollBottom(currentOffsetBottom);
+
+        springAlpha.setCurrentValue(1 - (offsetY / thresholdAlphaEnd));
+        springAlphaSwipeDown.setCurrentValue(offsetY / (thresholdAlphaEnd * 2));
+        return true;
+    }
+
+    private int computeOffsetWithTension(float scrollDist, float totalDragDistance) {
+        float boundedDragPercent = Math.min(1f, Math.abs(currentDragPercent));
+        float extraOS = Math.abs(scrollDist) - totalDragDistance;
+        float slingshotDist = totalDragDistance;
+        float tensionSlingshotPercent = Math.max(0,
+                Math.min(extraOS, slingshotDist * 2) / slingshotDist);
+        float tensionPercent = (float) ((tensionSlingshotPercent / 4) - Math.pow(
+                (tensionSlingshotPercent / 4), 2)) * 2f;
+        float extraMove = (slingshotDist) * tensionPercent / 2;
+        return (int) ((slingshotDist * boundedDragPercent) + extraMove);
+    }
+
+    private void scrollBottom(float value) {
+        recyclerViewFriends.setTranslationY(value);
+        //Todo: add pull to search here
     }
 
     private void initRecyclerView() {
@@ -470,4 +589,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private void loadData() {
         this.homeGridPresenter.onCreate();
     }
+
+
+
 }

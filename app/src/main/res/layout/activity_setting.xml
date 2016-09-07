@@ -28,127 +28,13 @@
             android:src="@drawable/picto_done_black" />
 
     </FrameLayout>
-
-
-    <!-- Main Scroll View -->
-
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/scrollSetting"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="50dp"
-        android:background="@android:color/black">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/shape_rect_white_rounded_corners"
-            android:orientation="vertical">
-
-            <!-- Profile Settings -->
-
-            <com.tribe.app.presentation.view.component.SettingSectionView
-                android:id="@+id/profileSection"
+    
+            <com.tribe.app.presentation.view.widget.CustomViewPager
+                android:id="@+id/viewPager"
+                android:layout_marginTop="50dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 />
-
-            <com.tribe.app.presentation.view.component.SettingItemView
-                android:id="@+id/settingsPicture"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/section_button_vertical_padding"
-                />
-
-            <com.tribe.app.presentation.view.component.SettingItemView
-                android:id="@+id/settingsDisplayName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <com.tribe.app.presentation.view.component.SettingItemView
-                android:id="@+id/settingsUsername"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/section_button_vertical_padding"
-                />
-
-            <!-- Message Settings -->
-
-            <com.tribe.app.presentation.view.component.SettingSectionView
-                android:id="@+id/messageSection"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
-
-
-            <com.tribe.app.presentation.view.component.SettingItemView
-                android:id="@+id/messageSettingMemories"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/section_button_vertical_padding"
-                />
-
-            <com.tribe.app.presentation.view.component.SettingItemView
-                android:id="@+id/messageSettingContext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <com.tribe.app.presentation.view.component.SettingItemView
-                android:id="@+id/messageSettingVoice"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <com.tribe.app.presentation.view.component.SettingItemView
-                android:id="@+id/messageSettingPreload"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <com.tribe.app.presentation.view.component.SettingItemView
-                android:id="@+id/messageSettingFahrenheit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/section_button_vertical_padding"/>
-
-            <!-- Support Settings -->
-
-            <com.tribe.app.presentation.view.component.SettingSectionView
-                android:id="@+id/supportSection"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-               />
-
-            <com.tribe.app.presentation.view.component.SettingItemView
-                android:id="@+id/settingsTweet"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/section_button_vertical_padding"
-                />
-
-            <com.tribe.app.presentation.view.component.SettingItemView
-                android:id="@+id/settingsEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <com.tribe.app.presentation.view.component.SettingItemView
-                android:id="@+id/settingsRateApp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/section_button_vertical_padding"/>
-
-            <com.tribe.app.presentation.view.component.SettingSectionView
-                android:id="@+id/exitSection"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <com.tribe.app.presentation.view.component.SettingItemView
-                android:id="@+id/settingsLogOut"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/section_button_vertical_padding"/>
-
-        </LinearLayout>
-
-    </ScrollView>
 
     <View
         android:layout_width="match_parent"

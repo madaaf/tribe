@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollSetting"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="50dp"
+    android:background="@android:color/black">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_rect_white_rounded_corners"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_white_rect_grey_border"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shape_white_rect_grey_border"
+                android:orientation="vertical">
+
+                <com.tribe.app.presentation.view.component.SettingItemView
+                    android:id="@+id/settingsProfile"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/section_button_vertical_padding" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@color/grey.background.profile_info" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shape_white_rect_grey_border"
+                android:orientation="vertical">
+
+                <com.tribe.app.presentation.view.component.SettingThemeView
+                    android:id="@+id/settingsTheme"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/section_button_vertical_padding" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@color/grey.background.profile_info" />
+
+            <com.tribe.app.presentation.view.component.SettingItemView
+                android:id="@+id/messageSettingMemories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/section_button_vertical_padding" />
+
+            <com.tribe.app.presentation.view.component.SettingItemView
+                android:id="@+id/messageSettingContext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <com.tribe.app.presentation.view.component.SettingItemView
+                android:id="@+id/messageSettingVoice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <com.tribe.app.presentation.view.component.SettingItemView
+                android:id="@+id/messageSettingPreload"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <com.tribe.app.presentation.view.component.SettingItemView
+                android:id="@+id/messageSettingFahrenheit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/section_button_vertical_padding" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@color/grey.background.profile_info" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_white_rect_grey_border"
+            android:orientation="vertical">
+
+            <com.tribe.app.presentation.view.component.SettingItemView
+                android:id="@+id/settingsFacebook"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/section_button_vertical_padding" />
+
+            <com.tribe.app.presentation.view.component.SettingItemView
+                android:id="@+id/settingsAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/section_button_vertical_padding" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@color/grey.background.profile_info" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_white_rect_grey_border"
+            android:orientation="vertical">
+
+            <com.tribe.app.presentation.view.component.SettingItemView
+                android:id="@+id/settingsInvisible"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/section_button_vertical_padding" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@color/grey.background.profile_info" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_white_rect_grey_border"
+            android:orientation="vertical">
+
+            <com.tribe.app.presentation.view.component.SettingItemView
+                android:id="@+id/settingsTweet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/section_button_vertical_padding" />
+
+            <com.tribe.app.presentation.view.component.SettingItemView
+                android:id="@+id/settingsEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <com.tribe.app.presentation.view.component.SettingItemView
+                android:id="@+id/settingsRateApp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/section_button_vertical_padding" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@color/grey.background.profile_info" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_white_rect_grey_border"
+            android:orientation="vertical">
+
+            <com.tribe.app.presentation.view.component.SettingItemView
+                android:id="@+id/settingsBlocked"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/section_button_vertical_padding" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@color/grey.background.profile_info" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_white_rect_grey_border"
+            android:orientation="vertical">
+
+            <com.tribe.app.presentation.view.component.SettingItemView
+                android:id="@+id/settingsLogOut"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/section_button_vertical_padding" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

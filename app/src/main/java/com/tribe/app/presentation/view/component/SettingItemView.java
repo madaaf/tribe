@@ -2,8 +2,10 @@ package com.tribe.app.presentation.view.component;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
@@ -25,6 +27,7 @@ import rx.subjects.PublishSubject;
  * Created by horatiothomas on 8/29/16.
  */
 public class SettingItemView extends FrameLayout {
+
     public SettingItemView(Context context) {
         super(context);
     }
@@ -50,11 +53,17 @@ public class SettingItemView extends FrameLayout {
     @BindView(R.id.switchSetting)
     Switch switchMessage;
 
-    @BindView(R.id.imageSetting)
-    ImageView imageSetting;
+    @BindView(R.id.imageProf)
+    ImageView imageProf;
+
+    @BindView(R.id.imageCancelIcon)
+    ImageView imageCancelIcon;
 
     @BindView(R.id.txtNameSetting)
     TextViewFont txtNameSetting;
+
+    @BindView(R.id.imageSyncIcon)
+    ImageView imageSyncIcon;
 
 //    @Inject
 //    Picasso picasso;
@@ -64,7 +73,7 @@ public class SettingItemView extends FrameLayout {
 
     int viewType;
 
-    public static final int PICTURE = 0, NAME = 1, SWITCH = 2, SIMPLE = 4, DELETE = 5;
+    public static final int NAME = 1, SWITCH = 2, SIMPLE = 4, DELETE = 5, MORE = 6;
 
     private PublishSubject<Boolean> checkedSwitch = PublishSubject.create();
 
@@ -113,10 +122,6 @@ public class SettingItemView extends FrameLayout {
         this.viewType = viewType;
 
         switch (viewType) {
-            case PICTURE:
-                imageSetting.setVisibility(VISIBLE);
-                setFrameClickable();
-                break;
             case NAME:
                 txtNameSetting.setVisibility(VISIBLE);
                 setFrameClickable();
@@ -131,6 +136,10 @@ public class SettingItemView extends FrameLayout {
                 txtSectionTitle.setTextColor(ContextCompat.getColor(getContext(), R.color.red_circle));
                 setFrameClickable();
                 break;
+            case MORE:
+                setFrameClickable();
+                imageCancelIcon.setVisibility(VISIBLE);
+                break;
             default:
                 break;
         }
@@ -142,44 +151,53 @@ public class SettingItemView extends FrameLayout {
         setForeground(ContextCompat.getDrawable(getContext(), R.drawable.selectable_button));
     }
 
+    public void setSyncUp(int textColor, int image) {
+        imageSyncIcon.setVisibility(VISIBLE);
+        imageSyncIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), image));
+
+        FrameLayout.LayoutParams titleViewLayoutParams = (FrameLayout.LayoutParams) txtSectionTitle.getLayoutParams();
+        titleViewLayoutParams.setMarginStart(dpToPx(25));
+        txtSectionTitle.setLayoutParams(titleViewLayoutParams);
+
+        txtSectionBody.setTextColor(ContextCompat.getColor(getContext(), textColor));
+
+    }
+
     public void setPicture(String picUrl) {
+
+        imageProf.setVisibility(VISIBLE);
+
         Picasso.with(getContext())
                 .load(picUrl)
                 .fit()
                 .centerCrop()
                 .transform(new RoundedCornersTransformation(R.dimen.setting_pic_size >> 1, 0, RoundedCornersTransformation.CornerType.ALL))
-                .into(imageSetting);
+                .into(imageProf);
+
+        FrameLayout.LayoutParams titleViewLayoutParams = (FrameLayout.LayoutParams) txtSectionTitle.getLayoutParams();
+        titleViewLayoutParams.setMarginStart(dpToPx(55));
+        txtSectionTitle.setLayoutParams(titleViewLayoutParams);
+
+        FrameLayout.LayoutParams bodyViewLayoutParams = (FrameLayout.LayoutParams) txtSectionBody.getLayoutParams();
+        bodyViewLayoutParams.setMarginStart(dpToPx(55));
+        txtSectionBody.setLayoutParams(bodyViewLayoutParams);
+
     }
 
     public ImageView getPictureImageView() {
-        return imageSetting;
+        return imageProf;
     }
 
     public void setPictureBitmap(Bitmap bitmap) {
-        imageSetting.setImageBitmap(bitmap);
+        imageProf.setImageBitmap(bitmap);
     }
 
     public void setName(String name) {
         txtNameSetting.setText(name);
     }
 
-    /**
-     * Begin Dagger setup
-     */
-//
-//    protected ApplicationComponent getApplicationComponent() {
-//        return ((AndroidApplication) ((BaseActivity) getContext()).getApplication()).getApplicationComponent();
-//    }
-//
-//    protected ActivityModule getActivityModule() {
-//        return new ActivityModule(((BaseActivity) getContext()));
-//    }
-//
-//    private void initDependencyInjector() {
-//        DaggerUserComponent.builder()
-//                .activityModule(getActivityModule())
-//                .applicationComponent(getApplicationComponent())
-//                .build().inject(this);
-//    }
+    public int dpToPx(int dp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getContext().getResources().getDisplayMetrics());
+    }
 
 }

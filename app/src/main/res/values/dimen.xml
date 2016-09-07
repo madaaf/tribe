@@ -84,6 +84,8 @@
     <dimen name="reply_tap_to_cancel">82dp</dimen>
     <dimen name="score_circle_size">40dp</dimen>
     <dimen name="setting_pic_size">40dp</dimen>
+    <dimen name="setting_theme_size">40dp</dimen>
+    <dimen name="setting_theme_vertical_padding">15dp</dimen>
 
     <!-- THRESHOLDS -->
     <dimen name="threshold_dismiss">100dp</dimen>
