@@ -2,12 +2,14 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/shape_rect_background_grey_rounded_bottom">
+    android:background="@drawable/shape_rect_white_rounded_bottom">
 
     <com.tribe.app.presentation.view.widget.EditTextFont
-        android:id="@+id/searchBlockFriends"
+        android:id="@+id/editTextSearchBlockFriends"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/setting_block_search_bar_height" />
+        android:layout_height="@dimen/setting_block_search_bar_height"
+        android:background="@drawable/shape_white_rect_grey_border_no_top"
+        />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/blockFriendsRecyclerView"

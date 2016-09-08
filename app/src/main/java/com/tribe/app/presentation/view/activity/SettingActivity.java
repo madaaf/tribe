@@ -249,9 +249,6 @@ public class SettingActivity extends BaseActivity implements SettingView {
                 .start();
     }
 
-    private void blockAnim() {
-
-    }
 
     /**
      * Initialize fragment view pager adapter
@@ -293,6 +290,7 @@ public class SettingActivity extends BaseActivity implements SettingView {
     public void goToMain() {
         viewPager.setCurrentItem(PAGE_MAIN);
         txtTitle.setText(getString(R.string.settings_title));
+        imgDone.setAlpha(1f);
         mainSettingAnim();
     }
 
@@ -305,6 +303,7 @@ public class SettingActivity extends BaseActivity implements SettingView {
     public void goToBlock() {
         viewPager.setCurrentItem(PAGE_BLOCK);
         txtTitle.setText(getString(R.string.hiddenblocked_empty_title));
+        imgDone.setAlpha(0f);
         updateAnim();
     }
 
