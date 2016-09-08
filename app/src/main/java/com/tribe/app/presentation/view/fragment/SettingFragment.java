@@ -227,7 +227,7 @@ public class SettingFragment extends BaseFragment {
         messageSettingFahrenheit.setTitleBodyViewType(getString(R.string.settings_weatherunits_title),
                 getString(R.string.settings_weatherunits_subtitle),
                 SettingItemView.SWITCH);
-        if (weatherUnits.get() == Weather.FAHRENHEIT) messageSettingFahrenheit.setCheckedSwitch(true);
+        if (weatherUnits.get().equals(Weather.FAHRENHEIT)) messageSettingFahrenheit.setCheckedSwitch(true);
         else messageSettingFahrenheit.setCheckedSwitch(false);
 
         // TODO: setup based on sync status

@@ -13,6 +13,7 @@ import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
+import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
@@ -35,9 +36,6 @@ public class BlockFriendAdapterDelegate extends RxAdapterDelegate<List<Friendshi
     private final PublishSubject<View> clickFriendItem = PublishSubject.create();
 
     private Context context;
-
-    @Inject
-    Picasso picasso;
 
     public BlockFriendAdapterDelegate(Context context) {
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -69,10 +67,12 @@ public class BlockFriendAdapterDelegate extends RxAdapterDelegate<List<Friendshi
         Friendship friendship = items.get(position);
 
         vh.txtDisplayName.setText(friendship.getDisplayName());
-        vh.txtUsername.setText(friendship.getUsername());
+        vh.txtUsername.setText("@" + friendship.getUsername());
 
         try {
-            picasso.load(friendship.getProfilePicture())
+            Picasso.with(context)
+                    .load(friendship.getProfilePicture())
+                    .transform(new RoundedCornersTransformation(R.dimen.setting_pic_size >> 1, 0, RoundedCornersTransformation.CornerType.ALL))
                     .into(vh.imageFriendPic);
         } catch (NullPointerException e) {
             e.printStackTrace();

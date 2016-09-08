@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.fragment;
 
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -82,7 +83,7 @@ public class SettingBlockFragment extends BaseFragment {
             if (friendship.isBlocked()) friendshipsList.add(friendship);
         }
         // TODO: remove after ui testing
-        friendshipsList.add(allFriendships.get(0));
+        friendshipsList.add(allFriendships.get(1));
 
         friendshipsListCopy = new ArrayList<>();
         friendshipsListCopy.addAll(friendshipsList);
@@ -93,6 +94,11 @@ public class SettingBlockFragment extends BaseFragment {
 
         subscriptions.add(blockFriendAdapter.clickFriendItem().subscribe(view -> {
            // TODO: add networking and update database
+            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
+            View bottomSheetView = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_block_friend, null);
+            bottomSheetDialog.setContentView(bottomSheetView);
+            bottomSheetDialog.show();
+
         }));
 
     }
