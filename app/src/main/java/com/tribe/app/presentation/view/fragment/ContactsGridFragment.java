@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.ButtonPoints;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
@@ -20,6 +21,7 @@ import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.ContactsGridAdapter;
 import com.tribe.app.presentation.view.adapter.manager.ContactsLayoutManager;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
+import com.tribe.app.presentation.view.widget.ButtonPointsView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -172,6 +174,18 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
         this.recyclerViewContacts.setAdapter(contactsGridAdapter);
 
         contactsGridAdapter.setItems(new ArrayList<>());
+
+        subscriptions.add(contactsGridAdapter.onButtonPointsClick()
+                .map(view -> contactsGridAdapter.getItemAtPosition(recyclerViewContacts.getChildLayoutPosition(view)))
+                .doOnError(throwable -> throwable.printStackTrace())
+                .subscribe(o -> {
+                    if (o instanceof ButtonPoints) {
+                        ButtonPoints buttonPoints = (ButtonPoints) o;
+                        if (buttonPoints.getType() == ButtonPointsView.FB_SYNC) {
+                            contactsGridPresenter.loginFacebook();
+                        }
+                    }
+                }));
     }
 
 
@@ -185,5 +199,15 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
     @Override
     public void renderContactList(List<Contact> contactList) {
         contactsGridAdapter.setItems(contactList);
+    }
+
+    @Override
+    public void successFacebookLogin() {
+        // TODO CHANGE BUTTON FACEBOOK
+    }
+
+    @Override
+    public void errorFacebookLogin() {
+        // TODO SHOW ERROR ?
     }
 }

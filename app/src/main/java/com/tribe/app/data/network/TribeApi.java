@@ -1,5 +1,6 @@
 package com.tribe.app.data.network;
 
+import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.Installation;
@@ -79,4 +80,12 @@ public interface TribeApi {
     @FormUrlEncoded
     @POST("/graphql")
     Observable<LookupEntity> lookup(@Field("query") String query);
+
+    @FormUrlEncoded
+    @POST("/graphql")
+    Observable<CreateFriendshipEntity> createFriendship(@Field("query") String query);
+
+    @FormUrlEncoded
+    @POST("/graphql")
+    Observable<List<Integer>> howManyFriends(@Field("query") String query);
 }

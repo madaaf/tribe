@@ -3,7 +3,6 @@ package com.tribe.app.presentation.view.camera.recorder;
 import android.content.Context;
 import android.media.MediaCodec;
 import android.media.MediaFormat;
-import android.support.design.BuildConfig;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
@@ -14,7 +13,7 @@ import rx.subjects.PublishSubject;
 
 public abstract class MediaEncoder implements Runnable {
 
-    private static final boolean DEBUG = BuildConfig.DEBUG;
+    private static final boolean DEBUG = true;
     private static final String TAG = "MediaEncoder";
 
     protected static final int TIMEOUT_USEC = 10000;
@@ -27,7 +26,8 @@ public abstract class MediaEncoder implements Runnable {
 
     // VARIABLES
     protected final Object sync = new Object();
-    protected volatile boolean isRecording;
+    protected volatile boolean isRecording = false;
+    protected volatile boolean isEncoding = false;
     private int requestDrain;
     protected volatile boolean requestStop;
     protected boolean isEOS;
@@ -125,6 +125,7 @@ public abstract class MediaEncoder implements Runnable {
     public void startRecording() {
         if (DEBUG) Log.v(TAG, "startRecording");
         synchronized (sync) {
+            System.out.println("START RECORDING");
             isRecording = true;
             requestStop = false;
             sync.notifyAll();
@@ -133,6 +134,8 @@ public abstract class MediaEncoder implements Runnable {
 
     public void stopRecording() {
         if (DEBUG) Log.v(TAG, "stopRecording");
+
+        System.out.println("STOP RECORDING");
 
         synchronized (sync) {
             if (!isRecording || requestStop) {
@@ -157,6 +160,7 @@ public abstract class MediaEncoder implements Runnable {
 
         if (mediaCodec != null) {
             try {
+                isEncoding = false;
                 mediaCodec.stop();
                 mediaCodec.release();
                 mediaCodec = null;

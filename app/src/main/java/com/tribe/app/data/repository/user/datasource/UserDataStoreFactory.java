@@ -14,6 +14,7 @@ import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
+import com.tribe.app.presentation.utils.facebook.RxFacebook;
 
 import java.text.SimpleDateFormat;
 
@@ -35,6 +36,7 @@ public class UserDataStoreFactory {
     private final ChatCache chatCache;
     private final ContactCache contactCache;
     private final RxContacts rxContacts;
+    private final RxFacebook rxFacebook;
     private final TribeApi tribeApi;
     private final LoginApi loginApi;
     private final User user;
@@ -47,7 +49,7 @@ public class UserDataStoreFactory {
     @Inject
     public UserDataStoreFactory(Context context, UserCache userCache,
                                 TribeCache tribeCache, ChatCache chatCache,
-                                ContactCache contactCache, RxContacts rxContacts,
+                                ContactCache contactCache, RxContacts rxContacts, RxFacebook rxFacebook,
                                 TribeApi tribeApi, LoginApi loginApi, User user, AccessToken accessToken,
                                 Installation installation, ReactiveLocationProvider reactiveLocationProvider,
                                 @LastMessageRequest Preference<String> lastMessageRequest,
@@ -62,6 +64,7 @@ public class UserDataStoreFactory {
         this.chatCache = chatCache;
         this.contactCache = contactCache;
         this.rxContacts = rxContacts;
+        this.rxFacebook = rxFacebook;
         this.tribeApi = tribeApi;
         this.loginApi = loginApi;
         this.user = user;
@@ -82,7 +85,7 @@ public class UserDataStoreFactory {
      */
     public UserDataStore createCloudDataStore() {
         return new CloudUserDataStore(this.userCache, this.tribeCache, this.chatCache, this.contactCache,
-                this.rxContacts, this.tribeApi, this.loginApi,
+                this.rxContacts, this.rxFacebook, this.tribeApi, this.loginApi,
                 this.user, this.accessToken, this.installation, this.reactiveLocationProvider, this.context,
                 this.lastMessageRequest, this.utcSimpleDate);
     }

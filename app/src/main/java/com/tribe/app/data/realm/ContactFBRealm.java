@@ -15,6 +15,7 @@ public class ContactFBRealm extends RealmObject implements ContactInterface {
     private String name;
     private String profilePicture;
     private RealmList<UserRealm> userList;
+    private int howManyFriends = 0;
 
     public String getId() {
         return id;
@@ -46,5 +47,22 @@ public class ContactFBRealm extends RealmObject implements ContactInterface {
 
     public void setUserList(RealmList<UserRealm> userList) {
         this.userList = userList;
+    }
+
+    @Override
+    public int getHowManyFriends() {
+        return howManyFriends;
+    }
+
+    @Override
+    public void setHowManyFriends(int howManyFriends) {
+        this.howManyFriends = howManyFriends;
+    }
+
+    @Override
+    public void addUser(UserRealm userRealm) {
+        if (this.userList == null) this.userList = new RealmList<>();
+
+        this.userList.add(userRealm);
     }
 }

@@ -2,7 +2,6 @@ package com.tribe.app.presentation.view.component;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.media.Image;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -14,6 +13,7 @@ import android.widget.Switch;
 
 import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
@@ -164,20 +164,16 @@ public class SettingItemView extends FrameLayout {
     }
 
     public void setPicture(String picUrl) {
-
         imageProf.setVisibility(VISIBLE);
 
-        try {
+        if (!StringUtils.isEmpty(picUrl)) {
             Picasso.with(getContext())
                     .load(picUrl)
                     .fit()
                     .centerCrop()
                     .transform(new RoundedCornersTransformation(R.dimen.setting_pic_size >> 1, 0, RoundedCornersTransformation.CornerType.ALL))
                     .into(imageProf);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
         }
-
 
         FrameLayout.LayoutParams titleViewLayoutParams = (FrameLayout.LayoutParams) txtSectionTitle.getLayoutParams();
         titleViewLayoutParams.setMarginStart(dpToPx(55));

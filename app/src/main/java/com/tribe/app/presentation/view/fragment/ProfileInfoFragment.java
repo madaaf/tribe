@@ -1,7 +1,5 @@
 package com.tribe.app.presentation.view.fragment;
 
-import android.Manifest;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
@@ -18,24 +15,18 @@ import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
 import com.jakewharton.rxbinding.view.RxView;
-import com.jakewharton.rxbinding.widget.RxTextView;
 import com.squareup.picasso.Picasso;
-import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
-import com.tribe.app.presentation.view.utils.FacebookUtils;
-import com.tribe.app.presentation.view.utils.ImageUtils;
-import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.FacebookView;
-import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,12 +38,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
-import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**

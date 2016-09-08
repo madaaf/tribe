@@ -77,6 +77,8 @@ public class UserCacheImpl implements UserCache {
                         friendshipDB.getFriend().setDisplayName(friendshipRealm.getFriend().getDisplayName());
                         friendshipDB.getFriend().setScore(friendshipRealm.getFriend().getScore());
                         friendshipDB.getFriend().setUsername(friendshipRealm.getFriend().getUsername());
+                        friendshipDB.getFriend().setPhone(friendshipRealm.getFriend().getPhone());
+                        friendshipDB.getFriend().setFbid(friendshipRealm.getFriend().getFbid());
                     } else {
                         FriendshipRealm addedFriendship = obsRealm.copyToRealmOrUpdate(friendshipRealm);
                         userDB.getFriendships().add(addedFriendship);
@@ -97,6 +99,7 @@ public class UserCacheImpl implements UserCache {
                 userDB.setPhone(userRealm.getPhone());
                 userDB.setDisplayName(userRealm.getDisplayName());
                 userDB.setProfilePicture(userRealm.getProfilePicture());
+                userDB.setFbid(userRealm.getFbid());
 
                 if (userRealm.getLocation() != null) {
                     LocationRealm locationRealm = obsRealm.copyToRealmOrUpdate(userRealm.getLocation());
@@ -177,5 +180,15 @@ public class UserCacheImpl implements UserCache {
             return otherRealm.copyFromRealm(friendshipRealm);
         else
             return null;
+    }
+
+    @Override
+    public void removeFriendship(String friendshipId) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        FriendshipRealm friendshipRealm = realm.where(FriendshipRealm.class).equalTo("id", friendshipId).findFirst();
+        if (friendshipRealm != null) friendshipRealm.deleteFromRealm();
+        realm.commitTransaction();
+        realm.close();
     }
 }

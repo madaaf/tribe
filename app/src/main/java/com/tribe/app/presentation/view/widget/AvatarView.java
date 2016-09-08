@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.StringUtils;
 
 import javax.inject.Inject;
 
@@ -88,16 +89,19 @@ public class AvatarView extends RoundedCornerLayout {
     }
 
     public void load(String url) {
-        try {
+        if (!StringUtils.isEmpty(url)) {
             picasso.load(url)
                     .fit()
                     .noFade()
                     .centerCrop()
                     .into(imgAvatar);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+        } else {
+            picasso.load(R.drawable.picto_avatar_placeholder)
+                    //.fit()
+                    .noFade()
+                    //.centerCrop()
+                    .into(imgAvatar);
         }
-
     }
 
     public void setHasBorder(boolean hasBorder) {

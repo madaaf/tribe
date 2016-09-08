@@ -125,6 +125,7 @@ dependencies {
     compile presentationDependencies.rxBindings
     compile presentationDependencies.picasso
     compile presentationDependencies.picassoDownloader
+    //compile presentationDependencies.glide
     compile presentationDependencies.byteUnits
     compile presentationDependencies.rebound
     compile presentationDependencies.rxSharedPreferences

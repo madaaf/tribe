@@ -28,13 +28,13 @@ import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
-import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
@@ -190,35 +190,26 @@ public class TileView extends SquareFrameLayout {
         super.onFinishInflate();
     }
 
-    public void initWithParent(ViewGroup parent) {
+    public void initClicks() {
         if (type == TYPE_GRID) {
-            prepareTouchesChat(parent);
-            prepareTouchesMore(parent);
-            prepareTouchesErrorTribe(parent);
+            prepareTouchesChat();
+            prepareTouchesMore();
+            prepareTouchesErrorTribe();
         }
 
         prepareTouchesTile();
     }
 
-    private void prepareTouchesChat(ViewGroup parent) {
-        subscriptions.add(RxView.clicks(btnText)
-                .takeUntil(RxView.detaches(parent))
-                .map(aVoid -> this)
-                .subscribe(clickChatView));
+    private void prepareTouchesChat() {
+        btnText.setOnClickListener(v -> clickChatView.onNext(this));
     }
 
-    private void prepareTouchesMore(ViewGroup parent) {
-        subscriptions.add(RxView.clicks(btnMore)
-                .takeUntil(RxView.detaches(parent))
-                .map(aVoid -> this)
-                .subscribe(clickMoreView));
+    private void prepareTouchesMore() {
+        btnMore.setOnClickListener(v -> clickMoreView.onNext(this));
     }
 
-    private void prepareTouchesErrorTribe(ViewGroup parent) {
-        subscriptions.add(RxView.clicks(txtStatusError)
-                .takeUntil(RxView.detaches(parent))
-                .map(aVoid -> this)
-                .subscribe(clickErrorTribes));
+    private void prepareTouchesErrorTribe() {
+        txtStatusError.setOnClickListener(v -> clickErrorTribes.onNext(this));
     }
 
     private void prepareTouchesTile() {
@@ -489,7 +480,7 @@ public class TileView extends SquareFrameLayout {
     public void setInfo(Recipient recipient) {
         // WE DON'T LOAD THE AVATAR AGAIN IF THE URL IS THE SAME
         String previousAvatar = (String) avatar.getTag(R.id.profile_picture);
-        if (previousAvatar == null || !previousAvatar.equals(recipient.getProfilePicture())) {
+        if (StringUtils.isEmpty(previousAvatar) || !previousAvatar.equals(recipient.getProfilePicture())) {
             avatar.setTag(R.id.profile_picture, recipient.getProfilePicture());
             avatar.load(recipient.getProfilePicture());
         }

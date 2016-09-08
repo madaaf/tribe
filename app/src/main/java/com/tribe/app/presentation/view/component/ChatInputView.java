@@ -92,7 +92,7 @@ public class ChatInputView extends FrameLayout {
             InputMethodManager keyboard = (InputMethodManager)
                     getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             keyboard.showSoftInput(editTextMessage, 0);
-        }, 500);
+        }, 1000);
     }
 
 

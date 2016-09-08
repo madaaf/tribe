@@ -58,7 +58,7 @@ public class ContactsGridAdapterDelegate extends RxAdapterDelegate<List<Object>>
 
         vh.txtName.setText(contact.getName());
         vh.txtPoints.setText(context.getString(R.string.points_suffix, ScoreUtils.Point.INVITE.getPoints()));
-        vh.txtDescription.setText("Hey lol trop bien");
+        vh.txtDescription.setText(context.getString(R.string.contacts_section_addressbook_friends_in_app, contact.getHowManyFriends()));
     }
 
     static class ContactViewHolder extends RecyclerView.ViewHolder {

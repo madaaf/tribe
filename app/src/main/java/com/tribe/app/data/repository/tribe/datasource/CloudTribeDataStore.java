@@ -115,7 +115,7 @@ public class CloudTribeDataStore implements TribeDataStore {
             count++;
         }
 
-        String req = context.getString(R.string.message_markAsSeen, buffer.toString());
+        String req = context.getString(R.string.mutation, buffer.toString());
         return this.tribeApi.markTribeListAsSeen(req);
     }
 

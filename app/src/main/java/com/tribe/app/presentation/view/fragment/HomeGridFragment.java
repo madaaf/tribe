@@ -32,11 +32,9 @@ import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
-import com.tribe.app.presentation.view.widget.CustomViewPager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -363,6 +361,12 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         this.recyclerViewFriends.setItemAnimator(null);
         this.recyclerViewFriends.setAdapter(homeGridAdapter);
 
+        // TODO HACK FIND ANOTHER WAY OF OPTIMIZING THE VIEW?
+        this.recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(0, 50);
+        this.recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(1, 50);
+        this.recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(2, 50);
+        this.recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(3, 50);
+
         Observable<Integer> scrollDetector = Observable.create(new Observable.OnSubscribe<Integer>() {
             @Override
             public void call(final Subscriber<? super Integer> subscriber) {
@@ -420,7 +424,6 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                 .subscribe(onRecordStart));
 
         subscriptions.add(homeGridAdapter.onRecordEnd()
-                .delay(System.currentTimeMillis() - startRecording > 500 ? 0 : 500, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))

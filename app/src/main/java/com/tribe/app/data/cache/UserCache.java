@@ -25,4 +25,5 @@ public interface UserCache {
     public UserRealm userInfosNoObs(String userId);
     public GroupRealm groupInfos(String groupId);
     public FriendshipRealm friendshipForUserId(String userId);
+    public void removeFriendship(String friendshipId);
 }

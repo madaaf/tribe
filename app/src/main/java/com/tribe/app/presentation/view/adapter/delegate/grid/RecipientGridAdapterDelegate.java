@@ -49,7 +49,7 @@ public abstract class RecipientGridAdapterDelegate extends RxAdapterDelegate<Lis
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
         RecipientGridViewHolder recipientGridViewHolder = new RecipientGridViewHolder(layoutInflater.inflate(getLayoutId(), parent, false));
 
-        recipientGridViewHolder.viewTile.initWithParent(parent);
+        recipientGridViewHolder.viewTile.initClicks();
         recipientGridViewHolder.viewTile.onRecordStart().subscribe(recordStarted);
         recipientGridViewHolder.viewTile.onRecordEnd().subscribe(recordEnded);
         recipientGridViewHolder.viewTile.onClickChat().subscribe(clickChatView);

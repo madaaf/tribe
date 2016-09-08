@@ -74,8 +74,10 @@ public class MediaVideoEncoder extends MediaEncoder {
         }
 
         try {
+            isEncoding = true;
             inputSurface = new InputSurface(mediaCodec.createInputSurface());
             mediaCodec.start();
+            System.out.println("START ENCODING");
         } catch (Exception e) {
             release();
             throw (RuntimeException) e;
@@ -117,7 +119,9 @@ public class MediaVideoEncoder extends MediaEncoder {
     @Override
     protected void signalEndOfInputStream() {
         if (DEBUG) Log.d(TAG, "sending EOS to encoder");
-        mediaCodec.signalEndOfInputStream();
+        if (isEncoding)
+            mediaCodec.signalEndOfInputStream();
+
         isEOS = true;
     }
 

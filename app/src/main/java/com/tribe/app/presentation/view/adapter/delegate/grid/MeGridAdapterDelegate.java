@@ -9,13 +9,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.jakewharton.rxbinding.view.RxView;
 import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
@@ -69,15 +69,8 @@ public class MeGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>> {
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
         MeGridViewHolder vh = new MeGridViewHolder(layoutInflater.inflate(R.layout.item_me_grid, parent, false));
 
-        subscriptions.add(RxView.clicks(vh.layoutPoints)
-            .takeUntil(RxView.detaches(parent))
-            .map(aVoid -> vh.layoutPoints)
-            .subscribe(clickOpenPoints));
-
-        subscriptions.add(RxView.clicks(vh.layoutSettings)
-        .takeUntil(RxView.detaches(parent))
-        .map(aVoid -> vh.layoutSettings)
-        .subscribe(clickOpenSettings));
+        vh.layoutPoints.setOnClickListener(v -> clickOpenPoints.onNext(vh.layoutPoints));
+        vh.layoutSettings.setOnClickListener(v -> clickOpenSettings.onNext(vh.layoutSettings));
 
         return vh;
     }
@@ -91,14 +84,12 @@ public class MeGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>> {
         vh.txtPoints.setText(me.getScoreStr());
         vh.imgLevel.setImageResource(ScoreUtils.getLevelForScore(me.getScore()).getDrawableId());
 
-        try {
+        if (!StringUtils.isEmpty(me.getProfilePicture())) {
             picasso.load(me.getProfilePicture())
                     .fit()
                     .centerCrop()
                     .transform(new RoundedCornersTransformation(avatarSize >> 1, 0, RoundedCornersTransformation.CornerType.ALL))
                     .into(vh.avatar);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
         }
     }
 

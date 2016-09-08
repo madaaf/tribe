@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
@@ -19,19 +20,22 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 08/19/2016.
  */
 public class ButtonPointsView extends LinearLayout {
 
-    @IntDef({PROFILE, FB_ACTIVE, FB_PROGRESS, FB_DISABLED})
+    @IntDef({PROFILE, FB_SYNC, FB_NOTIFY, FB_PROGRESS, FB_DISABLED})
     public @interface ButtonType {}
 
     public static final int PROFILE = 0;
-    public static final int FB_ACTIVE = 1;
-    public static final int FB_PROGRESS = 2;
-    public static final int FB_DISABLED = 3;
+    public static final int FB_SYNC = 1;
+    public static final int FB_NOTIFY = 2;
+    public static final int FB_PROGRESS = 3;
+    public static final int FB_DISABLED = 4;
 
     @Inject
     ScreenUtils screenUtils;
@@ -64,6 +68,9 @@ public class ButtonPointsView extends LinearLayout {
     // RESOURCES
     private int radiusImage;
     private int marginVertical;
+
+    // OBSERVABLES
+    private final PublishSubject<View> clickButton = PublishSubject.create();
 
     public ButtonPointsView(Context context) {
         this(context, null);
@@ -99,6 +106,8 @@ public class ButtonPointsView extends LinearLayout {
         setSubLabel(a.getResourceId(R.styleable.ButtonPointsView_buttonSubLabel, R.string.contacts_share_profile_description));
         setPoints(a.getInteger(R.styleable.ButtonPointsView_buttonPoints, 0));
 
+        viewBG.setOnClickListener(v -> clickButton.onNext(this));
+
         a.recycle();
     }
 
@@ -117,7 +126,7 @@ public class ButtonPointsView extends LinearLayout {
     public void setBackgroundButton() {
         if (type == PROFILE)
             viewBG.setBackgroundResource(R.drawable.bg_button_blue_text);
-        else if (type == FB_ACTIVE)
+        else if (type == FB_SYNC || type == FB_NOTIFY)
             viewBG.setBackgroundResource(R.drawable.bg_button_fb_light);
         else if (type == FB_DISABLED)
             viewBG.setBackgroundResource(R.drawable.bg_button_disabled);
@@ -145,14 +154,12 @@ public class ButtonPointsView extends LinearLayout {
     public void setDrawable(String url) {
         if (type == PROFILE) {
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            try {
+
+            if (!StringUtils.isEmpty(url)) {
                 picasso.load(url).fit().centerCrop()
                         .transform(new RoundedCornersTransformation(radiusImage, 0, RoundedCornersTransformation.CornerType.LEFT))
                         .into(imageView);
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
             }
-
         }
     }
 
@@ -163,5 +170,10 @@ public class ButtonPointsView extends LinearLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+    }
+
+    // OBSERVABLES
+    public Observable<View> onClick() {
+        return clickButton;
     }
 }
