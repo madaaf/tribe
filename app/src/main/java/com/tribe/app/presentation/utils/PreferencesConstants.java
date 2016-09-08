@@ -12,5 +12,8 @@ public class PreferencesConstants {
     public static String LOCATION_CONTEXT = "LOCATION_CONTEXT";
     public static String AUDIO_DEFAULT = "AUDIO_DEFAULT";
     public static String PRELOAD = "PRELOAD";
+    public static String THEME = "THEME";
+    public static String INVISIBLE_MODE = "INVISIBLE_MODE";
 	public static String LAST_MESSAGE_REQUEST = "LAST_MESSAGE_REQUEST";
+
 }

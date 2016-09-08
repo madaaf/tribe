@@ -28,11 +28,14 @@
     <dimen name="horizontal_left_margin_chat">71dp</dimen>
     <dimen name="horizontal_left_margin_onboarding_choose_picture_button">95dp</dimen>
     <dimen name="setting_section_title_horizontal_margin">45dp</dimen>
+    <dimen name="setting_block_item_left_margin">45dp</dimen>
+    <dimen name="setting_block_search_bar_height">64dp</dimen>
 
     <!-- PADDING -->
     <dimen name="icons_padding">3.75dp</dimen>
     <dimen name="text_padding">15dp</dimen>
     <dimen name="section_button_vertical_padding">12dp</dimen>
+    <dimen name="setting_block_item_horizontal_padding">15dp</dimen>
 
     <!-- HEIGHTS -->
     <dimen name="top_bar_height">65dp</dimen>

@@ -175,7 +175,7 @@ public class SettingActivity extends BaseActivity implements SettingView {
         }));
     }
 
-    private void updateProfileAnim() {
+    private void updateAnim() {
         txtTitle.animate()
                 .alpha(0)
                 .setStartDelay(0)
@@ -249,6 +249,10 @@ public class SettingActivity extends BaseActivity implements SettingView {
                 .start();
     }
 
+    private void blockAnim() {
+
+    }
+
     /**
      * Initialize fragment view pager adapter
      */
@@ -295,7 +299,13 @@ public class SettingActivity extends BaseActivity implements SettingView {
     public void goToUpdateProfile() {
         viewPager.setCurrentItem(PAGE_UPDATE);
         txtTitle.setText(getString(R.string.settings_profile_title));
-        updateProfileAnim();
+        updateAnim();
+    }
+
+    public void goToBlock() {
+        viewPager.setCurrentItem(PAGE_BLOCK);
+        txtTitle.setText(getString(R.string.hiddenblocked_empty_title));
+        updateAnim();
     }
 
 

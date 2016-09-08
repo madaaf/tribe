@@ -77,4 +77,30 @@
 
     <!-- GREENS -->
     <color name="green.text.friends">#97C308</color>
+
+    <!-- Themes -->
+
+    <!-- Classic -->
+    <color name="classic.1">#FF8C7F</color>
+    <color name="classic.2">#69DDD7</color>
+    <color name="classic.3">#6540FB</color>
+    <color name="classic.4">#9862DA</color>
+    <color name="classic.5">#FD83E9</color>
+    <color name="classic.6">#96DDFF</color>
+    <color name="classic.7">#32DDB0</color>
+    <color name="classic.8">#FDE175</color>
+    <color name="classic.9">#E155E7</color>
+    <color name="classic.10">#60A1EE</color>
+    <color name="classic.11">#866DEA</color>
+    <color name="classic.12">#FFBBE2</color>
+
+    <!-- Heighties -->
+    <color name="heighties.1">#1BA9D5</color>
+    <color name="heighties.2">#5515A9</color>
+    <color name="heighties.3">#EA1D4E</color>
+    <color name="heighties.4">#FD9526</color>
+
+
+
+    
 </resources>

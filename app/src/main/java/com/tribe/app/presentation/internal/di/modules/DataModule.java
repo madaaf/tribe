@@ -8,12 +8,14 @@ import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;
 import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
+import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
 import com.tribe.app.presentation.internal.di.scope.Memories;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
 import com.tribe.app.presentation.internal.di.scope.Preload;
 import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
+import com.tribe.app.presentation.internal.di.scope.Theme;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.utils.PreferencesConstants;
 import com.tribe.app.presentation.view.component.TribePagerView;
@@ -65,24 +67,46 @@ public class DataModule {
         return prefs.getString(PreferencesConstants.WEATHER_UNITS, com.tribe.app.presentation.view.utils.Weather.CELSIUS);
     }
 
-    @Provides @Singleton @Memories
+    @Provides
+    @Singleton
+    @Memories
     Preference<Boolean> provideMemories(RxSharedPreferences prefs) {
         return prefs.getBoolean(PreferencesConstants.MEMORIES, false);
     }
 
-    @Provides @Singleton @LocationContext
+    @Provides
+    @Singleton
+    @LocationContext
     Preference<Boolean> provideLocationContext(RxSharedPreferences prefs) {
         return prefs.getBoolean(PreferencesConstants.LOCATION_CONTEXT, false);
     }
 
-    @Provides @Singleton @AudioDefault
+    @Provides
+    @Singleton
+    @AudioDefault
     Preference<Boolean> provideAudioDefault(RxSharedPreferences prefs) {
         return prefs.getBoolean(PreferencesConstants.AUDIO_DEFAULT, false);
     }
 
-    @Provides @Singleton @Preload
+    @Provides
+    @Singleton
+    @Preload
     Preference<Boolean> providePreload(RxSharedPreferences prefs) {
-        return prefs.getBoolean(PreferencesConstants.AUDIO_DEFAULT, false);
+        return prefs.getBoolean(PreferencesConstants.PRELOAD, false);
+    }
+
+    @Provides
+    @Singleton
+    @Theme
+    Preference<Integer> provideTheme(RxSharedPreferences prefs) {
+        return prefs.getInteger(PreferencesConstants.THEME, 0);
+    }
+
+    @Provides
+    @Singleton
+    @InvisibleMode
+    Preference<Boolean> provideInvisibleMode(RxSharedPreferences prefs) {
+        return prefs.getBoolean(PreferencesConstants.INVISIBLE_MODE, false);
     }
 
     @Provides

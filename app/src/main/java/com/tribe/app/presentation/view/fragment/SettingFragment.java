@@ -16,9 +16,11 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;
+import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
 import com.tribe.app.presentation.internal.di.scope.Memories;
 import com.tribe.app.presentation.internal.di.scope.Preload;
+import com.tribe.app.presentation.internal.di.scope.Theme;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.mvp.presenter.SettingPresenter;
 import com.tribe.app.presentation.mvp.view.SettingView;
@@ -26,6 +28,7 @@ import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.SettingActivity;
 import com.tribe.app.presentation.view.component.SettingItemView;
+import com.tribe.app.presentation.view.component.SettingThemeView;
 import com.tribe.app.presentation.view.utils.Weather;
 
 import javax.inject.Inject;
@@ -56,6 +59,8 @@ public class SettingFragment extends BaseFragment {
 
     @BindView(R.id.settingsProfile)
     SettingItemView settingsProfile;
+    @BindView(R.id.settingsTheme)
+    SettingThemeView settingThemeView;
     @BindView(R.id.messageSettingMemories)
     SettingItemView messageSettingMemories;
     @BindView(R.id.messageSettingContext)
@@ -99,6 +104,9 @@ public class SettingFragment extends BaseFragment {
     @Inject
     @Preload
     Preference<Boolean> preload;
+    @Inject
+    @InvisibleMode
+    Preference<Boolean> invisibleMode;
 
     @Inject
     Navigator navigator;
@@ -165,6 +173,11 @@ public class SettingFragment extends BaseFragment {
             else weatherUnits.set(Weather.CELSIUS);
         }));
 
+        subscriptions.add(settingsInvisible.checkedSwitch().subscribe(isChecked -> {
+            if (isChecked) invisibleMode.set(true);
+            else invisibleMode.set(false);
+        }));
+
         subscriptions.add(RxView.clicks(settingsTweet).subscribe(aVoid -> {
             navigator.tweet(getActivity(), "@HeyTribe");
         }));
@@ -176,6 +189,10 @@ public class SettingFragment extends BaseFragment {
         subscriptions.add(RxView.clicks(settingsEmail).subscribe(aVoid -> {
             String[] addresses = {getString(R.string.settings_email_address)};
             navigator.composeEmail(getActivity(), addresses, getString(R.string.settings_email_subject));
+        }));
+
+        subscriptions.add(RxView.clicks(settingsBlocked).subscribe(aVoid -> {
+            ((SettingActivity) getActivity()).goToBlock();
         }));
 
         subscriptions.add(RxView.clicks(settingsLogOut).subscribe(aVoid -> {

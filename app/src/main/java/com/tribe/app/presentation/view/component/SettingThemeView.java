@@ -1,16 +1,26 @@
 package com.tribe.app.presentation.view.component;
 
+import android.app.Activity;
 import android.content.Context;
 import android.media.Image;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.internal.di.scope.Theme;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,6 +66,10 @@ public class SettingThemeView extends FrameLayout {
     @BindView(R.id.layoutTheme)
     LinearLayout layoutTheme;
 
+    @Inject
+    @Theme
+    Preference<Integer> theme;
+
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -68,25 +82,45 @@ public class SettingThemeView extends FrameLayout {
     }
 
     private void initUi() {
+        initDependencyInjector();
 
-        // TODO: get theme selected & set highlighter based on theme selected
+        imageTheme1.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                switch (theme.get()) {
+                    case 0:
+                        setUpUnderline(imageTheme1);
+                        break;
+                    case 1:
+                        setUpUnderline(imageTheme2);
+                        break;
+                    case 2:
+                        setUpUnderline(imageTheme3);
+                        break;
+                    default:
+                        break;
+                }
+                imageTheme1.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
 
         subscriptions.add(RxView.clicks(imageTheme1).subscribe(aVoid -> {
             setUpUnderline(imageTheme1);
+            theme.set(0);
         }));
 
         subscriptions.add(RxView.clicks(imageTheme2).subscribe(aVoid -> {
             setUpUnderline(imageTheme2);
+            theme.set(1);
         }));
 
         subscriptions.add(RxView.clicks(imageTheme3).subscribe(aVoid -> {
             setUpUnderline(imageTheme3);
+            theme.set(2);
         }));
-
     }
 
     private void setUpUnderline(ImageView imageView) {
-
         int location[] = new int[2];
         imageView.getLocationOnScreen(location);
 
@@ -108,9 +142,18 @@ public class SettingThemeView extends FrameLayout {
         super.onDetachedFromWindow();
     }
 
-
-    public int dpToPx(int dp) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getContext().getResources().getDisplayMetrics());
+    protected ApplicationComponent getApplicationComponent() {
+        return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
     }
 
+    protected ActivityModule getActivityModule() {
+        return new ActivityModule(((Activity) getContext()));
+    }
+
+    private void initDependencyInjector() {
+        DaggerUserComponent.builder()
+                .activityModule(getActivityModule())
+                .applicationComponent(getApplicationComponent())
+                .build().inject(this);
+    }
 }
