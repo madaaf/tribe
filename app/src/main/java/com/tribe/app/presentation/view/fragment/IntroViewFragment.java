@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,6 +27,7 @@ import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.component.CodeView;
 import com.tribe.app.presentation.view.component.ConnectedView;
 import com.tribe.app.presentation.view.component.PhoneNumberView;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -71,6 +73,9 @@ public class IntroViewFragment extends Fragment implements IntroView {
 
     @Inject
     Navigator navigator;
+
+    @Inject
+    ScreenUtils screenUtils;
 
     @BindView(R.id.viewPager)
     CustomViewPager viewPager;
@@ -275,7 +280,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
     @Override
     public void goToConnected() {
         txtIntroMessage.setText("");
-        hideKeyboard();
+        screenUtils.hideKeyboard(getActivity());
 
         // TODO: get user info and check if they have a picture
         Observable.timer(300, TimeUnit.MILLISECONDS)
@@ -370,12 +375,6 @@ public class IntroViewFragment extends Fragment implements IntroView {
      * Util methods
      */
 
-    public void hideKeyboard() {
-        View view = getActivity().getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-    }
+
 
 }

@@ -29,6 +29,7 @@ import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.fragment.SettingBlockFragment;
 import com.tribe.app.presentation.view.fragment.SettingFragment;
 import com.tribe.app.presentation.view.fragment.SettingUpdateProfileFragment;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
@@ -80,6 +81,9 @@ public class SettingActivity extends BaseActivity implements SettingView {
 
     @Inject
     SettingPresenter settingPresenter;
+
+    @Inject
+    ScreenUtils screenUtils;
 
     String pictureUri = null;
 
@@ -288,6 +292,7 @@ public class SettingActivity extends BaseActivity implements SettingView {
     }
 
     public void goToMain() {
+        screenUtils.hideKeyboard(this);
         viewPager.setCurrentItem(PAGE_MAIN);
         txtTitle.setText(getString(R.string.settings_title));
         imgDone.setAlpha(1f);

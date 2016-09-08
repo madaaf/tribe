@@ -1,9 +1,12 @@
 package com.tribe.app.presentation.view.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -58,5 +61,13 @@ public class ScreenUtils {
 
 	public int getOrientation() {
 		return context.getResources().getConfiguration().orientation;
+	}
+
+	public void hideKeyboard(Activity activity) {
+		View view = activity.getCurrentFocus();
+		if (view != null) {
+			InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+		}
 	}
 }
