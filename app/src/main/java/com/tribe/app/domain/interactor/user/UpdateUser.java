@@ -15,8 +15,9 @@ import rx.Observable;
 public class UpdateUser extends UseCase {
 
     private UserRepository userRepository;
-    private String key;
-    private String value;
+    private String username;
+    private String displayName;
+    private String pictureUri;
 
     @Inject
     protected UpdateUser(CloudUserDataRepository userDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
@@ -24,13 +25,14 @@ public class UpdateUser extends UseCase {
         this.userRepository = userDataRepository;
     }
 
-    public void prepare(String key, String value) {
-        this.key = key;
-        this.value = value;
+    public void prepare(String username, String displayName, String pictureUri) {
+        this.username = username;
+        this.displayName = displayName;
+        this.pictureUri = pictureUri;
     }
 
     @Override
     protected Observable buildUseCaseObservable() {
-        return this.userRepository.updateUser(key, value);
+        return this.userRepository.updateUser(username, displayName, pictureUri);
     }
 }

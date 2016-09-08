@@ -6,6 +6,7 @@ import android.util.Log;
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.config.Configuration;
 import com.birbit.android.jobqueue.log.CustomLogger;
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.ChatCacheImpl;
 import com.tribe.app.data.cache.ContactCache;
@@ -48,6 +49,7 @@ import com.tribe.app.domain.interactor.user.SynchroContactList;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.UIThread;
+import com.tribe.app.presentation.internal.di.scope.Theme;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
@@ -234,8 +236,8 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    PaletteGrid providePaletteGrid(Context context) {
-        return new PaletteGrid(context);
+    PaletteGrid providePaletteGrid(Context context, @Theme Preference<Integer> theme) {
+        return new PaletteGrid(context, theme);
     }
 
     @Provides

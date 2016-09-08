@@ -16,15 +16,19 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;
+import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
 import com.tribe.app.presentation.internal.di.scope.Memories;
 import com.tribe.app.presentation.internal.di.scope.Preload;
+import com.tribe.app.presentation.internal.di.scope.Theme;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.mvp.presenter.SettingPresenter;
 import com.tribe.app.presentation.mvp.view.SettingView;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.activity.BaseActivity;
+import com.tribe.app.presentation.view.activity.SettingActivity;
 import com.tribe.app.presentation.view.component.SettingItemView;
+import com.tribe.app.presentation.view.component.SettingThemeView;
 import com.tribe.app.presentation.view.utils.Weather;
 
 import javax.inject.Inject;
@@ -37,7 +41,7 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by horatiothomas on 9/6/16.
  */
-public class SettingFragment extends BaseFragment implements SettingView {
+public class SettingFragment extends BaseFragment {
 
 
     public static SettingFragment newInstance() {
@@ -49,49 +53,38 @@ public class SettingFragment extends BaseFragment implements SettingView {
         return fragment;
     }
 
-
+    User user;
     Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
     @BindView(R.id.settingsProfile)
     SettingItemView settingsProfile;
-
+    @BindView(R.id.settingsTheme)
+    SettingThemeView settingThemeView;
     @BindView(R.id.messageSettingMemories)
     SettingItemView messageSettingMemories;
-
     @BindView(R.id.messageSettingContext)
     SettingItemView messageSettingContext;
-
     @BindView(R.id.messageSettingVoice)
     SettingItemView messageSettingVoice;
-
     @BindView(R.id.messageSettingPreload)
     SettingItemView messageSettingPreload;
-
     @BindView(R.id.messageSettingFahrenheit)
     SettingItemView messageSettingFahrenheit;
-
     @BindView(R.id.settingsFacebook)
     SettingItemView settingsFacebook;
-
     @BindView(R.id.settingsAddress)
     SettingItemView settingsAddress;
-
     @BindView(R.id.settingsInvisible)
     SettingItemView settingsInvisible;
-
     @BindView(R.id.settingsTweet)
     SettingItemView settingsTweet;
-
     @BindView(R.id.settingsEmail)
     SettingItemView settingsEmail;
-
     @BindView(R.id.settingsRateApp)
     SettingItemView settingsRateApp;
-
     @BindView(R.id.settingsBlocked)
     SettingItemView settingsBlocked;
-
     @BindView(R.id.settingsLogOut)
     SettingItemView settingsLogOut;
 
@@ -111,10 +104,12 @@ public class SettingFragment extends BaseFragment implements SettingView {
     @Inject
     @Preload
     Preference<Boolean> preload;
+    @Inject
+    @InvisibleMode
+    Preference<Boolean> invisibleMode;
 
     @Inject
     Navigator navigator;
-
     @Inject
     SettingPresenter settingPresenter;
 
@@ -132,7 +127,6 @@ public class SettingFragment extends BaseFragment implements SettingView {
         initUi();
         initSettings();
         initDependencyInjector();
-        initPresenter();
 
         return fragmentView;
     }
@@ -150,22 +144,9 @@ public class SettingFragment extends BaseFragment implements SettingView {
     }
 
     private void initSettings() {
-
-//        subscriptions.add(RxView.clicks(settingsPicture).subscribe(aVoid -> {
-//            // Get picture and set
-//            navigator.getImageFromCamera(this, CAMERA_REQUEST);
-//
-//        }));
-//
-//        subscriptions.add(RxView.clicks(settingsDisplayName).subscribe(aVoid -> {
-//            settingPresenter.updateUser("display_name", "Horatio 101");
-//        }));
-//
-//        subscriptions.add(RxView.clicks(settingsUsername).subscribe(aVoid -> {
-//            settingPresenter.updateUser("username", "Horatio T");
-//        }));
-
-
+        subscriptions.add(RxView.clicks(settingsProfile).subscribe(aVoid -> {
+            ((SettingActivity) getActivity()).goToUpdateProfile();
+        }));
 
         subscriptions.add(messageSettingMemories.checkedSwitch().subscribe(isChecked -> {
             if (isChecked) memories.set(true);
@@ -192,6 +173,11 @@ public class SettingFragment extends BaseFragment implements SettingView {
             else weatherUnits.set(Weather.CELSIUS);
         }));
 
+        subscriptions.add(settingsInvisible.checkedSwitch().subscribe(isChecked -> {
+            if (isChecked) invisibleMode.set(true);
+            else invisibleMode.set(false);
+        }));
+
         subscriptions.add(RxView.clicks(settingsTweet).subscribe(aVoid -> {
             navigator.tweet(getActivity(), "@HeyTribe");
         }));
@@ -205,22 +191,21 @@ public class SettingFragment extends BaseFragment implements SettingView {
             navigator.composeEmail(getActivity(), addresses, getString(R.string.settings_email_subject));
         }));
 
-
+        subscriptions.add(RxView.clicks(settingsBlocked).subscribe(aVoid -> {
+            ((SettingActivity) getActivity()).goToBlock();
+        }));
 
         subscriptions.add(RxView.clicks(settingsLogOut).subscribe(aVoid -> {
             settingPresenter.logout();
         }));
-
     }
 
     private void initUi() {
-        User user = getCurrentUser();
-
+        user = getCurrentUser();
+        settingsProfile.setPicture(user.getProfilePicture());
         settingsProfile.setTitleBodyViewType(getString(R.string.settings_profile_title),
                 getString(R.string.settings_profile_subtitle),
                 SettingItemView.MORE);
-
-        settingsProfile.setPicture(user.getProfilePicture());
 
         messageSettingMemories.setTitleBodyViewType(getString(R.string.settings_tribesave_title),
                 getString(R.string.settings_tribesave_subtitle),
@@ -276,54 +261,8 @@ public class SettingFragment extends BaseFragment implements SettingView {
 
     }
 
-    private void initPresenter() {
-        settingPresenter.attachView(this);
-    }
-
-
-    @Override
-    public void changeUsername(String username) {
-//        settingsUsername.setName(username);
-    }
-
-    @Override
-    public void changeDisplayName(String displayName) {
-//        settingsDisplayName.setName(displayName);
-    }
-
-    @Override
-    public void goToLauncher() {
-        navigator.navigateToLauncher(getActivity());
-    }
-
-    @Override
-    public void showLoading() {
-
-    }
-
-    @Override
-    public void hideLoading() {
-
-    }
-
-    @Override
-    public void showRetry() {
-
-    }
-
-    @Override
-    public void hideRetry() {
-
-    }
-
-    @Override
-    public void showError(String message) {
-
-    }
-
-    @Override
-    public Context context() {
-        return getActivity();
+    public void setPicture(String profilePicUrl) {
+        settingsProfile.setPicture(profilePicUrl);
     }
 
     protected ApplicationComponent getApplicationComponent() {
@@ -340,6 +279,4 @@ public class SettingFragment extends BaseFragment implements SettingView {
                 .applicationComponent(getApplicationComponent())
                 .build().inject(this);
     }
-
-
 }

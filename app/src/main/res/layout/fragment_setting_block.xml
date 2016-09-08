@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/shape_rect_white_rounded_bottom">
 
-</LinearLayout>
+    <com.tribe.app.presentation.view.widget.EditTextFont
+        android:id="@+id/editTextSearchBlockFriends"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/setting_block_search_bar_height"
+        android:background="@drawable/shape_white_rect_grey_border_no_top"
+        />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/blockFriendsRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/setting_block_search_bar_height"
+        />
+
+</FrameLayout>

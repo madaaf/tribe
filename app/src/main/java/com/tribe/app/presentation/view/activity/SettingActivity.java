@@ -1,57 +1,38 @@
 package com.tribe.app.presentation.view.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.f2prateek.rx.preferences.Preference;
 import com.jakewharton.rxbinding.view.RxView;
 import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
-import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
-import com.tribe.app.presentation.internal.di.scope.AudioDefault;
-import com.tribe.app.presentation.internal.di.scope.LocationContext;
-import com.tribe.app.presentation.internal.di.scope.Memories;
-import com.tribe.app.presentation.internal.di.scope.Preload;
-import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.mvp.presenter.SettingPresenter;
 import com.tribe.app.presentation.mvp.view.SettingView;
-import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.FileUtils;
-import com.tribe.app.presentation.view.component.SettingSectionView;
-import com.tribe.app.presentation.view.component.SettingItemView;
-import com.tribe.app.presentation.view.fragment.AccessFragment;
-import com.tribe.app.presentation.view.fragment.IntroViewFragment;
-import com.tribe.app.presentation.view.fragment.ProfileInfoFragment;
+import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.fragment.SettingBlockFragment;
 import com.tribe.app.presentation.view.fragment.SettingFragment;
 import com.tribe.app.presentation.view.fragment.SettingUpdateProfileFragment;
-import com.tribe.app.presentation.view.utils.Weather;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
 import javax.inject.Inject;
@@ -65,7 +46,7 @@ import rx.subscriptions.CompositeSubscription;
  * SettingActivity.java
  * Created by horatiothomas on 8/26/16.
  */
-public class SettingActivity extends BaseActivity {
+public class SettingActivity extends BaseActivity implements SettingView {
 
     public static Intent getCallingIntent(Context context) {
         return new Intent(context, SettingActivity.class);
@@ -74,9 +55,14 @@ public class SettingActivity extends BaseActivity {
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
+    @BindView(R.id.imgBack)
+    ImageView imgBack;
 
     @BindView(R.id.imgDone)
     ImageView imgDone;
+
+    @BindView(R.id.txtTitle)
+    TextViewFont txtTitle;
 
     private SettingFragment settingFragment;
     private SettingUpdateProfileFragment settingUpdateProfileFragment;
@@ -84,11 +70,18 @@ public class SettingActivity extends BaseActivity {
 
     private final static int PAGE_MAIN = 0, PAGE_UPDATE = 1, PAGE_BLOCK = 2;
 
+    private int shortDuration = 150;
+
     @BindView(R.id.viewPager)
     CustomViewPager viewPager;
 
     @Inject
     Picasso picasso;
+
+    @Inject
+    SettingPresenter settingPresenter;
+
+    String pictureUri = null;
 
     private static final int CAMERA_REQUEST = 6;
 
@@ -99,6 +92,14 @@ public class SettingActivity extends BaseActivity {
         initUi();
         initViewPager();
         initDependencyInjector();
+        initPresenter();
+    }
+
+    @Override
+    protected void onPause() {
+        txtTitle.animate().setListener(null).start();
+
+        super.onPause();
     }
 
     @Override
@@ -126,21 +127,30 @@ public class SettingActivity extends BaseActivity {
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
             Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
 
+            settingUpdateProfileFragment.setImgProfilePic(thumbnail);
 
             String imageUri = Uri.fromFile(FileUtils.bitmapToFile(thumbnail, this)).toString();
 
-            InputStream image_stream = null;
-            try {
-                image_stream = getContentResolver().openInputStream(Uri.parse(imageUri));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            thumbnail = BitmapFactory.decodeStream(image_stream );
-
-//            settingsPicture.setPictureBitmap(thumbnail);
-//            settingPresenter.updateUser("picture", imageUri);
+            pictureUri = imageUri;
         }
 
+        // 2. Get image from Gallery
+        if (requestCode == ProfileInfoView.RESULT_LOAD_IMAGE && resultCode == Activity.RESULT_OK) {
+            Uri selectedImage = data.getData();
+            pictureUri = selectedImage.toString();
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+            Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
+            cursor.moveToFirst();
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
+            cursor.close();
+
+            Bitmap thumbnail = BitmapFactory.decodeFile(picturePath);
+
+            if (thumbnail != null) {
+                settingUpdateProfileFragment.setImgProfilePic(thumbnail);
+            }
+        }
     }
 
 
@@ -148,32 +158,95 @@ public class SettingActivity extends BaseActivity {
         setContentView(R.layout.activity_setting);
         unbinder = ButterKnife.bind(this);
 
-        subscriptions.add(RxView.clicks(imgDone).subscribe(aVoid -> {
-            Intent resultIntent = new Intent();
-            setResult(BaseActivity.RESULT_OK, resultIntent);
-            finish();
+        subscriptions.add(RxView.clicks(imgBack).subscribe(aVoid -> {
+            goToMain();
         }));
 
-//        profileSection.setTitleIcon(R.string.settings_section_profile, R.drawable.picto_profile_icon);
-//        messageSection.setTitleIcon(R.string.settings_section_messages, R.drawable.picto_setting_message_icon);
-//        supportSection.setTitleIcon(R.string.settings_section_support, R.drawable.picto_setting_support_icon);
-//        exitSection.setTitleIcon(R.string.settings_section_exit, R.drawable.picto_setting_exit_icon);
+        subscriptions.add(RxView.clicks(imgDone).subscribe(aVoid -> {
+            if (viewPager.getCurrentItem() == PAGE_MAIN) {
+                Intent resultIntent = new Intent();
+                setResult(BaseActivity.RESULT_OK, resultIntent);
+                finish();
+            }
+            if (viewPager.getCurrentItem() == PAGE_UPDATE) {
+                settingPresenter.updateUser(settingUpdateProfileFragment.getUsername(), settingUpdateProfileFragment.getDisplayName(), pictureUri);
+                goToMain();
+            }
+        }));
+    }
 
-//        settingsPicture.setTitleBodyViewType(getString(R.string.settings_picture_title),
-//                getString(R.string.settings_picture_subtitle),
-//                SettingItemView.PICTURE);
-//        settingsDisplayName.setTitleBodyViewType(getString(R.string.settings_displayname_title),
-//                getString(R.string.settings_displayname_subtitle),
-//                SettingItemView.NAME);
-//        settingsUsername.setTitleBodyViewType(getString(R.string.settings_username_title),
-//                getString(R.string.settings_username_subtitle),
-//                SettingItemView.NAME);
+    private void updateAnim() {
+        txtTitle.animate()
+                .alpha(0)
+                .setStartDelay(0)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        txtTitle.animate()
+                                .alpha(1)
+                                .setStartDelay(0)
+                                .setDuration(shortDuration)
+                                .translationX(10)
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        super.onAnimationEnd(animation);
+                                        txtTitle.animate()
+                                                .translationX(0)
+                                                .setDuration(shortDuration)
+                                                .start();
+                                    }
+                                })
+                                .start();
+                    }
+                })
+                .start();
 
+        imgBack.animate()
+                .alpha(1)
+                .setStartDelay(0)
+                .start();
+    }
 
+    public void setImgDoneEnabled(boolean isEnabled) {
+        if (isEnabled) {
+            imgDone.setClickable(true);
+            imgDone.animate()
+                    .alpha(1)
+                    .setStartDelay(0)
+                    .start();
+        } else {
+            imgDone.setClickable(false);
+            imgDone.animate()
+                    .alpha(.4f)
+                    .setStartDelay(0)
+                    .start();
+        }
+    }
 
-//        settingsUsername.setName(user.getUsername());
-//        settingsDisplayName.setName(user.getDisplayName());
+    private void mainSettingAnim() {
+        txtTitle.animate()
+                .alpha(0)
+                .setStartDelay(0)
+                .setDuration(shortDuration)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        txtTitle.animate()
+                                .alpha(1)
+                                .setStartDelay(0)
+                                .setDuration(shortDuration)
+                                .start();
+                    }
+                })
+                .start();
 
+        imgBack.animate()
+                .alpha(0)
+                .setStartDelay(0)
+                .start();
     }
 
 
@@ -214,6 +287,27 @@ public class SettingActivity extends BaseActivity {
 
     }
 
+    public void goToMain() {
+        viewPager.setCurrentItem(PAGE_MAIN);
+        txtTitle.setText(getString(R.string.settings_title));
+        imgDone.setAlpha(1f);
+        mainSettingAnim();
+    }
+
+    public void goToUpdateProfile() {
+        viewPager.setCurrentItem(PAGE_UPDATE);
+        txtTitle.setText(getString(R.string.settings_profile_title));
+        updateAnim();
+    }
+
+    public void goToBlock() {
+        viewPager.setCurrentItem(PAGE_BLOCK);
+        txtTitle.setText(getString(R.string.hiddenblocked_empty_title));
+        imgDone.setAlpha(0f);
+        updateAnim();
+    }
+
+
     private class SetttingPageTransformer implements ViewPager.PageTransformer {
 
         @Override
@@ -221,6 +315,59 @@ public class SettingActivity extends BaseActivity {
 
         }
     }
+
+
+    @Override
+    public void updateUser(String username, String displayName, String pictureUri) {
+
+    }
+
+    @Override
+    public void goToLauncher() {
+        navigator.navigateToLauncher(this);
+    }
+
+    @Override
+    public void showLoading() {
+
+    }
+
+    @Override
+    public void hideLoading() {
+
+    }
+
+    @Override
+    public void showRetry() {
+
+    }
+
+    @Override
+    public void hideRetry() {
+
+    }
+
+    @Override
+    public void showError(String message) {
+
+    }
+
+    @Override
+    public Context context() {
+        return null;
+    }
+
+
+    @Override
+    public void setProfilePic(String profilePicUrl) {
+        settingFragment.setPicture(profilePicUrl);
+    }
+
+    private void initPresenter() {
+        settingPresenter.attachView(this);
+    }
+
+
 
     /**
      * Dagger Setup

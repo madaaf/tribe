@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/grey.background.profile_info"
+    android:background="@drawable/shape_rect_background_grey_rounded_bottom"
     >
 
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -15,76 +15,10 @@
         style="@style/Headline.Black"
         />
 
-    <ImageView
-        android:id="@+id/imgProfilePic"
-        android:layout_width="@dimen/avatar_size_intermediate"
-        android:layout_height="@dimen/avatar_size_intermediate"
-        android:layout_gravity="top"
-        android:scaleType="centerInside"
-        android:layout_marginTop="86dp"
-        android:src="@drawable/picto_profile_pic_placeholder"
-        android:background="@drawable/shape_white_rect_grey_border"
-        />
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtOpenCameraRoll"
+    <com.tribe.app.presentation.view.component.ProfileInfoView
+        android:id="@+id/profileInfoView"
         android:layout_width="match_parent"
-        android:layout_height="49dp"
-        android:layout_gravity="top"
-        android:layout_marginTop="86dp"
-        android:layout_marginStart="@dimen/horizontal_left_margin_onboarding_choose_picture_button"
-        android:gravity="center_vertical"
-        android:paddingStart="@dimen/text_padding"
-        android:paddingEnd="@dimen/text_padding"
-        android:background="@drawable/shape_white_rect_grey_border"
-        android:text="@string/onboarding_user_avatar_library"
-        style="@style/Body.Two.Black"
-        />
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtTakeASelfie"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/onboarding_choose_picture_button_height"
-        android:layout_gravity="top"
-        android:layout_marginTop="134dp"
-        android:layout_marginStart="@dimen/horizontal_left_margin_onboarding_choose_picture_button"
-        android:gravity="center_vertical"
-        android:paddingStart="@dimen/text_padding"
-        android:paddingEnd="@dimen/text_padding"
-        android:background="@drawable/shape_white_rect_grey_border"
-        android:text="@string/onboarding_user_avatar_selfie"
-        style="@style/Body.Two.Black"
-        />
-    
-    <com.tribe.app.presentation.view.widget.EditTextFont
-        android:id="@+id/editDisplayName"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/onboarding_choose_name_height"
-        android:layout_marginTop="186dp"
-        android:paddingStart="@dimen/text_padding"
-        android:paddingEnd="@dimen/text_padding"
-        android:background="@drawable/shape_white_rect_grey_border"
-        android:hint="@string/onboarding_user_displayname_placeholder"
-        style="@style/Title.1.Black"
-        android:textColorHint="@color/black.opacity.40"
-        android:singleLine="true"
-        android:imeOptions="actionDone"
-        />
-
-    <com.tribe.app.presentation.view.widget.EditTextFont
-        android:id="@+id/editUsername"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/onboarding_choose_name_height"
-        android:layout_marginTop="254dp"
-        android:paddingStart="@dimen/text_padding"
-        android:paddingEnd="@dimen/text_padding"
-        android:background="@drawable/shape_white_rect_grey_border"
-        android:hint="@string/onboarding_user_username_placeholder"
-        style="@style/Title.1.Black"
-        android:textColorHint="@color/black.opacity.40"
-        android:singleLine="true"
-        android:imeOptions="actionDone"
-        />
+        android:layout_height="wrap_content"/>
     
     <ImageView
         android:id="@+id/imgNextIcon"

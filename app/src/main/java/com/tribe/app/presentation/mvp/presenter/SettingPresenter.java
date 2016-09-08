@@ -65,20 +65,10 @@ public class SettingPresenter implements Presenter {
 
     }
 
-    public void changeUsername(String username) {
-        this.settingView.changeUsername(username);
-    }
 
-    public void changeDisplayName(String displayName) {
-        this.settingView.changeDisplayName(displayName);
-    }
-
-
-    public void updateUser(String key, String value) {
-        updateUser.prepare(key, value);
-        if (key == "username") updateUser.execute(new UpdateUsernameSubscriber());
-        if (key == "display_name") updateUser.execute(new UpdateDisplayNameSubscriber());
-        if (key == "picture") updateUser.execute(new UpdatePictureSubscriber());
+    public void updateUser(String username, String displayName, String pictureUri) {
+        updateUser.prepare(username, displayName, pictureUri);
+        updateUser.execute(new UpdateUserSubscriber());
     }
 
     public void logout() {
@@ -87,57 +77,6 @@ public class SettingPresenter implements Presenter {
 
     public void goToLauncher() {
         this.settingView.goToLauncher();
-    }
-
-    private final class UpdateUsernameSubscriber extends DefaultSubscriber<User> {
-        @Override
-        public void onCompleted() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
-
-        }
-
-        @Override
-        public void onNext(User user) {
-            if (user != null) changeUsername(user.getUsername());
-        }
-    }
-
-    private final class UpdateDisplayNameSubscriber extends DefaultSubscriber<User> {
-        @Override
-        public void onCompleted() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
-
-        }
-
-        @Override
-        public void onNext(User user) {
-            if (user != null) changeDisplayName(user.getDisplayName());
-        }
-    }
-
-    private final class UpdatePictureSubscriber extends DefaultSubscriber<User> {
-        @Override
-        public void onCompleted() {
-
-        }
-
-        @Override
-        public void onError(Throwable e) {
-
-        }
-
-        @Override
-        public void onNext(User user) {
-
-        }
     }
 
     private final class RemoveInstallSubscriber extends DefaultSubscriber<User> {
@@ -154,6 +93,23 @@ public class SettingPresenter implements Presenter {
         @Override
         public void onNext(User user) {
             goToLauncher();
+        }
+    }
+
+    private final class UpdateUserSubscriber extends DefaultSubscriber<User> {
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+
+        }
+
+        @Override
+        public void onNext(User user) {
+            settingView.setProfilePic(user.getProfilePicture());
         }
     }
 

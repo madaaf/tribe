@@ -68,11 +68,12 @@ public interface UserDataStore {
 
     /**
      *
-     * @param key The type of user info to be updated
-     * @param value what the user info will be updated to
+     * @param username
+     * @param displayName
+     * @param pictureUri
      * @return the new user value
      */
-    Observable<UserRealm> updateUser(String key, String value);
+    Observable<UserRealm> updateUser(String username, String displayName, String pictureUri);
 
     /**
      * Get an {@link Observable} which will emit a {@link List <ContactInterface>} containing infos

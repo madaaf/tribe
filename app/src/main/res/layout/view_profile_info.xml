@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:background="@color/grey.background.profile_info"
+    >
+
+    <ImageView
+        android:id="@+id/imgProfilePic"
+        android:layout_width="@dimen/avatar_size_intermediate"
+        android:layout_height="@dimen/avatar_size_intermediate"
+        android:layout_gravity="top"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_profile_pic_placeholder"
+        android:background="@drawable/shape_white_rect_grey_border"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtOpenCameraRoll"
+        android:layout_width="match_parent"
+        android:layout_height="49dp"
+        android:layout_gravity="top"
+        android:layout_marginStart="@dimen/horizontal_left_margin_onboarding_choose_picture_button"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/text_padding"
+        android:paddingEnd="@dimen/text_padding"
+        android:background="@drawable/shape_white_rect_grey_border"
+        android:text="@string/onboarding_user_avatar_library"
+        android:clickable="true"
+        style="@style/Body.Two.Black"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtTakeASelfie"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/onboarding_choose_picture_button_height"
+        android:layout_gravity="top"
+        android:layout_marginTop="48dp"
+        android:layout_marginStart="@dimen/horizontal_left_margin_onboarding_choose_picture_button"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/text_padding"
+        android:paddingEnd="@dimen/text_padding"
+        android:background="@drawable/shape_white_rect_grey_border"
+        android:text="@string/onboarding_user_avatar_selfie"
+        android:clickable="true"
+        style="@style/Body.Two.Black"
+        />
+
+    <com.tribe.app.presentation.view.widget.EditTextFont
+        android:id="@+id/editDisplayName"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/onboarding_choose_name_height"
+        android:layout_marginTop="100dp"
+        android:paddingStart="@dimen/text_padding"
+        android:paddingEnd="@dimen/text_padding"
+        android:background="@drawable/shape_white_rect_grey_border"
+        android:hint="@string/onboarding_user_displayname_placeholder"
+        style="@style/Title.1.Black"
+        android:textColorHint="@color/black.opacity.40"
+        android:singleLine="true"
+        android:imeOptions="actionDone"
+        />
+
+    <com.tribe.app.presentation.view.widget.EditTextFont
+        android:id="@+id/editUsername"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/onboarding_choose_name_height"
+        android:layout_marginTop="168dp"
+        android:paddingStart="@dimen/text_padding"
+        android:paddingEnd="@dimen/text_padding"
+        android:background="@drawable/shape_white_rect_grey_border"
+        android:hint="@string/onboarding_user_username_placeholder"
+        style="@style/Title.1.Black"
+        android:textColorHint="@color/black.opacity.40"
+        android:singleLine="true"
+        android:imeOptions="actionDone"
+        />
+
+</FrameLayout>

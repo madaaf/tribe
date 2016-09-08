@@ -70,11 +70,13 @@
     <string name="user.mutate.username">
         mutation{
             updateUser(user: {
-                %1$s: \"%2$s\"
+                username: \"%1$s\",
+                display_name: \"%2$s\"
             }) {
-                picture
                 username
                 display_name
+                picture
+
             }
         }
     </string>

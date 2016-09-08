@@ -4,14 +4,13 @@
     android:layout_height="match_parent"
     android:background="@android:color/black">
 
-    <!-- header -->
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@drawable/shape_white_rect_grey_border_no_top">
 
         <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtTitle"
             style="@style/Title.1.Black"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -26,6 +25,16 @@
             android:clickable="true"
             android:scaleType="centerInside"
             android:src="@drawable/picto_done_black" />
+
+        <ImageView
+            android:id="@+id/imgBack"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
+            android:clickable="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/picto_back"
+            android:alpha="0"/>
 
     </FrameLayout>
     

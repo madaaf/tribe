@@ -28,6 +28,7 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.Extras;
+import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.fragment.AccessFragment;
 import com.tribe.app.presentation.view.fragment.IntroViewFragment;
 import com.tribe.app.presentation.view.fragment.ProfileInfoFragment;
@@ -144,7 +145,7 @@ public class IntroActivity extends BaseActivity {
         // Load image into profile info
 
         // 2. Get image from Gallery
-        if (requestCode == ProfileInfoFragment.RESULT_LOAD_IMAGE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == ProfileInfoView.RESULT_LOAD_IMAGE && resultCode == Activity.RESULT_OK) {
             Uri selectedImage = data.getData();
             String[] filePathColumn = { MediaStore.Images.Media.DATA };
             Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
@@ -156,7 +157,7 @@ public class IntroActivity extends BaseActivity {
             Bitmap thumbnail = BitmapFactory.decodeFile(picturePath);
 
             if (thumbnail != null) {
-                profileInfoFragment.setImgProfilePic(profileInfoFragment.formatBitmapforView(thumbnail));
+                profileInfoFragment.setImgProfilePic(thumbnail);
                 profileInfoFragment.profilePictureSelected = true;
             }
             if (profileInfoFragment.textInfoValidated) {
@@ -165,9 +166,9 @@ public class IntroActivity extends BaseActivity {
         }
 
         // 3. Capture image
-        if (requestCode == ProfileInfoFragment.CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
+        if (requestCode == ProfileInfoView.CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
             Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-            profileInfoFragment.setImgProfilePic(profileInfoFragment.formatBitmapforView(thumbnail));
+            profileInfoFragment.setImgProfilePic(thumbnail);
             profileInfoFragment.profilePictureSelected = true;
             if (profileInfoFragment.textInfoValidated) {
                 profileInfoFragment.enableNext(true);

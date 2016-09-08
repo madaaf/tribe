@@ -101,9 +101,9 @@ public class CloudUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<User> updateUser(String key, String value) {
+    public Observable<User> updateUser(String username, String displayName, String pictureUri) {
         final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-        return userDataStore.updateUser(key, value)
+        return userDataStore.updateUser(username, displayName, pictureUri)
                 .map(userRealm -> this.userRealmDataMapper.transform(userRealm));
     }
 
