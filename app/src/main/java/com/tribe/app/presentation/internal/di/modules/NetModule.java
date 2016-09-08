@@ -10,8 +10,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.jakewharton.byteunits.DecimalByteUnit;
-import com.jakewharton.picasso.OkHttp3Downloader;
-import com.squareup.picasso.Picasso;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.TribeCache;
@@ -53,7 +51,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -181,7 +178,7 @@ public class NetModule {
         }
 
         return new Retrofit.Builder()
-                .baseUrl("http://api.dev.tribe.pm/")
+                .baseUrl(BuildConfig.TRIBE_API)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .callFactory(httpClientBuilder.build())
@@ -205,7 +202,7 @@ public class NetModule {
         }
 
         return new Retrofit.Builder()
-            .baseUrl("http://api.dev.tribe.pm")
+            .baseUrl(BuildConfig.TRIBE_API)
             .callFactory(httpClientBuilder.build())
             .build().create(FileApi.class);
     }
@@ -244,22 +241,11 @@ public class NetModule {
         }
 
         return new Retrofit.Builder()
-                .baseUrl("http://auth.dev.tribe.pm/")
+                .baseUrl(BuildConfig.TRIBE_AUTH)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .callFactory(httpClientBuilder.build())
                 .build().create(LoginApi.class);
-    }
-
-
-
-    @Provides
-    @Singleton
-    Picasso providePicasso(Context context, @Named("picassoOkHttp") OkHttpClient client) {
-        return new Picasso.Builder(context)
-                .downloader(new OkHttp3Downloader(client))
-                .indicatorsEnabled(false)
-                .build();
     }
 
     static OkHttpClient.Builder createOkHttpClient(Context context) {

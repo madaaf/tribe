@@ -36,6 +36,7 @@ import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 
 import java.io.File;
@@ -351,7 +352,7 @@ public class CloudUserDataStore implements UserDataStore {
     public Observable<List<ContactInterface>> contacts() {
         return Observable.zip(
                 rxContacts.getContacts().toList(),
-                rxFacebook.requestFriends(),
+                FacebookUtils.isLoggedIn() ? rxFacebook.requestFriends() : Observable.just(new ArrayList<ContactFBRealm>()),
                 (contactABRealmList, contactFBRealmList) -> {
                     List<ContactInterface> contactList = new ArrayList<>();
 

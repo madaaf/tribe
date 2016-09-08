@@ -10,9 +10,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
-import com.squareup.picasso.Picasso;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
@@ -20,6 +20,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -76,15 +77,13 @@ public class ProfileInfoView extends FrameLayout {
     @Inject
     ScreenUtils screenUtils;
 
-    @Inject
-    Picasso picasso;
-
+    // VARIABLES
     Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private PublishSubject<Boolean> infoValid = PublishSubject.create();
     public boolean profilePictureSelected = false;
     public final static int RESULT_LOAD_IMAGE = 5, CAMERA_REQUEST = 6;
-    private int profilePicSize = 65;
+    private int profilePicSize;
 
     private static final String[] PERMISSIONS_CAMERA = new String[]{Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -95,9 +94,9 @@ public class ProfileInfoView extends FrameLayout {
 
         LayoutInflater.from(getContext()).inflate(R.layout.view_profile_info, this);
         unbinder = ButterKnife.bind(this);
+        initDimens();
         initDependencyInjector();
         initUi();
-
     }
 
     @Override
@@ -118,12 +117,12 @@ public class ProfileInfoView extends FrameLayout {
     }
 
     public void setUrlProfilePic(String imageUrl) {
-        picasso.load(imageUrl)
-                .resize(screenUtils.dpToPx(profilePicSize), screenUtils.dpToPx(profilePicSize))
-                .centerCrop()
-                .transform(new RoundedCornersTransformation(screenUtils.dpToPx(100), 0, RoundedCornersTransformation.CornerType.ALL))
+        Glide.with(getContext()).load(imageUrl)
+                .override(screenUtils.dpToPx(profilePicSize), screenUtils.dpToPx(profilePicSize))
+                .fitCenter()
+                .bitmapTransform(new CropCircleTransformation(getContext()))
+                .crossFade()
                 .into(imgProfilePic);
-
     }
 
     public void setEditDisplayName(String displayName) {
@@ -142,8 +141,11 @@ public class ProfileInfoView extends FrameLayout {
         return editUsername.getText().toString();
     }
 
-    private void initUi() {
+    private void initDimens() {
+        profilePicSize = getResources().getDimensionPixelSize(R.dimen.avatar_size_onboarding);
+    }
 
+    private void initUi() {
         subscriptions.add(RxView.clicks(txtOpenCameraRoll).subscribe(aVoid -> {
             RxPermissions.getInstance(getContext())
                     .request(PERMISSIONS_CAMERA)
@@ -162,22 +164,18 @@ public class ProfileInfoView extends FrameLayout {
         Observable.combineLatest(RxTextView.textChanges(editDisplayName),
                 RxTextView.textChanges(editUsername),
                 (charSequence1, charSequence2) -> charSequence1.length() > 1 && charSequence2.length() > 1).subscribe(infoValid);
-
-
     }
 
     public Observable<Boolean> infoValid() {
         return infoValid;
     }
 
-
-
-
     public void setInfoFromFacebook(String profilePicLink, String username, String realName) {
-        picasso.load(profilePicLink)
-                .transform(new RoundedCornersTransformation(screenUtils.dpToPx(100), 0))
-                .resize(screenUtils.dpToPx(profilePicSize), screenUtils.dpToPx(profilePicSize))
-                .centerInside()
+        Glide.with(getContext()).load(profilePicLink)
+                .override(screenUtils.dpToPx(profilePicSize), screenUtils.dpToPx(profilePicSize))
+                .fitCenter()
+                .bitmapTransform(new CropCircleTransformation(getContext()))
+                .crossFade()
                 .into(imgProfilePic);
         profilePictureSelected = true;
         editDisplayName.setText(realName);
@@ -186,7 +184,7 @@ public class ProfileInfoView extends FrameLayout {
     }
 
     public Bitmap formatBitmapforView(Bitmap thumbnail) {
-        RoundedCornersTransformation roundedCornersTransformation = new RoundedCornersTransformation(screenUtils.dpToPx(100), 0, RoundedCornersTransformation.CornerType.ALL);
+        RoundedCornersTransformation roundedCornersTransformation = new RoundedCornersTransformation(screenUtils.dpToPx(profilePicSize) >> 1, 0, RoundedCornersTransformation.CornerType.ALL);
         thumbnail = ImageUtils.centerCropBitmap(thumbnail);
         thumbnail = Bitmap.createScaledBitmap(thumbnail, screenUtils.dpToPx(profilePicSize), screenUtils.dpToPx(profilePicSize), false);
         thumbnail = roundedCornersTransformation.transform(thumbnail);
@@ -207,7 +205,4 @@ public class ProfileInfoView extends FrameLayout {
                 .applicationComponent(getApplicationComponent())
                 .build().inject(this);
     }
-
-
-
 }

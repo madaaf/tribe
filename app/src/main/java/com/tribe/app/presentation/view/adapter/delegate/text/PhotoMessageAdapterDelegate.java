@@ -8,8 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.jakewharton.rxbinding.view.RxView;
-import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.presentation.AndroidApplication;
@@ -27,9 +27,6 @@ import rx.subjects.PublishSubject;
  * Created by tiago on 08/09/2016.
  */
 public class PhotoMessageAdapterDelegate extends BaseMessageAdapterDelegate {
-
-    @Inject
-    Picasso picasso;
 
     @Inject
     ScreenUtils screenUtils;
@@ -85,10 +82,10 @@ public class PhotoMessageAdapterDelegate extends BaseMessageAdapterDelegate {
 
         vh.imgPhoto.setTag(R.id.tag_position, position);
 
-        picasso.load(chatMessage.getContent())
-                //.fit()
-                //.centerCrop()
-                //.transform(new RoundedCornersTransformation(radiusImg, 0, RoundedCornersTransformation.CornerType.ALL))
+        Glide.with(context)
+                .load(chatMessage.getContent())
+                .thumbnail(0.25f)
+                .crossFade()
                 .into(vh.imgPhoto);
     }
 

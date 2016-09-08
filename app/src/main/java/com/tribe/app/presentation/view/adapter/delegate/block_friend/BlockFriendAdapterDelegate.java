@@ -8,16 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.jakewharton.rxbinding.view.RxView;
-import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,9 +33,6 @@ public class BlockFriendAdapterDelegate extends RxAdapterDelegate<List<Friendshi
     private final PublishSubject<View> clickFriendItem = PublishSubject.create();
 
     private Context context;
-
-    @Inject
-    Picasso picasso;
 
     public BlockFriendAdapterDelegate(Context context) {
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -72,7 +67,8 @@ public class BlockFriendAdapterDelegate extends RxAdapterDelegate<List<Friendshi
         vh.txtUsername.setText(friendship.getUsername());
 
         try {
-            picasso.load(friendship.getProfilePicture())
+            Glide.with(context)
+                    .load(friendship.getProfilePicture())
                     .into(vh.imageFriendPic);
         } catch (NullPointerException e) {
             e.printStackTrace();

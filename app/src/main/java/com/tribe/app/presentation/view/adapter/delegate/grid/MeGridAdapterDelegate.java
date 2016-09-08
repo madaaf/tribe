@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
@@ -17,8 +17,8 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
+import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
-import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
@@ -40,9 +40,6 @@ public class MeGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>> {
 
     @Inject
     PaletteGrid paletteGrid;
-
-    @Inject
-    Picasso picasso;
 
     // RESOURCES
     private int avatarSize;
@@ -85,10 +82,11 @@ public class MeGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>> {
         vh.imgLevel.setImageResource(ScoreUtils.getLevelForScore(me.getScore()).getDrawableId());
 
         if (!StringUtils.isEmpty(me.getProfilePicture())) {
-            picasso.load(me.getProfilePicture())
-                    .fit()
+            Glide.with(context).load(me.getProfilePicture())
+                    .override(avatarSize, avatarSize)
                     .centerCrop()
-                    .transform(new RoundedCornersTransformation(avatarSize >> 1, 0, RoundedCornersTransformation.CornerType.ALL))
+                    .bitmapTransform(new CropCircleTransformation(context))
+                    .crossFade()
                     .into(vh.avatar);
         }
     }

@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.f2prateek.rx.preferences.Preference;
-import com.squareup.picasso.Picasso;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
@@ -166,8 +165,6 @@ public interface ApplicationComponent {
     JobManager jobManager();
 
     Realm realm();
-
-    Picasso picasso();
 
     @Named("simpleDateHoursMinutes") SimpleDateFormat simpleDateHoursMinutes();
 

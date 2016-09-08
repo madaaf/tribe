@@ -7,13 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 /**
  * Created by tiago on 18/05/2016.
@@ -22,9 +19,6 @@ public class SeparatorAdapterDelegate extends RxAdapterDelegate<List<Object>> {
 
     protected LayoutInflater layoutInflater;
     private Context context;
-
-    @Inject
-    Picasso picasso;
 
     // OBSERVABLES
 

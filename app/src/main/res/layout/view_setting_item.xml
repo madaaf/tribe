@@ -36,7 +36,8 @@
         android:id="@+id/imageProf"
         android:layout_width="@dimen/setting_pic_size"
         android:layout_height="@dimen/setting_pic_size"
-        android:visibility="invisible"/>
+        android:visibility="gone"
+        />
 
     <ImageView
         android:id="@+id/imageSyncIcon"
@@ -53,7 +54,8 @@
         android:layout_marginEnd="20dp"
         android:src="@drawable/picto_back"
         android:scaleX="-1"
-        android:visibility="invisible"/>
+        android:visibility="invisible"
+        />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtNameSetting"
@@ -61,6 +63,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:visibility="invisible" />
+        android:visibility="invisible"
+        />
 
 </FrameLayout>

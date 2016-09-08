@@ -19,8 +19,8 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.jakewharton.rxbinding.view.RxView;
-import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.Recipient;
@@ -32,9 +32,9 @@ import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.adapter.MessageAdapter;
 import com.tribe.app.presentation.view.adapter.manager.MessageLayoutManager;
 import com.tribe.app.presentation.view.component.ChatInputView;
+import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
-import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.video.VideoSize;
 import com.tribe.app.presentation.view.widget.ScalableTextureView;
@@ -78,7 +78,6 @@ public class ChatActivity extends BaseActivity implements MessageView {
 
     @Inject ChatPresenter chatPresenter;
     @Inject ScreenUtils screenUtils;
-    @Inject Picasso picasso;
 
     @BindView(android.R.id.content)
     ViewGroup rootView;
@@ -746,10 +745,11 @@ public class ChatActivity extends BaseActivity implements MessageView {
                     params.topMargin = topMargin;
                     avatar.setLayoutParams(params);
 
-                    picasso.load(chatMessage.getFrom().getProfilePicture())
-                            .fit()
+                    Glide.with(this).load(chatMessage.getFrom().getProfilePicture())
+                            .override(avatarSize, avatarSize)
                             .centerCrop()
-                            .transform(new RoundedCornersTransformation(avatarSize >> 1, 0, RoundedCornersTransformation.CornerType.ALL))
+                            .bitmapTransform(new CropCircleTransformation(context()))
+                            .crossFade()
                             .into(avatar);
 
                     layoutContent.addView(avatar);

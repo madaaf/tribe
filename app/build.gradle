@@ -36,6 +36,8 @@ android {
         testInstrumentationRunner globalConfiguration.getAt("testInstrumentationRunner")
         testApplicationId globalConfiguration.getAt("testApplicationId")
 
+        multiDexEnabled = true;
+
         resValue "string", "app_name", "Tribe"
     }
 
@@ -82,12 +84,19 @@ android {
 
             buildConfigField "String", "TRIBE_PUBLIC_KEY", "\"${tribe_public_key_debug}\""
             buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key_debug}\""
+            buildConfigField "String", "TRIBE_API", "\"http://api.dev.tribe.pm\""
+            buildConfigField "String", "TRIBE_AUTH", "\"http://auth.dev.tribe.pm\""
         }
 
-        beta {
-            signingConfig signingConfigs.debug
-            applicationIdSuffix = ".beta"
-            resValue "string", "app_name", "Tribe BETA"
+        tribe2 {
+            signingConfig signingConfigs.release
+            applicationIdSuffix = ".Tribe2"
+            resValue "string", "app_name", "Tribe2"
+
+            buildConfigField "String", "TRIBE_PUBLIC_KEY", "\"${tribe_public_key_tribe2}\""
+            buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key_tribe2}\""
+            buildConfigField "String", "TRIBE_API", "http://api.tribe.pm"
+            buildConfigField "String", "TRIBE_AUTH", "http://auth.tribe.pm"
         }
     }
 }
@@ -123,9 +132,10 @@ dependencies {
     compile presentationDependencies.priorityJobQueue
     compile presentationDependencies.pahoMQTT3
     compile presentationDependencies.rxBindings
-    compile presentationDependencies.picasso
-    compile presentationDependencies.picassoDownloader
-    //compile presentationDependencies.glide
+    //compile presentationDependencies.picasso
+    //compile presentationDependencies.picassoDownloader
+    compile presentationDependencies.glide
+    compile presentationDependencies.glideOKHttp
     compile presentationDependencies.byteUnits
     compile presentationDependencies.rebound
     compile presentationDependencies.rxSharedPreferences
@@ -138,7 +148,7 @@ dependencies {
     compile presentationDependencies.googlePlayLocation
     compile presentationDependencies.rxPermissions
     compile presentationDependencies.facebook
-    compile presentationDependencies.plattysoft
+    compile presentationDependencies.multiDex
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker
@@ -148,7 +158,7 @@ dependencies {
     androidTestCompile presentationTestDependencies.testingSupportLib
 
     // Development
-    compile developmentDependencies.leakCanary
+    //compile developmentDependencies.leakCanary
     compile developmentDependencies.stetho
     compile developmentDependencies.stethoOkHttp
 

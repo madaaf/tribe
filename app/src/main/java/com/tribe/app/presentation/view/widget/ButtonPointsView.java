@@ -9,11 +9,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
+import com.tribe.app.presentation.view.transformer.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 import javax.inject.Inject;
@@ -39,9 +39,6 @@ public class ButtonPointsView extends LinearLayout {
 
     @Inject
     ScreenUtils screenUtils;
-
-    @Inject
-    Picasso picasso;
 
     @BindView(R.id.viewBG)
     View viewBG;
@@ -156,8 +153,9 @@ public class ButtonPointsView extends LinearLayout {
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
             if (!StringUtils.isEmpty(url)) {
-                picasso.load(url).fit().centerCrop()
-                        .transform(new RoundedCornersTransformation(radiusImage, 0, RoundedCornersTransformation.CornerType.LEFT))
+                Glide.with(getContext()).load(url).centerCrop()
+                        .bitmapTransform(new RoundedCornersTransformation(getContext(), radiusImage, 0, RoundedCornersTransformation.CornerType.LEFT))
+                        .crossFade()
                         .into(imageView);
             }
         }

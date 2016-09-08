@@ -56,6 +56,7 @@
     <dimen name="snooze_mode_width">93dp</dimen>
 
     <!-- SIZES -->
+    <dimen name="avatar_size_onboarding">65dp</dimen>
     <dimen name="avatar_size">75dp</dimen>
     <dimen name="avatar_size_with_shadow">82dp</dimen>
     <dimen name="avatar_size_scaled">110dp</dimen>
