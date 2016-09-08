@@ -11,11 +11,11 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.jakewharton.rxbinding.view.RxView;
@@ -30,7 +30,6 @@ import com.tribe.app.presentation.view.fragment.SettingBlockFragment;
 import com.tribe.app.presentation.view.fragment.SettingFragment;
 import com.tribe.app.presentation.view.fragment.SettingUpdateProfileFragment;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.widget.CustomViewPager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.io.FileNotFoundException;
@@ -65,16 +64,15 @@ public class SettingActivity extends BaseActivity implements SettingView {
     @BindView(R.id.txtTitle)
     TextViewFont txtTitle;
 
+    FragmentManager fragmentManager;
     private SettingFragment settingFragment;
     private SettingUpdateProfileFragment settingUpdateProfileFragment;
     private SettingBlockFragment settingBlockFragment;
 
-    private final static int PAGE_MAIN = 0, PAGE_UPDATE = 1, PAGE_BLOCK = 2;
-
     private int shortDuration = 150;
 
-    @BindView(R.id.viewPager)
-    CustomViewPager viewPager;
+    @BindView(R.id.layoutFragmentContainer)
+    FrameLayout layouFragmentContainer;
 
     @Inject
     Picasso picasso;
@@ -94,7 +92,6 @@ public class SettingActivity extends BaseActivity implements SettingView {
         super.onCreate(savedInstanceState);
 
         initUi();
-        initViewPager();
         initDependencyInjector();
         initPresenter();
     }
@@ -111,17 +108,6 @@ public class SettingActivity extends BaseActivity implements SettingView {
         if (unbinder != null) unbinder.unbind();
 
         super.onDestroy();
-    }
-
-    private void initViewPager() {
-        IntroViewPagerAdapter introViewPagerAdapter = new IntroViewPagerAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(introViewPagerAdapter);
-        viewPager.setOffscreenPageLimit(4);
-        viewPager.setScrollDurationFactor(2f);
-        viewPager.setCurrentItem(PAGE_MAIN);
-        viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_NONE);
-        viewPager.setPageTransformer(false, new SetttingPageTransformer());
-        viewPager.setSwipeable(false);
     }
 
     @Override
@@ -162,50 +148,35 @@ public class SettingActivity extends BaseActivity implements SettingView {
         setContentView(R.layout.activity_setting);
         unbinder = ButterKnife.bind(this);
 
+        settingFragment = SettingFragment.newInstance();
+        settingUpdateProfileFragment = SettingUpdateProfileFragment.newInstance();
+        settingBlockFragment = SettingBlockFragment.newInstance();
+
+        fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.layoutFragmentContainer, settingFragment);
+        fragmentTransaction.commit();
+
+
         subscriptions.add(RxView.clicks(imgBack).subscribe(aVoid -> {
             goToMain();
         }));
 
         subscriptions.add(RxView.clicks(imgDone).subscribe(aVoid -> {
-            if (viewPager.getCurrentItem() == PAGE_MAIN) {
+
+            if (fragmentManager.findFragmentById(R.id.layoutFragmentContainer) instanceof SettingFragment) {
                 Intent resultIntent = new Intent();
                 setResult(BaseActivity.RESULT_OK, resultIntent);
                 finish();
             }
-            if (viewPager.getCurrentItem() == PAGE_UPDATE) {
+            if (fragmentManager.findFragmentById(R.id.layoutFragmentContainer) instanceof SettingUpdateProfileFragment) {
                 settingPresenter.updateUser(settingUpdateProfileFragment.getUsername(), settingUpdateProfileFragment.getDisplayName(), pictureUri);
                 goToMain();
             }
         }));
     }
 
-    private void updateAnim() {
-        txtTitle.animate()
-                .alpha(0)
-                .setStartDelay(0)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        txtTitle.animate()
-                                .alpha(1)
-                                .setStartDelay(0)
-                                .setDuration(shortDuration)
-                                .translationX(10)
-                                .setListener(new AnimatorListenerAdapter() {
-                                    @Override
-                                    public void onAnimationEnd(Animator animation) {
-                                        super.onAnimationEnd(animation);
-                                        txtTitle.animate()
-                                                .translationX(0)
-                                                .setDuration(shortDuration)
-                                                .start();
-                                    }
-                                })
-                                .start();
-                    }
-                })
-                .start();
+    private void updateAnim() { ;
 
         imgBack.animate()
                 .alpha(1)
@@ -230,22 +201,6 @@ public class SettingActivity extends BaseActivity implements SettingView {
     }
 
     private void mainSettingAnim() {
-        txtTitle.animate()
-                .alpha(0)
-                .setStartDelay(0)
-                .setDuration(shortDuration)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        txtTitle.animate()
-                                .alpha(1)
-                                .setStartDelay(0)
-                                .setDuration(shortDuration)
-                                .start();
-                    }
-                })
-                .start();
 
         imgBack.animate()
                 .alpha(0)
@@ -253,72 +208,34 @@ public class SettingActivity extends BaseActivity implements SettingView {
                 .start();
     }
 
-
-    /**
-     * Initialize fragment view pager adapter
-     */
-
-    private class IntroViewPagerAdapter extends FragmentPagerAdapter {
-
-        private static final int NUM_ITEMS = 3;
-
-        public IntroViewPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public int getCount() {
-            return NUM_ITEMS;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            switch (position) {
-                case 0:
-                    settingFragment = SettingFragment.newInstance();
-                    return settingFragment;
-                case 1:
-                    settingUpdateProfileFragment = SettingUpdateProfileFragment.newInstance();
-                    return settingUpdateProfileFragment;
-                case 2:
-                    settingBlockFragment = SettingBlockFragment.newInstance();
-                    return settingBlockFragment;
-                default:
-                    settingFragment = SettingFragment.newInstance();
-                    return settingFragment;
-            }
-        }
-
-    }
-
     public void goToMain() {
         screenUtils.hideKeyboard(this);
-        viewPager.setCurrentItem(PAGE_MAIN);
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.anim.fragment_in_from_left, R.anim.fragment_out_from_right);
+        fragmentTransaction.replace(R.id.layoutFragmentContainer, settingFragment);
+        fragmentTransaction.commit();
         txtTitle.setText(getString(R.string.settings_title));
         imgDone.setAlpha(1f);
         mainSettingAnim();
     }
 
     public void goToUpdateProfile() {
-        viewPager.setCurrentItem(PAGE_UPDATE);
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.anim.fragment_in_from_right, R.anim.fragment_out_from_left);
+        fragmentTransaction.add(R.id.layoutFragmentContainer, settingUpdateProfileFragment);
+        fragmentTransaction.commit();
         txtTitle.setText(getString(R.string.settings_profile_title));
         updateAnim();
     }
 
     public void goToBlock() {
-        viewPager.setCurrentItem(PAGE_BLOCK);
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.anim.fragment_in_from_right, R.anim.fragment_out_from_left);
+        fragmentTransaction.add(R.id.layoutFragmentContainer, settingBlockFragment);
+        fragmentTransaction.commit();
         txtTitle.setText(getString(R.string.hiddenblocked_empty_title));
         imgDone.setAlpha(0f);
         updateAnim();
-    }
-
-
-    private class SetttingPageTransformer implements ViewPager.PageTransformer {
-
-        @Override
-        public void transformPage(View page, float position) {
-
-        }
     }
 
 

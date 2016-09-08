@@ -38,9 +38,9 @@
 
     </FrameLayout>
     
-            <com.tribe.app.presentation.view.widget.CustomViewPager
-                android:id="@+id/viewPager"
+            <FrameLayout
                 android:layout_marginTop="50dp"
+                android:id="@+id/layoutFragmentContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 />

@@ -133,6 +133,12 @@ public class SettingFragment extends BaseFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+//        initSettings();
+    }
+
+    @Override
     public void onDestroy() {
         unbinder.unbind();
 

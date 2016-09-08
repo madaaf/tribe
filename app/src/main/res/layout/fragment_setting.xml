@@ -3,7 +3,6 @@
     android:id="@+id/scrollSetting"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="50dp"
     android:background="@drawable/shape_rect_background_grey_rounded_bottom">
 
     <LinearLayout
@@ -81,7 +80,7 @@
                 android:id="@+id/messageSettingFahrenheit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/section_button_vertical_padding" />
+                android:paddingBottom="@dimen/section_button_vertical_padding"/>
 
         </LinearLayout>
 
@@ -94,19 +93,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_white_rect_grey_border"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            >
 
             <com.tribe.app.presentation.view.component.SettingItemView
                 android:id="@+id/settingsFacebook"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/section_button_vertical_padding" />
+                android:paddingTop="@dimen/section_button_vertical_padding"
+                 />
 
             <com.tribe.app.presentation.view.component.SettingItemView
                 android:id="@+id/settingsAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/section_button_vertical_padding" />
+                android:paddingBottom="@dimen/section_button_vertical_padding"
+                 />
 
         </LinearLayout>
 
@@ -123,10 +125,11 @@
             android:orientation="vertical">
 
             <com.tribe.app.presentation.view.component.SettingItemView
+                android:paddingTop="@dimen/section_button_vertical_padding"
+                android:paddingBottom="@dimen/section_button_vertical_padding"
                 android:id="@+id/settingsInvisible"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/section_button_vertical_padding" />
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
 
@@ -145,7 +148,8 @@
                 android:id="@+id/settingsTweet"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/section_button_vertical_padding" />
+                android:paddingTop="@dimen/section_button_vertical_padding"
+                />
 
             <com.tribe.app.presentation.view.component.SettingItemView
                 android:id="@+id/settingsEmail"
@@ -156,7 +160,7 @@
                 android:id="@+id/settingsRateApp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/section_button_vertical_padding" />
+                android:paddingBottom="@dimen/section_button_vertical_padding"/>
 
         </LinearLayout>
 
@@ -175,7 +179,9 @@
                 android:id="@+id/settingsBlocked"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/section_button_vertical_padding" />
+                android:paddingTop="@dimen/section_button_vertical_padding"
+                android:paddingBottom="@dimen/section_button_vertical_padding"
+                />
 
         </LinearLayout>
 
@@ -194,7 +200,9 @@
                 android:id="@+id/settingsLogOut"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/section_button_vertical_padding" />
+                android:paddingTop="@dimen/section_button_vertical_padding"
+                android:paddingBottom="@dimen/section_button_vertical_padding"
+               />
 
         </LinearLayout>
 
