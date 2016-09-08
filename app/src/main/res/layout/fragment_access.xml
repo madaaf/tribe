@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    android:background="@drawable/shape_rect_white_rounded_corners">
+    android:background="@drawable/shape_rect_white_rounded_corners"
+    android:id="@+id/layoutAccess">
 
     <View
         android:layout_width="match_parent"
@@ -9,6 +10,7 @@
         android:layout_gravity="center_horizontal"
         android:background="@drawable/shape_white_rect_grey_border_rounded_top"
         />
+
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtAccessTitle"
@@ -56,5 +58,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"/>
 
+    <FrameLayout
+        android:id="@+id/confettiLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="60dp"
+        android:layout_gravity="bottom"/>
 
 </FrameLayout>

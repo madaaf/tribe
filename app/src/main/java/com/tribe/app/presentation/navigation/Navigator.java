@@ -145,6 +145,7 @@ public class Navigator {
     public void navigateToSettings(Activity activity, int result) {
         if (activity != null) {
             Intent intent = SettingActivity.getCallingIntent(activity);
+            activity.overridePendingTransition(R.anim.activity_in_from_right, R.anim.activity_out_scale_down);
             activity.startActivityForResult(intent, result);
         }
     }

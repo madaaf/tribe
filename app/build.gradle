@@ -139,6 +139,7 @@ dependencies {
     compile presentationDependencies.rxPermissions
     compile presentationDependencies.facebook
     compile presentationDependencies.plattysoft
+    compile presentationDependencies.confetti
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker

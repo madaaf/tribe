@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -15,6 +16,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -24,6 +27,7 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.github.jinatonic.confetti.CommonConfetti;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.navigation.Navigator;
@@ -78,7 +82,7 @@ public class IntroActivity extends BaseActivity {
     private CallbackManager mCallbackManager;
 
     // for ui testing
-    public static final boolean uiOnlyMode = false ;
+    public static final boolean uiOnlyMode = true;
 
     @Inject
     ScreenUtils screenUtils;
@@ -87,7 +91,7 @@ public class IntroActivity extends BaseActivity {
     CustomViewPager viewPager;
 
     @BindView(R.id.introActivityRoot)
-    FrameLayout introRoot;
+    ViewGroup container;
 
 
     /**
@@ -197,7 +201,7 @@ public class IntroActivity extends BaseActivity {
         viewPager.setAdapter(introViewPagerAdapter);
         viewPager.setOffscreenPageLimit(4);
         viewPager.setScrollDurationFactor(2f);
-        viewPager.setCurrentItem(PAGE_INTRO);
+        viewPager.setCurrentItem(PAGE_ACCESS);
         viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_NONE);
         viewPager.setPageTransformer(false, new IntroPageTransformer());
         viewPager.setSwipeable(false);

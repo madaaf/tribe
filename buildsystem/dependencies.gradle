@@ -47,6 +47,7 @@ ext {
     rxPermissionsVersion = '0.7.0@aar'
     facebookVersion = '4,5'
     plattysoftVersion = '1.3.1'
+    confettiVersion = '1.0.0'
 
     //Testing
     robolectricVersion = '3.0'
@@ -98,7 +99,8 @@ ext {
             rxPermissions           : "com.tbruyelle.rxpermissions:rxpermissions:${rxPermissionsVersion}",
             facebook                : "com.facebook.android:facebook-android-sdk:[${facebookVersion})",
             plattysoft              : "com.plattysoft.leonids:LeonidsLib:${plattysoftVersion}",
-            glide                   : "com.github.bumptech.glide:glide:${glideVersion}"
+            glide                   : "com.github.bumptech.glide:glide:${glideVersion}",
+            confetti                : "com.github.jinatonic.confetti:confetti:${confettiVersion}"
     ]
 
     presentationTestDependencies = [
