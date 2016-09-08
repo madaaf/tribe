@@ -84,6 +84,13 @@
             />
 
         <activity
+            android:name=".presentation.utils.facebook.FacebookHiddenActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Transparent.Dummy"
+            android:launchMode="singleTop"
+            />
+
+        <activity
             android:name=".presentation.view.activity.DummyActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Transparent.Dummy" />

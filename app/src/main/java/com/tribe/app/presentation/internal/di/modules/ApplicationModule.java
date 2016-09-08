@@ -50,6 +50,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.UIThread;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
+import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -367,6 +368,12 @@ public class ApplicationModule {
             });
 
         return new JobManager(builder.build());
+    }
+
+    @Provides
+    @Singleton
+    RxFacebook provideRxFacebook(Context context) {
+        return new RxFacebook(context);
     }
 
     // DATES

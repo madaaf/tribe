@@ -16,11 +16,13 @@ import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
+import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.ContactABRealm;
+import com.tribe.app.data.realm.ContactFBRealm;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
@@ -33,6 +35,7 @@ import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.facebook.RxFacebook;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -65,6 +68,7 @@ public class CloudUserDataStore implements UserDataStore {
     private final ChatCache chatCache;
     private final ContactCache contactCache;
     private final RxContacts rxContacts;
+    private final RxFacebook rxFacebook;
     private final Context context;
     private AccessToken accessToken = null;
     private User user = null;
@@ -82,7 +86,7 @@ public class CloudUserDataStore implements UserDataStore {
      * @param accessToken the access token
      */
     public CloudUserDataStore(UserCache userCache, TribeCache tribeCache, ChatCache chatCache,
-                              ContactCache contactCache, RxContacts rxContacts,
+                              ContactCache contactCache, RxContacts rxContacts, RxFacebook rxFacebook,
                               TribeApi tribeApi, LoginApi loginApi, User user,
                               AccessToken accessToken, Installation installation,
                               ReactiveLocationProvider reactiveLocationProvider, Context context,
@@ -92,6 +96,7 @@ public class CloudUserDataStore implements UserDataStore {
         this.chatCache = chatCache;
         this.contactCache = contactCache;
         this.rxContacts = rxContacts;
+        this.rxFacebook = rxFacebook;
         this.tribeApi = tribeApi;
         this.loginApi = loginApi;
         this.context = context;
@@ -139,7 +144,6 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<UserRealm> userInfos(String userId) {
-//        return this.tribeApi.getUserInfos(context.getString(R.string.user_infos)).doOnNext(saveToCacheUser);
         return Observable.zip(this.tribeApi.getUserInfos(context.getString(R.string.user_infos, context.getString(R.string.userfragment_infos))),
                 reactiveLocationProvider.getLastKnownLocation().onErrorReturn(throwable -> null).defaultIfEmpty(null),
                 (userRealm, location) -> {
@@ -324,11 +328,9 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<List<ContactInterface>> contacts() {
-        userCache.removeFriendship("BkfMWfBGs");
-
         return Observable.zip(
                 rxContacts.getContacts().toList(),
-                Observable.just(new ArrayList<>()),
+                rxFacebook.requestFriends(),
                 (contactABRealmList, contactFBRealmList) -> {
                     List<ContactInterface> contactList = new ArrayList<>();
 
@@ -336,18 +338,26 @@ public class CloudUserDataStore implements UserDataStore {
                         contactList.add(contactABRealm);
                     }
 
+                    for (ContactFBRealm contactFBRealm : contactFBRealmList) {
+                        contactList.add(contactFBRealm);
+                    }
+
                     return contactList;
                 }
         ).flatMap(contactList -> {
             Map<String, ContactInterface> phones = new HashMap<>();
+            Map<String, ContactInterface> fbIds = new HashMap<>();
 
             for (ContactInterface contactI : contactList) {
                 if (contactI instanceof ContactABRealm) {
                     ContactABRealm contactABRealm = (ContactABRealm) contactI;
                     for (PhoneRealm phoneRealm : contactABRealm.getPhones()) {
                         if (phoneRealm.isInternational())
-                            phones.put(phoneRealm.getPhone(), contactABRealm);
+                            phones.put(phoneRealm.getPhone(), contactI);
                     }
+                } else if (contactI instanceof ContactFBRealm) {
+                    ContactFBRealm contactFBRealm = (ContactFBRealm) contactI;
+                    fbIds.put(contactFBRealm.getId(), contactI);
                 }
             }
 
@@ -355,48 +365,72 @@ public class CloudUserDataStore implements UserDataStore {
 
             // WE REMOVE ALL THE PHONE NUMBERS THAT WE'RE ALREADY FRIENDS WITH
             for (FriendshipRealm fr : currentUser.getFriendships()) {
+                contactList.remove(phones.get(fr.getFriend().getPhone()));
                 phones.remove(fr.getFriend().getPhone());
+                fbIds.remove(fr.getFriend().getFbid());
             }
 
             phones.remove(currentUser.getPhone());
 
-            if (phones.size() > 0) {
+            if (phones.size() > 0 || fbIds.size() > 0) {
                 StringBuffer buffer = new StringBuffer();
-                StringBuilder result = new StringBuilder();
 
-                int count = 0;
-                int loopCount = 0;
-                for (String phone : phones.keySet()) {
-                    result.append("\"" + phone + "\"");
-                    result.append(",");
-                    count++;
+                if (phones.size() > 0) {
+                    StringBuilder result = new StringBuilder();
 
-                    if (count % LOOKUP_LIMIT == 0) {
-                        buffer.append(context.getString(R.string.lookup_phone, loopCount, result.length() > 0 ? result.substring(0, result.length() - 1) : ""));
-                        loopCount++;
-                        result = new StringBuilder();
+                    int count = 0;
+                    int loopCount = 0;
+                    for (String phone : phones.keySet()) {
+                        result.append("\"" + phone + "\"");
+                        result.append(",");
+                        count++;
+
+                        if (count % LOOKUP_LIMIT == 0) {
+                            buffer.append(context.getString(R.string.lookup_phone, loopCount, result.length() > 0 ? result.substring(0, result.length() - 1) : ""));
+                            loopCount++;
+                            result = new StringBuilder();
+                        }
                     }
-                }
 
-                buffer.append(context.getString(R.string.lookup_phone, loopCount, result.length() > 0 ? result.substring(0, result.length() - 1) : ""));
+                    buffer.append(context.getString(R.string.lookup_phone, loopCount, result.length() > 0 ? result.substring(0, result.length() - 1) : ""));
+                } else if (phones.size() > 0) {
+                    StringBuilder result = new StringBuilder();
+
+                    int count = 0;
+                    int loopCount = 0;
+                    for (String fbid : fbIds.keySet()) {
+                        result.append("\"" + fbid + "\"");
+                        result.append(",");
+                        count++;
+
+                        if (count % LOOKUP_LIMIT == 0) {
+                            buffer.append(context.getString(R.string.lookup_facebook, loopCount, result.length() > 0 ? result.substring(0, result.length() - 1) : ""));
+                            loopCount++;
+                            result = new StringBuilder();
+                        }
+                    }
+
+                    buffer.append(context.getString(R.string.lookup_facebook, loopCount, result.length() > 0 ? result.substring(0, result.length() - 1) : ""));
+                }
 
                 String reqLookup = context.getString(R.string.lookup, buffer.toString(), "", context.getString(R.string.userfragment_infos));
 
-                return Observable.zip(
-                        Observable.just(phones),
-                        tribeApi.lookup(reqLookup),
-                        (stringContactInterfaceMap, lookupEntity)
-                                -> {
-                            for (UserRealm userRealm : lookupEntity.getLookup()) {
-                                for (String phone : phones.keySet()) {
-                                    if (userRealm.getPhone().equals(phone)) {
-                                        phones.get(phone).addUser(userRealm);
-                                    }
-                                }
+                return tribeApi.lookup(reqLookup).map(lookupEntity -> {
+                    for (UserRealm userRealm : lookupEntity.getLookup()) {
+                        for (String phone : phones.keySet()) {
+                            if (userRealm.getPhone().equals(phone)) {
+                                phones.get(phone).addUser(userRealm);
                             }
-                            return Pair.create(stringContactInterfaceMap, lookupEntity);
                         }
-                );
+
+                        for (String fbId : fbIds.keySet()) {
+                            if (userRealm.getFbid().equals(fbId)) {
+                                fbIds.get(fbId).addUser(userRealm);
+                            }
+                        }
+                    }
+                    return Pair.create(phones, lookupEntity);
+                });
             }
 
             return Observable.just(Pair.create(phones, null));
@@ -448,9 +482,9 @@ public class CloudUserDataStore implements UserDataStore {
                 reqHowManyFriends = context.getString(R.string.mutation, bufferHowManyFriends.toString());
             }
 
-            Observable.zip(
+            return Observable.zip(
                     tribeApi.howManyFriends(reqHowManyFriends),
-                    StringUtils.isEmpty(mutationCreateFriendship) ? Observable.empty() : tribeApi.createFriendship(mutationCreateFriendship),
+                    StringUtils.isEmpty(mutationCreateFriendship) ? Observable.just(new CreateFriendshipEntity()) : tribeApi.createFriendship(mutationCreateFriendship),
                     (howManyFriendsResult, createFriendshipEntity) -> {
                         int indexHowMany = 0;
 
@@ -459,41 +493,17 @@ public class CloudUserDataStore implements UserDataStore {
                             indexHowMany++;
                         }
 
-                        UserRealm currentUser = userCache.userInfosNoObs(accessToken.getUserId());
-                        currentUser.getFriendships().addAll(createFriendshipEntity.getNewFriendshipList());
-                        userCache.put(currentUser);
+                        if (createFriendshipEntity != null && createFriendshipEntity.getNewFriendshipList() != null
+                                && createFriendshipEntity.getNewFriendshipList().size() > 0) {
+                            UserRealm currentUser = userCache.userInfosNoObs(accessToken.getUserId());
+                            currentUser.getFriendships().addAll(createFriendshipEntity.getNewFriendshipList());
+                            userCache.put(currentUser);
+                        }
 
-                        return phonesHowManyFriends;
-                    }).subscribe(stringContactInterfaceMap -> {
-                System.out.println("LOL");
-            });
-
-            //return Pair.create(contactABRealmList, tribeApi.createFriendship(mutationCreateFriendship));
-
-            return contactList;
-        });
-
-
-
-//        }, (contactABRealmList, lookupEntity) -> {
-//            StringBuffer buffer = new StringBuffer();
-//            String mutationCreateFriendship = null;
-//            Set<String> createdPhones = new HashSet<String>();
-//
-//            if (lookupEntity != null && lookupEntity.getLookup() != null && lookupEntity.getLookup().size() > 0) {
-//                int count = 0;
-//
-//                for (UserRealm userRealmLookup : lookupEntity.getLookup()) {
-//                    buffer.append(context.getString(R.string.createFriendship_input, count, userRealmLookup.getId(), context.getString(R.string.friendships_infos)));
-//                }
-//
-//                mutationCreateFriendship = context.getString(R.string.createFriendship_mutation, buffer.toString(), context.getString(R.string.userfragment_infos));
-//            }
-//
-//            return Pair.create(contactABRealmList, tribeApi.createFriendship(mutationCreateFriendship));
-//        }).flatMap(listPair -> {
-//            return Observable.just(listPair.first);
-//        });
+                        List<ContactInterface> interfaces = new ArrayList<ContactInterface>(contactList);
+                        return interfaces;
+                    });
+        }).flatMap(listObservable -> listObservable).doOnNext(saveToCacheContacts);
     }
 
     private final Action1<AccessToken> saveToCacheAccessToken = accessToken -> {
@@ -540,9 +550,21 @@ public class CloudUserDataStore implements UserDataStore {
         }
     };
 
-    private final Action1<List<ContactABRealm>> saveToCacheABContacts = contactABRealmList -> {
-        if (contactABRealmList != null && contactABRealmList.size() > 0) {
-            CloudUserDataStore.this.contactCache.insertAddressBook(contactABRealmList);
+    private final Action1<List<ContactInterface>> saveToCacheContacts = contactRealmList -> {
+        if (contactRealmList != null && contactRealmList.size() > 0) {
+            List<ContactFBRealm> contactFBRealm = new ArrayList<>();
+            List<ContactABRealm> contactABRealm = new ArrayList<>();
+
+            for (ContactInterface contactI : contactRealmList) {
+                if (contactI instanceof ContactABRealm) {
+                    contactABRealm.add((ContactABRealm) contactI);
+                } else if (contactI instanceof ContactFBRealm) {
+                    contactFBRealm.add((ContactFBRealm) contactI);
+                }
+            }
+
+            CloudUserDataStore.this.contactCache.insertAddressBook(contactABRealm);
+            CloudUserDataStore.this.contactCache.insertFBContactList(contactFBRealm);
         }
     };
 }

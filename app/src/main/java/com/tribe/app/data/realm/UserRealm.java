@@ -19,6 +19,7 @@ public class UserRealm extends RealmObject {
     private String display_name;
     private String username;
     private String phone;
+    private String fbid;
     private String picture;
     private int score;
     private String email;
@@ -175,5 +176,13 @@ public class UserRealm extends RealmObject {
 
     public void setGroups(RealmList<GroupRealm> groups) {
         this.groups = groups;
+    }
+
+    public String getFbid() {
+        return fbid;
+    }
+
+    public void setFbid(String fbid) {
+        this.fbid = fbid;
     }
 }

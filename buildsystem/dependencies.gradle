@@ -32,10 +32,11 @@ ext {
     rxBindingsVersion = '0.4.0'
     picassoVersion = '2.5.2'
     picassoDownloaderVersion = '1.0.2'
+    glideVersion = '3.7.0'
     byteUnitsVersion = '0.9.1'
     reboundVersion = '0.3.8'
     rxSharedPreferencesVersion = '1.0.1'
-    libPhoneNumberVersion = '7.1.0'
+    libPhoneNumberVersion = '7.6.0'
     exoPlayerVersion = 'r1.5.10'
     vlcPlayerVersion = '1.9.8'
     firebaseMessagingVersion = '9.4.0'
@@ -96,8 +97,8 @@ ext {
             googlePlayLocation      : "com.google.android.gms:play-services-location:${googlePlayLocationVersion}",
             rxPermissions           : "com.tbruyelle.rxpermissions:rxpermissions:${rxPermissionsVersion}",
             facebook                : "com.facebook.android:facebook-android-sdk:[${facebookVersion})",
-            plattysoft              : "com.plattysoft.leonids:LeonidsLib:${plattysoftVersion}"
-
+            plattysoft              : "com.plattysoft.leonids:LeonidsLib:${plattysoftVersion}",
+            glide                   : "com.github.bumptech.glide:glide:${glideVersion}"
     ]
 
     presentationTestDependencies = [

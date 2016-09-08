@@ -10,6 +10,7 @@ public class Contact implements Comparable<Contact> {
     protected String id;
     protected String name;
     protected List<User> userList;
+    protected int howManyFriends;
 
     public Contact(String id) {
         this.id = id;
@@ -49,5 +50,13 @@ public class Contact implements Comparable<Contact> {
 
     public void setUserList(List<User> userList) {
         this.userList = userList;
+    }
+
+    public int getHowManyFriends() {
+        return howManyFriends;
+    }
+
+    public void setHowManyFriends(int howManyFriends) {
+        this.howManyFriends = howManyFriends;
     }
 }

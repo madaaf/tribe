@@ -9,5 +9,7 @@ import java.util.List;
  */
 public interface ContactsView extends LoadDataView {
 
-    public void renderContactList(List<Contact> contactList);
+    void renderContactList(List<Contact> contactList);
+    void successFacebookLogin();
+    void errorFacebookLogin();
 }

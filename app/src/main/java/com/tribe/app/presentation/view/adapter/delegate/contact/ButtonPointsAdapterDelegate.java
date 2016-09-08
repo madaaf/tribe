@@ -19,6 +19,8 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 18/05/2016.
@@ -32,6 +34,7 @@ public class ButtonPointsAdapterDelegate extends RxAdapterDelegate<List<Object>>
     Picasso picasso;
 
     // OBSERVABLES
+    private final PublishSubject<View> clickButton = PublishSubject.create();
 
     public ButtonPointsAdapterDelegate(Context context) {
         this.context = context;
@@ -47,6 +50,9 @@ public class ButtonPointsAdapterDelegate extends RxAdapterDelegate<List<Object>>
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
         ContactViewHolder vh = new ContactViewHolder(layoutInflater.inflate(R.layout.item_button_points, parent, false));
+
+        vh.buttonPointsView.onClick().map(view -> (View) view.getParent()).subscribe(clickButton);
+
         return vh;
     }
 
@@ -72,5 +78,10 @@ public class ButtonPointsAdapterDelegate extends RxAdapterDelegate<List<Object>>
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
+    }
+
+    // OBSERVABLES
+    public Observable<View> onClick() {
+        return clickButton;
     }
 }

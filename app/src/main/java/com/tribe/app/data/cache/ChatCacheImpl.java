@@ -522,8 +522,8 @@ public class ChatCacheImpl implements ChatCache {
                     .endGroup()
                     .findAllSorted("created_at", Sort.ASCENDING);
 
-            messagesError.removeChangeListeners();
-            messagesError.addChangeListener(tribesPending -> subscriber.onNext(realm.copyFromRealm(tribesPending)));
+            //messagesError.removeChangeListeners();
+            //messagesError.addChangeListener(tribesPending -> subscriber.onNext(realm.copyFromRealm(tribesPending)));
             subscriber.onNext(realm.copyFromRealm(messagesError));
         });
     }

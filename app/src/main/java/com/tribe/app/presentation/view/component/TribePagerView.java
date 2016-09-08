@@ -345,7 +345,7 @@ public class TribePagerView extends FrameLayout {
         paramsLayoutTile.height = paramsLayoutTile.width;
         viewTile.setLayoutParams(paramsLayoutTile);
         viewTile.invalidate();
-        viewTile.initWithParent(null);
+        viewTile.initClicks();
 
         viewTile.onRecordStart()
                 .doOnNext(view -> hideExitCamera())
@@ -462,7 +462,13 @@ public class TribePagerView extends FrameLayout {
     }
 
     private void updateNbTribes() {
-        this.txtNbTribes.setText("" + (tribeList.size() - tribeListSeens.size()));
+        int nb = (tribeList.size() - tribeListSeens.size());
+        if (nb > 0) {
+            this.txtNbTribes.setText("" + nb);
+        } else {
+            this.imgCancelReply.setTranslationX(0);
+            this.layoutNbTribes.setVisibility(View.GONE);
+        }
     }
 
     public @CameraWrapper.TribeMode String getTribeMode() {
@@ -1064,9 +1070,13 @@ public class TribePagerView extends FrameLayout {
 
     @OnClick(R.id.imgCancelReply)
     public void stopReply() {
-        closeReplyMode();
-        viewTile.cancelReplyMode();
-        inReplyMode = false;
+        if (inReplyMode) {
+            closeReplyMode();
+            viewTile.cancelReplyMode();
+            inReplyMode = false;
+        } else {
+            onDismissHorizontal.onNext(null);
+        }
     }
 
     @OnClick(R.id.layoutNbTribes)

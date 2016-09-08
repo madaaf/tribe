@@ -22,8 +22,8 @@ public class LookupDeserializer implements JsonDeserializer<LookupEntity> {
 
         Gson gson = new Gson();
         int count = 0;
-        LookupEntity lookup = new LookupEntity();
-        List<UserRealm> lookupByPhone = new ArrayList<>();
+        LookupEntity lookupEntity = new LookupEntity();
+        List<UserRealm> lookup = new ArrayList<>();
         boolean hasResult = true;
 
         while (hasResult) {
@@ -31,7 +31,7 @@ public class LookupDeserializer implements JsonDeserializer<LookupEntity> {
             if (array != null) {
                 for (final JsonElement jsonElement : array) {
                     if (!jsonElement.isJsonNull()) {
-                        lookupByPhone.add(gson.fromJson(jsonElement, UserRealm.class));
+                        lookup.add(gson.fromJson(jsonElement, UserRealm.class));
                     }
                 }
             } else {
@@ -41,8 +41,25 @@ public class LookupDeserializer implements JsonDeserializer<LookupEntity> {
             count++;
         }
 
-        lookup.setLookup(lookupByPhone);
+        hasResult = true;
 
-        return lookup;
+        while (hasResult) {
+            JsonArray array = results.getAsJsonArray("lookupFB" + count);
+            if (array != null) {
+                for (final JsonElement jsonElement : array) {
+                    if (!jsonElement.isJsonNull()) {
+                        lookup.add(gson.fromJson(jsonElement, UserRealm.class));
+                    }
+                }
+            } else {
+                hasResult = false;
+            }
+
+            count++;
+        }
+
+        lookupEntity.setLookup(lookup);
+
+        return lookupEntity;
     }
 }

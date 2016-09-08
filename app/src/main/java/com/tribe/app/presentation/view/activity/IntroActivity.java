@@ -175,7 +175,7 @@ public class IntroActivity extends BaseActivity {
         }
 
         // 4. Facebook login
-        if(mCallbackManager.onActivityResult(requestCode, resultCode, data)) {
+        if (mCallbackManager.onActivityResult(requestCode, resultCode, data)) {
             return;
         }
     }

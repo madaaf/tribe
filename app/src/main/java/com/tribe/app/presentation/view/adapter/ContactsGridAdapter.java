@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.R;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -28,6 +30,7 @@ public class ContactsGridAdapter extends RecyclerView.Adapter {
 
     // DELEGATES
     protected RxAdapterDelegatesManager delegatesManager;
+    private ButtonPointsAdapterDelegate buttonPointsAdapterDelegate;
 
     // VARIABLES
     private List<Object> items;
@@ -43,8 +46,11 @@ public class ContactsGridAdapter extends RecyclerView.Adapter {
         this.currentUser = currentUser;
 
         delegatesManager = new RxAdapterDelegatesManager();
+
+        buttonPointsAdapterDelegate = new ButtonPointsAdapterDelegate(context);
+        delegatesManager.addDelegate(buttonPointsAdapterDelegate);
+
         delegatesManager.addDelegate(new ContactsGridAdapterDelegate(context));
-        delegatesManager.addDelegate(new ButtonPointsAdapterDelegate(context));
         delegatesManager.addDelegate(new SeparatorAdapterDelegate(context));
 
         setHasStableIds(true);
@@ -88,7 +94,7 @@ public class ContactsGridAdapter extends RecyclerView.Adapter {
                 R.string.contacts_share_profile_description, ScoreUtils.Point.SHARE_PROFILE.getPoints());
         shareProfile.setUrlImg(currentUser.getProfilePicture());
 
-        ButtonPoints syncFB = new ButtonPoints(ButtonPointsView.FB_ACTIVE, R.string.contacts_section_facebook_sync_title,
+        ButtonPoints syncFB = new ButtonPoints(ButtonPointsView.FB_SYNC, R.string.contacts_section_facebook_sync_title,
                 R.string.contacts_section_facebook_sync_description, ScoreUtils.Point.INVITE_FACEBOOK.getPoints());
         syncFB.setDrawable(R.drawable.picto_facebook_logo);
 
@@ -111,5 +117,10 @@ public class ContactsGridAdapter extends RecyclerView.Adapter {
 
     public List<Object> getItems() {
         return items;
+    }
+
+    // OBSERVABLES
+    public Observable<View> onButtonPointsClick() {
+        return buttonPointsAdapterDelegate.onClick();
     }
 }

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "777771645989",
+    "firebase_url": "https://tribe-engine.firebaseio.com",
+    "project_id": "tribe-engine",
+    "storage_bucket": "tribe-engine.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:777771645989:android:490c6464ed80839a",
+        "android_client_info": {
+          "package_name": "com.tribe.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "777771645989-4gkm0ad8p1crm9bg4in1gaf7u0g9i9d2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tribe.app",
+            "certificate_hash": "8811487A91A3E311ED2C1B21BD5CBCE37D8537BA"
+          }
+        },
+        {
+          "client_id": "777771645989-qcsk3unnr3e7ckk0u278cb64bj7g6il2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYIIzrjhVpeSEnD55l_1VgqE49Hrc9PIk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "777771645989-qcsk3unnr3e7ckk0u278cb64bj7g6il2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

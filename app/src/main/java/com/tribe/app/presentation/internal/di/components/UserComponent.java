@@ -4,6 +4,7 @@ import com.tribe.app.presentation.internal.di.scope.PerActivity;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.internal.di.modules.UserModule;
 import com.tribe.app.presentation.mvp.presenter.SettingPresenter;
+import com.tribe.app.presentation.utils.facebook.FacebookHiddenActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.IntroActivity;
@@ -28,6 +29,7 @@ import dagger.Component;
 @Component(dependencies = ApplicationComponent.class, modules = {ActivityModule.class, UserModule.class})
 public interface UserComponent extends ActivityComponent {
     void inject(IntroActivity introActivity);
+    void inject(FacebookHiddenActivity facebookHiddenActivity);
     void inject(CountryActivity countryActivity);
     void inject(HomeGridFragment homeGridFragment);
     void inject(ContactsGridFragment contactsGridFragment);

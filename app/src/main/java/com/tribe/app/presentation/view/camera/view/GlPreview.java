@@ -297,7 +297,10 @@ public class GlPreview extends GLSurfaceView implements Preview, Camera.PictureC
             Matrix.rotateM(mMMatrix, 0, -cameraHelper.getOptimalOrientation(), 0.0f, 0.0f, 1.0f);
             if (cameraHelper.isFaceCamera() && !faceMirror) {
                 Matrix.scaleM(mMMatrix, 0, 1.0f, -1.0f, 1.0f);
+            } else {
+                Matrix.scaleM(mMMatrix, 0, 0.75f, 0.75f, 1.0f);
             }
+            //Matrix.orthoM(mMMatrix, 0, -1.3f, 1.3f, -1, 1, -1, 1);
 
             final Camera.Size previewSize = cameraHelper.getPreviewSize();
             mCameraRatio = (float) previewSize.width / previewSize.height;

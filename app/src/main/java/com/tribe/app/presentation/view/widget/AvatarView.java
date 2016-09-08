@@ -95,6 +95,12 @@ public class AvatarView extends RoundedCornerLayout {
                     .noFade()
                     .centerCrop()
                     .into(imgAvatar);
+        } else {
+            picasso.load(R.drawable.picto_avatar_placeholder)
+                    //.fit()
+                    .noFade()
+                    //.centerCrop()
+                    .into(imgAvatar);
         }
     }
 

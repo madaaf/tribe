@@ -11,6 +11,7 @@ import javax.inject.Inject;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
+import io.realm.Sort;
 import rx.Observable;
 import rx.Subscriber;
 
@@ -66,7 +67,7 @@ public class ContactCacheImpl implements ContactCache {
         return Observable.create(new Observable.OnSubscribe<List<ContactABRealm>>() {
             @Override
             public void call(final Subscriber<? super List<ContactABRealm>> subscriber) {
-                contacts = realm.where(ContactABRealm.class).findAll();
+                contacts = realm.where(ContactABRealm.class).findAllSorted(new String[] {"howManyFriends", "name"}, new Sort[] {Sort.DESCENDING, Sort.ASCENDING});
                 contacts.removeChangeListeners();
                 contacts.addChangeListener(element -> {
                     if (element != null) {
