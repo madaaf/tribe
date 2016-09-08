@@ -201,6 +201,10 @@ public class SettingItemView extends FrameLayout {
         txtNameSetting.setText(name);
     }
 
+    public void setCheckedSwitch(boolean isChecked) {
+        switchMessage.setChecked(isChecked);
+    }
+
     public int dpToPx(int dp) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getContext().getResources().getDisplayMetrics());
     }

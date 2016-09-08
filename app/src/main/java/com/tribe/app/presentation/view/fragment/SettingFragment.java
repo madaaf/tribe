@@ -124,9 +124,10 @@ public class SettingFragment extends BaseFragment {
 
         unbinder = ButterKnife.bind(this, fragmentView);
 
+        initDependencyInjector();
         initUi();
         initSettings();
-        initDependencyInjector();
+
 
         return fragmentView;
     }
@@ -210,18 +211,24 @@ public class SettingFragment extends BaseFragment {
         messageSettingMemories.setTitleBodyViewType(getString(R.string.settings_tribesave_title),
                 getString(R.string.settings_tribesave_subtitle),
                 SettingItemView.SWITCH);
+        messageSettingMemories.setCheckedSwitch(memories.get());
         messageSettingContext.setTitleBodyViewType(getString(R.string.settings_geolocation_title),
                 getString(R.string.settings_geolocation_subtitle),
                 SettingItemView.SWITCH);
+        messageSettingContext.setCheckedSwitch(locationContext.get());
         messageSettingVoice.setTitleBodyViewType(getString(R.string.settings_audio_title),
                 getString(R.string.settings_audio_subtitle),
                 SettingItemView.SWITCH);
+        messageSettingVoice.setCheckedSwitch(audioDefault.get());
         messageSettingPreload.setTitleBodyViewType(getString(R.string.settings_preload_title),
                 getString(R.string.settings_preload_subtitle),
                 SettingItemView.SWITCH);
+        messageSettingPreload.setCheckedSwitch(preload.get());
         messageSettingFahrenheit.setTitleBodyViewType(getString(R.string.settings_weatherunits_title),
                 getString(R.string.settings_weatherunits_subtitle),
                 SettingItemView.SWITCH);
+        if (weatherUnits.get() == Weather.FAHRENHEIT) messageSettingFahrenheit.setCheckedSwitch(true);
+        else messageSettingFahrenheit.setCheckedSwitch(false);
 
         // TODO: setup based on sync status
         settingsFacebook.setTitleBodyViewType(getString(R.string.settings_facebook_sync_title),
@@ -240,6 +247,7 @@ public class SettingFragment extends BaseFragment {
         settingsInvisible.setTitleBodyViewType(getString(R.string.settings_invisible_title),
                 getString(R.string.settings_invisible_subtitle),
                 SettingItemView.SWITCH);
+        settingsInvisible.setCheckedSwitch(invisibleMode.get());
 
         settingsTweet.setTitleBodyViewType(getString(R.string.settings_tweet_title),
                 getString(R.string.settings_tweet_subtitle),
