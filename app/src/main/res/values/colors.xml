@@ -78,6 +78,13 @@
     <!-- GREENS -->
     <color name="green.text.friends">#97C308</color>
 
+    <!-- Confetti -->
+    <color name="confetti.1">#68CFC5</color>
+    <color name="confetti.2">#654AF7</color>
+    <color name="confetti.3">#8F61CC</color>
+    <color name="confetti.4">#E87CD6</color>
+    <color name="confetti.5">#97D3EF</color>
+
     <!-- Themes -->
 
     <!-- Classic -->

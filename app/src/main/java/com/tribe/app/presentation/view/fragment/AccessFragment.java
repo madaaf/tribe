@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,10 +13,13 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
+import com.github.jinatonic.confetti.CommonConfetti;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -79,6 +83,9 @@ public class AccessFragment extends Fragment {
 
     @BindView(R.id.textFriendsView)
     TextFriendsView textFriendsView;
+
+    @BindView(R.id.confettiLayout)
+    FrameLayout confettiLayout;
 
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -164,6 +171,8 @@ public class AccessFragment extends Fragment {
             sendIntent.setData(Uri.parse("sms:"));
             getActivity().startActivity(sendIntent);
         }));
+
+
 
     }
 
@@ -327,6 +336,13 @@ public class AccessFragment extends Fragment {
 
     private void goToCongrats() {
         viewState = STATE_CONGRATS;
+
+        CommonConfetti.rainingConfetti(confettiLayout, new int[]{ContextCompat.getColor(getContext(), R.color.confetti_1),
+                ContextCompat.getColor(getContext(), R.color.confetti_2),
+                ContextCompat.getColor(getContext(), R.color.confetti_3),
+                ContextCompat.getColor(getContext(), R.color.confetti_4),
+                ContextCompat.getColor(getContext(), R.color.confetti_5)})
+                .infinite();
 
         isActive = true;
         fadeTextInOut();

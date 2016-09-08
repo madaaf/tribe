@@ -32,6 +32,10 @@
         <item name="android:textColor">@color/grey.text.profile_info</item>
     </style>
 
+    <style name="Body.One.Red" parent="@style/Body.One">
+        <item name="android:textColor">@color/red.circle</item>
+    </style>
+
     <style name="Body.Two.Blue" parent="@style/Body.Two">
         <item name="android:textColor">@color/blue.text</item>
     </style>

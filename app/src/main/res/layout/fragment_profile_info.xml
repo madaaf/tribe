@@ -18,7 +18,8 @@
     <com.tribe.app.presentation.view.component.ProfileInfoView
         android:id="@+id/profileInfoView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="85dp"/>
     
     <ImageView
         android:id="@+id/imgNextIcon"

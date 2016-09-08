@@ -103,7 +103,8 @@
 
         <activity android:name=".presentation.view.activity.SettingActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
+            android:windowSoftInputMode="adjustNothing"
+            android:theme="@style/AppTheme.FullScreen" />
 
         <service android:name=".presentation.service.TribeFirebaseMessagingService">
             <intent-filter>

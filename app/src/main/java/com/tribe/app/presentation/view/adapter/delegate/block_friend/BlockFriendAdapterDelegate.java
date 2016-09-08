@@ -13,6 +13,7 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
+import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
@@ -64,7 +65,7 @@ public class BlockFriendAdapterDelegate extends RxAdapterDelegate<List<Friendshi
         Friendship friendship = items.get(position);
 
         vh.txtDisplayName.setText(friendship.getDisplayName());
-        vh.txtUsername.setText(friendship.getUsername());
+        vh.txtUsername.setText("@" + friendship.getUsername());
 
         try {
             Glide.with(context)
