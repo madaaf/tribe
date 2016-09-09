@@ -40,10 +40,10 @@
 	<string name="contacts_section_addressbook_syncing">Syncing</string>
 	<string name="contacts_section_addressbook_empty">No more contacts to invite</string>
 	<string name="contacts_section_addressbook_friends_in_app">Would have %1$d friends on Tribe</string>
-	<string name="contacts_section_search_usernames">Username</string>
+	<string name="contacts_section_search_usernames">Handle result</string>
 	<string name="contacts_section_search_searching">Searching</string>
-	<string name="contacts_section_search_friends">People that you know</string>
-	<string name="contacts_section_addressbook_title">How much friends would they have?</string>
+	<string name="contacts_section_search_friends">Friends result(s)</string>
+	<string name="contacts_section_addressbook_title">Address book invites</string>
 	
 	<!-- Permissions -->
 	<string name="permission_contacts_disabled_alert_title">Permission for Address Book was denied</string>
@@ -343,4 +343,12 @@
 	<string name="notification_pending_plural">%1$d pending messages. Swipe to resend &#11013;&#65039;</string>
 	<string name="notification_pending_action_resend">Resend</string>
 	<string name="notification_snoozed">Your snoozed message from %1$s is back !</string>
+	
+	<!-- Share -->
+	<string name="share_add_friends_addressbook_suggestions">I was able to get access to Tribe. Just noticed that you already have %1$d friends on this app. I can get you in: %2$s</string>
+	<string name="share_group_private_link">Here is your invite to join the %1$s group on Tribe. Join quickly because this invite will expire in 1 hour! %2$s</string>
+	<string name="share_add_friends_handle">I’ve locked up %1$s handle on Tribe. Reserve yours now before its gone on %2$s</string>
+	<string name="share_score">I have %1$s points on Tribe %2$s</string>
+	<string name="share_onboarding">I just discovered Tribe, but I can’t enter alone. Come now so we can get access together. Waiting for you. Go on %1$s</string>
+	<string name="share_copied_redirecting">Copied the link to the clipboard. Redirecting you...</string>
 </resources>

@@ -5,7 +5,12 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -32,6 +37,7 @@ import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.mvp.presenter.HomePresenter;
 import com.tribe.app.presentation.mvp.view.HomeView;
+import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.fragment.ContactsGridFragment;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
@@ -128,7 +134,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private HomeViewPagerAdapter homeViewPagerAdapter;
     private List<Message> newMessages;
     private int pendingTribeCount;
-    private final int SETTINGS_RESULT = 101;
+    public static final int SETTINGS_RESULT = 101, OPEN_CAMERA_RESULT = 102, OPEN_GALLERY_RESULT = 103;
+    String pictureUri;
 
     // DIMEN
     private int sizeNavMax, sizeNavSmall, marginHorizontalSmall, translationBackToTop;
@@ -184,6 +191,33 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SETTINGS_RESULT) reloadGrid();
+
+        if (requestCode == OPEN_CAMERA_RESULT) {
+            Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
+            homeViewPagerAdapter.groupsGridFragment.setGroupPicture(thumbnail);
+            String imageUri = Uri.fromFile(FileUtils.bitmapToFile(thumbnail, this)).toString();
+            pictureUri = imageUri;
+        }
+
+        if (requestCode == OPEN_GALLERY_RESULT) {
+            Uri selectedImage = data.getData();
+            pictureUri = selectedImage.toString();
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+            Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
+            cursor.moveToFirst();
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
+            cursor.close();
+
+            Bitmap thumbnail = BitmapFactory.decodeFile(picturePath);
+
+            if (thumbnail != null) {
+                homeViewPagerAdapter.groupsGridFragment.setGroupPicture(thumbnail);
+            }
+        }
+
+
+
     }
 
     private void initUi() {
