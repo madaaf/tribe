@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.view.fragment;
 
-import android.Manifest;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -9,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
-import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.ButtonPoints;
 import com.tribe.app.domain.entity.Contact;
@@ -62,6 +60,7 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
 
 
     // VARIABLES
+    private boolean isSearchMode = false;
     private HomeView homeView;
     private Unbinder unbinder;
     private ContactsLayoutManager layoutManager;
@@ -99,15 +98,6 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         this.contactsGridPresenter.attachView(this);
-
-        if (savedInstanceState == null) {
-            RxPermissions.getInstance(getContext())
-                    .request(Manifest.permission.READ_CONTACTS)
-                    .filter(hasPermission -> hasPermission)
-                    .subscribe(hasPermission -> {
-                        loadData();
-                    });
-        }
     }
 
     @Override
@@ -174,6 +164,7 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
     private void init() {
         RxTextView.textChanges(editTextSearchContact).map(CharSequence::toString)
                 .filter(s -> !StringUtils.isEmpty(s))
+                .doOnNext(s -> isSearchMode = true)
                 .debounce(500, TimeUnit.MILLISECONDS)
                 .subscribe(s -> contactsGridPresenter.findByUsername(s));
     }

@@ -25,7 +25,7 @@ public class ContactCacheImpl implements ContactCache {
     private Realm realm;
     private RealmResults<ContactABRealm> contacts;
     private RealmResults<ContactABRealm> contactsByValue;
-    private SearchResultRealm searchResult;
+    private RealmResults<SearchResultRealm> searchResult;
 
     @Inject
     public ContactCacheImpl(Context context, Realm realm) {
@@ -146,17 +146,17 @@ public class ContactCacheImpl implements ContactCache {
         return Observable.create(new Observable.OnSubscribe<SearchResultRealm>() {
             @Override
             public void call(final Subscriber<? super SearchResultRealm> subscriber) {
-                searchResult = realm.where(SearchResultRealm.class).findFirst();
+                searchResult = realm.where(SearchResultRealm.class).findAll();
 
                 searchResult.removeChangeListeners();
                 searchResult.addChangeListener(element -> {
-                    if (element != null) {
-                        subscriber.onNext(realm.copyFromRealm(searchResult));
+                    if (element != null && element.size() > 0) {
+                        subscriber.onNext(searchResult.size() > 0 ? realm.copyFromRealm(searchResult.get(0)) : null);
                     }
                 });
 
                 if (searchResult != null)
-                    subscriber.onNext(realm.copyFromRealm(searchResult));
+                    subscriber.onNext(searchResult.size() > 0 ? realm.copyFromRealm(searchResult.get(0)) : null);
             }
         });
     }

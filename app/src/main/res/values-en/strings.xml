@@ -181,6 +181,7 @@
 	<string name="group_button_share">Link to invite friends</string>
 	<string name="group_share_description">Add your friends that currently aren\'t on Tribe</string>
 	<string name="group_button_create">Create</string>
+	<string name="group_button_creating">Creating...</string>
 	<string name="group_empty_list">No friends to add to the group</string>
 	
 	<!-- Group Infos -->
