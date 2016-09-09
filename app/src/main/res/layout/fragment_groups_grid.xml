@@ -2,13 +2,89 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/shape_rect_grey_background_rounded_corners"
     >
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerViewMedia"
-        android:scrollbars="vertical"
+    <ImageView
+        android:id="@+id/imageGroup"
+        android:layout_width="@dimen/group_image_size"
+        android:layout_height="@dimen/group_image_size"
+        android:layout_marginTop="30dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/picto_group_image_placeholder"/>
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="65dp"
+        android:layout_marginTop="142dp"
+        android:background="@drawable/shape_rect_grey_greyer_border"
+        >
+
+        <com.tribe.app.presentation.view.widget.EditTextFont
+            android:id="@+id/editTextGroupName"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:hint="Name your group"
+            android:background="@null"
+            />
+
+    </FrameLayout>
+
+
+    <com.tribe.app.presentation.view.component.PrivatePublicView
+        android:id="@+id/privatePublicView"
+        android:layout_width="match_parent"
+        android:layout_height="116dp"
+        android:layout_marginTop="206dp"/>
+
+    <FrameLayout
+        android:layout_marginTop="330dp"
+        android:layout_width="match_parent"
+        android:layout_height="115dp"
+        android:background="@drawable/shape_white_rect_grey_border"
+        >
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="@dimen/vertical_margin_small"
+            android:layout_marginStart="@dimen/horizontal_margin_small"
+            android:layout_marginEnd="@dimen/horizontal_margin_small"
+            >
+
+            <View
+                android:id="@+id/viewCreateGroupBg1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/shape_rect_grey_group_rounded_corners"
+                />
+
+            <View
+                android:id="@+id/viewCreateGroupBg2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/shape_rect_black40_rounded_corners"
+                android:alpha="0"/>
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/group_create_title"
+                style="@style/Title.2.White"
+                />
+        </FrameLayout>
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="80dp"
+            android:gravity="center"
+            android:text="Add group details to create a group"
+            style="@style/Body.One.Black40"/>
+
+    </FrameLayout>
 
 </FrameLayout>

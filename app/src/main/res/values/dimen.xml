@@ -89,6 +89,7 @@
     <dimen name="setting_pic_size">40dp</dimen>
     <dimen name="setting_theme_size">40dp</dimen>
     <dimen name="setting_theme_vertical_padding">15dp</dimen>
+    <dimen name="group_image_size">82dp</dimen>
 
     <!-- THRESHOLDS -->
     <dimen name="threshold_dismiss">100dp</dimen>
