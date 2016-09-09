@@ -11,12 +11,10 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,9 +23,6 @@ import butterknife.ButterKnife;
  * Created by tiago on 17/02/2016.
  */
 public class AvatarView extends RoundedCornerLayout {
-
-    @Inject
-    Picasso picasso;
 
     @BindView(R.id.imgAvatar)
     ImageView imgAvatar;
@@ -90,16 +85,15 @@ public class AvatarView extends RoundedCornerLayout {
 
     public void load(String url) {
         if (!StringUtils.isEmpty(url)) {
-            picasso.load(url)
-                    .fit()
-                    .noFade()
+            Glide.with(getContext())
+                    .load(url)
                     .centerCrop()
+                    .crossFade()
                     .into(imgAvatar);
         } else {
-            picasso.load(R.drawable.picto_avatar_placeholder)
-                    //.fit()
-                    .noFade()
-                    //.centerCrop()
+            Glide.with(getContext())
+                    .load(R.drawable.picto_avatar_placeholder)
+                    .crossFade()
                     .into(imgAvatar);
         }
     }

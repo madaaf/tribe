@@ -30,6 +30,7 @@ import com.tribe.app.data.realm.LocationRealm;
 import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PhoneRealm;
 import com.tribe.app.data.realm.PinRealm;
+import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.repository.user.contact.RxContacts;
@@ -349,6 +350,9 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<List<ContactInterface>> contacts() {
+        userCache.removeFriendship("Hyfpq-7zo");
+        userCache.removeFriendship("ByF8cZaj");
+
         return Observable.zip(
                 rxContacts.getContacts().toList(),
                 rxFacebook.requestFriends(),
@@ -414,7 +418,9 @@ public class CloudUserDataStore implements UserDataStore {
                     }
 
                     buffer.append(context.getString(R.string.lookup_phone, loopCount, result.length() > 0 ? result.substring(0, result.length() - 1) : ""));
-                } else if (fbIds.size() > 0) {
+                }
+
+                if (fbIds.size() > 0) {
                     StringBuilder result = new StringBuilder();
 
                     int count = 0;
@@ -445,7 +451,7 @@ public class CloudUserDataStore implements UserDataStore {
                         }
 
                         for (String fbId : fbIds.keySet()) {
-                            if (userRealm.getFbid().equals(fbId)) {
+                            if (!StringUtils.isEmpty(userRealm.getFbid()) && userRealm.getFbid().equals(fbId)) {
                                 fbIds.get(fbId).addUser(userRealm);
                             }
                         }
@@ -468,8 +474,11 @@ public class CloudUserDataStore implements UserDataStore {
                 Set<String> phonesFound = new HashSet<>();
 
                 for (UserRealm userRealmLookup : lookupEntity.getLookup()) {
-                    phonesFound.add(userRealmLookup.getPhone());
-                    buffer.append(context.getString(R.string.createFriendship_input, count, userRealmLookup.getId(), context.getString(R.string.friendships_infos)));
+                    if (!phonesFound.contains(userRealmLookup.getPhone())) {
+                        phonesFound.add(userRealmLookup.getPhone());
+                        buffer.append(context.getString(R.string.createFriendship_input, count, userRealmLookup.getId(), context.getString(R.string.friendships_infos)));
+                        count++;
+                    }
                 }
 
                 phonesHowManyFriends.keySet().removeAll(phonesFound);
@@ -525,6 +534,20 @@ public class CloudUserDataStore implements UserDataStore {
                         return interfaces;
                     });
         }).flatMap(listObservable -> listObservable).doOnNext(saveToCacheContacts);
+    }
+
+    @Override
+    public Observable<SearchResultRealm> findByUsername(String username) {
+        contactCache.deleteSearchResults();
+
+        return this.tribeApi
+                .findByUsername(context.getString(R.string.lookup_username, username, context.getString(R.string.userfragment_infos)))
+                .doOnNext(saveToCacheSearchResult);
+    }
+
+    @Override
+    public Observable<List<ContactABRealm>> findByValue(String username) {
+        return null;
     }
 
     private final Action1<AccessToken> saveToCacheAccessToken = accessToken -> {
@@ -586,6 +609,12 @@ public class CloudUserDataStore implements UserDataStore {
 
             CloudUserDataStore.this.contactCache.insertAddressBook(contactABRealm);
             CloudUserDataStore.this.contactCache.insertFBContactList(contactFBRealm);
+        }
+    };
+
+    private final Action1<SearchResultRealm> saveToCacheSearchResult = searchResultRealm -> {
+        if (searchResultRealm != null) {
+            CloudUserDataStore.this.contactCache.insertSearchResult(searchResultRealm);
         }
     };
 }

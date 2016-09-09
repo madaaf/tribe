@@ -3,8 +3,12 @@ package com.tribe.app.presentation.mvp.presenter;
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.SynchroContactsJob;
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
+import com.tribe.app.domain.interactor.user.DiskFindContactByValue;
+import com.tribe.app.domain.interactor.user.DiskSearchResults;
+import com.tribe.app.domain.interactor.user.FindByUsername;
 import com.tribe.app.presentation.mvp.view.ContactsView;
 import com.tribe.app.presentation.mvp.view.View;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
@@ -24,20 +28,32 @@ public class ContactsGridPresenter implements Presenter {
     private JobManager jobManager;
     private RxFacebook rxFacebook;
     private UseCaseDisk getDiskContactList;
+    private FindByUsername findByUsername;
+    private DiskSearchResults searchResults;
+    private DiskFindContactByValue findContactByValue;
 
     // SUBSCRIBERS
+    private FindByValueSubscriber findByValueSubscriber;
 
     @Inject
     public ContactsGridPresenter(JobManager jobManager,
                                  RxFacebook rxFacebook,
-                                 @Named("diskContactList") UseCaseDisk getDiskContactList) {
+                                 @Named("diskContactList") UseCaseDisk getDiskContactList,
+                                 @Named("cloudFindByUsername") FindByUsername findByUsername,
+                                 @Named("diskSearchResults") DiskSearchResults diskSearchResults,
+                                 @Named("diskFindContactByValue") DiskFindContactByValue diskFindContactByValue) {
         super();
         this.jobManager = jobManager;
+        this.rxFacebook = rxFacebook;
         this.getDiskContactList = getDiskContactList;
+        this.findByUsername = findByUsername;
+        this.searchResults = diskSearchResults;
+        this.findContactByValue = diskFindContactByValue;
     }
 
     @Override
     public void onCreate() {
+
     }
 
     @Override
@@ -61,7 +77,10 @@ public class ContactsGridPresenter implements Presenter {
 
     @Override
     public void onDestroy() {
-
+        findByUsername.unsubscribe();
+        findContactByValue.unsubscribe();
+        searchResults.unsubscribe();
+        getDiskContactList.unsubscribe();
     }
 
     @Override
@@ -69,9 +88,21 @@ public class ContactsGridPresenter implements Presenter {
         contactsView = (ContactsView) v;
     }
 
+    public void findByUsername(String username) {
+        findByUsername.setUsername(username);
+        findByUsername.execute(new DefaultSubscriber<>());
+
+        if (findByValueSubscriber != null)
+            findByValueSubscriber.unsubscribe();
+
+        findByValueSubscriber = new FindByValueSubscriber();
+        findContactByValue.setValue(username);
+        findContactByValue.execute(findByValueSubscriber);
+    }
+
     public void loadContactList() {
-        jobManager.addJobInBackground(new SynchroContactsJob());
         getDiskContactList.execute(new ContactListSubscriber());
+        searchResults.execute(new SearchResultSubscriber());
     }
 
     public void loginFacebook() {
@@ -102,6 +133,41 @@ public class ContactsGridPresenter implements Presenter {
         @Override
         public void onNext(List<Contact> contactList) {
             contactsView.renderContactList(contactList);
+        }
+    }
+
+    private final class FindByValueSubscriber extends DefaultSubscriber<List<Contact>> {
+
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+        }
+
+        @Override
+        public void onNext(List<Contact> contactList) {
+            System.out.println("LOL : " + contactList.size());
+        }
+    }
+
+    private final class SearchResultSubscriber extends DefaultSubscriber<SearchResult> {
+
+        @Override
+        public void onCompleted() {
+            System.out.println("COMPLETED");
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(SearchResult searchResult) {
+            System.out.println("SEARCH : " + searchResult);
         }
     }
 }

@@ -5,6 +5,7 @@ import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MessageRealmInterface;
+import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
 
@@ -88,4 +89,8 @@ public interface TribeApi {
     @FormUrlEncoded
     @POST("/graphql")
     Observable<List<Integer>> howManyFriends(@Field("query") String query);
+
+    @FormUrlEncoded
+    @POST("/graphql")
+    Observable<SearchResultRealm> findByUsername(@Field("query") String query);
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactFBRealm;
+import com.tribe.app.data.realm.SearchResultRealm;
 
 import java.util.List;
 
@@ -23,6 +24,8 @@ public class ContactCacheImpl implements ContactCache {
     private Context context;
     private Realm realm;
     private RealmResults<ContactABRealm> contacts;
+    private RealmResults<ContactABRealm> contactsByValue;
+    private RealmResults<SearchResultRealm> searchResult;
 
     @Inject
     public ContactCacheImpl(Context context, Realm realm) {
@@ -63,6 +66,37 @@ public class ContactCacheImpl implements ContactCache {
     }
 
     @Override
+    public void insertSearchResult(SearchResultRealm searchResult) {
+        Realm obsRealm = Realm.getDefaultInstance();
+
+        try {
+            obsRealm.beginTransaction();
+            obsRealm.delete(SearchResultRealm.class);
+            obsRealm.copyToRealm(searchResult);
+            obsRealm.commitTransaction();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            obsRealm.close();
+        }
+    }
+
+    @Override
+    public void deleteSearchResults() {
+        Realm obsRealm = Realm.getDefaultInstance();
+
+        try {
+            obsRealm.beginTransaction();
+            obsRealm.delete(SearchResultRealm.class);
+            obsRealm.commitTransaction();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            obsRealm.close();
+        }
+    }
+
+    @Override
     public Observable<List<ContactABRealm>> contacts() {
         return Observable.create(new Observable.OnSubscribe<List<ContactABRealm>>() {
             @Override
@@ -77,6 +111,52 @@ public class ContactCacheImpl implements ContactCache {
 
                 if (contacts != null)
                     subscriber.onNext(realm.copyFromRealm(contacts));
+            }
+        });
+    }
+
+    @Override
+    public Observable<List<ContactABRealm>> findContactsByValue(String value) {
+        return Observable.create(new Observable.OnSubscribe<List<ContactABRealm>>() {
+            @Override
+            public void call(final Subscriber<? super List<ContactABRealm>> subscriber) {
+                contactsByValue = realm.where(ContactABRealm.class)
+                        .beginGroup()
+                            .equalTo("userList.username", value)
+                            .or()
+                            .beginsWith("name", value)
+                        .endGroup()
+                        .findAllSorted(new String[] {"name"}, new Sort[] {Sort.ASCENDING});
+
+                contactsByValue.removeChangeListeners();
+                contactsByValue.addChangeListener(element -> {
+                    if (element != null) {
+                        subscriber.onNext(realm.copyFromRealm(element));
+                    }
+                });
+
+                if (contactsByValue != null && contactsByValue.size() > 0)
+                    subscriber.onNext(realm.copyFromRealm(contactsByValue));
+            }
+        });
+    }
+
+    @Override
+    public Observable<SearchResultRealm> findContactByUsername(String value) {
+        return Observable.create(new Observable.OnSubscribe<SearchResultRealm>() {
+            @Override
+            public void call(final Subscriber<? super SearchResultRealm> subscriber) {
+                searchResult = realm.where(SearchResultRealm.class).findAll();
+
+                searchResult.removeChangeListeners();
+                searchResult.addChangeListener(element -> {
+                    if (element != null && element.size() > 0) {
+                        subscriber.onNext(searchResult.size() > 0 ? realm.copyFromRealm(searchResult.get(0)) : null);
+                    }
+                });
+
+                if (searchResult != null)
+                    subscriber.onNext(searchResult.size() > 0 ? realm.copyFromRealm(searchResult.get(0)) : null);
             }
         });
     }

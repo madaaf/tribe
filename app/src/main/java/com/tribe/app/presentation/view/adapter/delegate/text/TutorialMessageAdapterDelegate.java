@@ -8,17 +8,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.hannesdorfmann.adapterdelegates2.AdapterDelegate;
-import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
+import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,16 +26,15 @@ import butterknife.ButterKnife;
  */
 public class TutorialMessageAdapterDelegate implements AdapterDelegate<List<ChatMessage>> {
 
-    @Inject
-    Picasso picasso;
-
     // VARIABLES
+    protected Context context;
     protected LayoutInflater layoutInflater;
 
     // RESOURCES
     private int avatarSize;
 
     public TutorialMessageAdapterDelegate(LayoutInflater inflater, Context context) {
+        this.context = context;
         this.layoutInflater = inflater;
 
         avatarSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
@@ -63,10 +60,13 @@ public class TutorialMessageAdapterDelegate implements AdapterDelegate<List<Chat
 
         vh.txtName.setText(chatMessage.getTo().getDisplayName());
         vh.txtUsername.setText(chatMessage.getTo().getUsernameDisplay());
-        picasso.load(chatMessage.getTo().getProfilePicture())
-                .fit()
+
+        Glide.with(context)
+                .load(chatMessage.getContent())
+                .override(avatarSize, avatarSize)
+                .bitmapTransform(new CropCircleTransformation(context))
                 .centerCrop()
-                .transform(new RoundedCornersTransformation(avatarSize >> 1, 0, RoundedCornersTransformation.CornerType.ALL))
+                .crossFade()
                 .into(vh.imgAvatar);
     }
 

@@ -3,10 +3,12 @@ package com.tribe.app.data.repository.user.datasource;
 import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
+import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
 
 import java.util.ArrayList;
@@ -80,5 +82,15 @@ public class DiskUserDataStore implements UserDataStore {
     @Override
     public Observable<List<ContactInterface>> contacts() {
         return contactCache.contacts().map(contactABRealms -> new ArrayList<>(contactABRealms));
+    }
+
+    @Override
+    public Observable<SearchResultRealm> findByUsername(String username) {
+        return contactCache.findContactByUsername(username);
+    }
+
+    @Override
+    public Observable<List<ContactABRealm>> findByValue(String username) {
+        return contactCache.findContactsByValue(username);
     }
 }

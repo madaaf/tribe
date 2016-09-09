@@ -8,8 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.jakewharton.rxbinding.view.RxView;
-import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
@@ -17,8 +17,6 @@ import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -70,9 +68,8 @@ public class BlockFriendAdapterDelegate extends RxAdapterDelegate<List<Friendshi
         vh.txtUsername.setText("@" + friendship.getUsername());
 
         try {
-            Picasso.with(context)
+            Glide.with(context)
                     .load(friendship.getProfilePicture())
-                    .transform(new RoundedCornersTransformation(R.dimen.setting_pic_size >> 1, 0, RoundedCornersTransformation.CornerType.ALL))
                     .into(vh.imageFriendPic);
         } catch (NullPointerException e) {
             e.printStackTrace();

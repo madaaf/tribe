@@ -5,6 +5,7 @@ import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.mapper.ChatRealmDataMapper;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
+import com.tribe.app.data.realm.mapper.SearchResultRealmDataMapper;
 import com.tribe.app.data.realm.mapper.TribeRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.chat.datasource.ChatDataStore;
@@ -19,6 +20,7 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
@@ -45,6 +47,7 @@ public class DiskUserDataRepository implements UserRepository {
     private final ChatDataStoreFactory chatDataStoreFactory;
     private final ChatRealmDataMapper chatRealmDataMapper;
     private final ContactRealmDataMapper contactRealmDataMapper;
+    private final SearchResultRealmDataMapper searchResultRealmDataMapper;
 
     /**
      * Constructs a {@link UserRepository}.
@@ -67,6 +70,7 @@ public class DiskUserDataRepository implements UserRepository {
         this.chatDataStoreFactory = chatDataStoreFactory;
         this.chatRealmDataMapper = chatRealmDataMapper;
         this.contactRealmDataMapper = contactRealmDataMapper;
+        this.searchResultRealmDataMapper = new SearchResultRealmDataMapper(userRealmDataMapper.getFriendshipRealmDataMapper());
     }
 
     @Override
@@ -231,5 +235,17 @@ public class DiskUserDataRepository implements UserRepository {
     public Observable<List<Contact>> contacts() {
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
         return userDataStore.contacts().map(collection -> contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection)));
+    }
+
+    @Override
+    public Observable<SearchResult> findByUsername(String usernamve) {
+        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+        return userDataStore.findByUsername(usernamve).map(searchResultRealm -> searchResultRealmDataMapper.transform(searchResultRealm));
+    }
+
+    @Override
+    public Observable<List<Contact>> findByValue(String value) {
+        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+        return userDataStore.findByValue(value).map(collection -> contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection)));
     }
 }

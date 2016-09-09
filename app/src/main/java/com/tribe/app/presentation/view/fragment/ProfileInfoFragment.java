@@ -15,7 +15,6 @@ import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
 import com.jakewharton.rxbinding.view.RxView;
-import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -64,9 +63,6 @@ public class ProfileInfoFragment extends Fragment {
 
     @Inject
     ScreenUtils screenUtils;
-
-    @Inject
-    Picasso picasso;
 
     @Inject
     Navigator navigator;

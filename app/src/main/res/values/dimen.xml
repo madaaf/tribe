@@ -16,6 +16,8 @@
     <!-- MARGINS -->
     <dimen name="horizontal_margin">20dp</dimen>
     <dimen name="vertical_margin">20dp</dimen>
+    <dimen name="horizontal_margin_mid">17.5dp</dimen>
+    <dimen name="vertical_margin_mid">17.5dp</dimen>
     <dimen name="horizontal_margin_small">15dp</dimen>
     <dimen name="vertical_margin_small">15dp</dimen>
     <dimen name="vertical_margin_xsmall">5dp</dimen>
@@ -56,6 +58,7 @@
     <dimen name="snooze_mode_width">93dp</dimen>
 
     <!-- SIZES -->
+    <dimen name="avatar_size_onboarding">65dp</dimen>
     <dimen name="avatar_size">75dp</dimen>
     <dimen name="avatar_size_with_shadow">82dp</dimen>
     <dimen name="avatar_size_scaled">110dp</dimen>

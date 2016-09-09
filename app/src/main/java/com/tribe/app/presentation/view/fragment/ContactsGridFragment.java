@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.view.fragment;
 
-import android.Manifest;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -8,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.tbruyelle.rxpermissions.RxPermissions;
+import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.ButtonPoints;
 import com.tribe.app.domain.entity.Contact;
@@ -17,14 +16,17 @@ import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.ContactsGridPresenter;
 import com.tribe.app.presentation.mvp.view.ContactsView;
 import com.tribe.app.presentation.mvp.view.HomeView;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.ContactsGridAdapter;
 import com.tribe.app.presentation.view.adapter.manager.ContactsLayoutManager;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.widget.ButtonPointsView;
+import com.tribe.app.presentation.view.widget.EditTextFont;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -50,11 +52,15 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
     @BindView(R.id.recyclerViewContacts)
     RecyclerView recyclerViewContacts;
 
+    @BindView(R.id.editTextSearchContact)
+    EditTextFont editTextSearchContact;
+
     // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
 
     // VARIABLES
+    private boolean isSearchMode = false;
     private HomeView homeView;
     private Unbinder unbinder;
     private ContactsLayoutManager layoutManager;
@@ -92,15 +98,6 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         this.contactsGridPresenter.attachView(this);
-
-        if (savedInstanceState == null) {
-            RxPermissions.getInstance(getContext())
-                    .request(Manifest.permission.READ_CONTACTS)
-                    .filter(hasPermission -> hasPermission)
-                    .subscribe(hasPermission -> {
-                        loadData();
-                    });
-        }
     }
 
     @Override
@@ -165,6 +162,11 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
     }
 
     private void init() {
+        RxTextView.textChanges(editTextSearchContact).map(CharSequence::toString)
+                .filter(s -> !StringUtils.isEmpty(s))
+                .doOnNext(s -> isSearchMode = true)
+                .debounce(500, TimeUnit.MILLISECONDS)
+                .subscribe(s -> contactsGridPresenter.findByUsername(s));
     }
 
     private void initRecyclerView() {

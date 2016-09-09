@@ -136,4 +136,8 @@ public class UserRealmDataMapper {
 
         return userRealmList;
     }
+
+    public FriendshipRealmDataMapper getFriendshipRealmDataMapper() {
+        return friendshipRealmDataMapper;
+    }
 }

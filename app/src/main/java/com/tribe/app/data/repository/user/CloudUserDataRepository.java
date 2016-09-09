@@ -4,12 +4,15 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
 import com.tribe.app.data.realm.mapper.PinRealmDataMapper;
+import com.tribe.app.data.realm.mapper.SearchResultRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
+import com.tribe.app.data.repository.user.datasource.CloudUserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Pin;
+import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
 
@@ -31,6 +34,7 @@ public class CloudUserDataRepository implements UserRepository {
     private final UserRealmDataMapper userRealmDataMapper;
     private final PinRealmDataMapper pinRealmDataMapper;
     private final ContactRealmDataMapper contactRealmDataMapper;
+    private final SearchResultRealmDataMapper searchResultRealmDataMapper;
 
     /**
      * Constructs a {@link UserRepository}.
@@ -48,6 +52,7 @@ public class CloudUserDataRepository implements UserRepository {
         this.userRealmDataMapper = realmDataMapper;
         this.pinRealmDataMapper = pinRealmDataMapper;
         this.contactRealmDataMapper = contactRealmDataMapper;
+        this.searchResultRealmDataMapper = new SearchResultRealmDataMapper(userRealmDataMapper.getFriendshipRealmDataMapper());
     }
 
     @Override
@@ -120,5 +125,19 @@ public class CloudUserDataRepository implements UserRepository {
     public Observable<List<Contact>> contacts() {
         final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
         return userDataStore.contacts().map(collection -> this.contactRealmDataMapper.transform(new ArrayList<>(collection)));
+    }
+
+    @Override
+    public Observable<SearchResult> findByUsername(String username) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+
+        return cloudDataStore
+                        .findByUsername(username)
+                        .map(searchResultRealm -> this.searchResultRealmDataMapper.transform(searchResultRealm));
+    }
+
+    @Override
+    public Observable<List<Contact>> findByValue(String value) {
+        return null;
     }
 }

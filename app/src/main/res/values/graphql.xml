@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="user.infos">
+    <string name="user.infos" translatable="false">
         {
             user {
                 ...UserInfos
@@ -26,7 +26,7 @@
         %1$s
     </string>
 
-    <string name="user.infos.list">
+    <string name="user.infos.list" translatable="false">
         {
             users (ids: [%1$s]) {
                 ...UserInfos
@@ -36,7 +36,7 @@
         %2$s
     </string>
 
-    <string name="friendships.infos">
+    <string name="friendships.infos" translatable="false">
         id
         tag
         category
@@ -45,10 +45,11 @@
         }
     </string>
 
-    <string name="userfragment.infos">
+    <string name="userfragment.infos" translatable="false">
         fragment UserInfos on User {
             id
             phone
+            fbid
             score
             username
             display_name
@@ -67,7 +68,7 @@
             ...UserInfos
         }
     } -->
-    <string name="user.mutate.username">
+    <string name="user.mutate.username" translatable="false">
         mutation{
             updateUser(user: {
                 username: \"%1$s\",
@@ -76,12 +77,11 @@
                 username
                 display_name
                 picture
-
             }
         }
     </string>
 
-    <string name="tribe.send.solo">
+    <string name="tribe.send.solo" translatable="false">
         mutation {
             sendTribeToUser(
                 %1$s
@@ -89,7 +89,7 @@
         }
     </string>
 
-    <string name="tribe.send.group">
+    <string name="tribe.send.group" translatable="false">
         mutation {
             sendTribeToGroup(
                 %1$s
@@ -97,7 +97,7 @@
         }
     </string>
 
-    <string name="tribe.input">
+    <string name="tribe.input" translatable="false">
         tribe : {
             to: \"%1$s\",
             type: \"%2$s\",
@@ -107,7 +107,7 @@
         }
     </string>
 
-    <string name="message.send.solo">
+    <string name="message.send.solo" translatable="false">
         mutation {
             sendMessageToUser(
                 %1$s
@@ -115,7 +115,7 @@
         }
     </string>
 
-    <string name="message.send.group">
+    <string name="message.send.group" translatable="false">
         mutation {
             sendMessageToGroup(
                 %1$s
@@ -123,7 +123,7 @@
         }
     </string>
 
-    <string name="message.input">
+    <string name="message.input" translatable="false">
         message : {
             to: \"%1$s\",
             type: \"%2$s\",
@@ -132,7 +132,7 @@
         }
     </string>
 
-    <string name="chat.history.friendships">
+    <string name="chat.history.friendships" translatable="false">
         {
             friendships(ids: [\"%1$s\"]) {
                 messages(limit: %2$d) {
@@ -142,7 +142,7 @@
         }
     </string>
 
-    <string name="chat.history.groups">
+    <string name="chat.history.groups" translatable="false">
         {
             groups(ids: [\"%1$s\"]) {
                 messages(limit: %2$d) {
@@ -152,7 +152,7 @@
         }
     </string>
 
-    <string name="messages.infos">
+    <string name="messages.infos" translatable="false">
         {
             user {
                 tribes %1$s {
@@ -202,17 +202,17 @@
         }
     </string>
 
-    <string name="messages.status">
+    <string name="messages.status" translatable="false">
         {
             %1$s
         }
     </string>
 
-    <string name="messages.start">
+    <string name="messages.start" translatable="false">
         (start : \"%1$s\")
     </string>
 
-    <string name="tribe.sent.infos">
+    <string name="tribe.sent.infos" translatable="false">
         tribes (ids: [%1$s]) {
             id
 
@@ -223,15 +223,15 @@
         }
     </string>
 
-    <string name="mutation">
+    <string name="mutation" translatable="false">
         mutation { %1$s }
     </string>
 
-    <string name="tribe.markAsSeen.item">
+    <string name="tribe.markAsSeen.item" translatable="false">
         %1$s: markTribeAsSeen(id: \"%2$s\")
     </string>
 
-     <string name="message.sent.infos">
+     <string name="message.sent.infos" translatable="false">
         messages (ids: [%1$s]) {
             id
 
@@ -242,7 +242,7 @@
         }
     </string>
 
-    <string name="messages.infos.short">
+    <string name="messages.infos.short" translatable="false">
         {
             messages (ids: [%1$s]) {
                 id
@@ -262,11 +262,11 @@
         }
     </string>
 
-    <string name="chatMessage.markAsSeen.item">
+    <string name="chatMessage.markAsSeen.item" translatable="false">
         %1$s: markMessageAsSeen(id: \"%2$s\")
     </string>
 
-    <string name="install.create">
+    <string name="install.create" translatable="false">
         mutation {
             createInstall(install: %1$s) {
                 id
@@ -274,7 +274,7 @@
         }
     </string>
 
-    <string name="install.update">
+    <string name="install.update" translatable="false">
         mutation {
             updateInstall(id: \"%1$s\", install: %2$s) {
                 id
@@ -282,13 +282,13 @@
         }
     </string>
 
-    <string name="install.remove">
+    <string name="install.remove" translatable="false">
         mutation {
             removeInstall(id: \"%1$s\")
         }
     </string>
 
-    <string name="install.base">
+    <string name="install.base" translatable="false">
         {
             user_id : \"%1$s\",
             token : \"%2$s\",
@@ -303,7 +303,7 @@
         }
     </string>
 
-    <string name="lookup">
+    <string name="lookup" translatable="false">
         {
             %1$s
             %2$s
@@ -312,19 +312,29 @@
         %3$s
     </string>
 
-    <string name="lookup.phone">
+    <string name="lookup.phone" translatable="false">
         lookupPhone%1$d : lookupByPhone (phones: [%2$s]) {
             ...UserInfos
         }
     </string>
 
-    <string name="lookup.facebook">
+    <string name="lookup.facebook" translatable="false">
         lookupFB%1$d : lookupByFbid (fbids: [%2$s]) {
             ...UserInfos
         }
     </string>
 
-    <string name="createFriendship.mutation">
+    <string name="lookup.username" translatable="false">
+        {
+            lookupByUsername (usernames: [\"%1$s\"]) {
+                ...UserInfos
+            }
+        }
+
+        %2$s
+    </string>
+
+    <string name="createFriendship.mutation" translatable="false">
         mutation {
             %1$s
         }
@@ -332,7 +342,7 @@
         %2$s
     </string>
 
-    <string name="createFriendship.input">
+    <string name="createFriendship.input" translatable="false">
         createFriendship%1$d : createFriendship(
             friendship : {
                 category : \"main\",
@@ -345,7 +355,7 @@
         }
     </string>
 
-    <string name="howManyFriends.part">
+    <string name="howManyFriends.part" translatable="false">
         howManyFriends%1$d : howManyFriends (phones: [%2$s])
     </string>
 </resources>

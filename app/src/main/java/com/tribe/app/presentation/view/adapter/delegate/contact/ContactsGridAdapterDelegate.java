@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
@@ -15,8 +14,6 @@ import com.tribe.app.presentation.view.utils.ScoreUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,9 +25,6 @@ public class ContactsGridAdapterDelegate extends RxAdapterDelegate<List<Object>>
 
     protected LayoutInflater layoutInflater;
     private Context context;
-
-    @Inject
-    Picasso picasso;
 
     // OBSERVABLES
 

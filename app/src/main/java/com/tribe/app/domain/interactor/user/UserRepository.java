@@ -9,6 +9,7 @@ import com.tribe.app.data.realm.Installation;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Pin;
+import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 
 import java.util.List;
@@ -84,4 +85,16 @@ public interface UserRepository {
      * about the contacts from all sources (AddressBook / Facebook).
      */
     Observable<List<Contact>> contacts();
+
+    /**
+     * Get an {@link Observable} which will emit a {@link Contact} containing infos
+     * about the contact.
+     */
+    Observable<SearchResult> findByUsername(String username);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link Contact} containing infos
+     * about the contact.
+     */
+    Observable<List<Contact>> findByValue(String value);
 }

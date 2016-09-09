@@ -6,15 +6,14 @@ import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Switch;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
+import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import butterknife.BindView;
@@ -65,18 +64,12 @@ public class SettingItemView extends FrameLayout {
     @BindView(R.id.imageSyncIcon)
     ImageView imageSyncIcon;
 
-//    @Inject
-//    Picasso picasso;
-
-    Unbinder unbinder;
-
-
-    int viewType;
+    private Unbinder unbinder;
+    private int viewType;
 
     public static final int NAME = 1, SWITCH = 2, SIMPLE = 4, DELETE = 5, MORE = 6;
 
     private PublishSubject<Boolean> checkedSwitch = PublishSubject.create();
-
 
     @Override
     protected void onFinishInflate() {
@@ -103,13 +96,7 @@ public class SettingItemView extends FrameLayout {
     }
 
     private void setupSwitch() {
-        switchMessage.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                checkedSwitch.onNext(b);
-
-            }
-        });
+        switchMessage.setOnCheckedChangeListener((compoundButton, b) -> checkedSwitch.onNext(b));
     }
 
     public Observable<Boolean> checkedSwitch() {
@@ -166,12 +153,12 @@ public class SettingItemView extends FrameLayout {
     public void setPicture(String picUrl) {
         imageProf.setVisibility(VISIBLE);
 
+        int size = getContext().getResources().getDimensionPixelSize(R.dimen.setting_pic_size);
+
         if (!StringUtils.isEmpty(picUrl)) {
-            Picasso.with(getContext())
+            Glide.with(getContext())
                     .load(picUrl)
-                    .fit()
-                    .centerCrop()
-                    .transform(new RoundedCornersTransformation(R.dimen.setting_pic_size >> 1, 0, RoundedCornersTransformation.CornerType.ALL))
+                    .bitmapTransform(new CropCircleTransformation(getContext()))
                     .into(imageProf);
         }
 
@@ -182,7 +169,6 @@ public class SettingItemView extends FrameLayout {
         FrameLayout.LayoutParams bodyViewLayoutParams = (FrameLayout.LayoutParams) txtSectionBody.getLayoutParams();
         bodyViewLayoutParams.setMarginStart(dpToPx(55));
         txtSectionBody.setLayoutParams(bodyViewLayoutParams);
-
     }
 
     public ImageView getPictureImageView() {

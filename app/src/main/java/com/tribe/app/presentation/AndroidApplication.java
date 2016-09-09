@@ -1,6 +1,8 @@
 package com.tribe.app.presentation;
 
 import android.app.Application;
+import android.content.Context;
+import android.support.multidex.MultiDex;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
@@ -28,6 +30,12 @@ public class AndroidApplication extends Application {
         this.initializeRealm();
         this.initializeStetho();
         this.initializeFacebook();
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(base);
     }
 
     @Override

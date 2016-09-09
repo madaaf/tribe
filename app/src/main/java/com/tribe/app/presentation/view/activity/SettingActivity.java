@@ -19,7 +19,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.jakewharton.rxbinding.view.RxView;
-import com.squareup.picasso.Picasso;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.SettingPresenter;
@@ -31,9 +30,6 @@ import com.tribe.app.presentation.view.fragment.SettingFragment;
 import com.tribe.app.presentation.view.fragment.SettingUpdateProfileFragment;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 
 import javax.inject.Inject;
 
@@ -73,9 +69,6 @@ public class SettingActivity extends BaseActivity implements SettingView {
 
     @BindView(R.id.layoutFragmentContainer)
     FrameLayout layouFragmentContainer;
-
-    @Inject
-    Picasso picasso;
 
     @Inject
     SettingPresenter settingPresenter;

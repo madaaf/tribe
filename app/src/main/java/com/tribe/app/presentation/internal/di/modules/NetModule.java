@@ -10,8 +10,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.jakewharton.byteunits.DecimalByteUnit;
-import com.jakewharton.picasso.OkHttp3Downloader;
-import com.squareup.picasso.Picasso;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.TribeCache;
@@ -29,6 +27,7 @@ import com.tribe.app.data.network.deserializer.LookupDeserializer;
 import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
 import com.tribe.app.data.network.deserializer.NewMessageDeserializer;
 import com.tribe.app.data.network.deserializer.NewTribeDeserializer;
+import com.tribe.app.data.network.deserializer.SearchResultDeserializer;
 import com.tribe.app.data.network.deserializer.TribeAccessTokenDeserializer;
 import com.tribe.app.data.network.deserializer.TribeUserDeserializer;
 import com.tribe.app.data.network.deserializer.UserListDeserializer;
@@ -40,6 +39,7 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MessageRealmInterface;
+import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
@@ -53,7 +53,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -108,6 +107,7 @@ public class NetModule {
                 .registerTypeAdapter(LookupEntity.class, new LookupDeserializer())
                 .registerTypeAdapter(CreateFriendshipEntity.class, new CreateFriendshipDeserializer())
                 .registerTypeAdapter(new TypeToken<List<Integer>>(){}.getType(), new HowManyFriendsDeserializer())
+                .registerTypeAdapter(SearchResultRealm.class, new SearchResultDeserializer())
                 .registerTypeHierarchyAdapter(Collection.class, new CollectionAdapter())
                 .create();
     }
@@ -181,7 +181,7 @@ public class NetModule {
         }
 
         return new Retrofit.Builder()
-                .baseUrl("http://api.dev.tribe.pm/")
+                .baseUrl(BuildConfig.TRIBE_API)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .callFactory(httpClientBuilder.build())
@@ -205,7 +205,7 @@ public class NetModule {
         }
 
         return new Retrofit.Builder()
-            .baseUrl("http://api.dev.tribe.pm")
+            .baseUrl(BuildConfig.TRIBE_API)
             .callFactory(httpClientBuilder.build())
             .build().create(FileApi.class);
     }
@@ -244,22 +244,11 @@ public class NetModule {
         }
 
         return new Retrofit.Builder()
-                .baseUrl("http://auth.dev.tribe.pm/")
+                .baseUrl(BuildConfig.TRIBE_AUTH)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .callFactory(httpClientBuilder.build())
                 .build().create(LoginApi.class);
-    }
-
-
-
-    @Provides
-    @Singleton
-    Picasso providePicasso(Context context, @Named("picassoOkHttp") OkHttpClient client) {
-        return new Picasso.Builder(context)
-                .downloader(new OkHttp3Downloader(client))
-                .indicatorsEnabled(false)
-                .build();
     }
 
     static OkHttpClient.Builder createOkHttpClient(Context context) {

@@ -9,10 +9,10 @@ import android.view.LayoutInflater;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
+import com.tribe.app.presentation.view.transformer.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 import javax.inject.Inject;
@@ -35,9 +35,6 @@ public class LabelButton extends LinearLayout {
 
     @Inject
     ScreenUtils screenUtils;
-
-    @Inject
-    Picasso picasso;
 
     @BindView(R.id.imageView)
     ImageView imageView;
@@ -98,8 +95,12 @@ public class LabelButton extends LinearLayout {
 
     public void setDrawableResource(int resource) {
         this.drawableId = resource;
-        picasso.load(resource).fit().centerCrop()
-                .transform(new RoundedCornersTransformation(radiusImage, 0, RoundedCornersTransformation.CornerType.ALL)).into(imageView);
+        Glide.with(getContext())
+                .load(resource)
+                .centerCrop()
+                .bitmapTransform(new RoundedCornersTransformation(getContext(), radiusImage, 0, RoundedCornersTransformation.CornerType.ALL))
+                .crossFade()
+                .into(imageView);
     }
 
     public void setText(String text) {
