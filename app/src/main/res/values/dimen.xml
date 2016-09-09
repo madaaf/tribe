@@ -16,6 +16,8 @@
     <!-- MARGINS -->
     <dimen name="horizontal_margin">20dp</dimen>
     <dimen name="vertical_margin">20dp</dimen>
+    <dimen name="horizontal_margin_mid">17.5dp</dimen>
+    <dimen name="vertical_margin_mid">17.5dp</dimen>
     <dimen name="horizontal_margin_small">15dp</dimen>
     <dimen name="vertical_margin_small">15dp</dimen>
     <dimen name="vertical_margin_xsmall">5dp</dimen>

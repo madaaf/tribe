@@ -21,6 +21,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import rx.Observable;
+import rx.Subscriber;
 import rx.subjects.PublishSubject;
 
 @Singleton
@@ -36,7 +37,7 @@ public class RxFacebook {
 
     private Context context;
     private PublishSubject<LoginResult> loginSubject;
-    private PublishSubject<List<ContactFBRealm>> friendListSubject;
+    private Observable<List<ContactFBRealm>> friendListObservable;
 
     @Inject
     public RxFacebook(Context context) {
@@ -50,8 +51,15 @@ public class RxFacebook {
     }
 
     public Observable<List<ContactFBRealm>> requestFriends() {
-        friendListSubject = PublishSubject.create();
+        if (friendListObservable == null)
+            friendListObservable = Observable.create((Subscriber<? super List<ContactFBRealm>> subscriber) -> {
+                emitFriends(subscriber);
+            }).onBackpressureBuffer().serialize();
 
+        return friendListObservable;
+    }
+
+    public void emitFriends(Subscriber subscriber) {
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
                 "/" + AccessToken.getCurrentAccessToken().getUserId() + "/friends",
@@ -73,13 +81,11 @@ public class RxFacebook {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     } finally {
-                        friendListSubject.onNext(contactFBRealmList);
-                        friendListSubject.onCompleted();
+                        if (!subscriber.isUnsubscribed())
+                            subscriber.onNext(contactFBRealmList);
                     }
                 }
         ).executeAsync();
-
-        return friendListSubject;
     }
 
     void onLogin(LoginResult loginResult) {

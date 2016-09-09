@@ -42,6 +42,7 @@ public class LookupDeserializer implements JsonDeserializer<LookupEntity> {
         }
 
         hasResult = true;
+        count = 0;
 
         while (hasResult) {
             JsonArray array = results.getAsJsonArray("lookupFB" + count);

@@ -1,10 +1,12 @@
 package com.tribe.app.data.repository.user.datasource;
 
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
+import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
 
@@ -80,4 +82,16 @@ public interface UserDataStore {
      * about the contacts from address book.
      */
     Observable<List<ContactInterface>> contacts();
+
+    /**
+     * Get an {@link Observable} which will emit a {@link SearchResultRealm} containing infos
+     * about the search results.
+     */
+    Observable<SearchResultRealm> findByUsername(String username);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link List<ContactInterface>} containing infos
+     * about the contacts corresponding to the value.
+     */
+    Observable<List<ContactABRealm>> findByValue(String value);
 }

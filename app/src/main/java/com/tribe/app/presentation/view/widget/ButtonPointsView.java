@@ -64,7 +64,7 @@ public class ButtonPointsView extends LinearLayout {
 
     // RESOURCES
     private int radiusImage;
-    private int marginVertical;
+    private int margin;
 
     // OBSERVABLES
     private final PublishSubject<View> clickButton = PublishSubject.create();
@@ -87,10 +87,10 @@ public class ButtonPointsView extends LinearLayout {
         ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
 
         radiusImage = context.getResources().getDimensionPixelSize(R.dimen.radius_share_img);
-        marginVertical = context.getResources().getDimensionPixelSize(R.dimen.vertical_margin_small);
+        margin = context.getResources().getDimensionPixelSize(R.dimen.vertical_margin_xsmall);
 
         setOrientation(VERTICAL);
-        setPadding(marginVertical, marginVertical, marginVertical, marginVertical);
+        setPadding(margin, margin, margin, margin);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ButtonPointsView);
 

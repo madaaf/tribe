@@ -8,7 +8,10 @@ import com.tribe.app.domain.interactor.tribe.GetNotSeenDiskTribeList;
 import com.tribe.app.domain.interactor.tribe.GetPendingTribeList;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.domain.interactor.tribe.SendTribe;
+import com.tribe.app.domain.interactor.user.DiskFindContactByValue;
+import com.tribe.app.domain.interactor.user.DiskSearchResults;
 import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
+import com.tribe.app.domain.interactor.user.FindByUsername;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetDiskContactList;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
@@ -140,5 +143,26 @@ public class UserModule {
     @Named("diskContactList")
     UseCaseDisk provideGetContactList(GetDiskContactList getDiskContactList) {
         return getDiskContactList;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("cloudFindByUsername")
+    FindByUsername provideFindByUsername(FindByUsername findByUsername) {
+        return findByUsername;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("diskSearchResults")
+    DiskSearchResults provideDiskSearchResults(DiskSearchResults diskSearchResults) {
+        return diskSearchResults;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("diskFindContactByValue")
+    DiskFindContactByValue provideDiskFindContactByValue(DiskFindContactByValue diskFindContactByValue) {
+        return diskFindContactByValue;
     }
 }
