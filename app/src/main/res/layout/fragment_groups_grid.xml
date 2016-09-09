@@ -57,7 +57,7 @@
                 android:id="@+id/viewCreateGroupBg1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/shape_rect_grey_group_rounded_corners"
+                android:background="@drawable/bg_group_disabled"
                 />
 
             <View

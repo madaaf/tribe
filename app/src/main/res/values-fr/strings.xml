@@ -252,6 +252,7 @@
 	<string name="settings_logout_subtitle">Disconnect this account from this device.</string>
 	<string name="settings_remove_title">Delete account</string>
 	<string name="settings_remove_subtitle">Say goodbye to your friendships, points and more.</string>
+	<string name="settings_version">Version %1$s (%2$s) réalisée à Beaumont-de-Pertuis, FR.</string>
 	
 	<!-- HiddenBlocked -->
 	<string name="hiddenblocked_title">%1$d membres cachés/bloqués</string>
