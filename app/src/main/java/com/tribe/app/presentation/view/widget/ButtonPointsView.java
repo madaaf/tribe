@@ -1,11 +1,16 @@
 package com.tribe.app.presentation.view.widget;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.annotation.IntDef;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -28,14 +33,13 @@ import rx.subjects.PublishSubject;
  */
 public class ButtonPointsView extends LinearLayout {
 
-    @IntDef({PROFILE, FB_SYNC, FB_NOTIFY, FB_PROGRESS, FB_DISABLED})
+    @IntDef({PROFILE, FB_SYNC, FB_NOTIFY, FB_DISABLED})
     public @interface ButtonType {}
 
     public static final int PROFILE = 0;
     public static final int FB_SYNC = 1;
     public static final int FB_NOTIFY = 2;
-    public static final int FB_PROGRESS = 3;
-    public static final int FB_DISABLED = 4;
+    public static final int FB_DISABLED = 3;
 
     @Inject
     ScreenUtils screenUtils;
@@ -55,6 +59,9 @@ public class ButtonPointsView extends LinearLayout {
     @BindView(R.id.txtPoints)
     TextViewFont txtPoints;
 
+    @BindView(R.id.viewBGProgress)
+    View viewBGProgress;
+
     // VARIABLES
     private int drawableId;
     private int type;
@@ -68,6 +75,8 @@ public class ButtonPointsView extends LinearLayout {
 
     // OBSERVABLES
     private final PublishSubject<View> clickButton = PublishSubject.create();
+    private final PublishSubject<View> syncFBDone = PublishSubject.create();
+    private final PublishSubject<View> notifyDone = PublishSubject.create();
 
     public ButtonPointsView(Context context) {
         this(context, null);
@@ -165,6 +174,30 @@ public class ButtonPointsView extends LinearLayout {
         txtPoints.setText(getContext().getString(R.string.points_suffix, points));
     }
 
+    public void animateProgress() {
+        ViewGroup.LayoutParams params = viewBGProgress.getLayoutParams();
+        ValueAnimator widthAnimator = ValueAnimator.ofInt(0, viewBG.getWidth());
+        widthAnimator.setDuration(1500);
+        widthAnimator.setInterpolator(new DecelerateInterpolator());
+        widthAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                viewBGProgress.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                viewBGProgress.setVisibility(View.GONE);
+                syncFBDone.onNext(ButtonPointsView.this);
+            }
+        });
+        widthAnimator.addUpdateListener(animation -> {
+            params.width = (Integer) animation.getAnimatedValue();
+            viewBGProgress.setLayoutParams(params);
+        });
+        widthAnimator.start();
+    }
+
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -173,5 +206,13 @@ public class ButtonPointsView extends LinearLayout {
     // OBSERVABLES
     public Observable<View> onClick() {
         return clickButton;
+    }
+
+    public Observable<View> onFBSyncDone() {
+        return syncFBDone;
+    }
+
+    public Observable<View> onNotifyDone() {
+        return notifyDone;
     }
 }

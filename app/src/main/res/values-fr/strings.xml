@@ -305,26 +305,26 @@
 	<string name="points_SendReceiveChat_description">Message texte</string>
 	<string name="points_SendReceiveTribe_title">Envoyer ou recevoir des messages</string>
 	<string name="points_SendReceiveTribe_description">Message video ou audio</string>
-	<string name="points_NewFriendship_title">Nouvel ami</string>
-	<string name="points_NewFriendship_description">Swiper à gauche depuis la grille</string>
-	<string name="points_InviteTribe_title">Invite un ami</string>
-	<string name="points_InviteTribe_description">Swipe à gauche depuis la grille</string>
-	<string name="points_CreateGroup_title">Créé un groupe</string>
-	<string name="points_CreateGroup_description">Swipe à droite depuis la grille</string>
-	<string name="points_RateApp_title">Note l\'application</string>
-	<string name="points_RateApp_description">Rends-toi sur l\'App Store</string>
-	<string name="points_ShareProfile_title">Partage ton profile</string>
-	<string name="points_ShareProfile_description">Swipe à gauche depuis la grille</string>
+	<string name="points_NewFriendship_title">Nouvel(le) ami(e)</string>
+	<string name="points_NewFriendship_description">Rendez-vous à gauche de la grille</string>
+	<string name="points_InviteTribe_title">Inviter un ami</string>
+	<string name="points_InviteTribe_description">Rendez-vous à gauche de la grille</string>
+	<string name="points_CreateGroup_title">Créer un groupe</string>
+	<string name="points_CreateGroup_description">Rendez-vous à droite de la grille</string>
+	<string name="points_RateApp_title">Noter l\'app</string>
+	<string name="points_RateApp_description">Rendez-vous sur l\'App Store</string>
+	<string name="points_ShareProfile_title">Partage ton profil</string>
+	<string name="points_ShareProfile_description">Rendez-vous à gauche de la grille</string>
 	<string name="points_LocationPermission_title">TODO</string>
 	<string name="points_LocationPermission_description">TODO</string>
 	<string name="points_PushPermission_title">TODO</string>
 	<string name="points_PushPermission_description">TODO</string>
-	<string name="points_ConnectFacebook_title">Connecte toi avec Facebook</string>
-	<string name="points_ConnectFacebook_description">Auto-synchronise tes contacts</string>
-	<string name="points_InviteFacebookFriends_title">Invite tes amis Facebook</string>
-	<string name="points_InviteFacebookFriends_description">Swipe à gauche depuis la grille</string>
-	<string name="points_HundredGroupMembers_title">Groupe à 100 membres</string>
-	<string name="points_HundredGroupMembers_description">À chaque 100 members dans un publique groupe</string>
+	<string name="points_ConnectFacebook_title">Connecter Facebook</string>
+	<string name="points_ConnectFacebook_description">Synchroniser vos amis</string>
+	<string name="points_InviteFacebookFriends_title">Notifier vos amis Facebook</string>
+	<string name="points_InviteFacebookFriends_description">Rendez-vous à gauche de la grille</string>
+	<string name="points_HundredGroupMembers_title">100 membres</string>
+	<string name="points_HundredGroupMembers_description">Chaque fois que 100 nouveaux membres rejoignent votre groupe public</string>
 	
 	<!-- Level -->
 	<string name="level_noob_title">Noob</string>
@@ -339,10 +339,10 @@
 	<string name="level_bot_title">Bot</string>
 	
 	<!-- Notification -->
-	<string name="notification_pending">A pending message. Swipe to resend &#11013;&#65039;</string>
-	<string name="notification_pending_plural">%1$d pending messages. Swipe to resend &#11013;&#65039;</string>
+	<string name="notification_pending">Un message en attente. Glissez pour renvoyer &#11013;&#65039;</string>
+	<string name="notification_pending_plural">%1$d messages en attente. Glissez pour renvoyer &#11013;&#65039;</string>
 	<string name="notification_pending_action_resend">Renvoyer</string>
-	<string name="notification_snoozed">Your snoozed message from %1$s is back !</string>
+	<string name="notification_snoozed">Snoozed: Message de %1$s</string>
 	
 	<!-- Share -->
 	<string name="share_add_friends_addressbook_suggestions">I was able to get access to Tribe. Just noticed that you already have %1$d friends on this app. I can get you in: %2$s</string>

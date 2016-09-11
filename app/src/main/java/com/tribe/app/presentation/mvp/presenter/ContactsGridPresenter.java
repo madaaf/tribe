@@ -143,12 +143,14 @@ public class ContactsGridPresenter implements Presenter {
         if (!FacebookUtils.isLoggedIn()) {
             rxFacebook.requestLogin().subscribe(loginResult -> {
                 if (FacebookUtils.isLoggedIn()) {
+                    contactsView.successFacebookLogin();
                     jobManager.addJobInBackground(new SynchroContactsJob());
                 } else {
                     System.out.println("LOGIN FAIL !");
                 }
             });
         } else {
+            contactsView.successFacebookLogin();
             jobManager.addJobInBackground(new SynchroContactsJob());
         }
     }

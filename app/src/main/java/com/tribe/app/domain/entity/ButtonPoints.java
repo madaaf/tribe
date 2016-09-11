@@ -15,6 +15,7 @@ public class ButtonPoints implements Serializable {
     private int subLabel;
     private int points;
     private String urlImg;
+    private boolean animate = false;
 
     public ButtonPoints(@ButtonPointsView.ButtonType int type,
                         int label,
@@ -71,6 +72,14 @@ public class ButtonPoints implements Serializable {
 
     public String getUrlImg() {
         return urlImg;
+    }
+
+    public boolean isAnimate() {
+        return animate;
+    }
+
+    public void setAnimate(boolean animate) {
+        this.animate = animate;
     }
 
     @Override

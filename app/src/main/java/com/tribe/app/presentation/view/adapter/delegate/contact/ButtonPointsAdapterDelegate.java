@@ -29,6 +29,8 @@ public class ButtonPointsAdapterDelegate extends RxAdapterDelegate<List<Object>>
 
     // OBSERVABLES
     private final PublishSubject<View> clickButton = PublishSubject.create();
+    private final PublishSubject<View> syncFBDone = PublishSubject.create();
+    private final PublishSubject<View> notifyDone = PublishSubject.create();
 
     public ButtonPointsAdapterDelegate(Context context) {
         this.context = context;
@@ -46,6 +48,8 @@ public class ButtonPointsAdapterDelegate extends RxAdapterDelegate<List<Object>>
         ContactViewHolder vh = new ContactViewHolder(layoutInflater.inflate(R.layout.item_button_points, parent, false));
 
         vh.buttonPointsView.onClick().map(view -> (View) view.getParent()).subscribe(clickButton);
+        vh.buttonPointsView.onFBSyncDone().map(view -> (View) view.getParent()).subscribe(syncFBDone);
+        vh.buttonPointsView.onNotifyDone().map(view -> (View) view.getParent()).subscribe(notifyDone);
 
         return vh;
     }
@@ -61,6 +65,8 @@ public class ButtonPointsAdapterDelegate extends RxAdapterDelegate<List<Object>>
         vh.buttonPointsView.setLabel(buttonPoints.getLabel());
         vh.buttonPointsView.setPoints(buttonPoints.getPoints());
         vh.buttonPointsView.setSubLabel(buttonPoints.getSubLabel());
+
+        if (buttonPoints.isAnimate()) vh.buttonPointsView.animateProgress();
     }
 
     static class ContactViewHolder extends RecyclerView.ViewHolder {
@@ -77,5 +83,13 @@ public class ButtonPointsAdapterDelegate extends RxAdapterDelegate<List<Object>>
     // OBSERVABLES
     public Observable<View> onClick() {
         return clickButton;
+    }
+
+    public Observable<View> onFBSyncDone() {
+        return syncFBDone;
+    }
+
+    public Observable<View> onNotifyDone() {
+        return notifyDone;
     }
 }

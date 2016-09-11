@@ -35,6 +35,7 @@ import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.mvp.presenter.HomePresenter;
 import com.tribe.app.presentation.mvp.view.HomeView;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.fragment.ContactsGridFragment;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
@@ -147,6 +148,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         initCamera();
         initPresenter();
         initRegistrationToken();
+
+        FacebookUtils.logout();
     }
 
     @Override
@@ -304,8 +307,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 .applicationComponent(getApplicationComponent())
                 .build().inject(this);
     }
-
-
 
     private void initPresenter() {
         this.homePresenter.attachView(this);

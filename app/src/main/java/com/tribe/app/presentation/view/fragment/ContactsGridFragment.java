@@ -238,6 +238,23 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
                     }
                 }));
 
+        subscriptions.add(contactsGridAdapter.onButtonPointsFBSyncDone()
+                .subscribe(v -> {
+                    contactsGridAdapter.setItems(contactList);
+                }));
+
+        subscriptions.add(contactsGridAdapter.onButtonPointsClick()
+                .map(view -> contactsGridAdapter.getItemAtPosition(recyclerViewContacts.getChildLayoutPosition(view)))
+                .doOnError(throwable -> throwable.printStackTrace())
+                .subscribe(o -> {
+                    if (o instanceof ButtonPoints) {
+                        ButtonPoints buttonPoints = (ButtonPoints) o;
+                        if (buttonPoints.getType() == ButtonPointsView.FB_SYNC) {
+                            contactsGridPresenter.loginFacebook();
+                        }
+                    }
+                }));
+
         subscriptions.add(contactsGridAdapter.onClickAdd()
                 .map(view -> contactsGridAdapter.getItemAtPosition(recyclerViewContacts.getChildLayoutPosition(view)))
                 .doOnError(throwable -> throwable.printStackTrace())
@@ -327,7 +344,7 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
 
     @Override
     public void successFacebookLogin() {
-        // TODO CHANGE BUTTON FACEBOOK
+        contactsGridAdapter.startFBSync();
     }
 
     @Override
