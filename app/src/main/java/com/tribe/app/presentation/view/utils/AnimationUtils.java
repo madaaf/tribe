@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.utils;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -119,6 +120,25 @@ public class AnimationUtils {
                 .alpha(0)
                 .setDuration(50)
                 .start();
+    }
+
+    public static void fadeViewInOut(View view, int distance) {
+        view.animate()
+                .alpha(0)
+                .setDuration(300)
+                .translationY(distance)
+                .setStartDelay(0)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        view.animate().alpha(1)
+                                .setDuration(300)
+                                .translationY(0)
+                                .setStartDelay(0)
+                                .start();
+                    }
+                }).start();
     }
 
     /**

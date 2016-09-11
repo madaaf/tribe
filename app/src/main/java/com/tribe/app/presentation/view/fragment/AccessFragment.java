@@ -29,6 +29,7 @@ import com.tribe.app.presentation.view.component.AccessBottomBarView;
 import com.tribe.app.presentation.view.component.AccessLockView;
 import com.tribe.app.presentation.view.component.TextFriendsView;
 import com.tribe.app.presentation.view.dialog_fragment.GetNotifiedDialogFragment;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
@@ -417,43 +418,12 @@ public class AccessFragment extends Fragment {
     }
 
     private void fadeTextInOut() {
-
         int txtDistance = 25;
-
-        txtAccessDesc.animate()
-                .alpha(0)
-                .setDuration(300)
-                .translationY(txtDistance)
-                .setStartDelay(0)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                         txtAccessDesc.animate().alpha(1)
-                                 .setDuration(300)
-                                 .translationY(0)
-                                 .setStartDelay(0)
-                                 .start();
-                    }
-                }).start();
-
-        txtAccessTitle.animate()
-                .alpha(0)
-                .setDuration(300)
-                .translationY(txtDistance)
-                .setStartDelay(0)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        txtAccessTitle.animate().alpha(1)
-                                .setDuration(300)
-                                .translationY(0)
-                                .setStartDelay(0)
-                                .start();
-                    }
-                }).start();
+        AnimationUtils.fadeViewInOut(txtAccessDesc, txtDistance);
+        AnimationUtils.fadeViewInOut(txtAccessTitle, txtDistance);
     }
+
+
 
     public void fadeBigLockIn() {
         accessLockView.fadeBigLockIn();

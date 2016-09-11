@@ -1,14 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
+    android:background="@drawable/shape_rect_grey_background_rounded_corners">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerViewMedia"
-        android:scrollbars="vertical"
+    <View
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="142dp"
+        android:background="@drawable/shape_rect_white_rounded_top" />
+
+    <ImageView
+        android:id="@+id/imagePrivacyStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="22dp"
+        android:layout_marginTop="@dimen/vertical_margin"
+        android:layout_marginStart="@dimen/horizontal_margin"
         />
+    
+    <ImageView
+        android:id="@+id/imageEditGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="17dp"
+        android:layout_gravity="end"
+        android:layout_marginTop="@dimen/vertical_margin"
+        android:layout_marginEnd="@dimen/horizontal_margin"
+        android:src="@drawable/picto_pencil"
+        />
+
+    <ImageView
+        android:id="@+id/imageGroup"
+        android:layout_width="@dimen/group_image_size"
+        android:layout_height="@dimen/group_image_size"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:src="@drawable/picto_group_image_placeholder" />
+
+    <FrameLayout
+        android:layout_marginTop="142dp"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="@drawable/shape_white_rect_grey_border"
+        app:layout_collapseMode="parallax">
+
+        <com.tribe.app.presentation.view.widget.EditTextFont
+            android:id="@+id/editTextGroupName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@null"
+            android:gravity="center"
+            android:hint="Name your group" />
+
+    </FrameLayout>
+
+
+    <com.tribe.app.presentation.view.component.PrivatePublicView
+        android:id="@+id/privatePublicView"
+        android:layout_width="match_parent"
+        android:layout_height="116dp"
+        android:layout_marginTop="206dp"
+         />
+
+
+    <FrameLayout
+        android:layout_marginTop="328dp"
+        android:layout_width="match_parent"
+        android:layout_height="115dp"
+        android:background="@drawable/shape_white_rect_grey_border">
+
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginEnd="@dimen/horizontal_margin_small"
+            android:layout_marginStart="@dimen/horizontal_margin_small"
+            android:layout_marginTop="@dimen/vertical_margin_small">
+
+            <View
+                android:id="@+id/viewCreateGroupBg1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_group_disabled" />
+
+            <View
+                android:id="@+id/viewCreateGroupBg2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="3.5dp"
+                android:alpha="0"
+                android:background="@drawable/shape_rect_black40_rounded_corners" />
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                style="@style/Title.2.White"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/group_create_title" />
+        </FrameLayout>
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            style="@style/Body.One.Black40"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="80dp"
+            android:gravity="center"
+            android:text="Add group details to create a group" />
+
+    </FrameLayout>
 
 </FrameLayout>

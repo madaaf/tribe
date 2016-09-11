@@ -104,6 +104,14 @@
         <item name="android:textColor">@color/yellow</item>
     </style>
 
+    <style name="Title.2.Greeen" parent="@style/Title.2">
+        <item name="android:textColor">@color/green.group</item>
+    </style>
+
+    <style name="Title.2.Purple" parent="@style/Title.2">
+        <item name="android:textColor">@color/purple.group</item>
+    </style>
+
     <style name="Title.1.Black" parent="@style/Title.1">
         <item name="android:textColor">@android:color/black</item>
     </style>
@@ -118,6 +126,10 @@
 
     <style name="Title.1.Red" parent="@style/Title.1">
         <item name="android:textColor">@color/red.circle</item>
+    </style>
+
+    <style name="Title.1.White" parent="@style/Title.1">
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
     <style name="Headline">
