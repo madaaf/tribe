@@ -7,10 +7,21 @@ import java.io.Serializable;
  */
 public class SearchResult implements Serializable {
 
+    private String id;
     private String display_name;
     private String username;
     private String picture;
     private Friendship friendship;
+    private boolean searchDone = false;
+    private boolean shouldAnimateAdd = false;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getDisplayName() {
         return display_name;
@@ -42,5 +53,28 @@ public class SearchResult implements Serializable {
 
     public void setFriendship(Friendship friendship) {
         this.friendship = friendship;
+    }
+
+    public boolean isSearchDone() {
+        return searchDone;
+    }
+
+    public void setSearchDone(boolean searchDone) {
+        this.searchDone = searchDone;
+    }
+
+    public boolean isShouldAnimateAdd() {
+        return shouldAnimateAdd;
+    }
+
+    public void setShouldAnimateAdd(boolean shouldAnimateAdd) {
+        this.shouldAnimateAdd = shouldAnimateAdd;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + "search".hashCode();
+        return result;
     }
 }

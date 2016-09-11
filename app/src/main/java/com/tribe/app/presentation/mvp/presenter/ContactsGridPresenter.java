@@ -3,12 +3,15 @@ package com.tribe.app.presentation.mvp.presenter;
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.SynchroContactsJob;
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
+import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.DiskFindContactByValue;
 import com.tribe.app.domain.interactor.user.DiskSearchResults;
 import com.tribe.app.domain.interactor.user.FindByUsername;
+import com.tribe.app.domain.interactor.user.RemoveFriendship;
 import com.tribe.app.presentation.mvp.view.ContactsView;
 import com.tribe.app.presentation.mvp.view.View;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
@@ -31,9 +34,14 @@ public class ContactsGridPresenter implements Presenter {
     private FindByUsername findByUsername;
     private DiskSearchResults searchResults;
     private DiskFindContactByValue findContactByValue;
+    private RemoveFriendship removeFriendship;
+    private CreateFriendship createFriendship;
 
     // SUBSCRIBERS
     private FindByValueSubscriber findByValueSubscriber;
+    private CreateFriendshipSubscriber createFriendshipSubscriber;
+    private RemoveFriendshipSubscriber removeFriendshipSubscriber;
+    private DefaultSubscriber findByUsernameSubscriber;
 
     @Inject
     public ContactsGridPresenter(JobManager jobManager,
@@ -41,7 +49,9 @@ public class ContactsGridPresenter implements Presenter {
                                  @Named("diskContactList") UseCaseDisk getDiskContactList,
                                  @Named("cloudFindByUsername") FindByUsername findByUsername,
                                  @Named("diskSearchResults") DiskSearchResults diskSearchResults,
-                                 @Named("diskFindContactByValue") DiskFindContactByValue diskFindContactByValue) {
+                                 @Named("diskFindContactByValue") DiskFindContactByValue diskFindContactByValue,
+                                 @Named("createFriendship") CreateFriendship createFriendship,
+                                 @Named("removeFriendship") RemoveFriendship removeFriendship) {
         super();
         this.jobManager = jobManager;
         this.rxFacebook = rxFacebook;
@@ -49,6 +59,8 @@ public class ContactsGridPresenter implements Presenter {
         this.findByUsername = findByUsername;
         this.searchResults = diskSearchResults;
         this.findContactByValue = diskFindContactByValue;
+        this.createFriendship = createFriendship;
+        this.removeFriendship = removeFriendship;
     }
 
     @Override
@@ -88,10 +100,7 @@ public class ContactsGridPresenter implements Presenter {
         contactsView = (ContactsView) v;
     }
 
-    public void findByUsername(String username) {
-        findByUsername.setUsername(username);
-        findByUsername.execute(new DefaultSubscriber<>());
-
+    public void diskFindByUsername(String username) {
         if (findByValueSubscriber != null)
             findByValueSubscriber.unsubscribe();
 
@@ -100,9 +109,34 @@ public class ContactsGridPresenter implements Presenter {
         findContactByValue.execute(findByValueSubscriber);
     }
 
+    public void cloudFindByUsername(String username) {
+        if (findByUsernameSubscriber != null)
+            findByUsernameSubscriber.unsubscribe();
+
+        findByUsernameSubscriber = new DefaultSubscriber();
+        findByUsername.setUsername(username);
+        findByUsername.execute(findByUsernameSubscriber);
+    }
+
     public void loadContactList() {
         getDiskContactList.execute(new ContactListSubscriber());
         searchResults.execute(new SearchResultSubscriber());
+    }
+
+    public void createFriendship(String userId) {
+        if (createFriendshipSubscriber != null) createFriendshipSubscriber.unsubscribe();
+
+        createFriendshipSubscriber = new CreateFriendshipSubscriber();
+        createFriendship.setUserId(userId);
+        createFriendship.execute(createFriendshipSubscriber);
+    }
+
+    public void removeFriendship(String friendshipId) {
+        if (removeFriendshipSubscriber != null) removeFriendshipSubscriber.unsubscribe();
+
+        removeFriendshipSubscriber = new RemoveFriendshipSubscriber();
+        removeFriendship.setFriendshipId(friendshipId);
+        removeFriendship.execute(removeFriendshipSubscriber);
     }
 
     public void loginFacebook() {
@@ -149,7 +183,7 @@ public class ContactsGridPresenter implements Presenter {
 
         @Override
         public void onNext(List<Contact> contactList) {
-            System.out.println("LOL : " + contactList.size());
+            contactsView.renderSearchContacts(contactList);
         }
     }
 
@@ -167,7 +201,44 @@ public class ContactsGridPresenter implements Presenter {
 
         @Override
         public void onNext(SearchResult searchResult) {
-            System.out.println("SEARCH : " + searchResult);
+            contactsView.renderSearchResult(searchResult);
+        }
+    }
+
+    private final class CreateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
+
+        @Override
+        public void onCompleted() {
+            System.out.println("COMPLETED");
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(Friendship friendship) {
+            if (friendship == null) contactsView.onAddError();
+            else contactsView.onAddSuccess(friendship);
+        }
+    }
+
+    private final class RemoveFriendshipSubscriber extends DefaultSubscriber<Void> {
+
+        @Override
+        public void onCompleted() {
+            System.out.println("COMPLETED");
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(Void aVoid) {
+            System.out.println("Friendship deleted");
         }
     }
 }

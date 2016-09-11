@@ -2,7 +2,6 @@ package com.tribe.app.presentation.internal.di.modules;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceGroup;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
@@ -10,9 +9,9 @@ import com.tribe.app.presentation.internal.di.scope.AudioDefault;
 import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
 import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
+import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
 import com.tribe.app.presentation.internal.di.scope.Memories;
-import com.tribe.app.presentation.internal.di.scope.PerApplication;
 import com.tribe.app.presentation.internal.di.scope.Preload;
 import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.internal.di.scope.Theme;
@@ -114,5 +113,12 @@ public class DataModule {
     @LastMessageRequest
     Preference<String> provideLastMessageRequest(RxSharedPreferences prefs) {
         return prefs.getString(PreferencesConstants.LAST_MESSAGE_REQUEST, "");
+    }
+
+    @Provides
+    @Singleton
+    @LastUserRequest
+    Preference<String> provideLastUserRequest(RxSharedPreferences prefs) {
+        return prefs.getString(PreferencesConstants.LAST_USER_REQUEST, "");
     }
 }

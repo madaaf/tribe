@@ -1,6 +1,8 @@
 package com.tribe.app.presentation.mvp.view;
 
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.SearchResult;
 
 import java.util.List;
 
@@ -10,6 +12,10 @@ import java.util.List;
 public interface ContactsView extends LoadDataView {
 
     void renderContactList(List<Contact> contactList);
+    void renderSearchResult(SearchResult searchResult);
+    void renderSearchContacts(List<Contact> contactList);
+    void onAddSuccess(Friendship friendship);
+    void onAddError();
     void successFacebookLogin();
     void errorFacebookLogin();
 }

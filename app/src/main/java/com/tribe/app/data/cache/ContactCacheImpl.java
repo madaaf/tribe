@@ -4,12 +4,14 @@ import android.content.Context;
 
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactFBRealm;
+import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
+import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -71,8 +73,23 @@ public class ContactCacheImpl implements ContactCache {
 
         try {
             obsRealm.beginTransaction();
-            obsRealm.delete(SearchResultRealm.class);
-            obsRealm.copyToRealm(searchResult);
+
+            SearchResultRealm searchResultRealm = obsRealm.where(SearchResultRealm.class).findFirst();
+
+            if (searchResultRealm == null) {
+                obsRealm.copyToRealmOrUpdate(searchResult);
+            } else {
+                searchResultRealm.setDisplayName(searchResult.getDisplayName());
+                searchResultRealm.setPicture(searchResult.getPicture());
+                searchResultRealm.setUsername(searchResult.getUsername());
+                searchResultRealm.setId(searchResult.getId());
+                if (searchResult.getFriendshipRealm() != null)
+                    searchResultRealm.setFriendshipRealm(obsRealm.where(FriendshipRealm.class).equalTo("id", searchResult.getFriendshipRealm().getId()).findFirst());
+                else
+                    searchResultRealm.setFriendshipRealm(null);
+                searchResultRealm.setSearchDone(searchResult.isSearchDone());
+            }
+
             obsRealm.commitTransaction();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -82,13 +99,17 @@ public class ContactCacheImpl implements ContactCache {
     }
 
     @Override
-    public void deleteSearchResults() {
+    public void changeSearchResult(String username, FriendshipRealm friendshipRealm) {
         Realm obsRealm = Realm.getDefaultInstance();
+        SearchResultRealm resultRealm = obsRealm.where(SearchResultRealm.class).equalTo("username", username).findFirst();
+        FriendshipRealm friendshipManaged = obsRealm.where(FriendshipRealm.class).equalTo("id", friendshipRealm.getId()).findFirst();
 
         try {
-            obsRealm.beginTransaction();
-            obsRealm.delete(SearchResultRealm.class);
-            obsRealm.commitTransaction();
+            if (resultRealm != null) {
+                obsRealm.beginTransaction();
+                resultRealm.setFriendshipRealm(friendshipManaged);
+                obsRealm.commitTransaction();
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
@@ -124,9 +145,9 @@ public class ContactCacheImpl implements ContactCache {
                         .beginGroup()
                             .equalTo("userList.username", value)
                             .or()
-                            .beginsWith("name", value)
+                            .beginsWith("name", value, Case.INSENSITIVE)
                         .endGroup()
-                        .findAllSorted(new String[] {"name"}, new Sort[] {Sort.ASCENDING});
+                        .findAllSorted(new String[] {"howManyFriends", "name"}, new Sort[] {Sort.DESCENDING, Sort.ASCENDING});
 
                 contactsByValue.removeChangeListeners();
                 contactsByValue.addChangeListener(element -> {

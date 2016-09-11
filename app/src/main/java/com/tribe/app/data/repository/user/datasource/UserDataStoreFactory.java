@@ -14,6 +14,7 @@ import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
+import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 
 import java.text.SimpleDateFormat;
@@ -44,6 +45,7 @@ public class UserDataStoreFactory {
     private final Installation installation;
     private final ReactiveLocationProvider reactiveLocationProvider;
     private final Preference<String> lastMessageRequest;
+    private final Preference<String> lastUserRequest;
     private final SimpleDateFormat utcSimpleDate;
 
     @Inject
@@ -53,6 +55,7 @@ public class UserDataStoreFactory {
                                 TribeApi tribeApi, LoginApi loginApi, User user, AccessToken accessToken,
                                 Installation installation, ReactiveLocationProvider reactiveLocationProvider,
                                 @LastMessageRequest Preference<String> lastMessageRequest,
+                                @LastUserRequest Preference<String> lastUserRequest,
                                 @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate) {
         if (context == null || userCache == null) {
             throw new IllegalArgumentException("Constructor parameters cannot be null!");
@@ -72,6 +75,7 @@ public class UserDataStoreFactory {
         this.installation = installation;
         this.reactiveLocationProvider = reactiveLocationProvider;
         this.lastMessageRequest = lastMessageRequest;
+        this.lastUserRequest = lastUserRequest;
         this.utcSimpleDate = utcSimpleDate;
     }
 
@@ -87,6 +91,6 @@ public class UserDataStoreFactory {
         return new CloudUserDataStore(this.userCache, this.tribeCache, this.chatCache, this.contactCache,
                 this.rxContacts, this.rxFacebook, this.tribeApi, this.loginApi,
                 this.user, this.accessToken, this.installation, this.reactiveLocationProvider, this.context,
-                this.lastMessageRequest, this.utcSimpleDate);
+                this.lastMessageRequest, this.lastUserRequest, this.utcSimpleDate);
     }
 }

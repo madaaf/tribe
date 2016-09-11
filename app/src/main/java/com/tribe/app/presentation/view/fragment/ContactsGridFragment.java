@@ -1,16 +1,23 @@
 package com.tribe.app.presentation.view.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.ButtonPoints;
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.ContactsGridPresenter;
@@ -21,6 +28,7 @@ import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.ContactsGridAdapter;
 import com.tribe.app.presentation.view.adapter.manager.ContactsLayoutManager;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.ButtonPointsView;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 
@@ -32,6 +40,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import rx.subscriptions.CompositeSubscription;
 
@@ -39,6 +48,9 @@ import rx.subscriptions.CompositeSubscription;
  * Fragment that shows a list of discovery users.
  */
 public class ContactsGridFragment extends BaseFragment implements ContactsView {
+
+    private static final int DURATION = 300;
+    private static final float OVERSHOOT = 0.75f;
 
     @Inject
     ContactsGridPresenter contactsGridPresenter;
@@ -49,15 +61,23 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
     @Inject
     PhoneUtils phoneUtils;
 
+    @Inject
+    ScreenUtils screenUtils;
+
     @BindView(R.id.recyclerViewContacts)
     RecyclerView recyclerViewContacts;
 
     @BindView(R.id.editTextSearchContact)
     EditTextFont editTextSearchContact;
 
+    @BindView(R.id.btnCloseSearch)
+    ImageView btnCloseSearch;
+
+    @BindView(R.id.layoutDummy)
+    ViewGroup layoutDummy;
+
     // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
-
 
     // VARIABLES
     private boolean isSearchMode = false;
@@ -65,6 +85,9 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
     private Unbinder unbinder;
     private ContactsLayoutManager layoutManager;
     private User currentUser;
+    private List<Contact> contactList;
+    private List<Contact> searchContactList;
+    private SearchResult searchResult;
 
     @Override
     public void onAttach(Context context) {
@@ -161,12 +184,38 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
         return this.getActivity().getApplicationContext();
     }
 
+    @OnClick(R.id.btnCloseSearch)
+    public void closeSearch() {
+        editTextSearchContact.setText("");
+        InputMethodManager inputMethodManager = (InputMethodManager) context().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
+        layoutDummy.requestFocus();
+    }
+
     private void init() {
         RxTextView.textChanges(editTextSearchContact).map(CharSequence::toString)
+                .doOnNext(s -> {
+                    if (StringUtils.isEmpty(s)) {
+                        isSearchMode = false;
+                        hideClearSearch();
+                        if (contactList != null && contactList.size() > 0)
+                            renderContactList(contactList);
+                    }
+                })
                 .filter(s -> !StringUtils.isEmpty(s))
-                .doOnNext(s -> isSearchMode = true)
+                .doOnNext(s -> {
+                    if (!isSearchMode) showClearSearch();
+                    isSearchMode = true;
+                    searchResult = new SearchResult();
+                    searchResult.setUsername(s);
+                    updateSearch();
+                    contactsGridPresenter.diskFindByUsername(s);
+                })
                 .debounce(500, TimeUnit.MILLISECONDS)
-                .subscribe(s -> contactsGridPresenter.findByUsername(s));
+                .subscribe(s -> contactsGridPresenter.cloudFindByUsername(s));
+
+        searchContactList = new ArrayList<>();
+        btnCloseSearch.setTranslationX(screenUtils.getWidthPx() >> 1);
     }
 
     private void initRecyclerView() {
@@ -188,8 +237,29 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
                         }
                     }
                 }));
-    }
 
+        subscriptions.add(contactsGridAdapter.onClickAdd()
+                .map(view -> contactsGridAdapter.getItemAtPosition(recyclerViewContacts.getChildLayoutPosition(view)))
+                .doOnError(throwable -> throwable.printStackTrace())
+                .subscribe(o -> {
+                    if (o instanceof SearchResult) {
+                        SearchResult searchResult = (SearchResult) o;
+                        contactsGridPresenter.createFriendship(searchResult.getId());
+                    }
+                }));
+
+        subscriptions.add(contactsGridAdapter.onClickRemove()
+                .map(view -> contactsGridAdapter.getItemAtPosition(recyclerViewContacts.getChildLayoutPosition(view)))
+                .doOnError(throwable -> throwable.printStackTrace())
+                .subscribe(o -> {
+                    if (o instanceof SearchResult) {
+                        SearchResult searchResult = (SearchResult) o;
+                        contactsGridPresenter.removeFriendship(searchResult.getFriendship().getFriendshipId());
+                    }
+                }));
+
+        loadData();
+    }
 
     /**
      * Loads all contacts.
@@ -198,9 +268,61 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
         this.contactsGridPresenter.loadContactList();
     }
 
+    private void updateSearch() {
+        this.contactsGridAdapter.updateSearch(searchResult, searchContactList);
+    }
+
+    private void showClearSearch() {
+        if (btnCloseSearch.getTranslationX() > 0) {
+            btnCloseSearch.clearAnimation();
+            btnCloseSearch.animate().setDuration(DURATION).translationX(0).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
+        }
+    }
+
+    private void hideClearSearch() {
+        if (btnCloseSearch.getTranslationX() == 0) {
+            btnCloseSearch.clearAnimation();
+            btnCloseSearch.animate().setDuration(DURATION).translationX(screenUtils.getWidthPx() >> 1).setInterpolator(new DecelerateInterpolator()).start();
+        }
+    }
+
     @Override
     public void renderContactList(List<Contact> contactList) {
-        contactsGridAdapter.setItems(contactList);
+        this.contactList = contactList;
+
+        if (!isSearchMode)
+            contactsGridAdapter.setItems(contactList);
+    }
+
+    @Override
+    public void renderSearchContacts(List<Contact> contactList) {
+        if (isSearchMode) {
+            this.searchContactList.clear();
+            this.searchContactList.addAll(contactList);
+            updateSearch();
+        }
+    }
+
+    @Override
+    public void onAddSuccess(Friendship friendship) {
+
+    }
+
+    @Override
+    public void onAddError() {
+        updateSearch();
+    }
+
+    @Override
+    public void renderSearchResult(SearchResult searchResult) {
+        if (isSearchMode) {
+            if (this.searchResult != null && this.searchResult.getFriendship() == null && searchResult.getFriendship() != null
+                    && this.searchResult.getUsername().equals(searchResult.getUsername()) && this.searchResult.isSearchDone())
+                searchResult.setShouldAnimateAdd(true);
+
+            this.searchResult = searchResult;
+            updateSearch();
+        }
     }
 
     @Override

@@ -10,16 +10,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.MotionEvent;
-import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import com.facebook.rebound.Spring;
-import com.facebook.rebound.SpringSystem;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.tbruyelle.rxpermissions.RxPermissions;
@@ -233,8 +230,32 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         homeViewPagerAdapter = new HomeViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(homeViewPagerAdapter);
         viewPager.setOffscreenPageLimit(3);
-        viewPager.setScrollDurationFactor(2f);
+        viewPager.setScrollDurationFactor(1f);
         viewPager.setCurrentItem(1);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (viewPager.getCurrentItem() == GRID_FRAGMENT_PAGE) {
+                    reloadGrid();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                if (state == ViewPager.SCROLL_STATE_IDLE) {
+                    if (viewPager.getCurrentItem() == GRID_FRAGMENT_PAGE) {
+                        ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
+                                .hideSoftInputFromWindow(viewPager.getWindowToken(), 0);
+                        homeViewPagerAdapter.getContactsGridFragment().closeSearch();
+                    }
+                }
+            }
+        });
         viewPager.setPageTransformer(false, new HomePageTransformer());
     }
 
@@ -493,6 +514,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         public HomeGridFragment getHomeGridFragment() {
             return homeGridFragment;
         }
+
+        public ContactsGridFragment getContactsGridFragment() {
+            return contactsGridFragment;
+        }
     }
 
     public class HomePageTransformer implements ViewPager.PageTransformer {
@@ -561,14 +586,11 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     private void hideLayoutNewMessages() {
         if (layoutNavNewMessages.getTranslationY() == 0) {
-            System.out.println("ANIMATING HIDE");
             layoutNavNewMessages.animate().translationY(translationBackToTop).setDuration(DURATION).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     AnimationUtils.replaceView(HomeActivity.this, progressBarNewMessages, txtNewMessages, null);
                     layoutNavNewMessages.animate().setListener(null).start();
-
-                    System.out.println("END ANIMATING HIDE");
                 }
             });
             layoutNavGridMain.animate().translationY(0).setDuration(DURATION).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
@@ -577,13 +599,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     private void showLayoutNewTribes() {
         if (layoutNavNewMessages.getTranslationY() > 0) {
-            System.out.println("ANIMATING SHOW");
             layoutNavNewMessages.setTranslationY(translationBackToTop);
             layoutNavGridMain.animate().translationY(translationBackToTop).setDuration(DURATION).start();
             layoutNavNewMessages.animate().translationY(0).setDuration(DURATION).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
         }
     }
-
-
-
 }

@@ -3,6 +3,7 @@ package com.tribe.app.data.repository.user.datasource;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactInterface;
+import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
@@ -94,4 +95,15 @@ public interface UserDataStore {
      * about the contacts corresponding to the value.
      */
     Observable<List<ContactABRealm>> findByValue(String value);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link com.tribe.app.data.realm.FriendshipRealm} containing infos
+     * about the new friendship.
+     */
+    Observable<FriendshipRealm> createFriendship(String userId);
+
+    /**
+     * Get an {@link Observable} which will emit a void object
+     */
+    Observable<Void> removeFriendship(String userId);
 }

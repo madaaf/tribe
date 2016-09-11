@@ -20,7 +20,7 @@ public class SearchResultDeserializer implements JsonDeserializer<SearchResultRe
 
         Gson gson = new Gson();
         JsonArray array = results.getAsJsonArray("lookupByUsername");
-        if (array != null) {
+        if (array != null && !array.isJsonNull() && array.isJsonArray() && !array.get(0).isJsonNull()) {
             JsonElement jsonElement = array.get(0).getAsJsonObject();
             if (!(jsonElement instanceof JsonNull) && jsonElement != null) {
                 return gson.fromJson(jsonElement, SearchResultRealm.class);

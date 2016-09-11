@@ -5,7 +5,7 @@
             user {
                 ...UserInfos
 
-                friendships {
+                friendships %1$s {
                     id
                     tag
                     category
@@ -14,7 +14,7 @@
                     }
                 }
 
-                groups {
+                groups %2$s {
                     id
                     name
                     picture
@@ -23,7 +23,7 @@
             }
         }
 
-        %1$s
+        %3$s
     </string>
 
     <string name="user.infos.list" translatable="false">
@@ -208,7 +208,7 @@
         }
     </string>
 
-    <string name="messages.start" translatable="false">
+    <string name="input.start" translatable="false">
         (start : \"%1$s\")
     </string>
 
@@ -334,7 +334,7 @@
         %2$s
     </string>
 
-    <string name="createFriendship.mutation" translatable="false">
+    <string name="friendship.mutation" translatable="false">
         mutation {
             %1$s
         }
@@ -353,6 +353,10 @@
         ) {
             %3$s
         }
+    </string>
+
+    <string name="removeFriendship.input" translatable="false">
+        removeFriendship%1$d : removeFriendship(friendshipId : \"%2$s\")
     </string>
 
     <string name="howManyFriends.part" translatable="false">

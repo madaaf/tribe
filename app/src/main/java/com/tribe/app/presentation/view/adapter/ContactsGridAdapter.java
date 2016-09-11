@@ -8,9 +8,11 @@ import android.view.ViewGroup;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.ButtonPoints;
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ButtonPointsAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactsGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SeparatorAdapterDelegate;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 import com.tribe.app.presentation.view.widget.ButtonPointsView;
@@ -31,6 +33,7 @@ public class ContactsGridAdapter extends RecyclerView.Adapter {
     // DELEGATES
     protected RxAdapterDelegatesManager delegatesManager;
     private ButtonPointsAdapterDelegate buttonPointsAdapterDelegate;
+    private SearchResultGridAdapterDelegate searchResultGridAdapterDelegate;
 
     // VARIABLES
     private List<Object> items;
@@ -49,6 +52,9 @@ public class ContactsGridAdapter extends RecyclerView.Adapter {
 
         buttonPointsAdapterDelegate = new ButtonPointsAdapterDelegate(context);
         delegatesManager.addDelegate(buttonPointsAdapterDelegate);
+
+        searchResultGridAdapterDelegate = new SearchResultGridAdapterDelegate(context);
+        delegatesManager.addDelegate(searchResultGridAdapterDelegate);
 
         delegatesManager.addDelegate(new ContactsGridAdapterDelegate(context));
         delegatesManager.addDelegate(new SeparatorAdapterDelegate(context));
@@ -119,8 +125,24 @@ public class ContactsGridAdapter extends RecyclerView.Adapter {
         return items;
     }
 
+    public void updateSearch(SearchResult searchResult, List<Contact> contactList) {
+        this.items.clear();
+        this.items.add(searchResult);
+        this.items.add(new String());
+        this.items.addAll(contactList);
+        this.notifyDataSetChanged();
+    }
+
     // OBSERVABLES
     public Observable<View> onButtonPointsClick() {
         return buttonPointsAdapterDelegate.onClick();
+    }
+
+    public Observable<View> onClickAdd() {
+        return searchResultGridAdapterDelegate.onClickAdd();
+    }
+
+    public Observable<View> onClickRemove() {
+        return searchResultGridAdapterDelegate.onClickRemove();
     }
 }

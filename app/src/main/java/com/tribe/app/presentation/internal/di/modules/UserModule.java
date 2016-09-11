@@ -8,6 +8,7 @@ import com.tribe.app.domain.interactor.tribe.GetNotSeenDiskTribeList;
 import com.tribe.app.domain.interactor.tribe.GetPendingTribeList;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.domain.interactor.tribe.SendTribe;
+import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.DiskFindContactByValue;
 import com.tribe.app.domain.interactor.user.DiskSearchResults;
 import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
@@ -17,6 +18,7 @@ import com.tribe.app.domain.interactor.user.GetDiskContactList;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.GetReceivedDiskMessageList;
 import com.tribe.app.domain.interactor.user.GetRequestCode;
+import com.tribe.app.domain.interactor.user.RemoveFriendship;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
 import com.tribe.app.domain.interactor.user.SendToken;
 import com.tribe.app.domain.interactor.user.SynchroContactList;
@@ -164,5 +166,19 @@ public class UserModule {
     @Named("diskFindContactByValue")
     DiskFindContactByValue provideDiskFindContactByValue(DiskFindContactByValue diskFindContactByValue) {
         return diskFindContactByValue;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("removeFriendship")
+    RemoveFriendship provideRemoveFriendship(RemoveFriendship removeFriendship) {
+        return removeFriendship;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("createFriendship")
+    CreateFriendship provideCreateFriendship(CreateFriendship createFriendship) {
+        return createFriendship;
     }
 }

@@ -63,11 +63,13 @@ public class FacebookHiddenActivity extends BaseActivity {
                         @Override
                         public void onCancel() {
                             Toast.makeText(FacebookHiddenActivity.this, "Login Canceled", Toast.LENGTH_LONG).show();
+                            finish();
                         }
 
                         @Override
                         public void onError(FacebookException exception) {
                             Toast.makeText(FacebookHiddenActivity.this, exception.getMessage(), Toast.LENGTH_LONG).show();
+                            finish();
                         }
                     });
             LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "user_friends"));

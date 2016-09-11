@@ -7,6 +7,7 @@ package com.tribe.app.domain.interactor.user;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.SearchResult;
@@ -91,6 +92,17 @@ public interface UserRepository {
      * about the contact.
      */
     Observable<SearchResult> findByUsername(String username);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link com.tribe.app.domain.entity.Friendship} containing infos
+     * about the contact.
+     */
+    Observable<Friendship> createFriendship(String userId);
+
+    /**
+     * Get an {@link Observable} which will emit a void
+     */
+    Observable<Void> removeFriendship(String userId);
 
     /**
      * Get an {@link Observable} which will emit a {@link Contact} containing infos

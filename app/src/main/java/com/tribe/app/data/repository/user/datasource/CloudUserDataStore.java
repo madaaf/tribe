@@ -80,6 +80,7 @@ public class CloudUserDataStore implements UserDataStore {
     private final Installation installation;
     private final ReactiveLocationProvider reactiveLocationProvider;
     private Preference<String> lastMessageRequest;
+    private Preference<String> lastUserRequest;
     private SimpleDateFormat utcSimpleDate = null;
 
     /**
@@ -96,7 +97,7 @@ public class CloudUserDataStore implements UserDataStore {
                               TribeApi tribeApi, LoginApi loginApi, User user,
                               AccessToken accessToken, Installation installation,
                               ReactiveLocationProvider reactiveLocationProvider, Context context,
-                              Preference<String> lastMessageRequest, SimpleDateFormat utcSimpleDate) {
+                              Preference<String> lastMessageRequest, Preference<String> lastUserRequest, SimpleDateFormat utcSimpleDate) {
         this.userCache = userCache;
         this.tribeCache = tribeCache;
         this.chatCache = chatCache;
@@ -111,6 +112,7 @@ public class CloudUserDataStore implements UserDataStore {
         this.installation = installation;
         this.reactiveLocationProvider = reactiveLocationProvider;
         this.lastMessageRequest = lastMessageRequest;
+        this.lastUserRequest = lastUserRequest;
         this.utcSimpleDate = utcSimpleDate;
     }
 
@@ -118,26 +120,12 @@ public class CloudUserDataStore implements UserDataStore {
     public Observable<PinRealm> requestCode(String phoneNumber) {
         return this.loginApi
                 .requestCode(new LoginEntity(phoneNumber));
-        //.doOnError(throwable -> {
-        //    AccessToken accessToken1 = new AccessToken();
-        //    accessToken1.setAccessToken("DvEZQrxOZ5LgHQE9XjWYzCNMEcSmlCMVfvm27ZTLJ72KpRpVIY");
-        //    accessToken1.setTokenType("Bearer");
-        //    accessToken1.setUserId("BJgkS2rN");
-        //    CloudUserDataStore.this.userCache.put(accessToken1);
-        //});
     }
 
     @Override
     public Observable<AccessToken> loginWithPhoneNumber(String phoneNumber, String code, String pinId) {
         return this.loginApi
                 .loginWithUsername(new LoginEntity(phoneNumber, code, pinId))
-//                .doOnError(throwable -> {
-//                    AccessToken accessToken1 = new AccessToken();
-//                    accessToken1.setAccessToken("gI1J6AWUKIg6bTXOm9KNTCD3cI52o8qoQloGcGLD7RUj0i0RUx");
-//                    accessToken1.setTokenType("Bearer");
-//                    accessToken1.setUserId("BJAYhzzo");
-//                    CloudUserDataStore.this.userCache.put(accessToken1);
-//                })
                 .doOnNext(saveToCacheAccessToken);
     }
 
@@ -150,7 +138,10 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<UserRealm> userInfos(String userId) {
-        return Observable.zip(this.tribeApi.getUserInfos(context.getString(R.string.user_infos, context.getString(R.string.userfragment_infos))),
+        return Observable.zip(this.tribeApi.getUserInfos(context.getString(R.string.user_infos,
+                !StringUtils.isEmpty(lastUserRequest.get()) ? context.getString(R.string.input_start, lastUserRequest.get()) : "",
+                !StringUtils.isEmpty(lastUserRequest.get()) ? context.getString(R.string.input_start, lastUserRequest.get()) : "",
+                context.getString(R.string.userfragment_infos))),
                 reactiveLocationProvider.getLastKnownLocation().onErrorReturn(throwable -> null).defaultIfEmpty(null),
                 (userRealm, location) -> {
                     if (location != null) {
@@ -230,7 +221,7 @@ public class CloudUserDataStore implements UserDataStore {
         }
 
         String req = context.getString(R.string.messages_infos,
-                !StringUtils.isEmpty(lastMessageRequest.get()) ? context.getString(R.string.messages_start, lastMessageRequest.get()) : "",
+                !StringUtils.isEmpty(lastMessageRequest.get()) ? context.getString(R.string.input_start, lastMessageRequest.get()) : "",
                 !StringUtils.isEmpty(idsTribes.toString()) ? context.getString(R.string.tribe_sent_infos, idsTribes) : "");
 
         return tribeApi.messages(req).flatMap(messageRealmInterfaceList -> {
@@ -350,9 +341,6 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<List<ContactInterface>> contacts() {
-        userCache.removeFriendship("Hyfpq-7zo");
-        userCache.removeFriendship("ByF8cZaj");
-
         return Observable.zip(
                 rxContacts.getContacts().toList(),
                 rxFacebook.requestFriends(),
@@ -484,7 +472,7 @@ public class CloudUserDataStore implements UserDataStore {
                 phonesHowManyFriends.keySet().removeAll(phonesFound);
                 phonesNewFriendships.keySet().removeAll(phonesHowManyFriends.keySet());
 
-                mutationCreateFriendship = context.getString(R.string.createFriendship_mutation, buffer.toString(), context.getString(R.string.userfragment_infos));
+                mutationCreateFriendship = context.getString(R.string.friendship_mutation, buffer.toString(), context.getString(R.string.userfragment_infos));
             }
 
             if (phonesHowManyFriends.size() > 0) {
@@ -538,16 +526,82 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<SearchResultRealm> findByUsername(String username) {
-        contactCache.deleteSearchResults();
+        SearchResultRealm searchResultInit = new SearchResultRealm();
+        searchResultInit.setUsername(username);
+        contactCache.insertSearchResult(searchResultInit);
 
         return this.tribeApi
                 .findByUsername(context.getString(R.string.lookup_username, username, context.getString(R.string.userfragment_infos)))
+                .doOnError(throwable -> {
+                    SearchResultRealm searchResultRealmRet = new SearchResultRealm();
+                    searchResultRealmRet.setUsername(searchResultInit.getUsername());
+                    searchResultRealmRet.setKey("search");
+                    searchResultRealmRet.setSearchDone(true);
+                    contactCache.insertSearchResult(searchResultRealmRet);
+                })
+                .map(searchResultRealm -> {
+                    SearchResultRealm searchResultRealmRet = new SearchResultRealm();
+
+                    if (searchResultRealm != null) {
+                        FriendshipRealm fr = userCache.friendshipForUserId(searchResultRealm.getId());
+                        searchResultRealmRet.setFriendshipRealm(fr);
+                        searchResultRealmRet.setDisplayName(searchResultRealm.getDisplayName());
+                        searchResultRealmRet.setPicture(searchResultRealm.getPicture());
+                        searchResultRealmRet.setId(searchResultRealm.getId());
+                        searchResultRealmRet.setUsername(searchResultRealm.getUsername());
+                    }
+
+                    searchResultRealmRet.setUsername(searchResultInit.getUsername());
+                    searchResultRealmRet.setKey("search");
+                    searchResultRealmRet.setSearchDone(true);
+                    return searchResultRealmRet;
+                })
                 .doOnNext(saveToCacheSearchResult);
     }
 
     @Override
     public Observable<List<ContactABRealm>> findByValue(String username) {
         return null;
+    }
+
+    @Override
+    public Observable<FriendshipRealm> createFriendship(String userId) {
+        StringBuffer buffer = new StringBuffer();
+        String mutationCreateFriendship = null;
+
+        buffer.append(context.getString(R.string.createFriendship_input, 0, userId, context.getString(R.string.friendships_infos)));
+        mutationCreateFriendship = context.getString(R.string.friendship_mutation, buffer.toString(), context.getString(R.string.userfragment_infos));
+        return this.tribeApi
+                .createFriendship(mutationCreateFriendship)
+                .onErrorResumeNext(Observable.just(null))
+                .map(createFriendshipEntity -> {
+                    FriendshipRealm friendshipRealm = null;
+
+                    if (createFriendshipEntity != null && createFriendshipEntity.getNewFriendshipList() != null
+                            && createFriendshipEntity.getNewFriendshipList().size() > 0) {
+                        UserRealm currentUser = userCache.userInfosNoObs(accessToken.getUserId());
+                        currentUser.getFriendships().addAll(createFriendshipEntity.getNewFriendshipList());
+                        userCache.put(currentUser);
+                        friendshipRealm = createFriendshipEntity.getNewFriendshipList().get(0);
+                    }
+
+                    return friendshipRealm;
+                }).doOnNext(friendshipRealm -> {
+                    if (friendshipRealm != null) {
+                        contactCache.changeSearchResult(friendshipRealm.getFriend().getUsername(), friendshipRealm);
+                    }
+                });
+    }
+
+    @Override
+    public Observable<Void> removeFriendship(String friendshipId) {
+        StringBuffer buffer = new StringBuffer();
+        String mutationRemoveFriendship = null;
+
+        buffer.append(context.getString(R.string.removeFriendship_input, 0, friendshipId, context.getString(R.string.friendships_infos)));
+        mutationRemoveFriendship = context.getString(R.string.friendship_mutation, buffer.toString(), "");
+        return this.tribeApi.removeFriendship(mutationRemoveFriendship).onErrorResumeNext(throwable -> Observable.empty())
+                .doOnNext(aVoid -> userCache.removeFriendship(friendshipId));
     }
 
     private final Action1<AccessToken> saveToCacheAccessToken = accessToken -> {
@@ -566,6 +620,8 @@ public class CloudUserDataStore implements UserDataStore {
     };
 
     private final Action1<UserRealm> saveToCacheUser = userRealm -> {
+        this.lastUserRequest.set(utcSimpleDate.format(new Date()));
+
         if (userRealm != null) {
             CloudUserDataStore.this.userCache.put(userRealm);
         }

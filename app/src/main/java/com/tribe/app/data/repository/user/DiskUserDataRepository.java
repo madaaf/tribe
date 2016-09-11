@@ -248,4 +248,14 @@ public class DiskUserDataRepository implements UserRepository {
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
         return userDataStore.findByValue(value).map(collection -> contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection)));
     }
+
+    @Override
+    public Observable<Friendship> createFriendship(String userId) {
+        return null;
+    }
+
+    @Override
+    public Observable<Void> removeFriendship(String userId) {
+        return null;
+    }
 }

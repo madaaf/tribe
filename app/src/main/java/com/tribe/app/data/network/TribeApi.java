@@ -93,4 +93,8 @@ public interface TribeApi {
     @FormUrlEncoded
     @POST("/graphql")
     Observable<SearchResultRealm> findByUsername(@Field("query") String query);
+
+    @FormUrlEncoded
+    @POST("/graphql")
+    Observable<Void> removeFriendship(@Field("query") String query);
 }

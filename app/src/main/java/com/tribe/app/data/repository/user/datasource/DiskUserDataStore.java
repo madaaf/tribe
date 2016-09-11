@@ -5,6 +5,7 @@ import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactInterface;
+import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
@@ -92,5 +93,15 @@ public class DiskUserDataStore implements UserDataStore {
     @Override
     public Observable<List<ContactABRealm>> findByValue(String username) {
         return contactCache.findContactsByValue(username);
+    }
+
+    @Override
+    public Observable<FriendshipRealm> createFriendship(String userId) {
+        return null;
+    }
+
+    @Override
+    public Observable<Void> removeFriendship(String userId) {
+        return null;
     }
 }

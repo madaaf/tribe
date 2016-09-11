@@ -34,6 +34,8 @@ public class SearchResultRealmDataMapper {
             searchResult.setDisplayName(searchResultRealm.getDisplayName());
             searchResult.setPicture(searchResultRealm.getPicture());
             searchResult.setFriendship(friendshipRealmDataMapper.transform(searchResultRealm.getFriendshipRealm()));
+            searchResult.setSearchDone(searchResultRealm.isSearchDone());
+            searchResult.setId(searchResultRealm.getId());
         }
 
         return searchResult;

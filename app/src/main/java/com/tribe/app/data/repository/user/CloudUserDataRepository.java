@@ -10,6 +10,7 @@ import com.tribe.app.data.repository.user.datasource.CloudUserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.SearchResult;
@@ -139,5 +140,24 @@ public class CloudUserDataRepository implements UserRepository {
     @Override
     public Observable<List<Contact>> findByValue(String value) {
         return null;
+    }
+
+    @Override
+    public Observable<Friendship> createFriendship(String userId) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore
+                .createFriendship(userId)
+                .map(friendshipRealm -> {
+                    if (friendshipRealm != null)
+                        return this.userRealmDataMapper.getFriendshipRealmDataMapper().transform(friendshipRealm);
+                    else
+                        return null;
+                });
+    }
+
+    @Override
+    public Observable<Void> removeFriendship(String friendshipId) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.removeFriendship(friendshipId);
     }
 }
