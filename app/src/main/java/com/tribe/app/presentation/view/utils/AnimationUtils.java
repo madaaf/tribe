@@ -9,6 +9,7 @@ import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.OvershootInterpolator;
+import android.view.animation.ScaleAnimation;
 
 import com.tribe.app.R;
 
@@ -151,5 +152,28 @@ public class AnimationUtils {
         int translateOut = context.getResources().getDimensionPixelSize(R.dimen.transition_replace);
         v1.animate().alpha(0).translationY(translateOut).setDuration(DURATION_REPLACE).setInterpolator(new OvershootInterpolator(OVERSHOOT_REPLACE)).start();
         v2.animate().alpha(1).translationY(0).setDuration(DURATION_REPLACE).setInterpolator(new OvershootInterpolator(OVERSHOOT_REPLACE)).setListener(listener).start();
+    }
+
+    public static void scaleIn(View view, int duration) {
+        view.animate()
+                .scaleY((float) 1.2).scaleX((float) 1.2)
+                .setDuration(duration/2)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        view.animate()
+                                .scaleX(1).scaleY(1)
+                                .setDuration(duration/2)
+                                .start();
+                    }
+                }).start();
+    }
+
+    public static void collapseScale(View view, int duration) {
+        ScaleAnimation scaleAnimation = new ScaleAnimation(1f, 1f, 1f, 0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0f);
+        scaleAnimation.setDuration(duration);
+        scaleAnimation.setFillAfter(true);
+        view.startAnimation(scaleAnimation);
     }
 }

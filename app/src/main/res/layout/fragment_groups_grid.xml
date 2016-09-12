@@ -7,16 +7,8 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="142dp"
+        android:layout_height="186dp"
         android:background="@drawable/shape_rect_white_rounded_top" />
-
-    <ImageView
-        android:id="@+id/imagePrivacyStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="22dp"
-        android:layout_marginTop="@dimen/vertical_margin"
-        android:layout_marginStart="@dimen/horizontal_margin"
-        />
     
     <ImageView
         android:id="@+id/imageEditGroup"
@@ -36,23 +28,7 @@
         android:layout_marginTop="30dp"
         android:src="@drawable/picto_group_image_placeholder" />
 
-    <FrameLayout
-        android:layout_marginTop="142dp"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:background="@drawable/shape_white_rect_grey_border"
-        app:layout_collapseMode="parallax">
 
-        <com.tribe.app.presentation.view.widget.EditTextFont
-            android:id="@+id/editTextGroupName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@null"
-            android:gravity="center"
-            android:hint="Name your group" />
-
-    </FrameLayout>
 
 
     <com.tribe.app.presentation.view.component.PrivatePublicView
@@ -64,6 +40,7 @@
 
 
     <FrameLayout
+        android:id="@+id/layoutCreateInvite"
         android:layout_marginTop="328dp"
         android:layout_width="match_parent"
         android:layout_height="115dp"
@@ -92,15 +69,26 @@
                 android:background="@drawable/shape_rect_black40_rounded_corners" />
 
             <com.tribe.app.presentation.view.widget.TextViewFont
+                android:id="@+id/textCreateInvite"
                 style="@style/Title.2.White"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="@string/group_create_title" />
+
+            <ImageView
+                android:id="@+id/imageInvite"
+                android:layout_width="22dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="20dp"
+                android:src="@drawable/picto_link"
+                />
+
         </FrameLayout>
 
         <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/textCreateInviteDesc"
             style="@style/Body.One.Black40"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -109,5 +97,54 @@
             android:text="Add group details to create a group" />
 
     </FrameLayout>
+
+    <View
+        android:id="@+id/viewDividerBackground"
+        android:layout_marginTop="142dp"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="@drawable/shape_white_rect_grey_border"
+        />
+
+        <com.tribe.app.presentation.view.widget.EditTextFont
+            android:layout_marginTop="164dp"
+            android:id="@+id/editTextGroupName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:imeOptions="actionDone"
+            android:background="@null"
+            android:gravity="center"
+            android:hint="Name your group" />
+
+    <LinearLayout
+        android:id="@+id/layoutPrivacyStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="188dp"
+        android:layout_gravity="center_horizontal"
+        android:alpha="0">
+
+        <ImageView
+            android:id="@+id/imagePrivacyStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="15dp"
+            android:layout_gravity="center_vertical"
+            />
+
+        <View
+            android:layout_width="5dp"
+            android:layout_height="5dp" />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/textPrivacyStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            style="@style/Title.1.Black40"
+            />
+
+    </LinearLayout>
 
 </FrameLayout>

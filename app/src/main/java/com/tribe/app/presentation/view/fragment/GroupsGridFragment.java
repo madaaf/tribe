@@ -2,29 +2,26 @@ package com.tribe.app.presentation.view.fragment;
 
 import android.animation.ObjectAnimator;
 import android.animation.RectEvaluator;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.media.Image;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.NestedScrollView;
-import android.support.v7.view.CollapsibleActionView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.CameraType;
 import com.tribe.app.domain.entity.LabelType;
-import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -32,19 +29,28 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
+import com.tribe.app.presentation.view.component.PrivatePublicView;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
+import com.tribe.app.presentation.view.widget.TextViewFont;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -61,10 +67,19 @@ public class GroupsGridFragment extends BaseFragment {
 
     @BindView(R.id.imageGroup)
     ImageView imageGroup;
-    @BindView(R.id.imagePrivacyStatus)
-    ImageView imagePrivacyStatus;
     @BindView(R.id.imageEditGroup)
     ImageView imageEditGroup;
+    @BindView(R.id.imagePrivacyStatus)
+    ImageView imagePrivacyStatus;
+    @BindView(R.id.imageInvite)
+    ImageView imageInvite;
+
+    @BindView(R.id.textPrivacyStatus)
+    TextViewFont textPrivacyStatus;
+    @BindView(R.id.textCreateInvite)
+    TextViewFont textCreateInvite;
+    @BindView(R.id.textCreateInviteDesc)
+    TextViewFont textCreateInviteDesc;
 
     @BindView(R.id.editTextGroupName)
     EditTextFont editTextGroupName;
@@ -72,7 +87,18 @@ public class GroupsGridFragment extends BaseFragment {
     @BindView(R.id.viewCreateGroupBg1)
     View viewCreateGroupBg1;
     @BindView(R.id.viewCreateGroupBg2)
-    View getViewCreateGroupBg2;
+    View viewCreateGroupBg2;
+    @BindView(R.id.viewDividerBackground)
+    View viewDividerBackground;
+
+
+    @BindView(R.id.layoutPrivacyStatus)
+    LinearLayout layoutPrivacyStatus;
+    @BindView(R.id.layoutCreateInvite)
+    FrameLayout layoutCreateInvite;
+
+    @BindView(R.id.privatePublicView)
+    PrivatePublicView privatePublicView;
 
     @Inject
     Navigator navigator;
@@ -84,7 +110,8 @@ public class GroupsGridFragment extends BaseFragment {
     private BottomSheetDialog dialogCamera;
     private RecyclerView recyclerViewCameraType;
     private LabelSheetAdapter cameraTypeAdapter;
-    private int animDuration = 300;
+    private int animDuration = 300 * 2;
+    private int loadingAnimDuration = 1000 * 2;
     private boolean privateGroup = true;
 
     @Override
@@ -105,7 +132,8 @@ public class GroupsGridFragment extends BaseFragment {
     private void initUi() {
         int startTranslation = -200;
         imageEditGroup.setTranslationY(startTranslation);
-        imagePrivacyStatus.setTranslationY(startTranslation);
+        imageInvite.setScaleX(0);
+        imageInvite.setScaleY(0);
 
         subscriptions.add(RxView.clicks(imageGroup).subscribe(aVoid -> {
             setupBottomSheetCamera();
@@ -114,33 +142,90 @@ public class GroupsGridFragment extends BaseFragment {
         subscriptions.add(RxTextView.textChanges(editTextGroupName).subscribe(charSequence -> {
             if (editTextGroupName.getText().toString().length() > 0) {
                 viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_enabled));
-                getViewCreateGroupBg2.setClickable(true);
+                viewCreateGroupBg2.setEnabled(true);
             }
             else {
                 viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_disabled));
-                getViewCreateGroupBg2.setClickable(false);
+                viewCreateGroupBg2.setEnabled(false);
             }
         }));
-
-        subscriptions.add(RxView.clicks(getViewCreateGroupBg2).subscribe(aVoid -> {
+        viewCreateGroupBg2.setEnabled(false);
+        subscriptions.add(RxView.clicks(viewCreateGroupBg2).subscribe(aVoid -> {
             createGroupLoadingAnim();
-            if (privateGroup) imagePrivacyStatus.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_lock_grey));
-            else imagePrivacyStatus.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_megaphone_purple));
-            bringInIcon(imagePrivacyStatus);
-            bringInIcon(imageEditGroup);
-            imageGroup.animate()
-                    .scaleY(.7f)
-                    .scaleX(.7f)
-                    .setDuration(animDuration)
-                    .start();
-            editTextGroupName.setKeyListener(null);
-            editTextGroupName.bringToFront();
-            editTextGroupName.animate()
-                    .translationY(-screenUtils.dpToPx(60))
-                    .setDuration(animDuration)
-                    .start();
 
+            Observable.timer(loadingAnimDuration, TimeUnit.MILLISECONDS)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(time -> {
+                       animSet1();
+                    });
+
+            Observable.timer(loadingAnimDuration + animDuration, TimeUnit.MILLISECONDS)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(time -> {
+                       animSet2();
+                    });
+
+            Observable.timer(loadingAnimDuration + animDuration*2, TimeUnit.MILLISECONDS)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(time -> {
+                        AnimationUtils.scaleIn(imageInvite, animDuration);
+                    });
         }));
+    }
+
+    private void animSet1() {
+        viewDividerBackground.setVisibility(View.INVISIBLE);
+        AnimationUtils.collapseScale(privatePublicView, animDuration);
+        privatePublicView.animate()
+                .setStartDelay(0)
+                .alpha(0f)
+                .setDuration(animDuration)
+                .start();
+
+        if (privateGroup) {
+            textPrivacyStatus.setText(getString(R.string.group_private_title));
+            imagePrivacyStatus.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_lock_grey));
+        } else {
+            textPrivacyStatus.setText(getString(R.string.group_public_title));
+            imagePrivacyStatus.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_megaphone_grey));
+        }
+        layoutPrivacyStatus.animate()
+                .setDuration(animDuration)
+                .alpha(1)
+                .setStartDelay(0)
+                .translationY(-screenUtils.dpToPx(48))
+                .start();
+
+        bringInIcon(imageEditGroup);
+
+        imageGroup.animate()
+                .scaleY(.7f)
+                .scaleX(.7f)
+                .setDuration(animDuration)
+                .start();
+        editTextGroupName.bringToFront();
+        editTextGroupName.setKeyListener(null);
+        editTextGroupName.setCursorVisible(false);
+        editTextGroupName.animate()
+                .translationY(-screenUtils.dpToPx(60))
+                .setDuration(animDuration)
+                .start();
+
+        textCreateInvite.setText(getString(R.string.group_button_share));
+        textCreateInviteDesc.setText(getString(R.string.group_share_description));
+
+
+    }
+
+    private void animSet2() {
+        layoutCreateInvite.animate()
+                .translationY(-screenUtils.dpToPx(138))
+                .setDuration(animDuration)
+                .start();
+
     }
 
     private void bringInIcon(ImageView imageView) {
@@ -218,17 +303,25 @@ public class GroupsGridFragment extends BaseFragment {
 
     private void createGroupLoadingAnim() {
         Rect rect = new Rect();
-        getViewCreateGroupBg2.getLocalVisibleRect(rect);
+        viewCreateGroupBg2.getLocalVisibleRect(rect);
         Rect from = new Rect(rect);
         Rect to = new Rect(rect);
         from.right = 0;
-        getViewCreateGroupBg2.setAlpha(1f);
-        ObjectAnimator anim = ObjectAnimator.ofObject(getViewCreateGroupBg2,
+        viewCreateGroupBg2.setAlpha(1f);
+        ObjectAnimator anim = ObjectAnimator.ofObject(viewCreateGroupBg2,
                 "clipBounds",
                 new RectEvaluator(),
                 from, to);
-        anim.setDuration(2000);
+        anim.setDuration(loadingAnimDuration);
         anim.start();
+
+        Observable.timer(loadingAnimDuration, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(time -> {
+                    viewCreateGroupBg2.setVisibility(View.INVISIBLE);
+                });
+
     }
 
     public void setGroupPicture(Bitmap bitmap) {

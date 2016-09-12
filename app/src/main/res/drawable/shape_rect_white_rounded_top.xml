@@ -10,4 +10,9 @@
             <corners android:topRightRadius="5dp" android:topLeftRadius="5dp" />
         </shape>
     </item>
+    <item android:top="-1dp" android:right="-1dp" android:left="-1dp">
+        <shape>
+            <stroke android:color="@color/grey.light" android:width=".5dp"/>
+        </shape>
+    </item>
 </layer-list>
