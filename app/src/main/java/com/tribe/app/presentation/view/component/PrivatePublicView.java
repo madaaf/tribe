@@ -12,19 +12,21 @@ import android.widget.ImageView;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import org.w3c.dom.Text;
 
-import java.util.Observable;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -75,6 +77,8 @@ public class PrivatePublicView extends FrameLayout {
     TextViewFont txtPrivate;
 
     int animationDuration = 300;
+    private PublishSubject<Boolean> isPrivate = PublishSubject.create();
+
 
     @Override
     protected void onFinishInflate() {
@@ -83,8 +87,6 @@ public class PrivatePublicView extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.view_private_public, this);
         unbinder = ButterKnife.bind(this);
 
-        setPrivate();
-
         subscriptions.add(RxView.clicks(layoutPrivate).subscribe(aVoid -> {
             setPrivate();
         }));
@@ -92,6 +94,15 @@ public class PrivatePublicView extends FrameLayout {
         subscriptions.add(RxView.clicks(layoutPublic).subscribe(aVoid -> {
             setPublic();
         }));
+
+        getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                setPrivate();
+                getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
+
     }
 
     @Override
@@ -110,10 +121,8 @@ public class PrivatePublicView extends FrameLayout {
         txtDescription.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.green_group));
         imgTriangle.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_triangle_green));
         txtDescription.setText(getContext().getString(R.string.group_private_description));
-        int location[] = new int[2];
-        layoutPrivate.getLocationOnScreen(location);
         int layoutWidth = layoutPrivate.getWidth();
-        int triangleLoc = (location[0] + layoutWidth)/2;
+        int triangleLoc = (layoutWidth)/2;
         imgTriangle.animate()
                 .x(triangleLoc)
                 .setDuration(animationDuration)
@@ -124,6 +133,7 @@ public class PrivatePublicView extends FrameLayout {
         moveImg(imgMegaphone, 0);
         moveTxt(txtPublic, 0, 0);
         moveTxt(txtPrivate, 20, 1);
+        isPrivate.onNext(true);
     }
 
     private void setPublic() {
@@ -145,6 +155,11 @@ public class PrivatePublicView extends FrameLayout {
         moveImg(imgLock, 0);
         moveTxt(txtPrivate, 0, 0);
         moveTxt(txtPublic, 20, 1);
+        isPrivate.onNext(false);
+    }
+
+    public Observable<Boolean> isPrivate() {
+     return isPrivate;
     }
 
     private void moveImg(ImageView imageView, int dp) {

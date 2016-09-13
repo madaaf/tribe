@@ -9,17 +9,15 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Country;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.view.adapter.BlockFriendAdapter;
+import com.tribe.app.presentation.view.adapter.FriendAdapter;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 
 import java.util.ArrayList;
@@ -50,7 +48,7 @@ public class SettingBlockFragment extends BaseFragment {
     private Unbinder unbinder;
 
     @Inject
-    BlockFriendAdapter blockFriendAdapter;
+    FriendAdapter friendAdapter;
 
     @BindView(R.id.editTextSearchBlockFriends)
     EditTextFont editTextSearchBlockFriends;
@@ -87,12 +85,12 @@ public class SettingBlockFragment extends BaseFragment {
 
         friendshipsListCopy = new ArrayList<>();
         friendshipsListCopy.addAll(friendshipsList);
-        blockFriendAdapter.setItems(friendshipsList);
+        friendAdapter.setItems(friendshipsList);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         blockFriendsRecyclerView.setLayoutManager(linearLayoutManager);
-        blockFriendsRecyclerView.setAdapter(blockFriendAdapter);
+        blockFriendsRecyclerView.setAdapter(friendAdapter);
 
-        subscriptions.add(blockFriendAdapter.clickFriendItem().subscribe(view -> {
+        subscriptions.add(friendAdapter.clickFriendItem().subscribe(view -> {
            // TODO: add networking and update database
             BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
             View bottomSheetView = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_block_friend, null);
@@ -149,7 +147,7 @@ public class SettingBlockFragment extends BaseFragment {
             friendshipsList.clear();
             friendshipsList.addAll(result);
         }
-        blockFriendAdapter.setItems(friendshipsList);
+        friendAdapter.setItems(friendshipsList);
     }
 
     protected ApplicationComponent getApplicationComponent() {

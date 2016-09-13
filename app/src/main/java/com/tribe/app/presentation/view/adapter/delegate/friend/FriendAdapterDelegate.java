@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.adapter.delegate.block_friend;
+package com.tribe.app.presentation.view.adapter.delegate.friend;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -13,7 +13,6 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
-import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
@@ -26,7 +25,7 @@ import rx.subjects.PublishSubject;
 /**
  * Created by horatiothomas on 9/7/16.
  */
-public class BlockFriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
+public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
 
     protected LayoutInflater layoutInflater;
 
@@ -35,7 +34,7 @@ public class BlockFriendAdapterDelegate extends RxAdapterDelegate<List<Friendshi
 
     private Context context;
 
-    public BlockFriendAdapterDelegate(Context context) {
+    public FriendAdapterDelegate(Context context) {
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.context = context;
     }

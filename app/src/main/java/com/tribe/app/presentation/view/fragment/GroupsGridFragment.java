@@ -11,6 +11,7 @@ import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -139,7 +140,16 @@ public class GroupsGridFragment extends BaseFragment {
         imageInvite.setScaleX(0);
         imageInvite.setScaleY(0);
         imageDone.setTranslationY(200);
+        viewCreateGroupBg2.setEnabled(false);
+        viewCreateGroupBg1.setEnabled(false);
 
+        subscriptions.add(privatePublicView.isPrivate().subscribe(isPrivate -> {
+                    privateGroup = isPrivate;
+                    if (editTextGroupName.getText().toString().length() > 0) {
+                        if (privateGroup) viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_enabled));
+                        else viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_public));
+                    }
+                }));
 
         subscriptions.add(RxView.clicks(imageGroup).subscribe(aVoid -> {
             setupBottomSheetCamera();
@@ -147,7 +157,8 @@ public class GroupsGridFragment extends BaseFragment {
 
         subscriptions.add(RxTextView.textChanges(editTextGroupName).subscribe(charSequence -> {
             if (editTextGroupName.getText().toString().length() > 0) {
-                viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_enabled));
+                if (privateGroup) viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_enabled));
+                else viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_public));
                 viewCreateGroupBg2.setEnabled(true);
             }
             else {
@@ -155,11 +166,10 @@ public class GroupsGridFragment extends BaseFragment {
                 viewCreateGroupBg2.setEnabled(false);
             }
         }));
-        viewCreateGroupBg2.setEnabled(false);
-        viewCreateGroupBg1.setEnabled(false);
+
         subscriptions.add(RxView.clicks(viewCreateGroupBg2).subscribe(aVoid -> {
             createGroupLoadingAnim();
-
+            imageGroup.setEnabled(false);
             Observable.timer(loadingAnimDuration, TimeUnit.MILLISECONDS)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -181,6 +191,7 @@ public class GroupsGridFragment extends BaseFragment {
                         animSet3();
                     });
         }));
+
         subscriptions.add(RxView.clicks(viewCreateGroupBg1).subscribe(aVoid -> {
             showShareDialogFragment();
         }));
@@ -241,6 +252,8 @@ public class GroupsGridFragment extends BaseFragment {
 
     private void animSet3() {
         AnimationUtils.scaleIn(imageInvite, animDuration);
+
+        if (!privateGroup) imageDone.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_done_purple));
 
         imageDone.animate()
                 .translationY(0)
@@ -344,7 +357,6 @@ public class GroupsGridFragment extends BaseFragment {
                 .subscribe(time -> {
                     viewCreateGroupBg2.setVisibility(View.INVISIBLE);
                 });
-
     }
 
     public void setGroupPicture(Bitmap bitmap) {

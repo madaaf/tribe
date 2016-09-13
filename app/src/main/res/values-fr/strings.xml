@@ -342,6 +342,8 @@
 	<string name="notification_pending">Un message en attente. Glissez pour renvoyer &#11013;&#65039;</string>
 	<string name="notification_pending_plural">%1$d messages en attente. Glissez pour renvoyer &#11013;&#65039;</string>
 	<string name="notification_pending_action_resend">Renvoyer</string>
+	<string name="notification_pending_action_later">Plus tard</string>
+	<string name="notification_pending_action_decline">Refuser</string>
 	<string name="notification_snoozed">Snoozed: Message de %1$s</string>
 	
 	<!-- Share -->

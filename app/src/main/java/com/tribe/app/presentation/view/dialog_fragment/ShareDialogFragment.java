@@ -27,7 +27,7 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by horatiothomas on 9/12/16.
  */
-public class ShareDialogFragment extends DialogFragment {
+public class ShareDialogFragment extends BaseDialogFragment {
 
     public static ShareDialogFragment newInstance() {
         Bundle args = new Bundle();
@@ -35,8 +35,6 @@ public class ShareDialogFragment extends DialogFragment {
         fragment.setArguments(args);
         return fragment;
     }
-
-    Unbinder unbinder;
 
     @BindView(R.id.imageMessenger)
     ImageView imageMessenger;
@@ -61,7 +59,6 @@ public class ShareDialogFragment extends DialogFragment {
     @Inject
     Navigator navigator;
 
-    private CompositeSubscription subscriptions = new CompositeSubscription();
 
 
     @Override
@@ -75,21 +72,12 @@ public class ShareDialogFragment extends DialogFragment {
     }
 
     @Override
-    public void onDestroy() {
-        unbinder.unbind();
-
-        if (subscriptions.hasSubscriptions()) {
-            subscriptions.unsubscribe();
-            subscriptions.clear();
-        }
-
-        super.onDestroy();
-    }
-
-    private void initUi(View view) {
-        unbinder = ButterKnife.bind(this, view);
+    public void initUi(View view) {
+        super.initUi(view);
 
         String shareMessage = "test";
+
+        subscriptions = new CompositeSubscription();
 
         subscriptions.add(RxView.clicks(imageMessenger).subscribe(aVoid -> {
             navigator.openFacebookMessenger(shareMessage, getActivity());
@@ -127,14 +115,6 @@ public class ShareDialogFragment extends DialogFragment {
     /**
      * Dagger setup
      */
-
-    protected ApplicationComponent getApplicationComponent() {
-        return ((AndroidApplication) getActivity().getApplication()).getApplicationComponent();
-    }
-
-    protected ActivityModule getActivityModule() {
-        return new ActivityModule(getActivity());
-    }
 
     private void initDependencyInjector() {
         DaggerUserComponent.builder()

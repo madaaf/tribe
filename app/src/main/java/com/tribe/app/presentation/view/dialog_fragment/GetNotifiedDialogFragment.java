@@ -22,9 +22,7 @@ import butterknife.Unbinder;
  * GetNotifiedDialogFragment.java
  * Created by horatiothomas on 8/20/16.
  */
-public class GetNotifiedDialogFragment extends DialogFragment {
-
-    private Unbinder unbinder;
+public class GetNotifiedDialogFragment extends BaseDialogFragment {
 
     public static GetNotifiedDialogFragment newInstance() {
         Bundle args = new Bundle();
@@ -42,53 +40,4 @@ public class GetNotifiedDialogFragment extends DialogFragment {
         return fragmentView;
 
     }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // window animation
-        final View decorView = getDialog()
-                .getWindow()
-                .getDecorView();
-
-        decorView.animate().translationY(100)
-                .setStartDelay(300)
-                .setDuration(150)
-                .setInterpolator(new LinearInterpolator())
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        decorView.animate().translationY(0)
-                                .setInterpolator(new LinearInterpolator())
-                                .setStartDelay(50)
-                                .setDuration(150)
-                                .start();
-                    }
-                })
-                .start();
-
-    }
-
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.getWindow().getAttributes().windowAnimations = R.style.GetNotifiedAnimation;
-        return dialog;
-    }
-
-    @Override
-    public void onDestroy() {
-        unbinder.unbind();
-
-        super.onDestroy();
-    }
-
-    private void initUi(View view) {
-        unbinder = ButterKnife.bind(this, view);
-
-    }
-
 }
