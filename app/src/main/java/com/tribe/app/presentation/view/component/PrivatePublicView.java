@@ -117,6 +117,11 @@ public class PrivatePublicView extends FrameLayout {
         super.onDetachedFromWindow();
     }
 
+    public void setEnabled(boolean enabled) {
+        layoutPrivate.setEnabled(enabled);
+        layoutPublic.setEnabled(enabled);
+    }
+
     private void setPrivate() {
         txtDescription.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.green_group));
         imgTriangle.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_triangle_green));

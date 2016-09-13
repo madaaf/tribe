@@ -23,13 +23,9 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-<<<<<<< HEAD
 import com.tribe.app.presentation.navigation.Navigator;
-import com.tribe.app.presentation.view.activity.IntroActivity;
-=======
 import com.tribe.app.presentation.mvp.presenter.AccessPresenter;
 import com.tribe.app.presentation.mvp.view.AccessView;
->>>>>>> e0b6720286abb0d80f6d9865af3ec5a770b5c46e
 import com.tribe.app.presentation.view.component.AccessBottomBarView;
 import com.tribe.app.presentation.view.component.AccessLockView;
 import com.tribe.app.presentation.view.component.TextFriendsView;
@@ -76,11 +72,10 @@ public class AccessFragment extends Fragment implements AccessView {
     ScreenUtils screenUtils;
 
     @Inject
-<<<<<<< HEAD
     Navigator navigator;
-=======
+
+    @Inject
     AccessPresenter accessPresenter;
->>>>>>> e0b6720286abb0d80f6d9865af3ec5a770b5c46e
 
     @BindView(R.id.txtAccessTitle)
     TextViewFont txtAccessTitle;

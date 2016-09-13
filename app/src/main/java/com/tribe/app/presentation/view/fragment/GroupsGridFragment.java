@@ -168,8 +168,11 @@ public class GroupsGridFragment extends BaseFragment {
         }));
 
         subscriptions.add(RxView.clicks(viewCreateGroupBg2).subscribe(aVoid -> {
-            createGroupLoadingAnim();
             imageGroup.setEnabled(false);
+            viewCreateGroupBg2.setEnabled(false);
+            privatePublicView.setEnabled(false);
+
+            createGroupLoadingAnim();
             Observable.timer(loadingAnimDuration, TimeUnit.MILLISECONDS)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
