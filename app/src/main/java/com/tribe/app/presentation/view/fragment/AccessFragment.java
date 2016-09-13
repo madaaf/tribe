@@ -24,6 +24,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.component.AccessBottomBarView;
 import com.tribe.app.presentation.view.component.AccessLockView;
@@ -69,6 +70,9 @@ public class AccessFragment extends Fragment {
 
     @Inject
     ScreenUtils screenUtils;
+
+    @Inject
+    Navigator navigator;
 
     @BindView(R.id.txtAccessTitle)
     TextViewFont txtAccessTitle;
@@ -168,9 +172,7 @@ public class AccessFragment extends Fragment {
         }));
 
         subscriptions.add(RxView.clicks(textFriendsView).subscribe(aVoid -> {
-            Intent sendIntent = new Intent(Intent.ACTION_VIEW);
-            sendIntent.setData(Uri.parse("sms:"));
-            getActivity().startActivity(sendIntent);
+            navigator.sendText("", getActivity());
         }));
 
 

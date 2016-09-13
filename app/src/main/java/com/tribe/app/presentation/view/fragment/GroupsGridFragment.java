@@ -134,8 +134,6 @@ public class GroupsGridFragment extends BaseFragment {
     }
 
     private void initUi() {
-        showShareDialogFragment();
-
         int startTranslation = -200;
         imageEditGroup.setTranslationY(startTranslation);
         imageInvite.setScaleX(0);
@@ -158,6 +156,7 @@ public class GroupsGridFragment extends BaseFragment {
             }
         }));
         viewCreateGroupBg2.setEnabled(false);
+        viewCreateGroupBg1.setEnabled(false);
         subscriptions.add(RxView.clicks(viewCreateGroupBg2).subscribe(aVoid -> {
             createGroupLoadingAnim();
 
@@ -181,6 +180,9 @@ public class GroupsGridFragment extends BaseFragment {
                     .subscribe(time -> {
                         animSet3();
                     });
+        }));
+        subscriptions.add(RxView.clicks(viewCreateGroupBg1).subscribe(aVoid -> {
+            showShareDialogFragment();
         }));
     }
 
@@ -245,6 +247,7 @@ public class GroupsGridFragment extends BaseFragment {
                 .setDuration(animDuration)
                 .start();
 
+        viewCreateGroupBg1.setEnabled(true);
 
     }
 
