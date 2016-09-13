@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.fragment;
 
 import android.animation.ObjectAnimator;
 import android.animation.RectEvaluator;
+import android.app.FragmentManager;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.media.Image;
@@ -30,6 +31,7 @@ import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.component.PrivatePublicView;
+import com.tribe.app.presentation.view.dialog_fragment.ShareDialogFragment;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
@@ -73,6 +75,8 @@ public class GroupsGridFragment extends BaseFragment {
     ImageView imagePrivacyStatus;
     @BindView(R.id.imageInvite)
     ImageView imageInvite;
+    @BindView(R.id.imageDone)
+    ImageView imageDone;
 
     @BindView(R.id.textPrivacyStatus)
     TextViewFont textPrivacyStatus;
@@ -130,10 +134,14 @@ public class GroupsGridFragment extends BaseFragment {
     }
 
     private void initUi() {
+        showShareDialogFragment();
+
         int startTranslation = -200;
         imageEditGroup.setTranslationY(startTranslation);
         imageInvite.setScaleX(0);
         imageInvite.setScaleY(0);
+        imageDone.setTranslationY(200);
+
 
         subscriptions.add(RxView.clicks(imageGroup).subscribe(aVoid -> {
             setupBottomSheetCamera();
@@ -171,7 +179,7 @@ public class GroupsGridFragment extends BaseFragment {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(time -> {
-                        AnimationUtils.scaleIn(imageInvite, animDuration);
+                        animSet3();
                     });
         }));
     }
@@ -217,6 +225,7 @@ public class GroupsGridFragment extends BaseFragment {
         textCreateInvite.setText(getString(R.string.group_button_share));
         textCreateInviteDesc.setText(getString(R.string.group_share_description));
 
+        ((HomeActivity) getActivity()).disableNavigation();
 
     }
 
@@ -225,6 +234,17 @@ public class GroupsGridFragment extends BaseFragment {
                 .translationY(-screenUtils.dpToPx(138))
                 .setDuration(animDuration)
                 .start();
+
+    }
+
+    private void animSet3() {
+        AnimationUtils.scaleIn(imageInvite, animDuration);
+
+        imageDone.animate()
+                .translationY(0)
+                .setDuration(animDuration)
+                .start();
+
 
     }
 
@@ -326,6 +346,12 @@ public class GroupsGridFragment extends BaseFragment {
 
     public void setGroupPicture(Bitmap bitmap) {
         imageGroup.setImageBitmap(formatBitmapforView(bitmap));
+    }
+
+    private void showShareDialogFragment() {
+        ShareDialogFragment shareDialogFragment = ShareDialogFragment.newInstance();
+        shareDialogFragment.show(getFragmentManager(), ShareDialogFragment.class.getName());
+
     }
 
     public Bitmap formatBitmapforView(Bitmap thumbnail) {

@@ -113,6 +113,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:imeOptions="actionDone"
+            android:maxLines="1"
+            android:singleLine="true"
             android:background="@null"
             android:gravity="center"
             android:hint="Name your group" />
@@ -146,5 +148,14 @@
             />
 
     </LinearLayout>
+    
+    <ImageView
+        android:id="@+id/imageDone"
+        android:layout_width="45dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="@dimen/horizontal_margin_small"
+        android:src="@drawable/picto_done_green"
+        />
 
 </FrameLayout>

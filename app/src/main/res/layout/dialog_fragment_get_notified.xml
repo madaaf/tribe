@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:minHeight="244dp"
-    android:minWidth="262dp"
+    android:minWidth="@dimen/dialog_fragment_width"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:background="@drawable/shape_rect_white_rounded_corners"

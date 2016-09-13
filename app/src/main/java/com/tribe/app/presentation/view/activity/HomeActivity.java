@@ -606,6 +606,19 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         }
     }
 
+    public void disableNavigation() {
+        slideDownNav(imgNavFriends);
+        slideDownNav(imgNavGroups);
+        slideDownNav(layoutNavGridMain);
+        viewPager.setSwipeable(false);
+    }
+
+    public void enableNavigation() {
+        slideUpNav(imgNavGrid);
+        slideUpNav(imgNavFriends);
+        viewPager.setSwipeable(true);
+    }
+
     // ANIMATIONS
     private void hideLayoutPending() {
         if (layoutNavPending.getTranslationY() == 0) {
@@ -639,4 +652,19 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             layoutNavNewMessages.animate().translationY(0).setDuration(DURATION).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
         }
     }
+
+    private void slideDownNav(View view) {
+        view.animate()
+                .setDuration(300)
+                .translationY(200)
+                .start();
+    }
+
+    private void slideUpNav(View view) {
+        view.animate()
+                .setDuration(300)
+                .translationY(0)
+                .start();
+    }
+
 }
