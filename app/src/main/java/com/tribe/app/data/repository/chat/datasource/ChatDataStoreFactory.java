@@ -69,7 +69,7 @@ public class ChatDataStoreFactory {
     }
 
     public ChatDataStore createDiskChatStore() {
-        return new DiskChatDataStore(this.chatCache);
+        return new DiskChatDataStore(this.chatCache, this.userCache);
     }
 
     public ChatDataStore createCloudChatStore() {

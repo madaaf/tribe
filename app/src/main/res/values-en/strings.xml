@@ -218,7 +218,7 @@
 	<string name="settings_theme_title">Pick a theme</string>
 	<string name="settings_tribesave_title">Memories</string>
 	<string name="settings_tribesave_subtitle">Allow your friends to save your\nmessages if they want to.</string>
-	<string name="settings_geolocation_title">Context</string>
+	<string name="settings_geolocation_title">Location</string>
 	<string name="settings_geolocation_subtitle">Let recipients get location\n-based context on your\nmessages.</string>
 	<string name="settings_audio_title">Voice by default</string>
 	<string name="settings_audio_subtitle">Set voice mode by default\ninstead of video messages.</string>
@@ -342,6 +342,8 @@
 	<string name="notification_pending">A pending message. Swipe to resend &#11013;&#65039;</string>
 	<string name="notification_pending_plural">%1$d pending messages. Swipe to resend &#11013;&#65039;</string>
 	<string name="notification_pending_action_resend">Resend</string>
+	<string name="notification_pending_action_later">Later</string>
+	<string name="notification_pending_action_decline">Decline</string>
 	<string name="notification_snoozed">Snoozed: Message from %1$s</string>
 	
 	<!-- Share -->

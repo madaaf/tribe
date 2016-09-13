@@ -3,11 +3,9 @@ package com.tribe.app.presentation.view.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -17,18 +15,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
-import android.widget.Toast;
 
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.login.LoginManager;
-import com.facebook.login.LoginResult;
-import com.github.jinatonic.confetti.CommonConfetti;
 import com.tribe.app.R;
+import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.Extras;
@@ -46,7 +35,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -79,7 +67,6 @@ public class IntroActivity extends BaseActivity {
 
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
-    private CallbackManager mCallbackManager;
 
     // for ui testing
     public static final boolean uiOnlyMode = false;
@@ -93,7 +80,6 @@ public class IntroActivity extends BaseActivity {
     @BindView(R.id.introActivityRoot)
     ViewGroup container;
 
-
     /**
      * Lifecycle methods
      */
@@ -103,7 +89,6 @@ public class IntroActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         initUi();
         initViewPager();
-        initFacebookLogin();
         initDependencyInjector();
     }
 
@@ -162,10 +147,6 @@ public class IntroActivity extends BaseActivity {
 
             if (thumbnail != null) {
                 profileInfoFragment.setImgProfilePic(thumbnail);
-                profileInfoFragment.profilePictureSelected = true;
-            }
-            if (profileInfoFragment.textInfoValidated) {
-                profileInfoFragment.enableNext(true);
             }
         }
 
@@ -173,15 +154,6 @@ public class IntroActivity extends BaseActivity {
         if (requestCode == ProfileInfoView.CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
             Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
             profileInfoFragment.setImgProfilePic(thumbnail);
-            profileInfoFragment.profilePictureSelected = true;
-            if (profileInfoFragment.textInfoValidated) {
-                profileInfoFragment.enableNext(true);
-            }
-        }
-
-        // 4. Facebook login
-        if (mCallbackManager.onActivityResult(requestCode, resultCode, data)) {
-            return;
         }
     }
 
@@ -192,8 +164,6 @@ public class IntroActivity extends BaseActivity {
     private void initUi() {
         setContentView(R.layout.activity_intro);
         unbinder = ButterKnife.bind(this);
-
-
     }
 
     private void initViewPager() {
@@ -208,51 +178,22 @@ public class IntroActivity extends BaseActivity {
     }
 
     /**
-     * initFacebookLogin() sets up a callback for when the user logs in in ProfileInfoFragment.java
-     */
-
-    private void initFacebookLogin() {
-        mCallbackManager = CallbackManager.Factory.create();
-
-        LoginManager.getInstance().registerCallback(mCallbackManager,
-                new FacebookCallback<LoginResult>() {
-                    @Override
-                    public void onSuccess(LoginResult loginResult) {
-                        profileInfoFragment.getInfoFromFacebook();
-                    }
-
-                    @Override
-                    public void onCancel() {
-                        Toast.makeText(IntroActivity.this, "Login Canceled", Toast.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void onError(FacebookException exception) {
-                        Toast.makeText(IntroActivity.this, exception.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
-    }
-
-    /**
      * Navigation methods
      */
 
-    public void goToProfileInfo() {
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    public void goToProfileInfo(LoginEntity loginEntity) {
+        profileInfoFragment.setLoginEntity(loginEntity);
         viewPager.setCurrentItem(PAGE_PROFILE_INFO);
     }
 
     public void goToAccess() {
         accessFragment.fadeBigLockIn();
         Observable.timer(250, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(time -> {
                     viewPager.setCurrentItem(PAGE_ACCESS);
                 });
-
     }
 
     /**
@@ -303,12 +244,10 @@ public class IntroActivity extends BaseActivity {
     /**
      * Dagger setup
      */
-
     private void initDependencyInjector() {
         DaggerUserComponent.builder()
                 .activityModule(getActivityModule())
                 .applicationComponent(getApplicationComponent())
                 .build().inject(this);
     }
-
 }

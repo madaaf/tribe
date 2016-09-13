@@ -1,5 +1,6 @@
 package com.tribe.app.data.repository.user;
 
+import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
@@ -63,21 +64,24 @@ public class CloudUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<AccessToken> loginWithPhoneNumber(String phoneNumber, String code, String scope) {
+    public Observable<AccessToken> loginWithPhoneNumber(LoginEntity loginEntity) {
         final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-        return userDataStore.loginWithPhoneNumber(phoneNumber, code, scope);
+        return userDataStore.loginWithPhoneNumber(loginEntity);
     }
 
     @Override
-    public Observable<AccessToken> loginWithUserName(String username, String password) {
+    public Observable<AccessToken> register(String displayName, String username, LoginEntity loginEntity) {
         final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-        return userDataStore.loginWithUsername(username, password);
+        return userDataStore.register(displayName, username, loginEntity);
     }
 
     @Override
     public Observable<User> userInfos(String userId) {
         final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
         return userDataStore.userInfos(userId)
+                .doOnError(throwable -> {
+                    throwable.printStackTrace();
+                })
                 .map(userRealm -> this.userRealmDataMapper.transform(userRealm));
     }
 
@@ -159,5 +163,11 @@ public class CloudUserDataRepository implements UserRepository {
     public Observable<Void> removeFriendship(String friendshipId) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
         return cloudDataStore.removeFriendship(friendshipId);
+    }
+
+    @Override
+    public Observable<Void> notifyFBFriends() {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.notifyFBFriends();
     }
 }

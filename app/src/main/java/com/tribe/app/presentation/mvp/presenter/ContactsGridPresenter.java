@@ -1,11 +1,11 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
-import com.tribe.app.data.network.job.SynchroContactsJob;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.DiskFindContactByValue;
@@ -36,12 +36,14 @@ public class ContactsGridPresenter implements Presenter {
     private DiskFindContactByValue findContactByValue;
     private RemoveFriendship removeFriendship;
     private CreateFriendship createFriendship;
+    private UseCase notifyFBFriends;
 
     // SUBSCRIBERS
     private FindByValueSubscriber findByValueSubscriber;
     private CreateFriendshipSubscriber createFriendshipSubscriber;
     private RemoveFriendshipSubscriber removeFriendshipSubscriber;
     private DefaultSubscriber findByUsernameSubscriber;
+    private NotifyFBFriendsSubscriber notifyFBFriendsSubscriber;
 
     @Inject
     public ContactsGridPresenter(JobManager jobManager,
@@ -51,7 +53,8 @@ public class ContactsGridPresenter implements Presenter {
                                  @Named("diskSearchResults") DiskSearchResults diskSearchResults,
                                  @Named("diskFindContactByValue") DiskFindContactByValue diskFindContactByValue,
                                  @Named("createFriendship") CreateFriendship createFriendship,
-                                 @Named("removeFriendship") RemoveFriendship removeFriendship) {
+                                 @Named("removeFriendship") RemoveFriendship removeFriendship,
+                                 @Named("notifyFBFriends") UseCase notifyFBFriends) {
         super();
         this.jobManager = jobManager;
         this.rxFacebook = rxFacebook;
@@ -61,6 +64,7 @@ public class ContactsGridPresenter implements Presenter {
         this.findContactByValue = diskFindContactByValue;
         this.createFriendship = createFriendship;
         this.removeFriendship = removeFriendship;
+        this.notifyFBFriends = notifyFBFriends;
     }
 
     @Override
@@ -100,12 +104,12 @@ public class ContactsGridPresenter implements Presenter {
         contactsView = (ContactsView) v;
     }
 
-    public void diskFindByUsername(String username) {
+    public void diskFindByValue(String value) {
         if (findByValueSubscriber != null)
             findByValueSubscriber.unsubscribe();
 
         findByValueSubscriber = new FindByValueSubscriber();
-        findContactByValue.setValue(username);
+        findContactByValue.setValue(value);
         findContactByValue.execute(findByValueSubscriber);
     }
 
@@ -144,15 +148,20 @@ public class ContactsGridPresenter implements Presenter {
             rxFacebook.requestLogin().subscribe(loginResult -> {
                 if (FacebookUtils.isLoggedIn()) {
                     contactsView.successFacebookLogin();
-                    jobManager.addJobInBackground(new SynchroContactsJob());
                 } else {
-                    System.out.println("LOGIN FAIL !");
+                    contactsView.errorFacebookLogin();
                 }
             });
         } else {
             contactsView.successFacebookLogin();
-            jobManager.addJobInBackground(new SynchroContactsJob());
         }
+    }
+
+    public void notifyFBFriends() {
+        if (notifyFBFriendsSubscriber != null) notifyFBFriendsSubscriber.unsubscribe();
+
+        notifyFBFriendsSubscriber = new NotifyFBFriendsSubscriber();
+        notifyFBFriends.execute(notifyFBFriendsSubscriber);
     }
 
     private final class ContactListSubscriber extends DefaultSubscriber<List<Contact>> {
@@ -241,6 +250,23 @@ public class ContactsGridPresenter implements Presenter {
         @Override
         public void onNext(Void aVoid) {
             System.out.println("Friendship deleted");
+        }
+    }
+
+    private final class NotifyFBFriendsSubscriber extends DefaultSubscriber<Void> {
+
+        @Override
+        public void onCompleted() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(Void aVoid) {
+            contactsView.notifySuccess();
         }
     }
 }

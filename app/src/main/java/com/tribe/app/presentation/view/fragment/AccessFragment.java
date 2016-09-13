@@ -1,30 +1,30 @@
 package com.tribe.app.presentation.view.fragment;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
 import com.github.jinatonic.confetti.CommonConfetti;
 import com.jakewharton.rxbinding.view.RxView;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.view.activity.IntroActivity;
+import com.tribe.app.presentation.mvp.presenter.AccessPresenter;
+import com.tribe.app.presentation.mvp.view.AccessView;
 import com.tribe.app.presentation.view.component.AccessBottomBarView;
 import com.tribe.app.presentation.view.component.AccessLockView;
 import com.tribe.app.presentation.view.component.TextFriendsView;
@@ -52,7 +52,7 @@ import rx.subscriptions.CompositeSubscription;
  * Responsible for making sure user has enough friends on tribe before giving them access to the app.
  * A lot of fancy UI stuff going on here.
  */
-public class AccessFragment extends Fragment {
+public class AccessFragment extends Fragment implements AccessView {
 
     public static AccessFragment newInstance() {
 
@@ -69,6 +69,9 @@ public class AccessFragment extends Fragment {
 
     @Inject
     ScreenUtils screenUtils;
+
+    @Inject
+    AccessPresenter accessPresenter;
 
     @BindView(R.id.txtAccessTitle)
     TextViewFont txtAccessTitle;
@@ -118,8 +121,9 @@ public class AccessFragment extends Fragment {
         initUi(fragmentView);
         initLockViewSize();
 
-        return fragmentView;
+        accessPresenter.attachView(this);
 
+        return fragmentView;
     }
 
     @Override
@@ -143,13 +147,23 @@ public class AccessFragment extends Fragment {
         context = getActivity();
 
         textFriendsView.setAlpha(0);
-        textFriendsView.setTranslationY(100);
+        textFriendsView.setTranslationY(screenUtils.dpToPx(100));
 
         subscriptions.add(RxView.clicks(accessBottomBarView.getTxtAccessTry()).subscribe(aVoid -> {
             isActive2 = false;
             switch (viewState) {
                 case STATE_GET_ACCESS:
-                    goToHangTight();
+                    RxPermissions.getInstance(getContext())
+                        .request(Manifest.permission.READ_CONTACTS)
+                        .subscribe(hasPermission -> {
+                            if (hasPermission) {
+                                goToHangTight();
+                                accessPresenter.lookupContacts();
+                            } else {
+                                goToSorry();
+                            }
+                        });
+
                     break;
                 case STATE_SORRY:
                     cleanUpSorry();
@@ -172,9 +186,6 @@ public class AccessFragment extends Fragment {
             sendIntent.setData(Uri.parse("sms:"));
             getActivity().startActivity(sendIntent);
         }));
-
-
-
     }
 
     private void initLockViewSize() {
@@ -182,7 +193,7 @@ public class AccessFragment extends Fragment {
         int lockViewWidth, pulseWidth, whiteCircleWidth;
 
         whiteCircleWidthDp = screenUtils.getWidthDp() / 3;
-        pulseWidthDp = whiteCircleWidthDp + 50;
+        pulseWidthDp = whiteCircleWidthDp + screenUtils.dpToPx(20);
         lockViewWidthDp = (float) (pulseWidthDp * 1.2);
 
         whiteCircleWidth = screenUtils.dpToPx(whiteCircleWidthDp);
@@ -195,7 +206,6 @@ public class AccessFragment extends Fragment {
 
         accessLockView.setLayoutParams(lockViewLayoutParams);
         accessLockView.setViewWidthHeight(whiteCircleWidth, pulseWidth);
-
     }
 
     /**
@@ -210,7 +220,6 @@ public class AccessFragment extends Fragment {
         accessBottomBarView.setClickable(false);
         accessBottomBarView.animate()
                 .alpha(1)
-                .setDuration(300)
                 .translationY(0)
                 .setStartDelay(0)
                 .setDuration(300)
@@ -222,18 +231,16 @@ public class AccessFragment extends Fragment {
                         if (isActive) {
                             isActive = false;
 
-
                             changeBaseView(getString(R.string.onboarding_queue_title),
                                     android.R.color.black,
                                     getString(R.string.onboarding_queue_description),
                                     getString(R.string.onboarding_queue_button_title),
                                     R.drawable.shape_rect_blue_rounded_bottom);
 
-
                             accessBottomBarView.animate()
+                                    .setListener(null)
                                     .translationY(0);
                             accessBottomBarView.setClickable(true);
-
                         }
                     }
                 });
@@ -248,8 +255,8 @@ public class AccessFragment extends Fragment {
                 .alpha(0)
                 .setDuration(100)
                 .setStartDelay(0);
-        textFriendsView.setTranslationY(100);
-        accessLockView.setToHangTight(2);
+        textFriendsView.setTranslationY(screenUtils.dpToPx(100));
+        accessLockView.setToHangTight(0);
         accessBottomBarView.setClickable(false);
         accessBottomBarView.animate()
                 .setDuration(300)
@@ -268,25 +275,9 @@ public class AccessFragment extends Fragment {
                                     R.drawable.shape_rect_dark_grey_rounded_bottom);
                             accessBottomBarView.animate()
                                     .setDuration(300)
+                                    .setListener(null)
                                     .translationY(0);
                             accessBottomBarView.setClickable(true);
-
-                            // TODO: check if user has enough friends in app
-
-                            Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (isActive2) {
-                                        isActive2 = false;
-                                        if (tryAgain) {
-                                            tryAgain = false;
-                                            goToSorry();
-                                        } else goToCongrats();
-
-                                    }
-                                }
-                            }, 3000);
                         }
                     }
                 }).start();
@@ -296,18 +287,21 @@ public class AccessFragment extends Fragment {
         viewState = STATE_SORRY;
         isActive = true;
 
-        fadeTextInOut();
         textFriendsView.animate()
                 .alpha(1)
                 .setDuration(300)
                 .translationY(0)
                 .setStartDelay(0);
+
+        animateBottomMargin(txtAccessDesc, screenUtils.dpToPx(170), 300);
+
         accessLockView.setToSorry();
         accessBottomBarView.setClickable(false);
         accessBottomBarView.animate()
                 .setDuration(300)
                 .translationY(accessBottomBarView.getHeight())
                 .setListener(new AnimatorListenerAdapter() {
+
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         super.onAnimationEnd(animation);
@@ -319,17 +313,12 @@ public class AccessFragment extends Fragment {
                                     getString(R.string.onboarding_queue_button_title),
                                     R.drawable.shape_rect_blue_rounded_bottom);
 
-
-                            setBottomMargin(txtAccessDesc, 157);
-
                             accessBottomBarView.setImgRedFbVisibility(true);
-
                             accessBottomBarView.animate()
                                     .setDuration(300)
+                                    .setListener(null)
                                     .translationY(0);
                             accessBottomBarView.setClickable(true);
-
-                            showGetNotifiedDialog();
                         }
                     }
                 });
@@ -384,9 +373,7 @@ public class AccessFragment extends Fragment {
 
     private void cleanUpSorry() {
         accessBottomBarView.setImgRedFbVisibility(false);
-
-        setBottomMargin(txtAccessDesc, 112);
-
+        animateBottomMargin(txtAccessDesc, screenUtils.dpToPx(112), 300);
     }
 
     private void changeBaseView(String titleTxt, int titleTxtColor, String descTxt, String tryAgainTxt, int tryAgainBackground) {
@@ -395,20 +382,22 @@ public class AccessFragment extends Fragment {
         txtAccessDesc.setText(descTxt);
         accessBottomBarView.setText(tryAgainTxt);
         accessBottomBarView.setBackground(ContextCompat.getDrawable(context, tryAgainBackground));
-
     }
 
-    private void setBottomMargin(View view, int margin) {
-        FrameLayout.LayoutParams llp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-        float d = context.getResources().getDisplayMetrics().density;
-        ViewGroup.MarginLayoutParams viewLayoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
-        viewLayoutParams.bottomMargin = (int) (margin * d);
-        view.requestLayout();
+    private void animateBottomMargin(View view, int margin, int duration) {
+        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        ValueAnimator animator = ValueAnimator.ofInt(lp.bottomMargin, margin);
+        animator.setDuration(duration);
+        animator.addUpdateListener(animation -> {
+            lp.bottomMargin = (Integer) animation.getAnimatedValue();
+            view.setLayoutParams(lp);
+        });
+        animator.start();
     }
 
     private void showGetNotifiedDialog() {
         Observable.timer(4000, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(time -> {
                     GetNotifiedDialogFragment getNotifiedDialogFragment = GetNotifiedDialogFragment.newInstance();
@@ -418,12 +407,10 @@ public class AccessFragment extends Fragment {
     }
 
     private void fadeTextInOut() {
-        int txtDistance = 25;
+        int txtDistance = screenUtils.dpToPx(25);
         AnimationUtils.fadeViewInOut(txtAccessDesc, txtDistance);
         AnimationUtils.fadeViewInOut(txtAccessTitle, txtDistance);
     }
-
-
 
     public void fadeBigLockIn() {
         accessLockView.fadeBigLockIn();
@@ -447,5 +434,4 @@ public class AccessFragment extends Fragment {
                 .applicationComponent(getApplicationComponent())
                 .build().inject(this);
     }
-
 }

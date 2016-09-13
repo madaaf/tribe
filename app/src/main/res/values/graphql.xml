@@ -50,6 +50,7 @@
             id
             phone
             fbid
+            invisible_mode
             score
             username
             display_name
@@ -69,7 +70,7 @@
         }
     } -->
     <string name="user.mutate.username" translatable="false">
-        mutation{
+        mutation {
             updateUser(user: {
                 username: \"%1$s\",
                 display_name: \"%2$s\"

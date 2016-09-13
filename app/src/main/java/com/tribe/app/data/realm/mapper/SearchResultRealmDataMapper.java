@@ -33,6 +33,7 @@ public class SearchResultRealmDataMapper {
             searchResult.setUsername(searchResultRealm.getUsername());
             searchResult.setDisplayName(searchResultRealm.getDisplayName());
             searchResult.setPicture(searchResultRealm.getPicture());
+            searchResult.setInvisibleMode(searchResultRealm.isInvisibleMode());
             searchResult.setFriendship(friendshipRealmDataMapper.transform(searchResultRealm.getFriendshipRealm()));
             searchResult.setSearchDone(searchResultRealm.isSearchDone());
             searchResult.setId(searchResultRealm.getId());

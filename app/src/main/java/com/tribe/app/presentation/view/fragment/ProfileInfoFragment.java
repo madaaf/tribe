@@ -1,25 +1,24 @@
 package com.tribe.app.presentation.view.fragment;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.facebook.AccessToken;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
-import com.facebook.login.LoginManager;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.data.network.entity.LoginEntity;
+import com.tribe.app.domain.entity.FacebookEntity;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.mvp.presenter.ProfileInfoPresenter;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.IntroActivity;
@@ -27,15 +26,11 @@ import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.FacebookView;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.Arrays;
-
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import rx.subscriptions.CompositeSubscription;
 
@@ -46,10 +41,9 @@ import rx.subscriptions.CompositeSubscription;
  * Responsible for collecting user's profile picture, name, and username.
  * Has ability to retrieve this information from Facebook.
  */
-public class ProfileInfoFragment extends Fragment {
+public class ProfileInfoFragment extends Fragment implements com.tribe.app.presentation.mvp.view.ProfileInfoView {
 
     public static ProfileInfoFragment newInstance() {
-
         Bundle args = new Bundle();
 
         ProfileInfoFragment fragment = new ProfileInfoFragment();
@@ -60,6 +54,9 @@ public class ProfileInfoFragment extends Fragment {
     /**
      * Globals
      */
+
+    @Inject
+    ProfileInfoPresenter profileInfoPresenter;
 
     @Inject
     ScreenUtils screenUtils;
@@ -79,8 +76,11 @@ public class ProfileInfoFragment extends Fragment {
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
-    public boolean profilePictureSelected = false;
-    public boolean textInfoValidated = false;
+    // VARIABLES
+    private LoginEntity loginEntity;
+    private FacebookEntity facebookEntity;
+    private boolean profilePictureSelected = false;
+    private boolean textInfoValidated = false;
 
     /**
      * View Lifecycle
@@ -92,6 +92,9 @@ public class ProfileInfoFragment extends Fragment {
 
         initDependencyInjector();
         initUi(fragmentView);
+
+        this.profileInfoPresenter.attachView(this);
+        this.enableNext(false);
 
         return fragmentView;
     }
@@ -115,23 +118,15 @@ public class ProfileInfoFragment extends Fragment {
     public void initUi(View view) {
         unbinder = ButterKnife.bind(this, view);
 
-        subscriptions.add(RxView.clicks(imgNextIcon).subscribe(aVoid -> {
-            ((IntroActivity) getActivity()).goToAccess();
-        }));
-
-
-
         subscriptions.add(RxView.clicks(facebookView).subscribe(aVoid -> {
             if (FacebookUtils.isLoggedIn()) {
                 getInfoFromFacebook();
             } else {
-                LoginManager.getInstance().logInWithReadPermissions(getActivity(), Arrays.asList("public_profile"));
+                profileInfoPresenter.loginFacebook();
             }
         }));
 
         subscriptions.add(profileInfoView.infoValid().subscribe(this::enableNext));
-
-
     }
 
     /**
@@ -142,36 +137,32 @@ public class ProfileInfoFragment extends Fragment {
          profileInfoView.setImgProfilePic(bitmap);
     }
 
-    public void getInfoFromFacebook() {
-        new GraphRequest(AccessToken.getCurrentAccessToken(),
-                "/me",
-                null,
-                HttpMethod.GET,
-                new GraphRequest.Callback() {
-                    public void onCompleted(GraphResponse response) {
-                        JSONObject jsonResponse = response.getJSONObject();
-                        try {
-                            Log.v("Facebook info: ", response.toString());
-                            String name = jsonResponse.getString("name");
-                            String username = name.replaceAll("\\s", "").toLowerCase();
-                            String facebookId = jsonResponse.getString("id");
-                            String profilePictureLink = "https://graph.facebook.com/" + facebookId + "/picture?type=large";
-                            profileInfoView.setInfoFromFacebook(profilePictureLink, username, name);
-                        } catch (JSONException e) {
-                            Log.e("JSON exception:", e.toString());
-                        }
-                    }
-                }).executeAsync();
+    @Override
+    public void successFacebookLogin() {
+        getInfoFromFacebook();
     }
 
+    @Override
+    public void errorFacebookLogin() {
 
+    }
 
+    @Override
+    public void loadFacebookInfos(FacebookEntity facebookEntity) {
+        this.facebookEntity = facebookEntity;
+        profileInfoView.setInfoFromFacebook(facebookEntity);
+    }
 
+    @Override
+    public void usernameResult(User user) {
 
+    }
 
+    public void getInfoFromFacebook() {
+        profileInfoPresenter.loadFacebookInfos();
+    }
 
     public void enableNext(boolean enabled) {
-
         if (enabled) {
             imgNextIcon.setImageDrawable(getContext().getDrawable(R.drawable.picto_next_icon_black));
             imgNextIcon.setClickable(true);
@@ -179,14 +170,19 @@ public class ProfileInfoFragment extends Fragment {
             imgNextIcon.setImageDrawable(getContext().getDrawable(R.drawable.picto_next_icon));
             imgNextIcon.setClickable(false);
         }
-
     }
 
+    /**
+     * On clicks
+     */
+    @OnClick(R.id.imgNextIcon)
+    public void clickNext() {
+        ((IntroActivity) getActivity()).goToAccess();
+    }
 
     /**
      * Begin Dagger setup
      */
-
     protected ApplicationComponent getApplicationComponent() {
         return ((AndroidApplication) getActivity().getApplication()).getApplicationComponent();
     }
@@ -200,5 +196,39 @@ public class ProfileInfoFragment extends Fragment {
                 .activityModule(getActivityModule())
                 .applicationComponent(getApplicationComponent())
                 .build().inject(this);
+    }
+
+    @Override
+    public void showLoading() {
+
+    }
+
+    @Override
+    public void hideLoading() {
+
+    }
+
+    @Override
+    public void showRetry() {
+
+    }
+
+    @Override
+    public void hideRetry() {
+
+    }
+
+    @Override
+    public void showError(String message) {
+
+    }
+
+    @Override
+    public Context context() {
+        return getActivity();
+    }
+
+    public void setLoginEntity(LoginEntity loginEntity) {
+        this.loginEntity = loginEntity;
     }
 }

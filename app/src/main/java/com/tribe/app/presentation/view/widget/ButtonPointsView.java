@@ -112,7 +112,8 @@ public class ButtonPointsView extends LinearLayout {
         setSubLabel(a.getResourceId(R.styleable.ButtonPointsView_buttonSubLabel, R.string.contacts_share_profile_description));
         setPoints(a.getInteger(R.styleable.ButtonPointsView_buttonPoints, 0));
 
-        viewBG.setOnClickListener(v -> clickButton.onNext(this));
+        if (type != FB_DISABLED)
+            viewBG.setOnClickListener(v -> clickButton.onNext(this));
 
         a.recycle();
     }
@@ -188,7 +189,8 @@ public class ButtonPointsView extends LinearLayout {
             @Override
             public void onAnimationEnd(Animator animation) {
                 viewBGProgress.setVisibility(View.GONE);
-                syncFBDone.onNext(ButtonPointsView.this);
+                if (type == FB_SYNC) syncFBDone.onNext(ButtonPointsView.this);
+                else if (type == FB_NOTIFY) notifyDone.onNext(ButtonPointsView.this);
             }
         });
         widthAnimator.addUpdateListener(animation -> {

@@ -1,5 +1,6 @@
 package com.tribe.app.data.repository.user.datasource;
 
+import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactInterface;
@@ -29,18 +30,17 @@ public interface UserDataStore {
 
     /**
      * Get an {@link Observable} which will emit an Access Token.
-     * @param phoneNumber The phoneNumber used to login.
-     * @param code the code the user entered.
-     * @param pinId the pinId for the call
+     * @param loginEntity the infos for the log in
      */
-    Observable<AccessToken> loginWithPhoneNumber(String phoneNumber, String code, String pinId);
+    Observable<AccessToken> loginWithPhoneNumber(LoginEntity loginEntity);
 
     /**
      * Get an {@link Observable} which will emit an Access Token.
-     * @param username The username used to login.
-     * @param password the password the user entered.
+     * @param displayName the full name of the user.
+     * @param username the username of the user.
+     * @param loginEntity the login infos needed to register (pinId, etc)
      */
-    Observable<AccessToken> loginWithUsername(String username, String password);
+    Observable<AccessToken> register(String displayName, String username, LoginEntity loginEntity);
 
     /**
      * Get an {@link Observable} which will emit a {@link UserRealm}
@@ -106,4 +106,9 @@ public interface UserDataStore {
      * Get an {@link Observable} which will emit a void object
      */
     Observable<Void> removeFriendship(String userId);
+
+    /**
+     * Get an {@link Observable} which will emit nothing
+     */
+    Observable<Void> notifyFBFriends();
 }

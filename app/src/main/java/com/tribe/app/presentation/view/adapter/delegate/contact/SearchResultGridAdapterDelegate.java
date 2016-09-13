@@ -17,14 +17,18 @@ import com.bumptech.glide.Glide;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.SearchResult;
+import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,7 +40,13 @@ import rx.subjects.PublishSubject;
  */
 public class SearchResultGridAdapterDelegate extends RxAdapterDelegate<List<Object>> {
 
+    private static final int DURATION = 300;
+    private static final float OVERSHOOT = 0.75f;
+
     public static final String ACTION_ADD = "action_add";
+
+    @Inject
+    ScreenUtils screenUtils;
 
     // VARIABLES
     protected LayoutInflater layoutInflater;
@@ -52,6 +62,7 @@ public class SearchResultGridAdapterDelegate extends RxAdapterDelegate<List<Obje
         this.context = context;
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.avatarSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
+        this.screenUtils = ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().screenUtils();
     }
 
     @Override
@@ -92,6 +103,14 @@ public class SearchResultGridAdapterDelegate extends RxAdapterDelegate<List<Obje
         }
 
         if (!StringUtils.isEmpty(searchResult.getDisplayName())) {
+            if (searchResult.isInvisibleMode()) {
+                vh.btnAdd.setVisibility(View.GONE);
+                vh.imgGhost.setVisibility(View.VISIBLE);
+            } else {
+                vh.btnAdd.setVisibility(View.VISIBLE);
+                vh.imgGhost.setVisibility(View.GONE);
+            }
+
             vh.txtName.setText(searchResult.getDisplayName());
             vh.txtUsername.setText("@" + searchResult.getUsername());
 
@@ -104,6 +123,9 @@ public class SearchResultGridAdapterDelegate extends RxAdapterDelegate<List<Obje
                         .into(vh.imgAvatar);
             }
         } else {
+            vh.btnAdd.setVisibility(View.GONE);
+            vh.imgGhost.setVisibility(View.GONE);
+
             if (searchResult.isSearchDone()) {
                 vh.txtName.setText("No user found");
             } else {
@@ -199,6 +221,20 @@ public class SearchResultGridAdapterDelegate extends RxAdapterDelegate<List<Obje
         animations.put(vh, animatorSet);
     }
 
+//    private void showAdd(SearchResultViewHolder vh) {
+//        if (vh.btnAdd.getTranslationX() > 0) {
+//            vh.btnAdd.clearAnimation();
+//            vh.btnAdd.animate().setDuration(DURATION).translationX(0).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
+//        }
+//    }
+//
+//    private void hideAdd(SearchResultViewHolder vh) {
+//        if (vh.btnAdd.getTranslationX() == 0) {
+//            vh.btnAdd.clearAnimation();
+//            vh.btnAdd.animate().setDuration(DURATION).translationX(screenUtils.getWidthPx() >> 1).setInterpolator(new DecelerateInterpolator()).start();
+//        }
+//    }
+
     // OBSERVABLES
     public Observable<View> onClickAdd() {
         return clickAdd;
@@ -230,6 +266,9 @@ public class SearchResultGridAdapterDelegate extends RxAdapterDelegate<List<Obje
 
         @BindView(R.id.btnAdd)
         public ViewGroup btnAdd;
+
+        @BindView(R.id.imgGhost)
+        public ImageView imgGhost;
 
         public SearchResultViewHolder(View itemView) {
             super(itemView);

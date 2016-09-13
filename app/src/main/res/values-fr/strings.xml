@@ -96,12 +96,12 @@
 	
 	<!-- Grid -->
 	<string name="grid_user_points">Points</string>
-	<string name="grid_friendship_status_default">Maintenez appuyé !</string>
-	<string name="grid_friendship_status_sending">Envoie en cours</string>
+	<string name="grid_friendship_status_default">Appuyez !</string>
+	<string name="grid_friendship_status_sending">Envoi</string>
 	<string name="grid_friendship_status_sent">Envoyé</string>
 	<string name="grid_friendship_status_opened">Ouvert</string>
 	<string name="grid_friendship_status_opened_plural">Opened</string>
-	<string name="grid_friendship_status_new_messages">Appuyez pour ouvrir !</string>
+	<string name="grid_friendship_status_new_messages">Affichez !</string>
 	<string name="grid_friendship_status_loading">Chargement</string>
 	<string name="grid_friendship_status_reply">À votre tour</string>
 	<string name="grid_ghost">Pas encore inscrit</string>
@@ -218,7 +218,7 @@
 	<string name="settings_theme_title">Selecitionner un theme</string>
 	<string name="settings_tribesave_title">Souvenirs</string>
 	<string name="settings_tribesave_subtitle">Permettre à vos amis de sauvegarder\nvos meilleures vidéos.</string>
-	<string name="settings_geolocation_title">Contexte</string>
+	<string name="settings_geolocation_title">Localisation</string>
 	<string name="settings_geolocation_subtitle">Inclure aux messages des informations\nlocalisés pour enrichir vos messages.</string>
 	<string name="settings_audio_title">Voix par defaut</string>
 	<string name="settings_audio_subtitle">Accéder au mode Audio (à place du mode Video) à l\'ouverture de l\'app.</string>
@@ -342,6 +342,8 @@
 	<string name="notification_pending">Un message en attente. Glissez pour renvoyer &#11013;&#65039;</string>
 	<string name="notification_pending_plural">%1$d messages en attente. Glissez pour renvoyer &#11013;&#65039;</string>
 	<string name="notification_pending_action_resend">Renvoyer</string>
+	<string name="notification_pending_action_later">Plus tard</string>
+	<string name="notification_pending_action_decline">Refuser</string>
 	<string name="notification_snoozed">Snoozed: Message de %1$s</string>
 	
 	<!-- Share -->

@@ -134,7 +134,7 @@ public class ContactsGridAdapter extends RecyclerView.Adapter {
         return items;
     }
 
-    public void startFBSync() {
+    public void startAnimateFB() {
         ButtonPoints points = (ButtonPoints) this.items.get(2);
         points.setAnimate(true);
         notifyItemChanged(2);

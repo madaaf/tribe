@@ -2,6 +2,7 @@ package com.tribe.app.data.repository.user.datasource;
 
 import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.UserCache;
+import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactInterface;
@@ -44,12 +45,12 @@ public class DiskUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<AccessToken> loginWithPhoneNumber(String phoneNumber, String code, String pinId) {
+    public Observable<AccessToken> loginWithPhoneNumber(LoginEntity loginEntity) {
         return null;
     }
 
     @Override
-    public Observable<AccessToken> loginWithUsername(String username, String password) { return null; }
+    public Observable<AccessToken> register(String displayName, String username, LoginEntity loginEntity) { return null; }
 
     @Override
     public Observable<UserRealm> userInfos(String userId) {
@@ -102,6 +103,11 @@ public class DiskUserDataStore implements UserDataStore {
 
     @Override
     public Observable<Void> removeFriendship(String userId) {
+        return null;
+    }
+
+    @Override
+    public Observable<Void> notifyFBFriends() {
         return null;
     }
 }

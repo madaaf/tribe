@@ -17,6 +17,7 @@ public class SearchResultRealm extends RealmObject {
     private String picture;
     private FriendshipRealm friendshipRealm;
     private boolean searchDone = false;
+    private boolean invisible_mode = false;
 
     public SearchResultRealm() {
         this.key = "search";
@@ -76,5 +77,13 @@ public class SearchResultRealm extends RealmObject {
 
     public void setSearchDone(boolean searchDone) {
         this.searchDone = searchDone;
+    }
+
+    public void setInvisibleMode(boolean invisibleMode) {
+        this.invisible_mode = invisibleMode;
+    }
+
+    public boolean isInvisibleMode() {
+        return invisible_mode;
     }
 }

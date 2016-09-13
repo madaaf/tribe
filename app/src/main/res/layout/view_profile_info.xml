@@ -1,56 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:background="@color/grey.background.profile_info"
+    android:orientation="vertical"
     >
 
-    <ImageView
-        android:id="@+id/imgProfilePic"
-        android:layout_width="@dimen/avatar_size_intermediate"
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_size"
+        android:background="@color/grey.light"
+        android:layout_marginTop="5dp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="@dimen/avatar_size_intermediate"
-        android:layout_gravity="top"
-        android:padding="15dp"
-        android:scaleType="centerInside"
-        android:src="@drawable/picto_profile_pic_placeholder"
-        android:background="@drawable/shape_white_rect_grey_border"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            android:id="@+id/imgProfilePic"
+            android:layout_width="@dimen/avatar_size_intermediate"
+            android:layout_height="@dimen/avatar_size_intermediate"
+            android:layout_gravity="top"
+            android:padding="15dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/picto_profile_pic_placeholder"
+            android:background="@drawable/shape_white_rect_grey_border"
+            />
+
+        <View
+            android:layout_width="@dimen/divider_size"
+            android:layout_height="match_parent"
+            android:background="@color/grey.light"
+            android:layout_alignParentTop="true"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:id="@+id/txtOpenCameraRoll"
+                android:layout_width="match_parent"
+                android:layout_height="49dp"
+                android:layout_gravity="top"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/text_padding"
+                android:paddingEnd="@dimen/text_padding"
+                android:background="@drawable/shape_white_rect_grey_border"
+                android:text="@string/onboarding_user_avatar_library"
+                android:clickable="true"
+                style="@style/Body.Two.Black"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider_size"
+                android:background="@color/grey.light"
+                android:layout_alignParentTop="true"
+                />
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:id="@+id/txtTakeASelfie"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/onboarding_choose_picture_button_height"
+                android:layout_gravity="top"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/text_padding"
+                android:paddingEnd="@dimen/text_padding"
+                android:background="@drawable/shape_white_rect_grey_border"
+                android:text="@string/onboarding_user_avatar_selfie"
+                android:clickable="true"
+                style="@style/Body.Two.Black"
+                />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_size"
+        android:background="@color/grey.light"
+        android:layout_alignParentTop="true"
         />
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtOpenCameraRoll"
+    <View
         android:layout_width="match_parent"
-        android:layout_height="49dp"
-        android:layout_gravity="top"
-        android:layout_marginStart="@dimen/horizontal_left_margin_onboarding_choose_picture_button"
-        android:gravity="center_vertical"
-        android:paddingStart="@dimen/text_padding"
-        android:paddingEnd="@dimen/text_padding"
-        android:background="@drawable/shape_white_rect_grey_border"
-        android:text="@string/onboarding_user_avatar_library"
-        android:clickable="true"
-        style="@style/Body.Two.Black"
-        />
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtTakeASelfie"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/onboarding_choose_picture_button_height"
-        android:layout_gravity="top"
-        android:layout_marginTop="48dp"
-        android:layout_marginStart="@dimen/horizontal_left_margin_onboarding_choose_picture_button"
-        android:gravity="center_vertical"
-        android:paddingStart="@dimen/text_padding"
-        android:paddingEnd="@dimen/text_padding"
-        android:background="@drawable/shape_white_rect_grey_border"
-        android:text="@string/onboarding_user_avatar_selfie"
-        android:clickable="true"
-        style="@style/Body.Two.Black"
+        android:layout_height="@dimen/divider_size"
+        android:layout_marginTop="5dp"
+        android:layout_alignParentTop="true"
+        android:background="@color/grey.light"
         />
 
     <com.tribe.app.presentation.view.widget.EditTextFont
         android:id="@+id/editDisplayName"
         android:layout_width="match_parent"
         android:layout_height="@dimen/onboarding_choose_name_height"
-        android:layout_marginTop="100dp"
         android:paddingStart="@dimen/text_padding"
         android:paddingEnd="@dimen/text_padding"
         android:background="@drawable/shape_white_rect_grey_border"
@@ -61,11 +107,23 @@
         android:imeOptions="actionDone"
         />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_size"
+        android:background="@color/grey.light"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_size"
+        android:layout_marginTop="5dp"
+        android:background="@color/grey.light"
+        />
+
     <com.tribe.app.presentation.view.widget.EditTextFont
         android:id="@+id/editUsername"
         android:layout_width="match_parent"
         android:layout_height="@dimen/onboarding_choose_name_height"
-        android:layout_marginTop="168dp"
         android:paddingStart="@dimen/text_padding"
         android:paddingEnd="@dimen/text_padding"
         android:background="@drawable/shape_white_rect_grey_border"
@@ -76,4 +134,11 @@
         android:imeOptions="actionDone"
         />
 
-</FrameLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_size"
+        android:layout_alignParentTop="true"
+        android:background="@color/grey.light"
+        />
+
+</LinearLayout>

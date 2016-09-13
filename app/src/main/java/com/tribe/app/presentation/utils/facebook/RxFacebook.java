@@ -3,12 +3,14 @@ package com.tribe.app.presentation.utils.facebook;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.IntDef;
+import android.util.Log;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginResult;
 import com.tribe.app.data.realm.ContactFBRealm;
+import com.tribe.app.domain.entity.FacebookEntity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,6 +40,7 @@ public class RxFacebook {
     private Context context;
     private PublishSubject<LoginResult> loginSubject;
     private Observable<List<ContactFBRealm>> friendListObservable;
+    private Observable<FacebookEntity> facebookEntityObservable;
 
     @Inject
     public RxFacebook(Context context) {
@@ -48,6 +51,13 @@ public class RxFacebook {
         loginSubject = PublishSubject.create();
         startLoginHiddenActivity();
         return loginSubject;
+    }
+
+    void onLogin(LoginResult loginResult) {
+        if (loginSubject != null && loginSubject.hasObservers()) {
+            loginSubject.onNext(loginResult);
+            loginSubject.onCompleted();
+        }
     }
 
     public Observable<List<ContactFBRealm>> requestFriends() {
@@ -81,18 +91,47 @@ public class RxFacebook {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     } finally {
-                        if (!subscriber.isUnsubscribed())
+                        if (!subscriber.isUnsubscribed()) {
                             subscriber.onNext(contactFBRealmList);
+                            subscriber.onCompleted();
+                        }
                     }
                 }
         ).executeAsync();
     }
 
-    void onLogin(LoginResult loginResult) {
-        if (loginSubject != null && loginSubject.hasObservers()) {
-            loginSubject.onNext(loginResult);
-            loginSubject.onCompleted();
-        }
+    public Observable<FacebookEntity> requestInfos() {
+        if (facebookEntityObservable == null)
+            facebookEntityObservable = Observable.create((Subscriber<? super FacebookEntity> subscriber) -> {
+                emitMe(subscriber);
+            }).onBackpressureBuffer().serialize();
+
+        return facebookEntityObservable;
+    }
+
+    public void emitMe(Subscriber subscriber) {
+        new GraphRequest(AccessToken.getCurrentAccessToken(),
+                "/me",
+                null,
+                HttpMethod.GET,
+                response -> {
+                    JSONObject jsonResponse = response.getJSONObject();
+                    FacebookEntity facebookEntity = new FacebookEntity();
+
+                    try {
+                        facebookEntity.setName(jsonResponse.getString("name"));
+                        facebookEntity.setUsername(facebookEntity.getName().replaceAll("\\s", "").toLowerCase());
+                        facebookEntity.setId(jsonResponse.getString("id"));
+                        facebookEntity.setProfilePicture("https://graph.facebook.com/" + facebookEntity.getId() + "/picture?type=large");
+                    } catch (JSONException e) {
+                        Log.e("JSON exception:", e.toString());
+                    } finally {
+                        if (!subscriber.isUnsubscribed()) {
+                            subscriber.onNext(facebookEntity);
+                            subscriber.onCompleted();
+                        }
+                    }
+                }).executeAsync();
     }
 
     private void startLoginHiddenActivity() {

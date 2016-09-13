@@ -31,6 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="75dp"
         android:layout_gravity="center">
+
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtNumFriends"
             android:layout_width="wrap_content"
@@ -53,8 +54,6 @@
             />
     </FrameLayout>
 
-
-
     <ImageView
         android:id="@+id/imgLockIcon"
         android:layout_width="28dp"
@@ -62,7 +61,5 @@
         android:src="@drawable/picto_lock_icon"
         android:layout_gravity="center"
         />
-
-
 
 </FrameLayout>

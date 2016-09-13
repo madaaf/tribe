@@ -42,6 +42,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -209,7 +211,7 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
                     searchResult = new SearchResult();
                     searchResult.setUsername(s);
                     updateSearch();
-                    contactsGridPresenter.diskFindByUsername(s);
+                    contactsGridPresenter.diskFindByValue(s);
                 })
                 .debounce(500, TimeUnit.MILLISECONDS)
                 .subscribe(s -> contactsGridPresenter.cloudFindByUsername(s));
@@ -234,25 +236,26 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
                         ButtonPoints buttonPoints = (ButtonPoints) o;
                         if (buttonPoints.getType() == ButtonPointsView.FB_SYNC) {
                             contactsGridPresenter.loginFacebook();
+                        } else if (buttonPoints.getType() == ButtonPointsView.FB_NOTIFY) {
+                            contactsGridPresenter.notifyFBFriends();
                         }
                     }
                 }));
 
         subscriptions.add(contactsGridAdapter.onButtonPointsFBSyncDone()
+                .delay(250, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
                 .subscribe(v -> {
                     contactsGridAdapter.setItems(contactList);
                 }));
 
-        subscriptions.add(contactsGridAdapter.onButtonPointsClick()
-                .map(view -> contactsGridAdapter.getItemAtPosition(recyclerViewContacts.getChildLayoutPosition(view)))
-                .doOnError(throwable -> throwable.printStackTrace())
-                .subscribe(o -> {
-                    if (o instanceof ButtonPoints) {
-                        ButtonPoints buttonPoints = (ButtonPoints) o;
-                        if (buttonPoints.getType() == ButtonPointsView.FB_SYNC) {
-                            contactsGridPresenter.loginFacebook();
-                        }
-                    }
+        subscriptions.add(contactsGridAdapter.onButtonPointsNotifyDone()
+                .delay(250, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(v -> {
+                    contactsGridAdapter.setItems(contactList);
                 }));
 
         subscriptions.add(contactsGridAdapter.onClickAdd()
@@ -344,7 +347,12 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
 
     @Override
     public void successFacebookLogin() {
-        contactsGridAdapter.startFBSync();
+        contactsGridAdapter.startAnimateFB();
+    }
+
+    @Override
+    public void notifySuccess() {
+        contactsGridAdapter.startAnimateFB();
     }
 
     @Override

@@ -11,6 +11,7 @@
         android:layout_width="@dimen/icons_end"
         android:layout_height="@dimen/icons_end"
         android:layout_gravity="bottom"
+        android:background="@drawable/selectable_button_oval"
         android:scaleType="centerInside"
         android:clickable="true"
         android:src="@drawable/picto_next_icon_black"

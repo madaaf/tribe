@@ -19,4 +19,16 @@ public class LoginEntity {
         this.password = code;
         this.pinId = pinId;
     }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getPinId() {
+        return pinId;
+    }
 }
