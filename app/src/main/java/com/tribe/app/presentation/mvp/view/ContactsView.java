@@ -15,6 +15,7 @@ public interface ContactsView extends LoadDataView {
     void renderSearchResult(SearchResult searchResult);
     void renderSearchContacts(List<Contact> contactList);
     void onAddSuccess(Friendship friendship);
+    void notifySuccess();
     void onAddError();
     void successFacebookLogin();
     void errorFacebookLogin();

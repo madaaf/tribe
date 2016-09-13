@@ -1,5 +1,6 @@
 package com.tribe.app.domain.interactor.user;
 
+import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
@@ -14,9 +15,7 @@ import rx.Observable;
  */
 public class DoLoginWithPhoneNumber extends UseCase {
 
-    private String phoneNumber;
-    private String code;
-    private String pinId;
+    private LoginEntity loginEntity;
     private UserRepository userRepository;
 
     @Inject
@@ -25,14 +24,12 @@ public class DoLoginWithPhoneNumber extends UseCase {
         this.userRepository = userRepository;
     }
 
-    public void prepare(String phoneNumber, String code, String pinId) {
-        this.phoneNumber = phoneNumber;
-        this.code = code;
-        this.pinId = pinId;
+    public void prepare(LoginEntity loginEntity) {
+        this.loginEntity = loginEntity;
     }
 
     @Override
     protected Observable buildUseCaseObservable() {
-        return this.userRepository.loginWithPhoneNumber(phoneNumber, code, pinId);
+        return this.userRepository.loginWithPhoneNumber(loginEntity);
     }
 }

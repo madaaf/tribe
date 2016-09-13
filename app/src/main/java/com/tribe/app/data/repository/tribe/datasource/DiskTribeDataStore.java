@@ -1,6 +1,7 @@
 package com.tribe.app.data.repository.tribe.datasource;
 
 import com.tribe.app.data.cache.TribeCache;
+import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 
@@ -15,13 +16,15 @@ import rx.Observable;
 public class DiskTribeDataStore implements TribeDataStore {
 
     private final TribeCache tribeCache;
+    private final UserCache userCache;
 
     /**
      * Construct a {@link TribeDataStore} based on the database.
      * @param tribeCache A {@link TribeCache} to retrieve the data.
      */
-    public DiskTribeDataStore(TribeCache tribeCache) {
+    public DiskTribeDataStore(TribeCache tribeCache, UserCache userCache) {
         this.tribeCache = tribeCache;
+        this.userCache = userCache;
     }
 
     @Override
@@ -31,6 +34,7 @@ public class DiskTribeDataStore implements TribeDataStore {
 
     @Override
     public Observable<TribeRealm> sendTribe(TribeRealm tribeRealm) {
+        tribeRealm.setFrom(userCache.userInfosNoObs(tribeRealm.getFrom().getId()));
         return tribeCache.put(tribeRealm);
     }
 

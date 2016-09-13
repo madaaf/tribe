@@ -25,9 +25,10 @@
         android:id="@+id/imgNextIcon"
         android:layout_width="@dimen/icons_end"
         android:layout_height="@dimen/icons_end"
+        android:foreground="@drawable/selectable_button_oval"
         android:src="@drawable/picto_next_icon"
         android:scaleType="centerInside"
-        android:background="@drawable/shape_white_rect_rounded_bottom_right"
+        android:background="@android:color/white"
         android:layout_gravity="bottom|end"
         android:clickable="false"
         />
@@ -47,6 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_marginEnd="60dp"
+        android:foreground="@drawable/selectable_button_light"
         />
     
 </FrameLayout>

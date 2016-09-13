@@ -1,6 +1,7 @@
 package com.tribe.app.data.repository.chat.datasource;
 
 import com.tribe.app.data.cache.ChatCache;
+import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 
@@ -17,13 +18,15 @@ import rx.Observable;
 public class DiskChatDataStore implements ChatDataStore {
 
     private final ChatCache chatCache;
+    private final UserCache userCache;
 
     /**
      * Construct a {@link ChatDataStore} based on connections to the database cache.
      * @param chatCache A {@link ChatCache} to retrieve the data.
      */
-    public DiskChatDataStore(ChatCache chatCache) {
+    public DiskChatDataStore(ChatCache chatCache, UserCache userCache) {
         this.chatCache = chatCache;
+        this.userCache = userCache;
     }
 
     @Override
@@ -48,6 +51,7 @@ public class DiskChatDataStore implements ChatDataStore {
 
     @Override
     public Observable<ChatRealm> sendMessage(ChatRealm chatRealm) {
+        chatRealm.setFrom(userCache.userInfosNoObs(chatRealm.getFrom().getId()));
         return chatCache.put(chatRealm);
     }
 

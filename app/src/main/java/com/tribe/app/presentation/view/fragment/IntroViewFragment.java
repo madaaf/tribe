@@ -1,21 +1,21 @@
 package com.tribe.app.presentation.view.fragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.data.network.entity.LoginEntity;
+import com.tribe.app.domain.entity.ErrorLogin;
 import com.tribe.app.domain.entity.Pin;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -23,6 +23,7 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.IntroPresenter;
 import com.tribe.app.presentation.mvp.view.IntroView;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.component.CodeView;
 import com.tribe.app.presentation.view.component.ConnectedView;
@@ -56,7 +57,6 @@ import rx.subscriptions.CompositeSubscription;
 public class IntroViewFragment extends Fragment implements IntroView {
 
     public static IntroViewFragment newInstance() {
-
         Bundle args = new Bundle();
 
         IntroViewFragment fragment = new IntroViewFragment();
@@ -67,7 +67,6 @@ public class IntroViewFragment extends Fragment implements IntroView {
     /**
      * Globals
      */
-
     @Inject
     IntroPresenter introPresenter;
 
@@ -95,7 +94,10 @@ public class IntroViewFragment extends Fragment implements IntroView {
     @BindView(R.id.txtIntroMessage)
     TextViewFont txtIntroMessage;
 
+    // VARIABLES
+    private LoginEntity loginEntity;
     private Pin pin;
+    private ErrorLogin errorLogin;
     private String phoneNumber, code;
 
     public static final int PAGE_PHONE_NUMBER = 0,
@@ -119,8 +121,19 @@ public class IntroViewFragment extends Fragment implements IntroView {
         initViewPager();
         initPhoneNumberView();
         initPresenter();
-        initPlayerView();
         return fragmentView;
+    }
+
+    @Override
+    public void onPause() {
+        videoViewIntro.releasePlayer();
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        initPlayerView();
+        super.onResume();
     }
 
     @Override
@@ -131,7 +144,6 @@ public class IntroViewFragment extends Fragment implements IntroView {
             subscriptions.unsubscribe();
             subscriptions.clear();
         }
-
 
         super.onDestroy();
     }
@@ -160,15 +172,14 @@ public class IntroViewFragment extends Fragment implements IntroView {
         subscriptions.add(viewCode.codeValid().subscribe(isValid -> {
             if (isValid) {
                 if (IntroActivity.uiOnlyMode) {
-                    introPresenter.login("", "", "");
+                    loginEntity = introPresenter.login("", "", "");
                 } else {
                     this.code = viewCode.getCode();
-                    introPresenter.login(phoneNumber, code, pin.getPinId());
+                    loginEntity = introPresenter.login(phoneNumber, code, pin.getPinId());
                 }
             }
         }));
     }
-
 
     private void initViewPager() {
         IntroViewFragmentPagerAdapter introViewFragmentPagerAdapter = new IntroViewFragmentPagerAdapter();
@@ -183,15 +194,16 @@ public class IntroViewFragment extends Fragment implements IntroView {
 
     private void initPlayerView() {
         videoViewIntro.createPlayer("asset:///video/onboarding_video.mp4");
-
     }
 
     private void initPhoneNumberView() {
         viewPhoneNumber.setPhoneUtils(getApplicationComponent().phoneUtils());
+
         subscriptions.add(viewPhoneNumber.phoneNumberValid().subscribe(isValid -> {
             this.phoneNumber = viewPhoneNumber.getPhoneNumberFormatted();
             viewPhoneNumber.setNextEnabled(isValid);
         }));
+
         subscriptions.add(viewPhoneNumber.countryClick().subscribe(aVoid -> {
             navigator.navigateToCountries(getActivity());
         }));
@@ -213,7 +225,6 @@ public class IntroViewFragment extends Fragment implements IntroView {
     private class IntroViewFragmentPagerAdapter extends PagerAdapter {
 
         public static final int NUM_ITEMS = 3;
-
 
         public Object instantiateItem(View container, int position) {
 
@@ -257,7 +268,6 @@ public class IntroViewFragment extends Fragment implements IntroView {
     /**
      * Navigation methods
      */
-
     @Override
     public void goToCode(Pin pin) {
         this.pin = pin;
@@ -274,46 +284,55 @@ public class IntroViewFragment extends Fragment implements IntroView {
 
     @Override
     public void goToProfileInfo() {
-        ((IntroActivity) getActivity()).goToProfileInfo();
+        Observable.timer(300, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(time -> {
+                    ((IntroActivity) getActivity()).goToProfileInfo(loginEntity);
+                });
     }
 
     @Override
-    public void goToConnected() {
+    public void goToConnected(User user) {
         txtIntroMessage.setText("");
         screenUtils.hideKeyboard(getActivity());
 
-        // TODO: get user info and check if they have a picture
-        Observable.timer(300, TimeUnit.MILLISECONDS)
+        subscriptions.add(Observable.timer(300, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(time -> {
                     viewCode.animateConnectedIcon();
 
-                    Observable.timer(300, TimeUnit.MILLISECONDS)
-                            .subscribeOn(Schedulers.io())
+                    subscriptions.add(Observable.timer(300, TimeUnit.MILLISECONDS)
+                            .subscribeOn(Schedulers.newThread())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(time1 -> {
                                 viewCode.fadeConnectedOut();
                                 viewPager.setCurrentItem(PAGE_CONNECTED, true);
                                 viewConnected.animateConnected();
-                            });
+                            }));
 
-                    Observable.timer(2000, TimeUnit.MILLISECONDS)
-                            .subscribeOn(Schedulers.io())
+                    subscriptions.add(Observable.timer(2000, TimeUnit.MILLISECONDS)
+                            .subscribeOn(Schedulers.newThread())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(time2 -> {
-                                if (IntroActivity.uiOnlyMode) ((IntroActivity) getActivity()).goToProfileInfo();
-                            });
+                                if (user == null || StringUtils.isEmpty(user.getProfilePicture()) || StringUtils.isEmpty(user.getUsername())) {
+                                    ((IntroActivity) getActivity()).goToProfileInfo(loginEntity);
+                                } else {
+                                    goToHome();
+                                }
+                            }));
+                }));
+    }
 
-                });
-
-
+    @Override
+    public void loginError(ErrorLogin errorLogin) {
+        this.errorLogin = errorLogin;
     }
 
     /**
      * Manage view pager transition methods
      */
-
     @Override
     public void showLoading() {
         if (viewPager.getCurrentItem() == PAGE_PHONE_NUMBER) {
@@ -374,7 +393,5 @@ public class IntroViewFragment extends Fragment implements IntroView {
     /**
      * Util methods
      */
-
-
 
 }

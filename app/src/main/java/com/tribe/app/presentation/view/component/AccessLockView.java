@@ -3,22 +3,20 @@ package com.tribe.app.presentation.view.component;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
-import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.tribe.app.R;
-import com.tribe.app.presentation.view.drawable.SemiCircleDrawable;
+import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.concurrent.TimeUnit;
@@ -37,30 +35,15 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class AccessLockView extends FrameLayout {
 
-    public AccessLockView(Context context) {
-        super(context);
-    }
-
-    public AccessLockView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public AccessLockView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
-    public AccessLockView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
+    private static final int STATE_GET_ACCESS = 0;
+    private static final int STATE_HANG_TIGHT = 1;
+    private static final int STATE_SORRY = 2;
+    private static final int STATE_CONGRATS = 3;
+    private static int viewState;
 
     /**
      * Globals
      */
-
-    Unbinder unbinder;
-    private CompositeSubscription subscriptions = new CompositeSubscription();
-
-
     @BindView(R.id.pulse)
     View viewPulse;
 
@@ -79,22 +62,26 @@ public class AccessLockView extends FrameLayout {
     @BindView(R.id.txtFriends)
     TextViewFont txtFriends;
 
+    // OBSERVABLES
+    private Unbinder unbinder;
+    private CompositeSubscription subscriptions = new CompositeSubscription();
 
-    private static final int STATE_GET_ACCESS = 0;
-    private static final int STATE_HANG_TIGHT = 1;
-    private static final int STATE_SORRY = 2;
-    private static final int STATE_CONGRATS = 3;
-    private static int viewState;
-    private boolean isRed = true;
-    int oldSemiCircleBackground;
-    int newSemiCircleBackground;
-    int pulsingDuration = 1200;
+    // VARIABLES
+    private ScreenUtils screenUtils;
+    private boolean isEnd = true;
+    private int pulsingDuration = 1200;
 
+    public AccessLockView(Context context) {
+        super(context);
+    }
+
+    public AccessLockView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
 
     /**
      * Lifecycle methods
      */
-
 
     @Override
     protected void onFinishInflate() {
@@ -103,12 +90,9 @@ public class AccessLockView extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.view_access_lock, this);
         unbinder = ButterKnife.bind(this);
 
-        oldSemiCircleBackground = 0;
+        screenUtils = ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().screenUtils();
 
-        newSemiCircleBackground = 0;
-
-        setToAccess();
-
+        setToAccessFirstTime();
     }
 
     @Override
@@ -131,16 +115,28 @@ public class AccessLockView extends FrameLayout {
         viewState = STATE_GET_ACCESS;
 
         subscriptions.clear();
-        addPulsingRedCircleAnimation();
+        greyPulse();
 
         semiCircleView.setVisibility(INVISIBLE);
         imgLockIcon.setAlpha(1f);
         imgLockIcon.setTranslationY(0);
 
+        AnimationUtils.fadeViewDownOut(txtFriends);
+        AnimationUtils.fadeViewDownOut(txtNumFriends);
+    }
+
+    public void setToAccessFirstTime() {
+        viewState = STATE_GET_ACCESS;
+
+        subscriptions.clear();
+        greyPulse();
+
+        semiCircleView.setVisibility(INVISIBLE);
+        imgLockIcon.setAlpha(1f);
+        imgLockIcon.setTranslationY(0);
 
         AnimationUtils.fadeViewDownOut(txtFriends);
         AnimationUtils.fadeViewDownOut(txtNumFriends);
-
     }
 
     public void fadeBigLockIn() {
@@ -154,8 +150,6 @@ public class AccessLockView extends FrameLayout {
                 .start();
     }
 
-
-
     private void fadeTextIn() {
         AnimationUtils.fadeViewUpIn(txtFriends);
         AnimationUtils.fadeViewUpIn(txtNumFriends);
@@ -165,7 +159,6 @@ public class AccessLockView extends FrameLayout {
         AnimationUtils.fadeViewUpIn(imgLockIcon);
     }
 
-
     public void setToHangTight(int numFriends) {
         viewState = STATE_HANG_TIGHT;
 
@@ -174,7 +167,7 @@ public class AccessLockView extends FrameLayout {
         imgLockIcon.animate()
                 .alpha(0)
                 .setDuration(300)
-                .translationY(100)
+                .translationY(screenUtils.dpToPx(50))
                 .setStartDelay(0)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
@@ -185,28 +178,9 @@ public class AccessLockView extends FrameLayout {
                 }).start();
 
         subscriptions.clear();
-        viewPulse.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.shape_circle_grey, null));
-        subscriptions.add(Observable.interval(pulsingDuration, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
-                .subscribe(aVoid -> {
-                    if (isRed) {
-                        isRed = false;
-                        viewPulse.animate()
-                                .scaleY((float) 1)
-                                .scaleX((float) 1)
-                                .setDuration(pulsingDuration)
-                                .start();
-                    } else {
-                        isRed = true;
-                        viewPulse.animate().
-                                scaleY((float) 1.2)
-                                .scaleX((float) 1.2)
-                                .setDuration(pulsingDuration)
-                                .start();
-                    }
-                }));
+        greyPulse();
 
         semiCircleView.setVisibility(VISIBLE);
-        resetSemiCircle(numFriends);
     }
 
     public void setToSorry() {
@@ -215,7 +189,7 @@ public class AccessLockView extends FrameLayout {
         txtFriends.animate()
                 .alpha(0)
                 .setDuration(300)
-                .translationY(25)
+                .translationY(screenUtils.dpToPx(25))
                 .setStartDelay(0)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
@@ -228,13 +202,12 @@ public class AccessLockView extends FrameLayout {
         txtNumFriends.animate()
                 .alpha(0)
                 .setDuration(300)
-                .translationY(25)
+                .translationY(screenUtils.dpToPx(25))
                 .setStartDelay(0)
                 .start();
 
         subscriptions.clear();
-        addPulsingRedCircleAnimation();
-
+        redPulse();
 
         semiCircleView.setVisibility(INVISIBLE);
     }
@@ -249,46 +222,6 @@ public class AccessLockView extends FrameLayout {
                 .subscribe(aVoid -> {
                     removePulsingCircleAnimation();
                 }));
-
-        resetSemiCircle(3);
-    }
-
-    private void resetSemiCircle(int friends) {
-
-        int circleRadiusFriends;
-
-        oldSemiCircleBackground = newSemiCircleBackground;
-
-        switch (friends) {
-            case 0:
-                circleRadiusFriends = 0;
-                break;
-            case 1:
-                circleRadiusFriends = 120;
-                break;
-            case 2:
-                circleRadiusFriends = 240;
-                break;
-            case 3:
-                circleRadiusFriends = 360;
-                break;
-            default:
-                circleRadiusFriends = 0;
-                break;
-        }
-
-        AnimationDrawable animationDrawable = new AnimationDrawable();
-        animationDrawable.setOneShot(true);
-        newSemiCircleBackground = circleRadiusFriends;
-
-        for (int i = oldSemiCircleBackground; i <= newSemiCircleBackground; i++) {
-            animationDrawable.addFrame(new SemiCircleDrawable(ContextCompat.getColor(getContext(), R.color.blue_text),
-                    semiCircleView.getWidth(),
-                    semiCircleView.getHeight(),
-                    i), 10);
-        }
-        semiCircleView.setBackground(animationDrawable);
-        animationDrawable.start();
     }
 
     public void setViewWidthHeight(int whiteCircleWidth, int pulseWidth) {
@@ -297,7 +230,6 @@ public class AccessLockView extends FrameLayout {
         setNewWidthAndHeight(semiCircleView, whiteCircleWidth, whiteCircleWidth);
         setNewWidthAndHeight(viewPulse, pulseWidth, pulseWidth);
     }
-
 
     private void removePulsingCircleAnimation() {
         Drawable backgrounds[] = new Drawable[2];
@@ -310,32 +242,31 @@ public class AccessLockView extends FrameLayout {
         crossfader.startTransition(1200);
     }
 
-    //TODO: Tiago -> call this method every time a friend is found
     private void bluePulse() {
         Drawable backgrounds[] = new Drawable[2];
         backgrounds[0] = ResourcesCompat.getDrawable(getResources(), R.drawable.shape_circle_grey, null);
         backgrounds[1] = ResourcesCompat.getDrawable(getResources(), R.drawable.shape_circle_blue, null);
-
-        TransitionDrawable crossfader = new TransitionDrawable(backgrounds);
-        viewPulse.setBackground(crossfader);
-        viewPulse.animate()
-                .scaleX(1.2f).scaleY(1.2f)
-                .setDuration(600)
-                .start();
-        crossfader.startTransition(1200);
-
+        changePulse(backgrounds);
     }
 
-    private void addPulsingRedCircleAnimation() {
+    private void greyPulse() {
+        Drawable backgrounds[] = new Drawable[2];
+        backgrounds[0] = ResourcesCompat.getDrawable(getResources(), R.drawable.shape_circle_grey_light, null);
+        backgrounds[1] = ResourcesCompat.getDrawable(getResources(), R.drawable.shape_circle_grey, null);
+        changePulse(backgrounds);
+    }
 
+    private void redPulse() {
         Drawable backgrounds[] = new Drawable[2];
         backgrounds[0] = ResourcesCompat.getDrawable(getResources(), R.drawable.shape_circle_grey, null);
         backgrounds[1] = ResourcesCompat.getDrawable(getResources(), R.drawable.shape_circle_red, null);
+        changePulse(backgrounds);
+    }
 
+    private void changePulse(Drawable[] backgrounds) {
         TransitionDrawable crossfader = new TransitionDrawable(backgrounds);
         viewPulse.setBackground(crossfader);
         crossfader.startTransition(pulsingDuration * 2);
-
 
         expandAndContract(crossfader);
 
@@ -354,8 +285,8 @@ public class AccessLockView extends FrameLayout {
     }
 
     private void expandAndContract(TransitionDrawable crossfader) {
-        if (isRed) {
-            isRed = false;
+        if (isEnd) {
+            isEnd = false;
             crossfader.reverseTransition(pulsingDuration);
             viewPulse.animate()
                     .scaleY((float) 1)
@@ -364,7 +295,7 @@ public class AccessLockView extends FrameLayout {
                     .setDuration(pulsingDuration)
                     .start();
         } else {
-            isRed = true;
+            isEnd = true;
             crossfader.startTransition(pulsingDuration * 2);
             viewPulse.animate()
                     .scaleY((float) 1.2)

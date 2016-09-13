@@ -16,6 +16,7 @@ import butterknife.Unbinder;
  * Component used in AccessFragment to create the view that a user can tap on to invite their friends to Tribe.
  */
 public class TextFriendsView extends FrameLayout {
+
     public TextFriendsView(Context context) {
         super(context);
     }

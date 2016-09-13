@@ -9,6 +9,7 @@ import com.tribe.app.presentation.internal.di.scope.AudioDefault;
 import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
 import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
+import com.tribe.app.presentation.internal.di.scope.LastNotifyRequest;
 import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
 import com.tribe.app.presentation.internal.di.scope.Memories;
@@ -120,5 +121,12 @@ public class DataModule {
     @LastUserRequest
     Preference<String> provideLastUserRequest(RxSharedPreferences prefs) {
         return prefs.getString(PreferencesConstants.LAST_USER_REQUEST, "");
+    }
+
+    @Provides
+    @Singleton
+    @LastNotifyRequest
+    Preference<String> provideLastFBNotify(RxSharedPreferences prefs) {
+        return prefs.getString(PreferencesConstants.LAST_NOTIFY_REQUEST, "");
     }
 }

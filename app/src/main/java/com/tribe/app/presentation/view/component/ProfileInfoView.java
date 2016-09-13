@@ -15,6 +15,7 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -40,6 +41,7 @@ import rx.subscriptions.CompositeSubscription;
  * Created by horatiothomas on 9/6/16.
  */
 public class ProfileInfoView extends FrameLayout {
+
     public ProfileInfoView(Context context) {
         super(context);
     }
@@ -113,7 +115,6 @@ public class ProfileInfoView extends FrameLayout {
 
     public void setImgProfilePic(Bitmap bitmap) {
         imgProfilePic.setImageBitmap(formatBitmapforView(bitmap));
-
     }
 
     public void setUrlProfilePic(String imageUrl) {
@@ -161,26 +162,25 @@ public class ProfileInfoView extends FrameLayout {
             navigator.getImageFromCamera((Activity) getContext(), CAMERA_REQUEST);
         }));
 
-        Observable.combineLatest(RxTextView.textChanges(editDisplayName),
+        subscriptions.add(Observable.combineLatest(RxTextView.textChanges(editDisplayName),
                 RxTextView.textChanges(editUsername),
-                (charSequence1, charSequence2) -> charSequence1.length() > 1 && charSequence2.length() > 1).subscribe(infoValid);
+                (charSequence1, charSequence2) -> charSequence1.length() > 1 && charSequence2.length() > 1).subscribe(infoValid));
     }
 
     public Observable<Boolean> infoValid() {
         return infoValid;
     }
 
-    public void setInfoFromFacebook(String profilePicLink, String username, String realName) {
-        Glide.with(getContext()).load(profilePicLink)
+    public void setInfoFromFacebook(FacebookEntity facebookEntity) {
+        Glide.with(getContext()).load(facebookEntity.getProfilePicture())
                 .override(screenUtils.dpToPx(profilePicSize), screenUtils.dpToPx(profilePicSize))
                 .fitCenter()
                 .bitmapTransform(new CropCircleTransformation(getContext()))
                 .crossFade()
                 .into(imgProfilePic);
         profilePictureSelected = true;
-        editDisplayName.setText(realName);
-        editUsername.setText(username);
-
+        editDisplayName.setText(facebookEntity.getName());
+        editUsername.setText(facebookEntity.getUsername());
     }
 
     public Bitmap formatBitmapforView(Bitmap thumbnail) {

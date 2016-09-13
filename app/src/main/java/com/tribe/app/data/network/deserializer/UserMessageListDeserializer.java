@@ -28,9 +28,7 @@ public class UserMessageListDeserializer<T> extends MessageRealmListDeserializer
     }
 
     @Override
-    public T deserialize(JsonElement je, Type typeOfT,
-                               JsonDeserializationContext context) throws JsonParseException {
-
+    public T deserialize(JsonElement je, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject user = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("user");
         List<MessageRealmInterface> messages = new ArrayList<>();
 

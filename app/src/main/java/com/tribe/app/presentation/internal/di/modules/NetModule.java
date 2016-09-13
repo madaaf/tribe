@@ -11,6 +11,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.jakewharton.byteunits.DecimalByteUnit;
 import com.tribe.app.BuildConfig;
+import com.tribe.app.R;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
@@ -46,6 +47,15 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -53,6 +63,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Named;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 
 import dagger.Module;
 import dagger.Provides;
@@ -95,7 +107,7 @@ public class NetModule {
                         return false;
                     }
                 })
-                .registerTypeAdapter(new TypeToken<UserRealm>() {}.getType(), new TribeUserDeserializer<>())
+                .registerTypeAdapter(new TypeToken<UserRealm>() {}.getType(), new TribeUserDeserializer(utcSimpleDate))
                 .registerTypeAdapter(AccessToken.class, new TribeAccessTokenDeserializer())
                 .registerTypeAdapter(TribeRealm.class, new NewTribeDeserializer<>())
                 .registerTypeAdapter(ChatRealm.class, new NewMessageDeserializer<>())
@@ -114,14 +126,58 @@ public class NetModule {
 
     @Provides
     @PerApplication
+    @Named("tribeApiOKHttp")
     OkHttpClient provideOkHttpClient(Context context) {
-        return createOkHttpClient(context).build();
+        OkHttpClient.Builder okHttpClient = createOkHttpClient(context);
+
+        InputStream cert = context.getResources().openRawResource(R.raw.tribe);
+
+        try {
+            // loading CAs from an InputStream
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            Certificate ca;
+            ca = cf.generateCertificate(cert);
+
+            // creating a KeyStore containing our trusted CAs
+            String keyStoreType = KeyStore.getDefaultType();
+            KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+            keyStore.load(null, null);
+            keyStore.setCertificateEntry("ca", ca);
+
+            // creating a TrustManager that trusts the CAs in our KeyStore
+            String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
+            tmf.init(keyStore);
+
+            // creating an SSLSocketFactory that uses our TrustManager
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, tmf.getTrustManagers(), null);
+            okHttpClient.sslSocketFactory(sslContext.getSocketFactory());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                cert.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return okHttpClient.build();
     }
 
     @Provides
-    @Named("picassoOkHttp")
     @PerApplication
-    OkHttpClient provideOkHttpClientPicasso(Context context) {
+    @Named("fileApiOKHttp")
+    OkHttpClient provideOkHttpClientFile(Context context) {
         return createOkHttpClient(context).build();
     }
 
@@ -133,7 +189,7 @@ public class NetModule {
 
     @Provides
     @PerApplication
-    TribeApi provideTribeApi(Gson gson, OkHttpClient okHttpClient, TribeAuthorizer tribeAuthorizer,
+    TribeApi provideTribeApi(Gson gson, @Named("tribeApiOKHttp") OkHttpClient okHttpClient, TribeAuthorizer tribeAuthorizer,
                              final LoginApi loginApi, final AccessToken accessToken,
                              final UserCache userCache) {
         OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
@@ -184,13 +240,14 @@ public class NetModule {
                 .baseUrl(BuildConfig.TRIBE_API)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
+                //.addCallAdapterFactory(RxErrorHandlingCallAdapterFactory.create())
                 .callFactory(httpClientBuilder.build())
                 .build().create(TribeApi.class);
     }
 
     @Provides
     @PerApplication
-    FileApi provideFileApi(OkHttpClient okHttpClient) {
+    FileApi provideFileApi(@Named("fileApiOKHttp") OkHttpClient okHttpClient) {
         OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
         httpClientBuilder
@@ -207,12 +264,13 @@ public class NetModule {
         return new Retrofit.Builder()
             .baseUrl(BuildConfig.TRIBE_API)
             .callFactory(httpClientBuilder.build())
+            //.addCallAdapterFactory(RxErrorHandlingCallAdapterFactory.create())
             .build().create(FileApi.class);
     }
 
     @Provides
     @PerApplication
-    LoginApi provideLoginApi(Gson gson, OkHttpClient okHttpClient, TribeAuthorizer tribeAuthorizer) {
+    LoginApi provideLoginApi(Gson gson, @Named("tribeApiOKHttp") OkHttpClient okHttpClient, TribeAuthorizer tribeAuthorizer) {
         OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
         httpClientBuilder
@@ -247,6 +305,7 @@ public class NetModule {
                 .baseUrl(BuildConfig.TRIBE_AUTH)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
+                //.addCallAdapterFactory(RxErrorHandlingCallAdapterFactory.create())
                 .callFactory(httpClientBuilder.build())
                 .build().create(LoginApi.class);
     }

@@ -19,6 +19,7 @@ import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.network.entity.LookupEntity;
+import com.tribe.app.data.network.entity.RegisterEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.ContactABRealm;
@@ -123,16 +124,24 @@ public class CloudUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<AccessToken> loginWithPhoneNumber(String phoneNumber, String code, String pinId) {
+    public Observable<AccessToken> loginWithPhoneNumber(LoginEntity loginEntity) {
         return this.loginApi
-                .loginWithUsername(new LoginEntity(phoneNumber, code, pinId))
+                .loginWithUsername(loginEntity)
                 .doOnNext(saveToCacheAccessToken);
     }
 
     @Override
-    public Observable<AccessToken> loginWithUsername(String username, String password) {
+    public Observable<AccessToken> register(String displayName, String username, LoginEntity loginEntity) {
+        RegisterEntity registerEntity = new RegisterEntity();
+        registerEntity.setDisplayName(displayName);
+        registerEntity.setUsername(username);
+        registerEntity.setCountryCode(loginEntity.getPassword());
+        registerEntity.setPassword(loginEntity.getPassword());
+        registerEntity.setPhoneNumber(loginEntity.getUsername());
+        registerEntity.setPinId(loginEntity.getUsername());
+
         return this.loginApi
-                .loginWithUsername(new LoginEntity(username, password, ""))
+                .register(registerEntity)
                 .doOnNext(saveToCacheAccessToken);
     }
 
@@ -256,14 +265,19 @@ public class CloudUserDataStore implements UserDataStore {
                     }
                 },
                 (messageRealmInterfaceList, userRealmList) -> {
+                    List<MessageRealmInterface> messageRealmListFinal = new ArrayList<MessageRealmInterface>();
+
                     if (userRealmList != null && userRealmList.size() > 0) {
                         for (MessageRealmInterface message : messageRealmInterfaceList) {
                             if (message.getFrom() != null && StringUtils.isEmpty(message.getFrom().getUsername())) {
                                 for (UserRealm userRealm : userRealmList) {
-                                    if (message.getFrom().getId().equals(userRealm.getId())) {
+                                    if (userRealm != null && message.getFrom().getId().equals(userRealm.getId())) {
                                         message.setFrom(userRealm);
+                                        messageRealmListFinal.add(message);
                                     }
                                 }
+                            } else {
+                                messageRealmListFinal.add(message);
                             }
                         }
                     }
@@ -338,7 +352,6 @@ public class CloudUserDataStore implements UserDataStore {
         }
     }
 
-
     @Override
     public Observable<List<ContactInterface>> contacts() {
         return Observable.zip(
@@ -377,13 +390,15 @@ public class CloudUserDataStore implements UserDataStore {
             UserRealm currentUser = userCache.userInfosNoObs(accessToken.getUserId());
 
             // WE REMOVE ALL THE PHONE NUMBERS THAT WE'RE ALREADY FRIENDS WITH
-            for (FriendshipRealm fr : currentUser.getFriendships()) {
-                contactList.remove(phones.get(fr.getFriend().getPhone()));
-                phones.remove(fr.getFriend().getPhone());
-                fbIds.remove(fr.getFriend().getFbid());
-            }
+            if (currentUser != null) {
+                for (FriendshipRealm fr : currentUser.getFriendships()) {
+                    contactList.remove(phones.get(fr.getFriend().getPhone()));
+                    phones.remove(fr.getFriend().getPhone());
+                    fbIds.remove(fr.getFriend().getFbid());
+                }
 
-            phones.remove(currentUser.getPhone());
+                phones.remove(currentUser.getPhone());
+            }
 
             if (phones.size() > 0 || fbIds.size() > 0) {
                 StringBuffer buffer = new StringBuffer();
@@ -452,10 +467,7 @@ public class CloudUserDataStore implements UserDataStore {
         }, (contactList, entityPair) -> {
             StringBuffer buffer = new StringBuffer();
             String mutationCreateFriendship = null;
-            String reqHowManyFriends = null;
             LookupEntity lookupEntity = entityPair.second != null ? (LookupEntity) entityPair.second : null;
-            Map<String, ContactInterface> phonesHowManyFriends = new HashMap<>(entityPair.first);
-            Map<String, ContactInterface> phonesNewFriendships = new HashMap<>(entityPair.first);
 
             if (lookupEntity != null && lookupEntity.getLookup() != null && lookupEntity.getLookup().size() > 0) {
                 int count = 0;
@@ -469,48 +481,11 @@ public class CloudUserDataStore implements UserDataStore {
                     }
                 }
 
-                phonesHowManyFriends.keySet().removeAll(phonesFound);
-                phonesNewFriendships.keySet().removeAll(phonesHowManyFriends.keySet());
-
                 mutationCreateFriendship = context.getString(R.string.friendship_mutation, buffer.toString(), context.getString(R.string.userfragment_infos));
             }
 
-            if (phonesHowManyFriends.size() > 0) {
-                StringBuffer bufferHowManyFriends = new StringBuffer();
-                StringBuilder resultHowManyFriends = new StringBuilder();
-
-                int count = 0;
-                int loopCount = 0;
-                for (String phone : phonesHowManyFriends.keySet()) {
-                    resultHowManyFriends.append("\"" + phone + "\"");
-                    resultHowManyFriends.append(",");
-                    count++;
-
-                    if (count % LOOKUP_LIMIT == 0) {
-                        bufferHowManyFriends.append(context.getString(R.string.howManyFriends_part, loopCount,
-                                resultHowManyFriends.length() > 0 ? resultHowManyFriends.substring(0, resultHowManyFriends.length() - 1) : ""));
-                        loopCount++;
-                        resultHowManyFriends = new StringBuilder();
-                    }
-                }
-
-                bufferHowManyFriends.append(context.getString(R.string.howManyFriends_part, loopCount,
-                        resultHowManyFriends.length() > 0 ? resultHowManyFriends.substring(0, resultHowManyFriends.length() - 1) : ""));
-
-                reqHowManyFriends = context.getString(R.string.mutation, bufferHowManyFriends.toString());
-            }
-
-            return Observable.zip(
-                    tribeApi.howManyFriends(reqHowManyFriends),
-                    StringUtils.isEmpty(mutationCreateFriendship) ? Observable.just(new CreateFriendshipEntity()) : tribeApi.createFriendship(mutationCreateFriendship),
-                    (howManyFriendsResult, createFriendshipEntity) -> {
-                        int indexHowMany = 0;
-
-                        for (ContactInterface contactInterface : phonesHowManyFriends.values()) {
-                            contactInterface.setHowManyFriends(howManyFriendsResult.get(indexHowMany));
-                            indexHowMany++;
-                        }
-
+            return (StringUtils.isEmpty(mutationCreateFriendship) ? Observable.just(new CreateFriendshipEntity()) : tribeApi.createFriendship(mutationCreateFriendship))
+                    .map(createFriendshipEntity -> {
                         if (createFriendshipEntity != null && createFriendshipEntity.getNewFriendshipList() != null
                                 && createFriendshipEntity.getNewFriendshipList().size() > 0) {
                             UserRealm currentUser = userCache.userInfosNoObs(accessToken.getUserId());
@@ -602,6 +577,11 @@ public class CloudUserDataStore implements UserDataStore {
         mutationRemoveFriendship = context.getString(R.string.friendship_mutation, buffer.toString(), "");
         return this.tribeApi.removeFriendship(mutationRemoveFriendship).onErrorResumeNext(throwable -> Observable.empty())
                 .doOnNext(aVoid -> userCache.removeFriendship(friendshipId));
+    }
+
+    @Override
+    public Observable<Void> notifyFBFriends() {
+        return this.tribeApi.notifyFBFriends("{ user { id } }");
     }
 
     private final Action1<AccessToken> saveToCacheAccessToken = accessToken -> {

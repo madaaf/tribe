@@ -25,7 +25,6 @@ public class SynchroContactsJob extends BaseJob {
     @Named("synchroContactList")
     UseCase synchroContactList;
 
-
     public SynchroContactsJob() {
         super(new Params(Priority.LOW).delayInMs(1000).requireNetwork().singleInstanceBy(TAG).groupBy(TAG));
     }

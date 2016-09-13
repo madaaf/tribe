@@ -32,6 +32,7 @@ public class UserRealm extends RealmObject {
     private RealmList<FriendshipRealm> friendships;
     private RealmList<UserRealm> reported;
     private RealmList<GroupRealm> groups;
+    private boolean invisible_mode;
 
 
     public String getId() {
@@ -184,5 +185,13 @@ public class UserRealm extends RealmObject {
 
     public void setFbid(String fbid) {
         this.fbid = fbid;
+    }
+
+    public boolean isInvisibleMode() {
+        return invisible_mode;
+    }
+
+    public void setInvisibleMode(boolean invisibleMode) {
+        this.invisible_mode = invisibleMode;
     }
 }

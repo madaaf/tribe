@@ -4,10 +4,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.media.Image;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -166,7 +164,23 @@ public class CodeView extends FrameLayout {
     }
 
     public void animateConnectedIcon() {
+<<<<<<< HEAD
         AnimationUtils.scaleIn(imgConnectedIcon, 300);
+=======
+        imgConnectedIcon.animate()
+                .scaleY((float) 1.2).scaleX((float) 1.2)
+                .setDuration(150)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        imgConnectedIcon.animate()
+                                .scaleX(1).scaleY(1)
+                                .setDuration(150)
+                                .setListener(null)
+                                .start();
+                    }
+                }).start();
+>>>>>>> e0b6720286abb0d80f6d9865af3ec5a770b5c46e
     }
 
     public void fadeConnectedOut() {

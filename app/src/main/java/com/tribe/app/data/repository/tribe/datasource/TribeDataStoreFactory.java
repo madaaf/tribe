@@ -47,7 +47,7 @@ public class TribeDataStoreFactory {
     /**
      * Create {@link TribeDataStore}
      */
-    public TribeDataStore createDiskDataStore() { return new DiskTribeDataStore(tribeCache); }
+    public TribeDataStore createDiskDataStore() { return new DiskTribeDataStore(tribeCache, userCache); }
 
     /**
      * Create {@link TribeDataStore} to retrieve data from the Cloud.

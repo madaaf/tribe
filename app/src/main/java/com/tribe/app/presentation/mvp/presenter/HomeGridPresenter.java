@@ -1,8 +1,11 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.Manifest;
+
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.JobStatus;
 import com.birbit.android.jobqueue.TagConstraint;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.data.network.job.DownloadTribeJob;
 import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
 import com.tribe.app.data.network.job.UpdateMessagesJob;
@@ -148,34 +151,36 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
     }
 
     public void downloadMessages(List<Message> messageList) {
-        Observable
-            .just("")
-            .doOnNext(o -> {
-                for (Message message : messageList) {
-                    if (message instanceof TribeMessage) {
-                        boolean shouldDownload = false;
+        if (RxPermissions.getInstance(homeGridView.context()).isGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            Observable
+                .just("")
+                .doOnNext(o -> {
+                    for (Message message : messageList) {
+                        if (message instanceof TribeMessage) {
+                            boolean shouldDownload = false;
 
-                        JobStatus jobStatus = jobManager.getJobStatus(message.getLocalId());
-                        File file = FileUtils.getFileEnd(message.getId());
+                            JobStatus jobStatus = jobManager.getJobStatus(message.getLocalId());
+                            File file = FileUtils.getFileEnd(message.getId());
 
-                        if (jobStatus.equals(JobStatus.UNKNOWN) && (!file.exists() || file.length() == 0)
-                                && (message.getMessageDownloadingStatus() == null || message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD))) {
-                            shouldDownload = true;
-                            message.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
-                            jobManager.cancelJobsInBackground(null, TagConstraint.ALL, message.getId());
-                        }
+                            if (jobStatus.equals(JobStatus.UNKNOWN) && (!file.exists() || file.length() == 0)
+                                    && (message.getMessageDownloadingStatus() == null || message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD))) {
+                                shouldDownload = true;
+                                message.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
+                                jobManager.cancelJobsInBackground(null, TagConstraint.ALL, message.getId());
+                            }
 
-                        if (shouldDownload
-                                && message.getMessageDownloadingStatus() != null
-                                && message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD)
-                                && message.getFrom() != null) {
-                            jobManager.addJobInBackground(new DownloadTribeJob((TribeMessage) message));
+                            if (shouldDownload
+                                    && message.getMessageDownloadingStatus() != null
+                                    && message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD)
+                                    && message.getFrom() != null) {
+                                jobManager.addJobInBackground(new DownloadTribeJob((TribeMessage) message));
+                            }
                         }
                     }
-                }
-            }).subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe();
+                }).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
+        }
     }
 
     public void markTribeListAsRead(Recipient recipient) {

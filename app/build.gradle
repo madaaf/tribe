@@ -94,14 +94,14 @@ android {
         }
 
         tribe2 {
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
             applicationIdSuffix = ".Tribe2"
             resValue "string", "app_name", "Tribe2"
 
             buildConfigField "String", "TRIBE_PUBLIC_KEY", "\"${tribe_public_key_tribe2}\""
             buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key_tribe2}\""
-            buildConfigField "String", "TRIBE_API", "\"http://api.tribe.pm\""
-            buildConfigField "String", "TRIBE_AUTH", "\"http://auth.tribe.pm\""
+            buildConfigField "String", "TRIBE_API", "\"https://api.tribe.pm\""
+            buildConfigField "String", "TRIBE_AUTH", "\"https://auth.tribe.pm\""
         }
     }
 }

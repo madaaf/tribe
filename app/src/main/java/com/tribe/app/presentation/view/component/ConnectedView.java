@@ -18,6 +18,7 @@ import butterknife.Unbinder;
  * Created by horatiothomas on 8/17/16.
  */
 public class ConnectedView extends FrameLayout {
+
     public ConnectedView(Context context) {
         super(context);
     }
@@ -37,7 +38,11 @@ public class ConnectedView extends FrameLayout {
     @BindView(R.id.txtConnected)
     TextViewFont txtConnected;
 
-    Unbinder unbinder;
+    // VARIABLES
+    private Unbinder unbinder;
+
+    // RESOURCES
+    private int translationX;
 
     @Override
     protected void onFinishInflate() {
@@ -47,6 +52,7 @@ public class ConnectedView extends FrameLayout {
 
         ButterKnife.bind(this);
 
+        translationX = getResources().getDimensionPixelSize(R.dimen.horizontal_margin);
     }
 
     @Override
@@ -60,7 +66,7 @@ public class ConnectedView extends FrameLayout {
 
     public void animateConnected() {
         txtConnected.animate()
-                .translationX(-20)
+                .translationX(-translationX)
                 .setDuration(150)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override

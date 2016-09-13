@@ -4,6 +4,7 @@ package com.tribe.app.domain.interactor.user;
  * Created by tiago on 04/05/2016.
  */
 
+import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.domain.entity.Contact;
@@ -32,19 +33,17 @@ public interface UserRepository {
     /**
      * Get an {@link Observable} which will emit a {@link User}.
      *
-     * @param phoneNumber The phoneNumber used to login.
-     * @param code the validation code the user entered.
-     * @param pinId The pinId for the call.
+     * @param loginEntity infos needed to login.
      */
-    Observable<AccessToken> loginWithPhoneNumber(final String phoneNumber, final String code, final String pinId);
+    Observable<AccessToken> loginWithPhoneNumber(final LoginEntity loginEntity);
 
     /**
-     * Get an {@link Observable} which will emit a {@link User}.
-     *
-     * @param username The username used to login.
-     * @param password the password the user entered.
+     * Get an {@link Observable} which will emit an Access Token.
+     * @param displayName the full name of the user.
+     * @param username the username of the user.
+     * @param loginEntity the login infos needed to register (pinId, etc)
      */
-    Observable<AccessToken> loginWithUserName(final String username, final String password);
+    Observable<AccessToken> register(String displayName, String username, LoginEntity loginEntity);
 
 
     /**
@@ -109,4 +108,9 @@ public interface UserRepository {
      * about the contact.
      */
     Observable<List<Contact>> findByValue(String value);
+
+    /**
+     * Get an {@link Observable} which will emit nothing
+     */
+    Observable<Void> notifyFBFriends();
 }

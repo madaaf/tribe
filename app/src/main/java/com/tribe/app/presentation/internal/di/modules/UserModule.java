@@ -1,5 +1,8 @@
 package com.tribe.app.presentation.internal.di.modules;
 
+import com.tribe.app.data.repository.user.CloudUserDataRepository;
+import com.tribe.app.domain.executor.PostExecutionThread;
+import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
@@ -12,12 +15,14 @@ import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.DiskFindContactByValue;
 import com.tribe.app.domain.interactor.user.DiskSearchResults;
 import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
+import com.tribe.app.domain.interactor.user.DoRegister;
 import com.tribe.app.domain.interactor.user.FindByUsername;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetDiskContactList;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.GetReceivedDiskMessageList;
 import com.tribe.app.domain.interactor.user.GetRequestCode;
+import com.tribe.app.domain.interactor.user.NotifyFBFriends;
 import com.tribe.app.domain.interactor.user.RemoveFriendship;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
 import com.tribe.app.domain.interactor.user.SendToken;
@@ -53,10 +58,15 @@ public class UserModule {
 
     @Provides
     @PerActivity
+    DoRegister provideDoRegister(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+        return new DoRegister(userRepository, threadExecutor, postExecutionThread);
+    }
+
+    @Provides
+    @PerActivity
     UseCase provideUpdateUser(UpdateUser updateUser) {
         return updateUser;
     }
-
 
     @Provides
     @PerActivity
@@ -180,5 +190,12 @@ public class UserModule {
     @Named("createFriendship")
     CreateFriendship provideCreateFriendship(CreateFriendship createFriendship) {
         return createFriendship;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("notifyFBFriends")
+    UseCase provideNotifyFBFriends(NotifyFBFriends notifyFBFriends) {
+        return notifyFBFriends;
     }
 }

@@ -51,6 +51,7 @@ import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
+import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.text.PhotoMessageAdapterDelegate;
@@ -109,6 +110,7 @@ public interface ApplicationComponent {
     void inject(VideoMessageAdapterDelegate videoMessageAdapterDelegate);
     void inject(TribeVideoView tribeVideoView);
     void inject(ButtonPointsView buttonPointsView);
+    void inject(SearchResultGridAdapterDelegate searchResultGridAdapterDelegate);
 
     // JOBS
     void inject(SendTribeJob sendTribeJob);

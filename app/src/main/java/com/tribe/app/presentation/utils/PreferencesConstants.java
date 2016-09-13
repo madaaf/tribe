@@ -16,4 +16,5 @@ public class PreferencesConstants {
     public static String INVISIBLE_MODE = "INVISIBLE_MODE";
 	public static String LAST_MESSAGE_REQUEST = "LAST_MESSAGE_REQUEST";
     public static String LAST_USER_REQUEST = "LAST_USER_REQUEST";
+    public static String LAST_NOTIFY_REQUEST = "LAST_NOTIFY_REQUEST";
 }

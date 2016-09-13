@@ -1,5 +1,6 @@
 package com.tribe.app.data.repository.user;
 
+import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.Installation;
@@ -77,10 +78,10 @@ public class DiskUserDataRepository implements UserRepository {
     public Observable<Pin> requestCode(String phoneNumber) { return null; }
 
     @Override
-    public Observable<AccessToken> loginWithPhoneNumber(String phoneNumber, String code, String pinId) { return null; }
+    public Observable<AccessToken> loginWithPhoneNumber(LoginEntity loginEntity) { return null; }
 
     @Override
-    public Observable<AccessToken> loginWithUserName(String username, String password) { return null; }
+    public Observable<AccessToken> register(String displayName, String username, LoginEntity loginEntity) { return null; }
 
     @Override
     public Observable<User> userInfos(String userId) {
@@ -256,6 +257,11 @@ public class DiskUserDataRepository implements UserRepository {
 
     @Override
     public Observable<Void> removeFriendship(String userId) {
+        return null;
+    }
+
+    @Override
+    public Observable<Void> notifyFBFriends() {
         return null;
     }
 }

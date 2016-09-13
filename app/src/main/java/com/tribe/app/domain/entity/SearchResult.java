@@ -11,6 +11,7 @@ public class SearchResult implements Serializable {
     private String display_name;
     private String username;
     private String picture;
+    private boolean invisible_mode = false;
     private Friendship friendship;
     private boolean searchDone = false;
     private boolean shouldAnimateAdd = false;
@@ -69,6 +70,14 @@ public class SearchResult implements Serializable {
 
     public void setShouldAnimateAdd(boolean shouldAnimateAdd) {
         this.shouldAnimateAdd = shouldAnimateAdd;
+    }
+
+    public void setInvisibleMode(boolean invisibleMode) {
+        this.invisible_mode = invisibleMode;
+    }
+
+    public boolean isInvisibleMode() {
+        return invisible_mode;
     }
 
     @Override

@@ -83,6 +83,7 @@ public class ContactCacheImpl implements ContactCache {
                 searchResultRealm.setPicture(searchResult.getPicture());
                 searchResultRealm.setUsername(searchResult.getUsername());
                 searchResultRealm.setId(searchResult.getId());
+                searchResultRealm.setInvisibleMode(searchResult.isInvisibleMode());
                 if (searchResult.getFriendshipRealm() != null)
                     searchResultRealm.setFriendshipRealm(obsRealm.where(FriendshipRealm.class).equalTo("id", searchResult.getFriendshipRealm().getId()).findFirst());
                 else

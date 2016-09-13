@@ -21,6 +21,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import rx.Observable;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * PhoneNumberView.java
@@ -54,6 +55,7 @@ public class PhoneNumberView extends FrameLayout {
     private boolean editable = true;
 
     // OBSERVABLES
+    private CompositeSubscription subscriptions = new CompositeSubscription();
 
     private Unbinder unbinder;
     private PublishSubject<Boolean> phoneNumberValid = PublishSubject.create();
@@ -87,10 +89,8 @@ public class PhoneNumberView extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.view_phone_number, this);
         unbinder = ButterKnife.bind(this);
 
-        RxView.clicks(countryButton)
-                .subscribe(countryClickEventSubject);
-
-
+        subscriptions.add(RxView.clicks(countryButton)
+                .subscribe(countryClickEventSubject));
     }
 
     public void initWithCodeCountry(String codeCountry) {
@@ -105,6 +105,20 @@ public class PhoneNumberView extends FrameLayout {
             e.printStackTrace();
         }
 
+        checkValidPhoneNumber();
+    }
+
+    private void checkValidPhoneNumber() {
+        if (editable) {
+            currentPhoneNumber = phoneUtils.formatMobileNumber(PhoneNumberView.this.getPhoneNumberInput(), countryCode);
+            String viewPhoneNumber = phoneUtils.formatPhoneNumberForView(PhoneNumberView.this.getPhoneNumberInput(), countryCode);
+            if (viewPhoneNumber != null) {
+                editable = false;
+                editTextPhoneNumber.setText(viewPhoneNumber);
+                editTextPhoneNumber.setSelection(editTextPhoneNumber.getText().length());
+                editable = true;
+            }
+        }
     }
 
     public ImageView getImageViewNextIcon() {
@@ -130,22 +144,11 @@ public class PhoneNumberView extends FrameLayout {
     public void setPhoneUtils(PhoneUtils phoneUtils) {
         this.phoneUtils = phoneUtils;
 
-        RxTextView.textChanges(editTextPhoneNumber).map((charSequence) -> charSequence.toString())
+        subscriptions.add(RxTextView.textChanges(editTextPhoneNumber).map((charSequence) -> charSequence.toString())
                 .filter(s -> s != null && !s.isEmpty())
-                .doOnNext(s -> {
-                    if (editable) {
-                        currentPhoneNumber = phoneUtils.formatMobileNumber(PhoneNumberView.this.getPhoneNumberInput(), countryCode);
-                        String viewPhoneNumber = phoneUtils.formatPhoneNumberForView(PhoneNumberView.this.getPhoneNumberInput(), countryCode);
-                        if (viewPhoneNumber != null) {
-                            editable = false;
-                            editTextPhoneNumber.setText(viewPhoneNumber);
-                            editTextPhoneNumber.setSelection(editTextPhoneNumber.getText().length());
-                            editable = true;
-                        }
-                    }
-                })
+                .doOnNext(s -> checkValidPhoneNumber())
                 .map(s -> currentPhoneNumber != null)
-                .subscribe(phoneNumberValid);
+                .subscribe(phoneNumberValid));
 
         initWithCodeCountry(countryCode);
     }
@@ -182,7 +185,5 @@ public class PhoneNumberView extends FrameLayout {
         } else {
             circularProgressViewPhoneNumber.setVisibility(INVISIBLE);
         }
-
     }
-
 }

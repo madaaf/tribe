@@ -18,10 +18,13 @@
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtIntroMessage"
-        android:layout_width="244dp"
-        android:layout_height="17dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
+        android:layout_marginLeft="@dimen/horizontal_margin"
+        android:layout_marginRight="@dimen/horizontal_margin"
         android:layout_marginBottom="75dp"
+        android:singleLine="false"
         style="@style/Body.One.White"
         android:text="@string/onboarding_step_phone"
         android:textAlignment="center"
