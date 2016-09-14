@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="43dp"
-    android:layout_marginTop="25dp"
+    android:layout_width="match_parent" android:layout_height="80dp"
+    android:paddingTop="@dimen/vertical_margin"
+    android:paddingBottom="@dimen/vertical_margin"
     android:paddingStart="@dimen/setting_block_item_horizontal_padding"
     android:paddingEnd="@dimen/setting_block_item_horizontal_padding">
 

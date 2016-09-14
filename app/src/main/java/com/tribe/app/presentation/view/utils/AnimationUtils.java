@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.support.design.widget.CoordinatorLayout;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
@@ -12,6 +13,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.ScaleAnimation;
+import android.widget.FrameLayout;
 
 import com.tribe.app.R;
 
@@ -192,6 +194,29 @@ public class AnimationUtils {
         animator.addUpdateListener(animation -> {
             lp.bottomMargin = (Integer) animation.getAnimatedValue();
             view.setLayoutParams(lp);
+        });
+        animator.start();
+    }
+
+    public static void animateHeight(View view, int height, int duration) {
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) view.getLayoutParams();
+        ValueAnimator animator = ValueAnimator.ofInt(lp.height, height);
+        animator.setDuration(duration);
+        animator.addUpdateListener(animation -> {
+            lp.height = (Integer) animation.getAnimatedValue();
+            view.setLayoutParams(lp);
+        });
+        animator.start();
+    }
+
+    public static void animateHeightCoordinatorLayout(View view, int startHeight, int endHeight, int duration) {
+        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) view.getLayoutParams();
+        ValueAnimator animator = ValueAnimator.ofInt(startHeight, endHeight);
+        animator.setDuration(duration);
+        animator.addUpdateListener(animation -> {
+            lp.height = (Integer) animation.getAnimatedValue();
+            view.getLayoutParams().height = lp.height;
+            view.requestLayout();
         });
         animator.start();
     }

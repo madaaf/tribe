@@ -6,12 +6,16 @@ import android.animation.ObjectAnimator;
 import android.animation.RectEvaluator;
 import android.animation.ValueAnimator;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.media.Image;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -20,6 +24,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -110,9 +115,11 @@ public class GroupsGridFragment extends BaseFragment {
     @BindView(R.id.layoutCreateInvite)
     FrameLayout layoutCreateInvite;
     @BindView(R.id.layoutInvite)
-    LinearLayout layoutInvite;
+    NestedScrollView layoutInvite;
     @BindView(R.id.recyclerViewInvite)
     RecyclerView recyclerViewInvite;
+    @BindView(R.id.appBarLayout)
+    AppBarLayout appBarLayout;
     @BindView(R.id.privatePublicView)
     PrivatePublicView privatePublicView;
 
@@ -139,6 +146,7 @@ public class GroupsGridFragment extends BaseFragment {
     int moveUpY = 138;
     int moveGroupName = 60;
     int startTranslationEditIcons;
+    int startTranslationDoneIcon;
     float groupPicScaleDownF = .7f;
 
     /**
@@ -178,16 +186,19 @@ public class GroupsGridFragment extends BaseFragment {
     private void initUi() {
         // Setup top-right icons
         startTranslationEditIcons = screenUtils.dpToPx(-200);
+        startTranslationDoneIcon = screenUtils.dpToPx(200);
+
         imageEditGroup.setTranslationY(startTranslationEditIcons);
         imageDoneEdit.setTranslationY(startTranslationEditIcons);
-
         imageInvite.setScaleX(0);
         imageInvite.setScaleY(0);
-        imageDone.setTranslationY(200);
+        imageDone.setTranslationY(startTranslationDoneIcon);
         viewCreateGroupBg2.setEnabled(false);
         viewCreateGroupBg1.setEnabled(false);
         layoutInvite.setTranslationY(screenUtils.dpToPx(moveUpY));
         layoutInvite.setVisibility(View.INVISIBLE);
+        recyclerViewInvite.setTranslationY(screenUtils.dpToPx(moveUpY));
+        recyclerViewInvite.setVisibility(View.INVISIBLE);
 
         subscriptions.add(privatePublicView.isPrivate().subscribe(isPrivate -> {
                     privateGroup = isPrivate;
@@ -226,10 +237,14 @@ public class GroupsGridFragment extends BaseFragment {
                        animSet1();
                     });
 
+
             Observable.timer(loadingAnimDuration + animDuration, TimeUnit.MILLISECONDS)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(time -> {
+                        AnimationUtils.animateHeightCoordinatorLayout(appBarLayout,
+                                appBarLayout.getHeight(), appBarLayout.getHeight() - screenUtils.dpToPx(116),
+                                animDuration);
                        animSet2();
                     });
 
@@ -252,7 +267,23 @@ public class GroupsGridFragment extends BaseFragment {
         subscriptions.add(RxView.clicks(viewCreateGroupBg1).subscribe(aVoid -> {
             showShareDialogFragment();
         }));
+
     }
+
+    private void resetLayoutInvite() {
+        layoutInvite.animate()
+                .translationY(AnimationUtils.TRANSLATION_RESET)
+                .setDuration(animDuration)
+                .start();
+        recyclerViewInvite.animate()
+                .translationY(AnimationUtils.TRANSLATION_RESET)
+                .setDuration(animDuration)
+                .start();
+
+        AnimationUtils.animateBottomMargin(recyclerViewInvite, AnimationUtils.TRANSLATION_RESET, animDuration);
+    }
+
+
 
     /**
      * Methods
@@ -265,12 +296,12 @@ public class GroupsGridFragment extends BaseFragment {
                 .translationY(-screenUtils.dpToPx(moveUpY))
                 .setDuration(animDuration)
                 .start();
-        layoutInvite.animate()
+        resetLayoutInvite();
+
+        imageDone.animate()
                 .translationY(AnimationUtils.TRANSLATION_RESET)
                 .setDuration(animDuration)
                 .start();
-        AnimationUtils.animateBottomMargin(recyclerViewInvite, AnimationUtils.TRANSLATION_RESET, animDuration);
-
     }
 
     private void presentEdit() {
@@ -306,15 +337,25 @@ public class GroupsGridFragment extends BaseFragment {
 
         // Small move of bottom half off view
         int presentEditTranslation = screenUtils.dpToPx(25);
-        layoutInvite.animate()
-                .setDuration(animDuration)
-                .y(presentEditTranslation+layoutInvite.getY())
-                .start();
         layoutCreateInvite.animate()
                 .setDuration(animDuration)
                 .y(presentEditTranslation+layoutCreateInvite.getY())
                 .start();
-        AnimationUtils.animateBottomMargin(recyclerViewInvite, presentEditTranslation, animDuration);
+        layoutInvite.animate()
+                .setDuration(animDuration)
+                .y(presentEditTranslation+layoutInvite.getY())
+                .start();
+        recyclerViewInvite.animate()
+                .setDuration(animDuration)
+                .y(presentEditTranslation+recyclerViewInvite.getY())
+                .start();
+
+        imageDone.animate()
+                .translationY(startTranslationDoneIcon)
+                .setDuration(animDuration)
+                .start();
+
+        AnimationUtils.animateBottomMargin(recyclerViewInvite, screenUtils.dpToPx(25), animDuration);
     }
 
     private void removeEditGroup() {
@@ -380,6 +421,7 @@ public class GroupsGridFragment extends BaseFragment {
     }
 
     private void animSet1() {
+        // remove private public selection
         AnimationUtils.collapseScale(privatePublicView, animDuration);
         privatePublicView.animate()
                 .setStartDelay(AnimationUtils.NO_START_DELAY)
@@ -387,6 +429,7 @@ public class GroupsGridFragment extends BaseFragment {
                 .setDuration(animDuration)
                 .start();
 
+        // setup privacy view
         if (privateGroup) {
             textPrivacyStatus.setText(getString(R.string.group_private_title));
             imagePrivacyStatus.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_lock_grey));
@@ -397,10 +440,12 @@ public class GroupsGridFragment extends BaseFragment {
 
         removeEditGroup();
 
+        // Setup invite button
         textCreateInvite.setText(getString(R.string.group_button_share));
         textCreateInviteDesc.setText(getString(R.string.group_share_description));
 
         ((HomeActivity) getActivity()).disableNavigation();
+
 
     }
 
@@ -410,24 +455,36 @@ public class GroupsGridFragment extends BaseFragment {
                 .setDuration(animDuration)
                 .start();
         layoutInvite.setVisibility(View.VISIBLE);
+        recyclerViewInvite.setVisibility(View.VISIBLE);
         layoutInvite.animate()
+                .translationY(AnimationUtils.TRANSLATION_RESET)
+                .setDuration(animDuration)
+                .start();
+        recyclerViewInvite.animate()
                 .translationY(AnimationUtils.TRANSLATION_RESET)
                 .setDuration(animDuration)
                 .start();
     }
 
     private void animSet3() {
+//        setHeightCoordinatorLayout(appBarLayout, appBarLayout.getHeight() - screenUtils.dpToPx(116));
         AnimationUtils.scaleIn(imageInvite, animDuration);
 
         if (!privateGroup) imageDone.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_done_purple));
 
         imageDone.animate()
-                .translationY(0)
+                .translationY(AnimationUtils.TRANSLATION_RESET)
                 .setDuration(animDuration)
                 .start();
 
         viewCreateGroupBg1.setEnabled(true);
 
+    }
+
+    private void setHeightCoordinatorLayout(View coordinatorLayout, int height) {
+        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) coordinatorLayout.getLayoutParams();
+        layoutParams.height = height;
+        coordinatorLayout.setLayoutParams(layoutParams);
     }
 
     /**
