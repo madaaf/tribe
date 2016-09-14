@@ -21,17 +21,4 @@
         style="@style/Title.2.White"
         />
 
-    <ImageView
-        android:id="@+id/imgRedFb"
-        android:layout_width="@dimen/icons_end"
-        android:layout_height="@dimen/icons_end"
-        android:layout_marginTop="10dp"
-        android:layout_gravity="bottom|end"
-        android:scaleType="centerInside"
-        android:background="@drawable/shape_rect_blue_opaue_rounded_bottom_right"
-        android:src="@drawable/picto_facebook_icon_red"
-        android:visibility="invisible"
-        android:clickable="true"
-        />
-
 </FrameLayout>

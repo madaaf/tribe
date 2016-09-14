@@ -69,17 +69,17 @@
             ...UserInfos
         }
     } -->
-    <string name="user.mutate.username" translatable="false">
+    <string name="user.mutate" translatable="false">
         mutation {
             updateUser(user: {
                 username: \"%1$s\",
                 display_name: \"%2$s\"
             }) {
-                username
-                display_name
-                picture
+                ...UserInfos
             }
         }
+
+        %3$s
     </string>
 
     <string name="tribe.send.solo" translatable="false">

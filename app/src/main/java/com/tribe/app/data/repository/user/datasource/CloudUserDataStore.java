@@ -16,7 +16,6 @@ import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
-import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.network.entity.RegisterEntity;
@@ -135,10 +134,10 @@ public class CloudUserDataStore implements UserDataStore {
         RegisterEntity registerEntity = new RegisterEntity();
         registerEntity.setDisplayName(displayName);
         registerEntity.setUsername(username);
-        registerEntity.setCountryCode(loginEntity.getPassword());
+        registerEntity.setCountryCode(loginEntity.getCountryCode());
         registerEntity.setPassword(loginEntity.getPassword());
-        registerEntity.setPhoneNumber(loginEntity.getUsername());
-        registerEntity.setPinId(loginEntity.getUsername());
+        registerEntity.setPhoneNumber(loginEntity.getNationalNumber());
+        registerEntity.setPinId(loginEntity.getPinId());
 
         return this.loginApi
                 .register(registerEntity)
@@ -215,17 +214,19 @@ public class CloudUserDataStore implements UserDataStore {
 
         UserRealm user = userCache.userInfosNoObs(accessToken.getUserId());
 
-        for (FriendshipRealm fr : user.getFriendships()) {
-            toIds.add(fr.getFriend().getId());
-        }
+        if (user.getFriendships() != null) {
+            for (FriendshipRealm fr : user.getFriendships()) {
+                toIds.add(fr.getFriend().getId());
+            }
 
-        List<TribeRealm> lastTribesSent = tribeCache.tribesSent(toIds);
+            List<TribeRealm> lastTribesSent = tribeCache.tribesSent(toIds);
 
-        int countTribes = 0;
-        for (TribeRealm tribeRealm : lastTribesSent) {
-            if (!StringUtils.isEmpty(tribeRealm.getId())) {
-                idsTribes.append((countTribes > 0 ? "," : "") + "\"" + tribeRealm.getId() + "\"");
-                countTribes++;
+            int countTribes = 0;
+            for (TribeRealm tribeRealm : lastTribesSent) {
+                if (!StringUtils.isEmpty(tribeRealm.getId())) {
+                    idsTribes.append((countTribes > 0 ? "," : "") + "\"" + tribeRealm.getId() + "\"");
+                    countTribes++;
+                }
             }
         }
 
@@ -291,17 +292,22 @@ public class CloudUserDataStore implements UserDataStore {
         String usernameParam;
         String displayNameParam;
 
-        if (username == null)
-            usernameParam = userCache.userInfosNoObs(accessToken.getUserId()).getUsername();
-        else usernameParam = username;
+        UserRealm userDb = userCache.userInfosNoObs(accessToken.getUserId());
 
-        if (displayName == null)
-            displayNameParam = userCache.userInfosNoObs(accessToken.getUserId()).getDisplayName();
-        else displayNameParam = displayName;
+        if (username == null) {
+            usernameParam = userDb.getUsername();
+        } else {
+            usernameParam = username;
+        }
 
+        if (displayName == null) {
+            displayNameParam = userDb.getDisplayName();
+        } else {
+            displayNameParam = displayName;
+        }
 
         if (pictureUri == null) {
-            String request = context.getString(R.string.user_mutate_username, usernameParam, displayNameParam);
+            String request = context.getString(R.string.user_mutate, usernameParam, displayNameParam, context.getString(R.string.userfragment_infos));
 
             return this.tribeApi.updateUser(request)
                     .doOnNext(userRealm -> {
@@ -313,7 +319,7 @@ public class CloudUserDataStore implements UserDataStore {
                         userCache.put(dbUser);
                     });
         } else {
-            String request = context.getString(R.string.user_mutate_username, usernameParam, displayNameParam);
+            String request = context.getString(R.string.user_mutate, usernameParam, displayNameParam, context.getString(R.string.userfragment_infos));
             RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
 
             File file = new File(Uri.parse(pictureUri).getPath());
@@ -484,19 +490,23 @@ public class CloudUserDataStore implements UserDataStore {
                 mutationCreateFriendship = context.getString(R.string.friendship_mutation, buffer.toString(), context.getString(R.string.userfragment_infos));
             }
 
-            return (StringUtils.isEmpty(mutationCreateFriendship) ? Observable.just(new CreateFriendshipEntity()) : tribeApi.createFriendship(mutationCreateFriendship))
-                    .map(createFriendshipEntity -> {
-                        if (createFriendshipEntity != null && createFriendshipEntity.getNewFriendshipList() != null
-                                && createFriendshipEntity.getNewFriendshipList().size() > 0) {
-                            UserRealm currentUser = userCache.userInfosNoObs(accessToken.getUserId());
-                            currentUser.getFriendships().addAll(createFriendshipEntity.getNewFriendshipList());
-                            userCache.put(currentUser);
-                        }
+//            return (StringUtils.isEmpty(mutationCreateFriendship) ? Observable.just(new CreateFriendshipEntity()) : tribeApi.createFriendship(mutationCreateFriendship))
+//                    .map(createFriendshipEntity -> {
+//                        if (createFriendshipEntity != null && createFriendshipEntity.getNewFriendshipList() != null
+//                                && createFriendshipEntity.getNewFriendshipList().size() > 0) {
+//                            UserRealm currentUser = userCache.userInfosNoObs(accessToken.getUserId());
+//                            currentUser.getFriendships().addAll(createFriendshipEntity.getNewFriendshipList());
+//                            userCache.put(currentUser);
+//                        }
+//
+//                        List<ContactInterface> interfaces = new ArrayList<>(contactList);
+//                        return interfaces;
+//                    });
 
-                        List<ContactInterface> interfaces = new ArrayList<ContactInterface>(contactList);
-                        return interfaces;
-                    });
-        }).flatMap(listObservable -> listObservable).doOnNext(saveToCacheContacts);
+            return contactList;
+        }).doOnNext(saveToCacheContacts);
+
+        //.flatMap(listObservable -> listObservable)
     }
 
     @Override

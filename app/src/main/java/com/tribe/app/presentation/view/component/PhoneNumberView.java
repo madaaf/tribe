@@ -145,7 +145,7 @@ public class PhoneNumberView extends FrameLayout {
         this.phoneUtils = phoneUtils;
 
         subscriptions.add(RxTextView.textChanges(editTextPhoneNumber).map((charSequence) -> charSequence.toString())
-                .filter(s -> s != null && !s.isEmpty())
+                .filter(s -> s != null && s.length() > 2)
                 .doOnNext(s -> checkValidPhoneNumber())
                 .map(s -> currentPhoneNumber != null)
                 .subscribe(phoneNumberValid));

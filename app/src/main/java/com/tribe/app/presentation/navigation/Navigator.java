@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.widget.Toast;
 
 import com.tribe.app.R;
@@ -73,12 +72,14 @@ public class Navigator {
     /**
      * Goes to the main grid.
      *
-     * @param context A Context needed to open the destiny activity.
+     * @param activity An activity needed to open the destiny activity.
      */
-    public void navigateToHome(Context context) {
-        if (context != null) {
-            Intent intent = HomeActivity.getCallingIntent(context);
-            context.startActivity(intent);
+    public void navigateToHome(Activity activity) {
+        if (activity != null) {
+            Intent intent = HomeActivity.getCallingIntent(activity);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            activity.startActivity(intent);
+            activity.finish();
         }
     }
 

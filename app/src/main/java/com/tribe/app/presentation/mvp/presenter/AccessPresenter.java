@@ -6,6 +6,7 @@ import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.presentation.mvp.view.AccessView;
 import com.tribe.app.presentation.mvp.view.View;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -84,7 +85,13 @@ public class AccessPresenter implements Presenter {
 
         @Override
         public void onNext(List<Contact> contactList) {
-            System.out.println("HEY");
+            List<Contact> friendList = new ArrayList<>();
+
+            for (Contact contact : contactList) {
+                if (contact.getUserList() != null && contact.getUserList().size() > 0) friendList.add(contact);
+            }
+
+            accessView.renderFriendList(friendList);
         }
     }
 }

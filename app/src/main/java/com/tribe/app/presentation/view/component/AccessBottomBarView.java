@@ -6,7 +6,6 @@ import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -21,6 +20,7 @@ import butterknife.Unbinder;
  * Component used in AccessFragment.java to create bottom bar
  */
 public class AccessBottomBarView extends FrameLayout {
+
     public AccessBottomBarView(Context context) {
         super(context);
     }
@@ -42,9 +42,6 @@ public class AccessBottomBarView extends FrameLayout {
      */
 
     Unbinder unbinder;
-
-    @BindView(R.id.imgRedFb)
-    ImageView imgRedFb;
 
     @BindView(R.id.txtAccessTry)
     TextViewFont txtAccessTry;
@@ -82,11 +79,6 @@ public class AccessBottomBarView extends FrameLayout {
 
     public void setText(String text) {
         txtAccessTry.setText(text);
-    }
-
-    public void setImgRedFbVisibility(boolean isVisible) {
-        if (isVisible) imgRedFb.setVisibility(VISIBLE);
-        else imgRedFb.setVisibility(INVISIBLE);
     }
 
     public void setBackground(Drawable drawable) {

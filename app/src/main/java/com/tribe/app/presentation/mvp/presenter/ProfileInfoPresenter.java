@@ -7,6 +7,8 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.DoRegister;
 import com.tribe.app.domain.interactor.user.FindByUsername;
+import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
+import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.presentation.mvp.view.ProfileInfoView;
 import com.tribe.app.presentation.mvp.view.View;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
@@ -23,23 +25,31 @@ public class ProfileInfoPresenter implements Presenter {
     private ProfileInfoView profileInfoView;
 
     // USECASES
-    private RxFacebook rxFacebook;
-    private FindByUsername findByUsername;
-    private DoRegister doRegister;
+    private final RxFacebook rxFacebook;
+    private final FindByUsername findByUsername;
+    private final DoRegister doRegister;
+    private final UpdateUser updateUser;
+    private final GetCloudUserInfos cloudUserInfos;
 
     // SUBSCRIBERS
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private FindByUserNameSubscriber findByUsernameSubscriber;
     private RegisterSubscriber registerSubscriber;
+    private UpdateUserSubscriber updateUserSubscriber;
+    private UserInfoSubscriber userInfoSubscriber;
 
     @Inject
     public ProfileInfoPresenter(RxFacebook rxFacebook,
                                 @Named("cloudFindByUsername") FindByUsername findByUsername,
-                                DoRegister doRegister) {
+                                DoRegister doRegister,
+                                UpdateUser updateUser,
+                                GetCloudUserInfos cloudUserInfos) {
         super();
         this.rxFacebook = rxFacebook;
         this.findByUsername = findByUsername;
         this.doRegister = doRegister;
+        this.updateUser = updateUser;
+        this.cloudUserInfos = cloudUserInfos;
     }
 
     @Override
@@ -106,11 +116,31 @@ public class ProfileInfoPresenter implements Presenter {
     }
 
     public void register(String displayName, String username, LoginEntity loginEntity) {
+        profileInfoView.showLoading();
+
         if (registerSubscriber != null)
             registerSubscriber.unsubscribe();
 
         registerSubscriber = new RegisterSubscriber();
         doRegister.prepare(displayName, username, loginEntity);
+        doRegister.execute(registerSubscriber);
+    }
+
+    public void getUserInfo() {
+        if (userInfoSubscriber != null)
+            userInfoSubscriber.unsubscribe();
+
+        userInfoSubscriber = new UserInfoSubscriber();
+        cloudUserInfos.execute(new UserInfoSubscriber());
+    }
+
+    public void updateUser(String username, String displayName, String pictureUri) {
+        if (updateUserSubscriber != null)
+            updateUserSubscriber.unsubscribe();
+
+        updateUserSubscriber = new UpdateUserSubscriber();
+        updateUser.prepare(username, displayName, pictureUri);
+        updateUser.execute(new UpdateUserSubscriber());
     }
 
     private class FacebookInfosSubscriber extends DefaultSubscriber<FacebookEntity> {
@@ -148,16 +178,56 @@ public class ProfileInfoPresenter implements Presenter {
     private class RegisterSubscriber extends DefaultSubscriber<AccessToken> {
 
         @Override
-        public void onCompleted() { }
+        public void onCompleted() {
+        }
 
         @Override
         public void onError(Throwable e) {
             e.printStackTrace();
+            profileInfoView.hideLoading();
         }
 
         @Override
         public void onNext(AccessToken accessToken) {
+            if (accessToken != null) getUserInfo();
+        }
+    }
 
+    private final class UpdateUserSubscriber extends DefaultSubscriber<User> {
+
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+            profileInfoView.hideLoading();
+        }
+
+        @Override
+        public void onNext(User user) {
+            profileInfoView.hideLoading();
+            if (user != null) profileInfoView.goToAccess();
+        }
+    }
+
+    private final class UserInfoSubscriber extends DefaultSubscriber<User> {
+
+        @Override
+        public void onCompleted() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+            profileInfoView.hideLoading();
+        }
+
+        @Override
+        public void onNext(User user) {
+            if (user != null) profileInfoView.userRegistered();
         }
     }
 }

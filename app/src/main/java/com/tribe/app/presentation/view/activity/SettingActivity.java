@@ -1,20 +1,15 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
-import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -28,6 +23,7 @@ import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.fragment.SettingBlockFragment;
 import com.tribe.app.presentation.view.fragment.SettingFragment;
 import com.tribe.app.presentation.view.fragment.SettingUpdateProfileFragment;
+import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
@@ -36,6 +32,9 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -76,8 +75,6 @@ public class SettingActivity extends BaseActivity implements SettingView {
     @Inject
     ScreenUtils screenUtils;
 
-    String pictureUri = null;
-
     private static final int CAMERA_REQUEST = 6;
 
     @Override
@@ -108,31 +105,38 @@ public class SettingActivity extends BaseActivity implements SettingView {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
-            Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-
-            settingUpdateProfileFragment.setImgProfilePic(thumbnail);
-
-            String imageUri = Uri.fromFile(FileUtils.bitmapToFile(thumbnail, this)).toString();
-
-            pictureUri = imageUri;
+            subscriptions.add(
+                Observable.just((Bitmap) data.getExtras().get("data"))
+                        .map(bitmap -> ImageUtils.formatForUpload(bitmap))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(bitmap -> {
+                            settingUpdateProfileFragment.setImgProfilePic(bitmap, Uri.fromFile(FileUtils.bitmapToFile(bitmap, this)).toString());
+                        })
+            );
         }
 
         // 2. Get image from Gallery
         if (requestCode == ProfileInfoView.RESULT_LOAD_IMAGE && resultCode == Activity.RESULT_OK) {
-            Uri selectedImage = data.getData();
-            pictureUri = selectedImage.toString();
-            String[] filePathColumn = { MediaStore.Images.Media.DATA };
-            Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
-            cursor.moveToFirst();
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            String picturePath = cursor.getString(columnIndex);
-            cursor.close();
+            subscriptions.add(
+                    Observable.just(data.getData())
+                            .map(uri -> {
+                                String[] filePathColumn = { MediaStore.Images.Media.DATA };
+                                Cursor cursor = getContentResolver().query(uri, filePathColumn, null, null, null);
+                                cursor.moveToFirst();
+                                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                                String picturePath = cursor.getString(columnIndex);
+                                cursor.close();
 
-            Bitmap thumbnail = BitmapFactory.decodeFile(picturePath);
+                                return ImageUtils.formatForUpload(ImageUtils.loadFromPath(picturePath));
+                            })
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(bitmap -> {
+                                settingUpdateProfileFragment.setImgProfilePic(bitmap, Uri.fromFile(FileUtils.bitmapToFile(bitmap, this)).toString());
 
-            if (thumbnail != null) {
-                settingUpdateProfileFragment.setImgProfilePic(thumbnail);
-            }
+                            })
+            );
         }
     }
 
@@ -150,7 +154,6 @@ public class SettingActivity extends BaseActivity implements SettingView {
         fragmentTransaction.add(R.id.layoutFragmentContainer, settingFragment);
         fragmentTransaction.commit();
 
-
         subscriptions.add(RxView.clicks(imgBack).subscribe(aVoid -> {
             goToMain();
         }));
@@ -163,14 +166,18 @@ public class SettingActivity extends BaseActivity implements SettingView {
                 finish();
             }
             if (fragmentManager.findFragmentById(R.id.layoutFragmentContainer) instanceof SettingUpdateProfileFragment) {
-                settingPresenter.updateUser(settingUpdateProfileFragment.getUsername(), settingUpdateProfileFragment.getDisplayName(), pictureUri);
+                settingPresenter.updateUser(
+                        settingUpdateProfileFragment.getUsername(),
+                        settingUpdateProfileFragment.getDisplayName(),
+                        settingUpdateProfileFragment.getImgUri()
+                );
+
                 goToMain();
             }
         }));
     }
 
-    private void updateAnim() { ;
-
+    private void updateAnim() {
         imgBack.animate()
                 .alpha(1)
                 .setStartDelay(0)
@@ -194,7 +201,6 @@ public class SettingActivity extends BaseActivity implements SettingView {
     }
 
     private void mainSettingAnim() {
-
         imgBack.animate()
                 .alpha(0)
                 .setStartDelay(0)
@@ -282,8 +288,6 @@ public class SettingActivity extends BaseActivity implements SettingView {
         settingPresenter.attachView(this);
     }
 
-
-
     /**
      * Dagger Setup
      */
@@ -295,7 +299,4 @@ public class SettingActivity extends BaseActivity implements SettingView {
                 .build()
                 .inject(this);
     }
-
-
-
 }

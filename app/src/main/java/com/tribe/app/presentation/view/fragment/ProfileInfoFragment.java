@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
@@ -23,6 +24,7 @@ import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
+import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.FacebookView;
 
@@ -62,10 +64,16 @@ public class ProfileInfoFragment extends Fragment implements com.tribe.app.prese
     ScreenUtils screenUtils;
 
     @Inject
+    PhoneUtils phoneUtils;
+
+    @Inject
     Navigator navigator;
 
     @BindView(R.id.imgNextIcon)
     ImageView imgNextIcon;
+
+    @BindView(R.id.circularProgressProfile)
+    CircularProgressView circularProgressProfile;
 
     @BindView(R.id.profileInfoView)
     ProfileInfoView profileInfoView;
@@ -133,8 +141,8 @@ public class ProfileInfoFragment extends Fragment implements com.tribe.app.prese
      * Helper methods
      */
 
-    public void setImgProfilePic(Bitmap bitmap) {
-         profileInfoView.setImgProfilePic(bitmap);
+    public void setImgProfilePic(Bitmap bitmap, String uri) {
+        profileInfoView.setImgProfilePic(bitmap, uri);
     }
 
     @Override
@@ -158,6 +166,16 @@ public class ProfileInfoFragment extends Fragment implements com.tribe.app.prese
 
     }
 
+    @Override
+    public void userRegistered() {
+        profileInfoPresenter.updateUser(null, null, profileInfoView.getImgUri());
+    }
+
+    @Override
+    public void goToAccess() {
+        ((IntroActivity) getActivity()).goToAccess();
+    }
+
     public void getInfoFromFacebook() {
         profileInfoPresenter.loadFacebookInfos();
     }
@@ -177,7 +195,7 @@ public class ProfileInfoFragment extends Fragment implements com.tribe.app.prese
      */
     @OnClick(R.id.imgNextIcon)
     public void clickNext() {
-        ((IntroActivity) getActivity()).goToAccess();
+        profileInfoPresenter.register(profileInfoView.getDisplayName(), profileInfoView.getUsername(), loginEntity);
     }
 
     /**
@@ -200,12 +218,14 @@ public class ProfileInfoFragment extends Fragment implements com.tribe.app.prese
 
     @Override
     public void showLoading() {
-
+        imgNextIcon.setVisibility(View.GONE);
+        circularProgressProfile.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideLoading() {
-
+        imgNextIcon.setVisibility(View.VISIBLE);
+        circularProgressProfile.setVisibility(View.GONE);
     }
 
     @Override
@@ -229,6 +249,6 @@ public class ProfileInfoFragment extends Fragment implements com.tribe.app.prese
     }
 
     public void setLoginEntity(LoginEntity loginEntity) {
-        this.loginEntity = loginEntity;
+        this.loginEntity = phoneUtils.prepareLoginForRegister(loginEntity);
     }
 }

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
@@ -11,6 +12,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tbruyelle.rxpermissions.RxPermissions;
@@ -21,8 +26,8 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
-import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
@@ -41,6 +46,8 @@ import rx.subscriptions.CompositeSubscription;
  * Created by horatiothomas on 9/6/16.
  */
 public class ProfileInfoView extends FrameLayout {
+
+    private static final int AVATAR_SIZE = 500;
 
     public ProfileInfoView(Context context) {
         super(context);
@@ -86,6 +93,7 @@ public class ProfileInfoView extends FrameLayout {
     public boolean profilePictureSelected = false;
     public final static int RESULT_LOAD_IMAGE = 5, CAMERA_REQUEST = 6;
     private int profilePicSize;
+    private String imgUri;
 
     private static final String[] PERMISSIONS_CAMERA = new String[]{Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -113,14 +121,17 @@ public class ProfileInfoView extends FrameLayout {
         super.onDetachedFromWindow();
     }
 
-    public void setImgProfilePic(Bitmap bitmap) {
-        imgProfilePic.setImageBitmap(formatBitmapforView(bitmap));
+    public void setImgProfilePic(Bitmap bitmap, String imgUri) {
+        RoundedCornersTransformation roundedCornersTransformation = new RoundedCornersTransformation(bitmap.getWidth() >> 1, 0, RoundedCornersTransformation.CornerType.ALL);
+        imgProfilePic.setImageBitmap(roundedCornersTransformation.transform(bitmap));
+
+        this.imgUri = imgUri;
+        profilePictureSelected = true;
     }
 
     public void setUrlProfilePic(String imageUrl) {
         Glide.with(getContext()).load(imageUrl)
-                .override(screenUtils.dpToPx(profilePicSize), screenUtils.dpToPx(profilePicSize))
-                .fitCenter()
+                .override(profilePicSize, profilePicSize)
                 .bitmapTransform(new CropCircleTransformation(getContext()))
                 .crossFade()
                 .into(imgProfilePic);
@@ -143,7 +154,7 @@ public class ProfileInfoView extends FrameLayout {
     }
 
     private void initDimens() {
-        profilePicSize = getResources().getDimensionPixelSize(R.dimen.avatar_size_onboarding);
+        profilePicSize = getResources().getDimensionPixelSize(R.dimen.avatar_size);
     }
 
     private void initUi() {
@@ -159,7 +170,14 @@ public class ProfileInfoView extends FrameLayout {
         }));
 
         subscriptions.add(RxView.clicks(txtTakeASelfie).subscribe(aVoid -> {
-            navigator.getImageFromCamera((Activity) getContext(), CAMERA_REQUEST);
+            RxPermissions.getInstance(getContext())
+                    .request(PERMISSIONS_CAMERA)
+                    .subscribe(granted -> {
+                        if (granted) navigator.getImageFromCamera((Activity) getContext(), CAMERA_REQUEST);
+                        else
+                            // TODO: get string from laurent
+                            Toast.makeText(getContext(), "You must grant permissions to access the camera", Toast.LENGTH_LONG).show();
+                    });
         }));
 
         subscriptions.add(Observable.combineLatest(RxTextView.textChanges(editDisplayName),
@@ -173,22 +191,28 @@ public class ProfileInfoView extends FrameLayout {
 
     public void setInfoFromFacebook(FacebookEntity facebookEntity) {
         Glide.with(getContext()).load(facebookEntity.getProfilePicture())
-                .override(screenUtils.dpToPx(profilePicSize), screenUtils.dpToPx(profilePicSize))
-                .fitCenter()
+                .override(profilePicSize, profilePicSize)
+                .centerCrop()
                 .bitmapTransform(new CropCircleTransformation(getContext()))
                 .crossFade()
                 .into(imgProfilePic);
+
+        Glide.with(getContext()).load(facebookEntity.getProfilePicture())
+                .override(AVATAR_SIZE, AVATAR_SIZE)
+                .into(new SimpleTarget<GlideDrawable>() {
+                    @Override
+                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                        imgUri = Uri.fromFile(FileUtils.bitmapToFile(((GlideBitmapDrawable) resource.getCurrent()).getBitmap(), getContext())).toString();
+                    }
+                });
+
         profilePictureSelected = true;
         editDisplayName.setText(facebookEntity.getName());
         editUsername.setText(facebookEntity.getUsername());
     }
 
-    public Bitmap formatBitmapforView(Bitmap thumbnail) {
-        RoundedCornersTransformation roundedCornersTransformation = new RoundedCornersTransformation(screenUtils.dpToPx(profilePicSize) >> 1, 0, RoundedCornersTransformation.CornerType.ALL);
-        thumbnail = ImageUtils.centerCropBitmap(thumbnail);
-        thumbnail = Bitmap.createScaledBitmap(thumbnail, screenUtils.dpToPx(profilePicSize), screenUtils.dpToPx(profilePicSize), false);
-        thumbnail = roundedCornersTransformation.transform(thumbnail);
-        return thumbnail;
+    public String getImgUri() {
+        return imgUri;
     }
 
     protected ApplicationComponent getApplicationComponent() {

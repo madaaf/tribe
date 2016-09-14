@@ -4,7 +4,6 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,12 +18,14 @@ import com.github.jinatonic.confetti.CommonConfetti;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.AccessPresenter;
 import com.tribe.app.presentation.mvp.view.AccessView;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.component.AccessBottomBarView;
 import com.tribe.app.presentation.view.component.AccessLockView;
 import com.tribe.app.presentation.view.component.TextFriendsView;
@@ -33,6 +34,7 @@ import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -73,6 +75,9 @@ public class AccessFragment extends Fragment implements AccessView {
     @Inject
     AccessPresenter accessPresenter;
 
+    @Inject
+    Navigator navigator;
+
     @BindView(R.id.txtAccessTitle)
     TextViewFont txtAccessTitle;
 
@@ -91,20 +96,20 @@ public class AccessFragment extends Fragment implements AccessView {
     @BindView(R.id.confettiLayout)
     FrameLayout confettiLayout;
 
+    // OBSERVABLES
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
-    Context context;
 
+    // VARIABLES
+    private int numFriends = 0;
     private int viewState;
     private static final int STATE_GET_ACCESS = 0,
             STATE_HANG_TIGHT = 1,
             STATE_SORRY = 2,
             STATE_CONGRATS = 3;
 
-    //for UI testing
-    private boolean tryAgain = true;
-    private boolean isActive = false;
-    private boolean isActive2 = false;
+    // RESOURCES
+    private int totalTimeSynchro;
 
     /**
      * View Lifecycle
@@ -119,6 +124,7 @@ public class AccessFragment extends Fragment implements AccessView {
         viewState = STATE_GET_ACCESS;
         initDependencyInjector();
         initUi(fragmentView);
+        initResources();
         initLockViewSize();
 
         accessPresenter.attachView(this);
@@ -144,32 +150,21 @@ public class AccessFragment extends Fragment implements AccessView {
 
     private void initUi(View view) {
         unbinder = ButterKnife.bind(this, view);
-        context = getActivity();
 
         textFriendsView.setAlpha(0);
         textFriendsView.setTranslationY(screenUtils.dpToPx(100));
 
         subscriptions.add(RxView.clicks(accessBottomBarView.getTxtAccessTry()).subscribe(aVoid -> {
-            isActive2 = false;
             switch (viewState) {
                 case STATE_GET_ACCESS:
-                    RxPermissions.getInstance(getContext())
-                        .request(Manifest.permission.READ_CONTACTS)
-                        .subscribe(hasPermission -> {
-                            if (hasPermission) {
-                                goToHangTight();
-                                accessPresenter.lookupContacts();
-                            } else {
-                                goToSorry();
-                            }
-                        });
-
+                    requestPermissions();
                     break;
                 case STATE_SORRY:
                     cleanUpSorry();
-                    goToHangTight();
+                    requestPermissions();
                     break;
                 case STATE_HANG_TIGHT:
+                    numFriends = 0;
                     goToAccess();
                     break;
                 case STATE_CONGRATS:
@@ -186,6 +181,10 @@ public class AccessFragment extends Fragment implements AccessView {
             sendIntent.setData(Uri.parse("sms:"));
             getActivity().startActivity(sendIntent);
         }));
+    }
+
+    private void initResources() {
+        totalTimeSynchro = getResources().getInteger(R.integer.time_synchro);
     }
 
     private void initLockViewSize() {
@@ -214,8 +213,15 @@ public class AccessFragment extends Fragment implements AccessView {
 
     private void goToAccess() {
         viewState = STATE_GET_ACCESS;
-        isActive = true;
+
         fadeTextInOut();
+
+        textFriendsView.animate()
+                .alpha(0)
+                .translationY(screenUtils.dpToPx(100))
+                .setDuration(100)
+                .setStartDelay(0);
+
         accessLockView.setToAccess();
         accessBottomBarView.setClickable(false);
         accessBottomBarView.animate()
@@ -227,35 +233,33 @@ public class AccessFragment extends Fragment implements AccessView {
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        if (isActive) {
-                            isActive = false;
+                        changeBaseView(getString(R.string.onboarding_queue_title),
+                                android.R.color.black,
+                                getString(R.string.onboarding_queue_description),
+                                getString(R.string.onboarding_queue_button_title),
+                                R.drawable.shape_rect_blue_rounded_bottom);
 
-                            changeBaseView(getString(R.string.onboarding_queue_title),
-                                    android.R.color.black,
-                                    getString(R.string.onboarding_queue_description),
-                                    getString(R.string.onboarding_queue_button_title),
-                                    R.drawable.shape_rect_blue_rounded_bottom);
+                        accessBottomBarView.animate()
+                                .setListener(null)
+                                .translationY(0);
 
-                            accessBottomBarView.animate()
-                                    .setListener(null)
-                                    .translationY(0);
-                            accessBottomBarView.setClickable(true);
-                        }
+                        accessBottomBarView.setClickable(true);
                     }
                 });
     }
 
     private void goToHangTight() {
+        accessPresenter.lookupContacts();
+
         viewState = STATE_HANG_TIGHT;
-        isActive = true;
 
         fadeTextInOut();
         textFriendsView.animate()
                 .alpha(0)
+                .translationY(screenUtils.dpToPx(100))
                 .setDuration(100)
                 .setStartDelay(0);
-        textFriendsView.setTranslationY(screenUtils.dpToPx(100));
+
         accessLockView.setToHangTight(0);
         accessBottomBarView.setClickable(false);
         accessBottomBarView.animate()
@@ -264,28 +268,22 @@ public class AccessFragment extends Fragment implements AccessView {
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        if (isActive) {
-                            isActive = false;
-                            isActive2 = true;
-                            changeBaseView(getString(R.string.onboarding_queue_loading_title),
-                                    android.R.color.black,
-                                    getString(R.string.onboarding_queue_loading_description),
-                                    getString(R.string.action_cancel),
-                                    R.drawable.shape_rect_dark_grey_rounded_bottom);
-                            accessBottomBarView.animate()
-                                    .setDuration(300)
-                                    .setListener(null)
-                                    .translationY(0);
-                            accessBottomBarView.setClickable(true);
-                        }
+                        changeBaseView(getString(R.string.onboarding_queue_loading_title),
+                                android.R.color.black,
+                                getString(R.string.onboarding_queue_loading_description),
+                                getString(R.string.action_cancel),
+                                R.drawable.shape_rect_dark_grey_rounded_bottom);
+                        accessBottomBarView.animate()
+                                .setDuration(300)
+                                .setListener(null)
+                                .translationY(0);
+                        accessBottomBarView.setClickable(true);
                     }
                 }).start();
     }
 
     private void goToSorry() {
         viewState = STATE_SORRY;
-        isActive = true;
 
         textFriendsView.animate()
                 .alpha(1)
@@ -304,22 +302,18 @@ public class AccessFragment extends Fragment implements AccessView {
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        if (isActive) {
-                            isActive = false;
-                            changeBaseView(getString(R.string.onboarding_queue_declined_title),
-                                    R.color.red_deep,
-                                    getString(R.string.onboarding_queue_declined_description, "1"),
-                                    getString(R.string.onboarding_queue_button_title),
-                                    R.drawable.shape_rect_blue_rounded_bottom);
+                        changeBaseView(getString(R.string.onboarding_queue_declined_title),
+                                R.color.red_deep,
+                                getString(R.string.onboarding_queue_declined_description, "1"),
+                                getString(R.string.onboarding_queue_button_title),
+                                R.drawable.shape_rect_blue_rounded_bottom);
 
-                            accessBottomBarView.setImgRedFbVisibility(true);
-                            accessBottomBarView.animate()
-                                    .setDuration(300)
-                                    .setListener(null)
-                                    .translationY(0);
-                            accessBottomBarView.setClickable(true);
-                        }
+                        accessBottomBarView.animate()
+                                .setDuration(300)
+                                .setListener(null)
+                                .translationY(0);
+
+                        accessBottomBarView.setClickable(true);
                     }
                 });
     }
@@ -327,14 +321,15 @@ public class AccessFragment extends Fragment implements AccessView {
     private void goToCongrats() {
         viewState = STATE_CONGRATS;
 
-        CommonConfetti.rainingConfetti(confettiLayout, new int[]{ContextCompat.getColor(getContext(), R.color.confetti_1),
+        CommonConfetti.rainingConfetti(confettiLayout, new int[] {
+                ContextCompat.getColor(getContext(), R.color.confetti_1),
                 ContextCompat.getColor(getContext(), R.color.confetti_2),
                 ContextCompat.getColor(getContext(), R.color.confetti_3),
                 ContextCompat.getColor(getContext(), R.color.confetti_4),
-                ContextCompat.getColor(getContext(), R.color.confetti_5)})
-                .infinite();
+                ContextCompat.getColor(getContext(), R.color.confetti_5)
+        })
+        .infinite();
 
-        isActive = true;
         fadeTextInOut();
         accessBottomBarView.setClickable(false);
         accessBottomBarView.animate()
@@ -343,28 +338,36 @@ public class AccessFragment extends Fragment implements AccessView {
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        if (isActive) {
-                            isActive = false;
+                        changeBaseView(getString(R.string.onboarding_queue_valid_title),
+                                R.color.blue_text_access,
+                                getString(R.string.onboarding_queue_valid_description, "3"),
+                                getString(R.string.onboarding_queue_valid_button_title),
+                                R.drawable.shape_rect_blue_rounded_bottom);
+                        accessLockView.setToCongrats();
 
-                            changeBaseView(getString(R.string.onboarding_queue_valid_title),
-                                    R.color.blue_text_access,
-                                    getString(R.string.onboarding_queue_valid_description, "3"),
-                                    getString(R.string.onboarding_queue_valid_button_title),
-                                    R.drawable.shape_rect_blue_rounded_bottom);
-                            accessLockView.setToCongrats();
+                        accessBottomBarView.animate()
+                                .setDuration(300)
+                                .translationY(0)
+                                .setListener(null);
+                        accessBottomBarView.setClickable(true);
+                    }
+                });
+    }
 
-                            accessBottomBarView.animate()
-                                    .setDuration(300)
-                                    .translationY(0);
-                            accessBottomBarView.setClickable(true);
-                        }
+    private void requestPermissions() {
+        RxPermissions.getInstance(getContext())
+                .request(Manifest.permission.READ_CONTACTS)
+                .subscribe(hasPermission -> {
+                    if (hasPermission) {
+                        goToHangTight();
+                    } else {
+                        goToSorry();
                     }
                 });
     }
 
     private void goToHome() {
-
+        navigator.navigateToHome(getActivity());
     }
 
     /**
@@ -372,16 +375,21 @@ public class AccessFragment extends Fragment implements AccessView {
      */
 
     private void cleanUpSorry() {
-        accessBottomBarView.setImgRedFbVisibility(false);
         animateBottomMargin(txtAccessDesc, screenUtils.dpToPx(112), 300);
+
+        textFriendsView.animate()
+                .alpha(0)
+                .translationY(screenUtils.dpToPx(100))
+                .setDuration(100)
+                .setStartDelay(0);
     }
 
     private void changeBaseView(String titleTxt, int titleTxtColor, String descTxt, String tryAgainTxt, int tryAgainBackground) {
         txtAccessTitle.setText(titleTxt);
-        txtAccessTitle.setTextColor(ContextCompat.getColor(context, titleTxtColor));
+        txtAccessTitle.setTextColor(ContextCompat.getColor(getContext(), titleTxtColor));
         txtAccessDesc.setText(descTxt);
         accessBottomBarView.setText(tryAgainTxt);
-        accessBottomBarView.setBackground(ContextCompat.getDrawable(context, tryAgainBackground));
+        accessBottomBarView.setBackground(ContextCompat.getDrawable(getContext(), tryAgainBackground));
     }
 
     private void animateBottomMargin(View view, int margin, int duration) {
@@ -414,6 +422,33 @@ public class AccessFragment extends Fragment implements AccessView {
 
     public void fadeBigLockIn() {
         accessLockView.fadeBigLockIn();
+    }
+
+    /**
+     * AccessView methods
+     */
+
+    @Override
+    public void renderFriendList(List<Contact> contactList) {
+        if (contactList != null && contactList.size() > 0) {
+            accessLockView.animateProgress();
+
+            subscriptions.add(
+                    Observable.zip(
+                            Observable.from(contactList),
+                            Observable.interval(0, totalTimeSynchro / contactList.size(), TimeUnit.MILLISECONDS),
+                            (contact, aLong) -> contact
+                    ).subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread()).subscribe(contact -> {
+                        numFriends++;
+                        accessLockView.setToHangTight(numFriends);
+
+                        if (numFriends == contactList.size()) goToCongrats();
+                    })
+            );
+        } else {
+            goToSorry();
+        }
     }
 
     /**

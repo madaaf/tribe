@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.utils.StringUtils;
 
 import javax.inject.Inject;
 
@@ -12,6 +14,9 @@ public class LauncherActivity extends BaseActivity {
 
     @Inject
     AccessToken accessToken;
+
+    @Inject
+    User currentUser;
 
     public static Intent getCallingIntent(Context context) {
         return new Intent(context, LauncherActivity.class);
@@ -27,7 +32,9 @@ public class LauncherActivity extends BaseActivity {
         if (IntroActivity.uiOnlyMode) {
             navigator.navigateToLogin(this);
         } else {
-            if (accessToken == null || accessToken.getAccessToken() == null) {
+            if (currentUser == null || StringUtils.isEmpty(currentUser.getUsername())
+                    || ((currentUser.getGroupList() == null || currentUser.getGroupList().size() == 0)
+                    && (currentUser.getFriendships() == null || currentUser.getFriendships().size() == 0))) {
                 navigator.navigateToLogin(this);
             } else {
                 navigator.navigateToHome(this);

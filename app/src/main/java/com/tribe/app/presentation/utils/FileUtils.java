@@ -2,9 +2,7 @@ package com.tribe.app.presentation.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Environment;
-import android.provider.MediaStore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -23,6 +21,7 @@ public class FileUtils {
     private static String pathAudio = "/TribeMessage/Audio";
     private static String pathVideo = "/TribeMessage/Video";
     private static String pathEnd = "/TribeMessage/Sent";
+    private static String pathPicture = "/TribeMessage/Pictures";
 
     public static String generateFileForAudio(String id) {
         File audioDir = new File(pathOrigin + pathAudio);
@@ -109,7 +108,7 @@ public class FileUtils {
             e.printStackTrace();
         }
 
-        //Convert bitmap to byte array
+        // Convert bitmap to byte array
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
         byte[] bitmapdata = bos.toByteArray();
@@ -125,5 +124,4 @@ public class FileUtils {
         }
         return f;
     }
-
 }

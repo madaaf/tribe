@@ -67,8 +67,12 @@ public class SettingUpdateProfileFragment extends BaseFragment {
 
     }
 
-    public void setImgProfilePic(Bitmap bitmap) {
-        profileInfoView.setImgProfilePic(bitmap);
+    public void setImgProfilePic(Bitmap bitmap, String imgUri) {
+        profileInfoView.setImgProfilePic(bitmap, imgUri);
+    }
+
+    public String getImgUri() {
+        return profileInfoView.getImgUri();
     }
 
     public String getUsername() {
