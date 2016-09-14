@@ -27,10 +27,19 @@
         style="@style/Body.Two.Blue"
         />
 
-    <ImageView
-        android:id="@+id/imageBlock"
+    <FrameLayout
+        android:id="@+id/layoutSelected"
         android:layout_width="@dimen/setting_pic_size"
         android:layout_height="@dimen/setting_pic_size"
-        android:layout_gravity="end"/>
+        android:layout_gravity="end">
+
+        <ImageView
+            android:id="@+id/imageSelected"
+            android:layout_width="@dimen/friend_adapter_fill_size"
+            android:layout_height="@dimen/friend_adapter_fill_size"
+            android:layout_gravity="center"
+            />
+
+    </FrameLayout>
 
 </FrameLayout>

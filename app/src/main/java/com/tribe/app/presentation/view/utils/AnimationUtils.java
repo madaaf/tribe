@@ -2,13 +2,16 @@ package com.tribe.app.presentation.view.utils;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.OvershootInterpolator;
+import android.view.animation.ScaleAnimation;
 
 import com.tribe.app.R;
 
@@ -19,6 +22,12 @@ public class AnimationUtils {
 
     private static final float OVERSHOOT_REPLACE = 1f;
     private static final int DURATION_REPLACE = 300;
+
+    public static final float SCALE_RESET = 1f;
+    public static final int TRANSLATION_RESET = 0;
+    public static final int NO_START_DELAY = 0;
+    public static final int ALPHA_FULL = 1;
+    public static final int ALPHA_NONE = 0;
 
     public static Animation fadeInAnimation(final View view, long duration, long delay) {
         Animation animation = new AlphaAnimation(0, 1);
@@ -152,4 +161,39 @@ public class AnimationUtils {
         v1.animate().alpha(0).translationY(translateOut).setDuration(DURATION_REPLACE).setInterpolator(new OvershootInterpolator(OVERSHOOT_REPLACE)).start();
         v2.animate().alpha(1).translationY(0).setDuration(DURATION_REPLACE).setInterpolator(new OvershootInterpolator(OVERSHOOT_REPLACE)).setListener(listener).start();
     }
+
+    public static void scaleIn(View view, int duration) {
+        view.animate()
+                .scaleY((float) 1.2).scaleX((float) 1.2)
+                .setDuration(duration/2)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        view.animate()
+                                .scaleX(1).scaleY(1)
+                                .setDuration(duration/2)
+                                .start();
+                    }
+                }).start();
+    }
+
+    public static void collapseScale(View view, int duration) {
+        ScaleAnimation scaleAnimation = new ScaleAnimation(1f, 1f, 1f, 0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0f);
+        scaleAnimation.setDuration(duration);
+        scaleAnimation.setFillAfter(true);
+        view.startAnimation(scaleAnimation);
+    }
+
+    public static void animateBottomMargin(View view, int margin, int duration) {
+        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        ValueAnimator animator = ValueAnimator.ofInt(lp.bottomMargin, margin);
+        animator.setDuration(duration);
+        animator.addUpdateListener(animation -> {
+            lp.bottomMargin = (Integer) animation.getAnimatedValue();
+            view.setLayoutParams(lp);
+        });
+        animator.start();
+    }
+
 }

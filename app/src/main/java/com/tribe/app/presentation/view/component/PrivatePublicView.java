@@ -12,19 +12,21 @@ import android.widget.ImageView;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import org.w3c.dom.Text;
 
-import java.util.Observable;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -75,6 +77,11 @@ public class PrivatePublicView extends FrameLayout {
     TextViewFont txtPrivate;
 
     int animationDuration = 300;
+    int moveLeft = -20;
+    int moveRight = 20;
+    int reset = 0;
+    private PublishSubject<Boolean> isPrivate = PublishSubject.create();
+
 
     @Override
     protected void onFinishInflate() {
@@ -83,8 +90,6 @@ public class PrivatePublicView extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.view_private_public, this);
         unbinder = ButterKnife.bind(this);
 
-        setPrivate();
-
         subscriptions.add(RxView.clicks(layoutPrivate).subscribe(aVoid -> {
             setPrivate();
         }));
@@ -92,6 +97,15 @@ public class PrivatePublicView extends FrameLayout {
         subscriptions.add(RxView.clicks(layoutPublic).subscribe(aVoid -> {
             setPublic();
         }));
+
+        getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                setPrivate();
+                getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
+
     }
 
     @Override
@@ -106,24 +120,28 @@ public class PrivatePublicView extends FrameLayout {
         super.onDetachedFromWindow();
     }
 
+    public void setEnabled(boolean enabled) {
+        layoutPrivate.setEnabled(enabled);
+        layoutPublic.setEnabled(enabled);
+    }
+
     private void setPrivate() {
         txtDescription.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.green_group));
         imgTriangle.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_triangle_green));
         txtDescription.setText(getContext().getString(R.string.group_private_description));
-        int location[] = new int[2];
-        layoutPrivate.getLocationOnScreen(location);
         int layoutWidth = layoutPrivate.getWidth();
-        int triangleLoc = (location[0] + layoutWidth)/2;
+        int triangleLoc = (layoutWidth)/2;
         imgTriangle.animate()
                 .x(triangleLoc)
                 .setDuration(animationDuration)
                 .start();
         imgLock.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_lock_green));
         imgMegaphone.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_megaphone_grey));
-        moveImg(imgLock, -20);
-        moveImg(imgMegaphone, 0);
-        moveTxt(txtPublic, 0, 0);
-        moveTxt(txtPrivate, 20, 1);
+        moveImg(imgLock, moveLeft);
+        moveImg(imgMegaphone, reset);
+        moveTxt(txtPublic, reset, reset);
+        moveTxt(txtPrivate, moveRight, 1);
+        isPrivate.onNext(true);
     }
 
     private void setPublic() {
@@ -141,10 +159,15 @@ public class PrivatePublicView extends FrameLayout {
 
         imgLock.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_lock_grey));
         imgMegaphone.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_megaphone_purple));
-        moveImg(imgMegaphone, -20);
-        moveImg(imgLock, 0);
-        moveTxt(txtPrivate, 0, 0);
-        moveTxt(txtPublic, 20, 1);
+        moveImg(imgMegaphone, moveLeft);
+        moveImg(imgLock, reset);
+        moveTxt(txtPrivate, reset, reset);
+        moveTxt(txtPublic, moveRight, 1);
+        isPrivate.onNext(false);
+    }
+
+    public Observable<Boolean> isPrivate() {
+     return isPrivate;
     }
 
     private void moveImg(ImageView imageView, int dp) {

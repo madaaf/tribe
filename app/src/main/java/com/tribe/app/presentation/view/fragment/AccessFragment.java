@@ -23,6 +23,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.mvp.presenter.AccessPresenter;
 import com.tribe.app.presentation.mvp.view.AccessView;
 import com.tribe.app.presentation.navigation.Navigator;
@@ -73,10 +74,10 @@ public class AccessFragment extends Fragment implements AccessView {
     ScreenUtils screenUtils;
 
     @Inject
-    AccessPresenter accessPresenter;
+    Navigator navigator;
 
     @Inject
-    Navigator navigator;
+    AccessPresenter accessPresenter;
 
     @BindView(R.id.txtAccessTitle)
     TextViewFont txtAccessTitle;
@@ -177,9 +178,7 @@ public class AccessFragment extends Fragment implements AccessView {
         }));
 
         subscriptions.add(RxView.clicks(textFriendsView).subscribe(aVoid -> {
-            Intent sendIntent = new Intent(Intent.ACTION_VIEW);
-            sendIntent.setData(Uri.parse("sms:"));
-            getActivity().startActivity(sendIntent);
+            navigator.sendText("", getActivity());
         }));
     }
 
@@ -291,7 +290,7 @@ public class AccessFragment extends Fragment implements AccessView {
                 .translationY(0)
                 .setStartDelay(0);
 
-        animateBottomMargin(txtAccessDesc, screenUtils.dpToPx(170), 300);
+        AnimationUtils.animateBottomMargin(txtAccessDesc, screenUtils.dpToPx(170), 300);
 
         accessLockView.setToSorry();
         accessBottomBarView.setClickable(false);
@@ -375,7 +374,7 @@ public class AccessFragment extends Fragment implements AccessView {
      */
 
     private void cleanUpSorry() {
-        animateBottomMargin(txtAccessDesc, screenUtils.dpToPx(112), 300);
+        AnimationUtils.animateBottomMargin(txtAccessDesc, screenUtils.dpToPx(112), 300);
 
         textFriendsView.animate()
                 .alpha(0)
@@ -390,17 +389,6 @@ public class AccessFragment extends Fragment implements AccessView {
         txtAccessDesc.setText(descTxt);
         accessBottomBarView.setText(tryAgainTxt);
         accessBottomBarView.setBackground(ContextCompat.getDrawable(getContext(), tryAgainBackground));
-    }
-
-    private void animateBottomMargin(View view, int margin, int duration) {
-        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
-        ValueAnimator animator = ValueAnimator.ofInt(lp.bottomMargin, margin);
-        animator.setDuration(duration);
-        animator.addUpdateListener(animation -> {
-            lp.bottomMargin = (Integer) animation.getAnimatedValue();
-            view.setLayoutParams(lp);
-        });
-        animator.start();
     }
 
     private void showGetNotifiedDialog() {

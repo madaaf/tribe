@@ -6,8 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.block_friend.BlockFriendAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.friend.FriendAdapterDelegate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,17 +18,17 @@ import rx.Observable;
 /**
  * Created by horatiothomas on 9/7/16.
  */
-public class BlockFriendAdapter extends RecyclerView.Adapter {
+public class FriendAdapter extends RecyclerView.Adapter {
 
     protected RxAdapterDelegatesManager<List<Friendship>> delegatesManager;
     private List<Friendship> items;
-    private BlockFriendAdapterDelegate blockFriendAdapterDelegate;
+    private FriendAdapterDelegate friendAdapterDelegate;
 
     @Inject
-    public BlockFriendAdapter(Context context) {
+    public FriendAdapter(Context context) {
         delegatesManager = new RxAdapterDelegatesManager<>();
-        blockFriendAdapterDelegate = new BlockFriendAdapterDelegate(context);
-        delegatesManager.addDelegate(blockFriendAdapterDelegate);
+        friendAdapterDelegate = new FriendAdapterDelegate(context);
+        delegatesManager.addDelegate(friendAdapterDelegate);
         items = new ArrayList<>();
     }
 
@@ -64,6 +63,6 @@ public class BlockFriendAdapter extends RecyclerView.Adapter {
     }
 
     public Observable<View> clickFriendItem() {
-        return blockFriendAdapterDelegate.clickFriendItem();
+        return friendAdapterDelegate.clickFriendItem();
     }
 }

@@ -222,6 +222,7 @@ public class SettingActivity extends BaseActivity implements SettingView {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.setCustomAnimations(R.anim.fragment_in_from_right, R.anim.fragment_out_from_left);
         fragmentTransaction.add(R.id.layoutFragmentContainer, settingUpdateProfileFragment);
+        fragmentTransaction.addToBackStack("Update");
         fragmentTransaction.commit();
         txtTitle.setText(getString(R.string.settings_profile_title));
         updateAnim();
@@ -231,6 +232,7 @@ public class SettingActivity extends BaseActivity implements SettingView {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.setCustomAnimations(R.anim.fragment_in_from_right, R.anim.fragment_out_from_left);
         fragmentTransaction.add(R.id.layoutFragmentContainer, settingBlockFragment);
+        fragmentTransaction.addToBackStack("Block");
         fragmentTransaction.commit();
         txtTitle.setText(getString(R.string.hiddenblocked_empty_title));
         imgDone.setAlpha(0f);

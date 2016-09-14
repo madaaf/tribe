@@ -235,4 +235,53 @@ public class Navigator {
         activity.startActivityForResult(cameraIntent, result);
     }
 
+    public void sendText(String body, Activity activity) {
+        Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+        sendIntent.setData(Uri.parse("sms:"));
+        sendIntent.putExtra("sms_body", body);
+        activity.startActivity(sendIntent);
+    }
+
+    public void openFacebookMessenger(String body, Activity activity) {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent
+                .putExtra(Intent.EXTRA_TEXT,
+                        body);
+        sendIntent.setType("text/plain");
+        sendIntent.setPackage("com.facebook.orca");
+        try {
+            activity.startActivity(sendIntent);
+        }
+        catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(activity,"Facebook Messenger is not installed.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void openWhatsApp(String body, Activity activity) {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, body);
+        sendIntent.setType("text/plain");
+        sendIntent.setPackage("com.whatsapp");
+        activity.startActivity(sendIntent);
+    }
+
+    public void openSnapchat(String body, Activity activity) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("*/*");
+        intent.putExtra(Intent.EXTRA_TEXT, body);
+        intent.setPackage("com.snapchat.android");
+        activity.startActivity(Intent.createChooser(intent, "Open Snapchat"));
+    }
+
+    public void openTelegram(String body, Activity activity) {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, body);
+        sendIntent.setType("text/plain");
+        sendIntent.setPackage("org.telegram.messenger");
+        activity.startActivity(sendIntent);
+    }
+
 }

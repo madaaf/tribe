@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 
 import butterknife.BindView;
@@ -163,19 +164,7 @@ public class CodeView extends FrameLayout {
     }
 
     public void animateConnectedIcon() {
-        imgConnectedIcon.animate()
-                .scaleY((float) 1.2).scaleX((float) 1.2)
-                .setDuration(150)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        imgConnectedIcon.animate()
-                                .scaleX(1).scaleY(1)
-                                .setDuration(150)
-                                .setListener(null)
-                                .start();
-                    }
-                }).start();
+        AnimationUtils.scaleIn(imgConnectedIcon, 300);
     }
 
     public void fadeConnectedOut() {
