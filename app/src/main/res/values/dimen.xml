@@ -95,6 +95,7 @@
     <dimen name="group_image_size">82dp</dimen>
     <dimen name="dialog_fragment_width">262dp</dimen>
     <dimen name="dialog_fragment_icon_size">66dp</dimen>
+    <dimen name="friend_adapter_fill_size">30dp</dimen>
 
     <!-- THRESHOLDS -->
     <dimen name="threshold_dismiss">100dp</dimen>

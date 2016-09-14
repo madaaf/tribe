@@ -1,7 +1,10 @@
 package com.tribe.app.presentation.view.fragment;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.RectEvaluator;
+import android.animation.ValueAnimator;
 import android.app.FragmentManager;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -11,6 +14,8 @@ import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,13 +28,16 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.CameraType;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.activity.HomeActivity;
+import com.tribe.app.presentation.view.adapter.FriendAdapter;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.component.PrivatePublicView;
 import com.tribe.app.presentation.view.dialog_fragment.ShareDialogFragment;
@@ -68,6 +76,7 @@ public class GroupsGridFragment extends BaseFragment {
     Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
+    // Bind view
     @BindView(R.id.imageGroup)
     ImageView imageGroup;
     @BindView(R.id.imageEditGroup)
@@ -78,38 +87,42 @@ public class GroupsGridFragment extends BaseFragment {
     ImageView imageInvite;
     @BindView(R.id.imageDone)
     ImageView imageDone;
-
+    @BindView(R.id.imageDoneEdit)
+    ImageView imageDoneEdit;
     @BindView(R.id.textPrivacyStatus)
     TextViewFont textPrivacyStatus;
     @BindView(R.id.textCreateInvite)
     TextViewFont textCreateInvite;
     @BindView(R.id.textCreateInviteDesc)
     TextViewFont textCreateInviteDesc;
-
     @BindView(R.id.editTextGroupName)
     EditTextFont editTextGroupName;
-
+    @BindView(R.id.editTextInviteSearch)
+    EditTextFont editTextInviteSearch;
     @BindView(R.id.viewCreateGroupBg1)
     View viewCreateGroupBg1;
     @BindView(R.id.viewCreateGroupBg2)
     View viewCreateGroupBg2;
     @BindView(R.id.viewDividerBackground)
     View viewDividerBackground;
-
-
     @BindView(R.id.layoutPrivacyStatus)
     LinearLayout layoutPrivacyStatus;
     @BindView(R.id.layoutCreateInvite)
     FrameLayout layoutCreateInvite;
-
+    @BindView(R.id.layoutInvite)
+    LinearLayout layoutInvite;
+    @BindView(R.id.recyclerViewInvite)
+    RecyclerView recyclerViewInvite;
     @BindView(R.id.privatePublicView)
     PrivatePublicView privatePublicView;
 
+    // Dagger Dependencies
     @Inject
     Navigator navigator;
-
     @Inject
     ScreenUtils screenUtils;
+    @Inject
+    FriendAdapter friendAdapter;
 
     // VARIABLES
     private BottomSheetDialog dialogCamera;
@@ -118,6 +131,19 @@ public class GroupsGridFragment extends BaseFragment {
     private int animDuration = 300 * 2;
     private int loadingAnimDuration = 1000 * 2;
     private boolean privateGroup = true;
+    private List<Friendship> friendshipsList;
+    private List<Friendship> friendshipsListCopy;
+    private LinearLayoutManager linearLayoutManager;
+
+    // Animation Variables
+    int moveUpY = 138;
+    int moveGroupName = 60;
+    int startTranslationEditIcons;
+    float groupPicScaleDownF = .7f;
+
+    /**
+     * View lifecycle methods
+     */
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -125,23 +151,43 @@ public class GroupsGridFragment extends BaseFragment {
         unbinder = ButterKnife.bind(this, fragmentView);
         initDependencyInjector();
         initUi();
+        initFriendshipList();
+        initSearchView();
         fragmentView.setTag(HomeActivity.GROUPS_FRAGMENT_PAGE);
         return fragmentView;
     }
 
     @Override
     public void onDestroy() {
+
+        unbinder.unbind();
+
+        if (subscriptions.hasSubscriptions()) {
+            subscriptions.unsubscribe();
+            subscriptions.clear();
+        }
+
         super.onDestroy();
     }
 
+    /**
+     * Setup UI
+     * Includes subscription setup
+     */
+
     private void initUi() {
-        int startTranslation = -200;
-        imageEditGroup.setTranslationY(startTranslation);
+        // Setup top-right icons
+        startTranslationEditIcons = screenUtils.dpToPx(-200);
+        imageEditGroup.setTranslationY(startTranslationEditIcons);
+        imageDoneEdit.setTranslationY(startTranslationEditIcons);
+
         imageInvite.setScaleX(0);
         imageInvite.setScaleY(0);
         imageDone.setTranslationY(200);
         viewCreateGroupBg2.setEnabled(false);
         viewCreateGroupBg1.setEnabled(false);
+        layoutInvite.setTranslationY(screenUtils.dpToPx(moveUpY));
+        layoutInvite.setVisibility(View.INVISIBLE);
 
         subscriptions.add(privatePublicView.isPrivate().subscribe(isPrivate -> {
                     privateGroup = isPrivate;
@@ -195,17 +241,149 @@ public class GroupsGridFragment extends BaseFragment {
                     });
         }));
 
+        subscriptions.add(RxView.clicks(imageEditGroup).subscribe(aVoid -> {
+            presentEdit();
+        }));
+
+        subscriptions.add(RxView.clicks(imageDoneEdit).subscribe(aVoid -> {
+            backFromEdit();
+        }));
+
         subscriptions.add(RxView.clicks(viewCreateGroupBg1).subscribe(aVoid -> {
             showShareDialogFragment();
         }));
     }
 
-    private void animSet1() {
+    /**
+     * Methods
+     */
+
+    private void backFromEdit() {
+        removeEditGroup();
+
+        layoutCreateInvite.animate()
+                .translationY(-screenUtils.dpToPx(moveUpY))
+                .setDuration(animDuration)
+                .start();
+        layoutInvite.animate()
+                .translationY(AnimationUtils.TRANSLATION_RESET)
+                .setDuration(animDuration)
+                .start();
+        AnimationUtils.animateBottomMargin(recyclerViewInvite, AnimationUtils.TRANSLATION_RESET, animDuration);
+
+    }
+
+    private void presentEdit() {
+        // Setup top-right icon
+        bringInIcon(imageDoneEdit);
+        bringOutIcon(imageEditGroup);
+
+        // Setup group image
+        imageGroup.setEnabled(true);
+        imageGroup.animate()
+                .scaleY(AnimationUtils.SCALE_RESET)
+                .scaleX(AnimationUtils.SCALE_RESET)
+                .setDuration(animDuration)
+                .start();
+
+        // Setup edit group name
+        viewDividerBackground.setVisibility(View.VISIBLE);
+        editTextGroupName.bringToFront();
+        editTextGroupName.setEnabled(true);
+        editTextGroupName.setCursorVisible(true);
+        editTextGroupName.animate()
+                .translationY(AnimationUtils.TRANSLATION_RESET)
+                .setDuration(animDuration)
+                .start();
+
+        // Privacy status
+        layoutPrivacyStatus.animate()
+                .setDuration(animDuration)
+                .alpha(AnimationUtils.ALPHA_NONE)
+                .setStartDelay(AnimationUtils.NO_START_DELAY)
+                .translationY(AnimationUtils.TRANSLATION_RESET)
+                .start();
+
+        // Small move of bottom half off view
+        int presentEditTranslation = screenUtils.dpToPx(25);
+        layoutInvite.animate()
+                .setDuration(animDuration)
+                .y(presentEditTranslation+layoutInvite.getY())
+                .start();
+        layoutCreateInvite.animate()
+                .setDuration(animDuration)
+                .y(presentEditTranslation+layoutCreateInvite.getY())
+                .start();
+        AnimationUtils.animateBottomMargin(recyclerViewInvite, presentEditTranslation, animDuration);
+    }
+
+    private void removeEditGroup() {
+        screenUtils.hideKeyboard(getActivity());
+
+        // Setup top right icons
+        bringInIcon(imageEditGroup);
+        bringOutIcon(imageDoneEdit);
+
+        // Setup group image
+        imageGroup.setEnabled(false);
+        imageGroup.animate()
+                .scaleY(groupPicScaleDownF)
+                .scaleX(groupPicScaleDownF)
+                .setDuration(animDuration)
+                .start();
+
+        // Setup group name
         viewDividerBackground.setVisibility(View.INVISIBLE);
+        editTextGroupName.bringToFront();
+        editTextGroupName.setEnabled(false);
+        editTextGroupName.setTextColor(ContextCompat.getColor(getContext(), android.R.color.black));
+        editTextGroupName.setCursorVisible(false);
+        editTextGroupName.animate()
+                .translationY(-screenUtils.dpToPx(moveGroupName))
+                .setDuration(animDuration)
+                .start();
+
+        // Setup privacy view
+        int privacyFinalPosition = -screenUtils.dpToPx(48);
+        layoutPrivacyStatus.animate()
+                .setDuration(animDuration)
+                .alpha(AnimationUtils.ALPHA_FULL)
+                .setStartDelay(AnimationUtils.NO_START_DELAY)
+                .translationY(privacyFinalPosition)
+                .start();
+    }
+
+    /**
+     * Animations performed after step 1
+     */
+
+    private void createGroupLoadingAnim() {
+        screenUtils.hideKeyboard(getActivity());
+        Rect rect = new Rect();
+        viewCreateGroupBg2.getLocalVisibleRect(rect);
+        Rect from = new Rect(rect);
+        Rect to = new Rect(rect);
+        from.right = 0;
+        viewCreateGroupBg2.setAlpha(1f);
+        ObjectAnimator anim = ObjectAnimator.ofObject(viewCreateGroupBg2,
+                "clipBounds",
+                new RectEvaluator(),
+                from, to);
+        anim.setDuration(loadingAnimDuration);
+        anim.start();
+        Observable.timer(loadingAnimDuration, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(time -> {
+                    viewCreateGroupBg2.setVisibility(View.INVISIBLE);
+                });
+    }
+
+    private void animSet1() {
         AnimationUtils.collapseScale(privatePublicView, animDuration);
         privatePublicView.animate()
-                .setStartDelay(0)
-                .alpha(0f)
+                .setStartDelay(AnimationUtils.NO_START_DELAY)
+                .alpha(AnimationUtils.ALPHA_NONE)
                 .setDuration(animDuration)
                 .start();
 
@@ -216,27 +394,8 @@ public class GroupsGridFragment extends BaseFragment {
             textPrivacyStatus.setText(getString(R.string.group_public_title));
             imagePrivacyStatus.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_megaphone_grey));
         }
-        layoutPrivacyStatus.animate()
-                .setDuration(animDuration)
-                .alpha(1)
-                .setStartDelay(0)
-                .translationY(-screenUtils.dpToPx(48))
-                .start();
 
-        bringInIcon(imageEditGroup);
-
-        imageGroup.animate()
-                .scaleY(.7f)
-                .scaleX(.7f)
-                .setDuration(animDuration)
-                .start();
-        editTextGroupName.bringToFront();
-        editTextGroupName.setKeyListener(null);
-        editTextGroupName.setCursorVisible(false);
-        editTextGroupName.animate()
-                .translationY(-screenUtils.dpToPx(60))
-                .setDuration(animDuration)
-                .start();
+        removeEditGroup();
 
         textCreateInvite.setText(getString(R.string.group_button_share));
         textCreateInviteDesc.setText(getString(R.string.group_share_description));
@@ -247,10 +406,14 @@ public class GroupsGridFragment extends BaseFragment {
 
     private void animSet2() {
         layoutCreateInvite.animate()
-                .translationY(-screenUtils.dpToPx(138))
+                .translationY(-screenUtils.dpToPx(moveUpY))
                 .setDuration(animDuration)
                 .start();
-
+        layoutInvite.setVisibility(View.VISIBLE);
+        layoutInvite.animate()
+                .translationY(AnimationUtils.TRANSLATION_RESET)
+                .setDuration(animDuration)
+                .start();
     }
 
     private void animSet3() {
@@ -267,25 +430,87 @@ public class GroupsGridFragment extends BaseFragment {
 
     }
 
+    /**
+     * Helper UI methods
+     */
+
     private void bringInIcon(ImageView imageView) {
+        imageView.setEnabled(true);
         imageView.animate()
-                .translationY(0)
+                .translationY(AnimationUtils.TRANSLATION_RESET)
                 .setDuration(animDuration)
                 .start();
     }
 
-    @Override
-    public void onDetach() {
-        unbinder.unbind();
-
-        if (subscriptions.hasSubscriptions()) {
-            subscriptions.unsubscribe();
-            subscriptions.clear();
-        }
-
-
-        super.onDetach();
+    private void bringOutIcon(ImageView imageView) {
+        imageView.setEnabled(false);
+        imageView.animate()
+                .translationY(startTranslationEditIcons)
+                .setDuration(animDuration)
+                .start();
     }
+
+    private void showShareDialogFragment() {
+        ShareDialogFragment shareDialogFragment = ShareDialogFragment.newInstance();
+        shareDialogFragment.show(getFragmentManager(), ShareDialogFragment.class.getName());
+
+    }
+
+    /**
+     * Search for friend View
+     */
+
+    private void initFriendshipList() {
+        User user = getCurrentUser();
+        friendshipsList = user.getFriendships();
+        friendshipsListCopy = new ArrayList<>();
+        friendshipsListCopy.addAll(friendshipsList);
+        friendAdapter.setItems(friendshipsList);
+        linearLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerViewInvite.setLayoutManager(linearLayoutManager);
+        recyclerViewInvite.setAdapter(friendAdapter);
+    }
+
+    private void initSearchView() {
+        editTextInviteSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                filter(editable.toString());
+            }
+        });
+    }
+
+    private void filter(String text) {
+        if(text.isEmpty()){
+            friendshipsList.clear();
+            friendshipsList.addAll(friendshipsListCopy);
+        } else{
+            ArrayList<Friendship> result = new ArrayList<>();
+            text = text.toLowerCase();
+            for(Friendship item: friendshipsListCopy){
+                if(item.getDisplayName().toLowerCase().contains(text) || item.getDisplayName().toLowerCase().contains(text)){
+                    result.add(item);
+                }
+            }
+            friendshipsList.clear();
+            friendshipsList.addAll(result);
+        }
+        friendAdapter.setItems(friendshipsList);
+    }
+
+    /**
+     * Bottom sheet set-up
+     */
 
     private void prepareBottomSheetCamera(List<LabelType> items) {
         View view = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_camera_type, null);
@@ -340,36 +565,12 @@ public class GroupsGridFragment extends BaseFragment {
         return false;
     }
 
-    private void createGroupLoadingAnim() {
-        Rect rect = new Rect();
-        viewCreateGroupBg2.getLocalVisibleRect(rect);
-        Rect from = new Rect(rect);
-        Rect to = new Rect(rect);
-        from.right = 0;
-        viewCreateGroupBg2.setAlpha(1f);
-        ObjectAnimator anim = ObjectAnimator.ofObject(viewCreateGroupBg2,
-                "clipBounds",
-                new RectEvaluator(),
-                from, to);
-        anim.setDuration(loadingAnimDuration);
-        anim.start();
-
-        Observable.timer(loadingAnimDuration, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(time -> {
-                    viewCreateGroupBg2.setVisibility(View.INVISIBLE);
-                });
-    }
+    /**
+     * Public methods
+     */
 
     public void setGroupPicture(Bitmap bitmap) {
         imageGroup.setImageBitmap(formatBitmapforView(bitmap));
-    }
-
-    private void showShareDialogFragment() {
-        ShareDialogFragment shareDialogFragment = ShareDialogFragment.newInstance();
-        shareDialogFragment.show(getFragmentManager(), ShareDialogFragment.class.getName());
-
     }
 
     public Bitmap formatBitmapforView(Bitmap thumbnail) {
@@ -379,6 +580,10 @@ public class GroupsGridFragment extends BaseFragment {
         thumbnail = roundedCornersTransformation.transform(thumbnail);
         return thumbnail;
     }
+
+    /**
+     * Dependency injection set-up
+     */
 
     protected ApplicationComponent getApplicationComponent() {
         return ((AndroidApplication) getActivity().getApplication()).getApplicationComponent();

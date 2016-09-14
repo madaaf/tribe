@@ -77,6 +77,9 @@ public class PrivatePublicView extends FrameLayout {
     TextViewFont txtPrivate;
 
     int animationDuration = 300;
+    int moveLeft = -20;
+    int moveRight = 20;
+    int reset = 0;
     private PublishSubject<Boolean> isPrivate = PublishSubject.create();
 
 
@@ -134,10 +137,10 @@ public class PrivatePublicView extends FrameLayout {
                 .start();
         imgLock.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_lock_green));
         imgMegaphone.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_megaphone_grey));
-        moveImg(imgLock, -20);
-        moveImg(imgMegaphone, 0);
-        moveTxt(txtPublic, 0, 0);
-        moveTxt(txtPrivate, 20, 1);
+        moveImg(imgLock, moveLeft);
+        moveImg(imgMegaphone, reset);
+        moveTxt(txtPublic, reset, reset);
+        moveTxt(txtPrivate, moveRight, 1);
         isPrivate.onNext(true);
     }
 
@@ -156,10 +159,10 @@ public class PrivatePublicView extends FrameLayout {
 
         imgLock.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_lock_grey));
         imgMegaphone.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_megaphone_purple));
-        moveImg(imgMegaphone, -20);
-        moveImg(imgLock, 0);
-        moveTxt(txtPrivate, 0, 0);
-        moveTxt(txtPublic, 20, 1);
+        moveImg(imgMegaphone, moveLeft);
+        moveImg(imgLock, reset);
+        moveTxt(txtPrivate, reset, reset);
+        moveTxt(txtPublic, moveRight, 1);
         isPrivate.onNext(false);
     }
 

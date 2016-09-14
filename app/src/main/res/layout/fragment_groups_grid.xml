@@ -21,6 +21,16 @@
         />
 
     <ImageView
+        android:id="@+id/imageDoneEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="28dp"
+        android:layout_gravity="end"
+        android:src="@drawable/picto_done_black_circle"
+        android:layout_marginTop="@dimen/vertical_margin"
+        android:layout_marginEnd="@dimen/horizontal_margin"
+        />
+
+    <ImageView
         android:id="@+id/imageGroup"
         android:layout_width="@dimen/group_image_size"
         android:layout_height="@dimen/group_image_size"
@@ -149,6 +159,33 @@
 
     </LinearLayout>
     
+    <LinearLayout
+        android:id="@+id/layoutInvite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="312dp"
+        android:orientation="vertical"
+        >
+
+        <com.tribe.app.presentation.view.widget.EditTextFont
+            android:id="@+id/editTextInviteSearch"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/setting_block_search_bar_height"
+            android:background="@drawable/shape_white_rect_grey_border"
+            android:hint="@string/group_search_friends_placeholder"
+            android:gravity="center"
+            android:singleLine="true"
+            />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerViewInvite"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_rect_white_rounded_bottom"
+            />
+
+    </LinearLayout>
+
     <ImageView
         android:id="@+id/imageDone"
         android:layout_width="45dp"

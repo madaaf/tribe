@@ -295,7 +295,7 @@ public class AccessFragment extends Fragment implements AccessView {
                 .translationY(0)
                 .setStartDelay(0);
 
-        animateBottomMargin(txtAccessDesc, screenUtils.dpToPx(170), 300);
+        AnimationUtils.animateBottomMargin(txtAccessDesc, screenUtils.dpToPx(170), 300);
 
         accessLockView.setToSorry();
         accessBottomBarView.setClickable(false);
@@ -375,7 +375,7 @@ public class AccessFragment extends Fragment implements AccessView {
 
     private void cleanUpSorry() {
         accessBottomBarView.setImgRedFbVisibility(false);
-        animateBottomMargin(txtAccessDesc, screenUtils.dpToPx(112), 300);
+        AnimationUtils.animateBottomMargin(txtAccessDesc, screenUtils.dpToPx(112), 300);
     }
 
     private void changeBaseView(String titleTxt, int titleTxtColor, String descTxt, String tryAgainTxt, int tryAgainBackground) {
@@ -384,17 +384,6 @@ public class AccessFragment extends Fragment implements AccessView {
         txtAccessDesc.setText(descTxt);
         accessBottomBarView.setText(tryAgainTxt);
         accessBottomBarView.setBackground(ContextCompat.getDrawable(context, tryAgainBackground));
-    }
-
-    private void animateBottomMargin(View view, int margin, int duration) {
-        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
-        ValueAnimator animator = ValueAnimator.ofInt(lp.bottomMargin, margin);
-        animator.setDuration(duration);
-        animator.addUpdateListener(animation -> {
-            lp.bottomMargin = (Integer) animation.getAnimatedValue();
-            view.setLayoutParams(lp);
-        });
-        animator.start();
     }
 
     private void showGetNotifiedDialog() {

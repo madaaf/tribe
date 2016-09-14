@@ -2,8 +2,10 @@ package com.tribe.app.presentation.view.utils;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
@@ -20,6 +22,12 @@ public class AnimationUtils {
 
     private static final float OVERSHOOT_REPLACE = 1f;
     private static final int DURATION_REPLACE = 300;
+
+    public static final float SCALE_RESET = 1f;
+    public static final int TRANSLATION_RESET = 0;
+    public static final int NO_START_DELAY = 0;
+    public static final int ALPHA_FULL = 1;
+    public static final int ALPHA_NONE = 0;
 
     public static Animation fadeInAnimation(final View view, long duration, long delay) {
         Animation animation = new AlphaAnimation(0, 1);
@@ -176,4 +184,16 @@ public class AnimationUtils {
         scaleAnimation.setFillAfter(true);
         view.startAnimation(scaleAnimation);
     }
+
+    public static void animateBottomMargin(View view, int margin, int duration) {
+        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        ValueAnimator animator = ValueAnimator.ofInt(lp.bottomMargin, margin);
+        animator.setDuration(duration);
+        animator.addUpdateListener(animation -> {
+            lp.bottomMargin = (Integer) animation.getAnimatedValue();
+            view.setLayoutParams(lp);
+        });
+        animator.start();
+    }
+
 }
