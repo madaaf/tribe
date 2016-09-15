@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.view.activity.SettingActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 
 import butterknife.BindView;
@@ -61,10 +60,9 @@ public class SettingUpdateProfileFragment extends BaseFragment {
         profileInfoView.setEditDisplayName(user.getDisplayName());
         profileInfoView.setEditUsername(user.getUsername());
 
-        subscriptions.add(profileInfoView.infoValid().subscribe(isValid -> {
-            ((SettingActivity) getActivity()).setImgDoneEnabled(isValid);
-        }));
-
+//        subscriptions.add(profileInfoView.infoValid().subscribe(isValid -> {
+//            ((SettingActivity) getActivity()).setImgDoneEnabled(isValid);
+//        }));
     }
 
     public void setImgProfilePic(Bitmap bitmap, String imgUri) {

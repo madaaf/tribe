@@ -8,6 +8,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="right|center_vertical"
+        android:clickable="true"
         android:src="@drawable/picto_share_fb"
         android:scaleType="centerInside"
         />
@@ -18,17 +19,19 @@
         android:layout_height="50dp"
         android:layout_gravity="right|center_vertical"
         android:layout_marginLeft="@dimen/horizontal_margin_large"
+        android:clickable="true"
         android:background="@drawable/shape_oval_green"
         android:src="@drawable/picto_message_icon_large"
         android:scaleType="centerInside"
         />
 
     <ImageView
-        android:id="@+id/imgSharePicto"
+        android:id="@+id/imgShareWhatsapp"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="right|center_vertical"
         android:layout_marginLeft="@dimen/horizontal_margin_large"
+        android:clickable="true"
         android:background="@drawable/shape_oval_green"
         android:src="@drawable/picto_share_whatsapp"
         android:scaleType="centerInside"

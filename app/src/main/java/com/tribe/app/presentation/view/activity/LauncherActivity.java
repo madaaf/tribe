@@ -33,8 +33,7 @@ public class LauncherActivity extends BaseActivity {
             navigator.navigateToLogin(this);
         } else {
             if (currentUser == null || StringUtils.isEmpty(currentUser.getUsername())
-                    || ((currentUser.getGroupList() == null || currentUser.getGroupList().size() == 0)
-                    && (currentUser.getFriendships() == null || currentUser.getFriendships().size() == 0))) {
+                    || currentUser.getFriendshipList().size() == 0) {
                 navigator.navigateToLogin(this);
             } else {
                 navigator.navigateToHome(this);

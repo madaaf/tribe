@@ -319,7 +319,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
                                 if (user == null || StringUtils.isEmpty(user.getProfilePicture()) || StringUtils.isEmpty(user.getUsername())) {
                                     ((IntroActivity) getActivity()).goToProfileInfo(loginEntity);
                                 } else {
-                                    ((IntroActivity) getActivity()).goToAccess();
+                                    ((IntroActivity) getActivity()).goToAccess(user);
                                 }
                             }));
                 }));

@@ -23,36 +23,45 @@
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="@dimen/avatar_size"
-        android:layout_height="@dimen/avatar_size"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
         android:layout_gravity="center"
         android:max="@integer/time_synchro"
         android:progressDrawable="@drawable/progress_circular_synchro"
         />
 
-    <FrameLayout
-        android:layout_width="@dimen/avatar_size"
-        android:layout_height="@dimen/avatar_size"
-        android:layout_gravity="center">
+    <LinearLayout
+        android:id="@+id/layoutFriends"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:background="@null"
+        android:orientation="vertical">
 
         <TextSwitcher
             android:id="@+id/txtNumFriends"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|center"
-            android:layout_marginTop="-12dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="-15dp"
             android:inAnimation="@anim/slide_in_likes_counter"
             android:outAnimation="@anim/slide_out_likes_counter">
 
             <com.tribe.app.presentation.view.widget.TextViewFont
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="top|center_horizontal"
+                android:gravity="top|center_horizontal"
                 style="@style/Giant.1.Black"
+                android:text="1"
                 />
 
             <com.tribe.app.presentation.view.widget.TextViewFont
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="top|center_horizontal"
+                android:gravity="top|center_horizontal"
                 style="@style/Giant.1.Black"
                 />
         </TextSwitcher>
@@ -62,12 +71,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center"
-            android:layout_marginBottom="4dp"
-            android:alpha="0"
+            android:alpha="1"
             android:text="@string/onboarding_queue_loading_friends"
             style="@style/Body.One.Black40"
             />
-    </FrameLayout>
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/imgLockIcon"

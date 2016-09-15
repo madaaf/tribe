@@ -7,6 +7,7 @@ import com.tribe.app.data.realm.ContactFBRealm;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -138,6 +139,20 @@ public class ContactCacheImpl implements ContactCache {
     }
 
     @Override
+    public Observable<List<ContactABRealm>> contactsThreadSafe() {
+        return Observable.create(new Observable.OnSubscribe<List<ContactABRealm>>() {
+            @Override
+            public void call(final Subscriber<? super List<ContactABRealm>> subscriber) {
+                Realm realmObs = Realm.getDefaultInstance();
+                RealmResults<ContactABRealm> contactABRealmList = realmObs.where(ContactABRealm.class).findAllSorted(new String[] {"name"}, new Sort[] {Sort.ASCENDING});
+                if (contactABRealmList != null)
+                    subscriber.onNext(realmObs.copyFromRealm(contactABRealmList));
+                realmObs.close();
+            }
+        });
+    }
+
+    @Override
     public Observable<List<ContactABRealm>> findContactsByValue(String value) {
         return Observable.create(new Observable.OnSubscribe<List<ContactABRealm>>() {
             @Override
@@ -161,6 +176,24 @@ public class ContactCacheImpl implements ContactCache {
                     subscriber.onNext(realm.copyFromRealm(contactsByValue));
             }
         });
+    }
+
+    @Override
+    public void updateHowManyFriends(Collection<ContactABRealm> contactABList) {
+        Realm obsRealm = Realm.getDefaultInstance();
+
+        try {
+            obsRealm.beginTransaction();
+            for (ContactABRealm contactABRealm : contactABList) {
+                ContactABRealm contactDB = obsRealm.where(ContactABRealm.class).equalTo("id", contactABRealm.getId()).findFirst();
+                contactDB.setHowManyFriends(contactABRealm.getHowManyFriends());
+            }
+            obsRealm.commitTransaction();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            obsRealm.close();
+        }
     }
 
     @Override

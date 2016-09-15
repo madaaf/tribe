@@ -1,7 +1,6 @@
 package com.tribe.app.data.network.deserializer;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -27,20 +26,10 @@ public class CreateFriendshipDeserializer implements JsonDeserializer<CreateFrie
         boolean hasResult = true;
 
         while (hasResult) {
-            if (results.isJsonArray()) {
-                JsonArray array = results.getAsJsonArray("createFriendship" + count);
-                if (array != null) {
-                    for (final JsonElement jsonElement : array) {
-                        if (!jsonElement.isJsonNull()) {
-                            friendshipRealmList.add(gson.fromJson(jsonElement, FriendshipRealm.class));
-                        }
-                    }
-                } else {
-                    hasResult = false;
-                }
-            } else {
-                JsonElement element = results.getAsJsonObject("createFriendship0");
+            JsonElement element = results.getAsJsonObject("createFriendship" + count);
+            if (element != null && !element.isJsonNull()) {
                 friendshipRealmList.add(gson.fromJson(element, FriendshipRealm.class));
+            } else if (element == null) {
                 hasResult = false;
             }
 

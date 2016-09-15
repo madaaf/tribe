@@ -3,6 +3,7 @@ package com.tribe.app.presentation.mvp.presenter;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.FacebookEntity;
+import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.DoRegister;
@@ -159,7 +160,7 @@ public class ProfileInfoPresenter implements Presenter {
         }
     }
 
-    private class FindByUserNameSubscriber extends DefaultSubscriber<User> {
+    private class FindByUserNameSubscriber extends DefaultSubscriber<SearchResult> {
 
         @Override
         public void onCompleted() { }
@@ -170,8 +171,8 @@ public class ProfileInfoPresenter implements Presenter {
         }
 
         @Override
-        public void onNext(User user) {
-            profileInfoView.usernameResult(user);
+        public void onNext(SearchResult searchResult) {
+            profileInfoView.usernameResult(searchResult);
         }
     }
 
@@ -209,7 +210,7 @@ public class ProfileInfoPresenter implements Presenter {
         @Override
         public void onNext(User user) {
             profileInfoView.hideLoading();
-            if (user != null) profileInfoView.goToAccess();
+            if (user != null) profileInfoView.goToAccess(user);
         }
     }
 

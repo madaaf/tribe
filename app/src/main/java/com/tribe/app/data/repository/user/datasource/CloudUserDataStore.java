@@ -16,6 +16,7 @@ import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
+import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.network.entity.RegisterEntity;
@@ -65,6 +66,7 @@ import rx.functions.Action1;
 public class CloudUserDataStore implements UserDataStore {
 
     private static final int LOOKUP_LIMIT = 50;
+    private static final String SEARCH_KEY = "search";
 
     private final TribeApi tribeApi;
     private final LoginApi loginApi;
@@ -490,23 +492,80 @@ public class CloudUserDataStore implements UserDataStore {
                 mutationCreateFriendship = context.getString(R.string.friendship_mutation, buffer.toString(), context.getString(R.string.userfragment_infos));
             }
 
-//            return (StringUtils.isEmpty(mutationCreateFriendship) ? Observable.just(new CreateFriendshipEntity()) : tribeApi.createFriendship(mutationCreateFriendship))
-//                    .map(createFriendshipEntity -> {
-//                        if (createFriendshipEntity != null && createFriendshipEntity.getNewFriendshipList() != null
-//                                && createFriendshipEntity.getNewFriendshipList().size() > 0) {
-//                            UserRealm currentUser = userCache.userInfosNoObs(accessToken.getUserId());
-//                            currentUser.getFriendships().addAll(createFriendshipEntity.getNewFriendshipList());
-//                            userCache.put(currentUser);
-//                        }
-//
-//                        List<ContactInterface> interfaces = new ArrayList<>(contactList);
-//                        return interfaces;
-//                    });
+            return (StringUtils.isEmpty(mutationCreateFriendship) ? Observable.just(new CreateFriendshipEntity()) : tribeApi.createFriendship(mutationCreateFriendship))
+                    .map(createFriendshipEntity -> {
+                        if (createFriendshipEntity != null && createFriendshipEntity.getNewFriendshipList() != null
+                                && createFriendshipEntity.getNewFriendshipList().size() > 0) {
+                            UserRealm currentUser = userCache.userInfosNoObs(accessToken.getUserId());
+                            currentUser.getFriendships().addAll(createFriendshipEntity.getNewFriendshipList());
+                            userCache.put(currentUser);
+                        }
 
-            return contactList;
-        }).doOnNext(saveToCacheContacts);
+                        List<ContactInterface> interfaces = new ArrayList<>(contactList);
+                        return interfaces;
+                    });
+        }).flatMap(listObservable -> listObservable).doOnNext(saveToCacheContacts);
+    }
 
-        //.flatMap(listObservable -> listObservable)
+    @Override
+    public Observable<Void> howManyFriends() {
+        return contactCache.contactsThreadSafe()
+                .map(contactABRealmList -> {
+                    Map<String, ContactABRealm> phonesHowManyFriends = new HashMap<>();
+
+                    for (ContactABRealm contact : contactABRealmList) {
+                        if ((contact.getUsers() == null || contact.getUsers().size() == 0) && contact.getPhones() != null) {
+                            for (PhoneRealm phoneRealm : contact.getPhones()) {
+                                if (phoneRealm.isInternational()) {
+                                    phonesHowManyFriends.put(phoneRealm.getPhone(), contact);
+                                }
+                            }
+                        }
+                    }
+
+                    return phonesHowManyFriends;
+                })
+                .flatMap(phonesHowManyFriends -> {
+                    String reqHowManyFriends = null;
+
+                    if (phonesHowManyFriends.size() > 0) {
+                        StringBuffer bufferHowManyFriends = new StringBuffer();
+                        StringBuilder resultHowManyFriends = new StringBuilder();
+
+                        int count = 0;
+                        int loopCount = 0;
+                        for (String phone : phonesHowManyFriends.keySet()) {
+                            resultHowManyFriends.append("\"" + phone + "\"");
+                            resultHowManyFriends.append(",");
+                            count++;
+
+                            if (count % LOOKUP_LIMIT == 0) {
+                                bufferHowManyFriends.append(context.getString(R.string.howManyFriends_part, loopCount,
+                                        resultHowManyFriends.length() > 0 ? resultHowManyFriends.substring(0, resultHowManyFriends.length() - 1) : ""));
+                                loopCount++;
+                                resultHowManyFriends = new StringBuilder();
+                            }
+                        }
+
+                        bufferHowManyFriends.append(context.getString(R.string.howManyFriends_part, loopCount,
+                                resultHowManyFriends.length() > 0 ? resultHowManyFriends.substring(0, resultHowManyFriends.length() - 1) : ""));
+
+                        reqHowManyFriends = context.getString(R.string.mutation, bufferHowManyFriends.toString());
+                    }
+
+                    return tribeApi.howManyFriends(reqHowManyFriends);
+                }, (phonesHowManyFriends, howManyFriendsResult) -> {
+                    int indexHowMany = 0;
+
+                    for (ContactInterface contactInterface : phonesHowManyFriends.values()) {
+                        contactInterface.setHowManyFriends(howManyFriendsResult.get(indexHowMany));
+                        indexHowMany++;
+                    }
+
+                    contactCache.updateHowManyFriends(phonesHowManyFriends.values());
+
+                    return null;
+                });
     }
 
     @Override
@@ -520,7 +579,7 @@ public class CloudUserDataStore implements UserDataStore {
                 .doOnError(throwable -> {
                     SearchResultRealm searchResultRealmRet = new SearchResultRealm();
                     searchResultRealmRet.setUsername(searchResultInit.getUsername());
-                    searchResultRealmRet.setKey("search");
+                    searchResultRealmRet.setKey(SEARCH_KEY);
                     searchResultRealmRet.setSearchDone(true);
                     contactCache.insertSearchResult(searchResultRealmRet);
                 })
@@ -537,11 +596,20 @@ public class CloudUserDataStore implements UserDataStore {
                     }
 
                     searchResultRealmRet.setUsername(searchResultInit.getUsername());
-                    searchResultRealmRet.setKey("search");
+                    searchResultRealmRet.setKey(SEARCH_KEY);
                     searchResultRealmRet.setSearchDone(true);
                     return searchResultRealmRet;
                 })
                 .doOnNext(saveToCacheSearchResult);
+    }
+
+    /**
+     *
+     * UNUSED
+     */
+    @Override
+    public Observable<UserRealm> lookupUsername(String username) {
+        return null;
     }
 
     @Override

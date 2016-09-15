@@ -107,11 +107,12 @@ public class AnimationUtils {
         v.animate().alpha(1).setInterpolator(new DecelerateInterpolator()).setDuration(duration).start();
     }
 
-    public static void fadeViewDownOut(View view) {
+    public static void fadeViewDownOut(View view, Animator.AnimatorListener listener) {
         view.animate()
                 .translationY(25)
                 .alpha(0)
-                .setDuration(300)
+                .setDuration(DURATION_REPLACE)
+                .setListener(listener)
                 .start();
     }
 
@@ -119,7 +120,7 @@ public class AnimationUtils {
         view.animate()
                 .translationY(0)
                 .alpha(1).
-                setDuration(300)
+                setDuration(DURATION_REPLACE)
                 .start();
     }
 
@@ -134,7 +135,7 @@ public class AnimationUtils {
     public static void fadeViewInOut(View view, int distance) {
         view.animate()
                 .alpha(0)
-                .setDuration(300)
+                .setDuration(DURATION_REPLACE)
                 .translationY(distance)
                 .setStartDelay(0)
                 .setListener(new AnimatorListenerAdapter() {
@@ -142,9 +143,10 @@ public class AnimationUtils {
                     public void onAnimationEnd(Animator animation) {
                         super.onAnimationEnd(animation);
                         view.animate().alpha(1)
-                                .setDuration(300)
+                                .setDuration(DURATION_REPLACE)
                                 .translationY(0)
                                 .setStartDelay(0)
+                                .setListener(null)
                                 .start();
                     }
                 }).start();

@@ -87,8 +87,18 @@ public class DiskUserDataStore implements UserDataStore {
     }
 
     @Override
+    public Observable<Void> howManyFriends() {
+        return null;
+    }
+
+    @Override
     public Observable<SearchResultRealm> findByUsername(String username) {
         return contactCache.findContactByUsername(username);
+    }
+
+    @Override
+    public Observable<UserRealm> lookupUsername(String username) {
+        return null;
     }
 
     @Override

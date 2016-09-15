@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
@@ -191,8 +192,7 @@ public class IntroActivity extends BaseActivity {
         viewPager.setScrollDurationFactor(2f);
         if (currentUser == null || StringUtils.isEmpty(currentUser.getUsername())) {
             viewPager.setCurrentItem(PAGE_INTRO);
-        } else if ((currentUser.getGroupList() == null || currentUser.getGroupList().size() == 0)
-                && (currentUser.getFriendships() == null || currentUser.getFriendships().size() == 0)) {
+        } else if (currentUser.getFriendshipList().size() == 0) {
             viewPager.setCurrentItem(PAGE_ACCESS);
         }
         viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_NONE);
@@ -209,8 +209,12 @@ public class IntroActivity extends BaseActivity {
         viewPager.setCurrentItem(PAGE_PROFILE_INFO);
     }
 
-    public void goToAccess() {
+    public void goToAccess(User user) {
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         accessFragment.fadeBigLockIn();
+        accessFragment.setUser(user);
         Observable.timer(250, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -247,6 +251,7 @@ public class IntroActivity extends BaseActivity {
                     return profileInfoFragment;
                 case 2:
                     accessFragment = AccessFragment.newInstance();
+                    accessFragment.setUser(currentUser);
                     return accessFragment;
                 default:
                     introViewFragment = IntroViewFragment.newInstance();

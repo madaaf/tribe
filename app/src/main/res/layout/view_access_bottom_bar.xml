@@ -18,6 +18,7 @@
         android:text="@string/onboarding_queue_button_title"
         android:gravity="center"
         android:clickable="true"
+        android:foreground="@drawable/selectable_button_light"
         style="@style/Title.2.White"
         />
 

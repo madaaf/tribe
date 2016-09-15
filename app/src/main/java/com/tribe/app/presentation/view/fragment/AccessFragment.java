@@ -3,9 +3,6 @@ package com.tribe.app.presentation.view.fragment;
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.ValueAnimator;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -18,12 +15,13 @@ import com.github.jinatonic.confetti.CommonConfetti;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Group;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.mvp.presenter.AccessPresenter;
 import com.tribe.app.presentation.mvp.view.AccessView;
 import com.tribe.app.presentation.navigation.Navigator;
@@ -35,7 +33,10 @@ import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -44,6 +45,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
@@ -56,6 +58,9 @@ import rx.subscriptions.CompositeSubscription;
  * A lot of fancy UI stuff going on here.
  */
 public class AccessFragment extends Fragment implements AccessView {
+
+    private static final int DURATION = 300;
+    private static final int DURATION_SHORT = 100;
 
     public static AccessFragment newInstance() {
 
@@ -75,6 +80,9 @@ public class AccessFragment extends Fragment implements AccessView {
 
     @Inject
     Navigator navigator;
+
+    @Inject
+    User currentUser;
 
     @Inject
     AccessPresenter accessPresenter;
@@ -97,9 +105,11 @@ public class AccessFragment extends Fragment implements AccessView {
     @BindView(R.id.confettiLayout)
     FrameLayout confettiLayout;
 
+
     // OBSERVABLES
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
+    private Subscription lookupSubscription;
 
     // VARIABLES
     private int numFriends = 0;
@@ -115,8 +125,6 @@ public class AccessFragment extends Fragment implements AccessView {
     /**
      * View Lifecycle
      */
-
-    // TODO: fix cancel bug
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View fragmentView = inflater.inflate(R.layout.fragment_access, container, false);
@@ -166,6 +174,11 @@ public class AccessFragment extends Fragment implements AccessView {
                     break;
                 case STATE_HANG_TIGHT:
                     numFriends = 0;
+                    accessPresenter.cancelLookupContacts();
+                    if (lookupSubscription != null) {
+                        lookupSubscription.unsubscribe();
+                        lookupSubscription = null;
+                    }
                     goToAccess();
                     break;
                 case STATE_CONGRATS:
@@ -177,9 +190,20 @@ public class AccessFragment extends Fragment implements AccessView {
             }
         }));
 
-        subscriptions.add(RxView.clicks(textFriendsView).subscribe(aVoid -> {
-            navigator.sendText("", getActivity());
-        }));
+        subscriptions.add(
+                textFriendsView
+                        .onShareFB()
+                        .subscribe(aVoid -> navigator.openFacebookMessenger(getString(R.string.share_onboarding), getContext())));
+
+        subscriptions.add(
+                textFriendsView
+                        .onShareWhatsapp()
+                        .subscribe(aVoid -> navigator.openWhatsApp(getString(R.string.share_onboarding), getContext())));
+
+        subscriptions.add(
+                textFriendsView
+                        .onShareSMS()
+                        .subscribe(aVoid -> navigator.sendText(getString(R.string.share_onboarding), getContext())));
     }
 
     private void initResources() {
@@ -206,6 +230,10 @@ public class AccessFragment extends Fragment implements AccessView {
         accessLockView.setViewWidthHeight(whiteCircleWidth, pulseWidth);
     }
 
+    public void setUser(User user) {
+        this.currentUser = user;
+    }
+
     /**
      * Navigation methods
      */
@@ -218,7 +246,7 @@ public class AccessFragment extends Fragment implements AccessView {
         textFriendsView.animate()
                 .alpha(0)
                 .translationY(screenUtils.dpToPx(100))
-                .setDuration(100)
+                .setDuration(DURATION_SHORT)
                 .setStartDelay(0);
 
         accessLockView.setToAccess();
@@ -227,7 +255,7 @@ public class AccessFragment extends Fragment implements AccessView {
                 .alpha(1)
                 .translationY(0)
                 .setStartDelay(0)
-                .setDuration(300)
+                .setDuration(DURATION)
                 .translationY(accessBottomBarView.getHeight())
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
@@ -248,7 +276,11 @@ public class AccessFragment extends Fragment implements AccessView {
     }
 
     private void goToHangTight() {
-        accessPresenter.lookupContacts();
+        if (RxPermissions.getInstance(getContext()).isGranted(Manifest.permission.READ_CONTACTS)) {
+            accessPresenter.lookupContacts();
+        } else {
+            renderFriendList(new ArrayList<>());
+        }
 
         viewState = STATE_HANG_TIGHT;
 
@@ -256,13 +288,13 @@ public class AccessFragment extends Fragment implements AccessView {
         textFriendsView.animate()
                 .alpha(0)
                 .translationY(screenUtils.dpToPx(100))
-                .setDuration(100)
+                .setDuration(DURATION_SHORT)
                 .setStartDelay(0);
 
         accessLockView.setToHangTight(0);
         accessBottomBarView.setClickable(false);
         accessBottomBarView.animate()
-                .setDuration(300)
+                .setDuration(DURATION)
                 .translationY(accessBottomBarView.getHeight())
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
@@ -273,7 +305,7 @@ public class AccessFragment extends Fragment implements AccessView {
                                 getString(R.string.action_cancel),
                                 R.drawable.shape_rect_dark_grey_rounded_bottom);
                         accessBottomBarView.animate()
-                                .setDuration(300)
+                                .setDuration(DURATION)
                                 .setListener(null)
                                 .translationY(0);
                         accessBottomBarView.setClickable(true);
@@ -286,16 +318,16 @@ public class AccessFragment extends Fragment implements AccessView {
 
         textFriendsView.animate()
                 .alpha(1)
-                .setDuration(300)
+                .setDuration(DURATION)
                 .translationY(0)
                 .setStartDelay(0);
 
-        AnimationUtils.animateBottomMargin(txtAccessDesc, screenUtils.dpToPx(170), 300);
+        AnimationUtils.animateBottomMargin(txtAccessDesc, screenUtils.dpToPx(170), DURATION);
 
         accessLockView.setToSorry();
         accessBottomBarView.setClickable(false);
         accessBottomBarView.animate()
-                .setDuration(300)
+                .setDuration(DURATION)
                 .translationY(accessBottomBarView.getHeight())
                 .setListener(new AnimatorListenerAdapter() {
 
@@ -303,12 +335,12 @@ public class AccessFragment extends Fragment implements AccessView {
                     public void onAnimationEnd(Animator animation) {
                         changeBaseView(getString(R.string.onboarding_queue_declined_title),
                                 R.color.red_deep,
-                                getString(R.string.onboarding_queue_declined_description, "1"),
+                                getString(R.string.onboarding_queue_declined_description),
                                 getString(R.string.onboarding_queue_button_title),
                                 R.drawable.shape_rect_blue_rounded_bottom);
 
                         accessBottomBarView.animate()
-                                .setDuration(300)
+                                .setDuration(DURATION)
                                 .setListener(null)
                                 .translationY(0);
 
@@ -332,20 +364,20 @@ public class AccessFragment extends Fragment implements AccessView {
         fadeTextInOut();
         accessBottomBarView.setClickable(false);
         accessBottomBarView.animate()
-                .setDuration(300)
+                .setDuration(DURATION)
                 .translationY(accessBottomBarView.getHeight())
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         changeBaseView(getString(R.string.onboarding_queue_valid_title),
                                 R.color.blue_text_access,
-                                getString(R.string.onboarding_queue_valid_description, "3"),
+                                getString(R.string.onboarding_queue_valid_description),
                                 getString(R.string.onboarding_queue_valid_button_title),
                                 R.drawable.shape_rect_blue_rounded_bottom);
                         accessLockView.setToCongrats();
 
                         accessBottomBarView.animate()
-                                .setDuration(300)
+                                .setDuration(DURATION)
                                 .translationY(0)
                                 .setListener(null);
                         accessBottomBarView.setClickable(true);
@@ -359,7 +391,11 @@ public class AccessFragment extends Fragment implements AccessView {
                 .subscribe(hasPermission -> {
                     if (hasPermission) {
                         goToHangTight();
-                    } else {
+                    }
+//                    else if (currentUser.getFriendshipList().size() > 0) {
+//                        goToHangTight();
+//                    }
+                    else {
                         goToSorry();
                     }
                 });
@@ -374,12 +410,12 @@ public class AccessFragment extends Fragment implements AccessView {
      */
 
     private void cleanUpSorry() {
-        AnimationUtils.animateBottomMargin(txtAccessDesc, screenUtils.dpToPx(112), 300);
+        AnimationUtils.animateBottomMargin(txtAccessDesc, screenUtils.dpToPx(112), DURATION);
 
         textFriendsView.animate()
                 .alpha(0)
                 .translationY(screenUtils.dpToPx(100))
-                .setDuration(100)
+                .setDuration(DURATION_SHORT)
                 .setStartDelay(0);
     }
 
@@ -417,23 +453,44 @@ public class AccessFragment extends Fragment implements AccessView {
      */
 
     @Override
-    public void renderFriendList(List<Contact> contactList) {
-        if (contactList != null && contactList.size() > 0) {
+    public void renderFriendList(List<User> userList) {
+        Map<String, Object> relationsInApp = new HashMap<>();
+
+        for (User user : userList) {
+            relationsInApp.put(user.getId(), user);
+        }
+
+        if (currentUser.getFriendships() != null) {
+            for (Friendship fr : currentUser.getFriendships()) {
+                if (!relationsInApp.containsKey(fr.getFriend().getId())) {
+                    relationsInApp.put(fr.getFriend().getId(), fr.getFriend());
+                }
+            }
+        }
+
+        if (currentUser.getGroupList() != null) {
+            for (Group group : currentUser.getGroupList()) {
+                if (!relationsInApp.containsKey(group.getId())) {
+                    relationsInApp.put(group.getId(), group);
+                }
+            }
+        }
+
+        if (relationsInApp.values() != null && relationsInApp.values().size() > 0) {
             accessLockView.animateProgress();
 
-            subscriptions.add(
+            lookupSubscription =
                     Observable.zip(
-                            Observable.from(contactList),
-                            Observable.interval(0, totalTimeSynchro / contactList.size(), TimeUnit.MILLISECONDS),
+                            Observable.from(relationsInApp.values()),
+                            Observable.interval(0, totalTimeSynchro / relationsInApp.values().size(), TimeUnit.MILLISECONDS),
                             (contact, aLong) -> contact
                     ).subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread()).subscribe(contact -> {
+                    .observeOn(AndroidSchedulers.mainThread()).subscribe(relation -> {
                         numFriends++;
                         accessLockView.setToHangTight(numFriends);
 
-                        if (numFriends == contactList.size()) goToCongrats();
-                    })
-            );
+                        if (numFriends == relationsInApp.values().size()) goToCongrats();
+                    });
         } else {
             goToSorry();
         }

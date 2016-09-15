@@ -45,6 +45,7 @@ import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.domain.interactor.tribe.TribeRepository;
 import com.tribe.app.domain.interactor.user.GetCloudMessageList;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
+import com.tribe.app.domain.interactor.user.RefreshHowManyFriends;
 import com.tribe.app.domain.interactor.user.SynchroContactList;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.AndroidApplication;
@@ -326,6 +327,12 @@ public class ApplicationModule {
     @Named("manageChatHistory")
     CloudManageChatHistory provideManageChatHistory(CloudManageChatHistory cloudManageChatHistory) {
         return cloudManageChatHistory;
+    }
+
+    @Provides
+    @Named("refreshHowManyFriends")
+    UseCase provideRefreshHowManyFriends(RefreshHowManyFriends refreshHowManyFriends) {
+        return refreshHowManyFriends;
     }
 
     @Provides

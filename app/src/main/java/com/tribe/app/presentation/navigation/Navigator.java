@@ -235,36 +235,39 @@ public class Navigator {
         activity.startActivityForResult(cameraIntent, result);
     }
 
-    public void sendText(String body, Activity activity) {
+    public void sendText(String body, Context context) {
         Intent sendIntent = new Intent(Intent.ACTION_VIEW);
         sendIntent.setData(Uri.parse("sms:"));
         sendIntent.putExtra("sms_body", body);
-        activity.startActivity(sendIntent);
+        context.startActivity(sendIntent);
     }
 
-    public void openFacebookMessenger(String body, Activity activity) {
+    public void openFacebookMessenger(String body, Context context) {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent
-                .putExtra(Intent.EXTRA_TEXT,
-                        body);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, body);
         sendIntent.setType("text/plain");
         sendIntent.setPackage("com.facebook.orca");
         try {
-            activity.startActivity(sendIntent);
-        }
-        catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(activity,"Facebook Messenger is not installed.", Toast.LENGTH_LONG).show();
+            context.startActivity(sendIntent);
+        } catch (android.content.ActivityNotFoundException ex) {
+            // TODO externalize this string
+            Toast.makeText(context, "Facebook Messenger is not installed.", Toast.LENGTH_LONG).show();
         }
     }
 
-    public void openWhatsApp(String body, Activity activity) {
+    public void openWhatsApp(String body, Context context) {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, body);
         sendIntent.setType("text/plain");
         sendIntent.setPackage("com.whatsapp");
-        activity.startActivity(sendIntent);
+        try {
+            context.startActivity(sendIntent);
+        } catch (android.content.ActivityNotFoundException ex) {
+            // TODO externalize this string
+            Toast.makeText(context, "Whatsapp is not installed.", Toast.LENGTH_LONG).show();
+        }
     }
 
     public void openSnapchat(String body, Activity activity) {

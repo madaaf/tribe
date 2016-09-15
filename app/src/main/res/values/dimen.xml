@@ -8,7 +8,7 @@
     <!-- RADIUSES-->
     <dimen name="radius_gallery_img">2.5dp</dimen>
     <dimen name="radius_img">5dp</dimen>
-    <dimen name="radius_share_img">7.5dp</dimen>
+    <dimen name="radius_share_img">12.5dp</dimen>
 
     <!-- PROGRESS BAR -->
     <dimen name="progress_bar_thickness">2dp</dimen>

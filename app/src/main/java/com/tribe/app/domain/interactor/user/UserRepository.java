@@ -87,10 +87,21 @@ public interface UserRepository {
     Observable<List<Contact>> contacts();
 
     /**
-     * Get an {@link Observable} which will emit a {@link Contact} containing infos
-     * about the contact.
+     * Get an {@link Observable} which will emit
+     */
+    Observable<Void> howManyFriends();
+
+    /**
+     * Get an {@link Observable} which will emit a {@link SearchResult} containing infos
+     * about the user searched.
      */
     Observable<SearchResult> findByUsername(String username);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link User} containing infos
+     * about the contact.
+     */
+    Observable<User> lookupUsername(String username);
 
     /**
      * Get an {@link Observable} which will emit a {@link com.tribe.app.domain.entity.Friendship} containing infos

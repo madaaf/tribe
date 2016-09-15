@@ -85,10 +85,21 @@ public interface UserDataStore {
     Observable<List<ContactInterface>> contacts();
 
     /**
+     * Get an {@link Observable} which will get the number of friends from each address book member
+     */
+    Observable<Void> howManyFriends();
+
+    /**
      * Get an {@link Observable} which will emit a {@link SearchResultRealm} containing infos
      * about the search results.
      */
     Observable<SearchResultRealm> findByUsername(String username);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link UserRealm} containing infos
+     * about the lookup results.
+     */
+    Observable<UserRealm> lookupUsername(String username);
 
     /**
      * Get an {@link Observable} which will emit a {@link List<ContactInterface>} containing infos

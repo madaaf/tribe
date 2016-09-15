@@ -1,5 +1,7 @@
 package com.tribe.app.data.realm;
 
+import java.util.List;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -64,5 +66,10 @@ public class ContactFBRealm extends RealmObject implements ContactInterface {
         if (this.userList == null) this.userList = new RealmList<>();
 
         this.userList.add(userRealm);
+    }
+
+    @Override
+    public List<UserRealm> getUsers() {
+        return userList;
     }
 }

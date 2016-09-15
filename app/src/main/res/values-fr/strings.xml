@@ -115,7 +115,7 @@
 	<string name="grid_menu_group_leave">Quitter ce groupe</string>
 	<string name="grid_menu_group_leave_last_admin_error">Nommez un membre en tant qu\'admin avant de quitter ce groupe</string>
 	<string name="grid_menu_group_delete">Supprimer ce groupe</string>
-	<string name="grid_menu_friendship_hide">Supprimer</string>
+	<string name="grid_menu_friendship_hide">Masquer</string>
 	<string name="grid_menu_friendship_unhide">Ajouter</string>
 	<string name="grid_menu_friendship_block">Bloquer</string>
 	<string name="grid_menu_friendship_unblock">Ajouter</string>
