@@ -173,6 +173,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         unbinder = ButterKnife.bind(this, fragmentView);
 
         initDependencyInjector();
+        initPresenter();
         Bundle bundle = getArguments();
         if (bundle == null) initUi();
         else initGroupInfoUi(bundle.getString("groupId"));
@@ -201,16 +202,17 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
      */
 
     private void initGroupInfoUi(String groupId) {
-        User user = getCurrentUser();
-        List<Group> groups = user.getGroupList();
-        for(Group group: groups) {
-            if (groupId.equals(group.getId())) {
-                currentGroup = group;
-            }
-        }
         groupPresenter.getGroupMembers(groupId);
-
     }
+
+    @Override
+    public void setupGroupMembers(Group group) {
+        List<User> members = group.getMembers();
+        for (User user : members) {
+            System.out.println(user.getDisplayName());
+        }
+    }
+
 
     private void initUi() {
         // Setup top-right icons
@@ -690,6 +692,10 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                 .activityModule(getActivityModule())
                 .applicationComponent(getApplicationComponent())
                 .build().inject(this);
+    }
+
+    private void initPresenter() {
+        groupPresenter.attachView(this);
     }
 
     @Override

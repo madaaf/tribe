@@ -23,6 +23,7 @@ import com.tribe.app.data.network.deserializer.ChatHistoryDeserializer;
 import com.tribe.app.data.network.deserializer.CollectionAdapter;
 import com.tribe.app.data.network.deserializer.CreateFriendshipDeserializer;
 import com.tribe.app.data.network.deserializer.DateDeserializer;
+import com.tribe.app.data.network.deserializer.GroupDeserializer;
 import com.tribe.app.data.network.deserializer.HowManyFriendsDeserializer;
 import com.tribe.app.data.network.deserializer.LookupDeserializer;
 import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
@@ -38,6 +39,7 @@ import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.network.entity.RefreshEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ChatRealm;
+import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
@@ -110,6 +112,7 @@ public class NetModule {
                 .registerTypeAdapter(new TypeToken<UserRealm>() {}.getType(), new TribeUserDeserializer(utcSimpleDate))
                 .registerTypeAdapter(AccessToken.class, new TribeAccessTokenDeserializer())
                 .registerTypeAdapter(TribeRealm.class, new NewTribeDeserializer<>())
+                .registerTypeAdapter(GroupRealm.class, new GroupDeserializer())
                 .registerTypeAdapter(ChatRealm.class, new NewMessageDeserializer<>())
                 .registerTypeAdapter(new TypeToken<List<MessageRealmInterface>>(){}.getType(), new UserMessageListDeserializer<>(utcSimpleDate, userCache, tribeCache, chatCache, currentUser))
                 .registerTypeAdapter(Installation.class, new NewInstallDeserializer<>())

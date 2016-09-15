@@ -59,6 +59,10 @@ public class GroupPresenter implements Presenter {
 
     }
 
+    public void setupMembers(Group group) {
+        this.groupView.setupGroupMembers(group);
+    }
+
     public void getGroupMembers(String groupId) {
         getGroupMembers.prepare(groupId);
         getGroupMembers.execute(new GetGroupMemberSubscriber());
@@ -72,11 +76,12 @@ public class GroupPresenter implements Presenter {
 
         @Override
         public void onError(Throwable e) {
-
+            e.printStackTrace();
         }
 
         @Override
         public void onNext(Group group) {
+            setupMembers(group);
         }
     }
 

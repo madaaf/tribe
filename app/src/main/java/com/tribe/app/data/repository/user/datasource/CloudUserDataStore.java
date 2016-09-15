@@ -36,6 +36,7 @@ import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.repository.user.contact.RxContacts;
+import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -660,9 +661,14 @@ public class CloudUserDataStore implements UserDataStore {
         String request = context.getString(R.string.get_group_members, groupId, context.getString(R.string.userfragment_infos));
         return this.tribeApi.getGroupMembers(request)
                 .doOnNext(groupRealm -> {
-                    GroupRealm dbGroup = userCache.groupInfos(groupRealm.getId());
+                    List<GroupRealm> dbGroups = userCache.userInfosNoObs(accessToken.getUserId()).getGroups();
+                    GroupRealm dbGroup = null;
+                    for (GroupRealm group : dbGroups) {
+                        if (group.getId().equals(groupId)) {
+                            dbGroup = group;
+                        }
+                    }
                     dbGroup.setMembers(groupRealm.getMembers());
-                    userCache.groupInfos(groupRealm.getId()).setMembers(groupRealm.getMembers());
                 });
     }
 

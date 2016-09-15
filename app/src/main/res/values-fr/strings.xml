@@ -353,4 +353,10 @@
 	<string name="share_score">I have %1$s points on Tribe %2$s</string>
 	<string name="share_onboarding">I just discovered Tribe, but I can’t enter alone. Come now so we can get access together. Waiting for you. Go on %1$s</string>
 	<string name="share_copied_redirecting">Copied the link to the clipboard. Redirecting you...</string>
+	
+	<!-- TribeDistancePopup -->
+	<string name="tribe_distance_popup_description">Envoyé à %1$s de vous</string>
+	<string name="tribe_distance_popup_more">Plus d\'options</string>
+	<string name="tribe_distance_client_no_data">Pas de données trouvées, tapez pour réessayer</string>
+	<string name="tribe_distance_client_unknown_delay">Inconnu</string>
 </resources>
