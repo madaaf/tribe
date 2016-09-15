@@ -34,12 +34,15 @@ import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.CameraType;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.mvp.presenter.GroupPresenter;
+import com.tribe.app.presentation.mvp.view.GroupView;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.FriendAdapter;
@@ -57,6 +60,7 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -72,10 +76,17 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Fragment that shows a list of media.
  */
-public class GroupsGridFragment extends BaseFragment {
+public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     public GroupsGridFragment() {
         setRetainInstance(true);
+    }
+
+    public static GroupsGridFragment newInstance(Bundle args) {
+
+        GroupsGridFragment fragment = new GroupsGridFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     Unbinder unbinder;
@@ -130,6 +141,8 @@ public class GroupsGridFragment extends BaseFragment {
     ScreenUtils screenUtils;
     @Inject
     FriendAdapter friendAdapter;
+    @Inject
+    GroupPresenter groupPresenter;
 
     // VARIABLES
     private BottomSheetDialog dialogCamera;
@@ -141,6 +154,7 @@ public class GroupsGridFragment extends BaseFragment {
     private List<Friendship> friendshipsList;
     private List<Friendship> friendshipsListCopy;
     private LinearLayoutManager linearLayoutManager;
+    private Group currentGroup;
 
     // Animation Variables
     int moveUpY = 138;
@@ -157,8 +171,11 @@ public class GroupsGridFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View fragmentView = inflater.inflate(R.layout.fragment_groups_grid, container, false);
         unbinder = ButterKnife.bind(this, fragmentView);
+
         initDependencyInjector();
-        initUi();
+        Bundle bundle = getArguments();
+        if (bundle == null) initUi();
+        else initGroupInfoUi(bundle.getString("groupId"));
         initFriendshipList();
         initSearchView();
         fragmentView.setTag(HomeActivity.GROUPS_FRAGMENT_PAGE);
@@ -182,6 +199,18 @@ public class GroupsGridFragment extends BaseFragment {
      * Setup UI
      * Includes subscription setup
      */
+
+    private void initGroupInfoUi(String groupId) {
+        User user = getCurrentUser();
+        List<Group> groups = user.getGroupList();
+        for(Group group: groups) {
+            if (groupId.equals(group.getId())) {
+                currentGroup = group;
+            }
+        }
+        groupPresenter.getGroupMembers(groupId);
+
+    }
 
     private void initUi() {
         // Setup top-right icons
@@ -242,9 +271,6 @@ public class GroupsGridFragment extends BaseFragment {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(time -> {
-                        AnimationUtils.animateHeightCoordinatorLayout(appBarLayout,
-                                appBarLayout.getHeight(), appBarLayout.getHeight() - screenUtils.dpToPx(116),
-                                animDuration);
                        animSet2();
                     });
 
@@ -268,6 +294,14 @@ public class GroupsGridFragment extends BaseFragment {
             showShareDialogFragment();
         }));
 
+        subscriptions.add(RxView.clicks(editTextInviteSearch).subscribe(aVoid -> {
+            appBarLayout.setExpanded(false);
+        }));
+
+        subscriptions.add(RxView.clicks(imageDone).subscribe(aVoid -> {
+            // TODO: send data to create group
+            ((HomeActivity) getActivity()).resetGroupsGridFragment();
+        }));
     }
 
     private void resetLayoutInvite() {
@@ -446,10 +480,12 @@ public class GroupsGridFragment extends BaseFragment {
 
         ((HomeActivity) getActivity()).disableNavigation();
 
-
     }
 
     private void animSet2() {
+        AnimationUtils.animateHeightCoordinatorLayout(appBarLayout,
+                appBarLayout.getHeight(), appBarLayout.getHeight() - screenUtils.dpToPx(116),
+                animDuration);
         layoutCreateInvite.animate()
                 .translationY(-screenUtils.dpToPx(moveUpY))
                 .setDuration(animDuration)
@@ -467,7 +503,6 @@ public class GroupsGridFragment extends BaseFragment {
     }
 
     private void animSet3() {
-//        setHeightCoordinatorLayout(appBarLayout, appBarLayout.getHeight() - screenUtils.dpToPx(116));
         AnimationUtils.scaleIn(imageInvite, animDuration);
 
         if (!privateGroup) imageDone.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_done_purple));
@@ -657,4 +692,38 @@ public class GroupsGridFragment extends BaseFragment {
                 .build().inject(this);
     }
 
+    @Override
+    public void getGroupMembers(String groupId) {
+
+    }
+
+    @Override
+    public void showLoading() {
+
+    }
+
+    @Override
+    public void hideLoading() {
+
+    }
+
+    @Override
+    public void showRetry() {
+
+    }
+
+    @Override
+    public void hideRetry() {
+
+    }
+
+    @Override
+    public void showError(String message) {
+
+    }
+
+    @Override
+    public Context context() {
+        return null;
+    }
 }

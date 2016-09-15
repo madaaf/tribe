@@ -19,8 +19,12 @@ import io.realm.RealmList;
 @Singleton
 public class GroupRealmDataMapper {
 
+    UserRealmDataMapper userRealmDataMapper;
+
     @Inject
-    public GroupRealmDataMapper() {}
+    public GroupRealmDataMapper(UserRealmDataMapper userRealmDataMapper) {
+        this.userRealmDataMapper = userRealmDataMapper;
+    }
 
     /**
      * Transform a {@link com.tribe.app.data.realm.GroupRealm} into an {@link com.tribe.app.domain.entity.Group}.
@@ -36,6 +40,7 @@ public class GroupRealmDataMapper {
             group.setPicture(groupRealm.getPicture());
             group.setCreatedAt(groupRealm.getCreatedAt());
             group.setUpdatedAt(groupRealm.getUpdatedAt());
+            group.setMembers(userRealmDataMapper.transform(groupRealm.getMembers()));
         }
 
         return group;
@@ -76,6 +81,7 @@ public class GroupRealmDataMapper {
             groupRealm.setName(group.getDisplayName());
             groupRealm.setCreatedAt(group.getCreatedAt());
             groupRealm.setUpdatedAt(group.getUpdatedAt());
+            groupRealm.setMembers(userRealmDataMapper.transformList(group.getMembers()));
         }
 
         return groupRealm;

@@ -7,6 +7,7 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
@@ -108,6 +109,11 @@ public class DiskUserDataStore implements UserDataStore {
 
     @Override
     public Observable<Void> notifyFBFriends() {
+        return null;
+    }
+
+    @Override
+    public Observable<GroupRealm> getGroupMembers(String groupId) {
         return null;
     }
 }

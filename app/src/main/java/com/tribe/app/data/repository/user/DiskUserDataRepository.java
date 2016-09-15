@@ -18,6 +18,7 @@ import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
@@ -262,6 +263,11 @@ public class DiskUserDataRepository implements UserRepository {
 
     @Override
     public Observable<Void> notifyFBFriends() {
+        return null;
+    }
+
+    @Override
+    public Observable<Group> getGroupMembers(String groupId) {
         return null;
     }
 }

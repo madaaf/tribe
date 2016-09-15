@@ -23,10 +23,9 @@ public class UserRealmDataMapper {
     FriendshipRealmDataMapper friendshipRealmDataMapper;
 
     @Inject
-    public UserRealmDataMapper(LocationRealmDataMapper locationRealmDataMapper,
-                               GroupRealmDataMapper groupRealmDataMapper) {
+    public UserRealmDataMapper(LocationRealmDataMapper locationRealmDataMapper) {
         this.locationRealmDataMapper = locationRealmDataMapper;
-        this.groupRealmDataMapper = groupRealmDataMapper;
+        this.groupRealmDataMapper = new GroupRealmDataMapper(this);
         this.friendshipRealmDataMapper = new FriendshipRealmDataMapper(this);
     }
 
@@ -135,6 +134,28 @@ public class UserRealmDataMapper {
         }
 
         return userRealmList;
+    }
+
+    /**
+     * Transform a Collection of {@link UserRealm} into a List of {@link User}.
+     *
+     * @param userCollection Object Collection to be transformed.
+     * @return {@link User} if valid {@link UserRealm} otherwise null.
+     */
+    public List<User> transformList(List<UserRealm> userCollection) {
+        List<User> userList = new ArrayList<>();
+        User user;
+
+        if (userCollection != null) {
+            for (UserRealm userRealm : userCollection) {
+                user = transform(userRealm);
+                if (user != null) {
+                    userList.add(user);
+                }
+            }
+        }
+
+        return userList;
     }
 
     public FriendshipRealmDataMapper getFriendshipRealmDataMapper() {

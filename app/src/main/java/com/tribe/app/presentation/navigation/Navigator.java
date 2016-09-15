@@ -14,6 +14,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.view.activity.ChatActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
+import com.tribe.app.presentation.view.activity.GroupInfoActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
@@ -147,6 +148,15 @@ public class Navigator {
             Intent intent = SettingActivity.getCallingIntent(activity);
             activity.overridePendingTransition(R.anim.activity_in_from_right, R.anim.activity_out_scale_down);
             activity.startActivityForResult(intent, result);
+        }
+    }
+
+    public void navigateToGroupInfo(Activity activity, String groupId) {
+        if (activity != null) {
+            Intent intent = GroupInfoActivity.getCallingIntent(activity);
+            intent.putExtra("groupId", groupId);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.activity_in_from_right, R.anim.activity_out_scale_down);
         }
     }
 

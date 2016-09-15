@@ -26,6 +26,7 @@ import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactFBRealm;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.LocationRealm;
 import com.tribe.app.data.realm.MessageRealmInterface;
@@ -653,4 +654,17 @@ public class CloudUserDataStore implements UserDataStore {
             CloudUserDataStore.this.contactCache.insertSearchResult(searchResultRealm);
         }
     };
+
+    @Override
+    public Observable<GroupRealm> getGroupMembers(String groupId) {
+        String request = context.getString(R.string.get_group_members, groupId, context.getString(R.string.userfragment_infos));
+        return this.tribeApi.getGroupMembers(request)
+                .doOnNext(groupRealm -> {
+                    GroupRealm dbGroup = userCache.groupInfos(groupRealm.getId());
+                    dbGroup.setMembers(groupRealm.getMembers());
+                    userCache.groupInfos(groupRealm.getId()).setMembers(groupRealm.getMembers());
+                });
+    }
+
 }
+

@@ -9,6 +9,7 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.SearchResult;
@@ -113,4 +114,6 @@ public interface UserRepository {
      * Get an {@link Observable} which will emit nothing
      */
     Observable<Void> notifyFBFriends();
+
+    Observable<Group> getGroupMembers(String groupId);
 }

@@ -1,6 +1,7 @@
 package com.tribe.app.domain.entity;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by tiago on 30/05/2016.
@@ -14,6 +15,7 @@ public class Group extends Recipient {
     private String id;
     private String picture;
     private String name;
+    private List<User> members;
 
     @Override
     public String getProfilePicture() {
@@ -56,5 +58,13 @@ public class Group extends Recipient {
     @Override
     public Date getUpdatedAt() {
         return updated_at;
+    }
+
+    public List<User> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<User> members) {
+        this.members = members;
     }
 }
