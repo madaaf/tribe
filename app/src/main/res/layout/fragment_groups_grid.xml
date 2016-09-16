@@ -67,64 +67,12 @@
                     android:layout_height="116dp"
                     android:layout_marginTop="206dp" />
 
-                <FrameLayout
-                    android:id="@+id/layoutCreateInvite"
-                    android:layout_width="match_parent"
-                    android:layout_height="115dp"
-                    android:layout_marginTop="328dp"
-                    android:background="@drawable/shape_white_rect_grey_border">
-
-
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_marginEnd="@dimen/horizontal_margin_small"
-                        android:layout_marginStart="@dimen/horizontal_margin_small"
-                        android:layout_marginTop="@dimen/vertical_margin_small">
-
-                        <View
-                            android:id="@+id/viewCreateGroupBg1"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/bg_group_disabled" />
-
-                        <View
-                            android:id="@+id/viewCreateGroupBg2"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_margin="3.5dp"
-                            android:alpha="0"
-                            android:background="@drawable/shape_rect_black40_rounded_corners" />
-
-                        <com.tribe.app.presentation.view.widget.TextViewFont
-                            android:id="@+id/textCreateInvite"
-                            style="@style/Title.2.White"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_gravity="center"
-                            android:gravity="center"
-                            android:text="@string/group_create_title" />
-
-                        <ImageView
-                            android:id="@+id/imageInvite"
-                            android:layout_width="22dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="20dp"
-                            android:src="@drawable/picto_link" />
-
-
-                    </FrameLayout>
-
-                    <com.tribe.app.presentation.view.widget.TextViewFont
-                        android:id="@+id/textCreateInviteDesc"
-                        style="@style/Body.One.Black40"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="80dp"
-                        android:gravity="center"
-                        android:text="Add group details to create a group" />
-
-                </FrameLayout>
+            <com.tribe.app.presentation.view.component.CreateInviteView
+                android:id="@+id/createInviteView"
+                android:layout_width="match_parent"
+                android:layout_height="115dp"
+                android:layout_marginTop="328dp"
+                />
 
                 <FrameLayout
                     android:id="@+id/layoutDividerBackground"
@@ -183,7 +131,6 @@
                 </LinearLayout>
 
             </FrameLayout>
-
 
         </android.support.design.widget.CollapsingToolbarLayout>
 

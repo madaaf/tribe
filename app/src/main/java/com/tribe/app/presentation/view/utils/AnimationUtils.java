@@ -26,6 +26,7 @@ public class AnimationUtils {
     private static final int DURATION_REPLACE = 300;
 
     public static final float SCALE_RESET = 1f;
+    public static final float SCALE_INVISIBLE = 0f;
     public static final int TRANSLATION_RESET = 0;
     public static final int NO_START_DELAY = 0;
     public static final int ALPHA_FULL = 1;

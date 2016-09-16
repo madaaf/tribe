@@ -41,6 +41,7 @@ import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.FriendAdapter;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
+import com.tribe.app.presentation.view.component.CreateInviteView;
 import com.tribe.app.presentation.view.component.MemberPhotoViewList;
 import com.tribe.app.presentation.view.component.PrivatePublicView;
 import com.tribe.app.presentation.view.dialog_fragment.ShareDialogFragment;
@@ -91,8 +92,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     ImageView imageEditGroup;
     @BindView(R.id.imagePrivacyStatus)
     ImageView imagePrivacyStatus;
-    @BindView(R.id.imageInvite)
-    ImageView imageInvite;
     @BindView(R.id.imageDone)
     ImageView imageDone;
     @BindView(R.id.imageDoneEdit)
@@ -101,24 +100,14 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     ImageView imageBackIcon;
     @BindView(R.id.textPrivacyStatus)
     TextViewFont textPrivacyStatus;
-    @BindView(R.id.textCreateInvite)
-    TextViewFont textCreateInvite;
-    @BindView(R.id.textCreateInviteDesc)
-    TextViewFont textCreateInviteDesc;
     @BindView(R.id.editTextGroupName)
     EditTextFont editTextGroupName;
     @BindView(R.id.editTextInviteSearch)
     EditTextFont editTextInviteSearch;
-    @BindView(R.id.viewCreateGroupBg1)
-    View viewCreateGroupBg1;
-    @BindView(R.id.viewCreateGroupBg2)
-    View viewCreateGroupBg2;
     @BindView(R.id.layoutDividerBackground)
     FrameLayout layoutDividerBackground;
     @BindView(R.id.layoutPrivacyStatus)
     LinearLayout layoutPrivacyStatus;
-    @BindView(R.id.layoutCreateInvite)
-    FrameLayout layoutCreateInvite;
     @BindView(R.id.layoutInvite)
     NestedScrollView layoutInvite;
     @BindView(R.id.recyclerViewInvite)
@@ -129,6 +118,9 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     PrivatePublicView privatePublicView;
     @BindView(R.id.memberPhotoViewList)
     MemberPhotoViewList memberPhotoViewList;
+    @BindView(R.id.createInviteView)
+    CreateInviteView createInviteView;
+
 
     // Dagger Dependencies
     @Inject
@@ -207,12 +199,9 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         // Set up initial position of view
         imageDoneEdit.setTranslationY(-500);
         // Setup invite button
-        viewCreateGroupBg1.setEnabled(true);
-        if (privateGroup) viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_enabled));
-        else viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_public));
-        textCreateInvite.setText(getString(R.string.group_button_share));
-        textCreateInviteDesc.setText(getString(R.string.group_share_description));
-        screenUtils.setTopMargin(layoutCreateInvite, screenUtils.dpToPx(layoutCreateInviteInfoPositionY));
+        screenUtils.setTopMargin(createInviteView, screenUtils.dpToPx(layoutCreateInviteInfoPositionY));
+        createInviteView.setInvite(privateGroup);
+        createInviteView.enableInvitePress();
         privatePublicView.setVisibility(View.INVISIBLE);
         imageDone.setVisibility(View.INVISIBLE);
         imageGroup.setEnabled(false);
@@ -262,11 +251,9 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
         imageEditGroup.setTranslationY(startTranslationEditIcons);
         imageDoneEdit.setTranslationY(startTranslationEditIcons);
-        imageInvite.setScaleX(0);
-        imageInvite.setScaleY(0);
+
         imageDone.setTranslationY(startTranslationDoneIcon);
-        viewCreateGroupBg2.setEnabled(false);
-        viewCreateGroupBg1.setEnabled(false);
+        createInviteView.disable();
         layoutInvite.setNestedScrollingEnabled(false);
         layoutInvite.setTranslationY(screenUtils.dpToPx(moveUpY));
         layoutInvite.setVisibility(View.INVISIBLE);
@@ -276,8 +263,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         subscriptions.add(privatePublicView.isPrivate().subscribe(isPrivate -> {
                     privateGroup = isPrivate;
                     if (editTextGroupName.getText().toString().length() > 0) {
-                        if (privateGroup) viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_enabled));
-                        else viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_public));
+                        createInviteView.switchColors(privateGroup);
                     }
                 }));
 
@@ -287,22 +273,19 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
         subscriptions.add(RxTextView.textChanges(editTextGroupName).subscribe(charSequence -> {
             if (editTextGroupName.getText().toString().length() > 0) {
-                if (privateGroup) viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_enabled));
-                else viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_public));
-                viewCreateGroupBg2.setEnabled(true);
+                createInviteView.enableCreate(privateGroup);
             }
             else {
-                viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_disabled));
-                viewCreateGroupBg2.setEnabled(false);
+                createInviteView.disable();
             }
         }));
 
-        subscriptions.add(RxView.clicks(viewCreateGroupBg2).subscribe(aVoid -> {
+        subscriptions.add(createInviteView.createPressed().subscribe(aVoid -> {
             imageGroup.setEnabled(false);
-            viewCreateGroupBg2.setEnabled(false);
+            createInviteView.disable();
             privatePublicView.setEnabled(false);
 
-            createGroupLoadingAnim();
+            createInviteView.loadingAnimation(loadingAnimDuration, screenUtils, getActivity());
             Observable.timer(loadingAnimDuration, TimeUnit.MILLISECONDS)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -334,7 +317,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             backFromEdit();
         }));
 
-        subscriptions.add(RxView.clicks(viewCreateGroupBg1).subscribe(aVoid -> {
+        subscriptions.add((createInviteView.invitePressed()).subscribe(aVoid -> {
             showShareDialogFragment();
         }));
 
@@ -370,7 +353,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     private void backFromEdit() {
         removeEditGroup();
 
-        layoutCreateInvite.animate()
+        createInviteView.animate()
                 .translationY(-screenUtils.dpToPx(moveUpY))
                 .setDuration(animDuration)
                 .start();
@@ -415,9 +398,9 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
         // Small move of bottom half off view
         int presentEditTranslation = screenUtils.dpToPx(25);
-        layoutCreateInvite.animate()
+        createInviteView.animate()
                 .setDuration(animDuration)
-                .y(presentEditTranslation+layoutCreateInvite.getY())
+                .y(presentEditTranslation+createInviteView.getY())
                 .start();
         layoutInvite.animate()
                 .setDuration(animDuration)
@@ -475,28 +458,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
      * Animations performed after step 1
      */
 
-    private void createGroupLoadingAnim() {
-        screenUtils.hideKeyboard(getActivity());
-        Rect rect = new Rect();
-        viewCreateGroupBg2.getLocalVisibleRect(rect);
-        Rect from = new Rect(rect);
-        Rect to = new Rect(rect);
-        from.right = 0;
-        viewCreateGroupBg2.setAlpha(1f);
-        ObjectAnimator anim = ObjectAnimator.ofObject(viewCreateGroupBg2,
-                "clipBounds",
-                new RectEvaluator(),
-                from, to);
-        anim.setDuration(loadingAnimDuration);
-        anim.start();
-        Observable.timer(loadingAnimDuration, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(time -> {
-                    viewCreateGroupBg2.setVisibility(View.INVISIBLE);
-                });
-    }
-
     private void animSet1() {
         // remove private public selection
         AnimationUtils.collapseScale(privatePublicView, animDuration);
@@ -518,8 +479,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         removeEditGroup();
 
         // Setup invite button
-        textCreateInvite.setText(getString(R.string.group_button_share));
-        textCreateInviteDesc.setText(getString(R.string.group_share_description));
+        createInviteView.disable();
+        createInviteView.setInvite(privateGroup);
 
         ((HomeActivity) getActivity()).disableNavigation();
 
@@ -529,7 +490,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         AnimationUtils.animateHeightCoordinatorLayout(appBarLayout,
                 appBarLayout.getHeight(), appBarLayout.getHeight() - screenUtils.dpToPx(116),
                 animDuration);
-        layoutCreateInvite.animate()
+        createInviteView.animate()
                 .translationY(-screenUtils.dpToPx(moveUpY))
                 .setDuration(animDuration)
                 .start();
@@ -546,7 +507,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     }
 
     private void animSet3() {
-        AnimationUtils.scaleIn(imageInvite, animDuration);
+        createInviteView.scaleInInviteImage(animDuration);
 
         if (!privateGroup) imageDone.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_done_purple));
 
@@ -555,7 +516,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                 .setDuration(animDuration)
                 .start();
 
-        viewCreateGroupBg1.setEnabled(true);
+        createInviteView.enableInvitePress();
         layoutInvite.setNestedScrollingEnabled(true);
     }
 

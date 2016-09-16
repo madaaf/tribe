@@ -37,13 +37,14 @@ public class SettingSectionView extends FrameLayout {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    Unbinder unbinder;
 
     @BindView(R.id.imgSectionIcon)
     ImageView imgSectionIcon;
 
     @BindView(R.id.txtSectionTitle)
     TextViewFont txtSectionTitle;
+
+    Unbinder unbinder;
 
     @Override
     protected void onFinishInflate() {
@@ -62,11 +63,6 @@ public class SettingSectionView extends FrameLayout {
     @Override
     protected void onDetachedFromWindow() {
         unbinder.unbind();
-
-//        if (subscriptions.hasSubscriptions()) {
-//            subscriptions.unsubscribe();
-//            subscriptions.clear();
-//        }
 
         super.onDetachedFromWindow();
     }
