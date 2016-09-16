@@ -20,6 +20,7 @@ import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.network.entity.RegisterEntity;
+import com.tribe.app.data.network.entity.UsernameEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.ContactABRealm;
@@ -148,6 +149,8 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<UserRealm> userInfos(String userId) {
+        String initRequest = utcSimpleDate.format(new Date());
+
         return Observable.zip(this.tribeApi.getUserInfos(context.getString(R.string.user_infos,
                 !StringUtils.isEmpty(lastUserRequest.get()) ? context.getString(R.string.input_start, lastUserRequest.get()) : "",
                 !StringUtils.isEmpty(lastUserRequest.get()) ? context.getString(R.string.input_start, lastUserRequest.get()) : "",
@@ -164,7 +167,9 @@ public class CloudUserDataStore implements UserDataStore {
                     }
 
                     return userRealm;
-                }).doOnNext(saveToCacheUser);
+                })
+                .doOnNext(user -> lastUserRequest.set(initRequest))
+                .doOnNext(saveToCacheUser);
     }
 
     @Override
@@ -210,6 +215,7 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<List<MessageRealmInterface>> messages() {
+        String initRequest = utcSimpleDate.format(new Date());
         StringBuffer idsTribes = new StringBuffer();
 
         Set<String> toIds = new HashSet<>();
@@ -286,7 +292,9 @@ public class CloudUserDataStore implements UserDataStore {
                     }
 
                     return messageRealmInterfaceList;
-                }).doOnNext(saveToCacheMessages);
+                })
+                .doOnNext(messages -> this.lastMessageRequest.set(initRequest))
+                .doOnNext(saveToCacheMessages);
     }
 
     @Override
@@ -603,13 +611,9 @@ public class CloudUserDataStore implements UserDataStore {
                 .doOnNext(saveToCacheSearchResult);
     }
 
-    /**
-     *
-     * UNUSED
-     */
     @Override
-    public Observable<UserRealm> lookupUsername(String username) {
-        return null;
+    public Observable<Boolean> lookupUsername(String username) {
+        return loginApi.lookupUsername(new UsernameEntity("", username));
     }
 
     @Override
@@ -678,8 +682,6 @@ public class CloudUserDataStore implements UserDataStore {
     };
 
     private final Action1<UserRealm> saveToCacheUser = userRealm -> {
-        this.lastUserRequest.set(utcSimpleDate.format(new Date()));
-
         if (userRealm != null) {
             CloudUserDataStore.this.userCache.put(userRealm);
         }
@@ -692,8 +694,6 @@ public class CloudUserDataStore implements UserDataStore {
     };
 
     private final Action1<List<MessageRealmInterface>> saveToCacheMessages = messageRealmList -> {
-        this.lastMessageRequest.set(utcSimpleDate.format(new Date()));
-
         if (messageRealmList != null && messageRealmList.size() > 0) {
             List<TribeRealm> tribeRealmList = new ArrayList<>();
             List<ChatRealm> chatRealmList = new ArrayList<>();

@@ -165,6 +165,8 @@ public class PhoneNumberView extends FrameLayout {
 
     public void setNextVisible(boolean visible) {
         if (visible) {
+            imageViewNextIcon.clearAnimation();
+            imageViewNextIcon.setAlpha(1f);
             imageViewNextIcon.setVisibility(VISIBLE);
         } else {
             imageViewNextIcon.setVisibility(INVISIBLE);

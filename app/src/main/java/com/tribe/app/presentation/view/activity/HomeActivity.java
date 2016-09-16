@@ -271,7 +271,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             @Override
             public void onPageSelected(int position) {
                 if (viewPager.getCurrentItem() == GRID_FRAGMENT_PAGE) {
-                    reloadGrid();
+                    //reloadGrid();
                 }
             }
 
@@ -322,6 +322,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     public void initOnRecordStart(Observable<String> observable) {
         subscriptions.add(observable.subscribe(id -> {
+            viewPager.setSwipeable(false);
             cameraWrapper.onStartRecord(id);
         }));
     }
@@ -329,6 +330,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     public void initOnRecordEnd(Observable<Recipient> observable) {
         subscriptions.add(observable.subscribe(friend -> {
+            viewPager.setSwipeable(true);
             cameraWrapper.onEndRecord();
         }));
     }
@@ -386,6 +388,13 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     public void initClickOnSettings(Observable<View> observable) {
         subscriptions.add(observable.subscribe(view -> {
             HomeActivity.this.navigator.navigateToSettings(HomeActivity.this, SETTINGS_RESULT);
+        }));
+    }
+
+    @Override
+    public void initPullToSearchActive(Observable<Boolean> observable) {
+        subscriptions.add(observable.subscribe(active -> {
+            viewPager.requestDisallowInterceptTouchEvent(active);
         }));
     }
 
@@ -659,5 +668,4 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 .translationY(0)
                 .start();
     }
-
 }

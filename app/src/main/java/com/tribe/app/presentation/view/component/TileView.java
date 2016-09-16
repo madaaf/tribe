@@ -106,6 +106,7 @@ public class TileView extends SquareFrameLayout {
     private CompositeSubscription subscriptions;
     private Subscription subscriptionVideoStarted;
     private Unbinder unbinder;
+    private Subscription timer;
 
     // RX SUBSCRIPTIONS / SUBJECTS
     private final PublishSubject<View> clickErrorTribes = PublishSubject.create();
@@ -213,14 +214,40 @@ public class TileView extends SquareFrameLayout {
     }
 
     private void prepareTouchesTile() {
+//        setOnTouchListener((v, event) -> {
+//            int action = event.getAction();
+//
+//            switch (action & MotionEvent.ACTION_MASK) {
+//                case MotionEvent.ACTION_DOWN :
+//                    System.out.println("ACTION_DOWN TILE VIEW");
+//                    downX = event.getX();
+//                    downY = event.getY();
+//                    return true;
+//                case MotionEvent.ACTION_MOVE :
+//                    System.out.println("ACTION_MOVE TILE VIEW");
+//                    break;
+//                case MotionEvent.ACTION_UP:
+//                    System.out.println("ACTION_UP TILE VIEW");
+//                    break;
+//                case MotionEvent.ACTION_CANCEL:
+//                    System.out.println("ACTION_CANCEL TILE VIEW");
+//                    break;
+//            }
+//
+//            return false;
+//        });
         setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                System.out.println("DOWN");
                 if (isDown) return false;
+
+                if (timer != null) timer.unsubscribe();
 
                 if (getTag(R.id.is_tap_to_cancel) != null)
                     isTapToCancel = (Boolean) getTag(R.id.is_tap_to_cancel);
 
                 if (isTapToCancel) {
+                    System.out.println("Tap To Cancel");
                     clickTapToCancel.onNext(this);
                     resetViewAfterTapToCancel(false);
                     return false;
@@ -229,14 +256,15 @@ public class TileView extends SquareFrameLayout {
                     downX = currentX = event.getRawX();
                     downY = currentY = event.getRawY();
                     isDown = true;
-                    Observable.timer(LONG_PRESS, TimeUnit.MILLISECONDS)
-                            .takeUntil(aLong -> isDown)
+                    timer = Observable.timer(LONG_PRESS, TimeUnit.MILLISECONDS)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(time -> {
                                 if ((System.currentTimeMillis() - longDown) >= LONG_PRESS && isDown
                                         && Math.abs(currentX - downX) < diffDown
                                         && Math.abs(currentY - downY) < diffDown) {
+                                    System.out.println("Launching recording");
+
                                     isRecording = true;
                                     isTapToCancel = false;
 
@@ -260,14 +288,25 @@ public class TileView extends SquareFrameLayout {
                                 }
                             });
                 }
+
+                return true;
             } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
                 currentX = event.getRawX();
                 currentY = event.getRawY();
+                //if (isRecording) return true;
             } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                if ((System.currentTimeMillis() - longDown) >= LONG_PRESS && isDown) {
+                if (timer != null) timer.unsubscribe();
+
+                System.out.println("up");
+
+                if ((System.currentTimeMillis() - longDown) >= LONG_PRESS && isDown && isRecording) {
+
+                    System.out.println("Stop recording");
                     recordEnded.onNext(this);
                     isRecording = false;
                 } else if (isDown && (System.currentTimeMillis() - longDown) <= LONG_PRESS) {
+
+                    System.out.println("Open tribes");
                     if (type == TYPE_GRID) {
                         clickOpenTribes.onNext(this);
                     } else {
@@ -280,10 +319,11 @@ public class TileView extends SquareFrameLayout {
 
                 isDown = false;
             } else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
+                System.out.println("cancel");
                 isDown = false;
             }
 
-            return true;
+            return false;
         });
 
         SpringSystem springSystem = SpringSystem.create();
@@ -434,6 +474,7 @@ public class TileView extends SquareFrameLayout {
     }
 
     private void resetViewAfterTapToCancel(boolean hasFinished) {
+        System.out.println("ResetView");
         if (hasFinished) AnimationUtils.scaleDown(imgDone, SCALE_DURATION);
         else AnimationUtils.scaleDown(imgCancel, SCALE_DURATION);
 
@@ -603,6 +644,7 @@ public class TileView extends SquareFrameLayout {
 //    }
 
     public void showTapToCancel(TribeMessage tribe, @CameraWrapper.TribeMode String tribeMode) {
+        System.out.println("Show tap to cancel");
         currentTribe = tribe;
         currentTribeMode = tribeMode;
 
@@ -622,6 +664,7 @@ public class TileView extends SquareFrameLayout {
     }
 
     private void animateTapToCancel() {
+        System.out.println("Animate tap to cancel");
         AnimationUtils.fadeIn(viewForeground, 0);
         ((TransitionDrawable) ((LayerDrawable) viewForeground.getBackground()).getDrawable(0)).startTransition(FADE_DURATION);
         AnimationUtils.scaleUp(imgCancel, SCALE_DURATION, new OvershootInterpolator(OVERSHOOT));

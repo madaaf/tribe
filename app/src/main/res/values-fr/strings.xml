@@ -98,6 +98,7 @@
 	<string name="grid_user_points">Points</string>
 	<string name="grid_friendship_status_default">Appuyez !</string>
 	<string name="grid_friendship_status_sending">Envoi</string>
+	<string name="grid_friendship_status_processing">Traitement</string>
 	<string name="grid_friendship_status_sent">Envoyé</string>
 	<string name="grid_friendship_status_opened">Ouvert</string>
 	<string name="grid_friendship_status_opened_plural">Opened</string>
@@ -353,4 +354,58 @@
 	<string name="share_score">I have %1$s points on Tribe %2$s</string>
 	<string name="share_onboarding">I just discovered Tribe, but I can’t enter alone. Come now so we can get access together. Waiting for you. Go on %1$s</string>
 	<string name="share_copied_redirecting">Copied the link to the clipboard. Redirecting you...</string>
+	
+	<!-- TribeDistancePopup -->
+	<string name="tribe_distance_popup_description">Envoyé à %1$s de vous</string>
+	<string name="tribe_distance_popup_more">Plus d\'options</string>
+	<string name="tribe_distance_client_no_data">Pas de données trouvées, tapez pour réessayer</string>
+	<string name="tribe_distance_client_no_delay">Maintenant</string>
+	<string name="tribe_distance_client_delay">Dans %1$s</string>
+	<string name="tribe_distance_no_price">Prix inconnu</string>
+	<string name="tribe_distance_free_price">Gratuit</string>
+	
+	<!-- TribeMagicWordPopup -->
+	<string name="tribe_magicword_popup_error">Erreur lors du\nchargement de cette\nmagic card.</string>
+	<string name="tribe_magicword_popup_biography">Biographie</string>
+	<string name="tribe_magicword_popup_price">Prix</string>
+	<string name="tribe_magicword_popup_buy_on">Acheter sur</string>
+	<string name="tribe_magicword_popup_director">Réalisateur</string>
+	<string name="tribe_magicword_popup_cast_members">Acteurs</string>
+	<string name="tribe_magicword_popup_description">Description</string>
+	
+	<!-- TribeLocationPopup -->
+	<string name="tribe_location_popup_population">Habitants</string>
+	<string name="tribe_location_popup_directions">Itinéraire</string>
+	
+	<!-- TribeLevelPopup -->
+	<string name="tribe_level_popup_late">Tu es en retard !</string>
+	<string name="tribe_level_popup_ahead">Tu es en avance !</string>
+	<string name="tribe_level_popup_catch_up">À rattraper !</string>
+	<string name="tribe_level_popup_advance">D\'avance</string>
+	
+	<!-- TribeEventPopup -->
+	<string name="tribe_event_popup_title">Titre</string>
+	<string name="tribe_event_popup_title_default">Nouvel évènement</string>
+	<string name="tribe_event_popup_date">Date</string>
+	<string name="tribe_event_popup_start">De</string>
+	<string name="tribe_event_popup_end">À</string>
+	<string name="tribe_event_popup_more">Édite et créé un évènement</string>
+	<string name="tribe_event_popup_more_no_access">Vous devez donner les permissions pour l\'accès au calendrier</string>
+	<string name="tribe_event_today">Aujourd\'hui</string>
+	<string name="tribe_event_day_1_future">Demain</string>
+	<string name="tribe_event_day_1_past">Hier</string>
+	<string name="tribe_event_day_n_future">Dans %1$d jours</string>
+	<string name="tribe_event_day_n_past">Il y a %1$d jours</string>
+	<string name="tribe_event_week_1_future">Dans %1$d semaine</string>
+	<string name="tribe_event_week_1_past">Il y a %1$d semaine</string>
+	<string name="tribe_event_week_n_future">Dans %1$d semaines</string>
+	<string name="tribe_event_week_n_past">Il y a %1$d semaines</string>
+	<string name="tribe_event_month_1_future">Dans %1$d mois</string>
+	<string name="tribe_event_month_1_past">Il y a %1$d mois</string>
+	<string name="tribe_event_month_n_future">Dans %1$d mois</string>
+	<string name="tribe_event_month_n_past">Il y a %1$d mois</string>
+	<string name="tribe_event_year_1_future">Dans %1$d an</string>
+	<string name="tribe_event_year_1_past">Il y a %1$d an</string>
+	<string name="tribe_event_year_n_future">Dans %1$d ans</string>
+	<string name="tribe_event_year_n_past">Il y a %1$d ans</string>
 </resources>

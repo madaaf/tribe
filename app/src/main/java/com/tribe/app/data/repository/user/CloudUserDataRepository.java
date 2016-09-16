@@ -146,12 +146,10 @@ public class CloudUserDataRepository implements UserRepository {
                 .map(searchResultRealm -> this.searchResultRealmDataMapper.transform(searchResultRealm));
     }
 
-    /**
-     * UNUSED
-     */
     @Override
-    public Observable<User> lookupUsername(String username) {
-        return null;
+    public Observable<Boolean> lookupUsername(String username) {
+        final UserDataStore cloudDataStore = this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.lookupUsername(username);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.tribe.app.data.network;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.network.entity.RefreshEntity;
 import com.tribe.app.data.network.entity.RegisterEntity;
+import com.tribe.app.data.network.entity.UsernameEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.PinRealm;
 
@@ -24,4 +25,7 @@ public interface LoginApi {
 
     @POST("/register")
     Observable<AccessToken> register(@Body RegisterEntity registerEntity);
+
+    @POST("/username")
+    Observable<Boolean> lookupUsername(@Body UsernameEntity usernameEntity);
 }

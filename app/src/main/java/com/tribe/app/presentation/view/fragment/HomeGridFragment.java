@@ -6,13 +6,12 @@ import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
-import com.facebook.rebound.SpringSystem;
+import com.facebook.rebound.SpringConfig;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
@@ -30,7 +29,9 @@ import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
+import com.tribe.app.presentation.view.component.PullToSearchContainer;
 import com.tribe.app.presentation.view.component.TileView;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 
 import java.util.ArrayList;
@@ -53,11 +54,23 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class HomeGridFragment extends BaseFragment implements HomeGridView {
 
-    @Inject HomeGridPresenter homeGridPresenter;
-    @Inject HomeGridAdapter homeGridAdapter;
+    private static final SpringConfig PULL_TO_SEARCH_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(132, 7f);
+    private static final float DRAG_RATE = 0.5f;
+
+    @Inject
+    HomeGridPresenter homeGridPresenter;
+
+    @Inject
+    HomeGridAdapter homeGridAdapter;
+
+    @Inject
+    ScreenUtils screenUtils;
 
     @BindView(R.id.recyclerViewFriends)
     RecyclerView recyclerViewFriends;
+
+    @BindView(R.id.pullToSearchContainer)
+    PullToSearchContainer pullToSearchContainer;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -70,6 +83,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private PublishSubject<List<Message>> onNewMessages = PublishSubject.create();
     private PublishSubject<View> clickOpenPoints = PublishSubject.create();
     private PublishSubject<View> clickOpenSettings = PublishSubject.create();
+    private PublishSubject<Boolean> activePullToSearch = PublishSubject.create();
 
     // VARIABLES
     private HomeView homeView;
@@ -81,25 +95,12 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private User currentUser;
     private @CameraWrapper.TribeMode String tribeMode;
     private TribeMessage currentTribe; // The tribe currently being recorded / sent
-    private long startRecording;
+    private boolean isRecording;
     private List<TribeMessage> pendingTribes;
     private BottomSheetDialog bottomSheetPendingTribeDialog;
     private RecyclerView recyclerViewPending;
     private LabelSheetAdapter labelSheetAdapter;
-
-    // TOUCH HANDLING
-    private int activePointerId;
-    private float lastDownY, lastDownYTr;
-    private static final float DRAG_RATE = 0.5f;
-    private float currentDragPercent;
-    private int currentOffsetBottom;
-    private int thresholdAlphaEnd;
-    private int thresholdEnd;
-    private Spring springAlpha;
-    private Spring springAlphaSwipeDown;
-    private SpringSystem springSystem = null;
-    private VelocityTracker velocityTracker;
-
+    private int verticalScrollOffset = 0;
 
     public HomeGridFragment() {
         setRetainInstance(true);
@@ -129,8 +130,9 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         fragmentView.setTag(HomeActivity.GRID_FRAGMENT_PAGE);
 
         init();
+        initResources();
         initRecyclerView();
-//        initPullToSearch();
+        initPullToSearch();
         return fragmentView;
     }
 
@@ -250,109 +252,11 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         this.homeGridPresenter.loadFriendList();
     }
 
-//    public void prepareTapToCancel(String localId) {
-//        if (currentRecipient != null) {
-//            TileView tileView = (TileView) layoutManager.findViewByPosition(currentRecipient.getPosition());
-//            tileView.preparePlayer(localId);
-//        }
-//    }
-
     private void init() {
     }
 
-    private void initPullToSearch() {
+    private void initResources() {
 
-
-
-        thresholdEnd = getResources().getDimensionPixelSize(R.dimen.threshold_dismiss);
-        thresholdAlphaEnd = thresholdEnd >> 1;
-
-        springSystem = SpringSystem.create();
-
-        springAlpha = springSystem.createSpring();
-        springAlphaSwipeDown = springSystem.createSpring();
-
-        velocityTracker = VelocityTracker.obtain();
-
-        recyclerViewFriends.setOnTouchListener((view, event) -> {
-
-            if (layoutManager.findFirstVisibleItemPosition() == 0) {
-
-                final int action = event.getAction();
-
-                switch (action) {
-
-
-                    case MotionEvent.ACTION_DOWN:
-                        lastDownY = event.getRawY();
-                        lastDownYTr = view.getTranslationY();
-                        break;
-
-                    case MotionEvent.ACTION_MOVE:
-
-                        activePointerId = event.getPointerId(0);
-
-//                        if (currentSwipeDirection == CustomViewPager.SWIPE_MODE_DOWN) {
-                            final int pointerIndex = event.findPointerIndex(activePointerId);
-
-                            if (pointerIndex != -1) {
-                                final int location[] = {0, 0};
-                                view.getLocationOnScreen(location);
-
-                                float y = event.getY(pointerIndex) + location[1];
-
-                                float offsetY = y - lastDownY + lastDownYTr;
-
-                                if (offsetY >= 0) {
-                                    return applyOffsetBottomWithTension(offsetY, view);
-                                }
-
-                            }
-
-//                        }
-                        velocityTracker.addMovement(event);
-                    default:
-                        break;
-                }
-            }
-
-            return false;
-        });
-    }
-
-
-    private boolean applyOffsetBottomWithTension(float offsetY, View view) {
-        float totalDragDistance = view.getHeight() / 3;
-        final float scrollTop = offsetY * DRAG_RATE;
-        currentDragPercent = scrollTop / totalDragDistance;
-
-        if (currentDragPercent < 0) {
-            return false;
-        }
-
-        currentOffsetBottom = computeOffsetWithTension(scrollTop, totalDragDistance);
-        scrollBottom(currentOffsetBottom);
-
-        springAlpha.setCurrentValue(1 - (offsetY / thresholdAlphaEnd));
-        springAlphaSwipeDown.setCurrentValue(offsetY / (thresholdAlphaEnd * 2));
-        return true;
-    }
-
-    private int computeOffsetWithTension(float scrollDist, float totalDragDistance) {
-        float boundedDragPercent = Math.min(1f, Math.abs(currentDragPercent));
-        float extraOS = Math.abs(scrollDist) - totalDragDistance;
-        float slingshotDist = totalDragDistance;
-        float tensionSlingshotPercent = Math.max(0,
-                Math.min(extraOS, slingshotDist * 2) / slingshotDist);
-        float tensionPercent = (float) ((tensionSlingshotPercent / 4) - Math.pow(
-                (tensionSlingshotPercent / 4), 2)) * 2f;
-        float extraMove = (slingshotDist) * tensionPercent / 2;
-        return (int) ((slingshotDist * boundedDragPercent) + extraMove);
-    }
-
-    private void scrollBottom(float value) {
-        recyclerViewFriends.setTranslationY(value);
-        //Todo: add pull to search here
     }
 
     private void initRecyclerView() {
@@ -374,7 +278,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                     @Override
                     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                         super.onScrolled(recyclerView, dx, dy);
-                        int verticalScrollOffset = recyclerView.computeVerticalScrollOffset();
+                        verticalScrollOffset = recyclerView.computeVerticalScrollOffset();
                         subscriber.onNext(verticalScrollOffset);
                     }
                 });
@@ -414,13 +318,12 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         subscriptions.add(homeGridAdapter.onRecordStart()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .map(recipient -> {
-                    startRecording = System.currentTimeMillis();
+                    isRecording = true;
                     String tribeId = homeGridPresenter.createTribe(currentUser, recipient, tribeMode);
                     homeGridAdapter.updateItemWithTribe(recipient.getPosition(), currentTribe);
-                    recyclerViewFriends.requestDisallowInterceptTouchEvent(false);
+                    recyclerViewFriends.requestDisallowInterceptTouchEvent(true);
                     return tribeId;
                 })
-                .doOnNext(str -> recyclerViewFriends.requestDisallowInterceptTouchEvent(true))
                 .subscribe(onRecordStart));
 
         subscriptions.add(homeGridAdapter.onRecordEnd()
@@ -428,6 +331,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .doOnNext(recipient -> {
+                    isRecording = false;
                     TileView tileView = (TileView) layoutManager.findViewByPosition(recipient.getPosition());
                     tileView.showTapToCancel(currentTribe, tribeMode);
                     homeGridAdapter.updateItemWithTribe(recipient.getPosition(), currentTribe);
@@ -467,6 +371,14 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         if (homeView != null) homeView.initNewMessages(onNewMessages);
         if (homeView != null) homeView.initClickOnPoints(clickOpenPoints);
         if (homeView != null) homeView.initClickOnSettings(clickOpenSettings);
+        if (homeView != null) homeView.initPullToSearchActive(activePullToSearch);
+    }
+
+    private void initPullToSearch() {
+        subscriptions.add(pullToSearchContainer.pullToSearchActive().doOnNext(active -> {
+            recyclerViewFriends.requestDisallowInterceptTouchEvent(active);
+            recyclerViewFriends.getParent().requestDisallowInterceptTouchEvent(active);
+        }).subscribe(activePullToSearch));
     }
 
     private void setupBottomSheetMore(Recipient recipient) {
@@ -593,6 +505,29 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         this.homeGridPresenter.onCreate();
     }
 
+    /**
+     * PULL TO SEARCH METHODS
+     */
+    private class TopSpringListener extends SimpleSpringListener {
+        @Override
+        public void onSpringUpdate(Spring spring) {
+            if (isAdded()) {
+                float value = (float) spring.getCurrentValue();
+                scrollTop(value);
+            }
+        }
+    }
 
+    private void scrollTop(float value) {
+        recyclerViewFriends.setTranslationY(value);
+    }
 
+    private int computeActualScroll() {
+        if (layoutManager != null && layoutManager.getItemCount() > 0) {
+            int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
+            return layoutManager.getChildAt(firstVisibleItem).getTop();
+        }
+
+        return 0;
+    }
 }
