@@ -1,5 +1,7 @@
 package com.tribe.app.data.realm;
 
+import java.util.List;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -63,14 +65,6 @@ public class ContactABRealm extends RealmObject implements ContactInterface {
         this.version = version;
     }
 
-    public RealmList<UserRealm> getUserList() {
-        return userList;
-    }
-
-    public void setUserList(RealmList<UserRealm> userList) {
-        this.userList = userList;
-    }
-
     @Override
     public void setHowManyFriends(int howManyFriends) {
         this.howManyFriends = howManyFriends;
@@ -86,5 +80,14 @@ public class ContactABRealm extends RealmObject implements ContactInterface {
         if (this.userList == null) this.userList = new RealmList<>();
 
         this.userList.add(userRealm);
+    }
+
+    public void setUserList(RealmList<UserRealm> userList) {
+        this.userList = userList;
+    }
+
+    @Override
+    public List<UserRealm> getUsers() {
+        return userList;
     }
 }

@@ -9,10 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.domain.entity.FacebookEntity;
+import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -20,9 +22,11 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.ProfileInfoPresenter;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
+import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.FacebookView;
 
@@ -62,10 +66,16 @@ public class ProfileInfoFragment extends Fragment implements com.tribe.app.prese
     ScreenUtils screenUtils;
 
     @Inject
+    PhoneUtils phoneUtils;
+
+    @Inject
     Navigator navigator;
 
     @BindView(R.id.imgNextIcon)
     ImageView imgNextIcon;
+
+    @BindView(R.id.circularProgressProfile)
+    CircularProgressView circularProgressProfile;
 
     @BindView(R.id.profileInfoView)
     ProfileInfoView profileInfoView;
@@ -94,7 +104,7 @@ public class ProfileInfoFragment extends Fragment implements com.tribe.app.prese
         initUi(fragmentView);
 
         this.profileInfoPresenter.attachView(this);
-        this.enableNext(false);
+        refactorNext();
 
         return fragmentView;
     }
@@ -126,15 +136,19 @@ public class ProfileInfoFragment extends Fragment implements com.tribe.app.prese
             }
         }));
 
-        subscriptions.add(profileInfoView.infoValid().subscribe(this::enableNext));
+        subscriptions.add(profileInfoView.onUsernameInput().subscribe(s -> {
+            profileInfoPresenter.findByUsername(s);
+        }));
+
+        subscriptions.add(profileInfoView.onDisplayNameInput().subscribe(s -> refactorNext()));
     }
 
     /**
      * Helper methods
      */
 
-    public void setImgProfilePic(Bitmap bitmap) {
-         profileInfoView.setImgProfilePic(bitmap);
+    public void setImgProfilePic(Bitmap bitmap, String uri) {
+        profileInfoView.setImgProfilePic(bitmap, uri);
     }
 
     @Override
@@ -154,16 +168,28 @@ public class ProfileInfoFragment extends Fragment implements com.tribe.app.prese
     }
 
     @Override
-    public void usernameResult(User user) {
+    public void usernameResult(SearchResult searchResult) {
+        boolean usernameValid = searchResult == null || StringUtils.isEmpty(searchResult.getId());
+        profileInfoView.setUsernameValid(usernameValid);
+        refactorNext();
+    }
 
+    @Override
+    public void userRegistered() {
+        profileInfoPresenter.updateUser(null, null, profileInfoView.getImgUri());
+    }
+
+    @Override
+    public void goToAccess(User user) {
+        ((IntroActivity) getActivity()).goToAccess(user);
     }
 
     public void getInfoFromFacebook() {
         profileInfoPresenter.loadFacebookInfos();
     }
 
-    public void enableNext(boolean enabled) {
-        if (enabled) {
+    public void refactorNext() {
+        if (profileInfoView.isUsernameSelected() && profileInfoView.isDisplayNameSelected()) {
             imgNextIcon.setImageDrawable(getContext().getDrawable(R.drawable.picto_next_icon_black));
             imgNextIcon.setClickable(true);
         } else {
@@ -177,7 +203,8 @@ public class ProfileInfoFragment extends Fragment implements com.tribe.app.prese
      */
     @OnClick(R.id.imgNextIcon)
     public void clickNext() {
-        ((IntroActivity) getActivity()).goToAccess();
+        screenUtils.hideKeyboard(getActivity());
+        profileInfoPresenter.register(profileInfoView.getDisplayName(), profileInfoView.getUsername(), loginEntity);
     }
 
     /**
@@ -200,12 +227,14 @@ public class ProfileInfoFragment extends Fragment implements com.tribe.app.prese
 
     @Override
     public void showLoading() {
-
+        imgNextIcon.setVisibility(View.GONE);
+        circularProgressProfile.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideLoading() {
-
+        imgNextIcon.setVisibility(View.VISIBLE);
+        circularProgressProfile.setVisibility(View.GONE);
     }
 
     @Override
@@ -229,6 +258,6 @@ public class ProfileInfoFragment extends Fragment implements com.tribe.app.prese
     }
 
     public void setLoginEntity(LoginEntity loginEntity) {
-        this.loginEntity = loginEntity;
+        this.loginEntity = phoneUtils.prepareLoginForRegister(loginEntity);
     }
 }

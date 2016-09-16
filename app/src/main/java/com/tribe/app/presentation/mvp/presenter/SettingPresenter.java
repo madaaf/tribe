@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import android.content.Context;
-import android.widget.Toast;
 
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
@@ -112,5 +111,4 @@ public class SettingPresenter implements Presenter {
             settingView.setProfilePic(user.getProfilePicture());
         }
     }
-
 }

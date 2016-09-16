@@ -240,9 +240,19 @@ public class DiskUserDataRepository implements UserRepository {
     }
 
     @Override
+    public Observable<Void> howManyFriends() {
+        return null;
+    }
+
+    @Override
     public Observable<SearchResult> findByUsername(String usernamve) {
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
         return userDataStore.findByUsername(usernamve).map(searchResultRealm -> searchResultRealmDataMapper.transform(searchResultRealm));
+    }
+
+    @Override
+    public Observable<User> lookupUsername(String username) {
+        return null;
     }
 
     @Override

@@ -6,6 +6,7 @@ import android.telephony.PhoneNumberUtils;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
+import com.tribe.app.data.network.entity.LoginEntity;
 
 import java.util.LinkedList;
 
@@ -95,16 +96,19 @@ public class PhoneUtils {
         return null;
     }
 
-    public String prepareForScope(String phoneNumber) {
+    public LoginEntity prepareLoginForRegister(LoginEntity loginEntity) {
         Phonenumber.PhoneNumber numberProto = null;
 
         try {
-            numberProto = phoneUtil.parse(phoneNumber, "");
+            numberProto = phoneUtil.parse(loginEntity.getUsername(), "");
         } catch (NumberParseException e) {
             System.err.println("NumberParseException was thrown: " + e.toString());
         }
 
-        return "+" + numberProto.getCountryCode() + " " + numberProto.getNationalNumber();
+        loginEntity.setCountryCode("+" + numberProto.getCountryCode());
+        loginEntity.setNationalNumber("" + numberProto.getNationalNumber());
+
+        return loginEntity;
     }
 
     public int getCountryCode(String phoneNumber) {

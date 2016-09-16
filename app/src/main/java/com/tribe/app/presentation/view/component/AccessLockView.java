@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.component;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
@@ -10,14 +11,17 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextSwitcher;
 
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.concurrent.TimeUnit;
 
@@ -35,6 +39,9 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class AccessLockView extends FrameLayout {
 
+    private final static int DURATION = 300;
+    private final static int PULSATING_DURATION = 1200;
+
     private static final int STATE_GET_ACCESS = 0;
     private static final int STATE_HANG_TIGHT = 1;
     private static final int STATE_SORRY = 2;
@@ -47,8 +54,8 @@ public class AccessLockView extends FrameLayout {
     @BindView(R.id.pulse)
     View viewPulse;
 
-    @BindView(R.id.semiCircleView)
-    View semiCircleView;
+    @BindView(R.id.progressBar)
+    ProgressBar progressBar;
 
     @BindView(R.id.whiteCircle)
     View whiteCircle;
@@ -57,10 +64,10 @@ public class AccessLockView extends FrameLayout {
     ImageView imgLockIcon;
 
     @BindView(R.id.txtNumFriends)
-    TextViewFont txtNumFriends;
+    TextSwitcher txtNumFriends;
 
-    @BindView(R.id.txtFriends)
-    TextViewFont txtFriends;
+    @BindView(R.id.layoutFriends)
+    ViewGroup layoutFriends;
 
     // OBSERVABLES
     private Unbinder unbinder;
@@ -69,7 +76,9 @@ public class AccessLockView extends FrameLayout {
     // VARIABLES
     private ScreenUtils screenUtils;
     private boolean isEnd = true;
-    private int pulsingDuration = 1200;
+
+    // RESOURCES
+    private int totalTimeSynchro;
 
     public AccessLockView(Context context) {
         super(context);
@@ -91,6 +100,7 @@ public class AccessLockView extends FrameLayout {
         unbinder = ButterKnife.bind(this);
 
         screenUtils = ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().screenUtils();
+        totalTimeSynchro = getContext().getResources().getInteger(R.integer.time_synchro);
 
         setToAccessFirstTime();
     }
@@ -117,12 +127,21 @@ public class AccessLockView extends FrameLayout {
         subscriptions.clear();
         greyPulse();
 
-        semiCircleView.setVisibility(INVISIBLE);
-        imgLockIcon.setAlpha(1f);
-        imgLockIcon.setTranslationY(0);
+        progressBar.setVisibility(INVISIBLE);
 
-        AnimationUtils.fadeViewDownOut(txtFriends);
-        AnimationUtils.fadeViewDownOut(txtNumFriends);
+        AnimationUtils.fadeViewDownOut(layoutFriends, new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                imgLockIcon.animate()
+                        .alpha(1)
+                        .setDuration(DURATION)
+                        .translationY(0)
+                        .setListener(null)
+                        .start();
+
+                layoutFriends.animate().setListener(null).start();
+            }
+        });
     }
 
     public void setToAccessFirstTime() {
@@ -131,12 +150,11 @@ public class AccessLockView extends FrameLayout {
         subscriptions.clear();
         greyPulse();
 
-        semiCircleView.setVisibility(INVISIBLE);
+        progressBar.setVisibility(INVISIBLE);
         imgLockIcon.setAlpha(1f);
         imgLockIcon.setTranslationY(0);
 
-        AnimationUtils.fadeViewDownOut(txtFriends);
-        AnimationUtils.fadeViewDownOut(txtNumFriends);
+        AnimationUtils.fadeViewDownOut(layoutFriends, null);
     }
 
     public void fadeBigLockIn() {
@@ -151,8 +169,7 @@ public class AccessLockView extends FrameLayout {
     }
 
     private void fadeTextIn() {
-        AnimationUtils.fadeViewUpIn(txtFriends);
-        AnimationUtils.fadeViewUpIn(txtNumFriends);
+        AnimationUtils.fadeViewUpIn(layoutFriends);
     }
 
     private void fadeLockIn() {
@@ -160,74 +177,61 @@ public class AccessLockView extends FrameLayout {
     }
 
     public void setToHangTight(int numFriends) {
-        viewState = STATE_HANG_TIGHT;
-
         txtNumFriends.setText(String.valueOf(numFriends));
 
-        imgLockIcon.animate()
-                .alpha(0)
-                .setDuration(300)
-                .translationY(screenUtils.dpToPx(50))
-                .setStartDelay(0)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        if (viewState == STATE_HANG_TIGHT) fadeTextIn();
-                    }
-                }).start();
+        if (viewState != STATE_HANG_TIGHT) {
+            viewState = STATE_HANG_TIGHT;
 
-        subscriptions.clear();
-        greyPulse();
+            imgLockIcon.animate()
+                    .alpha(0)
+                    .setDuration(DURATION)
+                    .translationY(screenUtils.dpToPx(50))
+                    .setStartDelay(0)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            if (viewState == STATE_HANG_TIGHT) fadeTextIn();
+                            imgLockIcon.animate().setListener(null).start();
+                        }
+                    }).start();
 
-        semiCircleView.setVisibility(VISIBLE);
+            subscriptions.clear();
+            greyPulse();
+
+            progressBar.setVisibility(VISIBLE);
+        }
     }
 
     public void setToSorry() {
         viewState = STATE_SORRY;
 
-        txtFriends.animate()
+        layoutFriends.animate()
                 .alpha(0)
-                .setDuration(300)
+                .setDuration(DURATION)
                 .translationY(screenUtils.dpToPx(25))
                 .setStartDelay(0)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
                         if (viewState == STATE_SORRY) fadeLockIn();
                     }
                 }).start();
 
-        txtNumFriends.animate()
-                .alpha(0)
-                .setDuration(300)
-                .translationY(screenUtils.dpToPx(25))
-                .setStartDelay(0)
-                .start();
-
         subscriptions.clear();
         redPulse();
 
-        semiCircleView.setVisibility(INVISIBLE);
+        progressBar.setVisibility(INVISIBLE);
     }
 
     public void setToCongrats() {
         viewState = STATE_CONGRATS;
-        txtNumFriends.setText("3");
-
         subscriptions.clear();
-        bluePulse();
-        subscriptions.add(Observable.interval(600, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
-                .subscribe(aVoid -> {
-                    removePulsingCircleAnimation();
-                }));
+        removePulsingCircleAnimation();
     }
 
     public void setViewWidthHeight(int whiteCircleWidth, int pulseWidth) {
-        whiteCircle.setLayoutParams(new LayoutParams(whiteCircleWidth, whiteCircleWidth));
         setNewWidthAndHeight(whiteCircle, whiteCircleWidth, whiteCircleWidth);
-        setNewWidthAndHeight(semiCircleView, whiteCircleWidth, whiteCircleWidth);
+        setNewWidthAndHeight(progressBar, whiteCircleWidth, whiteCircleWidth);
         setNewWidthAndHeight(viewPulse, pulseWidth, pulseWidth);
     }
 
@@ -266,11 +270,11 @@ public class AccessLockView extends FrameLayout {
     private void changePulse(Drawable[] backgrounds) {
         TransitionDrawable crossfader = new TransitionDrawable(backgrounds);
         viewPulse.setBackground(crossfader);
-        crossfader.startTransition(pulsingDuration * 2);
+        crossfader.startTransition(PULSATING_DURATION * 2);
 
         expandAndContract(crossfader);
 
-        subscriptions.add(Observable.interval(pulsingDuration, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+        subscriptions.add(Observable.interval(PULSATING_DURATION, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .subscribe(aVoid -> {
                     expandAndContract(crossfader);
                 }));
@@ -287,23 +291,29 @@ public class AccessLockView extends FrameLayout {
     private void expandAndContract(TransitionDrawable crossfader) {
         if (isEnd) {
             isEnd = false;
-            crossfader.reverseTransition(pulsingDuration);
+            crossfader.reverseTransition(PULSATING_DURATION);
             viewPulse.animate()
                     .scaleY((float) 1)
                     .scaleX((float) 1)
                     .setStartDelay(0)
-                    .setDuration(pulsingDuration)
+                    .setDuration(PULSATING_DURATION)
                     .start();
         } else {
             isEnd = true;
-            crossfader.startTransition(pulsingDuration * 2);
+            crossfader.startTransition(PULSATING_DURATION * 2);
             viewPulse.animate()
                     .scaleY((float) 1.2)
                     .scaleX((float) 1.2)
                     .setStartDelay(0)
-                    .setDuration(pulsingDuration)
+                    .setDuration(PULSATING_DURATION)
                     .start();
         }
     }
 
+    public void animateProgress() {
+        ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", progressBar.getMax());
+        animation.setDuration(totalTimeSynchro);
+        animation.setInterpolator(new DecelerateInterpolator());
+        animation.start();
+    }
 }

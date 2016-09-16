@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.widget.Toast;
 
 import com.tribe.app.R;
@@ -74,12 +73,14 @@ public class Navigator {
     /**
      * Goes to the main grid.
      *
-     * @param context A Context needed to open the destiny activity.
+     * @param activity An activity needed to open the destiny activity.
      */
-    public void navigateToHome(Context context) {
-        if (context != null) {
-            Intent intent = HomeActivity.getCallingIntent(context);
-            context.startActivity(intent);
+    public void navigateToHome(Activity activity) {
+        if (activity != null) {
+            Intent intent = HomeActivity.getCallingIntent(activity);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            activity.startActivity(intent);
+            activity.finish();
         }
     }
 
@@ -244,36 +245,39 @@ public class Navigator {
         activity.startActivityForResult(cameraIntent, result);
     }
 
-    public void sendText(String body, Activity activity) {
+    public void sendText(String body, Context context) {
         Intent sendIntent = new Intent(Intent.ACTION_VIEW);
         sendIntent.setData(Uri.parse("sms:"));
         sendIntent.putExtra("sms_body", body);
-        activity.startActivity(sendIntent);
+        context.startActivity(sendIntent);
     }
 
-    public void openFacebookMessenger(String body, Activity activity) {
+    public void openFacebookMessenger(String body, Context context) {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent
-                .putExtra(Intent.EXTRA_TEXT,
-                        body);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, body);
         sendIntent.setType("text/plain");
         sendIntent.setPackage("com.facebook.orca");
         try {
-            activity.startActivity(sendIntent);
-        }
-        catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(activity,"Facebook Messenger is not installed.", Toast.LENGTH_LONG).show();
+            context.startActivity(sendIntent);
+        } catch (android.content.ActivityNotFoundException ex) {
+            // TODO externalize this string
+            Toast.makeText(context, "Facebook Messenger is not installed.", Toast.LENGTH_LONG).show();
         }
     }
 
-    public void openWhatsApp(String body, Activity activity) {
+    public void openWhatsApp(String body, Context context) {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, body);
         sendIntent.setType("text/plain");
         sendIntent.setPackage("com.whatsapp");
-        activity.startActivity(sendIntent);
+        try {
+            context.startActivity(sendIntent);
+        } catch (android.content.ActivityNotFoundException ex) {
+            // TODO externalize this string
+            Toast.makeText(context, "Whatsapp is not installed.", Toast.LENGTH_LONG).show();
+        }
     }
 
     public void openSnapchat(String body, Activity activity) {

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -15,16 +14,21 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.Extras;
+import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.fragment.AccessFragment;
 import com.tribe.app.presentation.view.fragment.IntroViewFragment;
 import com.tribe.app.presentation.view.fragment.ProfileInfoFragment;
+import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
 
@@ -74,6 +78,9 @@ public class IntroActivity extends BaseActivity {
     @Inject
     ScreenUtils screenUtils;
 
+    @Inject
+    User currentUser;
+
     @BindView(R.id.viewPager)
     CustomViewPager viewPager;
 
@@ -88,8 +95,8 @@ public class IntroActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initUi();
-        initViewPager();
         initDependencyInjector();
+        initViewPager();
     }
 
     @Override
@@ -135,25 +142,37 @@ public class IntroActivity extends BaseActivity {
 
         // 2. Get image from Gallery
         if (requestCode == ProfileInfoView.RESULT_LOAD_IMAGE && resultCode == Activity.RESULT_OK) {
-            Uri selectedImage = data.getData();
-            String[] filePathColumn = { MediaStore.Images.Media.DATA };
-            Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
-            cursor.moveToFirst();
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            String picturePath = cursor.getString(columnIndex);
-            cursor.close();
+            subscriptions.add(
+                    Observable.just(data.getData())
+                            .map(uri -> {
+                                String[] filePathColumn = { MediaStore.Images.Media.DATA };
+                                Cursor cursor = getContentResolver().query(uri, filePathColumn, null, null, null);
+                                cursor.moveToFirst();
+                                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                                String picturePath = cursor.getString(columnIndex);
+                                cursor.close();
 
-            Bitmap thumbnail = BitmapFactory.decodeFile(picturePath);
-
-            if (thumbnail != null) {
-                profileInfoFragment.setImgProfilePic(thumbnail);
-            }
+                                return ImageUtils.formatForUpload(ImageUtils.loadFromPath(picturePath));
+                            })
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(bitmap -> {
+                                profileInfoFragment.setImgProfilePic(bitmap, Uri.fromFile(FileUtils.bitmapToFile(bitmap, this)).toString());
+                            })
+            );
         }
 
         // 3. Capture image
         if (requestCode == ProfileInfoView.CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-            Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-            profileInfoFragment.setImgProfilePic(thumbnail);
+            subscriptions.add(
+                    Observable.just((Bitmap) data.getExtras().get("data"))
+                            .map(bitmap -> ImageUtils.formatForUpload(bitmap))
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(bitmap -> {
+                                profileInfoFragment.setImgProfilePic(bitmap, Uri.fromFile(FileUtils.bitmapToFile(bitmap, this)).toString());
+                            })
+            );
         }
     }
 
@@ -171,7 +190,11 @@ public class IntroActivity extends BaseActivity {
         viewPager.setAdapter(introViewPagerAdapter);
         viewPager.setOffscreenPageLimit(4);
         viewPager.setScrollDurationFactor(2f);
-        viewPager.setCurrentItem(PAGE_INTRO);
+        if (currentUser == null || StringUtils.isEmpty(currentUser.getUsername())) {
+            viewPager.setCurrentItem(PAGE_INTRO);
+        } else if (currentUser.getFriendshipList().size() == 0) {
+            viewPager.setCurrentItem(PAGE_ACCESS);
+        }
         viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_NONE);
         viewPager.setPageTransformer(false, new IntroPageTransformer());
         viewPager.setSwipeable(false);
@@ -186,8 +209,12 @@ public class IntroActivity extends BaseActivity {
         viewPager.setCurrentItem(PAGE_PROFILE_INFO);
     }
 
-    public void goToAccess() {
+    public void goToAccess(User user) {
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         accessFragment.fadeBigLockIn();
+        accessFragment.setUser(user);
         Observable.timer(250, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -224,6 +251,7 @@ public class IntroActivity extends BaseActivity {
                     return profileInfoFragment;
                 case 2:
                     accessFragment = AccessFragment.newInstance();
+                    accessFragment.setUser(currentUser);
                     return accessFragment;
                 default:
                     introViewFragment = IntroViewFragment.newInstance();

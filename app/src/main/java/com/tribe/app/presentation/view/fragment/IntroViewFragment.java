@@ -279,7 +279,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
 
     @Override
     public void goToHome() {
-        navigator.navigateToHome(context());
+        navigator.navigateToHome(getActivity());
     }
 
     @Override
@@ -319,7 +319,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
                                 if (user == null || StringUtils.isEmpty(user.getProfilePicture()) || StringUtils.isEmpty(user.getUsername())) {
                                     ((IntroActivity) getActivity()).goToProfileInfo(loginEntity);
                                 } else {
-                                    goToHome();
+                                    ((IntroActivity) getActivity()).goToAccess(user);
                                 }
                             }));
                 }));

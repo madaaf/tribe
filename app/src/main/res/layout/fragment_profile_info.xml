@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/shape_rect_background_grey_rounded_bottom"
@@ -19,19 +21,40 @@
         android:id="@+id/profileInfoView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="85dp"/>
-    
-    <ImageView
-        android:id="@+id/imgNextIcon"
+        android:layout_marginTop="85dp"
+        />
+
+    <LinearLayout
         android:layout_width="@dimen/icons_end"
         android:layout_height="@dimen/icons_end"
-        android:foreground="@drawable/selectable_button_oval"
-        android:src="@drawable/picto_next_icon"
-        android:scaleType="centerInside"
-        android:background="@android:color/white"
         android:layout_gravity="bottom|end"
-        android:clickable="false"
-        />
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="@android:color/white"
+        >
+
+        <ImageView
+            android:id="@+id/imgNextIcon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible"
+            android:src="@drawable/picto_next_icon"
+            android:scaleType="centerInside"
+            android:clickable="false"
+            />
+
+        <com.github.rahatarmanahmed.cpv.CircularProgressView
+            android:id="@+id/circularProgressProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:visibility="gone"
+            app:cpv_animAutostart="true"
+            app:cpv_color="@android:color/black"
+            app:cpv_indeterminate="true"
+            app:cpv_thickness="2dp"
+            />
+
+    </LinearLayout>
 
     <View
         android:id="@+id/shadow"

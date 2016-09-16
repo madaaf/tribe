@@ -139,12 +139,25 @@ public class CloudUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<SearchResult> findByUsername(String username) {
-        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+    public Observable<Void> howManyFriends() {
+        final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
+        return userDataStore.howManyFriends();
+    }
 
-        return cloudDataStore
-                        .findByUsername(username)
-                        .map(searchResultRealm -> this.searchResultRealmDataMapper.transform(searchResultRealm));
+    @Override
+    public Observable<SearchResult> findByUsername(String username) {
+        final UserDataStore cloudDataStore = this.userDataStoreFactory.createCloudDataStore();
+
+        return cloudDataStore.findByUsername(username)
+                .map(searchResultRealm -> this.searchResultRealmDataMapper.transform(searchResultRealm));
+    }
+
+    /**
+     * UNUSED
+     */
+    @Override
+    public Observable<User> lookupUsername(String username) {
+        return null;
     }
 
     @Override

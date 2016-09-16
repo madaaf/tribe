@@ -70,34 +70,41 @@ public class RxFacebook {
     }
 
     public void emitFriends(Subscriber subscriber) {
-        new GraphRequest(
-                AccessToken.getCurrentAccessToken(),
-                "/" + AccessToken.getCurrentAccessToken().getUserId() + "/friends",
-                null,
-                HttpMethod.GET,
-                response -> {
-                    List<ContactFBRealm> contactFBRealmList = new ArrayList<>();
+        if (FacebookUtils.isLoggedIn()) {
+            new GraphRequest(
+                    AccessToken.getCurrentAccessToken(),
+                    "/" + AccessToken.getCurrentAccessToken().getUserId() + "/friends",
+                    null,
+                    HttpMethod.GET,
+                    response -> {
+                        List<ContactFBRealm> contactFBRealmList = new ArrayList<>();
 
-                    try {
-                        JSONArray array = response.getJSONObject().getJSONArray("data");
+                        try {
+                            JSONArray array = response.getJSONObject().getJSONArray("data");
 
-                        for (int i = 0; i < array.length(); i++) {
-                            JSONObject object = array.getJSONObject(i);
-                            ContactFBRealm contactFBRealm = new ContactFBRealm();
-                            contactFBRealm.setId(object.getString("id"));
-                            contactFBRealm.setName(object.getString("name"));
-                            contactFBRealmList.add(contactFBRealm);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } finally {
-                        if (!subscriber.isUnsubscribed()) {
-                            subscriber.onNext(contactFBRealmList);
-                            subscriber.onCompleted();
+                            for (int i = 0; i < array.length(); i++) {
+                                JSONObject object = array.getJSONObject(i);
+                                ContactFBRealm contactFBRealm = new ContactFBRealm();
+                                contactFBRealm.setId(object.getString("id"));
+                                contactFBRealm.setName(object.getString("name"));
+                                contactFBRealmList.add(contactFBRealm);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } finally {
+                            if (!subscriber.isUnsubscribed()) {
+                                subscriber.onNext(contactFBRealmList);
+                                subscriber.onCompleted();
+                            }
                         }
                     }
-                }
-        ).executeAsync();
+            ).executeAsync();
+        } else {
+            if (!subscriber.isUnsubscribed()) {
+                subscriber.onNext(new ArrayList<>());
+                subscriber.onCompleted();
+            }
+        }
     }
 
     public Observable<FacebookEntity> requestInfos() {

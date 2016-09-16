@@ -18,6 +18,7 @@ package com.tribe.app.presentation.view.utils;
 
 import android.app.UiModeManager;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -29,6 +30,7 @@ import java.util.List;
  * A Utility class to help determine characteristics about the device
  */
 public class DeviceUtils {
+
     protected static final List<NonCompatibleDevice> NON_COMPATIBLE_DEVICES;
 
     static {
@@ -114,5 +116,19 @@ public class DeviceUtils {
         public String getManufacturer() {
             return manufacturer;
         }
+    }
+
+    public static boolean appInstalled(Context context, String uri) {
+        PackageManager pm = context.getPackageManager();
+        boolean appInstalled;
+
+        try {
+            pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
+            appInstalled = true;
+        } catch (PackageManager.NameNotFoundException e) {
+            appInstalled = false;
+        }
+
+        return appInstalled;
     }
 }
