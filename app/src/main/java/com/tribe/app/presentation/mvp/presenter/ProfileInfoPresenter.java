@@ -3,12 +3,11 @@ package com.tribe.app.presentation.mvp.presenter;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.FacebookEntity;
-import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.DoRegister;
-import com.tribe.app.domain.interactor.user.FindByUsername;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
+import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.presentation.mvp.view.ProfileInfoView;
 import com.tribe.app.presentation.mvp.view.View;
@@ -27,27 +26,27 @@ public class ProfileInfoPresenter implements Presenter {
 
     // USECASES
     private final RxFacebook rxFacebook;
-    private final FindByUsername findByUsername;
+    private final LookupUsername lookupUsername;
     private final DoRegister doRegister;
     private final UpdateUser updateUser;
     private final GetCloudUserInfos cloudUserInfos;
 
     // SUBSCRIBERS
     private CompositeSubscription subscriptions = new CompositeSubscription();
-    private FindByUserNameSubscriber findByUsernameSubscriber;
+    private LookupUsernameSubscriber lookupUsernameSubscriber;
     private RegisterSubscriber registerSubscriber;
     private UpdateUserSubscriber updateUserSubscriber;
     private UserInfoSubscriber userInfoSubscriber;
 
     @Inject
     public ProfileInfoPresenter(RxFacebook rxFacebook,
-                                @Named("cloudFindByUsername") FindByUsername findByUsername,
+                                @Named("lookupByUsername") LookupUsername lookupUsername,
                                 DoRegister doRegister,
                                 UpdateUser updateUser,
                                 GetCloudUserInfos cloudUserInfos) {
         super();
         this.rxFacebook = rxFacebook;
-        this.findByUsername = findByUsername;
+        this.lookupUsername = lookupUsername;
         this.doRegister = doRegister;
         this.updateUser = updateUser;
         this.cloudUserInfos = cloudUserInfos;
@@ -80,8 +79,10 @@ public class ProfileInfoPresenter implements Presenter {
     @Override
     public void onDestroy() {
         if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
-        findByUsername.unsubscribe();
+        lookupUsername.unsubscribe();
         doRegister.unsubscribe();
+        cloudUserInfos.unsubscribe();
+        updateUser.unsubscribe();
     }
 
     @Override
@@ -107,13 +108,13 @@ public class ProfileInfoPresenter implements Presenter {
         subscriptions.add(rxFacebook.requestInfos().subscribe(new FacebookInfosSubscriber()));
     }
 
-    public void findByUsername(String username) {
-        if (findByUsernameSubscriber != null)
-            findByUsernameSubscriber.unsubscribe();
+    public void lookupUsername(String username) {
+        if (lookupUsernameSubscriber != null)
+            lookupUsernameSubscriber.unsubscribe();
 
-        findByUsernameSubscriber = new FindByUserNameSubscriber();
-        findByUsername.setUsername(username);
-        findByUsername.execute(findByUsernameSubscriber);
+        lookupUsernameSubscriber = new LookupUsernameSubscriber();
+        lookupUsername.setUsername(username);
+        lookupUsername.execute(lookupUsernameSubscriber);
     }
 
     public void register(String displayName, String username, LoginEntity loginEntity) {
@@ -160,20 +161,20 @@ public class ProfileInfoPresenter implements Presenter {
         }
     }
 
-    private class FindByUserNameSubscriber extends DefaultSubscriber<SearchResult> {
+    private class LookupUsernameSubscriber extends DefaultSubscriber<Boolean> {
 
         @Override
         public void onCompleted() { }
 
         @Override
         public void onError(Throwable e) {
-            profileInfoView.usernameResult(null);
+            profileInfoView.usernameResult(false);
             e.printStackTrace();
         }
 
         @Override
-        public void onNext(SearchResult searchResult) {
-            profileInfoView.usernameResult(searchResult);
+        public void onNext(Boolean available) {
+            profileInfoView.usernameResult(available);
         }
     }
 

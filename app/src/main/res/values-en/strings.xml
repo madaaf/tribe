@@ -372,6 +372,7 @@
 	<string name="tribe_magicword_popup_director">Director</string>
 	<string name="tribe_magicword_popup_cast_members">Actors</string>
 	<string name="tribe_magicword_popup_description">Description</string>
+	<string name="tribe_magicword_popup_trailer">Watch trailer</string>
 	
 	<!-- TribeLocationPopup -->
 	<string name="tribe_location_popup_population">Population</string>

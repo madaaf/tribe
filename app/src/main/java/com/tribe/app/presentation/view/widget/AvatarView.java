@@ -87,6 +87,7 @@ public class AvatarView extends RoundedCornerLayout {
         if (!StringUtils.isEmpty(url)) {
             Glide.with(getContext())
                     .load(url)
+                    .error(R.drawable.picto_avatar_placeholder)
                     .centerCrop()
                     .crossFade()
                     .into(imgAvatar);

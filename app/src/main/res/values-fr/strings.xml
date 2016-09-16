@@ -372,6 +372,7 @@
 	<string name="tribe_magicword_popup_director">Réalisateur</string>
 	<string name="tribe_magicword_popup_cast_members">Acteurs</string>
 	<string name="tribe_magicword_popup_description">Description</string>
+	<string name="tribe_magicword_popup_trailer">Bande annonce</string>
 	
 	<!-- TribeLocationPopup -->
 	<string name="tribe_location_popup_population">Habitants</string>

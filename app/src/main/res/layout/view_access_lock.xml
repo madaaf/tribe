@@ -32,8 +32,8 @@
 
     <LinearLayout
         android:id="@+id/layoutFriends"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
         android:layout_gravity="center"
         android:gravity="center"
         android:background="@null"
@@ -54,11 +54,10 @@
                 android:layout_gravity="top|center_horizontal"
                 android:gravity="top|center_horizontal"
                 style="@style/Giant.1.Black"
-                android:text="1"
                 />
 
             <com.tribe.app.presentation.view.widget.TextViewFont
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|center_horizontal"
                 android:gravity="top|center_horizontal"
@@ -70,7 +69,7 @@
             android:id="@+id/txtFriends"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center"
+            android:layout_gravity="bottom|center_horizontal"
             android:alpha="1"
             android:text="@string/onboarding_queue_loading_friends"
             style="@style/Body.One.Black40"

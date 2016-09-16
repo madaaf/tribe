@@ -23,6 +23,7 @@ import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.GetGroupMembers;
 import com.tribe.app.domain.interactor.user.GetReceivedDiskMessageList;
 import com.tribe.app.domain.interactor.user.GetRequestCode;
+import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.NotifyFBFriends;
 import com.tribe.app.domain.interactor.user.RemoveFriendship;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
@@ -204,5 +205,12 @@ public class UserModule {
     @Named("notifyFBFriends")
     UseCase provideNotifyFBFriends(NotifyFBFriends notifyFBFriends) {
         return notifyFBFriends;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("lookupByUsername")
+    LookupUsername provideLookupUsername(LookupUsername lookupUsername) {
+        return lookupUsername;
     }
 }

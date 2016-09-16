@@ -98,7 +98,7 @@ public class DiskUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<UserRealm> lookupUsername(String username) {
+    public Observable<Boolean> lookupUsername(String username) {
         return null;
     }
 

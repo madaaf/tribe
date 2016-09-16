@@ -192,7 +192,7 @@ public class IntroActivity extends BaseActivity {
         viewPager.setScrollDurationFactor(2f);
         if (currentUser == null || StringUtils.isEmpty(currentUser.getUsername())) {
             viewPager.setCurrentItem(PAGE_INTRO);
-        } else if (currentUser.getFriendshipList().size() == 0) {
+        } else if (currentUser.getFriendshipList().size() > 0) {
             viewPager.setCurrentItem(PAGE_ACCESS);
         }
         viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_NONE);

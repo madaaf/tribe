@@ -35,7 +35,6 @@ import com.tribe.app.presentation.view.component.PullToSearchContainer;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
-import com.tribe.app.presentation.view.widget.GradientCircleView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,8 +55,6 @@ import rx.subscriptions.CompositeSubscription;
  * Fragment that shows a list of Recipients.
  */
 public class HomeGridFragment extends BaseFragment implements HomeGridView {
-
-<<<<<<< HEAD
     private static final SpringConfig PULL_TO_SEARCH_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(132, 7f);
     private static final float DRAG_RATE = 0.5f;
 
