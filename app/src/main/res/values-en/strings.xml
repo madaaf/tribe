@@ -98,6 +98,7 @@
 	<string name="grid_user_points">Points</string>
 	<string name="grid_friendship_status_default">Tap &amp; hold!</string>
 	<string name="grid_friendship_status_sending">Sending</string>
+	<string name="grid_friendship_status_processing">Processing</string>
 	<string name="grid_friendship_status_sent">Sent</string>
 	<string name="grid_friendship_status_opened">Opened</string>
 	<string name="grid_friendship_status_opened_plural">Opened</string>
@@ -358,5 +359,27 @@
 	<string name="tribe_distance_popup_description">Sent %1$s away from you</string>
 	<string name="tribe_distance_popup_more">More options</string>
 	<string name="tribe_distance_client_no_data">No data available, tap to retry</string>
-	<string name="tribe_distance_client_unknown_delay">Unknown</string>
+	<string name="tribe_distance_client_no_delay">Now</string>
+	<string name="tribe_distance_client_delay">%1$s away</string>
+	<string name="tribe_distance_no_price">Unknown price</string>
+	<string name="tribe_distance_free_price">Free</string>
+	
+	<!-- TribeMagicWordPopup -->
+	<string name="tribe_magicword_popup_error">Something happened\nwhile loading this\nmagic card.</string>
+	<string name="tribe_magicword_popup_biography">Biography</string>
+	<string name="tribe_magicword_popup_price">Price</string>
+	<string name="tribe_magicword_popup_buy_on">Buy on</string>
+	<string name="tribe_magicword_popup_director">Director</string>
+	<string name="tribe_magicword_popup_cast_members">Actors</string>
+	<string name="tribe_magicword_popup_description">Description</string>
+	
+	<!-- TribeLocationPopup -->
+	<string name="tribe_location_popup_population">Population</string>
+	<string name="tribe_location_popup_directions">Get directions</string>
+	
+	<!-- TribeLevelPopup -->
+	<string name="tribe_level_popup_late">You\'re late!</string>
+	<string name="tribe_level_popup_ahead">You\'re ahead!</string>
+	<string name="tribe_level_popup_catch_up">To catch up!</string>
+	<string name="tribe_level_popup_advance">In advance</string>
 </resources>

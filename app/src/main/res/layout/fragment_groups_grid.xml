@@ -104,6 +104,8 @@
                             android:layout_marginStart="20dp"
                             android:src="@drawable/picto_link" />
 
+
+
                     </FrameLayout>
 
                     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -166,6 +168,12 @@
                 </LinearLayout>
 
                 </FrameLayout>
+                <com.tribe.app.presentation.view.component.MemberPhotoViewList
+                    android:id="@+id/memberPhotoViewList"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    />
 
             </android.support.design.widget.CollapsingToolbarLayout>
 

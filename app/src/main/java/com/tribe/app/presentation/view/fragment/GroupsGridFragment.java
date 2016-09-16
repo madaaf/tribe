@@ -47,6 +47,8 @@ import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.FriendAdapter;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
+import com.tribe.app.presentation.view.component.MemberPhotoView;
+import com.tribe.app.presentation.view.component.MemberPhotoViewList;
 import com.tribe.app.presentation.view.component.PrivatePublicView;
 import com.tribe.app.presentation.view.dialog_fragment.ShareDialogFragment;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
@@ -133,6 +135,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     AppBarLayout appBarLayout;
     @BindView(R.id.privatePublicView)
     PrivatePublicView privatePublicView;
+    @BindView(R.id.memberPhotoViewList)
+    MemberPhotoViewList memberPhotoViewList;
 
     // Dagger Dependencies
     @Inject
@@ -208,8 +212,9 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     @Override
     public void setupGroupMembers(Group group) {
         List<User> members = group.getMembers();
-        for (User user : members) {
-            System.out.println(user.getDisplayName());
+        for (int i = 0; i < 5; i++) {
+            String profPic = members.get(i).getProfilePicture();
+            if (profPic != null) memberPhotoViewList.addMemberPhoto(profPic);
         }
     }
 

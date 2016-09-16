@@ -98,6 +98,7 @@
 	<string name="grid_user_points">Points</string>
 	<string name="grid_friendship_status_default">Appuyez !</string>
 	<string name="grid_friendship_status_sending">Envoi</string>
+	<string name="grid_friendship_status_processing">Traitement</string>
 	<string name="grid_friendship_status_sent">Envoyé</string>
 	<string name="grid_friendship_status_opened">Ouvert</string>
 	<string name="grid_friendship_status_opened_plural">Opened</string>
@@ -358,5 +359,27 @@
 	<string name="tribe_distance_popup_description">Envoyé à %1$s de vous</string>
 	<string name="tribe_distance_popup_more">Plus d\'options</string>
 	<string name="tribe_distance_client_no_data">Pas de données trouvées, tapez pour réessayer</string>
-	<string name="tribe_distance_client_unknown_delay">Inconnu</string>
+	<string name="tribe_distance_client_no_delay">Maintenant</string>
+	<string name="tribe_distance_client_delay">Dans %1$s</string>
+	<string name="tribe_distance_no_price">Prix inconnu</string>
+	<string name="tribe_distance_free_price">Gratuit</string>
+	
+	<!-- TribeMagicWordPopup -->
+	<string name="tribe_magicword_popup_error">Erreur lors du\nchargement de cette\nmagic card.</string>
+	<string name="tribe_magicword_popup_biography">Biographie</string>
+	<string name="tribe_magicword_popup_price">Prix</string>
+	<string name="tribe_magicword_popup_buy_on">Acheter sur</string>
+	<string name="tribe_magicword_popup_director">Réalisateur</string>
+	<string name="tribe_magicword_popup_cast_members">Acteurs</string>
+	<string name="tribe_magicword_popup_description">Description</string>
+	
+	<!-- TribeLocationPopup -->
+	<string name="tribe_location_popup_population">Habitants</string>
+	<string name="tribe_location_popup_directions">Itinéraire</string>
+	
+	<!-- TribeLevelPopup -->
+	<string name="tribe_level_popup_late">Tu es en retard !</string>
+	<string name="tribe_level_popup_ahead">Tu es en avance !</string>
+	<string name="tribe_level_popup_catch_up">À rattraper !</string>
+	<string name="tribe_level_popup_advance">D\'avance</string>
 </resources>

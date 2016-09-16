@@ -32,6 +32,7 @@
     <dimen name="setting_section_title_horizontal_margin">45dp</dimen>
     <dimen name="setting_block_item_left_margin">45dp</dimen>
     <dimen name="setting_block_search_bar_height">64dp</dimen>
+    <dimen name="group_member_image_overlap_margin">-15dp</dimen>
 
     <!-- PADDING -->
     <dimen name="icons_padding">3.75dp</dimen>
@@ -96,6 +97,7 @@
     <dimen name="dialog_fragment_width">262dp</dimen>
     <dimen name="dialog_fragment_icon_size">66dp</dimen>
     <dimen name="friend_adapter_fill_size">30dp</dimen>
+    <dimen name="group_member_image_size">50dp</dimen>
 
     <!-- THRESHOLDS -->
     <dimen name="threshold_dismiss">100dp</dimen>
