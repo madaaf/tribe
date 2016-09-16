@@ -382,4 +382,13 @@
 	<string name="tribe_level_popup_ahead">Tu es en avance !</string>
 	<string name="tribe_level_popup_catch_up">À rattraper !</string>
 	<string name="tribe_level_popup_advance">D\'avance</string>
+	
+	<!-- TribeEventPopup -->
+	<string name="tribe_event_popup_title">Titre</string>
+	<string name="tribe_event_popup_title_default">Nouvel évènement</string>
+	<string name="tribe_event_popup_date">Date</string>
+	<string name="tribe_event_popup_start">De</string>
+	<string name="tribe_event_popup_end">À</string>
+	<string name="tribe_event_popup_more">Édite et créé un évènement</string>
+	<string name="tribe_event_popup_more_no_access">Vous devez donner les permissions pour l\'accès au calendrier</string>
 </resources>
