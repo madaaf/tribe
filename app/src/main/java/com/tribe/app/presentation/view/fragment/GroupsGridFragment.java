@@ -5,6 +5,7 @@ import android.animation.RectEvaluator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetDialog;
@@ -96,6 +97,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     ImageView imageDone;
     @BindView(R.id.imageDoneEdit)
     ImageView imageDoneEdit;
+    @BindView(R.id.imageBackIcon)
+    ImageView imageBackIcon;
     @BindView(R.id.textPrivacyStatus)
     TextViewFont textPrivacyStatus;
     @BindView(R.id.textCreateInvite)
@@ -233,6 +236,11 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         }
         layoutInvite.setTranslationY(screenUtils.dpToPx(smallMargin));
         recyclerViewInvite.setTranslationY(screenUtils.dpToPx(smallMargin));
+        imageBackIcon.setVisibility(View.VISIBLE);
+
+        subscriptions.add(RxView.clicks(imageBackIcon).subscribe(aVoid -> {
+            navigator.navigateToHome(getActivity());
+        }));
 
         groupPresenter.getGroupMembers(groupId);
     }
@@ -259,6 +267,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         imageDone.setTranslationY(startTranslationDoneIcon);
         viewCreateGroupBg2.setEnabled(false);
         viewCreateGroupBg1.setEnabled(false);
+        layoutInvite.setNestedScrollingEnabled(false);
         layoutInvite.setTranslationY(screenUtils.dpToPx(moveUpY));
         layoutInvite.setVisibility(View.INVISIBLE);
         recyclerViewInvite.setTranslationY(screenUtils.dpToPx(moveUpY));
@@ -547,7 +556,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                 .start();
 
         viewCreateGroupBg1.setEnabled(true);
-
+        layoutInvite.setNestedScrollingEnabled(true);
     }
 
     private void setHeightCoordinatorLayout(View coordinatorLayout, int height) {
