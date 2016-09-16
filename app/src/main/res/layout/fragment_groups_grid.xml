@@ -5,27 +5,35 @@
     android:layout_height="match_parent"
     android:background="@drawable/shape_rect_grey_background_rounded_corners">
 
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/appBarLayout"
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/main.collapsing"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-            <android.support.design.widget.CollapsingToolbarLayout
-                android:id="@+id/main.collapsing"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed">
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_collapseMode="parallax"
-                    >
+                android:layout_height="wrap_content"
+                app:layout_collapseMode="parallax">
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="186dp"
                     android:background="@drawable/shape_rect_white_rounded_top" />
+
+                <ImageView
+                    android:id="@+id/imageBackIcon"
+                    android:layout_width="@dimen/nav_icon_size"
+                    android:layout_height="@dimen/nav_icon_size"
+                    android:src="@drawable/picto_back"
+                    android:scaleType="centerInside"
+                    android:visibility="invisible"
+                    />
 
                 <ImageView
                     android:id="@+id/imageEditGroup"
@@ -59,81 +67,27 @@
                     android:layout_height="116dp"
                     android:layout_marginTop="206dp" />
 
-                <FrameLayout
-                    android:id="@+id/layoutCreateInvite"
-                    android:layout_width="match_parent"
-                    android:layout_height="115dp"
-                    android:layout_marginTop="328dp"
-                    android:background="@drawable/shape_white_rect_grey_border">
-
-
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_marginEnd="@dimen/horizontal_margin_small"
-                        android:layout_marginStart="@dimen/horizontal_margin_small"
-                        android:layout_marginTop="@dimen/vertical_margin_small">
-
-                        <View
-                            android:id="@+id/viewCreateGroupBg1"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/bg_group_disabled" />
-
-                        <View
-                            android:id="@+id/viewCreateGroupBg2"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_margin="3.5dp"
-                            android:alpha="0"
-                            android:background="@drawable/shape_rect_black40_rounded_corners" />
-
-                        <com.tribe.app.presentation.view.widget.TextViewFont
-                            android:id="@+id/textCreateInvite"
-                            style="@style/Title.2.White"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_gravity="center"
-                            android:gravity="center"
-                            android:text="@string/group_create_title" />
-
-                        <ImageView
-                            android:id="@+id/imageInvite"
-                            android:layout_width="22dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="20dp"
-                            android:src="@drawable/picto_link" />
-
-
-
-                    </FrameLayout>
-
-                    <com.tribe.app.presentation.view.widget.TextViewFont
-                        android:id="@+id/textCreateInviteDesc"
-                        style="@style/Body.One.Black40"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="80dp"
-                        android:gravity="center"
-                        android:text="Add group details to create a group" />
-
-                </FrameLayout>
+            <com.tribe.app.presentation.view.component.CreateInviteView
+                android:id="@+id/createInviteView"
+                android:layout_width="match_parent"
+                android:layout_height="115dp"
+                android:layout_marginTop="328dp"
+                />
 
                 <FrameLayout
                     android:id="@+id/layoutDividerBackground"
                     android:layout_width="match_parent"
                     android:layout_height="64dp"
                     android:layout_marginTop="142dp"
-                    android:background="@drawable/shape_white_rect_grey_border" >
+                    android:background="@drawable/shape_white_rect_grey_border">
 
                     <com.tribe.app.presentation.view.component.MemberPhotoViewList
                         android:id="@+id/memberPhotoViewList"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        />
+                        android:layout_gravity="center" />
 
-                    </FrameLayout>
+                </FrameLayout>
 
                 <com.tribe.app.presentation.view.widget.EditTextFont
                     android:id="@+id/editTextGroupName"
@@ -176,51 +130,49 @@
 
                 </LinearLayout>
 
-                </FrameLayout>
-
-
-            </android.support.design.widget.CollapsingToolbarLayout>
-
-        </android.support.design.widget.AppBarLayout>
-
-        <android.support.v4.widget.NestedScrollView
-            android:id="@+id/layoutInvite"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/icons_end"
-                    android:background="@drawable/shape_white_rect_grey_border" />
-
-                <ImageView
-                    android:id="@+id/searchIconImageView"
-                    android:layout_width="@dimen/icons_end"
-                    android:layout_height="@dimen/icons_end"
-                    android:background="@drawable/shape_white_rect_grey_horizontal_border"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/picto_search_icon" />
-
-                <com.tribe.app.presentation.view.widget.EditTextFont
-                    android:id="@+id/editTextInviteSearch"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/icons_end"
-                    android:layout_marginStart="@dimen/icons_end"
-                    android:background="@drawable/shape_white_rect_grey_horizontal_border"
-                    android:hint="@string/group_search_friends_placeholder"
-                    android:singleLine="true" />
-
-
-
             </FrameLayout>
 
-        </android.support.v4.widget.NestedScrollView>
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/layoutInvite"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/icons_end"
+                android:background="@drawable/shape_white_rect_grey_border" />
+
+            <ImageView
+                android:id="@+id/searchIconImageView"
+                android:layout_width="@dimen/icons_end"
+                android:layout_height="@dimen/icons_end"
+                android:background="@drawable/shape_white_rect_grey_horizontal_border"
+                android:scaleType="centerInside"
+                android:src="@drawable/picto_search_icon" />
+
+            <com.tribe.app.presentation.view.widget.EditTextFont
+                android:id="@+id/editTextInviteSearch"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/icons_end"
+                android:layout_marginStart="@dimen/icons_end"
+                android:background="@drawable/shape_white_rect_grey_horizontal_border"
+                android:hint="@string/group_search_friends_placeholder"
+                android:singleLine="true" />
+
+
+        </FrameLayout>
+
+    </android.support.v4.widget.NestedScrollView>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerViewInvite"
@@ -228,15 +180,15 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/icons_end"
         android:background="@drawable/shape_white_rect_grey_border"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-        <ImageView
-            android:id="@+id/imageDone"
-            android:layout_width="45dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_marginEnd="@dimen/horizontal_margin_small"
-            android:src="@drawable/picto_done_green" />
+    <ImageView
+        android:id="@+id/imageDone"
+        android:layout_width="45dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="@dimen/horizontal_margin_small"
+        android:src="@drawable/picto_done_green" />
 
 
 </android.support.design.widget.CoordinatorLayout>
