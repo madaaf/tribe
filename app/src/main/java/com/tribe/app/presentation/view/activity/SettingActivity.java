@@ -66,9 +66,6 @@ public class SettingActivity extends BaseActivity implements SettingView {
 
     private int shortDuration = 150;
 
-    @BindView(R.id.layoutFragmentContainer)
-    FrameLayout layouFragmentContainer;
-
     @Inject
     SettingPresenter settingPresenter;
 

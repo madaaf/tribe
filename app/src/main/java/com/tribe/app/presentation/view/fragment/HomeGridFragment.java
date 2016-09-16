@@ -14,6 +14,7 @@ import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringConfig;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.MoreType;
@@ -25,6 +26,7 @@ import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.HomeView;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
@@ -33,6 +35,7 @@ import com.tribe.app.presentation.view.component.PullToSearchContainer;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
+import com.tribe.app.presentation.view.widget.GradientCircleView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +57,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class HomeGridFragment extends BaseFragment implements HomeGridView {
 
+<<<<<<< HEAD
     private static final SpringConfig PULL_TO_SEARCH_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(132, 7f);
     private static final float DRAG_RATE = 0.5f;
 
@@ -65,6 +69,9 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
 
     @Inject
     ScreenUtils screenUtils;
+
+    @Inject 
+    Navigator navigator;
 
     @BindView(R.id.recyclerViewFriends)
     RecyclerView recyclerViewFriends;
@@ -256,7 +263,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     }
 
     private void initResources() {
-
+        
     }
 
     private void initRecyclerView() {
@@ -392,6 +399,9 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
             moreTypes.add(new MoreType(getString(R.string.grid_more_hide), MoreType.HIDE));
             moreTypes.add(new MoreType(getString(R.string.grid_more_block_hide), MoreType.BLOCK_HIDE));
         }
+        if (recipient instanceof Group) {
+            moreTypes.add(new MoreType(getString(R.string.grid_menu_group_infos), MoreType.GROUP_INFO));
+        }
 
         prepareBottomSheetMore(recipient, moreTypes);
     }
@@ -419,6 +429,9 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                     MoreType moreType = (MoreType) labelType;
                     if (moreType.getMoreType().equals(MoreType.CLEAR_MESSAGES)) {
                         homeGridPresenter.markTribeListAsRead(recipient);
+                    }
+                    if (moreType.getMoreType().equals(MoreType.GROUP_INFO)) {
+                        navigator.navigateToGroupInfo(getActivity(),  recipient.getId());
                     }
 
                     dismissDialogSheetMore();

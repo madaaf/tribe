@@ -7,6 +7,7 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.FrameLayout;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -69,5 +70,11 @@ public class ScreenUtils {
 			InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 		}
+	}
+
+	public void setTopMargin(View view, int topMargin) {
+		FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) view.getLayoutParams();
+		layoutParams.topMargin = topMargin;
+		view.setLayoutParams(layoutParams);
 	}
 }

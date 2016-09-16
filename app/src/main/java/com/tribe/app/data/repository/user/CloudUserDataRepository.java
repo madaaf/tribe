@@ -2,8 +2,10 @@ package com.tribe.app.data.repository.user;
 
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
+import com.tribe.app.data.realm.mapper.GroupRealmDataMapper;
 import com.tribe.app.data.realm.mapper.PinRealmDataMapper;
 import com.tribe.app.data.realm.mapper.SearchResultRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
@@ -12,6 +14,7 @@ import com.tribe.app.data.repository.user.datasource.UserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.SearchResult;
@@ -37,6 +40,7 @@ public class CloudUserDataRepository implements UserRepository {
     private final PinRealmDataMapper pinRealmDataMapper;
     private final ContactRealmDataMapper contactRealmDataMapper;
     private final SearchResultRealmDataMapper searchResultRealmDataMapper;
+    private final GroupRealmDataMapper groupRealmDataMapper;
 
     /**
      * Constructs a {@link UserRepository}.
@@ -49,12 +53,14 @@ public class CloudUserDataRepository implements UserRepository {
     public CloudUserDataRepository(UserDataStoreFactory dataStoreFactory,
                                    UserRealmDataMapper realmDataMapper,
                                    PinRealmDataMapper pinRealmDataMapper,
-                                   ContactRealmDataMapper contactRealmDataMapper) {
+                                   ContactRealmDataMapper contactRealmDataMapper,
+                                   GroupRealmDataMapper groupRealmDataMapper) {
         this.userDataStoreFactory = dataStoreFactory;
         this.userRealmDataMapper = realmDataMapper;
         this.pinRealmDataMapper = pinRealmDataMapper;
         this.contactRealmDataMapper = contactRealmDataMapper;
         this.searchResultRealmDataMapper = new SearchResultRealmDataMapper(userRealmDataMapper.getFriendshipRealmDataMapper());
+        this.groupRealmDataMapper = groupRealmDataMapper;
     }
 
     @Override
@@ -180,5 +186,12 @@ public class CloudUserDataRepository implements UserRepository {
     public Observable<Void> notifyFBFriends() {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
         return cloudDataStore.notifyFBFriends();
+    }
+
+    @Override
+    public Observable<Group> getGroupMembers(String groupId) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return  cloudDataStore.getGroupMembers(groupId)
+                .map(this.groupRealmDataMapper::transform);
     }
 }

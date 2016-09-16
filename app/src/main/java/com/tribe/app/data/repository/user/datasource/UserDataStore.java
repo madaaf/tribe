@@ -5,6 +5,7 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
@@ -122,4 +123,6 @@ public interface UserDataStore {
      * Get an {@link Observable} which will emit nothing
      */
     Observable<Void> notifyFBFriends();
+
+    Observable<GroupRealm> getGroupMembers(String groupId);
 }

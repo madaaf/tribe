@@ -14,6 +14,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
@@ -513,6 +514,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             super(fragmentManager);
         }
 
+
         @Override
         public Fragment getItem(int position) {
             if (position == 0) return new ContactsGridFragment();
@@ -543,6 +545,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                     break;
                 case 2:
                     groupsGridFragment = (GroupsGridFragment) createdFragment;
+                    break;
             }
 
             return createdFragment;
@@ -554,6 +557,14 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
         public ContactsGridFragment getContactsGridFragment() {
             return contactsGridFragment;
+        }
+
+        public GroupsGridFragment getGroupsGridFragment() {
+            return groupsGridFragment;
+        }
+
+        public void setGroupsGridFragment(GroupsGridFragment groupsGridFragment) {
+            groupsGridFragment = groupsGridFragment;
         }
     }
 
@@ -618,6 +629,15 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     public void enableNavigation() {
         slideUpNav(imgNavGrid);
         slideUpNav(imgNavFriends);
+        viewPager.setSwipeable(true);
+    }
+
+
+
+    public void resetGroupsGridFragment() {
+        homeViewPagerAdapter.setGroupsGridFragment(new GroupsGridFragment());
+        viewPager.setCurrentItem(GRID_FRAGMENT_PAGE);
+        homeViewPagerAdapter.notifyDataSetChanged();
         viewPager.setSwipeable(true);
     }
 

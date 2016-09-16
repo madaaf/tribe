@@ -20,6 +20,7 @@ import com.tribe.app.domain.interactor.user.FindByUsername;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetDiskContactList;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
+import com.tribe.app.domain.interactor.user.GetGroupMembers;
 import com.tribe.app.domain.interactor.user.GetReceivedDiskMessageList;
 import com.tribe.app.domain.interactor.user.GetRequestCode;
 import com.tribe.app.domain.interactor.user.NotifyFBFriends;
@@ -66,6 +67,12 @@ public class UserModule {
     @PerActivity
     UseCase provideUpdateUser(UpdateUser updateUser) {
         return updateUser;
+    }
+
+    @Provides
+    @PerActivity
+    UseCase provideGetGroupMembers(GetGroupMembers getGroupMembers) {
+        return getGroupMembers;
     }
 
     @Provides

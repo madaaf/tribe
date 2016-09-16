@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/group_member_image_size" android:layout_height="@dimen/group_member_image_size"
+    android:background="@drawable/shape_oval_white">
+    <ImageView
+        android:id="@+id/imageMember"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"/>
+</FrameLayout>

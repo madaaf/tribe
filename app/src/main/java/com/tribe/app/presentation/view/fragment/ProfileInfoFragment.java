@@ -169,7 +169,8 @@ public class ProfileInfoFragment extends Fragment implements com.tribe.app.prese
 
     @Override
     public void usernameResult(SearchResult searchResult) {
-        boolean usernameValid = searchResult == null || StringUtils.isEmpty(searchResult.getId());
+        // TODO: CHANGE BACK
+        boolean usernameValid = true;
         profileInfoView.setUsernameValid(usernameValid);
         refactorNext();
     }

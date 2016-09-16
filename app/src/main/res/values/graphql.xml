@@ -363,4 +363,16 @@
     <string name="howManyFriends.part" translatable="false">
         howManyFriends%1$d : howManyFriends (phones: [%2$s])
     </string>
+
+    <string name="get.group.members" translatable="false">
+        {
+            groups (ids : [\"%1$s\"]) {
+                members {
+                    ...UserInfos
+                }
+            }
+        }
+
+        %2$s
+    </string>
 </resources>

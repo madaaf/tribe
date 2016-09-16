@@ -78,7 +78,6 @@ public class BaseDialogFragment extends DialogFragment {
         return dialog;
     }
 
-
     public void initUi(View view) {
         unbinder = ButterKnife.bind(this, view);
     }
