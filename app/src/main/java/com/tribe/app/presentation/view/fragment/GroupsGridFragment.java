@@ -1,15 +1,10 @@
 package com.tribe.app.presentation.view.fragment;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.RectEvaluator;
-import android.animation.ValueAnimator;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetDialog;
@@ -20,11 +15,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -47,7 +40,6 @@ import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.FriendAdapter;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
-import com.tribe.app.presentation.view.component.MemberPhotoView;
 import com.tribe.app.presentation.view.component.MemberPhotoViewList;
 import com.tribe.app.presentation.view.component.PrivatePublicView;
 import com.tribe.app.presentation.view.dialog_fragment.ShareDialogFragment;
@@ -58,11 +50,8 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -121,8 +110,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     View viewCreateGroupBg1;
     @BindView(R.id.viewCreateGroupBg2)
     View viewCreateGroupBg2;
-    @BindView(R.id.viewDividerBackground)
-    View viewDividerBackground;
+    @BindView(R.id.layoutDividerBackground)
+    FrameLayout layoutDividerBackground;
     @BindView(R.id.layoutPrivacyStatus)
     LinearLayout layoutPrivacyStatus;
     @BindView(R.id.layoutCreateInvite)
@@ -157,16 +146,20 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     private boolean privateGroup = true;
     private List<Friendship> friendshipsList;
     private List<Friendship> friendshipsListCopy;
+    List<User> members;
     private LinearLayoutManager linearLayoutManager;
     private Group currentGroup;
 
     // Animation Variables
     int moveUpY = 138;
     int moveGroupName = 60;
+    int privacyFinalPosition;
     int startTranslationEditIcons;
     int startTranslationDoneIcon;
     float groupPicScaleDownF = .7f;
-
+    int layoutCreateInviteInfoPositionY = 255;
+    int layoutViewBackgroundInfoPositionY = 185;
+    int smallMargin = 5;
     /**
      * View lifecycle methods
      */
@@ -175,8 +168,10 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View fragmentView = inflater.inflate(R.layout.fragment_groups_grid, container, false);
         unbinder = ButterKnife.bind(this, fragmentView);
-
         initDependencyInjector();
+
+        privacyFinalPosition = -screenUtils.dpToPx(48);
+
         initPresenter();
         Bundle bundle = getArguments();
         if (bundle == null) initUi();
@@ -206,12 +201,45 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
      */
 
     private void initGroupInfoUi(String groupId) {
+        // Set up initial position of view
+        imageDoneEdit.setTranslationY(-500);
+        // Setup invite button
+        viewCreateGroupBg1.setEnabled(true);
+        if (privateGroup) viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_enabled));
+        else viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_public));
+        textCreateInvite.setText(getString(R.string.group_button_share));
+        textCreateInviteDesc.setText(getString(R.string.group_share_description));
+        screenUtils.setTopMargin(layoutCreateInvite, screenUtils.dpToPx(layoutCreateInviteInfoPositionY));
+        privatePublicView.setVisibility(View.INVISIBLE);
+        imageDone.setVisibility(View.INVISIBLE);
+        imageGroup.setEnabled(false);
+        imageGroup.setScaleX(groupPicScaleDownF);
+        imageGroup.setScaleY(groupPicScaleDownF);
+        screenUtils.setTopMargin(layoutDividerBackground, screenUtils.dpToPx(layoutViewBackgroundInfoPositionY));
+        editTextGroupName.bringToFront();
+        editTextGroupName.setEnabled(false);
+        editTextGroupName.setTextColor(ContextCompat.getColor(getContext(), android.R.color.black));
+        editTextGroupName.setCursorVisible(false);
+        editTextGroupName.setTranslationY(-screenUtils.dpToPx(moveGroupName));
+        // setup privacy view
+        layoutPrivacyStatus.setAlpha(AnimationUtils.ALPHA_FULL);
+        layoutPrivacyStatus.setTranslationY(privacyFinalPosition);
+        if (privateGroup) {
+            textPrivacyStatus.setText(getString(R.string.group_private_title));
+            imagePrivacyStatus.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_lock_grey));
+        } else {
+            textPrivacyStatus.setText(getString(R.string.group_public_title));
+            imagePrivacyStatus.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_megaphone_grey));
+        }
+        layoutInvite.setTranslationY(screenUtils.dpToPx(smallMargin));
+        recyclerViewInvite.setTranslationY(screenUtils.dpToPx(smallMargin));
+
         groupPresenter.getGroupMembers(groupId);
     }
 
     @Override
     public void setupGroupMembers(Group group) {
-        List<User> members = group.getMembers();
+        members = group.getMembers();
         for (int i = 0; i < 5; i++) {
             String profPic = members.get(i).getProfilePicture();
             if (profPic != null) memberPhotoViewList.addMemberPhoto(profPic);
@@ -359,7 +387,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                 .start();
 
         // Setup edit group name
-        viewDividerBackground.setVisibility(View.VISIBLE);
+        layoutDividerBackground.setVisibility(View.VISIBLE);
         editTextGroupName.bringToFront();
         editTextGroupName.setEnabled(true);
         editTextGroupName.setCursorVisible(true);
@@ -415,7 +443,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                 .start();
 
         // Setup group name
-        viewDividerBackground.setVisibility(View.INVISIBLE);
+        layoutDividerBackground.setVisibility(View.INVISIBLE);
         editTextGroupName.bringToFront();
         editTextGroupName.setEnabled(false);
         editTextGroupName.setTextColor(ContextCompat.getColor(getContext(), android.R.color.black));
@@ -426,7 +454,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                 .start();
 
         // Setup privacy view
-        int privacyFinalPosition = -screenUtils.dpToPx(48);
         layoutPrivacyStatus.animate()
                 .setDuration(animDuration)
                 .alpha(AnimationUtils.ALPHA_FULL)

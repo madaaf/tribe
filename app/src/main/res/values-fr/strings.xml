@@ -391,4 +391,21 @@
 	<string name="tribe_event_popup_end">À</string>
 	<string name="tribe_event_popup_more">Édite et créé un évènement</string>
 	<string name="tribe_event_popup_more_no_access">Vous devez donner les permissions pour l\'accès au calendrier</string>
+	<string name="tribe_event_today">Aujourd\'hui</string>
+	<string name="tribe_event_day_1_future">Demain</string>
+	<string name="tribe_event_day_1_past">Hier</string>
+	<string name="tribe_event_day_n_future">Dans %1$d jours</string>
+	<string name="tribe_event_day_n_past">Il y a %1$d jours</string>
+	<string name="tribe_event_week_1_future">Dans %1$d semaine</string>
+	<string name="tribe_event_week_1_past">Il y a %1$d semaine</string>
+	<string name="tribe_event_week_n_future">Dans %1$d semaines</string>
+	<string name="tribe_event_week_n_past">Il y a %1$d semaines</string>
+	<string name="tribe_event_month_1_future">Dans %1$d mois</string>
+	<string name="tribe_event_month_1_past">Il y a %1$d mois</string>
+	<string name="tribe_event_month_n_future">Dans %1$d mois</string>
+	<string name="tribe_event_month_n_past">Il y a %1$d mois</string>
+	<string name="tribe_event_year_1_future">Dans %1$d an</string>
+	<string name="tribe_event_year_1_past">Il y a %1$d an</string>
+	<string name="tribe_event_year_n_future">Dans %1$d ans</string>
+	<string name="tribe_event_year_n_past">Il y a %1$d ans</string>
 </resources>

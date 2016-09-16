@@ -167,6 +167,7 @@ public class ProfileInfoPresenter implements Presenter {
 
         @Override
         public void onError(Throwable e) {
+            profileInfoView.usernameResult(null);
             e.printStackTrace();
         }
 

@@ -391,4 +391,21 @@
 	<string name="tribe_event_popup_end">To</string>
 	<string name="tribe_event_popup_more">Edit and create event</string>
 	<string name="tribe_event_popup_more_no_access">Permission is needed to access the calendar. Go to Settings > Privacy > Calendars to allow access for the Be Collective app.</string>
+	<string name="tribe_event_today">Today</string>
+	<string name="tribe_event_day_1_future">Tomorrow</string>
+	<string name="tribe_event_day_1_past">Yesterday</string>
+	<string name="tribe_event_day_n_future">In %1$d days</string>
+	<string name="tribe_event_day_n_past">%1$d days ago</string>
+	<string name="tribe_event_week_1_future">In %1$d week</string>
+	<string name="tribe_event_week_1_past">%1$d week ago</string>
+	<string name="tribe_event_week_n_future">In %1$d weeks</string>
+	<string name="tribe_event_week_n_past">%1$d weeks ago</string>
+	<string name="tribe_event_month_1_future">In %1$d month</string>
+	<string name="tribe_event_month_1_past">%1$d month ago</string>
+	<string name="tribe_event_month_n_future">In %1$d months</string>
+	<string name="tribe_event_month_n_past">%1$d months ago</string>
+	<string name="tribe_event_year_1_future">In %1$d year</string>
+	<string name="tribe_event_year_1_past">%1$d year ago</string>
+	<string name="tribe_event_year_n_future">In %1$d years</string>
+	<string name="tribe_event_year_n_past">%1$d years ago</string>
 </resources>
