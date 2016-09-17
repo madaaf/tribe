@@ -54,8 +54,6 @@ public class CreateInviteView extends FrameLayout {
     private PublishSubject<Void> createPressed = PublishSubject.create();
     private PublishSubject<Void> invitePressed = PublishSubject.create();
 
-
-
     @BindView(R.id.textCreateInvite)
     TextViewFont textCreateInvite;
     @BindView(R.id.textCreateInviteDesc)
@@ -118,6 +116,10 @@ public class CreateInviteView extends FrameLayout {
         imageInvite.setScaleY(AnimationUtils.SCALE_INVISIBLE);
         viewCreateGroupBg2.setEnabled(false);
         viewCreateGroupBg1.setEnabled(false);
+    }
+
+    public void setCreateGrey() {
+        viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_disabled));
     }
 
     public void enableCreate(Boolean privateGroup) {

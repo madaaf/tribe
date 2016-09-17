@@ -191,7 +191,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
         if (requestCode == OPEN_CAMERA_RESULT) {
             Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-            homeViewPagerAdapter.groupsGridFragment.setGroupPicture(thumbnail);
+            homeViewPagerAdapter.groupsGridFragment.getGroupInfoView().setGroupPicture(thumbnail);
             String imageUri = Uri.fromFile(FileUtils.bitmapToFile(thumbnail, this)).toString();
             pictureUri = imageUri;
         }
@@ -209,7 +209,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             Bitmap thumbnail = BitmapFactory.decodeFile(picturePath);
 
             if (thumbnail != null) {
-                homeViewPagerAdapter.groupsGridFragment.setGroupPicture(thumbnail);
+                homeViewPagerAdapter.groupsGridFragment.getGroupInfoView().setGroupPicture(thumbnail);
             }
         }
     }

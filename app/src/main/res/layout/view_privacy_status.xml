@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/imagePrivacyStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="15dp"
+        android:layout_gravity="center_vertical" />
+
+    <View
+        android:layout_width="5dp"
+        android:layout_height="5dp" />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/textPrivacyStatus"
+        style="@style/Title.1.Black40"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical" />
+
+</LinearLayout>

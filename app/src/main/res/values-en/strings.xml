@@ -409,4 +409,5 @@
 	<string name="tribe_event_year_1_past">%1$d year ago</string>
 	<string name="tribe_event_year_n_future">In %1$d years</string>
 	<string name="tribe_event_year_n_past">%1$d years ago</string>
+	<string name="tribe_event_title_suggestion">Beer,Call,Camping,Coffee,Concert,Date,Dentist,Doctor,Drink,Facetime,Flight,Boat,Bus,Meeting,Movie,Office,Party,Repair,Run,Shopping,Skype,Sleep,Train,Travel,TV,Vacation,Workout,Chill</string>
 </resources>
