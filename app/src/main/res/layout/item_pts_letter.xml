@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="30dp"
+    >
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtLetter"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:background="@drawable/shape_rect_white20_rounded_corners"
+        android:singleLine="true"
+        style="@style/Title.2.White"
+        android:text="A"
+        />
+</FrameLayout>

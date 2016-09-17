@@ -12,8 +12,10 @@
         android:background="@android:color/black">
 
         <com.tribe.app.presentation.view.component.PullToSearchView
+            android:id="@+id/ptsView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             />
 
         <android.support.v7.widget.RecyclerView

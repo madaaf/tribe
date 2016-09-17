@@ -1,11 +1,7 @@
 package com.tribe.app.presentation.view.fragment;
 
-import android.animation.ObjectAnimator;
-import android.animation.RectEvaluator;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Rect;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetDialog;
@@ -558,10 +554,14 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     private void initFriendshipList() {
         User user = getCurrentUser();
-        friendshipsList = user.getFriendships();
-        friendshipsListCopy = new ArrayList<>();
-        friendshipsListCopy.addAll(friendshipsList);
-        friendAdapter.setItems(friendshipsList);
+
+        if (friendshipsList != null) {
+            friendshipsList = user.getFriendships();
+            friendshipsListCopy = new ArrayList<>();
+            friendshipsListCopy.addAll(friendshipsList);
+            friendAdapter.setItems(friendshipsList);
+        }
+
         linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerViewInvite.setLayoutManager(linearLayoutManager);
         recyclerViewInvite.setAdapter(friendAdapter);

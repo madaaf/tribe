@@ -9,8 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.facebook.rebound.SimpleSpringListener;
-import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringConfig;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
@@ -203,6 +201,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     @Override
     public void renderRecipientList(List<Recipient> recipientList) {
         if (recipientList != null) {
+            pullToSearchContainer.updatePTSList(recipientList);
             this.homeGridAdapter.setItems(recipientList);
         }
     }
@@ -513,31 +512,5 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
      */
     private void loadData() {
         this.homeGridPresenter.onCreate();
-    }
-
-    /**
-     * PULL TO SEARCH METHODS
-     */
-    private class TopSpringListener extends SimpleSpringListener {
-        @Override
-        public void onSpringUpdate(Spring spring) {
-            if (isAdded()) {
-                float value = (float) spring.getCurrentValue();
-                scrollTop(value);
-            }
-        }
-    }
-
-    private void scrollTop(float value) {
-        recyclerViewFriends.setTranslationY(value);
-    }
-
-    private int computeActualScroll() {
-        if (layoutManager != null && layoutManager.getItemCount() > 0) {
-            int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
-            return layoutManager.getChildAt(firstVisibleItem).getTop();
-        }
-
-        return 0;
     }
 }

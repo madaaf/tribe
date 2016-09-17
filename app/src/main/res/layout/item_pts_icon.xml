@@ -1,22 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:id="@+id/layoutContent"
+<ImageView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/imgIcon"
     android:layout_width="30dp"
     android:layout_height="30dp"
-    android:background="@null"
-    android:orientation="vertical"
-    android:gravity="center"
-    >
-
-    <ImageView
-        android:id="@+id/imgIcon"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_centerVertical="true"
-        android:background="@drawable/shape_oval_dark_grey"
-        android:src="@drawable/picto_lock_white"
-        android:scaleType="centerInside"
-        />
-
-</LinearLayout>
+    android:layout_centerVertical="true"
+    android:background="@drawable/shape_rect_white20_rounded_corners"
+    android:scaleType="centerInside"
+    />

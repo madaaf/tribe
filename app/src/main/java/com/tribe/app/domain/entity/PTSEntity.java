@@ -2,6 +2,8 @@ package com.tribe.app.domain.entity;
 
 import android.support.annotation.StringDef;
 
+import com.tribe.app.presentation.utils.StringUtils;
+
 import java.io.Serializable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -11,16 +13,16 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class PTSEntity implements Serializable {
 
-    @StringDef({ICON, ALPHABET})
+    @StringDef({ICON, LETTER})
     @Retention(RetentionPolicy.SOURCE)
     public @interface PTSType {
     }
 
     public static final String ICON = "icon";
-    public static final String ALPHABET = "alphabet";
+    public static final String LETTER = "letter";
 
     private @PTSType String type;
-    private boolean activated;
+    private boolean activated = false;
     private String letter;
     private int drawable;
 
@@ -30,10 +32,6 @@ public class PTSEntity implements Serializable {
 
     public String getType() {
         return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public boolean isActivated() {
@@ -58,5 +56,12 @@ public class PTSEntity implements Serializable {
 
     public void setDrawable(int drawable) {
         this.drawable = drawable;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (!StringUtils.isEmpty(letter) ? letter.hashCode() : drawable);
+        return result;
     }
 }

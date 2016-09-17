@@ -4,9 +4,9 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
-import com.tribe.app.presentation.view.adapter.delegate.points.LevelAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.points.LevelLockedAdapterDelegate;
-import com.tribe.app.presentation.view.utils.ScoreUtils;
+import com.tribe.app.domain.entity.PTSEntity;
+import com.tribe.app.presentation.view.adapter.delegate.pulltosearch.LetterAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.pulltosearch.IconAdapterDelegate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,17 +20,17 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class PullToSearchAdapter extends RecyclerView.Adapter {
 
-    private RxAdapterDelegatesManager<List<ScoreUtils.Level>> delegatesManager;
-    private List<ScoreUtils.Level> items;
+    private RxAdapterDelegatesManager<List<PTSEntity>> delegatesManager;
+    private List<PTSEntity> items;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
     @Inject
-    public PullToSearchAdapter(Context context, int score) {
+    public PullToSearchAdapter(Context context) {
         delegatesManager = new RxAdapterDelegatesManager<>();
-        delegatesManager.addDelegate(new LevelAdapterDelegate(context, score));
-        delegatesManager.addDelegate(new LevelLockedAdapterDelegate(context, score));
+        delegatesManager.addDelegate(new IconAdapterDelegate(context));
+        delegatesManager.addDelegate(new LetterAdapterDelegate(context));
 
         items = new ArrayList<>();
 
@@ -44,8 +44,8 @@ public class PullToSearchAdapter extends RecyclerView.Adapter {
 
     @Override
     public long getItemId(int position) {
-        ScoreUtils.Level level = getLevel(position);
-        return level.hashCode();
+        PTSEntity ptsEntity = getPTSEntity(position);
+        return ptsEntity.hashCode();
     }
 
     @Override
@@ -68,13 +68,13 @@ public class PullToSearchAdapter extends RecyclerView.Adapter {
         delegatesManager.releaseSubscriptions();
     }
 
-    public void setItems(List<ScoreUtils.Level> levelList) {
+    public void setItems(List<PTSEntity> ptsEntityList) {
         items.clear();
-        items.addAll(levelList);
+        items.addAll(ptsEntityList);
         notifyDataSetChanged();
     }
 
-    public ScoreUtils.Level getLevel(int position) {
+    public PTSEntity getPTSEntity(int position) {
         return items.get(position);
     }
 }

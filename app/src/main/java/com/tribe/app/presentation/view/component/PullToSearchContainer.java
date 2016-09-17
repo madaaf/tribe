@@ -15,9 +15,12 @@ import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,6 +40,9 @@ public class PullToSearchContainer extends FrameLayout {
     @BindView(R.id.recyclerViewFriends)
     RecyclerView recyclerView;
 
+    @BindView(R.id.ptsView)
+    PullToSearchView ptsView;
+
     // SPRINGS
     private SpringSystem springSystem = null;
     private Spring springTop;
@@ -47,7 +53,6 @@ public class PullToSearchContainer extends FrameLayout {
     private float currentDragPercent;
     private boolean beingDragged = false;
     private boolean pullToSearchActive = false;
-    private float initialMotionY = -1;
     private float lastDownX;
     private float lastDownXTr;
     private float lastDownY;
@@ -121,6 +126,10 @@ public class PullToSearchContainer extends FrameLayout {
 
     public boolean beingDragged() {
         return beingDragged;
+    }
+
+    public void updatePTSList(List<Recipient> recipientList) {
+        ptsView.updatePTSList(recipientList);
     }
 
     ///////////////////////
@@ -251,6 +260,16 @@ public class PullToSearchContainer extends FrameLayout {
                 scrollTop(value);
             }
         }
+
+        @Override
+        public void onSpringAtRest(Spring spring) {
+            super.onSpringAtRest(spring);
+            if (spring.getEndValue() == 0) {
+                pullToSearchActiveSubject.onNext(pullToSearchActive = false);
+            } else {
+                pullToSearchActiveSubject.onNext(pullToSearchActive = true);
+            }
+        }
     }
 
     private void scrollTop(float value) {
@@ -285,15 +304,13 @@ public class PullToSearchContainer extends FrameLayout {
     }
 
     private void openPullToSearch() {
-        pullToSearchActiveSubject.onNext(pullToSearchActive = true);
         springTop.setSpringConfig(PULL_TO_SEARCH_BOUNCE_SPRING_CONFIG);
         springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(getHeight() - thresholdEnd);
     }
 
     private void closePullToSearch() {
-        pullToSearchActiveSubject.onNext(pullToSearchActive = false);
-        springTop.setSpringConfig(PULL_TO_SEARCH_SPRING_CONFIG);
-        springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(0);
+        //springTop.setSpringConfig(PULL_TO_SEARCH_SPRING_CONFIG);
+        //springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(0);
     }
 
     ///////////////////////
