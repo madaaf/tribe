@@ -35,8 +35,6 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
     // RX SUBSCRIPTIONS / SUBJECTS
     private final PublishSubject<View> clickFriendItem = PublishSubject.create();
 
-    private boolean selected = false;
-
     private Context context;
 
     public FriendAdapterDelegate(Context context) {
@@ -56,12 +54,13 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
 
         subscriptions.add(RxView.clicks(vh.itemView)
                 .doOnNext(aVoid -> {
-                    if (selected) {
-                        ((BlockFriendViewHolder) vh).imageSelected.setImageDrawable(null);
-                        selected = false;
+                    BlockFriendViewHolder blockFriendViewHolder = (BlockFriendViewHolder) vh;
+                    if (blockFriendViewHolder.selected) {
+                        blockFriendViewHolder.imageSelected.setImageDrawable(null);
+                        blockFriendViewHolder.selected = false;
                     } else {
-                        ((BlockFriendViewHolder) vh).imageSelected.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.picto_oval_green_fill));
-                        selected = true;
+                        blockFriendViewHolder.imageSelected.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.picto_oval_green_fill));
+                        blockFriendViewHolder.selected = true;
                     }
                 })
                 .takeUntil(RxView.detaches(parent))
@@ -104,11 +103,13 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
         @BindView(R.id.txtUsername) public TextViewFont txtUsername;
         @BindView(R.id.layoutSelected) public FrameLayout layoutSelected;
         @BindView(R.id.imageSelected) public ImageView imageSelected;
+        public boolean selected;
 
 
         public BlockFriendViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            selected = false;
         }
     }
 

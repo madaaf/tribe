@@ -198,6 +198,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         subscriptions.add(groupInfoView.imageDoneEditClicked().subscribe(aVoid -> {
             backFromEditInfo();
         }));
+
         groupPresenter.getGroupMembers(groupId);
     }
 
@@ -313,7 +314,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     }
 
     /**
-     * Methods
+     * Methods to switch between edit and non-edit modes
      */
     private void backFromEdit() {
         groupInfoView.collapseInfo(animDuration, getActivity());
@@ -469,9 +470,18 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerViewInvite.setLayoutManager(linearLayoutManager);
         recyclerViewInvite.setAdapter(friendAdapter);
+
+        subscriptions.add(friendAdapter.clickFriendItem()
+            .subscribe(friendView -> {
+                if (friendView.isSelected()) {
+                    Friendship friendship = friendAdapter.getItemAtPosition((Integer) friendView.getTag(R.id.tag_position));
+
+                }
+            }));
     }
 
     private void initSearchView() {
+        setupSearchView();
         editTextInviteSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -488,6 +498,15 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                 filter(editable.toString());
             }
         });
+    }
+
+    private void setupSearchView() {
+        subscriptions.add(RxView.focusChanges(editTextInviteSearch).subscribe(aBoolean -> {
+            if (aBoolean) appBarLayout.setExpanded(false);
+        }));
+        subscriptions.add(RxView.clicks(editTextInviteSearch).subscribe(aVoid -> {
+            appBarLayout.setExpanded(false);
+        }));
     }
 
     private void filter(String text) {
