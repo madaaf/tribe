@@ -72,7 +72,7 @@ public class CloudUserDataStore implements UserDataStore {
 
     private final TribeApi tribeApi;
     private final LoginApi loginApi;
-    private final UserCache userCache;
+    private UserCache userCache = null;
     private final TribeCache tribeCache;
     private final ChatCache chatCache;
     private final ContactCache contactCache;
@@ -149,7 +149,7 @@ public class CloudUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<UserRealm> userInfos(String userId) {
+    public Observable<UserRealm> userInfos(String userId, String filterRecipient) {
         String initRequest = utcSimpleDate.format(new Date());
 
         return Observable.zip(this.tribeApi.getUserInfos(context.getString(R.string.user_infos,
@@ -299,7 +299,7 @@ public class CloudUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<UserRealm> updateUser(String username, String displayName, String pictureUri) {
+    public Observable<UserRealm> updateUser(String username, String displayName, String pictureUri, String fbid) {
         String usernameParam;
         String displayNameParam;
 
@@ -318,19 +318,12 @@ public class CloudUserDataStore implements UserDataStore {
         }
 
         if (pictureUri == null) {
-            String request = context.getString(R.string.user_mutate, usernameParam, displayNameParam, context.getString(R.string.userfragment_infos));
+            String request = context.getString(R.string.user_mutate, usernameParam, displayNameParam, fbid, context.getString(R.string.userfragment_infos));
 
             return this.tribeApi.updateUser(request)
-                    .doOnNext(userRealm -> {
-                        UserRealm dbUser = userCache.userInfosNoObs(accessToken.getUserId());
-                        dbUser.setUsername(userRealm.getUsername());
-                        user.setUsername(userRealm.getUsername());
-                        dbUser.setDisplayName(userRealm.getDisplayName());
-                        user.setDisplayName(userRealm.getDisplayName());
-                        userCache.put(dbUser);
-                    });
+                    .doOnNext(saveToCacheUpdateUser);
         } else {
-            String request = context.getString(R.string.user_mutate, usernameParam, displayNameParam, context.getString(R.string.userfragment_infos));
+            String request = context.getString(R.string.user_mutate, usernameParam, displayNameParam, fbid, context.getString(R.string.userfragment_infos));
             RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
 
             File file = new File(Uri.parse(pictureUri).getPath());
@@ -355,16 +348,7 @@ public class CloudUserDataStore implements UserDataStore {
             body = MultipartBody.Part.createFormData("user_pic", "user_pic.jpg", requestFile);
 
             return tribeApi.updateUserMedia(query, body)
-                    .doOnNext(userRealm -> {
-                        UserRealm dbUser = userCache.userInfosNoObs(accessToken.getUserId());
-                        dbUser.setProfilePicture(userRealm.getProfilePicture());
-                        dbUser.setUsername(userRealm.getUsername());
-                        user.setUsername(userRealm.getUsername());
-                        dbUser.setDisplayName(userRealm.getDisplayName());
-                        user.setDisplayName(userRealm.getDisplayName());
-                        userCache.put(dbUser);
-                        user.setProfilePicture(userRealm.getProfilePicture());
-                    });
+                    .doOnNext(saveToCacheUpdateUser);
 
         }
     }
@@ -730,6 +714,19 @@ public class CloudUserDataStore implements UserDataStore {
     private final Action1<SearchResultRealm> saveToCacheSearchResult = searchResultRealm -> {
         if (searchResultRealm != null) {
             CloudUserDataStore.this.contactCache.insertSearchResult(searchResultRealm);
+        }
+    };
+
+    private final Action1<UserRealm> saveToCacheUpdateUser = userRealm -> {
+        if (userRealm != null && userCache != null) {
+            UserRealm dbUser = userCache.userInfosNoObs(accessToken.getUserId());
+            dbUser.setProfilePicture(userRealm.getProfilePicture());
+            dbUser.setUsername(userRealm.getUsername());
+            user.setUsername(userRealm.getUsername());
+            dbUser.setDisplayName(userRealm.getDisplayName());
+            user.setDisplayName(userRealm.getDisplayName());
+            userCache.put(dbUser);
+            user.setProfilePicture(userRealm.getProfilePicture());
         }
     };
 

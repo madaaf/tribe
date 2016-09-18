@@ -46,9 +46,10 @@ public interface UserDataStore {
     /**
      * Get an {@link Observable} which will emit a {@link UserRealm}
      * @param userId the id of the user for which we get the info
+     * @param filterRecipient the filter for the recipients
      *
      */
-    Observable<UserRealm> userInfos(final String userId);
+    Observable<UserRealm> userInfos(final String userId, String filterRecipient);
 
     /**
      * Get an {@link Observable} which will emit a {@link User}
@@ -75,9 +76,10 @@ public interface UserDataStore {
      * @param username
      * @param displayName
      * @param pictureUri
+     * @param fbid
      * @return the new user value
      */
-    Observable<UserRealm> updateUser(String username, String displayName, String pictureUri);
+    Observable<UserRealm> updateUser(String username, String displayName, String pictureUri, String fbid);
 
     /**
      * Get an {@link Observable} which will emit a {@link List <ContactInterface>} containing infos

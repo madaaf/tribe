@@ -123,6 +123,7 @@
 	<string name="grid_menu_friendship_report">Report</string>
 	<string name="grid_menu_friendship_report_success">Reportedè</string>
 	<string name="grid_menu_friendship_clear_tribes">Clear messages</string>
+	<string name="grid_menu_select_language">Change language</string>
 	
 	<!-- Chat -->
 	<string name="chat_tutorial_content">Chat here if you can\'t send a video or if you need to text something such as an address, a phone or a handle.</string>
@@ -329,15 +330,20 @@
 	
 	<!-- Level -->
 	<string name="level_noob_title">Noob</string>
-	<string name="level_rookie_title">Rookie</string>
 	<string name="level_coolkid_title">Coolkid</string>
-	<string name="level_champ_title">Champ</string>
-	<string name="level_rockstar_title">Rockstar</string>
-	<string name="level_legend_title">Legend</string>
-	<string name="level_king_title">King</string>
 	<string name="level_alien_title">Alien</string>
 	<string name="level_unicorn_title">Unicorn</string>
 	<string name="level_bot_title">Bot</string>
+	<string name="level_rookie_title">Rookie</string>
+	<string name="level_baller_title">Baller</string>
+	<string name="level_stud_title">Stud</string>
+	<string name="level_rockstar_title">Rockstar</string>
+	<string name="level_allstar_title">All Star</string>
+	<string name="level_champ_title">Champ</string>
+	<string name="level_goat_title">GOAT</string>
+	<string name="level_mvp">MVP</string>
+	<string name="level_legend_title">Legend</string>
+	<string name="level_king_title">King</string>
 	
 	<!-- Notification -->
 	<string name="notification_pending">A pending message. Swipe to resend &#11013;&#65039;</string>
@@ -354,6 +360,7 @@
 	<string name="share_score">I have %1$s points on Tribe %2$s</string>
 	<string name="share_onboarding">I just discovered Tribe, but I can’t enter alone. Come now so we can get access together. Waiting for you. Go on %1$s</string>
 	<string name="share_copied_redirecting">Copied the link to the clipboard. Redirecting you...</string>
+	<string name="share_grid_invite">Sent from Tribe. http://tribe.pm</string>
 	
 	<!-- TribeDistancePopup -->
 	<string name="tribe_distance_popup_description">Sent %1$s away from you</string>
@@ -373,10 +380,13 @@
 	<string name="tribe_magicword_popup_cast_members">Actors</string>
 	<string name="tribe_magicword_popup_description">Description</string>
 	<string name="tribe_magicword_popup_trailer">Watch trailer</string>
+	<string name="tribe_magicword_popup_loading">Looking for the magic\ncard of %1$s...</string>
 	
 	<!-- TribeLocationPopup -->
 	<string name="tribe_location_popup_population">Population</string>
 	<string name="tribe_location_popup_directions">Get directions</string>
+	<string name="tribe_location_popup_no_temperature">No temperature</string>
+	<string name="tribe_location_popup_no_population">Unknown population</string>
 	
 	<!-- TribeLevelPopup -->
 	<string name="tribe_level_popup_late">You\'re late!</string>
@@ -409,4 +419,5 @@
 	<string name="tribe_event_year_1_past">%1$d year ago</string>
 	<string name="tribe_event_year_n_future">In %1$d years</string>
 	<string name="tribe_event_year_n_past">%1$d years ago</string>
+	<string name="tribe_event_title_suggestion">Beer,Call,Camping,Coffee,Concert,Date,Dentist,Doctor,Drink,Facetime,Flight,Boat,Bus,Meeting,Movie,Office,Party,Repair,Run,Shopping,Skype,Sleep,Train,Travel,TV,Vacation,Workout,Chill</string>
 </resources>

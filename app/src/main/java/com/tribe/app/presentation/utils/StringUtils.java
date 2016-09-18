@@ -64,4 +64,13 @@ public class StringUtils {
 
         return links.toArray(new String[links.size()]);
     }
+
+    public static String getFirstCharacter(String str) {
+        if (!StringUtils.isEmpty(str) && str.length() >= 1) {
+            String firstCharacter = str.substring(0, 1);
+            return firstCharacter;
+        }
+
+        return "";
+    }
 }

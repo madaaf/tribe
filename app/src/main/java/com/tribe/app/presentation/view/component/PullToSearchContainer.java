@@ -18,6 +18,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 import java.util.List;
@@ -32,7 +33,7 @@ import rx.subscriptions.CompositeSubscription;
 public class PullToSearchContainer extends FrameLayout {
 
     private static final SpringConfig PULL_TO_SEARCH_BOUNCE_SPRING_CONFIG = SpringConfig.fromOrigamiTensionAndFriction(132, 7f);
-    private static final SpringConfig PULL_TO_SEARCH_SPRING_CONFIG = SpringConfig.fromOrigamiTensionAndFriction(200, 17);
+    private static final SpringConfig PULL_TO_SEARCH_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(0, 25);
     private static final float DRAG_RATE = 0.5f;
     private static final int DRAG_THRESHOLD = 20;
     private static final int INVALID_POINTER = -1;
@@ -46,7 +47,9 @@ public class PullToSearchContainer extends FrameLayout {
     // SPRINGS
     private SpringSystem springSystem = null;
     private Spring springTop;
+    private Spring springMargin;
     private TopSpringListener springTopListener;
+    private MarginSpringListener springMarginListener;
 
     // VARIABLES
     private ScreenUtils screenUtils;
@@ -61,14 +64,17 @@ public class PullToSearchContainer extends FrameLayout {
     private VelocityTracker velocityTracker;
     private int touchSlop;
     private int currentOffsetTop;
+    private String selectedLetter;
 
     // DIMENS
     private int thresholdEnd;
+    private int marginAnim;
 
     // BINDERS / SUBSCRIPTIONS
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private PublishSubject<Boolean> pullToSearchActiveSubject = PublishSubject.create();
+    private PublishSubject<String> onLetterSelected = PublishSubject.create();
 
     public PullToSearchContainer(Context context) {
         super(context);
@@ -83,19 +89,22 @@ public class PullToSearchContainer extends FrameLayout {
         super.onAttachedToWindow();
 
         springTop.addListener(springTopListener);
+        springMargin.addListener(springMarginListener);
     }
 
     @Override
     protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
+        springTop.removeListener(springTopListener);
+        springMargin.removeListener(springMarginListener);
 
-        springTop.addListener(springTopListener);
         unbinder.unbind();
 
         if (subscriptions != null && subscriptions.hasSubscriptions()) {
             subscriptions.unsubscribe();
             subscriptions.clear();
         }
+
+        super.onDetachedFromWindow();
     }
 
     @Override
@@ -110,6 +119,7 @@ public class PullToSearchContainer extends FrameLayout {
 
         initDimen();
         initUI();
+        initSubscriptions();
     }
 
     private void initUI() {
@@ -117,11 +127,23 @@ public class PullToSearchContainer extends FrameLayout {
         springTop = springSystem.createSpring();
         springTop.setSpringConfig(PULL_TO_SEARCH_BOUNCE_SPRING_CONFIG);
         springTopListener = new TopSpringListener();
+        springMargin = springSystem.createSpring();
+        springMargin.setSpringConfig(PULL_TO_SEARCH_SPRING_CONFIG);
+        springMarginListener = new MarginSpringListener();
         touchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
     }
 
     private void initDimen() {
         thresholdEnd = getContext().getResources().getDimensionPixelSize(R.dimen.threshold_dismiss);
+        marginAnim = getContext().getResources().getDimensionPixelSize(R.dimen.horizontal_margin);
+    }
+
+    private void initSubscriptions() {
+        subscriptions.add(ptsView.onLetterSelected().subscribe(s -> {
+            selectedLetter = s;
+            onLetterSelected.onNext(s);
+            closePullToSearchSelected();
+        }));
     }
 
     public boolean beingDragged() {
@@ -142,8 +164,6 @@ public class PullToSearchContainer extends FrameLayout {
         }
 
         final int action = MotionEventCompat.getActionMasked(ev);
-
-        if (ev.getRawY() < screenUtils.dpToPx(DRAG_THRESHOLD)) return false;
 
         switch (action) {
             case MotionEvent.ACTION_DOWN:
@@ -186,7 +206,7 @@ public class PullToSearchContainer extends FrameLayout {
                 break;
         }
 
-        return beingDragged || pullToSearchActive;
+        return beingDragged;
     }
 
     @Override
@@ -252,12 +272,13 @@ public class PullToSearchContainer extends FrameLayout {
     ///////////////////////
     //    ANIMATIONS     //
     ///////////////////////
+
     private class TopSpringListener extends SimpleSpringListener {
         @Override
         public void onSpringUpdate(Spring spring) {
             if (isAttachedToWindow()) {
                 float value = (float) spring.getCurrentValue();
-                scrollTop(value);
+                translateTop(value);
             }
         }
 
@@ -265,14 +286,12 @@ public class PullToSearchContainer extends FrameLayout {
         public void onSpringAtRest(Spring spring) {
             super.onSpringAtRest(spring);
             if (spring.getEndValue() == 0) {
-                pullToSearchActiveSubject.onNext(pullToSearchActive = false);
-            } else {
-                pullToSearchActiveSubject.onNext(pullToSearchActive = true);
+                ptsView.close();
             }
         }
     }
 
-    private void scrollTop(float value) {
+    private void translateTop(float value) {
         recyclerView.setTranslationY(value);
     }
 
@@ -286,7 +305,7 @@ public class PullToSearchContainer extends FrameLayout {
         }
 
         currentOffsetTop = computeOffsetWithTension(scrollTop, totalDragDistance);
-        scrollTop(currentOffsetTop);
+        translateTop(currentOffsetTop);
 
         return true;
     }
@@ -303,14 +322,57 @@ public class PullToSearchContainer extends FrameLayout {
         return (int) ((slingshotDist * boundedDragPercent) + extraMove);
     }
 
+    private class MarginSpringListener extends SimpleSpringListener {
+        @Override
+        public void onSpringUpdate(Spring spring) {
+            if (isAttachedToWindow()) {
+                int value = (int) spring.getCurrentValue();
+                margin(value);
+            }
+        }
+
+        @Override
+        public void onSpringAtRest(Spring spring) {
+            if (isAttachedToWindow() && !StringUtils.isEmpty(selectedLetter) && spring.getEndValue() == 0) {
+                pullToSearchActiveSubject.onNext(pullToSearchActive = false);
+                springTop.setSpringConfig(PULL_TO_SEARCH_SPRING_CONFIG);
+                springTop.setEndValue(0);
+            }
+        }
+    }
+
+    private void margin(int value) {
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) recyclerView.getLayoutParams();
+        params.leftMargin = value;
+        params.rightMargin = value;
+        recyclerView.setLayoutParams(params);
+    }
+
     private void openPullToSearch() {
+        selectedLetter = null;
+        pullToSearchActiveSubject.onNext(pullToSearchActive = true);
+        ptsView.open();
         springTop.setSpringConfig(PULL_TO_SEARCH_BOUNCE_SPRING_CONFIG);
         springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(getHeight() - thresholdEnd);
+        springMargin.setSpringConfig(PULL_TO_SEARCH_BOUNCE_SPRING_CONFIG);
+        springMargin.setEndValue(marginAnim);
     }
 
     private void closePullToSearch() {
-        //springTop.setSpringConfig(PULL_TO_SEARCH_SPRING_CONFIG);
-        //springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(0);
+        pullToSearchActiveSubject.onNext(pullToSearchActive = false);
+        springTop.setSpringConfig(PULL_TO_SEARCH_SPRING_CONFIG);
+        springTop.setEndValue(0);
+        springMargin.setSpringConfig(PULL_TO_SEARCH_SPRING_CONFIG);
+        springMargin.setEndValue(0);
+        ptsView.close();
+    }
+
+    private void closePullToSearchSelected() {
+        springMargin.setSpringConfig(PULL_TO_SEARCH_SPRING_CONFIG);
+        springMargin.setEndValue(0);
+
+        springTop.setSpringConfig(PULL_TO_SEARCH_SPRING_CONFIG);
+        springTop.setEndValue(springTop.getCurrentValue() - (thresholdEnd >> 1));
     }
 
     ///////////////////////
@@ -318,5 +380,9 @@ public class PullToSearchContainer extends FrameLayout {
     ///////////////////////
     public Observable<Boolean> pullToSearchActive() {
         return pullToSearchActiveSubject;
+    }
+
+    public Observable<String> onLetterSelected() {
+        return onLetterSelected;
     }
 }

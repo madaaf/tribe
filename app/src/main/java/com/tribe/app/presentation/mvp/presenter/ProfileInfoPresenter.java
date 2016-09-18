@@ -136,12 +136,12 @@ public class ProfileInfoPresenter implements Presenter {
         cloudUserInfos.execute(new UserInfoSubscriber());
     }
 
-    public void updateUser(String username, String displayName, String pictureUri) {
+    public void updateUser(String username, String displayName, String pictureUri, String fbid) {
         if (updateUserSubscriber != null)
             updateUserSubscriber.unsubscribe();
 
         updateUserSubscriber = new UpdateUserSubscriber();
-        updateUser.prepare(username, displayName, pictureUri);
+        updateUser.prepare(username, displayName, pictureUri, fbid);
         updateUser.execute(new UpdateUserSubscriber());
     }
 

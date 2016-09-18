@@ -2,7 +2,6 @@ package com.tribe.app.data.repository.user;
 
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
-import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
 import com.tribe.app.data.realm.mapper.GroupRealmDataMapper;
@@ -82,9 +81,9 @@ public class CloudUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<User> userInfos(String userId) {
+    public Observable<User> userInfos(String userId, String filterRecipient) {
         final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-        return userDataStore.userInfos(userId)
+        return userDataStore.userInfos(userId, filterRecipient)
                 .doOnError(throwable -> {
                     throwable.printStackTrace();
                 })
@@ -117,9 +116,9 @@ public class CloudUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<User> updateUser(String username, String displayName, String pictureUri) {
+    public Observable<User> updateUser(String username, String displayName, String pictureUri, String fbid) {
         final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-        return userDataStore.updateUser(username, displayName, pictureUri)
+        return userDataStore.updateUser(username, displayName, pictureUri, fbid)
                 .map(userRealm -> this.userRealmDataMapper.transform(userRealm));
     }
 

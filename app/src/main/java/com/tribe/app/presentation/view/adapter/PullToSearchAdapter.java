@@ -5,14 +5,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import com.tribe.app.domain.entity.PTSEntity;
-import com.tribe.app.presentation.view.adapter.delegate.pulltosearch.LetterAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.pulltosearch.IconAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.pulltosearch.LetterAdapterDelegate;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -20,7 +22,10 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class PullToSearchAdapter extends RecyclerView.Adapter {
 
+    // DELEGATES
     private RxAdapterDelegatesManager<List<PTSEntity>> delegatesManager;
+    private LetterAdapterDelegate letterAdapterDelegate;
+
     private List<PTSEntity> items;
 
     // OBSERVABLES
@@ -30,7 +35,9 @@ public class PullToSearchAdapter extends RecyclerView.Adapter {
     public PullToSearchAdapter(Context context) {
         delegatesManager = new RxAdapterDelegatesManager<>();
         delegatesManager.addDelegate(new IconAdapterDelegate(context));
-        delegatesManager.addDelegate(new LetterAdapterDelegate(context));
+
+        letterAdapterDelegate = new LetterAdapterDelegate(context);
+        delegatesManager.addDelegate(letterAdapterDelegate);
 
         items = new ArrayList<>();
 
@@ -76,5 +83,12 @@ public class PullToSearchAdapter extends RecyclerView.Adapter {
 
     public PTSEntity getPTSEntity(int position) {
         return items.get(position);
+    }
+
+    ///////////////////////
+    //    OBSERVABLES    //
+    ///////////////////////
+    public Observable<TextViewFont> onClickLetter() {
+        return letterAdapterDelegate.onClickLetter();
     }
 }

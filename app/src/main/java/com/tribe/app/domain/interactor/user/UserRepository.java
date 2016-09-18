@@ -50,9 +50,10 @@ public interface UserRepository {
     /**
      * Get an {@link Observable} which will emit a {@link User}
      * @param userId the id of the user for which we get the info
+     * @param filterRecipient the filter for the recipients
      *
      */
-    Observable<User> userInfos(final String userId);
+    Observable<User> userInfos(final String userId, String filterRecipient);
 
     /**
      * Get an {@link Observable} which will emit a {@link User}
@@ -79,7 +80,7 @@ public interface UserRepository {
      * Get an {@link Observable} which will emit a {@link User} containing infos
      * about the user updated.
      */
-    Observable<User> updateUser(String username, String displayName, String pictureUri);
+    Observable<User> updateUser(String username, String displayName, String pictureUri, String fbid);
 
     /**
      * Get an {@link Observable} which will emit a {@link List <Contact>} containing infos

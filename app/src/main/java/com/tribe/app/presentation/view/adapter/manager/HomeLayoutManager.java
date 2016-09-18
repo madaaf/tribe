@@ -8,7 +8,18 @@ import android.support.v7.widget.GridLayoutManager;
  */
 public class HomeLayoutManager extends GridLayoutManager {
 
+    private boolean isScrollEnabled = true;
+
     public HomeLayoutManager(Context context) {
         super(context, 2);
+    }
+
+    public void setScrollEnabled(boolean enabled) {
+        this.isScrollEnabled = enabled;
+    }
+
+    @Override
+    public boolean canScrollVertically() {
+        return isScrollEnabled && super.canScrollVertically();
     }
 }

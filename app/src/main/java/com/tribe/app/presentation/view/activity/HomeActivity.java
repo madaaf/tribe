@@ -14,10 +14,10 @@ import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
@@ -62,6 +62,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     private static final int THRESHOLD_SCROLL = 12;
     private static final int DURATION = 500;
+    private static final int DURATION_SMALL = 300;
     private static final int DELAY_DISMISS_PENDING = 1000;
     private static final int DELAY_DISMISS_NEW_TRIBES = 1000;
     private static final float OVERSHOOT = 1f;
@@ -85,6 +86,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @BindView(R.id.viewPager)
     CustomViewPager viewPager;
+
+    @BindView(R.id.layoutNavMaster)
+    View layoutNavMaster;
 
     @BindView(R.id.imgNavGrid)
     ImageView imgNavGrid;
@@ -395,7 +399,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     public void initPullToSearchActive(Observable<Boolean> observable) {
         subscriptions.add(observable.subscribe(active -> {
-            viewPager.requestDisallowInterceptTouchEvent(active);
+            animateViewsOnPTSOpen(active);
+            viewPager.setSwipeable(!active);
         }));
     }
 
@@ -619,21 +624,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         }
     }
 
-    public void disableNavigation() {
-        slideDownNav(imgNavFriends);
-        slideDownNav(imgNavGroups);
-        slideDownNav(layoutNavGridMain);
-        viewPager.setSwipeable(false);
-    }
-
-    public void enableNavigation() {
-        slideUpNav(imgNavGrid);
-        slideUpNav(imgNavFriends);
-        viewPager.setSwipeable(true);
-    }
-
-
-
     public void resetGroupsGridFragment() {
         homeViewPagerAdapter.setGroupsGridFragment(new GroupsGridFragment());
         viewPager.setCurrentItem(GRID_FRAGMENT_PAGE);
@@ -641,7 +631,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         viewPager.setSwipeable(true);
     }
 
-    // ANIMATIONS
+    //////////////////
+    //  ANIMATIONS  //
+    //////////////////
+
     private void hideLayoutPending() {
         if (layoutNavPending.getTranslationY() == 0) {
             layoutNavPending.animate().translationY(translationBackToTop).setDuration(DURATION).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
@@ -675,17 +668,39 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         }
     }
 
+    private void animateViewsOnPTSOpen(boolean active) {
+        if (active) {
+            disableNavigation();
+            cameraWrapper.hideCamera();
+        } else {
+            enableNavigation();
+            cameraWrapper.showCamera();
+        }
+    }
+
     private void slideDownNav(View view) {
         view.animate()
-                .setDuration(300)
-                .translationY(200)
+                .setDuration(DURATION_SMALL)
+                .translationY(translationBackToTop)
+                .setInterpolator(new DecelerateInterpolator())
                 .start();
     }
 
     private void slideUpNav(View view) {
         view.animate()
-                .setDuration(300)
+                .setDuration(DURATION_SMALL)
                 .translationY(0)
+                .setInterpolator(new DecelerateInterpolator())
                 .start();
+    }
+
+    public void disableNavigation() {
+        slideDownNav(layoutNavMaster);
+        viewPager.setSwipeable(false);
+    }
+
+    public void enableNavigation() {
+        slideUpNav(layoutNavMaster);
+        viewPager.setSwipeable(true);
     }
 }

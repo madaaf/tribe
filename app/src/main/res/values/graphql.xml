@@ -73,13 +73,14 @@
         mutation {
             updateUser(user: {
                 username: \"%1$s\",
-                display_name: \"%2$s\"
+                display_name: \"%2$s\",
+                fbid: \"%3$s\"
             }) {
                 ...UserInfos
             }
         }
 
-        %3$s
+        %4$s
     </string>
 
     <string name="tribe.send.solo" translatable="false">

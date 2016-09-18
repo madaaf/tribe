@@ -23,6 +23,7 @@ import com.tribe.app.domain.interactor.common.UseCaseDisk;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.DiskMarkTribeListAsRead;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
+import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.SendTribeView;
 import com.tribe.app.presentation.mvp.view.View;
@@ -47,7 +48,7 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
     private HomeGridView homeGridView;
 
     // USECASES
-    private UseCaseDisk diskUserInfosUsecase;
+    private GetDiskUserInfos diskUserInfosUsecase;
     private UseCaseDisk diskGetMessageReceivedListUsecase;
     private UseCaseDisk diskGetPendingTribeListUsecase;
     private DiskMarkTribeListAsRead diskMarkTribeListAsRead;
@@ -58,7 +59,7 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
 
     @Inject
     public HomeGridPresenter(JobManager jobManager,
-                             @Named("diskUserInfos") UseCaseDisk diskUserInfos,
+                             @Named("diskUserInfos") GetDiskUserInfos diskUserInfos,
                              @Named("diskSaveTribe") SaveTribe diskSaveTribe,
                              @Named("diskDeleteTribe") DeleteTribe diskDeleteTribe,
                              @Named("diskGetReceivedMessages") UseCaseDisk diskGetReceivedMessageList,
@@ -76,7 +77,7 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         jobManager.addJobInBackground(new UpdateTribeDownloadedJob());
         jobManager.addJobInBackground(new UpdateTribesErrorStatusJob());
         jobManager.addJobInBackground(new UpdateUserJob());
-        loadFriendList();
+        loadFriendList(null);
         loadTribeList();
         loadPendingTribeList();
     }
@@ -106,6 +107,8 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         diskDeleteTribeUsecase.unsubscribe();
         diskSaveTribeUsecase.unsubscribe();
         diskGetMessageReceivedListUsecase.unsubscribe();
+        diskGetPendingTribeListUsecase.unsubscribe();
+        diskMarkTribeListAsRead.unsubscribe();
     }
 
     @Override
@@ -113,7 +116,7 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         homeGridView = (HomeGridView) v;
     }
 
-    public void loadFriendList() {
+    public void loadFriendList(String filter) {
         showViewLoading();
 
         if (friendListSubscriber != null) {
@@ -121,6 +124,7 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         }
 
         friendListSubscriber = new FriendListSubscriber();
+        diskUserInfosUsecase.prepare(null, filter);
         diskUserInfosUsecase.execute(friendListSubscriber);
     }
 
