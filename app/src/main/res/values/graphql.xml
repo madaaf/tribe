@@ -365,6 +365,21 @@
         howManyFriends%1$d : howManyFriends (phones: [%2$s])
     </string>
 
+    <string name="groupfragment.info" translatable="false">
+        fragment GroupInfo on Group {
+            id
+            name
+            type
+            picture
+            link
+            members
+            admins
+            messages
+            created_at
+            updated_at
+        }
+    </string>
+
     <string name="get.group.members" translatable="false">
         {
             groups (ids : [\"%1$s\"]) {
@@ -376,4 +391,18 @@
 
         %2$s
     </string>
+
+    <string name="create.group" translatable="false">
+        {
+            createGroup(group: {
+                name : "\%1$s\",
+   	        type : PRIVATE
+             }, members: [%2$s]
+            ) {
+                ...GroupInfo
+            }
+        }
+        %3$s
+    </string>
+
 </resources>

@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.presentation.view.adapter.delegate.friend.FriendAdapterDelegate;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by horatiothomas on 9/7/16.
@@ -23,6 +25,8 @@ public class FriendAdapter extends RecyclerView.Adapter {
     protected RxAdapterDelegatesManager<List<Friendship>> delegatesManager;
     private List<Friendship> items;
     private FriendAdapterDelegate friendAdapterDelegate;
+    private PublishSubject<Boolean> isSelected = PublishSubject.create();
+
 
     @Inject
     public FriendAdapter(Context context) {
@@ -60,6 +64,18 @@ public class FriendAdapter extends RecyclerView.Adapter {
         items.clear();
         items.addAll(friendshipList);
         notifyDataSetChanged();
+    }
+
+    public Friendship getItemAtPosition(int position) {
+        if (items.size() > 0 && position < items.size()) {
+            return items.get(position);
+        } else {
+            return null;
+        }
+    }
+
+    public Observable<Boolean> isSelected() {
+        return isSelected;
     }
 
     public Observable<View> clickFriendItem() {

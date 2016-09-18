@@ -43,7 +43,6 @@ public class GroupInfoActivity extends BaseActivity {
 
     }
 
-
     @Override
     protected void onDestroy() {
         if (unbinder != null) unbinder.unbind();
@@ -65,11 +64,7 @@ public class GroupInfoActivity extends BaseActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.layoutFragmentContainer, groupsGridFragment);
         fragmentTransaction.commit();
-
-
     }
-
-
 
     /**
      * Dagger Setup

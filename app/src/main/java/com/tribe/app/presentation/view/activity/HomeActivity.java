@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.activity;
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -40,6 +41,7 @@ import com.tribe.app.presentation.view.fragment.ContactsGridFragment;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
@@ -53,6 +55,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class HomeActivity extends BaseActivity implements HasComponent<UserComponent>, HomeView {
@@ -193,14 +197,19 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SETTINGS_RESULT) reloadGrid();
 
-        if (requestCode == OPEN_CAMERA_RESULT) {
-            Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-            homeViewPagerAdapter.groupsGridFragment.setGroupPicture(thumbnail);
-            String imageUri = Uri.fromFile(FileUtils.bitmapToFile(thumbnail, this)).toString();
-            pictureUri = imageUri;
+        if (requestCode == OPEN_CAMERA_RESULT && resultCode == Activity.RESULT_OK && data != null) {
+            subscriptions.add(
+                    Observable.just((Bitmap) data.getExtras().get("data"))
+                            .map(bitmap -> ImageUtils.formatForUpload(bitmap))
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(bitmap -> {
+                                homeViewPagerAdapter.groupsGridFragment.getGroupInfoView().setGroupPicture(bitmap);
+                            })
+            );
         }
 
-        if (requestCode == OPEN_GALLERY_RESULT) {
+        if (requestCode == OPEN_GALLERY_RESULT && resultCode == Activity.RESULT_OK && data != null) {
             Uri selectedImage = data.getData();
             pictureUri = selectedImage.toString();
             String[] filePathColumn = { MediaStore.Images.Media.DATA };
@@ -213,7 +222,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             Bitmap thumbnail = BitmapFactory.decodeFile(picturePath);
 
             if (thumbnail != null) {
-                homeViewPagerAdapter.groupsGridFragment.setGroupPicture(thumbnail);
+                homeViewPagerAdapter.groupsGridFragment.getGroupInfoView().setGroupPicture(thumbnail);
             }
         }
     }

@@ -6,31 +6,31 @@
 
     <FrameLayout
         android:id="@+id/layoutMember1"
-        android:layout_width="@dimen/group_member_image_size"
-        android:layout_height="@dimen/group_member_image_size"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
     <FrameLayout
         android:id="@+id/layoutMember2"
         android:layout_marginStart="@dimen/group_member_image_overlap_margin"
-        android:layout_width="@dimen/group_member_image_size"
-        android:layout_height="@dimen/group_member_image_size"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
     <FrameLayout
         android:id="@+id/layoutMember3"
         android:layout_marginStart="@dimen/group_member_image_overlap_margin"
-        android:layout_width="@dimen/group_member_image_size"
-        android:layout_height="@dimen/group_member_image_size"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
     <FrameLayout
         android:id="@+id/layoutMember4"
         android:layout_marginStart="@dimen/group_member_image_overlap_margin"
-        android:layout_width="@dimen/group_member_image_size"
-        android:layout_height="@dimen/group_member_image_size"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
     <FrameLayout
         android:id="@+id/layoutMember5"
         android:layout_marginStart="@dimen/group_member_image_overlap_margin"
-        android:layout_width="@dimen/group_member_image_size"
-        android:layout_height="@dimen/group_member_image_size"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>
