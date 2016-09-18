@@ -202,6 +202,17 @@ public class AnimationUtils {
         animator.start();
     }
 
+    public static void animateTopMargin(View view, int margin, int duration) {
+        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        ValueAnimator animator = ValueAnimator.ofInt(lp.topMargin, margin);
+        animator.setDuration(duration);
+        animator.addUpdateListener(animation -> {
+            lp.topMargin = (Integer) animation.getAnimatedValue();
+            view.setLayoutParams(lp);
+        });
+        animator.start();
+    }
+
     public static void animateHeight(View view, int height, int duration) {
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) view.getLayoutParams();
         ValueAnimator animator = ValueAnimator.ofInt(lp.height, height);

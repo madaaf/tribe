@@ -166,7 +166,8 @@ public class SettingActivity extends BaseActivity implements SettingView {
                 settingPresenter.updateUser(
                         settingUpdateProfileFragment.getUsername(),
                         settingUpdateProfileFragment.getDisplayName(),
-                        settingUpdateProfileFragment.getImgUri()
+                        settingUpdateProfileFragment.getImgUri(),
+                        getCurrentUser().getFbid()
                 );
 
                 goToMain();

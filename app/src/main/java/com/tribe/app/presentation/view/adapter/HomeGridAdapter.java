@@ -13,6 +13,7 @@ import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyGridAdapterDel
 import com.tribe.app.presentation.view.adapter.delegate.grid.GroupGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.interfaces.RecyclerViewItemEnabler;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by tiago on 18/05/2016.
  */
-public class HomeGridAdapter extends RecyclerView.Adapter {
+public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerViewItemEnabler {
 
     private ScreenUtils screenUtils;
 
@@ -35,7 +36,9 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
     private UserGridAdapterDelegate userGridAdapterDelegate;
     private GroupGridAdapterDelegate groupGridAdapterDelegate;
 
+    // VARIABLES
     private List<Recipient> items;
+    private boolean allEnabled = true;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -78,6 +81,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        holder.itemView.setEnabled(isAllItemsEnabled());
         delegatesManager.onBindViewHolder(items, position, holder);
     }
 
@@ -168,5 +172,20 @@ public class HomeGridAdapter extends RecyclerView.Adapter {
 
     public void updateItemWithTribe(int position, TribeMessage tribe) {
         items.get(position).setTribe(tribe);
+    }
+
+    public void setAllItemsEnabled(boolean enable) {
+        allEnabled = enable;
+        notifyItemRangeChanged(0, getItemCount());
+    }
+
+    @Override
+    public boolean isAllItemsEnabled() {
+        return allEnabled;
+    }
+
+    @Override
+    public boolean getItemEnabled(int position) {
+        return true;
     }
 }

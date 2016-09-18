@@ -54,7 +54,7 @@ public class DiskUserDataStore implements UserDataStore {
     public Observable<AccessToken> register(String displayName, String username, LoginEntity loginEntity) { return null; }
 
     @Override
-    public Observable<UserRealm> userInfos(String userId) {
+    public Observable<UserRealm> userInfos(String userId, String filterRecipient) {
         return this.userCache.userInfos(accessToken.getUserId());
     }
 
@@ -78,7 +78,7 @@ public class DiskUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<UserRealm> updateUser(String username, String displayName, String pictureUri) {
+    public Observable<UserRealm> updateUser(String username, String displayName, String pictureUri, String fbid) {
         return null;
     }
 

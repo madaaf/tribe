@@ -65,8 +65,8 @@ public class SettingPresenter implements Presenter {
     }
 
 
-    public void updateUser(String username, String displayName, String pictureUri) {
-        updateUser.prepare(username, displayName, pictureUri);
+    public void updateUser(String username, String displayName, String pictureUri, String fbid) {
+        updateUser.prepare(username, displayName, pictureUri, fbid);
         updateUser.execute(new UpdateUserSubscriber());
     }
 

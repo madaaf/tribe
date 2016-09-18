@@ -101,6 +101,8 @@
     <dimen name="friend_adapter_fill_size">30dp</dimen>
     <dimen name="group_member_image_size">50dp</dimen>
     <dimen name="nav_icon_size">50dp</dimen>
+    <dimen name="pull_to_search_letter_size">30dp</dimen>
+    <dimen name="pull_to_search_letter_selected_size">40dp</dimen>
 
     <!-- THRESHOLDS -->
     <dimen name="threshold_dismiss">100dp</dimen>

@@ -86,7 +86,7 @@ public class UserModule {
     @Provides
     @PerActivity
     @Named("diskUserInfos")
-    UseCaseDisk provideDiskGetUserInfos(GetDiskUserInfos getDiskUserInfos) {
+    GetDiskUserInfos provideDiskGetUserInfos(GetDiskUserInfos getDiskUserInfos) {
         return getDiskUserInfos;
     }
 

@@ -22,6 +22,7 @@ import com.tribe.app.presentation.view.camera.shader.fx.GlLutShader;
 import com.tribe.app.presentation.view.camera.view.CameraView;
 import com.tribe.app.presentation.view.camera.view.GlPreview;
 import com.tribe.app.presentation.view.camera.view.PictoVisualizerView;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -49,7 +50,7 @@ public class CameraWrapper extends FrameLayout {
     public static final String PHOTO = "photo";
 
     public static final String TAG = "CameraWrapper";
-    public static final int DURATION = 200;
+    public static final int DURATION = 300;
     public static final int DURATION_ICONS = 360;
     public static final int DELAY = 500;
     public static final int DIFF_TOUCH = 20;
@@ -276,22 +277,20 @@ public class CameraWrapper extends FrameLayout {
         getLocationOnScreen(locationLayoutCamera);
 
         final FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) getLayoutParams();
-        int leftMargin = 0;
-        int topMargin = 0;
 
         if (lp.leftMargin > screenUtils.getWidthPx() / 4) {
-            leftMargin = screenUtils.getWidthPx() - getWidth() - marginLeftBounds;
+            marginLeftInit = screenUtils.getWidthPx() - getWidth() - marginLeftBounds;
         } else {
-            leftMargin = marginLeftBounds;
+            marginLeftInit = marginLeftBounds;
         }
 
         if (lp.topMargin > screenUtils.getHeightPx() / 4) {
-            topMargin = ((View) getParent()).getHeight() - getMeasuredHeight() - marginBottomBounds;
+            marginTopInit = ((View) getParent()).getHeight() - getMeasuredHeight() - marginBottomBounds;
         } else {
-            topMargin = marginTopBounds;
+            marginTopInit = marginTopBounds;
         }
 
-        ValueAnimator animator = ValueAnimator.ofInt(lp.leftMargin, leftMargin);
+        ValueAnimator animator = ValueAnimator.ofInt(lp.leftMargin, marginLeftInit);
         animator.setDuration(DURATION);
         animator.addUpdateListener(animation -> {
             lp.leftMargin = (Integer) animation.getAnimatedValue();
@@ -299,7 +298,7 @@ public class CameraWrapper extends FrameLayout {
         });
         animator.start();
 
-        ValueAnimator animator2 = ValueAnimator.ofInt(lp.topMargin, topMargin);
+        ValueAnimator animator2 = ValueAnimator.ofInt(lp.topMargin, marginTopInit);
         animator2.setDuration(DURATION);
         animator2.addUpdateListener(animation -> {
             lp.topMargin = (Integer) animation.getAnimatedValue();
@@ -462,5 +461,13 @@ public class CameraWrapper extends FrameLayout {
 
     private void removePathView() {
         removeView(pathView);
+    }
+
+    public void hideCamera() {
+        AnimationUtils.animateTopMargin(this, marginTopInit + screenUtils.getHeightPx(), DURATION);
+    }
+
+    public void showCamera() {
+        AnimationUtils.animateTopMargin(this, marginTopInit, DURATION);
     }
 }

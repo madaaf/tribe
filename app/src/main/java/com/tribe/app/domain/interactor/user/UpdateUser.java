@@ -18,6 +18,7 @@ public class UpdateUser extends UseCase {
     private String username;
     private String displayName;
     private String pictureUri;
+    private String fbid;
 
     @Inject
     protected UpdateUser(CloudUserDataRepository userDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
@@ -25,14 +26,15 @@ public class UpdateUser extends UseCase {
         this.userRepository = userDataRepository;
     }
 
-    public void prepare(String username, String displayName, String pictureUri) {
+    public void prepare(String username, String displayName, String pictureUri, String fbid) {
         this.username = username;
         this.displayName = displayName;
         this.pictureUri = pictureUri;
+        this.fbid = fbid;
     }
 
     @Override
     protected Observable buildUseCaseObservable() {
-        return this.userRepository.updateUser(username, displayName, pictureUri);
+        return this.userRepository.updateUser(username, displayName, pictureUri, fbid);
     }
 }

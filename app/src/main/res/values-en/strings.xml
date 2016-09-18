@@ -330,15 +330,20 @@
 	
 	<!-- Level -->
 	<string name="level_noob_title">Noob</string>
-	<string name="level_rookie_title">Rookie</string>
 	<string name="level_coolkid_title">Coolkid</string>
-	<string name="level_champ_title">Champ</string>
-	<string name="level_rockstar_title">Rockstar</string>
-	<string name="level_legend_title">Legend</string>
-	<string name="level_king_title">King</string>
 	<string name="level_alien_title">Alien</string>
 	<string name="level_unicorn_title">Unicorn</string>
 	<string name="level_bot_title">Bot</string>
+	<string name="level_rookie_title">Rookie</string>
+	<string name="level_baller_title">Baller</string>
+	<string name="level_stud_title">Stud</string>
+	<string name="level_rockstar_title">Rockstar</string>
+	<string name="level_allstar_title">All Star</string>
+	<string name="level_champ_title">Champ</string>
+	<string name="level_goat_title">GOAT</string>
+	<string name="level_mvp">MVP</string>
+	<string name="level_legend_title">Legend</string>
+	<string name="level_king_title">King</string>
 	
 	<!-- Notification -->
 	<string name="notification_pending">A pending message. Swipe to resend &#11013;&#65039;</string>
@@ -355,6 +360,7 @@
 	<string name="share_score">I have %1$s points on Tribe %2$s</string>
 	<string name="share_onboarding">I just discovered Tribe, but I can’t enter alone. Come now so we can get access together. Waiting for you. Go on %1$s</string>
 	<string name="share_copied_redirecting">Copied the link to the clipboard. Redirecting you...</string>
+	<string name="share_grid_invite">Sent from Tribe. http://tribe.pm</string>
 	
 	<!-- TribeDistancePopup -->
 	<string name="tribe_distance_popup_description">Sent %1$s away from you</string>
@@ -379,6 +385,8 @@
 	<!-- TribeLocationPopup -->
 	<string name="tribe_location_popup_population">Population</string>
 	<string name="tribe_location_popup_directions">Get directions</string>
+	<string name="tribe_location_popup_no_temperature">No temperature</string>
+	<string name="tribe_location_popup_no_population">Unknown population</string>
 	
 	<!-- TribeLevelPopup -->
 	<string name="tribe_level_popup_late">You\'re late!</string>

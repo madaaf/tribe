@@ -36,6 +36,7 @@ import com.tribe.app.presentation.view.widget.CameraWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -103,6 +104,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private RecyclerView recyclerViewPending;
     private LabelSheetAdapter labelSheetAdapter;
     private int verticalScrollOffset = 0;
+    private String filter = null;
 
     public HomeGridFragment() {
         setRetainInstance(true);
@@ -142,9 +144,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         this.homeGridPresenter.attachView(this);
-        if (savedInstanceState == null) {
-            this.loadData();
-        }
+
+        if (savedInstanceState == null) loadData();
     }
 
     @Override
@@ -201,7 +202,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     @Override
     public void renderRecipientList(List<Recipient> recipientList) {
         if (recipientList != null) {
-            pullToSearchContainer.updatePTSList(recipientList);
+            if (pullToSearchContainer != null) pullToSearchContainer.updatePTSList(recipientList);
             this.homeGridAdapter.setItems(recipientList);
         }
     }
@@ -252,7 +253,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     }
 
     public void reloadGrid() {
-        this.homeGridPresenter.loadFriendList();
+        filter = null;
+        this.homeGridPresenter.loadFriendList(filter);
     }
 
     private void init() {
@@ -379,9 +381,17 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
 
     private void initPullToSearch() {
         subscriptions.add(pullToSearchContainer.pullToSearchActive().doOnNext(active -> {
+            recyclerViewFriends.setEnabled(!active);
+            layoutManager.setScrollEnabled(!active);
+            homeGridAdapter.setAllItemsEnabled(!active);
             recyclerViewFriends.requestDisallowInterceptTouchEvent(active);
             recyclerViewFriends.getParent().requestDisallowInterceptTouchEvent(active);
         }).subscribe(activePullToSearch));
+
+        subscriptions.add(pullToSearchContainer.onLetterSelected().subscribe(s -> {
+            filter = s;
+            homeGridPresenter.loadFriendList(filter);
+        }));
     }
 
     private void setupBottomSheetMore(Recipient recipient) {
@@ -511,6 +521,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
      * Loads all friends / tribes.
      */
     private void loadData() {
-        this.homeGridPresenter.onCreate();
+        subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS).subscribe(t ->  {
+            if (isAdded()) this.homeGridPresenter.onCreate();
+        }));
     }
 }

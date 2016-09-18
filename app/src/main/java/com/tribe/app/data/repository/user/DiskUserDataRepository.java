@@ -26,6 +26,8 @@ import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
+import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.component.PullToSearchView;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import java.util.ArrayList;
@@ -85,14 +87,43 @@ public class DiskUserDataRepository implements UserRepository {
     public Observable<AccessToken> register(String displayName, String username, LoginEntity loginEntity) { return null; }
 
     @Override
-    public Observable<User> userInfos(String userId) {
+    public Observable<User> userInfos(String userId, String filterRecipient) {
         final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
         final ChatDataStore chatDataStore = this.chatDataStoreFactory.createDiskChatStore();
 
-        return Observable.combineLatest(tribeDataStore.tribesNotSeen(null).map(collection -> tribeRealmDataMapper.transform(collection)),
-                userDataStore.userInfos(null).map(userRealm -> userRealmDataMapper.transform(userRealm)),
-                chatDataStore.messages(null).map(collection -> chatRealmDataMapper.transform(collection)),
+        return Observable.combineLatest(
+                tribeDataStore.tribesNotSeen(null).map(collection -> tribeRealmDataMapper.transform(collection)),
+                userDataStore
+                        .userInfos(null, filterRecipient)
+                        .map(userRealm -> userRealmDataMapper.transform(userRealm))
+                        .map(user -> {
+                            if (!StringUtils.isEmpty(filterRecipient) && !filterRecipient.equals(PullToSearchView.HOME)) {
+                                List<Friendship> filteredFriendshipList = new ArrayList<>();
+                                List<Group> filteredGroupList = new ArrayList<>();
+
+                                for (Friendship friendship : user.getFriendships()) {
+                                    if (PullToSearchView.shouldFilter(filterRecipient, friendship)) {
+                                        filteredFriendshipList.add(friendship);
+                                    }
+                                }
+
+                                user.setFriendships(filteredFriendshipList);
+
+                                for (Group group : user.getGroupList()) {
+                                    if (PullToSearchView.shouldFilter(filterRecipient, group)) {
+                                        filteredGroupList.add(group);
+                                    }
+                                }
+
+                                user.setGroupList(filteredGroupList);
+                            }
+
+                            return user;
+                        }),
+                chatDataStore
+                        .messages(null)
+                        .map(collection -> chatRealmDataMapper.transform(collection)),
                 (tribes, user, chatMessages) -> {
                     List<Recipient> result = user.getFriendshipList();
 
@@ -142,60 +173,8 @@ public class DiskUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<User> updateUser(String username, String displayName, String pictureUri) {
-        final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
-        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-        final ChatDataStore chatDataStore = this.chatDataStoreFactory.createDiskChatStore();
-
-        return Observable.combineLatest(tribeDataStore.tribesNotSeen(null).map(collection -> tribeRealmDataMapper.transform(collection)),
-                userDataStore.userInfos(null).map(userRealm -> userRealmDataMapper.transform(userRealm)),
-                chatDataStore.messages(null).map(collection -> chatRealmDataMapper.transform(collection)),
-                (tribes, user, chatMessages) -> {
-                    List<Recipient> result = user.getFriendshipList();
-
-                    for (Recipient recipient : result) {
-                        List<TribeMessage> receivedTribes = new ArrayList<>();
-                        List<TribeMessage> sentTribes = new ArrayList<>();
-                        List<TribeMessage> errorTribes = new ArrayList<>();
-                        List<ChatMessage> receivedChatMessage = new ArrayList<>();
-
-                        for (TribeMessage tribe : tribes) {
-                            if (tribe.getFrom() != null) {
-                                if (!tribe.getFrom().getId().equals(user.getId()) && (tribe.isToGroup() && tribe.getTo().getId().equals(recipient.getId()))
-                                        || (!tribe.isToGroup() && tribe.getFrom().getId().equals(recipient.getId()))) {
-                                    receivedTribes.add(tribe);
-                                } else if (tribe.getFrom().getId().equals(user.getId())
-                                        && tribe.getTo().getId().equals(recipient.getId())) {
-                                    if (tribe.getMessageSendingStatus().equals(MessageSendingStatus.STATUS_ERROR))
-                                        errorTribes.add(tribe);
-                                    else sentTribes.add(tribe);
-                                }
-                            }
-                        }
-
-                        recipient.setErrorTribes(errorTribes);
-                        recipient.setReceivedTribes(receivedTribes);
-                        recipient.setSentTribes(sentTribes);
-
-                        for (ChatMessage chatMessage : chatMessages) {
-                            if (chatMessage.getFrom() != null) {
-                                if (!chatMessage.getFrom().getId().equals(user.getId()) && (chatMessage.isToGroup() && chatMessage.getTo().getId().equals(recipient.getId()))
-                                        || (!chatMessage.isToGroup() && chatMessage.getFrom().getId().equals(recipient.getId()))) {
-                                    receivedChatMessage.add(chatMessage);
-                                }
-                            }
-                        }
-
-                        recipient.setReceivedMessages(receivedChatMessage);
-                    }
-
-                    Friendship friendship = new Friendship(user.getId());
-                    friendship.setFriend(user);
-                    result.add(0, friendship);
-
-                    return user;
-                }
-        );
+    public Observable<User> updateUser(String username, String displayName, String pictureUri, String fbid) {
+        return null;
     }
 
     @Override

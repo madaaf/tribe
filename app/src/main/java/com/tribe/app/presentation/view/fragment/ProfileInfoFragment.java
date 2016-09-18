@@ -21,6 +21,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.ProfileInfoPresenter;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
@@ -174,7 +175,8 @@ public class ProfileInfoFragment extends Fragment implements com.tribe.app.prese
 
     @Override
     public void userRegistered() {
-        profileInfoPresenter.updateUser(null, null, profileInfoView.getImgUri());
+        profileInfoPresenter.updateUser(null, null, profileInfoView.getImgUri(),
+                facebookEntity != null && !StringUtils.isEmpty(facebookEntity.getId()) ? facebookEntity.getId() : null);
     }
 
     @Override

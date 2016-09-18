@@ -16,6 +16,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 18/05/2016.
@@ -27,6 +29,9 @@ public class LetterAdapterDelegate extends RxAdapterDelegate<List<PTSEntity>> {
     private Context context;
 
     // RESOURCES
+
+    // OBSERVABLES
+    private PublishSubject<TextViewFont> clickLetter = PublishSubject.create();
 
     public LetterAdapterDelegate(Context context) {
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -41,7 +46,8 @@ public class LetterAdapterDelegate extends RxAdapterDelegate<List<PTSEntity>> {
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
-        RecyclerView.ViewHolder vh = new LetterViewHolder(layoutInflater.inflate(R.layout.item_pts_letter, parent, false));
+        LetterViewHolder vh = new LetterViewHolder(layoutInflater.inflate(R.layout.item_pts_letter, parent, false));
+        vh.txtLetter.setOnClickListener(v -> clickLetter.onNext(vh.txtLetter));
         return vh;
     }
 
@@ -50,7 +56,13 @@ public class LetterAdapterDelegate extends RxAdapterDelegate<List<PTSEntity>> {
         PTSEntity ptsEntity = items.get(position);
         LetterViewHolder letterViewHolder = (LetterViewHolder) holder;
         letterViewHolder.txtLetter.setText(ptsEntity.getLetter());
-        letterViewHolder.txtLetter.setAlpha(0.25f);
+        letterViewHolder.txtLetter.setAlpha(ptsEntity.isActivated() ? 1 : 0.25f);
+
+        letterViewHolder.txtLetter.setTag(R.id.tag_position, position);
+    }
+
+    public Observable<TextViewFont> onClickLetter() {
+        return clickLetter;
     }
 
     static class LetterViewHolder extends RecyclerView.ViewHolder {

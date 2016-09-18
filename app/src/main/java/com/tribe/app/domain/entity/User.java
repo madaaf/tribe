@@ -35,6 +35,7 @@ public class User implements Serializable {
     private List<User> reportedList;
     private List<Group> groupList;
     private List<Recipient> friendshipList;
+    private String fbid;
 
     public int getScore() {
         return score;
@@ -186,6 +187,14 @@ public class User implements Serializable {
 
     public List<Friendship> getFriendships() {
         return friendships;
+    }
+
+    public String getFbid() {
+        return fbid;
+    }
+
+    public void setFbid(String fbid) {
+        this.fbid = fbid;
     }
 
     public List<Recipient> getFriendshipList() {
