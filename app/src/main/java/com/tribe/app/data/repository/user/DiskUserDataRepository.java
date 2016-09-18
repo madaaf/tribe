@@ -251,7 +251,7 @@ public class DiskUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<User> lookupUsername(String username) {
+    public Observable<Boolean> lookupUsername(String username) {
         return null;
     }
 

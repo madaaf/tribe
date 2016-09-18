@@ -99,10 +99,10 @@ public interface UserRepository {
     Observable<SearchResult> findByUsername(String username);
 
     /**
-     * Get an {@link Observable} which will emit a {@link User} containing infos
-     * about the contact.
+     * Get an {@link Observable} which will emit a {@link Boolean} saying whether or not the
+     * username is taken
      */
-    Observable<User> lookupUsername(String username);
+    Observable<Boolean> lookupUsername(String username);
 
     /**
      * Get an {@link Observable} which will emit a {@link com.tribe.app.domain.entity.Friendship} containing infos

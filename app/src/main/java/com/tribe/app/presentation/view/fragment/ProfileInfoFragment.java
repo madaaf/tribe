@@ -14,7 +14,6 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.domain.entity.FacebookEntity;
-import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -22,7 +21,6 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.ProfileInfoPresenter;
 import com.tribe.app.presentation.navigation.Navigator;
-import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
@@ -137,7 +135,7 @@ public class ProfileInfoFragment extends Fragment implements com.tribe.app.prese
         }));
 
         subscriptions.add(profileInfoView.onUsernameInput().subscribe(s -> {
-            profileInfoPresenter.findByUsername(s);
+            profileInfoPresenter.lookupUsername(s);
         }));
 
         subscriptions.add(profileInfoView.onDisplayNameInput().subscribe(s -> refactorNext()));
@@ -168,9 +166,8 @@ public class ProfileInfoFragment extends Fragment implements com.tribe.app.prese
     }
 
     @Override
-    public void usernameResult(SearchResult searchResult) {
-        // TODO: CHANGE BACK
-        boolean usernameValid = true;
+    public void usernameResult(Boolean available) {
+        boolean usernameValid = available;
         profileInfoView.setUsernameValid(usernameValid);
         refactorNext();
     }

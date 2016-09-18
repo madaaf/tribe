@@ -20,4 +20,5 @@ public interface HomeView extends LoadDataView {
     void initNewMessages(Observable<List<Message>> observable);
     void initClickOnPoints(Observable<android.view.View> observable);
     void initClickOnSettings(Observable<android.view.View> observable);
+    void initPullToSearchActive(Observable<Boolean> observable);
 }

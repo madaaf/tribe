@@ -97,10 +97,10 @@ public interface UserDataStore {
     Observable<SearchResultRealm> findByUsername(String username);
 
     /**
-     * Get an {@link Observable} which will emit a {@link UserRealm} containing infos
-     * about the lookup results.
+     * Get an {@link Observable} which will emit a {@link Boolean} saying whether or not the
+     * username is taken
      */
-    Observable<UserRealm> lookupUsername(String username);
+    Observable<Boolean> lookupUsername(String username);
 
     /**
      * Get an {@link Observable} which will emit a {@link List<ContactInterface>} containing infos
