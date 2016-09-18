@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -65,6 +66,8 @@ public class GroupInfoView extends FrameLayout {
     EditTextFont editTextGroupName;
     @BindView(R.id.layoutDividerBackground)
     FrameLayout layoutDividerBackground;
+    @BindView(R.id.layoutGroupMembers)
+    FrameLayout layoutGroupMembers;
     @BindView(R.id.privatePublicView)
     PrivatePublicView privatePublicView;
     @BindView(R.id.viewPrivacyStatus)
@@ -84,6 +87,7 @@ public class GroupInfoView extends FrameLayout {
     int privacyFinalPosition = -48;
     float groupPicScaleDownF = .7f;
     int layoutViewBackgroundInfoPositionY = 185;
+    int groupLayoutOffSet = 20;
 
     private PublishSubject<Boolean> isPrivate = PublishSubject.create();
     private PublishSubject<Boolean> isGroupNameValid = PublishSubject.create();
@@ -117,9 +121,7 @@ public class GroupInfoView extends FrameLayout {
             imageDoneEditClicked.onNext(null);
         }));
 
-        subscriptions.add(RxView.clicks(imageBackIcon).subscribe(aVoid -> {
-            imageBackClicked.onNext(null);
-        }));
+
 
         subscriptions.add(privatePublicView.isPrivate().subscribe(aBoolean -> {
            isPrivate.onNext(aBoolean);
@@ -164,7 +166,8 @@ public class GroupInfoView extends FrameLayout {
     }
 
     public void setGroupPicture(Bitmap bitmap) {
-        imageGroup.setImageBitmap(formatBitmapForView(bitmap));
+        RoundedCornersTransformation roundedCornersTransformation = new RoundedCornersTransformation(bitmap.getWidth() >> 1, 0, RoundedCornersTransformation.CornerType.ALL);
+        imageGroup.setImageBitmap(roundedCornersTransformation.transform(bitmap));
     }
 
     public Bitmap formatBitmapForView(Bitmap thumbnail) {
@@ -223,6 +226,14 @@ public class GroupInfoView extends FrameLayout {
         presentFinishEditIcons(animDuration);
     }
 
+    public void expandInfo(int animDuration) {
+        expand(animDuration);
+        layoutGroupMembers.animate()
+                .setDuration(animDuration)
+                .translationY(screenUtils.dpToPx(groupLayoutOffSet))
+                .start();
+    }
+
     public void enableDoneEdit(Boolean enable) {
         imageDoneEdit.setClickable(enable);
     }
@@ -256,6 +267,14 @@ public class GroupInfoView extends FrameLayout {
                 .start();
 
         presentEditIcons(animDuration);
+    }
+
+    public void collapseInfo(int animDuration, Activity activity) {
+        collapse(animDuration, activity);
+        layoutGroupMembers.animate()
+                .setDuration(animDuration)
+                .translationY(AnimationUtils.TRANSLATION_RESET)
+                .start();
     }
 
     public void presentFinishEditIcons(int animDuration) {
@@ -298,7 +317,8 @@ public class GroupInfoView extends FrameLayout {
         imageGroup.setEnabled(false);
         imageGroup.setScaleX(groupPicScaleDownF);
         imageGroup.setScaleY(groupPicScaleDownF);
-        screenUtils.setTopMargin(layoutDividerBackground, screenUtils.dpToPx(layoutViewBackgroundInfoPositionY));
+        layoutDividerBackground.setVisibility(INVISIBLE);
+        layoutGroupMembers.setVisibility(VISIBLE);
         editTextGroupName.bringToFront();
         editTextGroupName.setEnabled(false);
         editTextGroupName.setTextColor(ContextCompat.getColor(getContext(), android.R.color.black));
@@ -308,11 +328,12 @@ public class GroupInfoView extends FrameLayout {
         viewPrivacyStatus.setTranslationY(screenUtils.dpToPx(privacyFinalPosition));
         viewPrivacyStatus.setup(privateGroup);
         imageBackIcon.setVisibility(View.VISIBLE);
+        imageBackIcon.setClickable(true);
 
         memberPhotoViewList.bringToFront();
 
         subscriptions.add(RxView.clicks(imageBackIcon).subscribe(aVoid -> {
-
+            imageBackClicked.onNext(null);
         }));
     }
 

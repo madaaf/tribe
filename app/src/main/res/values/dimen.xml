@@ -55,6 +55,7 @@
     <dimen name="onboarding_choose_name_height">64dp</dimen>
     <dimen name="setting_section_bar_height">40dp</dimen>
     <dimen name="create_invite_view_height">115dp</dimen>
+    <dimen name="group_info_bar_height">64dp</dimen>
 
     <!-- WIDTHS -->
     <dimen name="snooze_mode_width">93dp</dimen>

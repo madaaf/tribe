@@ -51,16 +51,23 @@
     <FrameLayout
         android:id="@+id/layoutDividerBackground"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="@dimen/group_info_bar_height"
         android:layout_marginTop="142dp"
-        android:background="@drawable/shape_white_rect_grey_border">
+        android:background="@drawable/shape_white_rect_grey_border"/>
 
+    
+    <FrameLayout
+        android:id="@+id/layoutGroupMembers"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/group_info_bar_height"
+        android:layout_marginTop="185dp"
+        android:visibility="invisible"
+        android:background="@drawable/shape_white_rect_grey_border">
         <com.tribe.app.presentation.view.component.MemberPhotoViewList
             android:id="@+id/memberPhotoViewList"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center" />
-
     </FrameLayout>
 
     <com.tribe.app.presentation.view.widget.EditTextFont
