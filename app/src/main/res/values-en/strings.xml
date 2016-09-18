@@ -123,6 +123,7 @@
 	<string name="grid_menu_friendship_report">Report</string>
 	<string name="grid_menu_friendship_report_success">Reportedè</string>
 	<string name="grid_menu_friendship_clear_tribes">Clear messages</string>
+	<string name="grid_menu_select_language">Change language</string>
 	
 	<!-- Chat -->
 	<string name="chat_tutorial_content">Chat here if you can\'t send a video or if you need to text something such as an address, a phone or a handle.</string>

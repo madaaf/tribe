@@ -371,9 +371,6 @@
             type
             picture
             link
-            members
-            admins
-            messages
             created_at
             updated_at
         }
@@ -392,16 +389,22 @@
     </string>
 
     <string name="create.group" translatable="false">
-        {
+       mutation {
             createGroup(group: {
-                name : "\%1$s\",
-   	        type : PRIVATE
-             }, members: [%2$s]
+                name : \"%1$s\",
+   	        type : %2$s
+             }, members: [%3$s]
             ) {
                 ...GroupInfo
             }
         }
-        %3$s
+        %4$s
+    </string>
+
+    <string name="update.group" translatable="false">
+        mutation {
+            update
+        }
     </string>
 
 </resources>

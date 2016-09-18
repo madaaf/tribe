@@ -61,8 +61,8 @@ import rx.subscriptions.CompositeSubscription;
 
 public class HomeActivity extends BaseActivity implements HasComponent<UserComponent>, HomeView {
 
-    private static final String[] PERMISSIONS_CAMERA = new String[]{ Manifest.permission.CAMERA,
-            Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE };
+    private static final String[] PERMISSIONS_CAMERA = new String[]{Manifest.permission.CAMERA,
+            Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     private static final int THRESHOLD_SCROLL = 12;
     private static final int DURATION = 500;
@@ -162,16 +162,16 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 from(PERMISSIONS_CAMERA)
                 .map(permission -> RxPermissions.getInstance(HomeActivity.this).isGranted(permission))
                 .toList()
-            .subscribe(grantedList -> {
-                boolean areAllGranted = true;
+                .subscribe(grantedList -> {
+                    boolean areAllGranted = true;
 
-                for (Boolean granted : grantedList) {
-                    if (!granted) areAllGranted = false;
-                }
+                    for (Boolean granted : grantedList) {
+                        if (!granted) areAllGranted = false;
+                    }
 
-                if (areAllGranted) cameraWrapper.onResume(false);
-                else cameraWrapper.showPermissions();
-            }));
+                    if (areAllGranted) cameraWrapper.onResume(false);
+                    else cameraWrapper.showPermissions();
+                }));
     }
 
     @Override
@@ -200,26 +200,31 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(bitmap -> {
+                                homeViewPagerAdapter.groupsGridFragment.setPictureUri(Uri.fromFile(FileUtils.bitmapToFile(bitmap, this)).toString());
                                 homeViewPagerAdapter.groupsGridFragment.getGroupInfoView().setGroupPicture(bitmap);
                             })
             );
         }
 
         if (requestCode == OPEN_GALLERY_RESULT && resultCode == Activity.RESULT_OK && data != null) {
-            Uri selectedImage = data.getData();
-            pictureUri = selectedImage.toString();
-            String[] filePathColumn = { MediaStore.Images.Media.DATA };
-            Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
-            cursor.moveToFirst();
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            String picturePath = cursor.getString(columnIndex);
-            cursor.close();
+            subscriptions.add(
+                    Observable.just(data.getData())
+                            .map(uri -> {
+                                String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                                Cursor cursor = getContentResolver().query(uri, filePathColumn, null, null, null);
+                                cursor.moveToFirst();
+                                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                                String picturePath = cursor.getString(columnIndex);
+                                cursor.close();
 
-            Bitmap thumbnail = BitmapFactory.decodeFile(picturePath);
-
-            if (thumbnail != null) {
-                homeViewPagerAdapter.groupsGridFragment.getGroupInfoView().setGroupPicture(thumbnail);
-            }
+                                return ImageUtils.formatForUpload(ImageUtils.loadFromPath(picturePath));
+                            })
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(bitmap -> {
+                                homeViewPagerAdapter.groupsGridFragment.setPictureUri(Uri.fromFile(FileUtils.bitmapToFile(bitmap, this)).toString());
+                                homeViewPagerAdapter.groupsGridFragment.getGroupInfoView().setGroupPicture(bitmap);
+                            }));
         }
     }
 
@@ -514,7 +519,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     public class HomeViewPagerAdapter extends FragmentStatePagerAdapter {
 
-        public String[] pagers = new String[] {"Discover", "Home", "Media"};
+        public String[] pagers = new String[]{"Discover", "Home", "Media"};
         public HomeGridFragment homeGridFragment;
         public ContactsGridFragment contactsGridFragment;
         public GroupsGridFragment groupsGridFragment;
@@ -640,7 +645,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         slideUpNav(imgNavFriends);
         viewPager.setSwipeable(true);
     }
-
 
 
     public void resetGroupsGridFragment() {

@@ -115,13 +115,18 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     private LabelSheetAdapter cameraTypeAdapter;
     private int animDuration = 300 * 2;
     private int loadingAnimDuration = 1000 * 2;
-    private boolean privateGroup = true;
     private List<Friendship> friendshipsList;
     private List<Friendship> friendshipsListCopy;
     List<User> members;
     private LinearLayoutManager linearLayoutManager;
     private Group currentGroup;
     private boolean groupInfoValid = false;
+
+    // Group Info
+    private String groupName = null;
+    private List<String> memberIds = new ArrayList<>();
+    private String groupPictureUri = null;
+    private boolean privateGroup = true;
 
     // Animation Variables
     int moveUpY = 138;
@@ -211,7 +216,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     }
 
-
     private void initUi() {
         // Setup top-right icons
         groupInfoView.setUpInitialUi();
@@ -249,6 +253,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         subscriptions.add(createInviteView.createPressed().subscribe(aVoid -> {
             createInviteView.disable();
             groupInfoView.disableButtons();
+            groupName = groupInfoView.getGroupName();
+            groupPresenter.createGroup(groupName, memberIds, privateGroup, groupPictureUri);
 
             createInviteView.loadingAnimation(loadingAnimDuration, screenUtils, getActivity());
             Observable.timer(loadingAnimDuration, TimeUnit.MILLISECONDS)
@@ -291,7 +297,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         }));
 
         subscriptions.add(RxView.clicks(imageDone).subscribe(aVoid -> {
-            // TODO: send data to create group
+            //// TODO: add members
             ((HomeActivity) getActivity()).resetGroupsGridFragment();
         }));
     }
@@ -453,6 +459,10 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     }
 
+    public void setPictureUri(String pictureUri) {
+        this.groupPictureUri = pictureUri;
+    }
+
     /**
      * Search for friend View
      */
@@ -608,6 +618,16 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     @Override
     public void getGroupMembers(String groupId) {
+
+    }
+
+    @Override
+    public void createGroup(String groupName, List<String> memberIds, boolean isPrivate, String pictureUri) {
+
+    }
+
+    @Override
+    public void backToHome() {
 
     }
 

@@ -124,5 +124,10 @@ public interface UserDataStore {
      */
     Observable<Void> notifyFBFriends();
 
+    /**
+     * Get an {@link Observable} which will emit the members of the group
+     */
     Observable<GroupRealm> getGroupMembers(String groupId);
+
+    Observable<GroupRealm> createGroup(String groupName, List<String> memberIds, Boolean isPrivate, String pictureUri);
 }

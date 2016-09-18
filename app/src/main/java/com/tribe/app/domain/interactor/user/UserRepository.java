@@ -127,4 +127,6 @@ public interface UserRepository {
     Observable<Void> notifyFBFriends();
 
     Observable<Group> getGroupMembers(String groupId);
+
+    Observable<Group> createGroup(String groupName, List<String> memberIds, boolean isPrivate, String pictureUri);
 }

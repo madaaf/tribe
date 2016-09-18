@@ -123,6 +123,7 @@
 	<string name="grid_menu_friendship_report">Signaler</string>
 	<string name="grid_menu_friendship_report_success">Signalé !</string>
 	<string name="grid_menu_friendship_clear_tribes">Effacer vos messages</string>
+	<string name="grid_menu_select_language">Changer de langue</string>
 	
 	<!-- Chat -->
 	<string name="chat_tutorial_content">Discutez ici si vous n\'êtes pas en mesure d\'envoyer une vidéo ou si vous avez besoin d\'envoyer une address, un numéro de téléphone ou un nom d\'utilisateur.</string>

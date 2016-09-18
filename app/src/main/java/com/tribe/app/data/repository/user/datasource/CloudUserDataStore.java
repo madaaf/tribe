@@ -299,6 +299,47 @@ public class CloudUserDataStore implements UserDataStore {
     }
 
     @Override
+    public Observable<GroupRealm> createGroup(String groupName, List<String> memberIds, Boolean isPrivate, String pictureUri) {
+        String idList = "";
+        for (int i = 0; i < memberIds.size(); i++) {
+            if (i == memberIds.size() - 1) idList += memberIds.get(i);
+            else idList += memberIds.get(i) + ", ";
+        }
+        String privateGroup = isPrivate ? "PRIVATE" : "PUBLIC";
+
+        if (pictureUri == null) {
+            String request = context.getString(R.string.create_group, groupName, privateGroup, idList, context.getString(R.string.groupfragment_info));
+            return this.tribeApi.createGroup(request);
+        } else {
+            String request = context.getString(R.string.create_group, groupName, privateGroup, idList, context.getString(R.string.groupfragment_info));
+            RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
+
+            File file = new File(Uri.parse(pictureUri).getPath());
+
+            if (!(file != null && file.exists() && file.length() > 0)) {
+                InputStream inputStream = null;
+                file = FileUtils.getFileEnd(FileUtils.generateIdForMessage());
+                try {
+                    inputStream = context.getContentResolver().openInputStream(Uri.parse(pictureUri));
+                    FileUtils.copyInputStreamToFile(inputStream, file);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            RequestBody requestFile = null;
+            MultipartBody.Part body = null;
+
+            requestFile = RequestBody.create(MediaType.parse("image/jpeg"), file);
+            body = MultipartBody.Part.createFormData("group_pic", "group_pic.jpg", requestFile);
+
+            return this.tribeApi.createGroupMedia(query, body);
+        }
+    }
+
+    @Override
     public Observable<UserRealm> updateUser(String username, String displayName, String pictureUri) {
         String usernameParam;
         String displayNameParam;
@@ -748,6 +789,8 @@ public class CloudUserDataStore implements UserDataStore {
                     dbGroup.setMembers(groupRealm.getMembers());
                 });
     }
+
+
 
 }
 

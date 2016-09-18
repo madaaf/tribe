@@ -83,7 +83,6 @@ public class GroupInfoView extends FrameLayout {
     // view vars
     int moveGroupName = 60;
     int startTranslationEditIcons = -200;
-
     int privacyFinalPosition = -48;
     float groupPicScaleDownF = .7f;
     int layoutViewBackgroundInfoPositionY = 185;
@@ -335,6 +334,10 @@ public class GroupInfoView extends FrameLayout {
         subscriptions.add(RxView.clicks(imageBackIcon).subscribe(aVoid -> {
             imageBackClicked.onNext(null);
         }));
+    }
+
+    public String getGroupName() {
+        return editTextGroupName.getText().toString();
     }
 
     protected ApplicationComponent getApplicationComponent() {
