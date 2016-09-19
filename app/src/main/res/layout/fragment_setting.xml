@@ -206,6 +206,22 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_white_rect_grey_border"
+            android:orientation="vertical">
+
+            <com.tribe.app.presentation.view.component.SettingItemView
+                android:id="@+id/settingsSendToken"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/section_button_vertical_padding"
+                android:paddingBottom="@dimen/section_button_vertical_padding"
+                />
+
+        </LinearLayout>
+
         <ImageView
             android:layout_marginTop="10dp"
             android:layout_width="wrap_content"

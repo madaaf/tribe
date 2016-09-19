@@ -3,6 +3,7 @@ package com.tribe.app.presentation.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
+import android.support.annotation.StringDef;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -17,70 +18,45 @@ import java.util.UUID;
  */
 public class FileUtils {
 
+    @StringDef({VIDEO, PHOTO})
+    public @interface MessageType {}
+
+    public static final String VIDEO = "video";
+    public static final String PHOTO = "photo";
+
     private static File pathOrigin = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-    private static String pathAudio = "/TribeMessage/Audio";
-    private static String pathVideo = "/TribeMessage/Video";
     private static String pathEnd = "/TribeMessage/Sent";
-    private static String pathPicture = "/TribeMessage/Pictures";
 
-    public static String generateFileForAudio(String id) {
-        File audioDir = new File(pathOrigin + pathAudio);
-
-        if (!audioDir.exists()) {
-            audioDir.mkdirs();
-        }
-
-        return generateOutputFile(audioDir, id).getAbsolutePath();
+    public static String generateFile(String id, @MessageType String type) {
+        return getFile(id, type).getAbsolutePath();
     }
 
-    public static String generateFileForVideo(String id) {
-        File videoDir = new File(pathOrigin + pathVideo);
-
-        if (!videoDir.exists()) {
-            videoDir.mkdirs();
-        }
-
-        return generateOutputFile(videoDir, id).getAbsolutePath();
-    }
-
-
-    public static String generateFileEnd(String id) {
+    public static File getFile(String id, @MessageType String type) {
         File endDir = new File(pathOrigin + pathEnd);
 
         if (!endDir.exists()) {
             endDir.mkdirs();
         }
 
-        return generateOutputFile(endDir, id).getAbsolutePath();
+        return generateOutputFile(endDir, id, type);
     }
 
-    public static File getFileEnd(String id) {
+    public static File generateOutputFile(File dir, String id, @MessageType String type) {
+        return new File(dir, getTribeFilenameForId(id, type));
+    }
+
+    public static String getPathForId(String id, @MessageType String type) {
         File endDir = new File(pathOrigin + pathEnd);
-
-        if (!endDir.exists()) {
-            endDir.mkdirs();
-        }
-
-        return generateOutputFile(endDir, id);
+        return generateOutputFile(endDir, id, type).getAbsolutePath();
     }
 
-    public static String getPathForId(String id) {
+    public static String getTribeFilenameForId(String id, @MessageType String type) {
+        return id + (type == PHOTO ? ".jpeg" : ".mp4");
+    }
+
+    public static void delete(String id, @MessageType String type) {
         File endDir = new File(pathOrigin + pathEnd);
-        return generateOutputFile(endDir, id).getAbsolutePath();
-    }
-
-    public static String getFilenameForId(String id) {
-        return id + ".mp4";
-    }
-
-    public static void deleteTribe(String id) {
-        File endDir = new File(pathOrigin + pathEnd);
-        generateOutputFile(endDir, id).delete();
-    }
-
-    public static File generateOutputFile(File dir, String id) {
-        File finalDir = new File(dir, getFilenameForId(id));
-        return finalDir;
+        generateOutputFile(endDir, id, type).delete();
     }
 
     public static String generateIdForMessage() {
@@ -100,28 +76,31 @@ public class FileUtils {
         in.close();
     }
 
-    public static File bitmapToFile(Bitmap bitmap, Context context) {
-        File f = new File(context.getCacheDir(), "avatar");
+    public static File bitmapToFile(String name, Bitmap bitmap, Context context) {
+        File f = new File(context.getCacheDir(), name);
         try {
             f.createNewFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        // Convert bitmap to byte array
+        return bitmapToFile(bitmap, f);
+    }
+
+    public static File bitmapToFile(Bitmap bitmap, File file) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-        byte[] bitmapdata = bos.toByteArray();
+        byte[] bitmapData = bos.toByteArray();
 
-        //write the bytes in file
         try {
-            FileOutputStream fos = new FileOutputStream(f);
-            fos.write(bitmapdata);
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(bitmapData);
             fos.close();
             fos.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return f;
+
+        return file;
     }
 }

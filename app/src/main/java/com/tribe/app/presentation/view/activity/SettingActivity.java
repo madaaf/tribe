@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.jakewharton.rxbinding.view.RxView;
@@ -47,8 +46,7 @@ public class SettingActivity extends BaseActivity implements SettingView {
         return new Intent(context, SettingActivity.class);
     }
 
-    private Unbinder unbinder;
-    private CompositeSubscription subscriptions = new CompositeSubscription();
+    private static final String AVATAR = "AVATAR";
 
     @BindView(R.id.imgBack)
     ImageView imgBack;
@@ -59,7 +57,12 @@ public class SettingActivity extends BaseActivity implements SettingView {
     @BindView(R.id.txtTitle)
     TextViewFont txtTitle;
 
-    FragmentManager fragmentManager;
+    // OBSERVABLES
+    private Unbinder unbinder;
+    private CompositeSubscription subscriptions = new CompositeSubscription();
+
+    // VARIABLES
+    private FragmentManager fragmentManager;
     private SettingFragment settingFragment;
     private SettingUpdateProfileFragment settingUpdateProfileFragment;
     private SettingBlockFragment settingBlockFragment;
@@ -108,7 +111,7 @@ public class SettingActivity extends BaseActivity implements SettingView {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(bitmap -> {
-                            settingUpdateProfileFragment.setImgProfilePic(bitmap, Uri.fromFile(FileUtils.bitmapToFile(bitmap, this)).toString());
+                            settingUpdateProfileFragment.setImgProfilePic(bitmap, Uri.fromFile(FileUtils.bitmapToFile(AVATAR, bitmap, this)).toString());
                         })
             );
         }
@@ -130,8 +133,7 @@ public class SettingActivity extends BaseActivity implements SettingView {
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(bitmap -> {
-                                settingUpdateProfileFragment.setImgProfilePic(bitmap, Uri.fromFile(FileUtils.bitmapToFile(bitmap, this)).toString());
-
+                                settingUpdateProfileFragment.setImgProfilePic(bitmap, Uri.fromFile(FileUtils.bitmapToFile(AVATAR, bitmap, this)).toString());
                             })
             );
         }

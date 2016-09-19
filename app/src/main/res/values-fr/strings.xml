@@ -61,7 +61,7 @@
 	<string name="permission_popup_push_home_points">Autoriser les notifications</string>
 	<string name="permission_popup_push_home_no">Rester seul</string>
 	<string name="permission_popup_push_home_yes">Notifiez moi !</string>
-	<string name="permission_popup_location_home_title">Recevez de meilleur messages !</string>
+	<string name="permission_popup_location_home_title">Enrichissez vos messages !</string>
 	<string name="permission_popup_location_home_description">Profitez d\'une expérience plus riche en\naccédant à plus de contexte sur les messages.</string>
 	<string name="permission_popup_location_home_points">Autoriser la location</string>
 	<string name="permission_popup_location_home_no">Ne pas activer</string>
@@ -93,6 +93,7 @@
 	<string name="tribe_distance_menu_directions">Se rendre à cet endroit</string>
 	<string name="tribe_metadata_activate_location">Location</string>
 	<string name="tribe_metadata_get_directions">Itinéraire</string>
+	<string name="tribe_event_saved">Ajouté au calendrier</string>
 	
 	<!-- Grid -->
 	<string name="grid_user_points">Points</string>
@@ -168,8 +169,8 @@
 	<string name="group_private_popup_title_description">Groupe ouvert que tout le monde peut rejoindre</string>
 	<string name="group_private_popup_done">Super!</string>
 	<string name="group_public_title">Public</string>
-	<string name="group_public_description">Chats ouvert ou tout le monde peut rejoindre</string>
-	<string name="group_public_create">Créer un groupe publique</string>
+	<string name="group_public_description">Groupe public, tout le monde pourra le rejoindre</string>
+	<string name="group_public_create">Créer un groupe public</string>
 	<string name="group_public_popup_title">Pars à l\'aventure\navec les groupes publics !</string>
 	<string name="group_public_popup_title_description">Chat about hot topics, current, events, sports, music, and more !</string>
 	<string name="group_public_popup_done">Super!</string>
@@ -253,7 +254,7 @@
 	<string name="settings_logout_title">Déconnexion</string>
 	<string name="settings_logout_subtitle">Déconnecter ce compte de ce terminal.</string>
 	<string name="settings_remove_title">Supprimer ce compte</string>
-	<string name="settings_remove_subtitle">Dites aurevoir à vos amis, nombre de points et plus.</string>
+	<string name="settings_remove_subtitle">Dites aurevoir à vos amis, vos groupes et votre nombre de points.</string>
 	<string name="settings_version">Version %1$s (%2$s) réalisée à San Francisco, CA.</string>
 	
 	<!-- HiddenBlocked -->
@@ -262,7 +263,7 @@
 	
 	<!-- Onboarding -->
 	<string name="onboarding_step_phone">Entre ton numéro de téléphone pour démarrer.</string>
-	<string name="onboarding_step_code">Nous venons de t\'envoyer un code pour le vérifier.</string>
+	<string name="onboarding_step_code">Nous venons de t\'envoyer un code par SMS.</string>
 	<string name="onboarding_phone_number">Numéro de téléphone</string>
 	<string name="onboarding_code">Code</string>
 	<string name="onboarding_connected">Connecté</string>
@@ -297,10 +298,10 @@
 	<!-- Score -->
 	<string name="score_current_level">Votre niveau</string>
 	<string name="score_next_level">Prochain niveau dans</string>
-	<string name="score_points_system_button">Obtenir plus de point rapidement</string>
+	<string name="score_points_system_button">Comment obtenir des points</string>
 	
 	<!-- Points System -->
-	<string name="points_system_title">Gagner des points</string>
+	<string name="points_system_title">Comment obtenir des points</string>
 	<string name="points_AppOpened_title">Rester sur l\'app</string>
 	<string name="points_AppOpened_description">Toutes les 15s</string>
 	<string name="points_SendReceiveChat_title">Envoyer ou recevoir des messages</string>
@@ -419,5 +420,11 @@
 	<string name="tribe_event_year_1_past">Il y a %1$d an</string>
 	<string name="tribe_event_year_n_future">Dans %1$d ans</string>
 	<string name="tribe_event_year_n_past">Il y a %1$d ans</string>
-	<string name="tribe_event_title_suggestion">Beer,Call,Camping,Coffee,Concert,Date,Dentist,Doctor,Drink,Facetime,Flight,Boat,Bus,Meeting,Movie,Office,Party,Repair,Run,Shopping,Skype,Sleep,Train,Travel,TV,Vacation,Workout,Chill</string>
+	<string name="tribe_event_title_suggestion">Dinner,Beer,Call,Camping,Coffee,Concert,Date,Dentist,Doctor,Drink,Facetime,Flight,Boat,Bus,Meeting,Movie,Office,Party,Repair,Run,Shopping,Skype,Sleep,Train,Travel,TV,Vacation,Workout,Chill</string>
+	
+	<!-- Tutorial -->
+	<string name="tutorial_message_support">%1$d messages de l\'équipe</string>
+	<string name="tutorial_message_next_message">Message suivant</string>
+	<string name="tutorial_message_close_message">Fermer les messages</string>
+	<string name="tutorial_message_contacts">Tape pour ajouter des amis</string>
 </resources>

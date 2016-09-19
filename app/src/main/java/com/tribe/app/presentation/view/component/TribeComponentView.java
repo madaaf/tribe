@@ -91,6 +91,8 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     // PLAYER
     private TribeMediaPlayer mediaPlayer;
     private TribeMessage tribe;
+    private SurfaceTexture surfaceTexture;
+    private long lastPosition = -1L;
 
     public TribeComponentView(Context context) {
         super(context);
@@ -157,7 +159,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     }
 
     public void preparePlayer(boolean autoStart) {
-        mediaPlayer = new TribeMediaPlayer.TribeMediaPlayerBuilder(getContext(), FileUtils.getPathForId(tribe.getId()))
+        mediaPlayer = new TribeMediaPlayer.TribeMediaPlayerBuilder(getContext(), FileUtils.getPathForId(tribe.getId(), FileUtils.VIDEO))
                 .autoStart(autoStart)
                 .looping(true)
                 .mute(false)
@@ -179,10 +181,16 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
                 System.out.println("MEDIA PLAYER ERROR");
             }));
         }));
+
+        if (lastPosition != -1) mediaPlayer.seekTo(lastPosition);
     }
 
     public void releasePlayer() {
-        mediaPlayer.release();
+        if (mediaPlayer != null)
+            mediaPlayer.release();
+
+        mediaPlayer = null;
+        lastPosition = -1;
 
         if (subscriptions != null && subscriptions.hasSubscriptions()) {
             subscriptions.clear();
@@ -190,11 +198,20 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     }
 
     public void play() {
-        mediaPlayer.play();
+        if (mediaPlayer != null) {
+            mediaPlayer.play();
+        } else {
+            preparePlayer(true);
+            if (surfaceTexture != null)
+                mediaPlayer.setSurface(surfaceTexture);
+        }
     }
 
     public void pausePlayer() {
-        mediaPlayer.pause();
+        if (mediaPlayer != null)
+            lastPosition = mediaPlayer.getPosition();
+
+        releasePlayer();
     }
 
     public void setIconsAlpha(float alpha) {
@@ -246,6 +263,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+        surfaceTexture = surface;
         mediaPlayer.setSurface(surface);
     }
 
@@ -256,6 +274,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+        surfaceTexture = null;
         return false;
     }
 

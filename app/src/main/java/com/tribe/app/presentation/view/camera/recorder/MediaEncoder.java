@@ -13,7 +13,7 @@ import rx.subjects.PublishSubject;
 
 public abstract class MediaEncoder implements Runnable {
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final String TAG = "MediaEncoder";
 
     protected static final int TIMEOUT_USEC = 10000;
@@ -125,7 +125,6 @@ public abstract class MediaEncoder implements Runnable {
     public void startRecording() {
         if (DEBUG) Log.v(TAG, "startRecording");
         synchronized (sync) {
-            System.out.println("START RECORDING");
             isRecording = true;
             requestStop = false;
             sync.notifyAll();
@@ -134,8 +133,6 @@ public abstract class MediaEncoder implements Runnable {
 
     public void stopRecording() {
         if (DEBUG) Log.v(TAG, "stopRecording");
-
-        System.out.println("STOP RECORDING");
 
         synchronized (sync) {
             if (!isRecording || requestStop) {

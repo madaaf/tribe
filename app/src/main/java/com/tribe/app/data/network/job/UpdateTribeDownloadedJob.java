@@ -41,7 +41,7 @@ public class UpdateTribeDownloadedJob extends BaseJob {
         List<TribeRealm> tribeRealmList = tribeCache.tribesNotSeenNoObs(null);
 
         for (TribeRealm tribeRealm : tribeRealmList) {
-            File file = FileUtils.getFileEnd(tribeRealm.getId());
+            File file = FileUtils.getFile(tribeRealm.getId(), FileUtils.VIDEO);
             if (file.exists() && file.length() > 0) tribeRealm.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_DOWNLOADED);
         }
 

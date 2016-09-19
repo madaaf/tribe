@@ -34,6 +34,7 @@
             android:layout_toRightOf="@id/imgAvatar"
             android:layout_centerVertical="true"
             android:layout_marginLeft="@dimen/horizontal_margin_small"
+            android:layout_marginRight="@dimen/horizontal_margin_small"
             android:gravity="center_vertical"
             android:singleLine="false"
             android:maxLines="2"

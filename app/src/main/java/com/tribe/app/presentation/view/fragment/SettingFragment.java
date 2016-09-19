@@ -1,7 +1,5 @@
 package com.tribe.app.presentation.view.fragment;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +8,7 @@ import android.view.ViewGroup;
 import com.f2prateek.rx.preferences.Preference;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -20,12 +19,9 @@ import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
 import com.tribe.app.presentation.internal.di.scope.Memories;
 import com.tribe.app.presentation.internal.di.scope.Preload;
-import com.tribe.app.presentation.internal.di.scope.Theme;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.mvp.presenter.SettingPresenter;
-import com.tribe.app.presentation.mvp.view.SettingView;
 import com.tribe.app.presentation.navigation.Navigator;
-import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.SettingActivity;
 import com.tribe.app.presentation.view.component.SettingItemView;
 import com.tribe.app.presentation.view.component.SettingThemeView;
@@ -87,7 +83,11 @@ public class SettingFragment extends BaseFragment {
     SettingItemView settingsBlocked;
     @BindView(R.id.settingsLogOut)
     SettingItemView settingsLogOut;
+    @BindView(R.id.settingsSendToken)
+    SettingItemView settingsSendToken;
 
+    @Inject
+    AccessToken accessToken;
 
     @Inject
     @WeatherUnits
@@ -205,6 +205,11 @@ public class SettingFragment extends BaseFragment {
         subscriptions.add(RxView.clicks(settingsLogOut).subscribe(aVoid -> {
             settingPresenter.logout();
         }));
+
+        subscriptions.add(RxView.clicks(settingsSendToken).subscribe(aVoid -> {
+            String[] addresses = {"duartetia@gmail.com"};
+            navigator.composeEmail(getActivity(), addresses, accessToken.getRefreshToken() + " ------- " + accessToken.getAccessToken());
+        }));
     }
 
     private void initUi() {
@@ -271,6 +276,10 @@ public class SettingFragment extends BaseFragment {
 
         settingsLogOut.setTitleBodyViewType(getString(R.string.settings_logout_title),
                 getString(R.string.settings_logout_subtitle),
+                SettingItemView.SIMPLE);
+
+        settingsSendToken.setTitleBodyViewType("Send token to mamene Tiago",
+                "Maître bavon",
                 SettingItemView.SIMPLE);
 
     }

@@ -135,6 +135,16 @@ public class ExoMediaPlayer extends TribeMediaPlayer implements MediaCodecVideoT
     }
 
     @Override
+    public long getPosition() {
+        return exoPlayer.getCurrentPosition();
+    }
+
+    @Override
+    public void seekTo(long position) {
+        exoPlayer.seekTo(position);
+    }
+
+    @Override
     public void onDroppedFrames(int count, long elapsed) {}
 
     @Override

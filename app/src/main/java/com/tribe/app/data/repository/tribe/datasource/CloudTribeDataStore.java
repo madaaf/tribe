@@ -79,7 +79,7 @@ public class CloudTribeDataStore implements TribeDataStore {
 
         RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
 
-        File file = new File(FileUtils.getPathForId(tribeRealm.getLocalId()));
+        File file = new File(FileUtils.getPathForId(tribeRealm.getLocalId(), FileUtils.VIDEO));
         RequestBody requestFile = RequestBody.create(MediaType.parse("video/mp4"), file);
         MultipartBody.Part body = MultipartBody.Part.createFormData("tribe", file.getName(), requestFile);
 
@@ -110,7 +110,7 @@ public class CloudTribeDataStore implements TribeDataStore {
 
         int count = 0;
         for (TribeRealm tribeRealm : tribeRealmList) {
-            FileUtils.deleteTribe(tribeRealm.getId());
+            FileUtils.delete(tribeRealm.getId(), FileUtils.VIDEO);
             buffer.append(context.getString(R.string.tribe_markAsSeen_item, "tribe" + tribeRealm.getId(), tribeRealm.getId()) + (count < tribeRealmList.size() - 1 ? "," : ""));
             count++;
         }

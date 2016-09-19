@@ -61,6 +61,7 @@ public class IntroActivity extends BaseActivity {
      * Globals
      */
 
+    private static final String AVATAR = "AVATAR";
     private static final int PAGE_INTRO = 0,
             PAGE_PROFILE_INFO = 1,
             PAGE_ACCESS = 2;
@@ -157,7 +158,7 @@ public class IntroActivity extends BaseActivity {
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(bitmap -> {
-                                profileInfoFragment.setImgProfilePic(bitmap, Uri.fromFile(FileUtils.bitmapToFile(bitmap, this)).toString());
+                                profileInfoFragment.setImgProfilePic(bitmap, Uri.fromFile(FileUtils.bitmapToFile(AVATAR, bitmap, this)).toString());
                             })
             );
         }
@@ -170,7 +171,7 @@ public class IntroActivity extends BaseActivity {
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(bitmap -> {
-                                profileInfoFragment.setImgProfilePic(bitmap, Uri.fromFile(FileUtils.bitmapToFile(bitmap, this)).toString());
+                                profileInfoFragment.setImgProfilePic(bitmap, Uri.fromFile(FileUtils.bitmapToFile(AVATAR, bitmap, this)).toString());
                             })
             );
         }

@@ -37,8 +37,8 @@
             <ProgressBar
                 android:id="@+id/progressBar"
                 style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="@dimen/avatar_size"
-                android:layout_height="@dimen/avatar_size"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
                 android:layout_gravity="center"
                 android:progressDrawable="@drawable/progress_circular"
                 android:background="@drawable/shape_oval_black40"

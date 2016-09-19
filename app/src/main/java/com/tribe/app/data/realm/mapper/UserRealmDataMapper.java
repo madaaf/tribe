@@ -162,4 +162,12 @@ public class UserRealmDataMapper {
     public FriendshipRealmDataMapper getFriendshipRealmDataMapper() {
         return friendshipRealmDataMapper;
     }
+
+    public GroupRealmDataMapper getGroupRealmDataMapper() {
+        return groupRealmDataMapper;
+    }
+
+    public LocationRealmDataMapper getLocationRealmDataMapper() {
+        return locationRealmDataMapper;
+    }
 }

@@ -347,7 +347,7 @@ public class PullToSearchView extends FrameLayout {
     }
 
     public void close() {
-        spring.setEndValue(screenUtils.getHeightPx());
+        cleanUp();
     }
 
     public void open() {
@@ -365,9 +365,7 @@ public class PullToSearchView extends FrameLayout {
 
         @Override
         public void onSpringAtRest(Spring spring) {
-            if (spring.getEndValue() == screenUtils.getHeightPx()) {
-                cleanUp();
-            }
+
         }
     }
 
@@ -377,7 +375,7 @@ public class PullToSearchView extends FrameLayout {
 
     private void cleanUp() {
         recyclerViewPTS.setAlpha(1f);
-        recyclerViewPTS.setTranslationY(screenUtils.getHeightPx());
+        spring.setEndValue(screenUtils.getHeightPx()).setAtRest();
         if (recyclerViewTextView != null) {
             recyclerViewTextView.setAlpha(1f);
             removeView(textViewClicked);

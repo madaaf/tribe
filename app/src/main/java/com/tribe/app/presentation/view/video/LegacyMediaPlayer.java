@@ -123,7 +123,7 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
 
     @Override
     public void pause() {
-        mediaPlayer.pause();
+        mediaPlayer.stop();
     }
 
     @Override
@@ -161,5 +161,15 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
                 mediaPlayer.setPlaybackParams(myPlayBackParams);
             } catch (IllegalStateException ex) {}
         }
+    }
+
+    @Override
+    public long getPosition() {
+        return mediaPlayer.getCurrentPosition();
+    }
+
+    @Override
+    public void seekTo(long position) {
+        mediaPlayer.seekTo((int) position);
     }
 }

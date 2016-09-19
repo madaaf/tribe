@@ -1,6 +1,7 @@
 package com.tribe.app.data.network.job;
 
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.util.Log;
 
 import com.birbit.android.jobqueue.Params;
@@ -40,7 +41,7 @@ public abstract class DownloadVideoJob extends BaseJob {
 
     @Override
     public void onRun() throws Throwable {
-        File file = FileUtils.getFileEnd(getFileId());
+        File file = FileUtils.getFile(getFileId(), FileUtils.VIDEO);
 
         if (file.exists() && file.length() > 0) throw new FileAlreadyExists();
 
@@ -52,29 +53,29 @@ public abstract class DownloadVideoJob extends BaseJob {
                 if (response.isSuccessful()) {
                     Observable.just("")
                             .doOnNext(s -> {
-                                Log.d(getTag(), "server contacted and has file");
+                                if (DEBUG) Log.d(getTag(), "server contacted and has file");
                                 boolean writtenToDisk = writeResponseBodyToDisk(response.body());
-                                Log.d(getTag(), "file download was a success? " + writtenToDisk);
+                                if (DEBUG) Log.d(getTag(), "file download was a success? " + writtenToDisk);
                                 saveResult(writtenToDisk);
                             })
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(s -> {});
                 } else {
-                    Log.d(getTag(), "server contact failed");
+                    if (DEBUG) Log.d(getTag(), "server contact failed");
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e(getTag(), "error : " + t.getMessage());
+                if (DEBUG) Log.e(getTag(), "error : " + t.getMessage());
             }
         });
     }
 
     @Override
     protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
-        File file = FileUtils.getFileEnd(getFileId());
+        File file = FileUtils.getFile(getFileId(), FileUtils.VIDEO);
         setStatus(file.exists() && file.length() > 0 ? MessageDownloadingStatus.STATUS_DOWNLOADED : MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
     }
 
@@ -85,7 +86,7 @@ public abstract class DownloadVideoJob extends BaseJob {
 
     private boolean writeResponseBodyToDisk(ResponseBody body) {
         try {
-            File file = FileUtils.getFileEnd(getFileId());
+            File file = FileUtils.getFile(getFileId(), FileUtils.VIDEO);
 
             InputStream inputStream = null;
             OutputStream outputStream = null;
@@ -111,7 +112,7 @@ public abstract class DownloadVideoJob extends BaseJob {
                     outputStream.write(fileReader, 0, read);
                     fileSizeDownloaded += read;
                     setProgress(fileSizeDownloaded);
-                    Log.d(getTag(), "file download: " + fileSizeDownloaded + " of " + fileSize);
+                    if (DEBUG) Log.d(getTag(), "file download: " + fileSizeDownloaded + " of " + fileSize);
                 }
 
                 outputStream.flush();
@@ -140,4 +141,5 @@ public abstract class DownloadVideoJob extends BaseJob {
     protected abstract void setStatus(@MessageDownloadingStatus.Status String status);
     protected abstract void setProgress(long progress);
     protected abstract void setTotalSize(long totalSize);
+    protected abstract void update(Pair<String, Object>... valuesToUpdate);
 }

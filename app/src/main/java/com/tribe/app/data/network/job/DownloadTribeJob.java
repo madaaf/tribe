@@ -1,5 +1,7 @@
 package com.tribe.app.data.network.job;
 
+import android.support.v4.util.Pair;
+
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 import com.tribe.app.data.cache.TribeCache;
@@ -91,5 +93,10 @@ public class DownloadTribeJob extends DownloadVideoJob {
     @Override
     protected void setTotalSize(long totalSize) {
 
+    }
+
+    @Override
+    protected void update(Pair<String, Object>... valuesToUpdate) {
+        
     }
 }

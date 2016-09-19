@@ -95,6 +95,10 @@ public class ChatInputView extends FrameLayout {
         }, 1000);
     }
 
+    public void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(editTextMessage.getWindowToken(), 0);
+    }
 
     public void setImageGallery(Bitmap bitmap) {
         imgGallery.setImageBitmap(bitmap);

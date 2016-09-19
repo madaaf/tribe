@@ -37,7 +37,7 @@ public abstract class SendTribePresenter implements Presenter {
         diskSaveTribeUsecase.unsubscribe();
     }
 
-    public String createTribe(User user, Recipient recipient, @CameraWrapper.TribeMode String tribeMode) {
+    public TribeMessage createTribe(User user, Recipient recipient, @CameraWrapper.TribeMode String tribeMode) {
         TribeMessage tribe = TribeMessage.createTribe(user, recipient, tribeMode);
 
         if (tribeCreateSubscriber == null) {
@@ -46,12 +46,12 @@ public abstract class SendTribePresenter implements Presenter {
 
         diskSaveTribeUsecase.setTribe(tribe);
         diskSaveTribeUsecase.execute(tribeCreateSubscriber);
-        return tribe.getLocalId();
+        return tribe;
     }
 
     public void deleteTribe(TribeMessage... tribeList) {
         for (TribeMessage tribe : tribeList) {
-            FileUtils.deleteTribe(tribe.getLocalId());
+            FileUtils.delete(tribe.getLocalId(), FileUtils.VIDEO);
 
             if (tribeDeleteSubscriber == null) {
                 tribeDeleteSubscriber = new TribeDeleteSubscriber();

@@ -32,8 +32,8 @@
 
     <LinearLayout
         android:id="@+id/layoutFriends"
-        android:layout_width="125dp"
-        android:layout_height="125dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_gravity="center"
         android:gravity="center"
         android:background="@null"

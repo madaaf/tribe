@@ -23,6 +23,8 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 
 abstract public class BaseJob extends Job {
 
+    protected static final boolean DEBUG = false;
+
     public BaseJob(Params params) {
         super(params);
     }

@@ -11,7 +11,7 @@ import com.tribe.app.R;
 
 public class MediaVideoEncoder extends MediaEncoder {
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final String TAG = "MediaVideoEncoder";
 
     // CONFIGURATION
@@ -40,11 +40,14 @@ public class MediaVideoEncoder extends MediaEncoder {
             throw new RuntimeException("prepareEncoder called twice?");
         }
 
+        int endWidth = (int) ((float) width / 16) * 16;
+        int endHeight = (int) (endWidth / ((float) width / height));
+
         try {
             MediaFormat format = MediaFormat.createVideoFormat(
                     MIME_TYPE,
-                    width,
-                    height);
+                    endWidth,
+                    endHeight);
             format.setInteger(MediaFormat.KEY_COLOR_FORMAT,
                     MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
             format.setInteger(MediaFormat.KEY_BIT_RATE, BITRATE);
@@ -77,7 +80,6 @@ public class MediaVideoEncoder extends MediaEncoder {
             isEncoding = true;
             inputSurface = new InputSurface(mediaCodec.createInputSurface());
             mediaCodec.start();
-            System.out.println("START ENCODING");
         } catch (Exception e) {
             release();
             throw (RuntimeException) e;
@@ -139,7 +141,7 @@ public class MediaVideoEncoder extends MediaEncoder {
         for (int i = 0; i < numCodecs; i++) {
             final MediaCodecInfo codecInfo = MediaCodecList.getCodecInfoAt(i);
 
-            if (!codecInfo.isEncoder()) {	// skipp decoder
+            if (!codecInfo.isEncoder() && !codecInfo.getName().equals("OMX.google.h264.encoder")) {	// skipp decoder
                 continue;
             }
             // select first codec that match a specific MIME type and color format
@@ -181,7 +183,7 @@ public class MediaVideoEncoder extends MediaEncoder {
             }
         }
         if (result == 0)
-            Log.e(TAG, "couldn't find a good color format for " + codecInfo.getName() + " / " + mimeType);
+            if (DEBUG) Log.e(TAG, "couldn't find a good color format for " + codecInfo.getName() + " / " + mimeType);
         return result;
     }
 

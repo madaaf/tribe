@@ -202,10 +202,11 @@ public class AnimationUtils {
         animator.start();
     }
 
-    public static void animateTopMargin(View view, int margin, int duration) {
+    public static void animateTopMargin(View view, int margin, int duration, Interpolator interpolator) {
         ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         ValueAnimator animator = ValueAnimator.ofInt(lp.topMargin, margin);
         animator.setDuration(duration);
+        animator.setInterpolator(interpolator);
         animator.addUpdateListener(animation -> {
             lp.topMargin = (Integer) animation.getAnimatedValue();
             view.setLayoutParams(lp);

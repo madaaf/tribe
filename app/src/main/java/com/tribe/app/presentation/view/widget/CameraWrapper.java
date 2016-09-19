@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 
 import com.tribe.app.R;
@@ -50,11 +51,12 @@ public class CameraWrapper extends FrameLayout {
     public static final String PHOTO = "photo";
 
     public static final String TAG = "CameraWrapper";
-    public static final int DURATION = 300;
-    public static final int DURATION_ICONS = 360;
-    public static final int DELAY = 500;
-    public static final int DIFF_TOUCH = 20;
-    public static final int RATIO = 3;
+    private static final float OVERSHOOT = 0.55f;
+    private static final int DURATION = 300;
+    private static final int DURATION_ICONS = 360;
+    private static final int DELAY = 500;
+    private static final int DIFF_TOUCH = 20;
+    private static final int RATIO = 3;
 
     @Inject ScreenUtils screenUtils;
 
@@ -136,8 +138,8 @@ public class CameraWrapper extends FrameLayout {
         setBackgroundResource(R.color.black_opacity_20);
     }
 
-    public void onPause() {
-        pauseCamera();
+    public void onPause(boolean shouldDelay) {
+        pauseCamera(shouldDelay);
     }
 
     public void onResume(boolean animate) {
@@ -409,7 +411,20 @@ public class CameraWrapper extends FrameLayout {
         return permissionsPublishSubject;
     }
 
-    private void pauseCamera() {
+    private void pauseCamera(boolean shouldDelay) {
+        if (shouldDelay) {
+            Observable.timer(1000, TimeUnit.MILLISECONDS)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(aLong -> {
+                        releaseCamera();
+                    });
+        } else {
+            releaseCamera();
+        }
+    }
+
+    private void releaseCamera() {
         if (cameraView != null && preview != null) {
             cameraView.stopPreview();
             cameraView.removeAllViews();
@@ -426,7 +441,7 @@ public class CameraWrapper extends FrameLayout {
             preview.setZOrderMediaOverlay(false);
             cameraView.setPreview(preview);
 
-            Observable.timer(1000, TimeUnit.MILLISECONDS)
+            Observable.timer(750, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(time -> {
@@ -464,10 +479,13 @@ public class CameraWrapper extends FrameLayout {
     }
 
     public void hideCamera() {
-        AnimationUtils.animateTopMargin(this, marginTopInit + screenUtils.getHeightPx(), DURATION);
+        if (marginTopInit < (screenUtils.getHeightPx() >> 1))
+            AnimationUtils.animateTopMargin(this, -screenUtils.getHeightPx(), DURATION >> 1, new OvershootInterpolator(OVERSHOOT));
+        else
+            AnimationUtils.animateTopMargin(this, screenUtils.getHeightPx(), DURATION >> 1, new OvershootInterpolator(OVERSHOOT));
     }
 
     public void showCamera() {
-        AnimationUtils.animateTopMargin(this, marginTopInit, DURATION);
+        AnimationUtils.animateTopMargin(this, marginTopInit, DURATION >> 1, new OvershootInterpolator(OVERSHOOT));
     }
 }

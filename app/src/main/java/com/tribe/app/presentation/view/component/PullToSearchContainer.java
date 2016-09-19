@@ -22,11 +22,14 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -139,11 +142,17 @@ public class PullToSearchContainer extends FrameLayout {
     }
 
     private void initSubscriptions() {
-        subscriptions.add(ptsView.onLetterSelected().subscribe(s -> {
-            selectedLetter = s;
-            onLetterSelected.onNext(s);
-            closePullToSearchSelected();
-        }));
+        subscriptions.add(ptsView.onLetterSelected()
+                .doOnNext(letter -> {
+                    selectedLetter = letter;
+                })
+                .delay(500, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> {
+                    closePullToSearch();
+                })
+        );
     }
 
     public boolean beingDragged() {
@@ -194,7 +203,7 @@ public class PullToSearchContainer extends FrameLayout {
 
                 final boolean isSwipingVertically = Math.abs(diffY) > Math.abs(diffX);
 
-                if (!pullToSearchActive && isSwipingVertically && diffY > touchSlop && !beingDragged) {
+                if (!pullToSearchActive && isSwipingVertically && diffY > touchSlop && diffY > screenUtils.dpToPx(DRAG_THRESHOLD) && !beingDragged) {
                     beingDragged = true;
                 }
 
@@ -287,6 +296,8 @@ public class PullToSearchContainer extends FrameLayout {
             super.onSpringAtRest(spring);
             if (spring.getEndValue() == 0) {
                 ptsView.close();
+                if (!StringUtils.isEmpty(selectedLetter))
+                    onLetterSelected.onNext(selectedLetter);
             }
         }
     }
@@ -330,15 +341,6 @@ public class PullToSearchContainer extends FrameLayout {
                 margin(value);
             }
         }
-
-        @Override
-        public void onSpringAtRest(Spring spring) {
-            if (isAttachedToWindow() && !StringUtils.isEmpty(selectedLetter) && spring.getEndValue() == 0) {
-                pullToSearchActiveSubject.onNext(pullToSearchActive = false);
-                springTop.setSpringConfig(PULL_TO_SEARCH_SPRING_CONFIG);
-                springTop.setEndValue(0);
-            }
-        }
     }
 
     private void margin(int value) {
@@ -365,14 +367,6 @@ public class PullToSearchContainer extends FrameLayout {
         springMargin.setSpringConfig(PULL_TO_SEARCH_SPRING_CONFIG);
         springMargin.setEndValue(0);
         ptsView.close();
-    }
-
-    private void closePullToSearchSelected() {
-        springMargin.setSpringConfig(PULL_TO_SEARCH_SPRING_CONFIG);
-        springMargin.setEndValue(0);
-
-        springTop.setSpringConfig(PULL_TO_SEARCH_SPRING_CONFIG);
-        springTop.setEndValue(springTop.getCurrentValue() - (thresholdEnd >> 1));
     }
 
     ///////////////////////
