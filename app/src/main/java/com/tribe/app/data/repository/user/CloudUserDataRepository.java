@@ -212,4 +212,34 @@ public class CloudUserDataRepository implements UserRepository {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
         return cloudDataStore.addMembersToGroup(groupId, memberIds);
     }
+
+    @Override
+    public Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.removeMembersFromGroup(groupId, memberIds);
+    }
+
+    @Override
+    public Observable<Void> addAdminsToGroup(String groupId, List<String> memberIds) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.addAdminsToGroup(groupId, memberIds);
+    }
+
+    @Override
+    public Observable<Void> removeAdminsFromGroup(String groupId, List<String> memberIds) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.removeAdminsFromGroup(groupId, memberIds);
+    }
+
+    @Override
+    public Observable<Void> removeGroup(String groupId) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.removeGroup(groupId);
+    }
+
+    @Override
+    public Observable<Void> leaveGroup(String groupId) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.leaveGroup(groupId);
+    }
 }

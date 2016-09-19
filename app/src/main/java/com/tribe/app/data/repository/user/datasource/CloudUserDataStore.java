@@ -829,6 +829,39 @@ public class CloudUserDataStore implements UserDataStore {
         return this.tribeApi.addMembersToGroup(request);
     }
 
+    @Override
+    public Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds) {
+        String memberIdsJson = listToJson(memberIds);
+        String request = context.getString(R.string.remove_members_group, groupId, memberIdsJson);
+        return this.tribeApi.removeMembersFromGroup(request);
+    }
+
+    @Override
+    public Observable<Void> addAdminsToGroup(String groupId, List<String> memberIds) {
+        String memberIdsJson = listToJson(memberIds);
+        String request = context.getString(R.string.add_admins_group, groupId, memberIdsJson);
+        return this.tribeApi.addAdminsToGroup(request);
+    }
+
+    @Override
+    public Observable<Void> removeAdminsFromGroup(String groupId, List<String> memberIds) {
+        String memberIdsJson = listToJson(memberIds);
+        String request = context.getString(R.string.remove_admins_group, groupId, memberIdsJson);
+        return this.tribeApi.removeAdminsFromGroup(request);
+    }
+
+    @Override
+    public Observable<Void> removeGroup(String groupId) {
+        String request = context.getString(R.string.remove_group, groupId);
+        return this.tribeApi.removeGroup(request);
+    }
+
+    @Override
+    public Observable<Void> leaveGroup(String groupId) {
+        String request = context.getString(R.string.leave_group, groupId);
+        return this.tribeApi.leaveGroup(groupId);
+    }
+
     public String listToJson(List<String> list) {
         String json = "";
         for (int i = 0; i < list.size(); i++) {

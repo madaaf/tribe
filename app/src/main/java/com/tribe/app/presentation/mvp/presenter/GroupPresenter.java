@@ -3,9 +3,14 @@ package com.tribe.app.presentation.mvp.presenter;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.user.AddAdminsToGroup;
 import com.tribe.app.domain.interactor.user.AddMembersToGroup;
 import com.tribe.app.domain.interactor.user.CreateGroup;
 import com.tribe.app.domain.interactor.user.GetGroupMembers;
+import com.tribe.app.domain.interactor.user.LeaveGroup;
+import com.tribe.app.domain.interactor.user.RemoveAdminsFromGroup;
+import com.tribe.app.domain.interactor.user.RemoveGroup;
+import com.tribe.app.domain.interactor.user.RemoveMembersFromGroup;
 import com.tribe.app.domain.interactor.user.UpdateGroup;
 import com.tribe.app.presentation.mvp.view.GroupView;
 import com.tribe.app.presentation.mvp.view.View;
@@ -24,15 +29,28 @@ public class GroupPresenter implements Presenter {
     private final CreateGroup createGroup;
     private final UpdateGroup updateGroup;
     private final AddMembersToGroup addMembersToGroup;
+    private final RemoveMembersFromGroup removeMembersFromGroup;
+    private final AddAdminsToGroup addAdminsToGroup;
+    private final RemoveAdminsFromGroup removeAdminsFromGroup;
+    private final LeaveGroup leaveGroup;
+    private final RemoveGroup removeGroup;
 
     private GroupView groupView;
 
     @Inject
-    GroupPresenter(GetGroupMembers getGroupMembers, CreateGroup createGroup, UpdateGroup updateGroup, AddMembersToGroup addMembersToGroup) {
+    GroupPresenter(GetGroupMembers getGroupMembers, CreateGroup createGroup, UpdateGroup updateGroup,
+                   AddMembersToGroup addMembersToGroup, RemoveMembersFromGroup removeMembersFromGroup,
+                   AddAdminsToGroup addAdminsToGroup, RemoveAdminsFromGroup removeAdminsFromGroup,
+                   LeaveGroup leaveGroup, RemoveGroup removeGroup) {
         this.getGroupMembers = getGroupMembers;
         this.createGroup = createGroup;
         this.updateGroup = updateGroup;
         this.addMembersToGroup = addMembersToGroup;
+        this.removeMembersFromGroup = removeMembersFromGroup;
+        this.addAdminsToGroup = addAdminsToGroup;
+        this.removeAdminsFromGroup = removeAdminsFromGroup;
+        this.leaveGroup = leaveGroup;
+        this.removeGroup = removeGroup;
     }
 
     @Override
@@ -95,6 +113,32 @@ public class GroupPresenter implements Presenter {
     public void addMembersToGroup(String groupId, List<String> memberIds) {
         addMembersToGroup.prepare(groupId, memberIds);
         addMembersToGroup.execute(new AddMembersToGroupSubscriber());
+    }
+
+    public void removeMembersFromGroup(String groupId, List<String> memberIds) {
+        removeMembersFromGroup.prepare(groupId, memberIds);
+        removeMembersFromGroup.execute(new RemoveMembersFromGroupSubscriber());
+    }
+
+    public void addAdminsToGroup(String groupId, List<String> memberIds) {
+        addAdminsToGroup.prepare(groupId, memberIds);
+        addAdminsToGroup.execute(new AddAdminsToGroupSubscriber());
+    }
+
+    public void removeAdminsFromGroup(String groupId, List<String> memberIds) {
+        removeAdminsFromGroup.prepare(groupId, memberIds);
+        removeAdminsFromGroup.execute(new RemoveAdminsFromGroupSubscriber());
+    }
+
+    public void leaveGroup(String groupId) {
+        leaveGroup.prepare(groupId);
+        leaveGroup.execute(new LeaveGroupSubscriber());
+    }
+
+    public void removeGroup(String groupId) {
+        removeGroup.prepare(groupId);
+        removeGroup.execute(new RemoveGroupSubscriber());
+
     }
 
     private final class GetGroupMemberSubscriber extends DefaultSubscriber<Group> {
@@ -160,6 +204,91 @@ public class GroupPresenter implements Presenter {
         @Override
         public void onNext(Void aVoid) {
             backToHome();
+        }
+    }
+
+    private final class RemoveMembersFromGroupSubscriber extends DefaultSubscriber<Void> {
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(Void aVoid) {
+
+        }
+    }
+
+    private final class AddAdminsToGroupSubscriber extends DefaultSubscriber<Void> {
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(Void aVoid) {
+
+        }
+    }
+
+    private final class RemoveAdminsFromGroupSubscriber extends DefaultSubscriber<Void> {
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(Void aVoid) {
+
+        }
+    }
+
+    private final class LeaveGroupSubscriber extends DefaultSubscriber<Void> {
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(Void aVoid) {
+
+        }
+    }
+
+    private final class RemoveGroupSubscriber extends DefaultSubscriber<Void> {
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(Void aVoid) {
+
         }
     }
 

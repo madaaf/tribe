@@ -107,6 +107,8 @@ public class DiskUserDataStore implements UserDataStore {
         return contactCache.findContactsByValue(username);
     }
 
+    // TODO: setup groups in db
+
     @Override
     public Observable<FriendshipRealm> createFriendship(String userId) {
         return null;
@@ -139,6 +141,31 @@ public class DiskUserDataStore implements UserDataStore {
 
     @Override
     public Observable<Void> addMembersToGroup(String groupId, List<String> memberIds) {
+        return null;
+    }
+
+    @Override
+    public Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds) {
+        return null;
+    }
+
+    @Override
+    public Observable<Void> addAdminsToGroup(String groupId, List<String> memberIds) {
+        return null;
+    }
+
+    @Override
+    public Observable<Void> removeAdminsFromGroup(String groupId, List<String> memberIds) {
+        return null;
+    }
+
+    @Override
+    public Observable<Void> removeGroup(String groupId) {
+        return null;
+    }
+
+    @Override
+    public Observable<Void> leaveGroup(String groupId) {
         return null;
     }
 

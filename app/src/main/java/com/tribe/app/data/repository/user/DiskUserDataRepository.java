@@ -240,6 +240,7 @@ public class DiskUserDataRepository implements UserRepository {
         return userDataStore.findByValue(value).map(collection -> contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection)));
     }
 
+    // TODO: update info in DB
     @Override
     public Observable<Friendship> createFriendship(String userId) {
         return null;
@@ -272,6 +273,31 @@ public class DiskUserDataRepository implements UserRepository {
 
     @Override
     public Observable<Void> addMembersToGroup(String groupId, List<String> memberIds) {
+        return null;
+    }
+
+    @Override
+    public Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds) {
+        return null;
+    }
+
+    @Override
+    public Observable<Void> addAdminsToGroup(String groupId, List<String> memberIds) {
+        return null;
+    }
+
+    @Override
+    public Observable<Void> removeAdminsFromGroup(String groupId, List<String> memberIds) {
+        return null;
+    }
+
+    @Override
+    public Observable<Void> removeGroup(String groupId) {
+        return null;
+    }
+
+    @Override
+    public Observable<Void> leaveGroup(String groupId) {
         return null;
     }
 }
