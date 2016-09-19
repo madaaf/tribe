@@ -8,10 +8,14 @@ import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.LocationRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.Group;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import rx.Observable;
 import rx.Subscriber;
 
@@ -191,4 +195,122 @@ public class UserCacheImpl implements UserCache {
         realm.commitTransaction();
         realm.close();
     }
+
+    @Override
+    public void createGroup(String userId, String groupId, String groupName, List<String> memberIds, Boolean isPrivate, String pictureUri) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        UserRealm userRealm = realm.where(UserRealm.class).equalTo("id", userId).findFirst();
+        GroupRealm groupRealm = new GroupRealm();
+        groupRealm.setName(groupName);
+        groupRealm.setId(groupId);
+        groupRealm.setPrivateGroup(isPrivate);
+        if (pictureUri != null) groupRealm.setPicture(pictureUri);
+        userRealm.getGroups().add(groupRealm);
+        realm.commitTransaction();
+        realm.close();
+    }
+
+    @Override
+    public void updateGroup(String groupId, String groupName, String pictureUri) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        GroupRealm groupRealm = realm.where(GroupRealm.class).equalTo("id", groupId).findFirst();
+        if (groupName != null) groupRealm.setName(groupName);
+        if (pictureUri != null) groupRealm.setPicture(pictureUri);
+        realm.commitTransaction();
+        realm.close();
+    }
+
+    @Override
+    public void addMembersToGroup(String groupId, List<String> memberIds) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        RealmList<UserRealm> usersToAdd = new RealmList<>();
+        realm.commitTransaction();
+        for (String memberId : memberIds) {
+            realm.beginTransaction();
+            usersToAdd.add(realm.where(UserRealm.class).equalTo("id", memberId).findFirst());
+            realm.commitTransaction();
+        }
+        realm.beginTransaction();
+        GroupRealm groupRealm = realm.where(GroupRealm.class).equalTo("id", groupId).findFirst();
+        for (UserRealm user: usersToAdd) {
+            groupRealm.getMembers().add(user);
+        }
+        realm.commitTransaction();
+        realm.close();
+    }
+
+    @Override
+    public void removeMembersFromGroup(String groupId, List<String> memberIds) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        RealmList<UserRealm> usersToRemove = new RealmList<>();
+        realm.commitTransaction();
+        for (String memberId : memberIds) {
+            realm.beginTransaction();
+            usersToRemove.add(realm.where(UserRealm.class).equalTo("id", memberId).findFirst());
+            realm.commitTransaction();
+        }
+        realm.beginTransaction();
+        GroupRealm groupRealm = realm.where(GroupRealm.class).equalTo("id", groupId).findFirst();
+        for (UserRealm user: usersToRemove) {
+            groupRealm.getMembers().remove(user);
+        }
+        realm.commitTransaction();
+        realm.close();
+    }
+
+    @Override
+    public void addAdminsToGroup(String groupId, List<String> memberIds) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        RealmList<UserRealm> usersToAdd = new RealmList<>();
+        realm.commitTransaction();
+        for (String memberId : memberIds) {
+            realm.beginTransaction();
+            usersToAdd.add(realm.where(UserRealm.class).equalTo("id", memberId).findFirst());
+            realm.commitTransaction();
+        }
+        realm.beginTransaction();
+        GroupRealm groupRealm = realm.where(GroupRealm.class).equalTo("id", groupId).findFirst();
+        for (UserRealm user: usersToAdd) {
+            groupRealm.getAdmins().add(user);
+        }
+        realm.commitTransaction();
+        realm.close();
+    }
+
+    @Override
+    public void removeAdminsFromGroup(String groupId, List<String> memberIds) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        RealmList<UserRealm> usersToRemove = new RealmList<>();
+        realm.commitTransaction();
+        for (String memberId : memberIds) {
+            realm.beginTransaction();
+            usersToRemove.add(realm.where(UserRealm.class).equalTo("id", memberId).findFirst());
+            realm.commitTransaction();
+        }
+        realm.beginTransaction();
+        GroupRealm groupRealm = realm.where(GroupRealm.class).equalTo("id", groupId).findFirst();
+        for (UserRealm user: usersToRemove) {
+            groupRealm.getMembers().remove(user);
+        }
+        realm.commitTransaction();
+        realm.close();
+    }
+
+    @Override
+    public void removeGroup(String groupId) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        GroupRealm groupRealm = realm.where(GroupRealm.class).equalTo("id", groupId).findFirst();
+        if (groupRealm != null) groupRealm.deleteFromRealm();
+        realm.commitTransaction();
+        realm.close();
+    }
+
+
 }

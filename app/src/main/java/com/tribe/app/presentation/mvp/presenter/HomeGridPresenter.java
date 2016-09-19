@@ -284,7 +284,7 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
 
         @Override
         public void onNext(Void aVoid) {
-            // refresh grid
+            homeGridView.refreshGrid();
         }
     }
 
@@ -301,7 +301,7 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
 
         @Override
         public void onNext(Void aVoid) {
-            // refresh grid
+            homeGridView.refreshGrid();
         }
     }
 }

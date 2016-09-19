@@ -15,4 +15,5 @@ public interface HomeGridView extends SendTribeView {
     void scrollToTop();
     void setCurrentTribe(TribeMessage tribe);
     int getNbItems();
+    void refreshGrid();
 }

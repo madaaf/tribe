@@ -2,6 +2,7 @@ package com.tribe.app.data.repository.user;
 
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
 import com.tribe.app.data.realm.mapper.GroupRealmDataMapper;
@@ -202,9 +203,10 @@ public class CloudUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<Void> updateGroup(String groupId, String groupName, String pictureUri) {
+    public Observable<Group> updateGroup(String groupId, String groupName, String pictureUri) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-        return  cloudDataStore.updateGroup(groupId, groupName, pictureUri);
+        return  cloudDataStore.updateGroup(groupId, groupName, pictureUri)
+                .map(this.groupRealmDataMapper::transform);
     }
 
     @Override

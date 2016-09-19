@@ -36,6 +36,7 @@ import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.data.realm.mapper.GroupRealmDataMapper;
 import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.User;
@@ -89,6 +90,7 @@ public class CloudUserDataStore implements UserDataStore {
     private Preference<String> lastMessageRequest;
     private Preference<String> lastUserRequest;
     private SimpleDateFormat utcSimpleDate = null;
+    private GroupRealmDataMapper groupRealmDataMapper;
 
     /**
      * Construct a {@link UserDataStore} based on connections to the api (Cloud).
@@ -104,7 +106,8 @@ public class CloudUserDataStore implements UserDataStore {
                               TribeApi tribeApi, LoginApi loginApi, User user,
                               AccessToken accessToken, Installation installation,
                               ReactiveLocationProvider reactiveLocationProvider, Context context,
-                              Preference<String> lastMessageRequest, Preference<String> lastUserRequest, SimpleDateFormat utcSimpleDate) {
+                              Preference<String> lastMessageRequest, Preference<String> lastUserRequest, SimpleDateFormat utcSimpleDate,
+                                GroupRealmDataMapper groupRealmDataMapper) {
         this.userCache = userCache;
         this.tribeCache = tribeCache;
         this.chatCache = chatCache;
@@ -121,6 +124,7 @@ public class CloudUserDataStore implements UserDataStore {
         this.lastMessageRequest = lastMessageRequest;
         this.lastUserRequest = lastUserRequest;
         this.utcSimpleDate = utcSimpleDate;
+        this.groupRealmDataMapper = groupRealmDataMapper;
     }
 
     @Override
@@ -759,11 +763,7 @@ public class CloudUserDataStore implements UserDataStore {
         if (pictureUri == null) {
             return this.tribeApi.createGroup(request)
                     .doOnNext(groupRealm -> {
-                        UserRealm userDb = userCache.userInfosNoObs(accessToken.getUserId());
-                        RealmList<GroupRealm> dbGroups = userDb.getGroups();
-                        groupRealm.getAdmins().add(userDb);
-                        dbGroups.add(groupRealm);
-                        userDb.setGroups(dbGroups);
+                        userCache.createGroup(accessToken.getUserId(), groupRealm.getId(), groupName, memberIds, isPrivate, groupRealm.getPicture());
                     });
         } else {
             RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
@@ -791,35 +791,21 @@ public class CloudUserDataStore implements UserDataStore {
 
             return this.tribeApi.createGroupMedia(query, body)
                     .doOnNext(groupRealm -> {
-                        UserRealm userDb = userCache.userInfosNoObs(accessToken.getUserId());
-                        RealmList<GroupRealm> dbGroups = userDb.getGroups();
-                        groupRealm.getAdmins().add(userDb);
-                        dbGroups.add(groupRealm);
-                        userDb.setGroups(dbGroups);
+                        userCache.createGroup(accessToken.getUserId(), groupRealm.getId(), groupName, memberIds, isPrivate, groupRealm.getPicture());
                     });
         }
     }
 
     @Override
     public Observable<GroupRealm> updateGroup(String groupId, String groupName, String pictureUri) {
-
-        GroupRealm groupDb = userCache.groupInfos(groupId);
-
-        if (groupName == null) groupName = groupDb.getName();
-
         String request = context.getString(R.string.update_group, groupId, groupName, context.getString(R.string.groupfragment_info));
         if (pictureUri == null) {
             return this.tribeApi.updateGroup(request)
+                    .doOnError(throwable -> {
+                        throwable.printStackTrace();
+                    })
                     .doOnNext(groupRealm -> {
-                        UserRealm dbUser = userCache.userInfosNoObs(accessToken.getUserId());
-                        RealmList<GroupRealm> dbGroups = dbUser.getGroups();
-                        for (GroupRealm groupRealmItem: dbGroups) {
-                            if (groupRealmItem.getId().equals(groupId)) {
-                                groupRealmItem.setName(groupRealm.getName());
-                                groupRealmItem.setPrivateGroup(groupRealm.isPrivateGroup());
-                            }
-                        }
-                        dbUser.setGroups(dbGroups);
+                        userCache.updateGroup(groupId, groupName, pictureUri);
                     });
         } else {
             RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
@@ -846,17 +832,11 @@ public class CloudUserDataStore implements UserDataStore {
             body = MultipartBody.Part.createFormData("group_pic", "group_pic.jpg", requestFile);
 
             return this.tribeApi.updateGroupMedia(query, body)
+                    .doOnError(throwable -> {
+                        throwable.printStackTrace();
+                    })
                     .doOnNext(groupRealm -> {
-                        UserRealm dbUser = userCache.userInfosNoObs(accessToken.getUserId());
-                        RealmList<GroupRealm> dbGroups = dbUser.getGroups();
-                        for (GroupRealm groupRealmItem: dbGroups) {
-                            if (groupRealmItem.getId().equals(groupId)) {
-                                groupRealmItem.setName(groupRealm.getName());
-                                groupRealmItem.setPrivateGroup(groupRealm.isPrivateGroup());
-                                groupRealmItem.setPicture(groupRealm.getPicture());
-                            }
-                        }
-                        dbUser.setGroups(dbGroups);
+                        userCache.updateGroup(groupId, groupName, pictureUri);
                     });
         }
 
@@ -868,19 +848,7 @@ public class CloudUserDataStore implements UserDataStore {
         String request = context.getString(R.string.add_members_group, groupId, memberIdsJson);
         return this.tribeApi.addMembersToGroup(request)
                 .doOnNext(aVoid -> {
-                    UserRealm dbUser = userCache.userInfosNoObs(accessToken.getUserId());
-                    RealmList<UserRealm> usersToAdd = new RealmList<>();
-                    for (int i = 0; i < dbUser.getFriendships().size(); i++) {
-                        UserRealm friend = dbUser.getFriendships().get(i).getFriend();
-                        if (memberIds.contains(friend.getId())) usersToAdd.add(friend);
-                    }
-                    RealmList<GroupRealm> dbGroups = dbUser.getGroups();
-                    for (GroupRealm groupRealmItem: dbGroups) {
-                        if (groupRealmItem.getId().equals(groupId)) {
-                            groupRealmItem.getMembers().addAll(usersToAdd);
-                        }
-                    }
-                    dbUser.setGroups(dbGroups);
+                    userCache.addMembersToGroup(groupId, memberIds);
                 });
     }
 
@@ -890,17 +858,7 @@ public class CloudUserDataStore implements UserDataStore {
         String request = context.getString(R.string.remove_members_group, groupId, memberIdsJson);
         return this.tribeApi.removeMembersFromGroup(request)
                 .doOnNext(aVoid -> {
-                    UserRealm dbUser = userCache.userInfosNoObs(accessToken.getUserId());
-                    RealmList<GroupRealm> dbGroups = dbUser.getGroups();
-                    for (GroupRealm groupRealmItem: dbGroups) {
-                        if (groupRealmItem.getId().equals(groupId)) {
-                            RealmList<UserRealm> membersList = groupRealmItem.getMembers();
-                            for (Iterator<UserRealm> iterMember = membersList.iterator(); iterMember.hasNext();) {
-                                if (memberIds.contains(iterMember.next().getId())) iterMember.remove();
-                            }
-                        }
-                    }
-                    dbUser.setGroups(dbGroups);
+                    userCache.removeMembersFromGroup(groupId, memberIds);
                 });
     }
 
@@ -910,19 +868,7 @@ public class CloudUserDataStore implements UserDataStore {
         String request = context.getString(R.string.add_admins_group, groupId, memberIdsJson);
         return this.tribeApi.addAdminsToGroup(request)
                 .doOnNext(aVoid -> {
-                    UserRealm dbUser = userCache.userInfosNoObs(accessToken.getUserId());
-                    RealmList<UserRealm> usersToAdd = new RealmList<>();
-                    for (int i = 0; i < dbUser.getFriendships().size(); i++) {
-                        UserRealm friend = dbUser.getFriendships().get(i).getFriend();
-                        if (memberIds.contains(friend.getId())) usersToAdd.add(friend);
-                    }
-                    RealmList<GroupRealm> dbGroups = dbUser.getGroups();
-                    for (GroupRealm groupRealmItem: dbGroups) {
-                        if (groupRealmItem.getId().equals(groupId)) {
-                            groupRealmItem.getAdmins().addAll(usersToAdd);
-                        }
-                    }
-                    dbUser.setGroups(dbGroups);
+                    userCache.addAdminsToGroup(groupId, memberIds);
                 });
     }
 
@@ -932,17 +878,7 @@ public class CloudUserDataStore implements UserDataStore {
         String request = context.getString(R.string.remove_admins_group, groupId, memberIdsJson);
         return this.tribeApi.removeAdminsFromGroup(request)
                 .doOnNext(aVoid -> {
-                    UserRealm dbUser = userCache.userInfosNoObs(accessToken.getUserId());
-                    RealmList<GroupRealm> dbGroups = dbUser.getGroups();
-                    for (GroupRealm groupRealmItem: dbGroups) {
-                        if (groupRealmItem.getId().equals(groupId)) {
-                            RealmList<UserRealm> adminsList = groupRealmItem.getAdmins();
-                            for (Iterator<UserRealm> iterMember = adminsList.iterator(); iterMember.hasNext();) {
-                                if (memberIds.contains(iterMember.next().getId())) iterMember.remove();
-                            }
-                        }
-                    }
-                    dbUser.setGroups(dbGroups);
+                    userCache.removeAdminsFromGroup(groupId, memberIds);
                 });
     }
 
@@ -950,16 +886,11 @@ public class CloudUserDataStore implements UserDataStore {
     public Observable<Void> removeGroup(String groupId) {
         String request = context.getString(R.string.remove_group, groupId);
         return this.tribeApi.removeGroup(request)
+                .doOnError(throwable -> {
+                    throwable.printStackTrace();
+                })
                 .doOnNext(aVoid -> {
-                    UserRealm dbUser = userCache.userInfosNoObs(accessToken.getUserId());
-                    RealmList<GroupRealm> dbGroups = dbUser.getGroups();
-                    for (Iterator<GroupRealm>  groupRealmIter = dbGroups.iterator(); groupRealmIter.hasNext();) {
-                        if (groupRealmIter.next().getId().equals(groupId)) {
-                            groupRealmIter.remove();
-                        }
-                    }
-                    dbUser.setGroups(dbGroups);
-
+                    userCache.removeGroup(groupId);
                 });
     }
 
@@ -968,14 +899,7 @@ public class CloudUserDataStore implements UserDataStore {
         String request = context.getString(R.string.leave_group, groupId);
         return this.tribeApi.leaveGroup(request)
                 .doOnNext(aVoid -> {
-                    UserRealm dbUser = userCache.userInfosNoObs(accessToken.getUserId());
-                    RealmList<GroupRealm> dbGroups = dbUser.getGroups();
-                    for (Iterator<GroupRealm>  groupRealmIter = dbGroups.iterator(); groupRealmIter.hasNext();) {
-                        if (groupRealmIter.next().getId().equals(groupId)) {
-                            groupRealmIter.remove();
-                        }
-                    }
-                    dbUser.setGroups(dbGroups);
+                    userCache.removeGroup(groupId);
                 });
     }
 

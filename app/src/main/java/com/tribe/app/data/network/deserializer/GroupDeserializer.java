@@ -31,17 +31,23 @@ public class GroupDeserializer implements JsonDeserializer<GroupRealm> {
 
 
         JsonObject data = json.getAsJsonObject().getAsJsonObject("data");
-        JsonObject group = data.getAsJsonArray("groups").get(0).getAsJsonObject();
-        JsonArray members = group.getAsJsonArray("members");
-        for (int i = 0; i < members.size(); i++) {
-            if (members.get(i).isJsonNull()) {
-                members.remove(i);
+        JsonObject group;
+        try {
+            group = data.getAsJsonArray("groups").get(0).getAsJsonObject();
+            JsonArray members = group.getAsJsonArray("members");
+            for (int i = 0; i < members.size(); i++) {
+                if (members.get(i).isJsonNull()) {
+                    members.remove(i);
+                }
             }
+            RealmList<UserRealm> users = new GsonBuilder().create().fromJson(members, new TypeToken<RealmList<UserRealm>>(){}.getType());
+            groupRealm.setMembers(users);
+        } catch (NullPointerException e) {
+            group = data.getAsJsonObject("updateGroup");
+            if (group == null) group = data.getAsJsonObject("createGroup");
         }
-        RealmList<UserRealm> users = new GsonBuilder().create().fromJson(members, new TypeToken<RealmList<UserRealm>>(){}.getType());
 
         groupRealm.setId(group.get("id").getAsString());
-        groupRealm.setMembers(users);
         groupRealm.setName(group.get("name").getAsString());
         try {
             groupRealm.setPicture(group.get("picture").getAsString());

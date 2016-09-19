@@ -13,6 +13,7 @@ import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.Group;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,7 +136,7 @@ public class DiskUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<Void> updateGroup(String groupId, String groupName, String pictureUri) {
+    public Observable<GroupRealm> updateGroup(String groupId, String groupName, String pictureUri) {
         return null;
     }
 

@@ -229,6 +229,11 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     }
 
     @Override
+    public void refreshGrid() {
+        reloadGrid();
+    }
+
+    @Override
     public void showError(String message) {
         this.showToastMessage(message);
     }

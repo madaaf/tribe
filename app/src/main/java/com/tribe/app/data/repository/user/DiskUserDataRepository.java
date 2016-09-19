@@ -267,7 +267,7 @@ public class DiskUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<Void> updateGroup(String groupId, String groupName, String pictureUri) {
+    public Observable<Group> updateGroup(String groupId, String groupName, String pictureUri) {
         return null;
     }
 

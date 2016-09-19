@@ -424,4 +424,8 @@
 	
 	<!-- Tutorial -->
 	<string name="tutorial_message_support">%1$d messages from the team</string>
+	<string name="tutorial_message_next_message">Next message</string>
+	<string name="tutorial_message_close_message">Close message</string>
+	<string name="tutorial_message_contacts">Tap to add friends</string>
+	<string name="tutorial_message_groups">Tap to create a group</string>
 </resources>
