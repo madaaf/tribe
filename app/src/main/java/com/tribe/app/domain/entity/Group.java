@@ -15,6 +15,7 @@ public class Group extends Recipient {
     private String id;
     private String picture;
     private String name;
+    private boolean privateGroup;
     private List<User> members;
 
     @Override
@@ -66,5 +67,13 @@ public class Group extends Recipient {
 
     public void setMembers(List<User> members) {
         this.members = members;
+    }
+
+    public boolean isPrivateGroup() {
+        return privateGroup;
+    }
+
+    public void setPrivateGroup(boolean privateGroup) {
+        this.privateGroup = privateGroup;
     }
 }

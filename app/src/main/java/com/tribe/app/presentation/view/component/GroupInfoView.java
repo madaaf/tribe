@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
@@ -19,6 +20,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
@@ -83,7 +85,6 @@ public class GroupInfoView extends FrameLayout {
     // view vars
     int moveGroupName = 60;
     int startTranslationEditIcons = -200;
-
     int privacyFinalPosition = -48;
     float groupPicScaleDownF = .7f;
     int layoutViewBackgroundInfoPositionY = 185;
@@ -170,12 +171,12 @@ public class GroupInfoView extends FrameLayout {
         imageGroup.setImageBitmap(roundedCornersTransformation.transform(bitmap));
     }
 
-    public Bitmap formatBitmapForView(Bitmap thumbnail) {
-        RoundedCornersTransformation roundedCornersTransformation = new RoundedCornersTransformation(imageGroup.getWidth() >> 1, 0, RoundedCornersTransformation.CornerType.ALL);
-        thumbnail = ImageUtils.centerCropBitmap(thumbnail);
-        thumbnail = Bitmap.createScaledBitmap(thumbnail, imageGroup.getWidth(), imageGroup.getWidth(), false);
-        thumbnail = roundedCornersTransformation.transform(thumbnail);
-        return thumbnail;
+    public void setGroupPictureFromUrl(String pictureFromUrl) {
+        Glide.with(getContext()).load(pictureFromUrl)
+                .fitCenter()
+                .bitmapTransform(new CropCircleTransformation(getContext()))
+                .crossFade()
+                .into(imageGroup);
     }
 
     public void disableButtons() {
@@ -335,6 +336,18 @@ public class GroupInfoView extends FrameLayout {
         subscriptions.add(RxView.clicks(imageBackIcon).subscribe(aVoid -> {
             imageBackClicked.onNext(null);
         }));
+    }
+
+    public String getGroupName() {
+        return editTextGroupName.getText().toString();
+    }
+
+    public void setGroupName(String groupName) {
+        editTextGroupName.setText(groupName);
+    }
+
+    public void setPrivacy(boolean isPrivate) {
+            viewPrivacyStatus.setup(isPrivate);
     }
 
     protected ApplicationComponent getApplicationComponent() {

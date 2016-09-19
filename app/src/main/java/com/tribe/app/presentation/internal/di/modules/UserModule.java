@@ -11,6 +11,7 @@ import com.tribe.app.domain.interactor.tribe.GetNotSeenDiskTribeList;
 import com.tribe.app.domain.interactor.tribe.GetPendingTribeList;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.domain.interactor.tribe.SendTribe;
+import com.tribe.app.domain.interactor.user.AddMembersToGroup;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.DiskFindContactByValue;
 import com.tribe.app.domain.interactor.user.DiskSearchResults;
@@ -29,6 +30,7 @@ import com.tribe.app.domain.interactor.user.RemoveFriendship;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
 import com.tribe.app.domain.interactor.user.SendToken;
 import com.tribe.app.domain.interactor.user.SynchroContactList;
+import com.tribe.app.domain.interactor.user.UpdateGroup;
 import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.presentation.internal.di.scope.PerActivity;
 
@@ -36,6 +38,7 @@ import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
+import retrofit2.http.POST;
 
 /**
  * Created by tiago on 19/05/2016.
@@ -74,6 +77,18 @@ public class UserModule {
     @PerActivity
     UseCase provideGetGroupMembers(GetGroupMembers getGroupMembers) {
         return getGroupMembers;
+    }
+
+    @Provides
+    @PerActivity
+    UseCase provideUpdateGroup(UpdateGroup updateGroup) {
+        return updateGroup;
+    }
+
+    @Provides
+    @PerActivity
+    UseCase provideAddMembersToGroup(AddMembersToGroup addMembersToGroup) {
+        return addMembersToGroup;
     }
 
     @Provides

@@ -51,6 +51,7 @@ import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -115,13 +116,20 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     private LabelSheetAdapter cameraTypeAdapter;
     private int animDuration = 300 * 2;
     private int loadingAnimDuration = 1000 * 2;
-    private boolean privateGroup = true;
-    private List<Friendship> friendshipsList;
-    private List<Friendship> friendshipsListCopy;
+    private List<Friendship> friendshipsList = new ArrayList<>();
+    private List<Friendship> friendshipsListCopy = new ArrayList<>();
     List<User> members;
     private LinearLayoutManager linearLayoutManager;
     private Group currentGroup;
     private boolean groupInfoValid = false;
+
+    // Group Info
+    private String groupId = null;
+    private String groupName = null;
+    private List<String> memberIds = new ArrayList<>();
+    private String groupPictureUri = null;
+    private boolean privateGroup = true;
+    private List<String> groupMemberIds = new ArrayList<>();
 
     // Animation Variables
     int moveUpY = 138;
@@ -141,12 +149,34 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         final View fragmentView = inflater.inflate(R.layout.fragment_groups_grid, container, false);
         unbinder = ButterKnife.bind(this, fragmentView);
         initDependencyInjector();
-
+        initForBoth();
         initPresenter();
+
         Bundle bundle = getArguments();
-        if (bundle == null) initUi();
-        else initGroupInfoUi(bundle.getString("groupId"));
-        initFriendshipList();
+        if (bundle == null) {
+            initUi();
+            initFriendshipList();
+        }
+        else {
+            initGroupInfoUi(bundle.getString("groupId"));
+            recyclerViewInvite.setLayoutManager(new LinearLayoutManager(getContext()));
+            recyclerViewInvite.setAdapter(new RecyclerView.Adapter() {
+                @Override
+                public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                    return null;
+                }
+
+                @Override
+                public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+
+                }
+
+                @Override
+                public int getItemCount() {
+                    return 0;
+                }
+            });
+        }
         initSearchView();
         fragmentView.setTag(HomeActivity.GROUPS_FRAGMENT_PAGE);
         return fragmentView;
@@ -175,11 +205,12 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
      */
 
     private void initGroupInfoUi(String groupId) {
+        this.groupId = groupId;
         screenUtils.setTopMargin(createInviteView, screenUtils.dpToPx(layoutCreateInviteInfoPositionY));
         createInviteView.setInvite(privateGroup);
         createInviteView.enableInvitePress();
         groupInfoView.setupGroupInfoUi(privateGroup);
-        imageDone.setVisibility(View.INVISIBLE);
+        imageDone.setVisibility(View.VISIBLE);
 
         layoutInvite.setTranslationY(screenUtils.dpToPx(smallMargin));
         recyclerViewInvite.setTranslationY(screenUtils.dpToPx(smallMargin));
@@ -191,15 +222,34 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             presentEditInfo();
         }));
 
-        subscriptions.add(groupInfoView.imageDoneEditClicked().subscribe(aVoid -> {
-            backFromEditInfo();
-        }));
 
         groupPresenter.getGroupMembers(groupId);
     }
 
+    public void initForBoth() {
+        subscriptions.add(groupInfoView.imageDoneEditClicked().subscribe(aVoid -> {
+            groupName = groupInfoView.getGroupName();
+            groupPresenter.updateGroup(groupId, groupName, groupPictureUri);
+            backFromEditInfo();
+        }));
+
+        subscriptions.add(RxView.clicks(imageDone).subscribe(aVoid -> {
+            groupPresenter.addMembersToGroup(groupId, memberIds);
+        }));
+
+        subscriptions.add(groupInfoView.imageGroupClicked().subscribe(aVoid -> {
+            setupBottomSheetCamera();
+        }));
+
+    }
+
     @Override
-    public void setupGroupMembers(Group group) {
+    public void setupGroup(Group group) {
+        groupName = group.getDisplayName();
+        groupInfoView.setGroupName(groupName);
+        if (group.getProfilePicture() != null && !group.getProfilePicture().isEmpty()) groupInfoView.setGroupPictureFromUrl(group.getProfilePicture());
+        setGroupPrivacy(group.isPrivateGroup());
+
         members = group.getMembers();
         int memberPhotos;
         if (group.getMembers().size() < 5) memberPhotos = group.getMembers().size();
@@ -208,9 +258,14 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             String profPic = members.get(i).getProfilePicture();
             if (profPic != null) groupInfoView.addMemberPhoto(profPic);
         }
-
+        initFriendshipListExcluding(members);
+        friendAdapter.setItems(friendshipsList);
+        friendAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * Modify layout methods
+     */
 
     private void initUi() {
         // Setup top-right icons
@@ -231,10 +286,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             }
         }));
 
-        subscriptions.add(groupInfoView.imageGroupClicked().subscribe(aVoid -> {
-            setupBottomSheetCamera();
-        }));
-
         subscriptions.add(groupInfoView.isGroupNameValid().subscribe(isValid -> {
             groupInfoValid = isValid;
             groupInfoView.enableDoneEdit(isValid);
@@ -249,6 +300,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         subscriptions.add(createInviteView.createPressed().subscribe(aVoid -> {
             createInviteView.disable();
             groupInfoView.disableButtons();
+            groupName = groupInfoView.getGroupName();
+            groupPresenter.createGroup(groupName, memberIds, privateGroup, groupPictureUri);
 
             createInviteView.loadingAnimation(loadingAnimDuration, screenUtils, getActivity());
             Observable.timer(loadingAnimDuration, TimeUnit.MILLISECONDS)
@@ -278,21 +331,12 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             presentEdit();
         }));
 
-        subscriptions.add(groupInfoView.imageDoneEditClicked().subscribe(aVoid -> {
-            backFromEdit();
-        }));
-
         subscriptions.add((createInviteView.invitePressed()).subscribe(aVoid -> {
             showShareDialogFragment();
         }));
 
         subscriptions.add(RxView.clicks(editTextInviteSearch).subscribe(aVoid -> {
             appBarLayout.setExpanded(false);
-        }));
-
-        subscriptions.add(RxView.clicks(imageDone).subscribe(aVoid -> {
-            // TODO: send data to create group
-            ((HomeActivity) getActivity()).resetGroupsGridFragment();
         }));
     }
 
@@ -307,6 +351,12 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                 .start();
 
         AnimationUtils.animateBottomMargin(recyclerViewInvite, AnimationUtils.TRANSLATION_RESET, animDuration);
+    }
+
+    private void setGroupPrivacy(boolean isPrivate) {
+        groupInfoView.setPrivacy(isPrivate);
+        createInviteView.switchColors(isPrivate);
+        if (!isPrivate) imageDone.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_done_purple));
     }
 
     /**
@@ -453,17 +503,21 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     }
 
+    public void setPictureUri(String pictureUri) {
+        this.groupPictureUri = pictureUri;
+    }
+
     /**
      * Search for friend View
      */
 
     private void initFriendshipList() {
         User user = getCurrentUser();
-
+        friendshipsList = user.getFriendships();
+        friendshipsListCopy = new ArrayList<>();
         if (friendshipsList != null) {
-            friendshipsList = user.getFriendships();
-            friendshipsListCopy = new ArrayList<>();
             friendshipsListCopy.addAll(friendshipsList);
+            friendAdapter.setHasStableIds(true);
             friendAdapter.setItems(friendshipsList);
         }
 
@@ -473,11 +527,47 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
         subscriptions.add(friendAdapter.clickFriendItem()
             .subscribe(friendView -> {
-                if (friendView.isSelected()) {
-                    Friendship friendship = friendAdapter.getItemAtPosition((Integer) friendView.getTag(R.id.tag_position));
-
+                Friendship friendship = friendAdapter.getItemAtPosition((Integer) friendView.getTag(R.id.tag_position));
+                String friendId = friendship.getFriend().getId();
+                if ((Boolean) friendView.getTag(R.id.tag_selected)) {
+                    memberIds.add(friendId);
+                } else {
+                    memberIds.remove(friendId);
                 }
             }));
+    }
+
+    private void initFriendshipListExcluding(List<User> usersToExclude) {
+        User user = getCurrentUser();
+        friendshipsList.addAll(user.getFriendships());
+        for(Iterator<Friendship> iterFriendship = friendshipsList.iterator(); iterFriendship.hasNext();) {
+            final User frienshipUser = iterFriendship.next().getFriend();
+            for (Iterator<User> iterMember = usersToExclude.iterator(); iterMember.hasNext();) {
+                if (frienshipUser.getId().equals(iterMember.next().getId())) iterFriendship.remove();
+            }
+        }
+        friendshipsListCopy = new ArrayList<>();
+        if (friendshipsList != null) {
+            friendshipsListCopy.addAll(friendshipsList);
+            friendAdapter.setHasStableIds(true);
+            friendAdapter.setItems(friendshipsList);
+        }
+
+        linearLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerViewInvite.setLayoutManager(linearLayoutManager);
+        recyclerViewInvite.setAdapter(friendAdapter);
+
+        subscriptions.add(friendAdapter.clickFriendItem()
+                .subscribe(friendView -> {
+                    Friendship friendship = friendAdapter.getItemAtPosition((Integer) friendView.getTag(R.id.tag_position));
+                    String friendId = friendship.getFriend().getId();
+                    if ((Boolean) friendView.getTag(R.id.tag_selected)) {
+                        memberIds.add(friendId);
+                    } else {
+                        memberIds.remove(friendId);
+                    }
+                }));
+        friendAdapter.notifyDataSetChanged();
     }
 
     private void initSearchView() {
@@ -540,7 +630,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         cameraTypeAdapter.setHasStableIds(true);
         recyclerViewCameraType.setAdapter(cameraTypeAdapter);
         subscriptions.add(cameraTypeAdapter.clickLabelItem()
-                .map(labelView -> cameraTypeAdapter.getItemAtPosition((Integer) labelView.getTag(R.id.tag_position)))
+                .map((View labelView) -> cameraTypeAdapter.getItemAtPosition((Integer) labelView.getTag(R.id.tag_position)))
                 .subscribe(labelType -> {
                     CameraType cameraType = (CameraType) labelType;
                     if (cameraType.getCameraTypeDef().equals(CameraType.OPEN_CAMERA)) {
@@ -609,6 +699,16 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     @Override
     public void getGroupMembers(String groupId) {
 
+    }
+
+    @Override
+    public void createGroup(String groupName, List<String> memberIds, boolean isPrivate, String pictureUri) {
+
+    }
+
+    @Override
+    public void backToHome() {
+        navigator.navigateToHome(getActivity());
     }
 
     @Override
