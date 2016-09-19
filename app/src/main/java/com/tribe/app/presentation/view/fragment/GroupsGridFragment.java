@@ -237,9 +237,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             groupPresenter.addMembersToGroup(groupId, memberIds);
         }));
 
-        subscriptions.add(groupInfoView.imageGroupClicked().subscribe(aVoid -> {
-            setupBottomSheetCamera();
-        }));
+
 
     }
 

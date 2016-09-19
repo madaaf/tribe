@@ -8,6 +8,8 @@ import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
+import com.tribe.app.domain.interactor.user.LeaveGroup;
+import com.tribe.app.domain.interactor.user.RemoveGroup;
 import com.tribe.app.domain.interactor.user.SendToken;
 import com.tribe.app.presentation.mvp.view.HomeView;
 import com.tribe.app.presentation.mvp.view.View;
@@ -23,6 +25,7 @@ public class HomePresenter implements Presenter {
     private UseCase cloudUserInfos;
     private JobManager jobManager;
 
+
     private FriendListSubscriber friendListSubscriber;
 
     private HomeView homeView;
@@ -30,10 +33,12 @@ public class HomePresenter implements Presenter {
     @Inject
     public HomePresenter(JobManager jobManager,
                          @Named("sendToken") SendToken sendToken,
-                         @Named("cloudUserInfos") UseCase cloudUserInfos) {
+                         @Named("cloudUserInfos") UseCase cloudUserInfos,
+                         LeaveGroup leaveGroup, RemoveGroup removeGroup) {
         this.sendTokenUseCase = sendToken;
         this.cloudUserInfos = cloudUserInfos;
         this.jobManager = jobManager;
+
     }
 
     @Override
@@ -118,4 +123,6 @@ public class HomePresenter implements Presenter {
             // TODO WHATEVER NEEDS TO BE DONE
         }
     }
+
+
 }

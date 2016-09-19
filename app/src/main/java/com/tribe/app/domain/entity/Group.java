@@ -17,6 +17,7 @@ public class Group extends Recipient {
     private String name;
     private boolean privateGroup;
     private List<User> members;
+    private List<User> admins;
 
     @Override
     public String getProfilePicture() {
@@ -75,5 +76,13 @@ public class Group extends Recipient {
 
     public void setPrivateGroup(boolean privateGroup) {
         this.privateGroup = privateGroup;
+    }
+
+    public List<User> getAdmins() {
+        return admins;
+    }
+
+    public void setAdmins(List<User> admins) {
+        this.admins = admins;
     }
 }

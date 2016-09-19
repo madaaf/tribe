@@ -121,11 +121,11 @@ public interface TribeApi {
 
     @FormUrlEncoded
     @POST("/graphql")
-    Observable<Void> updateGroup(@Field("query") String query);
+    Observable<GroupRealm> updateGroup(@Field("query") String query);
 
     @Multipart
     @POST("/graphql")
-    Observable<Void> updateGroupMedia(@Part("query") RequestBody query, @Part MultipartBody.Part file);
+    Observable<GroupRealm> updateGroupMedia(@Part("query") RequestBody query, @Part MultipartBody.Part file);
 
     @FormUrlEncoded
     @POST("/graphql")

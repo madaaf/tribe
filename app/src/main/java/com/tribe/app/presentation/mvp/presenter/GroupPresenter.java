@@ -32,16 +32,14 @@ public class GroupPresenter implements Presenter {
     private final RemoveMembersFromGroup removeMembersFromGroup;
     private final AddAdminsToGroup addAdminsToGroup;
     private final RemoveAdminsFromGroup removeAdminsFromGroup;
-    private final LeaveGroup leaveGroup;
-    private final RemoveGroup removeGroup;
+
 
     private GroupView groupView;
 
     @Inject
     GroupPresenter(GetGroupMembers getGroupMembers, CreateGroup createGroup, UpdateGroup updateGroup,
                    AddMembersToGroup addMembersToGroup, RemoveMembersFromGroup removeMembersFromGroup,
-                   AddAdminsToGroup addAdminsToGroup, RemoveAdminsFromGroup removeAdminsFromGroup,
-                   LeaveGroup leaveGroup, RemoveGroup removeGroup) {
+                   AddAdminsToGroup addAdminsToGroup, RemoveAdminsFromGroup removeAdminsFromGroup) {
         this.getGroupMembers = getGroupMembers;
         this.createGroup = createGroup;
         this.updateGroup = updateGroup;
@@ -49,8 +47,7 @@ public class GroupPresenter implements Presenter {
         this.removeMembersFromGroup = removeMembersFromGroup;
         this.addAdminsToGroup = addAdminsToGroup;
         this.removeAdminsFromGroup = removeAdminsFromGroup;
-        this.leaveGroup = leaveGroup;
-        this.removeGroup = removeGroup;
+
     }
 
     @Override
@@ -130,16 +127,7 @@ public class GroupPresenter implements Presenter {
         removeAdminsFromGroup.execute(new RemoveAdminsFromGroupSubscriber());
     }
 
-    public void leaveGroup(String groupId) {
-        leaveGroup.prepare(groupId);
-        leaveGroup.execute(new LeaveGroupSubscriber());
-    }
 
-    public void removeGroup(String groupId) {
-        removeGroup.prepare(groupId);
-        removeGroup.execute(new RemoveGroupSubscriber());
-
-    }
 
     private final class GetGroupMemberSubscriber extends DefaultSubscriber<Group> {
         @Override
@@ -257,39 +245,4 @@ public class GroupPresenter implements Presenter {
 
         }
     }
-
-    private final class LeaveGroupSubscriber extends DefaultSubscriber<Void> {
-        @Override
-        public void onCompleted() {
-
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-
-        @Override
-        public void onNext(Void aVoid) {
-
-        }
-    }
-
-    private final class RemoveGroupSubscriber extends DefaultSubscriber<Void> {
-        @Override
-        public void onCompleted() {
-
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-
-        @Override
-        public void onNext(Void aVoid) {
-
-        }
-    }
-
 }

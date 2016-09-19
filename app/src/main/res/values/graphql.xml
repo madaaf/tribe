@@ -409,9 +409,10 @@
             updateGroup(id : \"%1$s\", group: {
                 name : \"%2$s\"
             }) {
-                id
+                ...GroupInfo
             }
         }
+        %3$s
     </string>
 
     <string name="add.members.group" translatable="false">
@@ -448,13 +449,13 @@
 
     <string name="remove.group" translatable="false">
         mutation {
-            removeGroup(id : \"%1$\")
+            removeGroup(id : \"%1$s\")
         }
     </string>
 
     <string name="leave.group" translatable="false">
         mutation {
-            leaveGroup(id: \"%1$\")
+            leaveGroup(id: \"%1$s\")
         }
     </string>
 
