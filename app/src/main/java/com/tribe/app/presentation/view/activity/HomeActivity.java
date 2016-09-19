@@ -141,7 +141,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private List<Message> newMessages;
     private int pendingTribeCount;
     public static final int SETTINGS_RESULT = 101, OPEN_CAMERA_RESULT = 102, OPEN_GALLERY_RESULT = 103;
-    String pictureUri;
+    private boolean navVisible = true;
 
     // DIMEN
     private int sizeNavMax, sizeNavSmall, marginHorizontalSmall, translationBackToTop;
@@ -291,6 +291,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             public void onPageSelected(int position) {
                 if (viewPager.getCurrentItem() == GRID_FRAGMENT_PAGE) {
                     //reloadGrid();
+                    if (!navVisible) enableNavigation();
                 }
             }
 
@@ -711,10 +712,12 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     public void disableNavigation() {
         slideDownNav(layoutNavMaster);
         viewPager.setSwipeable(false);
+        navVisible = false;
     }
 
     public void enableNavigation() {
         slideUpNav(layoutNavMaster);
         viewPager.setSwipeable(true);
+        navVisible = true;
     }
 }

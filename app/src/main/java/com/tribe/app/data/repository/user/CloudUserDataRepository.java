@@ -200,4 +200,16 @@ public class CloudUserDataRepository implements UserRepository {
         return cloudDataStore.createGroup(groupName, memberIds, isPrivate, pictureUri)
                 .map(this.groupRealmDataMapper::transform);
     }
+
+    @Override
+    public Observable<Void> updateGroup(String groupId, String groupName, String pictureUri) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return  cloudDataStore.updateGroup(groupId, groupName, pictureUri);
+    }
+
+    @Override
+    public Observable<Void> addMembersToGroup(String groupId, List<String> memberIds) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.addMembersToGroup(groupId, memberIds);
+    }
 }

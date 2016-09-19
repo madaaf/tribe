@@ -132,4 +132,8 @@ public interface UserDataStore {
     Observable<GroupRealm> getGroupMembers(String groupId);
 
     Observable<GroupRealm> createGroup(String groupName, List<String> memberIds, Boolean isPrivate, String pictureUri);
+
+    Observable<Void> updateGroup(String groupId, String groupName, String pictureUri);
+
+    Observable<Void> addMembersToGroup(String groupId, List<String> memberIds);
 }

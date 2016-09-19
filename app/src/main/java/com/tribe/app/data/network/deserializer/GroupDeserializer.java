@@ -13,6 +13,8 @@ import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
 
+import org.json.JSONObject;
+
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -29,8 +31,8 @@ public class GroupDeserializer implements JsonDeserializer<GroupRealm> {
 
 
         JsonObject data = json.getAsJsonObject().getAsJsonObject("data");
-        JsonArray groups = data.getAsJsonArray("groups");
-        JsonArray members = groups.get(0).getAsJsonObject().getAsJsonArray("members");
+        JsonObject group = data.getAsJsonArray("groups").get(0).getAsJsonObject();
+        JsonArray members = group.getAsJsonArray("members");
         for (int i = 0; i < members.size(); i++) {
             if (members.get(i).isJsonNull()) {
                 members.remove(i);
@@ -38,7 +40,16 @@ public class GroupDeserializer implements JsonDeserializer<GroupRealm> {
         }
         RealmList<UserRealm> users = new GsonBuilder().create().fromJson(members, new TypeToken<RealmList<UserRealm>>(){}.getType());
 
+        groupRealm.setId(group.get("id").getAsString());
         groupRealm.setMembers(users);
+        groupRealm.setName(group.get("name").getAsString());
+        try {
+            groupRealm.setPicture(group.get("picture").getAsString());
+        } catch (UnsupportedOperationException e) {
+            e.printStackTrace();
+        }
+        groupRealm.setPrivateGroup(group.get("type").getAsString().equals("PRIVATE"));
+
 
         return groupRealm;
     }

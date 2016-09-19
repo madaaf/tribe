@@ -57,9 +57,11 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
                     BlockFriendViewHolder blockFriendViewHolder = (BlockFriendViewHolder) vh;
                     if (blockFriendViewHolder.selected) {
                         blockFriendViewHolder.imageSelected.setImageDrawable(null);
-                        blockFriendViewHolder.selected = false;
+                        blockFriendViewHolder.itemView.setTag(R.id.tag_selected, false);
+                        blockFriendViewHolder.selected = true;
                     } else {
                         blockFriendViewHolder.imageSelected.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.picto_oval_green_fill));
+                        blockFriendViewHolder.itemView.setTag(R.id.tag_selected, true);
                         blockFriendViewHolder.selected = true;
                     }
                 })
@@ -76,10 +78,11 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
 
         BlockFriendViewHolder vh = (BlockFriendViewHolder) holder;
         Friendship friendship = items.get(position);
-
         vh.txtDisplayName.setText(friendship.getDisplayName());
         vh.txtUsername.setText("@" + friendship.getUsername());
         vh.layoutSelected.setBackground(ContextCompat.getDrawable(context, R.drawable.picto_oval));
+        vh.itemView.setTag(R.id.tag_position, position);
+
 
         try {
             Glide.with(context)

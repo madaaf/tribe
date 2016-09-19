@@ -299,47 +299,6 @@ public class CloudUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<GroupRealm> createGroup(String groupName, List<String> memberIds, Boolean isPrivate, String pictureUri) {
-        String idList = "";
-        for (int i = 0; i < memberIds.size(); i++) {
-            if (i == memberIds.size() - 1) idList += memberIds.get(i);
-            else idList += memberIds.get(i) + ", ";
-        }
-        String privateGroup = isPrivate ? "PRIVATE" : "PUBLIC";
-
-        if (pictureUri == null) {
-            String request = context.getString(R.string.create_group, groupName, privateGroup, idList, context.getString(R.string.groupfragment_info));
-            return this.tribeApi.createGroup(request);
-        } else {
-            String request = context.getString(R.string.create_group, groupName, privateGroup, idList, context.getString(R.string.groupfragment_info));
-            RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
-
-            File file = new File(Uri.parse(pictureUri).getPath());
-
-            if (!(file != null && file.exists() && file.length() > 0)) {
-                InputStream inputStream = null;
-                file = FileUtils.getFileEnd(FileUtils.generateIdForMessage());
-                try {
-                    inputStream = context.getContentResolver().openInputStream(Uri.parse(pictureUri));
-                    FileUtils.copyInputStreamToFile(inputStream, file);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            RequestBody requestFile = null;
-            MultipartBody.Part body = null;
-
-            requestFile = RequestBody.create(MediaType.parse("image/jpeg"), file);
-            body = MultipartBody.Part.createFormData("group_pic", "group_pic.jpg", requestFile);
-
-            return this.tribeApi.createGroupMedia(query, body);
-        }
-    }
-
-    @Override
     public Observable<UserRealm> updateUser(String username, String displayName, String pictureUri, String fbid) {
 
         String usernameParam;
@@ -774,7 +733,7 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<GroupRealm> getGroupMembers(String groupId) {
-        String request = context.getString(R.string.get_group_members, groupId, context.getString(R.string.userfragment_infos));
+        String request = context.getString(R.string.get_group_members, groupId, context.getString(R.string.userfragment_infos), context.getString(R.string.groupfragment_info));
         return this.tribeApi.getGroupMembers(request)
                 .doOnNext(groupRealm -> {
                     List<GroupRealm> dbGroups = userCache.userInfosNoObs(accessToken.getUserId()).getGroups();
@@ -789,6 +748,94 @@ public class CloudUserDataStore implements UserDataStore {
     }
 
 
+    @Override
+    public Observable<GroupRealm> createGroup(String groupName, List<String> memberIds, Boolean isPrivate, String pictureUri) {
+        String idList = listToJson(memberIds);
+        String privateGroup = isPrivate ? "PRIVATE" : "PUBLIC";
+        final String request = context.getString(R.string.create_group, groupName, privateGroup, idList, context.getString(R.string.groupfragment_info));
+        if (pictureUri == null) {
+            return this.tribeApi.createGroup(request);
+        } else {
+            RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
 
+            File file = new File(Uri.parse(pictureUri).getPath());
+
+            if (!(file != null && file.exists() && file.length() > 0)) {
+                InputStream inputStream = null;
+                file = FileUtils.getFileEnd(FileUtils.generateIdForMessage());
+                try {
+                    inputStream = context.getContentResolver().openInputStream(Uri.parse(pictureUri));
+                    FileUtils.copyInputStreamToFile(inputStream, file);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            RequestBody requestFile = null;
+            MultipartBody.Part body = null;
+
+            requestFile = RequestBody.create(MediaType.parse("image/jpeg"), file);
+            body = MultipartBody.Part.createFormData("group_pic", "group_pic.jpg", requestFile);
+
+            return this.tribeApi.createGroupMedia(query, body);
+        }
+    }
+
+    @Override
+    public Observable<Void> updateGroup(String groupId, String groupName, String pictureUri) {
+
+        GroupRealm groupDb = userCache.groupInfos(groupId);
+
+        if (groupName == null) groupName = groupDb.getName();
+
+        String request = context.getString(R.string.update_group, groupId, groupName);
+        if (pictureUri == null) {
+            return this.tribeApi.updateGroup(request);
+        } else {
+            RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
+
+            File file = new File(Uri.parse(pictureUri).getPath());
+
+            if (!(file != null && file.exists() && file.length() > 0)) {
+                InputStream inputStream = null;
+                file = FileUtils.getFileEnd(FileUtils.generateIdForMessage());
+                try {
+                    inputStream = context.getContentResolver().openInputStream(Uri.parse(pictureUri));
+                    FileUtils.copyInputStreamToFile(inputStream, file);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            RequestBody requestFile = null;
+            MultipartBody.Part body = null;
+
+            requestFile = RequestBody.create(MediaType.parse("image/jpeg"), file);
+            body = MultipartBody.Part.createFormData("group_pic", "group_pic.jpg", requestFile);
+
+            return this.tribeApi.updateGroupMedia(query, body);
+        }
+
+    }
+
+    @Override
+    public Observable<Void> addMembersToGroup(String groupId, List<String> memberIds) {
+        String memberIdsJson = listToJson(memberIds);
+        String request = context.getString(R.string.add_members_group, groupId, memberIdsJson);
+        return this.tribeApi.addMembersToGroup(request);
+    }
+
+    public String listToJson(List<String> list) {
+        String json = "";
+        for (int i = 0; i < list.size(); i++) {
+            if (i == list.size() - 1) json += list.get(i);
+            else json += list.get(i) + ", ";
+        }
+        return json;
+    }
 }
 

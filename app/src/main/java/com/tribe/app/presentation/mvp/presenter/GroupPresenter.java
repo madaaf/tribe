@@ -3,8 +3,10 @@ package com.tribe.app.presentation.mvp.presenter;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.user.AddMembersToGroup;
 import com.tribe.app.domain.interactor.user.CreateGroup;
 import com.tribe.app.domain.interactor.user.GetGroupMembers;
+import com.tribe.app.domain.interactor.user.UpdateGroup;
 import com.tribe.app.presentation.mvp.view.GroupView;
 import com.tribe.app.presentation.mvp.view.View;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
@@ -20,13 +22,17 @@ public class GroupPresenter implements Presenter {
 
     private final GetGroupMembers getGroupMembers;
     private final CreateGroup createGroup;
+    private final UpdateGroup updateGroup;
+    private final AddMembersToGroup addMembersToGroup;
 
     private GroupView groupView;
 
     @Inject
-    GroupPresenter(GetGroupMembers getGroupMembers, CreateGroup createGroup) {
+    GroupPresenter(GetGroupMembers getGroupMembers, CreateGroup createGroup, UpdateGroup updateGroup, AddMembersToGroup addMembersToGroup) {
         this.getGroupMembers = getGroupMembers;
         this.createGroup = createGroup;
+        this.updateGroup = updateGroup;
+        this.addMembersToGroup = addMembersToGroup;
     }
 
     @Override
@@ -65,7 +71,7 @@ public class GroupPresenter implements Presenter {
     }
 
     public void setupMembers(Group group) {
-        this.groupView.setupGroupMembers(group);
+        this.groupView.setupGroup(group);
     }
     public void backToHome() {
         this.groupView.backToHome();
@@ -79,6 +85,16 @@ public class GroupPresenter implements Presenter {
     public void createGroup(String groupName, List<String> memberIds, boolean isPrivate, String pictureUri) {
         createGroup.prepare(groupName, memberIds, isPrivate, pictureUri);
         createGroup.execute(new CreateGroupSubscriber());
+    }
+
+    public void updateGroup(String groupId, String groupName, String pictureUri) {
+        updateGroup.prepare(groupId, groupName, pictureUri);
+        updateGroup.execute(new UpdateGroupSubscriber());
+    }
+
+    public void addMembersToGroup(String groupId, List<String> memberIds) {
+        addMembersToGroup.prepare(groupId, memberIds);
+        addMembersToGroup.execute(new AddMembersToGroupSubscriber());
     }
 
     private final class GetGroupMemberSubscriber extends DefaultSubscriber<Group> {
@@ -110,6 +126,39 @@ public class GroupPresenter implements Presenter {
 
         @Override
         public void onNext(Group group) {
+            backToHome();
+        }
+    }
+
+    private final class UpdateGroupSubscriber extends DefaultSubscriber<Void> {
+        @Override
+        public void onCompleted() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(Void aVoid) {
+
+        }
+    }
+
+    private final class AddMembersToGroupSubscriber extends DefaultSubscriber<Void> {
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(Void aVoid) {
             backToHome();
         }
     }

@@ -264,4 +264,14 @@ public class DiskUserDataRepository implements UserRepository {
     public Observable<Group> createGroup(String groupName, List<String> memberIds, boolean isPrivate, String pictureUri) {
         return null;
     }
+
+    @Override
+    public Observable<Void> updateGroup(String groupId, String groupName, String pictureUri) {
+        return null;
+    }
+
+    @Override
+    public Observable<Void> addMembersToGroup(String groupId, List<String> memberIds) {
+        return null;
+    }
 }

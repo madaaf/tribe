@@ -16,6 +16,7 @@ public class GroupRealm extends RealmObject {
 
     private String name;
     private String picture;
+    private boolean privateGroup;
     private Date created_at;
     private Date updated_at;
     private RealmList<UserRealm> members;
@@ -42,6 +43,14 @@ public class GroupRealm extends RealmObject {
 
     public void setPicture(String picture) {
         this.picture = picture;
+    }
+
+    public boolean isPrivateGroup() {
+        return privateGroup;
+    }
+
+    public void setPrivateGroup(boolean privateGroup) {
+        this.privateGroup = privateGroup;
     }
 
     public Date getCreatedAt() {

@@ -93,6 +93,7 @@
 	<string name="tribe_distance_menu_directions">Get me there</string>
 	<string name="tribe_metadata_activate_location">Location</string>
 	<string name="tribe_metadata_get_directions">Directions</string>
+	<string name="tribe_event_saved">Added to calendar</string>
 	
 	<!-- Grid -->
 	<string name="grid_user_points">Points</string>
@@ -162,13 +163,13 @@
 	<string name="group_pick_avatar_title">Pick an avatar for the group</string>
 	<string name="group_suggestions_title">Name suggestions</string>
 	<string name="group_private_title">Private</string>
-	<string name="group_private_description">Closed group for your private conversations</string>
+	<string name="group_private_description">Closed groups for your private conversations</string>
 	<string name="group_private_create">Create a private group</string>
 	<string name="group_private_popup_title">Go into the wild\nwith Private Groups!</string>
 	<string name="group_private_popup_title_description">Open conversations that anyone can join</string>
 	<string name="group_private_popup_done">Exciting!</string>
 	<string name="group_public_title">Public</string>
-	<string name="group_public_description">Opened chats where anyone can join</string>
+	<string name="group_public_description">Accessible chats for anyone to join</string>
 	<string name="group_public_create">Create public group</string>
 	<string name="group_public_popup_title">Go into the wild\nwith Public Groups!</string>
 	<string name="group_public_popup_title_description">Chat about hot topics, current events, sports, music, and more!</string>
@@ -219,39 +220,39 @@
 	<string name="settings_filter_title">Pick a filter</string>
 	<string name="settings_theme_title">Pick a theme</string>
 	<string name="settings_tribesave_title">Memories</string>
-	<string name="settings_tribesave_subtitle">Allow your friends to save your\nmessages if they want to.</string>
+	<string name="settings_tribesave_subtitle">Allow your friends to save your messages.</string>
 	<string name="settings_geolocation_title">Location</string>
-	<string name="settings_geolocation_subtitle">Let recipients get location\n-based context on your\nmessages.</string>
-	<string name="settings_audio_title">Voice by default</string>
-	<string name="settings_audio_subtitle">Set voice mode by default\ninstead of video messages.</string>
+	<string name="settings_geolocation_subtitle">Allow friends to receive location based\ncontext in your messages.</string>
+	<string name="settings_audio_title">Audio only</string>
+	<string name="settings_audio_subtitle">All messages sent will be audio only.</string>
 	<string name="settings_preload_title">Preload</string>
-	<string name="settings_preload_subtitle">Download new messages in\nbackground, automatically.</string>
+	<string name="settings_preload_subtitle">Incoming messages will automatically\nbe ready to view.</string>
 	<string name="settings_facebook_sync_title">Facebook friends</string>
-	<string name="settings_facebook_not_synced_description">Not synced at all</string>
+	<string name="settings_facebook_not_synced_description">Not synced yet</string>
 	<string name="settings_facebook_synced_description">%1$d friends perfectly synced</string>
 	<string name="settings_addressbook_sync_title">Address Book</string>
-	<string name="settings_addressbook_not_synced_description">Not synced at all</string>
+	<string name="settings_addressbook_not_synced_description">Not synced yet</string>
 	<string name="settings_addressbook_synced_description">%1$d friends perfectly synced</string>
 	<string name="settings_weatherunits_title">Fahrenheit</string>
 	<string name="settings_weatherunits_subtitle">Display temperature on message\nin Fahrenheit instead of Celsius.</string>
 	<string name="settings_invisible_title">Invisible mode</string>
 	<string name="settings_invisible_subtitle">Only you can add friends.\nNobody can add you.</string>
 	<string name="settings_section_support">Support</string>
-	<string name="settings_support_title">Send us messages on Tribe</string>
-	<string name="settings_support_subtitle">We reply in less than 12 hours to every single message.</string>
+	<string name="settings_support_title">Message the CEO on Tribe</string>
+	<string name="settings_support_subtitle">All incoming messages are responded to within 12 hours.</string>
 	<string name="settings_tweet_title">Tweet @heytribe</string>
-	<string name="settings_tweet_subtitle">We reply in less than 24 hours\nto every single tweet.</string>
+	<string name="settings_tweet_subtitle">We love interacting with our users on Twitter</string>
 	<string name="settings_email_title">Email the team</string>
 	<string name="settings_email_subtitle">We reply in less than 48 hours\nto every single email.</string>
 	<string name="settings_email_address">cyril@tribe.pm</string>
 	<string name="settings_email_subject">Something about Tribe</string>
 	<string name="settings_rate_title">Rate the app</string>
-	<string name="settings_rate_subtitle">The easiest way to show us\nsome love.</string>
+	<string name="settings_rate_subtitle">We appreciate the love that you give us!</string>
 	<string name="settings_blocked_title">Blocked contacts</string>
-	<string name="settings_blocked_subtitle">Get access to the list of contacts you blocked.</string>
+	<string name="settings_blocked_subtitle">Get access to the list of contacts you have blocked.</string>
 	<string name="settings_section_exit">Exit</string>
 	<string name="settings_logout_title">Log out</string>
-	<string name="settings_logout_subtitle">Disconnect this account from\nthis device.</string>
+	<string name="settings_logout_subtitle">Disconnect my account from this device.</string>
 	<string name="settings_remove_title">Delete account</string>
 	<string name="settings_remove_subtitle">Say goodbye to your\nfriendships, points and more.</string>
 	<string name="settings_version">Version %1$s (%2$s) handcrafted in San Francisco, CA</string>
@@ -262,7 +263,7 @@
 	
 	<!-- Onboarding -->
 	<string name="onboarding_step_phone">Use your phone number to connect</string>
-	<string name="onboarding_step_code">We just texted you a code to verify it.</string>
+	<string name="onboarding_step_code">We just texted you a verification code.</string>
 	<string name="onboarding_phone_number">Phone number</string>
 	<string name="onboarding_code">Code</string>
 	<string name="onboarding_connected">Connected</string>
@@ -272,11 +273,11 @@
 	<string name="onboarding_user_displayname_placeholder">Full name</string>
 	<string name="onboarding_user_username_placeholder">username</string>
 	<string name="onboarding_user_facebook_button_title">Or autofill profile</string>
-	<string name="onboarding_queue_title">Get access now</string>
-	<string name="onboarding_queue_description">At least 1 friend\nis required to enter.</string>
-	<string name="onboarding_queue_button_title">Look in my friends</string>
+	<string name="onboarding_queue_title">Gain access now</string>
+	<string name="onboarding_queue_description">Hold up, you need at least\n1 friend already on Tribe.</string>
+	<string name="onboarding_queue_button_title">Search for my friends</string>
 	<string name="onboarding_queue_loading_title">Hang tight…</string>
-	<string name="onboarding_queue_loading_description">Looking if one of your\n friends is already on Tribe.</string>
+	<string name="onboarding_queue_loading_description">Looking if one of your\nfriends is already on Tribe.</string>
 	<string name="onboarding_queue_loading_friends">friends</string>
 	<string name="onboarding_queue_declined_title">Uh oh... You don\'t have access yet &#128532;</string>
 	<string name="onboarding_queue_declined_description">You need at least one friend\nto enter. Send invites!&#128171;</string>
@@ -286,8 +287,8 @@
 	<string name="onboarding_queue_declined_popup_description">Get notified when your friends join Tribe.</string>
 	<string name="onboarding_queue_declined_popup_cancel_button">Stay alone.</string>
 	<string name="onboarding_queue_declined_popup_confirm_button">Sure!</string>
-	<string name="onboarding_queue_valid_title">Congrats! You\'re in.</string>
-	<string name="onboarding_queue_valid_description">Some of your friends\nare already there.</string>
+	<string name="onboarding_queue_valid_title">Congrats, you\'re in!</string>
+	<string name="onboarding_queue_valid_description">Some of your friends\nare already here.</string>
 	<string name="onboarding_queue_valid_button_title">Enter now</string>
 	
 	<!-- Pull to search -->
@@ -297,10 +298,10 @@
 	<!-- Score -->
 	<string name="score_current_level">Your current level</string>
 	<string name="score_next_level">Next level in</string>
-	<string name="score_points_system_button">Get free and easy points</string>
+	<string name="score_points_system_button">Get points easily</string>
 	
 	<!-- Points System -->
-	<string name="points_system_title">Get free points</string>
+	<string name="points_system_title">Get points easily</string>
 	<string name="points_AppOpened_title">Stay on the app</string>
 	<string name="points_AppOpened_description">Every 15 sec</string>
 	<string name="points_SendReceiveChat_title">Send or receive</string>
@@ -419,5 +420,8 @@
 	<string name="tribe_event_year_1_past">%1$d year ago</string>
 	<string name="tribe_event_year_n_future">In %1$d years</string>
 	<string name="tribe_event_year_n_past">%1$d years ago</string>
-	<string name="tribe_event_title_suggestion">Beer,Call,Camping,Coffee,Concert,Date,Dentist,Doctor,Drink,Facetime,Flight,Boat,Bus,Meeting,Movie,Office,Party,Repair,Run,Shopping,Skype,Sleep,Train,Travel,TV,Vacation,Workout,Chill</string>
+	<string name="tribe_event_title_suggestion">Dinner,Beer,Call,Camping,Coffee,Concert,Date,Dentist,Doctor,Drink,Facetime,Flight,Boat,Bus,Meeting,Movie,Office,Party,Repair,Run,Shopping,Skype,Sleep,Train,Travel,TV,Vacation,Workout,Chill</string>
+	
+	<!-- Tutorial -->
+	<string name="tutorial_message_support">%1$d messages from the team</string>
 </resources>

@@ -131,4 +131,16 @@ public class DiskUserDataStore implements UserDataStore {
     public Observable<GroupRealm> createGroup(String groupName, List<String> memberIds, Boolean isPrivate, String pictureUri) {
         return null;
     }
+
+    @Override
+    public Observable<Void> updateGroup(String groupId, String groupName, String pictureUri) {
+        return null;
+    }
+
+    @Override
+    public Observable<Void> addMembersToGroup(String groupId, List<String> memberIds) {
+        return null;
+    }
+
+
 }
