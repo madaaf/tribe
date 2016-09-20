@@ -55,6 +55,11 @@ public class PlayerView extends FrameLayout implements TextureView.SurfaceTextur
     }
 
     @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+    }
+
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
@@ -65,11 +70,6 @@ public class PlayerView extends FrameLayout implements TextureView.SurfaceTextur
             textureViewLayout.setRadius(params.width / 2);
             textureViewLayout.setLayoutParams(params);
         }
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
     }
 
     public void createPlayer(String media) {
@@ -92,9 +92,13 @@ public class PlayerView extends FrameLayout implements TextureView.SurfaceTextur
         }));
 
         subscriptions.add(mediaPlayer.onVideoSizeChanged().subscribe(videoSize -> {
+            System.out.println("Video Width : " + videoSize.getWidth());
+            System.out.println("Video Height : " + videoSize.getHeight());
+            System.out.println("Texture height : " + videoTextureView.getHeight());
+            System.out.println("Texture width : " + videoTextureView.getHeight());
             if (videoTextureView != null && videoTextureView.getContentHeight() != videoSize.getHeight()) {
-                videoTextureView.setContentWidth(videoSize.getWidth());
-                videoTextureView.setContentHeight(videoSize.getHeight());
+                videoTextureView.setContentWidth(videoSize.getWidth() * 2);
+                videoTextureView.setContentHeight(videoSize.getHeight() * 2);
                 videoTextureView.updateTextureViewSize();
             }
 

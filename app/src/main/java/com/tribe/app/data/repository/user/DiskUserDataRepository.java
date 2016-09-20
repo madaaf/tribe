@@ -96,31 +96,7 @@ public class DiskUserDataRepository implements UserRepository {
                 tribeDataStore.tribesNotSeen(null).map(collection -> tribeRealmDataMapper.transform(collection)),
                 userDataStore
                         .userInfos(null, filterRecipient)
-                        .map(userRealm -> userRealmDataMapper.transform(userRealm))
-                        .map(user -> {
-                            if (!StringUtils.isEmpty(filterRecipient) && !filterRecipient.equals(PullToSearchView.HOME)) {
-                                List<Friendship> filteredFriendshipList = new ArrayList<>();
-                                List<Group> filteredGroupList = new ArrayList<>();
-
-                                for (Friendship friendship : user.getFriendships()) {
-                                    if (PullToSearchView.shouldFilter(filterRecipient, friendship)) {
-                                        filteredFriendshipList.add(friendship);
-                                    }
-                                }
-
-                                user.setFriendships(filteredFriendshipList);
-
-                                for (Group group : user.getGroupList()) {
-                                    if (PullToSearchView.shouldFilter(filterRecipient, group)) {
-                                        filteredGroupList.add(group);
-                                    }
-                                }
-
-                                user.setGroupList(filteredGroupList);
-                            }
-
-                            return user;
-                        }),
+                        .map(userRealm -> userRealmDataMapper.transform(userRealm)),
                 chatDataStore
                         .messages(null)
                         .map(collection -> chatRealmDataMapper.transform(collection)),
@@ -169,7 +145,30 @@ public class DiskUserDataRepository implements UserRepository {
 
                     return user;
                 }
-        );
+        ).map(user -> {
+            if (!StringUtils.isEmpty(filterRecipient) && !filterRecipient.equals(PullToSearchView.HOME)) {
+                List<Friendship> filteredFriendshipList = new ArrayList<>();
+                List<Group> filteredGroupList = new ArrayList<>();
+
+                for (Friendship friendship : user.getFriendships()) {
+                    if (PullToSearchView.shouldFilter(filterRecipient, friendship)) {
+                        filteredFriendshipList.add(friendship);
+                    }
+                }
+
+                user.setFriendships(filteredFriendshipList);
+
+                for (Group group : user.getGroupList()) {
+                    if (PullToSearchView.shouldFilter(filterRecipient, group)) {
+                        filteredGroupList.add(group);
+                    }
+                }
+
+                user.setGroupList(filteredGroupList);
+            }
+
+            return user;
+        });
     }
 
     @Override

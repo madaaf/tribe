@@ -135,7 +135,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
         subscriptions.add(viewTribePager.onRecordStart()
                 .map(view -> tribePresenter.createTribe(currentUser, recipient, viewTribePager.getTribeMode()))
-                .subscribe(id -> viewTribePager.startRecording(id)));
+                .subscribe(tribe -> viewTribePager.startRecording(tribe.getLocalId())));
 
         subscriptions.add(viewTribePager.onRecordEnd()
                 .subscribe(view -> {
@@ -145,7 +145,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
         subscriptions.add(viewTribePager.onClickTapToCancel()
                 .subscribe(friendship -> {
-                    FileUtils.deleteTribe(currentTribe.getLocalId());
+                    FileUtils.delete(currentTribe.getLocalId(), FileUtils.VIDEO);
                     tribePresenter.deleteTribe(currentTribe);
                     currentTribe = null;
                 }));

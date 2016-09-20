@@ -1,9 +1,12 @@
 package com.tribe.app.data.cache;
 
+import android.support.v4.util.Pair;
+
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.MessageRecipientRealm;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Singleton;
@@ -20,7 +23,22 @@ public interface ChatCache {
     public boolean isExpired();
     public boolean isCached(String messageId);
     public Observable<ChatRealm> put(ChatRealm chatRealm);
-    public void update(ChatRealm chatRealm);
+
+    void insert(ChatRealm chatRealm);
+
+    /**
+     *
+     * @param id
+     * @param valuesToUpdate keys have to be of {@link com.tribe.app.data.realm.ChatRealm.ChatRealmAttributes}
+     */
+    void update(String id, Pair<String, Object>... valuesToUpdate);
+    /**
+     *
+     * @param valuesToUpdate Map of the id of the tribe + the values paired to update
+     *  keys of pair have to be of {@link com.tribe.app.data.realm.ChatRealm.ChatRealmAttributes}
+     */
+    void update(Map<String, List<Pair<String, Object>>> valuesToUpdate);
+
     public void put(List<ChatRealm> messageListRealm);
     public Observable<List<ChatRealm>> messages();
     public Observable<List<ChatRealm>> messages(String friendshipId);
@@ -32,7 +50,5 @@ public interface ChatCache {
     public Observable<List<ChatRealm>> messagesError(String recipientId);
     public List<ChatRealm> messagesPending(String recipientId);
     public RealmList<MessageRecipientRealm> createMessageRecipientRealm(List<MessageRecipientRealm> messageRecipientRealmList);
-    public void updateToError(List<ChatRealm> chatRealmList);
-    public void updateMessageStatus(String recipientId);
     public Observable<List<ChatRealm>> messagesReceived(String friendshipId);
 }

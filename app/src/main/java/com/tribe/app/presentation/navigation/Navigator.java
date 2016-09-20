@@ -105,10 +105,10 @@ public class Navigator {
      * @param position position of the friendship in the grid
      * @param recipient a recipient (friendship with user / group) to open the tribes
      */
-    public void navigateToTribe(Activity activity, int position, Recipient recipient) {
+    public void navigateToTribe(Activity activity, int position, Recipient recipient, int result) {
         if (activity != null) {
             Intent intent = TribeActivity.getCallingIntent(activity, position, recipient);
-            activity.startActivity(intent);
+            activity.startActivityForResult(intent, result);
             activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
         }
     }

@@ -1,6 +1,7 @@
 package com.tribe.app.data.repository.chat.datasource;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 
 import com.tribe.app.R;
@@ -17,6 +18,7 @@ import com.tribe.app.data.repository.tribe.datasource.TribeDataStore;
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
@@ -114,14 +116,28 @@ public class CloudChatDataStore implements ChatDataStore {
             RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
 
             InputStream inputStream = null;
-            File file = FileUtils.getFileEnd(FileUtils.generateIdForMessage());
+            Bitmap bitmap = null;
+            File file = FileUtils.getFile(chatRealm.getLocalId(), chatRealm.getType().equals(ChatMessage.PHOTO) ? FileUtils.PHOTO : FileUtils.VIDEO);
             try {
                 inputStream = context.getContentResolver().openInputStream(Uri.parse(chatRealm.getContent()));
-                FileUtils.copyInputStreamToFile(inputStream, file);
+                if (chatRealm.getType().equals(ChatMessage.PHOTO)) {
+                    bitmap = ImageUtils.loadFromInputStream(inputStream);
+                    FileUtils.bitmapToFile(bitmap, file);
+                } else {
+                    FileUtils.copyInputStreamToFile(inputStream, file);
+                }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+                if (bitmap != null) bitmap.recycle();
+
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
             if (file != null && file.exists() && file.length() > 0) {
@@ -129,7 +145,7 @@ public class CloudChatDataStore implements ChatDataStore {
                 MultipartBody.Part body = null;
 
                 if (chatRealm.getType().equals(ChatMessage.PHOTO)) {
-                    requestFile = RequestBody.create(MediaType.parse("image/*"), file);
+                    requestFile = RequestBody.create(MediaType.parse("image/jpeg"), file);
                     body = MultipartBody.Part.createFormData("content", file.getName(), requestFile);
                 } else {
                     requestFile = RequestBody.create(MediaType.parse("video/mp4"), file);
@@ -256,7 +272,7 @@ public class CloudChatDataStore implements ChatDataStore {
                     if (userRealm != null) {
                         message.setFrom(userRealm);
 
-                        File file = FileUtils.getFileEnd(message.getId());
+                        File file = FileUtils.getFile(message.getId(), FileUtils.VIDEO);
 
                         if (file.exists() && file.length() > 0) {
                             message.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_DOWNLOADED);

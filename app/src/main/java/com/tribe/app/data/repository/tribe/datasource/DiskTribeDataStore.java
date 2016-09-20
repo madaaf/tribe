@@ -1,11 +1,16 @@
 package com.tribe.app.data.repository.tribe.datasource;
 
+import android.support.v4.util.Pair;
+
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
@@ -35,7 +40,7 @@ public class DiskTribeDataStore implements TribeDataStore {
     @Override
     public Observable<TribeRealm> sendTribe(TribeRealm tribeRealm) {
         tribeRealm.setFrom(userCache.userInfosNoObs(tribeRealm.getFrom().getId()));
-        return tribeCache.put(tribeRealm);
+        return tribeCache.insert(tribeRealm);
     }
 
     @Override
@@ -55,11 +60,15 @@ public class DiskTribeDataStore implements TribeDataStore {
 
     @Override
     public Observable<List<TribeRealm>> markTribeListAsRead(List<TribeRealm> tribeRealmList) {
+        Map<String, List<Pair<String, Object>>> tribeUpdates = new HashMap<>();
+
         for (TribeRealm tribeRealm : tribeRealmList) {
-            tribeRealm.setMessageReceivingStatus(MessageReceivingStatus.STATUS_SEEN);
+            List<Pair<String, Object>> values = new ArrayList<>();
+            values.add(Pair.create(TribeRealm.MESSAGE_RECEIVING_STATUS, MessageReceivingStatus.STATUS_SEEN));
+            tribeUpdates.put(tribeRealm.getLocalId(), values);
         }
 
-        tribeCache.put(tribeRealmList);
+        tribeCache.update(tribeUpdates);
 
         return Observable.just(tribeRealmList);
     }

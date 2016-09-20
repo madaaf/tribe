@@ -3,13 +3,15 @@ package com.tribe.app.presentation.view.utils;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import java.io.InputStream;
+
 /**
  * Utility methods for manipulating images.
  * Created by horatiothomas on 8/25/16.
  */
 public class ImageUtils {
 
-    public static final int AVATAR_SIZE = 500;
+    public static final int IMG_SIZE = 500;
 
     public static Bitmap loadFromPath(String imagePath) {
         // Get the dimensions of the bitmap
@@ -21,7 +23,7 @@ public class ImageUtils {
         int photoH = bmOptions.outHeight;
 
         // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW / AVATAR_SIZE, photoH / AVATAR_SIZE);
+        int scaleFactor = Math.min(photoW / IMG_SIZE, photoH / IMG_SIZE);
 
         // Decode the image file into a Bitmap sized to fill the View
         bmOptions.inJustDecodeBounds = false;
@@ -32,9 +34,21 @@ public class ImageUtils {
         return(bitmap);
     }
 
+    public static Bitmap loadFromInputStream(InputStream inputStream) {
+        // Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = 2;
+        bmOptions.inPurgeable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeStream(inputStream, null, bmOptions);
+        return bitmap;
+    }
+
     public static Bitmap formatForUpload(Bitmap srcBmp) {
         srcBmp = centerCropBitmap(srcBmp);
-        srcBmp = Bitmap.createScaledBitmap(srcBmp, AVATAR_SIZE, AVATAR_SIZE, true);
+        srcBmp = Bitmap.createScaledBitmap(srcBmp, IMG_SIZE, IMG_SIZE, true);
         return srcBmp;
     }
 

@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.facebook.rebound.SpringConfig;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
@@ -54,8 +53,8 @@ import rx.subscriptions.CompositeSubscription;
  * Fragment that shows a list of Recipients.
  */
 public class HomeGridFragment extends BaseFragment implements HomeGridView {
-    private static final SpringConfig PULL_TO_SEARCH_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(132, 7f);
-    private static final float DRAG_RATE = 0.5f;
+
+    private static final int TIME_MIN_RECORDING = 1500; // IN MS
 
     @Inject
     HomeGridPresenter homeGridPresenter;
@@ -99,12 +98,14 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private @CameraWrapper.TribeMode String tribeMode;
     private TribeMessage currentTribe; // The tribe currently being recorded / sent
     private boolean isRecording;
+    private long timeRecording;
     private List<TribeMessage> pendingTribes;
     private BottomSheetDialog bottomSheetPendingTribeDialog;
     private RecyclerView recyclerViewPending;
     private LabelSheetAdapter labelSheetAdapter;
     private int verticalScrollOffset = 0;
     private String filter = null;
+    private boolean shouldReloadGrid = false;
 
     public HomeGridFragment() {
         setRetainInstance(true);
@@ -202,6 +203,10 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     @Override
     public void renderRecipientList(List<Recipient> recipientList) {
         if (recipientList != null) {
+            if (shouldReloadGrid) {
+                shouldReloadGrid = false;
+                reloadGrid();
+            }
             if (pullToSearchContainer != null) pullToSearchContainer.updatePTSList(recipientList);
             this.homeGridAdapter.setItems(recipientList);
         }
@@ -260,6 +265,10 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     public void reloadGrid() {
         filter = null;
         this.homeGridPresenter.loadFriendList(filter);
+    }
+
+    public void reloadGridAfterNewTribes() {
+        shouldReloadGrid = true;
     }
 
     private void init() {
@@ -329,10 +338,11 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .map(recipient -> {
                     isRecording = true;
-                    String tribeId = homeGridPresenter.createTribe(currentUser, recipient, tribeMode);
+                    timeRecording = System.currentTimeMillis();
+                    currentTribe = homeGridPresenter.createTribe(currentUser, recipient, tribeMode);
                     homeGridAdapter.updateItemWithTribe(recipient.getPosition(), currentTribe);
                     recyclerViewFriends.requestDisallowInterceptTouchEvent(true);
-                    return tribeId;
+                    return currentTribe.getLocalId();
                 })
                 .subscribe(onRecordStart));
 
@@ -343,18 +353,24 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                 .doOnNext(recipient -> {
                     isRecording = false;
                     TileView tileView = (TileView) layoutManager.findViewByPosition(recipient.getPosition());
-                    tileView.showTapToCancel(currentTribe, tribeMode);
-                    homeGridAdapter.updateItemWithTribe(recipient.getPosition(), currentTribe);
-                    recyclerViewFriends.requestDisallowInterceptTouchEvent(false);
+                    System.out.println("TIME : " + (System.currentTimeMillis() - timeRecording));
+                    System.out.println("currentTribe : " + recipient.getTribe());
+                    if ((System.currentTimeMillis() - timeRecording) > TIME_MIN_RECORDING) {
+                        System.out.println("HEY");
+                        tileView.showTapToCancel(currentTribe, tribeMode);
+                        homeGridAdapter.updateItemWithTribe(recipient.getPosition(), currentTribe);
+                        recyclerViewFriends.requestDisallowInterceptTouchEvent(false);
+                    } else {
+                        cleanupCurrentTribe(recipient);
+                        tileView.resetViewAfterTapToCancel(false);
+                    }
                 })
                 .subscribe(onRecordEnd));
 
         subscriptions.add(homeGridAdapter.onClickTapToCancel()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .subscribe(recipient -> {
-                    homeGridPresenter.deleteTribe(recipient.getTribe());
-                    homeGridAdapter.updateItemWithTribe(recipient.getPosition(), null);
-                    currentTribe = null;
+                    cleanupCurrentTribe(recipient);
                 }));
 
         subscriptions.add(homeGridAdapter.onNotCancel()
@@ -399,6 +415,13 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         }));
     }
 
+    private void cleanupCurrentTribe(Recipient recipient) {
+        System.out.println("currentTribe bis : " + recipient.getTribe());
+        homeGridPresenter.deleteTribe(recipient.getTribe());
+        homeGridAdapter.updateItemWithTribe(recipient.getPosition(), null);
+        currentTribe = null;
+    }
+
     private void setupBottomSheetMore(Recipient recipient) {
         if (dismissDialogSheetMore()) {
             return;
@@ -410,6 +433,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
             moreTypes.add(new MoreType(getString(R.string.grid_more_hide), MoreType.HIDE));
             moreTypes.add(new MoreType(getString(R.string.grid_more_block_hide), MoreType.BLOCK_HIDE));
         }
+
         if (recipient instanceof Group) {
             moreTypes.add(new MoreType(getString(R.string.grid_menu_group_infos), MoreType.GROUP_INFO));
             moreTypes.add(new MoreType(getString(R.string.grid_menu_group_leave), MoreType.GROUP_LEAVE));

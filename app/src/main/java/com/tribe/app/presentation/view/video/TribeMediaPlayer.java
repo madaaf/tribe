@@ -57,6 +57,8 @@ public abstract class TribeMediaPlayer {
     public abstract void pause();
     public abstract void play();
     public abstract void release();
+    public abstract long getPosition();
+    public abstract void seekTo(long position);
 
     public static class TribeMediaPlayerBuilder {
         private final Context context;

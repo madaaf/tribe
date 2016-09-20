@@ -97,7 +97,7 @@ public class PhoneNumberView extends FrameLayout {
         countryCode = codeCountry;
 
         try {
-            Drawable countryFlagImg = context.getDrawable(R.drawable.class.getField("picto_flag_" + codeCountry.toLowerCase()).getInt(null));
+            Drawable countryFlagImg = context.getResources().getDrawable(R.drawable.class.getField("picto_flag_" + codeCountry.toLowerCase()).getInt(null));
             imgCountryCode.setImageDrawable(countryFlagImg);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -155,10 +155,10 @@ public class PhoneNumberView extends FrameLayout {
 
     public void setNextEnabled(boolean enabled) {
         if (enabled) {
-            imageViewNextIcon.setImageDrawable(context.getDrawable(R.drawable.picto_next_icon_black));
+            imageViewNextIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.picto_next_icon_black));
             imageViewNextIcon.setClickable(true);
         } else {
-            imageViewNextIcon.setImageDrawable(context.getDrawable(R.drawable.picto_next_icon));
+            imageViewNextIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.picto_next_icon));
             imageViewNextIcon.setClickable(false);
         }
     }

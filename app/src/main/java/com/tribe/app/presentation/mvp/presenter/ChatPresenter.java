@@ -187,7 +187,7 @@ public class ChatPresenter implements Presenter {
                 boolean shouldDownload = false;
 
                 JobStatus jobStatus = jobManager.getJobStatus(message.getLocalId());
-                File file = FileUtils.getFileEnd(message.getId());
+                File file = FileUtils.getFile(message.getId(), FileUtils.VIDEO);
 
                 if (jobStatus.equals(JobStatus.UNKNOWN) && (!file.exists() || file.length() == 0)
                         && (message.getMessageDownloadingStatus() == null || message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD))) {

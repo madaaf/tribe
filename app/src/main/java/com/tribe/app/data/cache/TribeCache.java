@@ -1,9 +1,12 @@
 package com.tribe.app.data.cache;
 
-import com.tribe.app.data.realm.TribeRealm;
+import android.support.v4.util.Pair;
+
 import com.tribe.app.data.realm.MessageRecipientRealm;
+import com.tribe.app.data.realm.TribeRealm;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Singleton;
@@ -17,20 +20,32 @@ import rx.Observable;
 @Singleton
 public interface TribeCache {
 
-    public boolean isExpired();
-    public boolean isCached(int messageId);
-    public Observable<TribeRealm> put(TribeRealm tribeRealm);
-    public void update(TribeRealm tribeRealm);
-    public void put(List<TribeRealm> tribeRealmList);
-    public RealmList<MessageRecipientRealm> createTribeRecipientRealm(List<MessageRecipientRealm> tribeRecipientRealm);
-    public Observable<Void> delete(TribeRealm tribeRealm);
-    public Observable<List<TribeRealm>> tribesNotSeen(String friendshipId);
-    public List<TribeRealm> tribesNotSeenNoObs(String friendshipId);
-    public Observable<List<TribeRealm>> tribesReceived(String friendshipId);
-    public List<TribeRealm> tribesReceivedNoObs(String friendshipId);
-    public Observable<List<TribeRealm>> tribesPending();
-    public List<TribeRealm> tribesNotSent();
-    public List<TribeRealm> tribesSent(Set<String> toIds);
-    public TribeRealm updateLocalWithServerRealm(TribeRealm local, TribeRealm server);
-    public void updateToError(List<TribeRealm> tribeRealmList);
+    boolean isExpired();
+    boolean isCached(int messageId);
+    void insert(List<TribeRealm> tribeRealmList);
+    Observable<TribeRealm> insert(TribeRealm tribeRealm);
+    void update(TribeRealm tribeRealm);
+    /**
+     *
+     * @param id
+     * @param valuesToUpdate keys have to be of {@link com.tribe.app.data.realm.TribeRealm.TribeRealmAttributes}
+     */
+    void update(String id, Pair<String, Object>... valuesToUpdate);
+    /**
+     *
+     * @param valuesToUpdate Map of the id of the tribe + the values paired to update
+     *  keys of pair have to be of {@link com.tribe.app.data.realm.TribeRealm.TribeRealmAttributes}
+     */
+    void update(Map<String, List<Pair<String, Object>>> valuesToUpdate);
+
+    RealmList<MessageRecipientRealm> createTribeRecipientRealm(List<MessageRecipientRealm> tribeRecipientRealm);
+    Observable<Void> delete(TribeRealm tribeRealm);
+    Observable<List<TribeRealm>> tribesNotSeen(String friendshipId);
+    List<TribeRealm> tribesNotSeenNoObs(String friendshipId);
+    Observable<List<TribeRealm>> tribesReceived(String friendshipId);
+    List<TribeRealm> tribesReceivedNoObs(String friendshipId);
+    Observable<List<TribeRealm>> tribesPending();
+    List<TribeRealm> tribesNotSent();
+    List<TribeRealm> tribesSent(Set<String> toIds);
+    TribeRealm updateLocalWithServerRealm(TribeRealm local, TribeRealm server);
 }

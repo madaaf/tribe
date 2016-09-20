@@ -41,13 +41,11 @@ public class UpdateMessagesJob extends BaseJob {
 
     @Override
     protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
-        //System.out.println("Cancel Reason : " + cancelReason);
-        //throwable.printStackTrace();
+
     }
 
     @Override
     protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount, int maxRunCount) {
-        //return RetryConstraint.createExponentialBackoff(runCount, 1000);
         return RetryConstraint.CANCEL;
     }
 

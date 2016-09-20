@@ -127,6 +127,8 @@ public class AccessLockView extends FrameLayout {
         subscriptions.clear();
         greyPulse();
 
+        txtNumFriends.setText("0");
+        progressBar.setProgress(0);
         progressBar.setVisibility(INVISIBLE);
 
         AnimationUtils.fadeViewDownOut(layoutFriends, new AnimatorListenerAdapter() {
@@ -243,7 +245,7 @@ public class AccessLockView extends FrameLayout {
         TransitionDrawable crossfader = new TransitionDrawable(backgrounds);
         viewPulse.setBackground(crossfader);
         viewPulse.animate().scaleX(0).scaleY(0).setDuration(600).start();
-        crossfader.startTransition(1200);
+        crossfader.startTransition(PULSATING_DURATION);
     }
 
     private void bluePulse() {

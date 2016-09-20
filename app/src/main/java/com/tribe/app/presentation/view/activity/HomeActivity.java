@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -48,6 +47,7 @@ import com.tribe.app.presentation.view.widget.CustomViewPager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -61,8 +61,10 @@ import rx.subscriptions.CompositeSubscription;
 
 public class HomeActivity extends BaseActivity implements HasComponent<UserComponent>, HomeView {
 
-    private static final String[] PERMISSIONS_CAMERA = new String[]{Manifest.permission.CAMERA,
-            Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    public static final String[] PERMISSIONS_CAMERA = new String[]{ Manifest.permission.CAMERA,
+            Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE };
+    public static final int SETTINGS_RESULT = 101, OPEN_CAMERA_RESULT = 102, OPEN_GALLERY_RESULT = 103, TRIBES_RESULT = 104;
+    private static final String GROUP_AVATAR = "group_avatar";
 
     private static final int THRESHOLD_SCROLL = 12;
     private static final int DURATION = 500;
@@ -140,7 +142,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private HomeViewPagerAdapter homeViewPagerAdapter;
     private List<Message> newMessages;
     private int pendingTribeCount;
-    public static final int SETTINGS_RESULT = 101, OPEN_CAMERA_RESULT = 102, OPEN_GALLERY_RESULT = 103;
+    private String pictureUri;
+    private boolean isRecording;
     private boolean navVisible = true;
 
     // DIMEN
@@ -162,6 +165,14 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     protected void onResume() {
         super.onResume();
 
+        subscriptions.add(Observable.just("")
+                .observeOn(Schedulers.newThread())
+                .delay(1000, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(o1 -> {
+                    cameraWrapper.showCamera();
+                }));
+
         subscriptions.add(Observable.
                 from(PERMISSIONS_CAMERA)
                 .map(permission -> RxPermissions.getInstance(HomeActivity.this).isGranted(permission))
@@ -180,9 +191,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @Override
     protected void onPause() {
-        super.onPause();
+        cameraWrapper.onPause(true);
 
-        cameraWrapper.onPause();
+        super.onPause();
     }
 
     @Override
@@ -195,7 +206,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SETTINGS_RESULT) reloadGrid();
+        if (requestCode == SETTINGS_RESULT || requestCode == TRIBES_RESULT) reloadGrid();
 
         if (requestCode == OPEN_CAMERA_RESULT && resultCode == Activity.RESULT_OK && data != null) {
             subscriptions.add(
@@ -204,7 +215,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(bitmap -> {
-                                homeViewPagerAdapter.groupsGridFragment.setPictureUri(Uri.fromFile(FileUtils.bitmapToFile(bitmap, this)).toString());
+                                homeViewPagerAdapter.groupsGridFragment.setPictureUri(Uri.fromFile(FileUtils.bitmapToFile(GROUP_AVATAR, bitmap, this)).toString());
                                 homeViewPagerAdapter.groupsGridFragment.getGroupInfoView().setGroupPicture(bitmap);
                             })
             );
@@ -226,7 +237,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(bitmap -> {
-                                homeViewPagerAdapter.groupsGridFragment.setPictureUri(Uri.fromFile(FileUtils.bitmapToFile(bitmap, this)).toString());
+                                homeViewPagerAdapter.groupsGridFragment.setPictureUri(Uri.fromFile(FileUtils.bitmapToFile(GROUP_AVATAR, bitmap, this)).toString());
                                 homeViewPagerAdapter.groupsGridFragment.getGroupInfoView().setGroupPicture(bitmap);
                             }));
         }
@@ -273,6 +284,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                         else cameraWrapper.showPermissions();
                     });
         }));
+
+        cameraWrapper.hideCamera();
     }
 
     private void initViewPager() {
@@ -327,8 +340,11 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @Override
     public void initOpenTribes(Observable<Recipient> observable) {
-        subscriptions.add(observable.subscribe(friend -> {
-            HomeActivity.this.navigator.navigateToTribe(HomeActivity.this, friend.getPosition(), friend);
+        subscriptions.add(observable
+                .doOnNext(recipient -> cameraWrapper.hideCamera())
+                .delay(DURATION_SMALL, TimeUnit.MILLISECONDS)
+                .subscribe(friend -> {
+            HomeActivity.this.navigator.navigateToTribe(HomeActivity.this, friend.getPosition(), friend, TRIBES_RESULT);
         }));
     }
 
@@ -342,6 +358,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     public void initOnRecordStart(Observable<String> observable) {
         subscriptions.add(observable.subscribe(id -> {
+            isRecording = true;
             viewPager.setSwipeable(false);
             cameraWrapper.onStartRecord(id);
         }));
@@ -350,6 +367,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     public void initOnRecordEnd(Observable<Recipient> observable) {
         subscriptions.add(observable.subscribe(friend -> {
+            isRecording = false;
             viewPager.setSwipeable(true);
             cameraWrapper.onEndRecord();
         }));
@@ -446,42 +464,46 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @OnClick(R.id.imgNavGroups)
     public void goToGroups() {
-        viewPager.setCurrentItem(GROUPS_FRAGMENT_PAGE, true);
+        if (!isRecording) viewPager.setCurrentItem(GROUPS_FRAGMENT_PAGE, true);
     }
 
     @OnClick(R.id.imgNavFriends)
     public void goToFriends() {
-        viewPager.setCurrentItem(CONTACTS_FRAGMENT_PAGE, true);
+        if (!isRecording) viewPager.setCurrentItem(CONTACTS_FRAGMENT_PAGE, true);
     }
 
     @OnClick(R.id.layoutNavPending)
     public void sendPendingMessages() {
-        homeViewPagerAdapter.getHomeGridFragment().showPendingTribesMenu();
+        if (!isRecording) homeViewPagerAdapter.getHomeGridFragment().showPendingTribesMenu();
     }
 
     @OnClick(R.id.layoutNavNewMessages)
     public void updateGrid() {
-        homePresenter.updateMessagesToNotSeen(newMessages);
-        homeViewPagerAdapter.getHomeGridFragment().reloadGrid();
-        homeViewPagerAdapter.getHomeGridFragment().scrollToTop();
+        if (!isRecording) {
+            homePresenter.updateMessagesToNotSeen(newMessages);
+            homeViewPagerAdapter.getHomeGridFragment().scrollToTop();
+            homeViewPagerAdapter.getHomeGridFragment().reloadGridAfterNewTribes();
 
-        AnimationUtils.replaceView(this, txtNewMessages, progressBarNewMessages, new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                txtNewMessages.animate().setListener(null).start();
-                progressBarNewMessages.animate().setListener(null).start();
-                hideLayoutNewMessages();
-            }
-        });
+            AnimationUtils.replaceView(this, txtNewMessages, progressBarNewMessages, new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    txtNewMessages.animate().setListener(null).start();
+                    progressBarNewMessages.animate().setListener(null).start();
+                    hideLayoutNewMessages();
+                }
+            });
+        }
     }
 
     @OnClick(R.id.layoutNavGridMain)
     public void reloadGrid() {
-        if (viewPager.getCurrentItem() == GRID_FRAGMENT_PAGE) {
-            homePresenter.reloadData();
-            homeViewPagerAdapter.getHomeGridFragment().scrollToTop();
-        } else {
-            viewPager.setCurrentItem(GRID_FRAGMENT_PAGE, true);
+        if (!isRecording) {
+            if (viewPager.getCurrentItem() == GRID_FRAGMENT_PAGE) {
+                homePresenter.reloadData();
+                homeViewPagerAdapter.getHomeGridFragment().scrollToTop();
+            } else {
+                viewPager.setCurrentItem(GRID_FRAGMENT_PAGE, true);
+            }
         }
     }
 
@@ -533,7 +555,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         public HomeViewPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
         }
-
 
         @Override
         public Fragment getItem(int position) {

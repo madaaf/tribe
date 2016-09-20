@@ -43,6 +43,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -51,6 +53,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class ProfileInfoView extends FrameLayout {
 
+    private final static String AVATAR = "AVATAR";
     public final static int RESULT_LOAD_IMAGE = 5, CAMERA_REQUEST = 6;
 
     @BindView(R.id.imgProfilePic)
@@ -209,6 +212,9 @@ public class ProfileInfoView extends FrameLayout {
                 RxTextView.textChanges(editUsername)
                         .filter(charSequence -> charSequence.length() > 1)
                         .debounce(500, TimeUnit.MILLISECONDS)
+                        .subscribeOn(AndroidSchedulers.mainThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnNext(s -> setUsernameValid(false))
                         .map(CharSequence::toString)
                         .subscribe(usernameInput)
         );
@@ -238,11 +244,11 @@ public class ProfileInfoView extends FrameLayout {
                 .into(imgProfilePic);
 
         Glide.with(getContext()).load(facebookEntity.getProfilePicture())
-                .override(ImageUtils.AVATAR_SIZE, ImageUtils.AVATAR_SIZE)
+                .override(ImageUtils.IMG_SIZE, ImageUtils.IMG_SIZE)
                 .into(new SimpleTarget<GlideDrawable>() {
                     @Override
                     public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                        imgUri = Uri.fromFile(FileUtils.bitmapToFile(((GlideBitmapDrawable) resource.getCurrent()).getBitmap(), getContext())).toString();
+                        imgUri = Uri.fromFile(FileUtils.bitmapToFile(AVATAR, ((GlideBitmapDrawable) resource.getCurrent()).getBitmap(), getContext())).toString();
                     }
                 });
 

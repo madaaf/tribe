@@ -1,40 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content" android:layout_height="50dp"
+    android:layout_width="match_parent" android:layout_height="50dp"
     android:background="@null">
 
     <ImageView
         android:id="@+id/imgShareFB"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_gravity="right|center_vertical"
+        android:layout_marginRight="@dimen/horizontal_margin_large"
         android:clickable="true"
         android:src="@drawable/picto_share_fb"
         android:scaleType="centerInside"
+        android:visibility="visible"
         />
 
     <ImageView
         android:id="@+id/imgShareSms"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_gravity="right|center_vertical"
-        android:layout_marginLeft="@dimen/horizontal_margin_large"
         android:clickable="true"
         android:background="@drawable/shape_oval_green"
         android:src="@drawable/picto_message_icon_large"
         android:scaleType="centerInside"
+        android:visibility="visible"
         />
 
     <ImageView
         android:id="@+id/imgShareWhatsapp"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_gravity="right|center_vertical"
         android:layout_marginLeft="@dimen/horizontal_margin_large"
         android:clickable="true"
         android:background="@drawable/shape_oval_green"
         android:src="@drawable/picto_share_whatsapp"
         android:scaleType="centerInside"
+        android:visibility="visible"
         />
 
 </LinearLayout>

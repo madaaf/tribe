@@ -113,7 +113,7 @@
         mutation {
             sendMessageToUser(
                 %1$s
-            ) { id, created_at, recorded_at }
+            ) { id, content, created_at, recorded_at }
         }
     </string>
 
@@ -121,7 +121,7 @@
         mutation {
             sendMessageToGroup(
                 %1$s
-            ) { id, created_at, recorded_at }
+            ) { id, content, created_at, recorded_at }
         }
     </string>
 

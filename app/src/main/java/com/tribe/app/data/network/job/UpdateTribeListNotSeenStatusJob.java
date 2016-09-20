@@ -1,6 +1,7 @@
 package com.tribe.app.data.network.job;
 
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
@@ -17,7 +18,9 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -64,33 +67,42 @@ public class UpdateTribeListNotSeenStatusJob extends BaseJob {
 
     @Override
     public void onRun() throws Throwable {
+        Map<String, List<Pair<String, Object>>> chatUpdates = new HashMap<>();
+        Map<String, List<Pair<String, Object>>> tribeUpdates = new HashMap<>();
+
         for (TribeRealm tribeRealm : tribeRealmList) {
-            tribeRealm.setMessageReceivingStatus(MessageReceivingStatus.STATUS_NOT_SEEN);
+            List<Pair<String, Object>> values = new ArrayList<>();
+            values.add(Pair.create(TribeRealm.MESSAGE_RECEIVING_STATUS, MessageReceivingStatus.STATUS_NOT_SEEN));
 
             if (tribeRealm.isToGroup() && tribeRealm.getGroup() != null
                     && (tribeRealm.getGroup().getUpdatedAt() == null || tribeRealm.getGroup().getUpdatedAt().before(tribeRealm.getRecordedAt()))) {
-                tribeRealm.getGroup().setUpdatedAt(tribeRealm.getRecordedAt());
+                values.add(Pair.create(TribeRealm.GROUP_ID_UPDATED_AT, tribeRealm.getRecordedAt()));
             } else if (!tribeRealm.isToGroup() && tribeRealm.getFrom() != null
                     && (tribeRealm.getFrom().getUpdatedAt() == null || tribeRealm.getFrom().getUpdatedAt().before(tribeRealm.getRecordedAt()))) {
-                tribeRealm.getFrom().setUpdatedAt(tribeRealm.getRecordedAt());
+                values.add(Pair.create(TribeRealm.FRIEND_ID_UPDATED_AT, tribeRealm.getRecordedAt()));
             }
+
+            tribeUpdates.put(tribeRealm.getLocalId(), values);
         }
 
-        tribeCache.put(tribeRealmList);
+        tribeCache.update(tribeUpdates);
 
         for (ChatRealm chatRealm : chatRealmList) {
-            chatRealm.setMessageReceivingStatus(MessageReceivingStatus.STATUS_NOT_SEEN);
+            List<Pair<String, Object>> values = new ArrayList<>();
+            values.add(Pair.create(ChatRealm.MESSAGE_RECEIVING_STATUS, MessageReceivingStatus.STATUS_NOT_SEEN));
 
             if (chatRealm.isToGroup() && chatRealm.getGroup() != null
                     && (chatRealm.getGroup().getUpdatedAt() == null || chatRealm.getGroup().getUpdatedAt().before(chatRealm.getRecordedAt()))) {
-                chatRealm.getGroup().setUpdatedAt(chatRealm.getRecordedAt());
+                values.add(Pair.create(ChatRealm.GROUP_ID_UPDATED_AT, chatRealm.getRecordedAt()));
             } else if (!chatRealm.isToGroup() && chatRealm.getFrom() != null
                     && (chatRealm.getFrom().getUpdatedAt() == null || chatRealm.getFrom().getUpdatedAt().before(chatRealm.getRecordedAt()))) {
-                chatRealm.getFrom().setUpdatedAt(chatRealm.getRecordedAt());
+                values.add(Pair.create(ChatRealm.FRIEND_ID_UPDATED_AT, chatRealm.getRecordedAt()));
             }
+
+            chatUpdates.put(chatRealm.getLocalId(), values);
         }
 
-        chatCache.put(chatRealmList);
+        chatCache.update(chatUpdates);
     }
 
     @Override

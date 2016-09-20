@@ -142,9 +142,10 @@
 
         <com.github.rahatarmanahmed.cpv.CircularProgressView
             android:id="@+id/circularProgressView"
-            android:layout_width="12.5dp"
-            android:layout_height="12.5dp"
+            android:layout_width="17.5dp"
+            android:layout_height="17.5dp"
             android:layout_gravity="center"
+            android:visibility="gone"
             app:cpv_thickness="@dimen/progress_bar_thickness"
             app:cpv_indeterminate="true"
             app:cpv_color="@android:color/white"

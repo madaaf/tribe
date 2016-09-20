@@ -1,5 +1,7 @@
 package com.tribe.app.data.realm;
 
+import android.support.annotation.StringDef;
+
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
@@ -15,6 +17,18 @@ import io.realm.annotations.PrimaryKey;
  * Created by tiago on 29/06/2016.
  */
 public class TribeRealm extends RealmObject implements MessageRealmInterface {
+
+    @StringDef({MESSAGE_SENDING_STATUS, MESSAGE_RECEIVING_STATUS, MESSAGE_DOWNLOADING_STATUS,
+            PROGRESS, TOTAL_SIZE, FRIEND_ID_UPDATED_AT, GROUP_ID_UPDATED_AT})
+    public @interface TribeRealmAttributes {}
+
+    public static final String MESSAGE_SENDING_STATUS = "messageSendingStatus";
+    public static final String MESSAGE_RECEIVING_STATUS = "messageReceivingStatus";
+    public static final String MESSAGE_DOWNLOADING_STATUS = "messageDownloadingStatus";
+    public static final String PROGRESS = "progress";
+    public static final String TOTAL_SIZE = "totalSize";
+    public static final String FRIEND_ID_UPDATED_AT = "friendshipRealm.updated_at";
+    public static final String GROUP_ID_UPDATED_AT = "groupRealm.updated_at";
 
     @PrimaryKey
     private String localId;
@@ -36,6 +50,8 @@ public class TribeRealm extends RealmObject implements MessageRealmInterface {
     private LocationRealm locationRealm;
     private RealmList<MessageRecipientRealm> recipientList;
     private String transcript;
+    private int progress;
+    private long totalSize;
 
     public void setId(String id) {
         this.id = id;
@@ -181,26 +197,5 @@ public class TribeRealm extends RealmObject implements MessageRealmInterface {
 
     public void setTranscript(String transcript) {
         this.transcript = transcript;
-    }
-
-    public TribeRealm cloneTribeRealm(TribeRealm fromRealm) {
-        TribeRealm tribeRealm = new TribeRealm();
-        tribeRealm.setId(fromRealm.getId());
-        tribeRealm.setLocalId(fromRealm.getLocalId());
-        tribeRealm.setGroup(fromRealm.getGroup());
-        tribeRealm.setFriendshipRealm(fromRealm.getFriendshipRealm());
-        tribeRealm.setType(fromRealm.getType());
-        tribeRealm.setRecordedAt(fromRealm.getRecordedAt());
-        tribeRealm.setUpdatedAt(fromRealm.getUpdatedAt());
-        tribeRealm.setFrom(fromRealm.getFrom());
-        tribeRealm.setLocationRealm(fromRealm.getLocationRealm());
-        tribeRealm.setWeatherRealm(fromRealm.getWeatherRealm());
-        tribeRealm.setUrl(fromRealm.getUrl());
-        tribeRealm.setMessageSendingStatus(fromRealm.getMessageSendingStatus());
-        tribeRealm.setMessageReceivingStatus(fromRealm.getMessageReceivingStatus());
-        tribeRealm.setMessageDownloadingStatus(fromRealm.getMessageDownloadingStatus());
-        tribeRealm.setRecipientList(fromRealm.getRecipientList());
-
-        return tribeRealm;
     }
 }

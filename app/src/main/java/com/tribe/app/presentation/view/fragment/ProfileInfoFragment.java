@@ -190,10 +190,10 @@ public class ProfileInfoFragment extends Fragment implements com.tribe.app.prese
 
     public void refactorNext() {
         if (profileInfoView.isUsernameSelected() && profileInfoView.isDisplayNameSelected()) {
-            imgNextIcon.setImageDrawable(getContext().getDrawable(R.drawable.picto_next_icon_black));
+            imgNextIcon.setImageDrawable(getContext().getResources().getDrawable(R.drawable.picto_next_icon_black));
             imgNextIcon.setClickable(true);
         } else {
-            imgNextIcon.setImageDrawable(getContext().getDrawable(R.drawable.picto_next_icon));
+            imgNextIcon.setImageDrawable(getContext().getResources().getDrawable(R.drawable.picto_next_icon));
             imgNextIcon.setClickable(false);
         }
     }

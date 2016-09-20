@@ -1,5 +1,7 @@
 package com.tribe.app.data.realm;
 
+import android.support.annotation.StringDef;
+
 import java.util.Date;
 
 import io.realm.RealmList;
@@ -10,6 +12,11 @@ import io.realm.annotations.PrimaryKey;
  * Created by tiago on 04/05/2016.
  */
 public class UserRealm extends RealmObject {
+
+    @StringDef({UPDATED_AT})
+    public @interface UserRealmAttributes {}
+
+    public static final String UPDATED_AT = "updated_at";
 
     @PrimaryKey
     private String id;
@@ -33,7 +40,6 @@ public class UserRealm extends RealmObject {
     private RealmList<UserRealm> reported;
     private RealmList<GroupRealm> groups;
     private boolean invisible_mode;
-
 
     public String getId() {
         return id;

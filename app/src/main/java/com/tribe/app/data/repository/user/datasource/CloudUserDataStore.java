@@ -36,7 +36,11 @@ import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
+<<<<<<< HEAD
 import com.tribe.app.data.realm.mapper.GroupRealmDataMapper;
+=======
+import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
+>>>>>>> ba78dbd0afb0b3b2f296f600375936782fa61f97
 import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.User;
@@ -90,7 +94,11 @@ public class CloudUserDataStore implements UserDataStore {
     private Preference<String> lastMessageRequest;
     private Preference<String> lastUserRequest;
     private SimpleDateFormat utcSimpleDate = null;
+<<<<<<< HEAD
     private GroupRealmDataMapper groupRealmDataMapper;
+=======
+    private UserRealmDataMapper userRealmDataMapper;
+>>>>>>> ba78dbd0afb0b3b2f296f600375936782fa61f97
 
     /**
      * Construct a {@link UserDataStore} based on connections to the api (Cloud).
@@ -107,7 +115,8 @@ public class CloudUserDataStore implements UserDataStore {
                               AccessToken accessToken, Installation installation,
                               ReactiveLocationProvider reactiveLocationProvider, Context context,
                               Preference<String> lastMessageRequest, Preference<String> lastUserRequest, SimpleDateFormat utcSimpleDate,
-                                GroupRealmDataMapper groupRealmDataMapper) {
+                            GroupRealmDataMapper groupRealmDataMapper,
+                              UserRealmDataMapper userRealmDataMapper) {
         this.userCache = userCache;
         this.tribeCache = tribeCache;
         this.chatCache = chatCache;
@@ -125,6 +134,7 @@ public class CloudUserDataStore implements UserDataStore {
         this.lastUserRequest = lastUserRequest;
         this.utcSimpleDate = utcSimpleDate;
         this.groupRealmDataMapper = groupRealmDataMapper;
+        this.userRealmDataMapper = userRealmDataMapper;
     }
 
     @Override
@@ -338,7 +348,7 @@ public class CloudUserDataStore implements UserDataStore {
 
             if (!(file != null && file.exists() && file.length() > 0)) {
                 InputStream inputStream = null;
-                file = FileUtils.getFileEnd(FileUtils.generateIdForMessage());
+                file = FileUtils.getFile(FileUtils.generateIdForMessage(), FileUtils.PHOTO);
                 try {
                     inputStream = context.getContentResolver().openInputStream(Uri.parse(pictureUri));
                     FileUtils.copyInputStreamToFile(inputStream, file);
@@ -676,6 +686,16 @@ public class CloudUserDataStore implements UserDataStore {
 
     private final Action1<UserRealm> saveToCacheUser = userRealm -> {
         if (userRealm != null) {
+//            user.setId(userRealm.getId());
+//            user.setDisplayName(userRealm.getDisplayName());
+//            user.setUsername(userRealm.getUsername());
+//            user.setFriendships(userRealmDataMapper.getFriendshipRealmDataMapper().transform(userRealm.getFriendships()));
+//            user.setGroupList(userRealmDataMapper.getGroupRealmDataMapper().transform(userRealm.getGroups()));
+//            user.setLocation(userRealmDataMapper.getLocationRealmDataMapper().transform(userRealm.getLocation()));
+//            user.setFbid(userRealm.getFbid());
+//            user.setProfilePicture(userRealm.getProfilePicture());
+//            user.setScore(userRealm.getScore());
+//            user.setPhone(userRealm.getPhone());
             CloudUserDataStore.this.userCache.put(userRealm);
         }
     };
@@ -696,7 +716,7 @@ public class CloudUserDataStore implements UserDataStore {
                 else if (message instanceof ChatRealm) chatRealmList.add((ChatRealm) message);
             }
 
-            CloudUserDataStore.this.tribeCache.put(tribeRealmList);
+            CloudUserDataStore.this.tribeCache.insert(tribeRealmList);
             CloudUserDataStore.this.chatCache.put(chatRealmList);
         }
     };
@@ -745,11 +765,13 @@ public class CloudUserDataStore implements UserDataStore {
                 .doOnNext(groupRealm -> {
                     List<GroupRealm> dbGroups = userCache.userInfosNoObs(accessToken.getUserId()).getGroups();
                     GroupRealm dbGroup = null;
+
                     for (GroupRealm group : dbGroups) {
                         if (group.getId().equals(groupId)) {
                             dbGroup = group;
                         }
                     }
+
                     dbGroup.setMembers(groupRealm.getMembers());
                 });
     }
@@ -772,7 +794,7 @@ public class CloudUserDataStore implements UserDataStore {
 
             if (!(file != null && file.exists() && file.length() > 0)) {
                 InputStream inputStream = null;
-                file = FileUtils.getFileEnd(FileUtils.generateIdForMessage());
+                file = FileUtils.getFile(FileUtils.generateIdForMessage(), FileUtils.PHOTO);
                 try {
                     inputStream = context.getContentResolver().openInputStream(Uri.parse(pictureUri));
                     FileUtils.copyInputStreamToFile(inputStream, file);
@@ -814,7 +836,7 @@ public class CloudUserDataStore implements UserDataStore {
 
             if (!(file != null && file.exists() && file.length() > 0)) {
                 InputStream inputStream = null;
-                file = FileUtils.getFileEnd(FileUtils.generateIdForMessage());
+                file = FileUtils.getFile(FileUtils.generateIdForMessage(), FileUtils.PHOTO);
                 try {
                     inputStream = context.getContentResolver().openInputStream(Uri.parse(pictureUri));
                     FileUtils.copyInputStreamToFile(inputStream, file);

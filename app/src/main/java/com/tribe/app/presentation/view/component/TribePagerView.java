@@ -279,7 +279,7 @@ public class TribePagerView extends FrameLayout {
     }
 
     public void onPause() {
-        cameraWrapper.onPause();
+        cameraWrapper.onPause(false);
 
         if (currentView == null) {
             computeCurrentView();
@@ -698,6 +698,11 @@ public class TribePagerView extends FrameLayout {
                 break;
         }
 
+        layoutNbTribes.onTouchEvent(event);
+        imgSpeed.onTouchEvent(event);
+        imgCancelReply.onTouchEvent(event);
+        viewTile.onTouchEvent(event);
+
         return true;
     }
 
@@ -1081,6 +1086,7 @@ public class TribePagerView extends FrameLayout {
 
     @OnClick(R.id.layoutNbTribes)
     public void goToNext() {
+        System.out.println("HEY CLICK");
         if (tribeList.size() - tribeListSeens.size() > 0)
             viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
     }

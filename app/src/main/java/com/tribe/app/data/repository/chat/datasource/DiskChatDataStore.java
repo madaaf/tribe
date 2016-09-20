@@ -51,8 +51,7 @@ public class DiskChatDataStore implements ChatDataStore {
 
     @Override
     public Observable<ChatRealm> sendMessage(ChatRealm chatRealm) {
-        chatRealm.setFrom(userCache.userInfosNoObs(chatRealm.getFrom().getId()));
-        return chatCache.put(chatRealm);
+        return null;
     }
 
     @Override

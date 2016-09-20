@@ -20,7 +20,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.Recipient;
@@ -153,6 +152,11 @@ public class ChatActivity extends BaseActivity implements MessageView {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
     protected void onStop() {
         chatPresenter.onStop();
         super.onStop();
@@ -196,11 +200,12 @@ public class ChatActivity extends BaseActivity implements MessageView {
             updateAvatars();
         }));
 
-        subscriptions.add(
-            RxView.scrollChangeEvents(recyclerViewText)
-                .subscribe(viewScrollChangeEvent -> {
-                    updateAvatars();
-                }));
+        recyclerViewText.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                updateAvatars();
+            }
+        });
 
         subscriptions.add(messageAdapter
                 .clickPhoto()
@@ -297,12 +302,12 @@ public class ChatActivity extends BaseActivity implements MessageView {
                 openGalleryIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                 openGalleryIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
                 openGalleryIntent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-                openGalleryIntent.setType("image/jpeg");
-                openGalleryIntent.putExtra(Intent.EXTRA_MIME_TYPES, new String[] {"image/jpeg", "video/mp4"});
+                openGalleryIntent.setType("image/jpeg image/png");
+                openGalleryIntent.putExtra(Intent.EXTRA_MIME_TYPES, new String[] {"image/jpeg", "image/png", "video/mp4"});
                 openGalleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
             } else {
                 openGalleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                openGalleryIntent.setType("image/jpeg video/mp4");
+                openGalleryIntent.setType("image/jpeg image/png video/mp4");
             }
 
             openGalleryIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
@@ -310,6 +315,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
 
             startActivityForResult(openGalleryIntent, REQUEST_GALLERY);
         }));
+
     }
 
     private void initDependencyInjector() {
@@ -343,7 +349,8 @@ public class ChatActivity extends BaseActivity implements MessageView {
 
     @OnClick(R.id.imgBack)
     public void exit() {
-        finish();
+        chatInputView.hideKeyboard();
+        chatInputView.postDelayed(() -> finish(), 200);
     }
 
     @Override
@@ -471,7 +478,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
         tribeVideoView.setAutoStart(true);
         tribeVideoView.setSpeedControl(false);
         tribeVideoView.setScaleType(ScalableTextureView.CENTER_CROP);
-        tribeVideoView.createPlayer(message.getContent().contains("content://") ? message.getContent() : FileUtils.getPathForId(message.getId()));
+        tribeVideoView.createPlayer(message.getContent().contains("content://") ? message.getContent() : FileUtils.getPathForId(message.getId(), FileUtils.VIDEO));
         subscriptions.add(tribeVideoView.videoSize().subscribe(videoSize -> {
             this.videoSize = videoSize;
             if (!recyclerViewText.isEnabled()) animateFullScreen(tribeVideoView);
@@ -768,7 +775,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
             String type = getContentResolver().getType(data.getData());
             ChatMessage chatMessage = null;
 
-            if (type.equals("image/jpeg")) {
+            if (type.equals("image/jpeg") || type.equals("image/png")) {
                 chatMessage = ChatMessage.createMessage(ChatMessage.PHOTO, data.getData().toString(), getCurrentUser(), recipient,  getApplicationComponent().dateUtils());
             } else if (type.equals("video/mp4")) {
                 chatMessage = ChatMessage.createMessage(ChatMessage.VIDEO, data.getData().toString(), getCurrentUser(), recipient,  getApplicationComponent().dateUtils());

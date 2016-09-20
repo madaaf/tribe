@@ -8,7 +8,6 @@ import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.media.MediaFormat;
 import android.media.MediaRecorder;
-import android.support.design.BuildConfig;
 import android.util.Log;
 
 import com.tribe.app.R;
@@ -20,7 +19,7 @@ import java.nio.ByteBuffer;
 
 public class MediaAudioEncoder extends MediaEncoder {
 
-    private static final boolean DEBUG = BuildConfig.DEBUG;
+    private static final boolean DEBUG = false;
     private static final String TAG = "MediaAudioEncoder";
 
     private static final String MIME_TYPE = "audio/mp4a-latm";
@@ -178,10 +177,10 @@ public class MediaAudioEncoder extends MediaEncoder {
                         audioRecord.release();
                     }
                 } else {
-                    Log.e(TAG, "failed to initialize AudioRecord");
+                    if (DEBUG) Log.e(TAG, "failed to initialize AudioRecord");
                 }
             } catch (final Exception e) {
-                Log.e(TAG, "AudioThread#run", e);
+                if (DEBUG) Log.e(TAG, "AudioThread#run", e);
             }
             if (DEBUG) Log.v(TAG, "AudioThread:finished");
         }

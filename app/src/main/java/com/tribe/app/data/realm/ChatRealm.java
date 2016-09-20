@@ -1,5 +1,7 @@
 package com.tribe.app.data.realm;
 
+import android.support.annotation.StringDef;
+
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
@@ -15,6 +17,18 @@ import io.realm.annotations.PrimaryKey;
  * Created by tiago on 29/06/2016.
  */
 public class ChatRealm extends RealmObject implements MessageRealmInterface {
+
+    @StringDef({MESSAGE_SENDING_STATUS, MESSAGE_RECEIVING_STATUS, MESSAGE_DOWNLOADING_STATUS,
+            PROGRESS, TOTAL_SIZE, FRIEND_ID_UPDATED_AT, GROUP_ID_UPDATED_AT})
+    public @interface ChatRealmAttributes {}
+
+    public static final String MESSAGE_SENDING_STATUS = "messageSendingStatus";
+    public static final String MESSAGE_RECEIVING_STATUS = "messageReceivingStatus";
+    public static final String MESSAGE_DOWNLOADING_STATUS = "messageDownloadingStatus";
+    public static final String PROGRESS = "progress";
+    public static final String TOTAL_SIZE = "totalSize";
+    public static final String FRIEND_ID_UPDATED_AT = "friendshipRealm.updated_at";
+    public static final String GROUP_ID_UPDATED_AT = "groupRealm.updated_at";
 
     @PrimaryKey
     private String localId;

@@ -1,6 +1,7 @@
 package com.tribe.app.data.network.job;
 
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
@@ -53,7 +54,7 @@ public class DownloadChatVideoJob extends DownloadVideoJob {
 
     @Override
     protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
-        File file = FileUtils.getFileEnd(chatMessage.getId());
+        File file = FileUtils.getFile(chatMessage.getId(), FileUtils.VIDEO);
 
         setStatus(file.exists() && file.length() > 0 ? MessageDownloadingStatus.STATUS_DOWNLOADED : MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
     }
@@ -92,18 +93,24 @@ public class DownloadChatVideoJob extends DownloadVideoJob {
     @Override
     protected void setStatus(@MessageDownloadingStatus.Status String status) {
         chatRealm.setMessageDownloadingStatus(status);
-        chatCache.update(chatRealm);
+        Pair<String, Object> updatePair = Pair.create(ChatRealm.MESSAGE_DOWNLOADING_STATUS, status);
+        update(updatePair);
     }
 
     @Override
     protected void setProgress(long progress) {
-        chatRealm.setProgress(progress);
-        chatCache.update(chatRealm);
+        Pair<String, Object> updatePair = Pair.create(ChatRealm.PROGRESS, progress);
+        update(updatePair);
     }
 
     @Override
     protected void setTotalSize(long totalSize) {
-        chatRealm.setTotalSize(totalSize);
-        chatCache.update(chatRealm);
+        Pair<String, Object> updatePair = Pair.create(ChatRealm.TOTAL_SIZE, totalSize);
+        update(updatePair);
+    }
+
+    @Override
+    protected void update(Pair<String, Object>... valuesToUpdate) {
+        chatCache.update(chatRealm.getLocalId(), valuesToUpdate);
     }
 }

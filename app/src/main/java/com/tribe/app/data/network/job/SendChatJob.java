@@ -2,6 +2,7 @@ package com.tribe.app.data.network.job;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
@@ -49,7 +50,8 @@ public class SendChatJob extends BaseJob {
     @Override
     public void onAdded() {
         chatRealm = chatRealmDataMapper.transform(chatMessage);
-        setStatus(MessageSendingStatus.STATUS_PENDING);
+        chatRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_PENDING);
+        chatCache.insert(chatRealm);
     }
 
     @Override
@@ -75,8 +77,12 @@ public class SendChatJob extends BaseJob {
     }
 
     protected void setStatus(@MessageSendingStatus.Status String status) {
-        chatRealm.setMessageSendingStatus(status);
-        chatCache.update(chatRealm);
+        Pair<String, Object> updatePair = Pair.create(ChatRealm.MESSAGE_SENDING_STATUS, status);
+        update(updatePair);
+    }
+
+    protected void update(Pair<String, Object>... valuesToUpdate) {
+        chatCache.update(chatRealm.getLocalId(), valuesToUpdate);
     }
 
     private final class ChatSendSubscriber extends DefaultSubscriber<ChatMessage> {

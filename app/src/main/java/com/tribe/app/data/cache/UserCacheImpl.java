@@ -12,6 +12,8 @@ import com.tribe.app.domain.entity.Group;
 
 import java.util.List;
 
+import java.util.Date;
+
 import javax.inject.Inject;
 
 import io.realm.Realm;
@@ -43,8 +45,9 @@ public class UserCacheImpl implements UserCache {
     }
 
     public void put(UserRealm userRealm) {
+        Realm obsRealm = Realm.getDefaultInstance();
+
         try {
-            Realm obsRealm = Realm.getDefaultInstance();
             obsRealm.beginTransaction();
 
             UserRealm userDB = obsRealm.where(UserRealm.class).equalTo("id", userRealm.getId()).findFirst();
@@ -58,6 +61,7 @@ public class UserCacheImpl implements UserCache {
                         groupDB.setPicture(groupRealm.getPicture());
                         groupDB.setMembers(groupRealm.getMembers());
                     } else {
+                        groupRealm.setUpdatedAt(new Date());
                         GroupRealm addedGroup = obsRealm.copyToRealmOrUpdate(groupRealm);
                         userDB.getGroups().add(addedGroup);
                     }
@@ -84,6 +88,7 @@ public class UserCacheImpl implements UserCache {
                         friendshipDB.getFriend().setPhone(friendshipRealm.getFriend().getPhone());
                         friendshipDB.getFriend().setFbid(friendshipRealm.getFriend().getFbid());
                     } else {
+                        friendshipRealm.getFriend().setUpdatedAt(new Date());
                         FriendshipRealm addedFriendship = obsRealm.copyToRealmOrUpdate(friendshipRealm);
                         userDB.getFriendships().add(addedFriendship);
                     }
@@ -114,28 +119,42 @@ public class UserCacheImpl implements UserCache {
             }
 
             obsRealm.commitTransaction();
-            obsRealm.close();
-        } catch (Exception ex) {
+        } catch (IllegalStateException ex) {
+            if (obsRealm.isInTransaction()) obsRealm.cancelTransaction();
             ex.printStackTrace();
+        } finally {
+            obsRealm.close();
         }
     }
 
     public void put(AccessToken accessToken) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.delete(AccessToken.class);
-        realm.copyToRealm(accessToken);
-        realm.commitTransaction();
-        realm.close();
+        Realm otherRealm = Realm.getDefaultInstance();
+        try {
+            otherRealm.beginTransaction();
+            otherRealm.delete(AccessToken.class);
+            otherRealm.copyToRealm(accessToken);
+            otherRealm.commitTransaction();
+        } catch (IllegalStateException ex) {
+            if (otherRealm.isInTransaction()) otherRealm.cancelTransaction();
+            ex.printStackTrace();
+        } finally {
+            otherRealm.close();
+        }
     }
 
     public void put(Installation installation) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.delete(Installation.class);
-        realm.copyToRealm(installation);
-        realm.commitTransaction();
-        realm.close();
+        Realm otherRealm = Realm.getDefaultInstance();
+        try {
+            otherRealm.beginTransaction();
+            otherRealm.delete(Installation.class);
+            otherRealm.copyToRealm(installation);
+            otherRealm.commitTransaction();
+        } catch (IllegalStateException ex) {
+            if (otherRealm.isInTransaction()) otherRealm.cancelTransaction();
+            ex.printStackTrace();
+        } finally {
+            otherRealm.close();
+        }
     }
 
     // ALWAYS CALLED ON MAIN THREAD
@@ -145,12 +164,6 @@ public class UserCacheImpl implements UserCache {
             @Override
             public void call(final Subscriber<? super UserRealm> subscriber) {
                 results = realm.where(UserRealm.class).equalTo("id", userId).findFirst();
-//                results.removeChangeListeners();
-//                results.addChangeListener(element -> {
-//                    if (results != null) {
-//                        subscriber.onNext(realm.copyFromRealm(results));
-//                    }
-//                });
 
                 if (results != null)
                     subscriber.onNext(realm.copyFromRealm(results));
@@ -188,12 +201,18 @@ public class UserCacheImpl implements UserCache {
 
     @Override
     public void removeFriendship(String friendshipId) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        FriendshipRealm friendshipRealm = realm.where(FriendshipRealm.class).equalTo("id", friendshipId).findFirst();
-        if (friendshipRealm != null) friendshipRealm.deleteFromRealm();
-        realm.commitTransaction();
-        realm.close();
+        Realm otherRealm = Realm.getDefaultInstance();
+        try {
+            otherRealm.beginTransaction();
+            FriendshipRealm friendshipRealm = otherRealm.where(FriendshipRealm.class).equalTo("id", friendshipId).findFirst();
+            if (friendshipRealm != null) friendshipRealm.deleteFromRealm();
+            otherRealm.commitTransaction();
+        } catch (IllegalStateException ex) {
+            if (otherRealm.isInTransaction()) otherRealm.cancelTransaction();
+            ex.printStackTrace();
+        } finally {
+            otherRealm.close();
+        }
     }
 
     @Override

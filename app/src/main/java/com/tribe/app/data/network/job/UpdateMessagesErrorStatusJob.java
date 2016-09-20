@@ -1,6 +1,7 @@
 package com.tribe.app.data.network.job;
 
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.JobStatus;
@@ -13,7 +14,9 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -47,16 +50,20 @@ public class UpdateMessagesErrorStatusJob extends BaseJob {
     @Override
     public void onRun() throws Throwable {
         List<ChatRealm> chatRealmSent = chatCache.messagesPending(recipientId);
-        List<ChatRealm> chatRealmSentFiltered = new ArrayList<>();
+        Map<String, List<Pair<String, Object>>> chatUpdates = new HashMap<>();
 
         for (ChatRealm chatRealm : chatRealmSent) {
+            List<Pair<String, Object>> values = new ArrayList<>();
+
             if (chatRealm.getMessageSendingStatus() != null && chatRealm.getMessageSendingStatus().equals(MessageSendingStatus.STATUS_PENDING) &&
                     jobManager.getJobStatus(chatRealm.getLocalId()).equals(JobStatus.UNKNOWN)) {
-                chatRealmSentFiltered.add(chatRealm);
+                values.add(Pair.create(ChatRealm.MESSAGE_SENDING_STATUS, MessageSendingStatus.STATUS_ERROR));
             }
+
+            chatUpdates.put(chatRealm.getLocalId(), values);
         }
 
-        chatCache.updateToError(chatRealmSentFiltered);
+        chatCache.update(chatUpdates);
     }
 
     @Override

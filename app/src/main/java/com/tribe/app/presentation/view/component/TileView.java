@@ -71,7 +71,7 @@ public class TileView extends SquareFrameLayout {
     private final float BOUNCINESS_OUTSIDE = 1f;
     private final float SPEED_OUTSIDE = 20f;
     private final float DIFF_DOWN = 20f;
-    private final int LONG_PRESS = 150;
+    private final int LONG_PRESS = 200;
     private final int FADE_DURATION = 200;
     private final int SCALE_DURATION = 200;
     private final int END_RECORD_DELAY = 1000;
@@ -214,28 +214,6 @@ public class TileView extends SquareFrameLayout {
     }
 
     private void prepareTouchesTile() {
-//        setOnTouchListener((v, event) -> {
-//            int action = event.getAction();
-//
-//            switch (action & MotionEvent.ACTION_MASK) {
-//                case MotionEvent.ACTION_DOWN :
-//                    System.out.println("ACTION_DOWN TILE VIEW");
-//                    downX = event.getX();
-//                    downY = event.getY();
-//                    return true;
-//                case MotionEvent.ACTION_MOVE :
-//                    System.out.println("ACTION_MOVE TILE VIEW");
-//                    break;
-//                case MotionEvent.ACTION_UP:
-//                    System.out.println("ACTION_UP TILE VIEW");
-//                    break;
-//                case MotionEvent.ACTION_CANCEL:
-//                    System.out.println("ACTION_CANCEL TILE VIEW");
-//                    break;
-//            }
-//
-//            return false;
-//        });
         setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 System.out.println("DOWN");
@@ -312,7 +290,6 @@ public class TileView extends SquareFrameLayout {
                     } else {
                         Spring springAvatar = (Spring) v.getTag(R.id.spring_avatar);
                         springAvatar.setEndValue(REPLY_OPEN_CAMERA);
-
                         replyModeStarted.onNext(true);
                     }
                 }
@@ -346,6 +323,7 @@ public class TileView extends SquareFrameLayout {
                     btnMore.setAlpha(alpha);
                     txtStatusError.setAlpha(alpha);
                     layoutNbTribes.setAlpha(alpha);
+                    viewNewText.setAlpha(alpha);
                 }
             }
         });
@@ -401,8 +379,9 @@ public class TileView extends SquareFrameLayout {
                             .subscribe(aLong -> recordStarted.onNext(TileView.this));
                 } else if (currentTribe != null
                         && (spring.getCurrentValue() == TAP_TO_CANCEL_SPRING_VALUE || spring.getCurrentValue() == REPLY_TAP_TO_CANCEL)
-                        && currentTribeMode.equals(CameraWrapper.VIDEO)) {
-                    playerView.createPlayer(FileUtils.getPathForId(currentTribe.getLocalId()));
+                        && currentTribeMode != null && currentTribeMode.equals(CameraWrapper.VIDEO)
+                        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    playerView.createPlayer(FileUtils.getPathForId(currentTribe.getLocalId(), FileUtils.VIDEO));
 
                     if (currentTribeMode.equals(CameraWrapper.VIDEO)) {
                         subscriptionVideoStarted = playerView.videoStarted()
@@ -473,10 +452,12 @@ public class TileView extends SquareFrameLayout {
         }
     }
 
-    private void resetViewAfterTapToCancel(boolean hasFinished) {
+    public void resetViewAfterTapToCancel(boolean hasFinished) {
         System.out.println("ResetView");
-        if (hasFinished) AnimationUtils.scaleDown(imgDone, SCALE_DURATION);
-        else AnimationUtils.scaleDown(imgCancel, SCALE_DURATION);
+        if (isTapToCancel) {
+            if (hasFinished) AnimationUtils.scaleDown(imgDone, SCALE_DURATION);
+            else AnimationUtils.scaleDown(imgCancel, SCALE_DURATION);
+        }
 
         AnimationUtils.fadeOut(viewForeground, 0);
         //AnimationUtils.fadeOut(txtSending, 0);
@@ -491,7 +472,7 @@ public class TileView extends SquareFrameLayout {
         progressBar.setProgress(0);
         currentTribe = null;
 
-        if (currentTribeMode.equals(CameraWrapper.VIDEO))
+        if (currentTribeMode != null && currentTribeMode.equals(CameraWrapper.VIDEO) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             playerView.hideVideo();
 
         Spring springInside = (Spring) getTag(R.id.spring_inside);
@@ -503,11 +484,15 @@ public class TileView extends SquareFrameLayout {
         if (type == TYPE_TILE) {
             Spring springReplyBG = (Spring) getTag(R.id.spring_reply_bg);
             springReplyBG.setEndValue(0f);
+        } else {
+            Spring springOutside = (Spring) getTag(R.id.spring_outside);
+            springOutside.setEndValue(0f);
         }
 
         setTag(R.id.is_tap_to_cancel, false);
 
         isTapToCancel = false;
+        currentTribeMode = null;
 
         ((TransitionDrawable) ((LayerDrawable) viewForeground.getBackground()).getDrawable(0)).reverseTransition(FADE_DURATION);
     }

@@ -1,6 +1,7 @@
 package com.tribe.app.data.network.job;
 
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
@@ -12,7 +13,10 @@ import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -39,13 +43,20 @@ public class UpdateTribeDownloadedJob extends BaseJob {
     @Override
     public void onRun() throws Throwable {
         List<TribeRealm> tribeRealmList = tribeCache.tribesNotSeenNoObs(null);
+        Map<String, List<Pair<String, Object>>> tribeUpdates = new HashMap<>();
 
         for (TribeRealm tribeRealm : tribeRealmList) {
-            File file = FileUtils.getFileEnd(tribeRealm.getId());
-            if (file.exists() && file.length() > 0) tribeRealm.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_DOWNLOADED);
+            List<Pair<String, Object>> values = new ArrayList<>();
+
+            File file = FileUtils.getFile(tribeRealm.getId(), FileUtils.VIDEO);
+            if (file.exists() && file.length() > 0) {
+                values.add(Pair.create(TribeRealm.MESSAGE_DOWNLOADING_STATUS, MessageDownloadingStatus.STATUS_DOWNLOADED));
+            }
+
+            tribeUpdates.put(tribeRealm.getLocalId(), values);
         }
 
-        tribeCache.put(tribeRealmList);
+        tribeCache.update(tribeUpdates);
     }
 
     @Override
