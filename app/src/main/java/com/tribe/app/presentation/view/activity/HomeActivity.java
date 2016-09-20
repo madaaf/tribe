@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -36,6 +35,7 @@ import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.mvp.presenter.HomePresenter;
 import com.tribe.app.presentation.mvp.view.HomeView;
+import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.fragment.ContactsGridFragment;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
@@ -64,6 +64,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     public static final String[] PERMISSIONS_CAMERA = new String[]{ Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE };
     public static final int SETTINGS_RESULT = 101, OPEN_CAMERA_RESULT = 102, OPEN_GALLERY_RESULT = 103;
+    private static final String GROUP_AVATAR = "group_avatar";
+
     private static final int THRESHOLD_SCROLL = 12;
     private static final int DURATION = 500;
     private static final int DURATION_SMALL = 300;
@@ -213,7 +215,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(bitmap -> {
-                                homeViewPagerAdapter.groupsGridFragment.setPictureUri(Uri.fromFile(FileUtils.bitmapToFile(bitmap, this)).toString());
+                                homeViewPagerAdapter.groupsGridFragment.setPictureUri(Uri.fromFile(FileUtils.bitmapToFile(GROUP_AVATAR, bitmap, this)).toString());
                                 homeViewPagerAdapter.groupsGridFragment.getGroupInfoView().setGroupPicture(bitmap);
                             })
             );
@@ -235,7 +237,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(bitmap -> {
-                                homeViewPagerAdapter.groupsGridFragment.setPictureUri(Uri.fromFile(FileUtils.bitmapToFile(bitmap, this)).toString());
+                                homeViewPagerAdapter.groupsGridFragment.setPictureUri(Uri.fromFile(FileUtils.bitmapToFile(GROUP_AVATAR, bitmap, this)).toString());
                                 homeViewPagerAdapter.groupsGridFragment.getGroupInfoView().setGroupPicture(bitmap);
                             }));
         }

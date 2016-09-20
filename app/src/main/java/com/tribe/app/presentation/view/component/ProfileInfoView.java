@@ -43,6 +43,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -210,6 +212,8 @@ public class ProfileInfoView extends FrameLayout {
                 RxTextView.textChanges(editUsername)
                         .filter(charSequence -> charSequence.length() > 1)
                         .debounce(500, TimeUnit.MILLISECONDS)
+                        .subscribeOn(AndroidSchedulers.mainThread())
+                        .observeOn(AndroidSchedulers.mainThread())
                         .doOnNext(s -> setUsernameValid(false))
                         .map(CharSequence::toString)
                         .subscribe(usernameInput)

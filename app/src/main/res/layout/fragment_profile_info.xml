@@ -17,12 +17,30 @@
         style="@style/Headline.Black"
         />
 
-    <com.tribe.app.presentation.view.component.ProfileInfoView
-        android:id="@+id/profileInfoView"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginTop="85dp"
-        />
+        android:fillViewport="true"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+            <com.tribe.app.presentation.view.component.ProfileInfoView
+                android:id="@+id/profileInfoView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                />
+        </LinearLayout>
+    </ScrollView>
 
     <LinearLayout
         android:layout_width="@dimen/icons_end"

@@ -379,7 +379,8 @@ public class TileView extends SquareFrameLayout {
                             .subscribe(aLong -> recordStarted.onNext(TileView.this));
                 } else if (currentTribe != null
                         && (spring.getCurrentValue() == TAP_TO_CANCEL_SPRING_VALUE || spring.getCurrentValue() == REPLY_TAP_TO_CANCEL)
-                        && currentTribeMode != null && currentTribeMode.equals(CameraWrapper.VIDEO)) {
+                        && currentTribeMode != null && currentTribeMode.equals(CameraWrapper.VIDEO)
+                        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     playerView.createPlayer(FileUtils.getPathForId(currentTribe.getLocalId(), FileUtils.VIDEO));
 
                     if (currentTribeMode.equals(CameraWrapper.VIDEO)) {
@@ -471,7 +472,7 @@ public class TileView extends SquareFrameLayout {
         progressBar.setProgress(0);
         currentTribe = null;
 
-        if (currentTribeMode != null && currentTribeMode.equals(CameraWrapper.VIDEO))
+        if (currentTribeMode != null && currentTribeMode.equals(CameraWrapper.VIDEO) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             playerView.hideVideo();
 
         Spring springInside = (Spring) getTag(R.id.spring_inside);

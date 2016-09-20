@@ -1,7 +1,5 @@
 package com.tribe.app.presentation.view.component;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
@@ -92,7 +90,10 @@ public class CodeView extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.view_code, this);
         unbinder = ButterKnife.bind(this);
 
-        editTextCode.setLetterSpacing((float) 1.5);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            editTextCode.setLetterSpacing((float) 1.5);
+        }
+
         imgConnectedIcon.setScaleX(0);
         imgConnectedIcon.setScaleY(0);
 

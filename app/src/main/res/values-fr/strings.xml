@@ -427,4 +427,5 @@
 	<string name="tutorial_message_next_message">Message suivant</string>
 	<string name="tutorial_message_close_message">Fermer les messages</string>
 	<string name="tutorial_message_contacts">Tape pour ajouter des amis</string>
+	<string name="tutorial_message_groups">Tape pour créer un groupe</string>
 </resources>

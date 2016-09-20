@@ -778,7 +778,7 @@ public class CloudUserDataStore implements UserDataStore {
 
             if (!(file != null && file.exists() && file.length() > 0)) {
                 InputStream inputStream = null;
-                file = FileUtils.getFileEnd(FileUtils.generateIdForMessage());
+                file = FileUtils.getFile(FileUtils.generateIdForMessage(), FileUtils.PHOTO);
                 try {
                     inputStream = context.getContentResolver().openInputStream(Uri.parse(pictureUri));
                     FileUtils.copyInputStreamToFile(inputStream, file);
@@ -816,7 +816,7 @@ public class CloudUserDataStore implements UserDataStore {
 
             if (!(file != null && file.exists() && file.length() > 0)) {
                 InputStream inputStream = null;
-                file = FileUtils.getFileEnd(FileUtils.generateIdForMessage());
+                file = FileUtils.getFile(FileUtils.generateIdForMessage(), FileUtils.PHOTO);
                 try {
                     inputStream = context.getContentResolver().openInputStream(Uri.parse(pictureUri));
                     FileUtils.copyInputStreamToFile(inputStream, file);

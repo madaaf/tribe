@@ -10,20 +10,13 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.widget.FrameLayout;
 
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
-import com.tribe.app.presentation.mvp.presenter.GroupPresenter;
-import com.tribe.app.presentation.mvp.view.GroupView;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
-import com.tribe.app.presentation.view.fragment.SettingFragment;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 
-import javax.inject.Inject;
-
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import rx.Observable;
@@ -36,6 +29,9 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class GroupInfoActivity extends BaseActivity {
 
+    public static final int OPEN_CAMERA_RESULT = 102, OPEN_GALLERY_RESULT = 103;
+    private static final String GROUP_AVATAR = "GROUP_AVATAR";
+
     public static Intent getCallingIntent(Context context) {
         Intent intent = new Intent(context, GroupInfoActivity.class);
         return intent;
@@ -44,7 +40,6 @@ public class GroupInfoActivity extends BaseActivity {
     Unbinder unbinder;
     FragmentManager fragmentManager;
     GroupsGridFragment groupsGridFragment;
-    public static final int  OPEN_CAMERA_RESULT = 102, OPEN_GALLERY_RESULT = 103;
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
 
@@ -68,7 +63,7 @@ public class GroupInfoActivity extends BaseActivity {
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(bitmap -> {
-                                groupsGridFragment.setPictureUri(Uri.fromFile(FileUtils.bitmapToFile(bitmap, this)).toString());
+                                groupsGridFragment.setPictureUri(Uri.fromFile(FileUtils.bitmapToFile(GROUP_AVATAR, bitmap, this)).toString());
                                 groupsGridFragment.getGroupInfoView().setGroupPicture(bitmap);
                             })
             );
@@ -90,7 +85,7 @@ public class GroupInfoActivity extends BaseActivity {
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(bitmap -> {
-                                groupsGridFragment.setPictureUri(Uri.fromFile(FileUtils.bitmapToFile(bitmap, this)).toString());
+                                groupsGridFragment.setPictureUri(Uri.fromFile(FileUtils.bitmapToFile(GROUP_AVATAR, bitmap, this)).toString());
                                 groupsGridFragment.getGroupInfoView().setGroupPicture(bitmap);
                             }));
         }

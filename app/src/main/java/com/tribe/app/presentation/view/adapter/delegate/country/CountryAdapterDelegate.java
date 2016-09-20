@@ -69,7 +69,7 @@ public class CountryAdapterDelegate extends RxAdapterDelegate<List<Country>> {
         vh.txtName.setText(countryName);
 
         try {
-            vh.imageCountryFlag.setImageDrawable(context.getDrawable(R.drawable.class.getField("picto_flag_" + country.code.toLowerCase()).getInt(null)));
+            vh.imageCountryFlag.setImageDrawable(context.getResources().getDrawable(R.drawable.class.getField("picto_flag_" + country.code.toLowerCase()).getInt(null)));
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (NoSuchFieldException e) {
