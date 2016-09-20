@@ -436,7 +436,7 @@
 
     <string name="add.admins.group" translatable="false">
         mutation {
-            addAdminsToGroup(id : \"%1$s\", members: [\"%2$s\"]) {
+            addAdminsToGroup(id : \"%1$s\", admins: [\"%2$s\"]) {
                 id
             }
         }
@@ -444,7 +444,7 @@
 
     <string name="remove.admins.group" translatable="false">
         mutation {
-            removeAdminsFromGroup(id : \"%1$s\", members: [\"%2$s\"]) {
+            removeAdminsFromGroup(id : \"%1$s\", admins: [\"%2$s\"]) {
                 id
             }
         }

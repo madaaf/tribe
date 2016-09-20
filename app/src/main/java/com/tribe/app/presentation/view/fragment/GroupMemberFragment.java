@@ -125,6 +125,7 @@ public class GroupMemberFragment extends BaseFragment implements GroupMemberView
      */
 
     private void initGroupMemberList() {
+        groupId = getArguments().getString("groupId");
         groupMemberList = getArguments().getParcelableArrayList("groupMemberList");
         groupMemberListCopy = new ArrayList<>();
         groupMemberPresenter.attachView(this);
@@ -234,6 +235,7 @@ public class GroupMemberFragment extends BaseFragment implements GroupMemberView
     @Override
     public void removeMember() {
         groupMemberList.remove(itemPosition);
+        groupMemberAdapter.setItems(groupMemberList);
         groupMemberAdapter.notifyDataSetChanged();
     }
 

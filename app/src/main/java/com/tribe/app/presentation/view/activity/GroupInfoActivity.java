@@ -139,6 +139,7 @@ public class GroupInfoActivity extends BaseActivity {
     private void goToGroupMembers() {
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("groupMemberList", groupsGridFragment.getGroupMemberList());
+        bundle.putString("groupId", groupsGridFragment.getGroupId());
         groupMemberFragment = GroupMemberFragment.newInstance(bundle);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.setCustomAnimations(R.anim.fragment_in_from_right, R.anim.fragment_out_from_left);

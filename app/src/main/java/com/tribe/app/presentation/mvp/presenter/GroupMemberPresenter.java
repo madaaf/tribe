@@ -118,7 +118,7 @@ public class GroupMemberPresenter implements Presenter {
 
         @Override
         public void onNext(Void aVoid) {
-            groupMemberView.removeFriend();
+            groupMemberView.removeMember();
         }
     }
 

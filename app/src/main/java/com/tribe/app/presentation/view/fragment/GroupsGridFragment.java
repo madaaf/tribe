@@ -207,6 +207,10 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         return groupMemberList;
     }
 
+    public String getGroupId() {
+        return groupId;
+    }
+
     /**
      * Setup UI
      * Includes subscription setup
