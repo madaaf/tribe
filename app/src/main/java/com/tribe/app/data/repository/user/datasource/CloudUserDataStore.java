@@ -36,11 +36,8 @@ import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
-<<<<<<< HEAD
 import com.tribe.app.data.realm.mapper.GroupRealmDataMapper;
-=======
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
->>>>>>> ba78dbd0afb0b3b2f296f600375936782fa61f97
 import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.User;
@@ -94,11 +91,8 @@ public class CloudUserDataStore implements UserDataStore {
     private Preference<String> lastMessageRequest;
     private Preference<String> lastUserRequest;
     private SimpleDateFormat utcSimpleDate = null;
-<<<<<<< HEAD
     private GroupRealmDataMapper groupRealmDataMapper;
-=======
     private UserRealmDataMapper userRealmDataMapper;
->>>>>>> ba78dbd0afb0b3b2f296f600375936782fa61f97
 
     /**
      * Construct a {@link UserDataStore} based on connections to the api (Cloud).

@@ -20,6 +20,8 @@ import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import rx.Observable;
@@ -44,7 +46,6 @@ public class GroupInfoActivity extends BaseActivity {
     private FragmentManager fragmentManager;
     private GroupsGridFragment groupsGridFragment;
     private GroupMemberFragment groupMemberFragment;
-    public static final int  OPEN_CAMERA_RESULT = 102, OPEN_GALLERY_RESULT = 103;
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
     @Inject
