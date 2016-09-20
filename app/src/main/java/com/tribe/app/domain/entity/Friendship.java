@@ -13,6 +13,7 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
     private boolean blocked;
     private String category;
     private User friend;
+    private boolean isAdmin;
 
     public Friendship(String id) {
         this.id = id;

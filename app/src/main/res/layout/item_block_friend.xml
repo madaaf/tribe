@@ -11,6 +11,12 @@
         android:layout_width="@dimen/setting_pic_size"
         android:layout_height="@dimen/setting_pic_size" />
 
+    <ImageView
+        android:id="@+id/imageFriendPicBadge"
+        android:layout_width="@dimen/image_badge_size"
+        android:layout_height="@dimen/image_badge_size"
+        android:layout_gravity="bottom"/>
+
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtDisplayName"
         android:layout_marginStart="@dimen/setting_block_item_left_margin"

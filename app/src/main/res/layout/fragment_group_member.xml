@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black">
+    android:orientation="vertical">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -18,37 +18,39 @@
             android:text="@string/settings_title" />
 
         <ImageView
-            android:id="@+id/imgDone"
-            android:layout_width="@dimen/nav_icon_size"
-            android:layout_height="@dimen/nav_icon_size"
-            android:layout_gravity="end|center_vertical"
-            android:clickable="true"
-            android:scaleType="centerInside"
-            android:src="@drawable/picto_done_black" />
-
-        <ImageView
             android:id="@+id/imgBack"
             android:layout_width="@dimen/nav_icon_size"
             android:layout_height="@dimen/nav_icon_size"
             android:layout_gravity="center_vertical"
             android:clickable="true"
             android:scaleType="centerInside"
-            android:src="@drawable/picto_back"
-            android:alpha="0"/>
+            android:src="@drawable/picto_back" />
 
     </FrameLayout>
-    
-            <FrameLayout
-                android:layout_marginTop="50dp"
-                android:id="@+id/layoutFragmentContainer"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                />
 
-    <View
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="5dp"
-        android:layout_marginTop="50dp"
-        android:background="@drawable/shadow_bottom" />
+        android:layout_height="@dimen/setting_block_search_bar_height"
+        android:orientation="horizontal">
 
-</FrameLayout>
+        <ImageView
+            android:layout_width="@dimen/nav_icon_size"
+            android:layout_height="@dimen/nav_icon_size"
+            android:layout_gravity="center_vertical"
+            android:scaleType="centerInside"
+            android:src="@drawable/picto_search_icon" />
+
+        <com.tribe.app.presentation.view.widget.EditTextFont
+            android:id="@+id/editTextSearchGroupMembers"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_white_rect_grey_border" />
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerViewGroupMembers"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

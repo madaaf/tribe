@@ -70,18 +70,17 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class GroupsGridFragment extends BaseFragment implements GroupView {
 
-    public GroupsGridFragment() {
-        setRetainInstance(true);
-    }
-
     public static GroupsGridFragment newInstance(Bundle args) {
-
         GroupsGridFragment fragment = new GroupsGridFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
-    Unbinder unbinder;
+    public GroupsGridFragment() {
+        setRetainInstance(true);
+    }
+
+    private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
     // Bind view
@@ -112,15 +111,11 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     // VARIABLES
     private BottomSheetDialog dialogCamera;
-    private RecyclerView recyclerViewCameraType;
     private LabelSheetAdapter cameraTypeAdapter;
-    private int animDuration = 300 * 2;
-    private int loadingAnimDuration = 1000 * 2;
     private List<Friendship> friendshipsList = new ArrayList<>();
     private List<Friendship> friendshipsListCopy = new ArrayList<>();
     List<User> members;
     private LinearLayoutManager linearLayoutManager;
-    private Group currentGroup;
     private boolean groupInfoValid = false;
 
     // Group Info
@@ -132,13 +127,13 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     private List<String> groupMemberIds = new ArrayList<>();
 
     // Animation Variables
-    int moveUpY = 138;
-    int moveGroupName = 60;
-    int presentEditInfoTranslation = 20;
-    int layoutCreateInviteInfoPositionY = 255;
-    int startTranslationDoneIcon = 200;
-
-    int smallMargin = 5;
+    private int moveUpY = 138;
+    private int presentEditInfoTranslation = 20;
+    private int layoutCreateInviteInfoPositionY = 255;
+    private int startTranslationDoneIcon = 200;
+    private int animDuration = 300 * 2;
+    private int loadingAnimDuration = 1000 * 2;
+    private int smallMargin = 5;
 
     /**
      * View lifecycle methods
@@ -621,7 +616,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     private void prepareBottomSheetCamera(List<LabelType> items) {
         View view = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_camera_type, null);
-        recyclerViewCameraType = (RecyclerView) view.findViewById(R.id.recyclerViewCameraType);
+        RecyclerView recyclerViewCameraType = (RecyclerView) view.findViewById(R.id.recyclerViewCameraType);
         recyclerViewCameraType.setHasFixedSize(true);
         recyclerViewCameraType.setLayoutManager(new LinearLayoutManager(getActivity()));
         cameraTypeAdapter = new LabelSheetAdapter(getContext(), items);

@@ -50,41 +50,6 @@ public class GroupPresenter implements Presenter {
 
     }
 
-    @Override
-    public void onStart() {
-
-    }
-
-    @Override
-    public void onResume() {
-
-    }
-
-    @Override
-    public void onStop() {
-
-    }
-
-    @Override
-    public void onPause() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-
-    }
-
-    @Override
-    public void attachView(View v) {
-        groupView = (GroupView) v;
-    }
-
-    @Override
-    public void onCreate() {
-
-    }
-
     public void setupMembers(Group group) {
         this.groupView.setupGroup(group);
     }
@@ -245,4 +210,40 @@ public class GroupPresenter implements Presenter {
 
         }
     }
+
+    @Override
+    public void onStart() {
+
+    }
+
+    @Override
+    public void onResume() {
+
+    }
+
+    @Override
+    public void onStop() {
+
+    }
+
+    @Override
+    public void onPause() {
+
+    }
+
+    @Override
+    public void onDestroy() {
+
+    }
+
+    @Override
+    public void attachView(View v) {
+        groupView = (GroupView) v;
+    }
+
+    @Override
+    public void onCreate() {
+
+    }
+
 }
