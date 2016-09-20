@@ -77,9 +77,7 @@ public class DiskChatDataRepository implements ChatRepository {
 
     @Override
     public Observable<ChatMessage> sendMessage(ChatMessage chatMessage) {
-        ChatDataStore diskChatDataStore = chatDataStoreFactory.createDiskChatStore();
-        return diskChatDataStore.sendMessage(chatRealmDataMapper.transform(chatMessage))
-                .map(chatMessageRealm -> chatRealmDataMapper.transform(chatMessageRealm));
+        return null;
     }
 
     @Override

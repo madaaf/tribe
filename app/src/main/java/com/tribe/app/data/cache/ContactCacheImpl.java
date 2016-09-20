@@ -45,7 +45,8 @@ public class ContactCacheImpl implements ContactCache {
             obsRealm.delete(ContactABRealm.class);
             obsRealm.copyToRealmOrUpdate(contactList);
             obsRealm.commitTransaction();
-        } catch (Exception ex) {
+        } catch (IllegalStateException ex) {
+            if (obsRealm.isInTransaction()) obsRealm.cancelTransaction();
             ex.printStackTrace();
         } finally {
             obsRealm.close();
@@ -61,7 +62,8 @@ public class ContactCacheImpl implements ContactCache {
             obsRealm.delete(ContactFBRealm.class);
             obsRealm.copyToRealmOrUpdate(contactList);
             obsRealm.commitTransaction();
-        } catch (Exception ex) {
+        } catch (IllegalStateException ex) {
+            if (obsRealm.isInTransaction()) obsRealm.cancelTransaction();
             ex.printStackTrace();
         } finally {
             obsRealm.close();
@@ -93,7 +95,8 @@ public class ContactCacheImpl implements ContactCache {
             }
 
             obsRealm.commitTransaction();
-        } catch (Exception ex) {
+        } catch (IllegalStateException ex) {
+            if (obsRealm.isInTransaction()) obsRealm.cancelTransaction();
             ex.printStackTrace();
         } finally {
             obsRealm.close();
@@ -112,7 +115,8 @@ public class ContactCacheImpl implements ContactCache {
                 resultRealm.setFriendshipRealm(friendshipManaged);
                 obsRealm.commitTransaction();
             }
-        } catch (Exception ex) {
+        } catch (IllegalStateException ex) {
+            if (obsRealm.isInTransaction()) obsRealm.cancelTransaction();
             ex.printStackTrace();
         } finally {
             obsRealm.close();
@@ -189,7 +193,8 @@ public class ContactCacheImpl implements ContactCache {
                 contactDB.setHowManyFriends(contactABRealm.getHowManyFriends());
             }
             obsRealm.commitTransaction();
-        } catch (Exception ex) {
+        } catch (IllegalStateException ex) {
+            if (obsRealm.isInTransaction()) obsRealm.cancelTransaction();
             ex.printStackTrace();
         } finally {
             obsRealm.close();

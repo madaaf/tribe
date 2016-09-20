@@ -63,7 +63,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     public static final String[] PERMISSIONS_CAMERA = new String[]{ Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE };
-    public static final int SETTINGS_RESULT = 101, OPEN_CAMERA_RESULT = 102, OPEN_GALLERY_RESULT = 103;
+    public static final int SETTINGS_RESULT = 101, OPEN_CAMERA_RESULT = 102, OPEN_GALLERY_RESULT = 103, TRIBES_RESULT = 104;
     private static final String GROUP_AVATAR = "group_avatar";
 
     private static final int THRESHOLD_SCROLL = 12;
@@ -206,7 +206,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SETTINGS_RESULT) reloadGrid();
+        if (requestCode == SETTINGS_RESULT || requestCode == TRIBES_RESULT) reloadGrid();
 
         if (requestCode == OPEN_CAMERA_RESULT && resultCode == Activity.RESULT_OK && data != null) {
             subscriptions.add(
@@ -344,7 +344,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 .doOnNext(recipient -> cameraWrapper.hideCamera())
                 .delay(DURATION_SMALL, TimeUnit.MILLISECONDS)
                 .subscribe(friend -> {
-            HomeActivity.this.navigator.navigateToTribe(HomeActivity.this, friend.getPosition(), friend);
+            HomeActivity.this.navigator.navigateToTribe(HomeActivity.this, friend.getPosition(), friend, TRIBES_RESULT);
         }));
     }
 
@@ -481,8 +481,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     public void updateGrid() {
         if (!isRecording) {
             homePresenter.updateMessagesToNotSeen(newMessages);
-            homeViewPagerAdapter.getHomeGridFragment().reloadGrid();
             homeViewPagerAdapter.getHomeGridFragment().scrollToTop();
+            homeViewPagerAdapter.getHomeGridFragment().reloadGridAfterNewTribes();
 
             AnimationUtils.replaceView(this, txtNewMessages, progressBarNewMessages, new AnimatorListenerAdapter() {
                 @Override

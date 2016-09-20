@@ -105,6 +105,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     private LabelSheetAdapter labelSheetAdapter;
     private int verticalScrollOffset = 0;
     private String filter = null;
+    private boolean shouldReloadGrid = false;
 
     public HomeGridFragment() {
         setRetainInstance(true);
@@ -202,6 +203,10 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     @Override
     public void renderRecipientList(List<Recipient> recipientList) {
         if (recipientList != null) {
+            if (shouldReloadGrid) {
+                shouldReloadGrid = false;
+                reloadGrid();
+            }
             if (pullToSearchContainer != null) pullToSearchContainer.updatePTSList(recipientList);
             this.homeGridAdapter.setItems(recipientList);
         }
@@ -255,6 +260,10 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     public void reloadGrid() {
         filter = null;
         this.homeGridPresenter.loadFriendList(filter);
+    }
+
+    public void reloadGridAfterNewTribes() {
+        shouldReloadGrid = true;
     }
 
     private void init() {

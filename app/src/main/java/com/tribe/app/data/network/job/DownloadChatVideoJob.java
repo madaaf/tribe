@@ -93,23 +93,24 @@ public class DownloadChatVideoJob extends DownloadVideoJob {
     @Override
     protected void setStatus(@MessageDownloadingStatus.Status String status) {
         chatRealm.setMessageDownloadingStatus(status);
-        chatCache.update(chatRealm);
+        Pair<String, Object> updatePair = Pair.create(ChatRealm.MESSAGE_DOWNLOADING_STATUS, status);
+        update(updatePair);
     }
 
     @Override
     protected void setProgress(long progress) {
-        chatRealm.setProgress(progress);
-        chatCache.update(chatRealm);
+        Pair<String, Object> updatePair = Pair.create(ChatRealm.PROGRESS, progress);
+        update(updatePair);
     }
 
     @Override
     protected void setTotalSize(long totalSize) {
-        chatRealm.setTotalSize(totalSize);
-        chatCache.update(chatRealm);
+        Pair<String, Object> updatePair = Pair.create(ChatRealm.TOTAL_SIZE, totalSize);
+        update(updatePair);
     }
 
     @Override
     protected void update(Pair<String, Object>... valuesToUpdate) {
-
+        chatCache.update(chatRealm.getLocalId(), valuesToUpdate);
     }
 }

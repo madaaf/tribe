@@ -6,6 +6,7 @@ import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.network.FileApi;
+import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.mapper.TribeRealmDataMapper;
 import com.tribe.app.domain.entity.TribeMessage;
@@ -81,8 +82,8 @@ public class DownloadTribeJob extends DownloadVideoJob {
 
     @Override
     protected void setStatus(@MessageDownloadingStatus.Status String status) {
-        tribeRealm.setMessageDownloadingStatus(status);
-        tribeCache.update(tribeRealm);
+        Pair<String, Object> updatePair = Pair.create(ChatRealm.MESSAGE_DOWNLOADING_STATUS, status);
+        update(updatePair);
     }
 
     @Override
@@ -97,6 +98,6 @@ public class DownloadTribeJob extends DownloadVideoJob {
 
     @Override
     protected void update(Pair<String, Object>... valuesToUpdate) {
-        
+        tribeCache.update(tribeRealm.getLocalId(), valuesToUpdate);
     }
 }

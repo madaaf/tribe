@@ -202,8 +202,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
 
         recyclerViewText.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 updateAvatars();
             }
         });

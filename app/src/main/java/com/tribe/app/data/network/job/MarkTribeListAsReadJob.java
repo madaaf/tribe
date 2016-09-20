@@ -65,7 +65,6 @@ public class MarkTribeListAsReadJob extends BaseJob {
         @Override
         public void onCompleted() {
             cloudMarkTribeListAsRead.unsubscribe();
-
         }
 
         @Override

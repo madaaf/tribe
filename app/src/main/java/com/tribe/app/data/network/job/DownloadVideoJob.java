@@ -58,9 +58,9 @@ public abstract class DownloadVideoJob extends BaseJob {
                                 if (DEBUG) Log.d(getTag(), "file download was a success? " + writtenToDisk);
                                 saveResult(writtenToDisk);
                             })
-                        .subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(s -> {});
+                            .subscribeOn(Schedulers.newThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(s -> {});
                 } else {
                     if (DEBUG) Log.d(getTag(), "server contact failed");
                 }

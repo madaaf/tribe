@@ -703,7 +703,7 @@ public class CloudUserDataStore implements UserDataStore {
                 else if (message instanceof ChatRealm) chatRealmList.add((ChatRealm) message);
             }
 
-            CloudUserDataStore.this.tribeCache.put(tribeRealmList);
+            CloudUserDataStore.this.tribeCache.insert(tribeRealmList);
             CloudUserDataStore.this.chatCache.put(chatRealmList);
         }
     };

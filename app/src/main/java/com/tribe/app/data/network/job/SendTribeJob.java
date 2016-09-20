@@ -2,10 +2,12 @@ package com.tribe.app.data.network.job;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 import com.tribe.app.data.cache.TribeCache;
+import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.mapper.TribeRealmDataMapper;
 import com.tribe.app.domain.entity.TribeMessage;
@@ -75,8 +77,8 @@ public class  SendTribeJob extends BaseJob {
     }
 
     protected void setStatus(@MessageSendingStatus.Status String status) {
-        tribeRealm.setMessageSendingStatus(status);
-        tribeCache.update(tribeRealm);
+        Pair<String, Object> updatePair = Pair.create(ChatRealm.MESSAGE_SENDING_STATUS, status);
+        tribeCache.update(tribeRealm.getLocalId(), updatePair);
     }
 
     private final class TribeSendSubscriber extends DefaultSubscriber<TribeMessage> {
