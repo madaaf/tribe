@@ -2,6 +2,7 @@ package com.tribe.app.presentation.mvp.presenter;
 
 import android.os.Parcelable;
 
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.AddAdminsToGroup;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
@@ -117,7 +118,7 @@ public class GroupMemberPresenter implements Presenter {
 
         @Override
         public void onNext(Void aVoid) {
-
+            groupMemberView.removeFriend();
         }
     }
 
@@ -134,11 +135,11 @@ public class GroupMemberPresenter implements Presenter {
 
         @Override
         public void onNext(Void aVoid) {
-
+            groupMemberView.removeFriend();
         }
     }
 
-    private final class CreateFriendshipSubscriber extends DefaultSubscriber<Void> {
+    private final class CreateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
         @Override
         public void onCompleted() {
 
@@ -150,8 +151,8 @@ public class GroupMemberPresenter implements Presenter {
         }
 
         @Override
-        public void onNext(Void aVoid) {
-
+        public void onNext(Friendship friendship) {
+            groupMemberView.createFriendship();
         }
     }
 
@@ -168,7 +169,7 @@ public class GroupMemberPresenter implements Presenter {
 
         @Override
         public void onNext(Void aVoid) {
-
+            groupMemberView.setAdmin();
         }
     }
 
@@ -185,7 +186,7 @@ public class GroupMemberPresenter implements Presenter {
 
         @Override
         public void onNext(Void aVoid) {
-
+            groupMemberView.removeAdmin();
         }
     }
 }

@@ -384,6 +384,9 @@
                 members {
                     ...UserInfos
                 }
+                admins {
+                    ...UserInfos
+                }
             }
         }
 

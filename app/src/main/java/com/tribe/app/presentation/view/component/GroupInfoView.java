@@ -64,6 +64,8 @@ public class GroupInfoView extends FrameLayout {
     ImageView imageDoneEdit;
     @BindView(R.id.imageBackIcon)
     ImageView imageBackIcon;
+    @BindView(R.id.imageGoToMembers)
+    ImageView imageGoToMembers;
     @BindView(R.id.editTextGroupName)
     EditTextFont editTextGroupName;
     @BindView(R.id.layoutDividerBackground)
@@ -96,6 +98,7 @@ public class GroupInfoView extends FrameLayout {
     private PublishSubject<Void> imageEditGroupClicked = PublishSubject.create();
     private PublishSubject<Void> imageDoneEditClicked = PublishSubject.create();
     private PublishSubject<Void> imageBackClicked = PublishSubject.create();
+    private PublishSubject<Void> imageGoToMembersClicked = PublishSubject.create();
 
 
     @Override
@@ -122,12 +125,12 @@ public class GroupInfoView extends FrameLayout {
             imageDoneEditClicked.onNext(null);
         }));
 
-
-
         subscriptions.add(privatePublicView.isPrivate().subscribe(aBoolean -> {
            isPrivate.onNext(aBoolean);
         }));
-
+        subscriptions.add(RxView.clicks(imageGoToMembers).subscribe(aVoid -> {
+            imageGoToMembersClicked.onNext(null);
+        }));
     }
 
     @Override
@@ -154,12 +157,16 @@ public class GroupInfoView extends FrameLayout {
     public Observable<Void> imageGroupClicked() {
         return imageGroupClicked;
     }
+    public Observable<Void> imageGoToMembersClicked() {
+        return imageGoToMembersClicked;
+    }
     public Observable<Boolean> isPrivate() {
         return isPrivate;
     }
     public Observable<Boolean> isGroupNameValid() {
         return isGroupNameValid;
     }
+
 
 
     public void addMemberPhoto(String profPic) {

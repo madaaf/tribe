@@ -40,8 +40,11 @@ public class GroupDeserializer implements JsonDeserializer<GroupRealm> {
                     members.remove(i);
                 }
             }
+            JsonArray admins = group.getAsJsonArray("admins");
             RealmList<UserRealm> users = new GsonBuilder().create().fromJson(members, new TypeToken<RealmList<UserRealm>>(){}.getType());
+            RealmList<UserRealm> adminsList = new GsonBuilder().create().fromJson(admins, new TypeToken<RealmList<UserRealm>>(){}.getType());
             groupRealm.setMembers(users);
+            groupRealm.setAdmins(adminsList);
         } catch (NullPointerException e) {
             group = data.getAsJsonObject("updateGroup");
             if (group == null) group = data.getAsJsonObject("createGroup");

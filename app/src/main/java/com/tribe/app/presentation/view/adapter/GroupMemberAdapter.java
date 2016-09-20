@@ -35,6 +35,11 @@ public class GroupMemberAdapter extends RecyclerView.Adapter {
     }
 
     @Override
+    public int getItemViewType(int position) {
+        return delegatesManager.getItemViewType(items, position);
+    }
+
+    @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return delegatesManager.onCreateViewHolder(parent, viewType);
     }

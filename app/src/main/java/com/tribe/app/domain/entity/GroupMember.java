@@ -12,8 +12,21 @@ public class GroupMember implements Parcelable {
     private String displayName;
     private String username;
     private String profilePicture;
+    private String friendshipId;
     private boolean isFriend;
     private boolean isAdmin;
+    private boolean isCurrentUser;
+
+    public GroupMember(String userId) {
+        this.userId = userId;
+    }
+
+    public GroupMember(String userId, String displayName, String username, String profilePicture) {
+        this.userId = userId;
+        this.displayName = displayName;
+        this.username = username;
+        this.profilePicture = profilePicture;
+    }
 
     public String getUserId() {
         return userId;
@@ -39,6 +52,22 @@ public class GroupMember implements Parcelable {
         this.username = username;
     }
 
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
+    public String getFriendshipId() {
+        return friendshipId;
+    }
+
+    public void setFriendshipId(String friendshipId) {
+        this.friendshipId = friendshipId;
+    }
+
     public boolean isFriend() {
         return isFriend;
     }
@@ -55,16 +84,12 @@ public class GroupMember implements Parcelable {
         isAdmin = admin;
     }
 
-    private GroupMember(String userId) {
-        this.userId = userId;
+    public boolean isCurrentUser() {
+        return isCurrentUser;
     }
 
-    public String getProfilePicture() {
-        return profilePicture;
-    }
-
-    public void setProfilePicture(String profilePicture) {
-        this.profilePicture = profilePicture;
+    public void setCurrentUser(boolean currentUser) {
+        isCurrentUser = currentUser;
     }
 
     protected GroupMember(Parcel in) {

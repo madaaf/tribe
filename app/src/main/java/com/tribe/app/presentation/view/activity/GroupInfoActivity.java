@@ -13,13 +13,16 @@ import android.support.v4.app.FragmentTransaction;
 import android.widget.FrameLayout;
 
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.GroupPresenter;
 import com.tribe.app.presentation.mvp.view.GroupView;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.view.fragment.GroupMemberFragment;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
 import com.tribe.app.presentation.view.fragment.SettingFragment;
 import com.tribe.app.presentation.view.utils.ImageUtils;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 import javax.inject.Inject;
 
@@ -41,12 +44,15 @@ public class GroupInfoActivity extends BaseActivity {
         return intent;
     }
 
-    Unbinder unbinder;
-    FragmentManager fragmentManager;
-    GroupsGridFragment groupsGridFragment;
+    private Unbinder unbinder;
+    private FragmentManager fragmentManager;
+    private GroupsGridFragment groupsGridFragment;
+    private GroupMemberFragment groupMemberFragment;
     public static final int  OPEN_CAMERA_RESULT = 102, OPEN_GALLERY_RESULT = 103;
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
+    @Inject
+    ScreenUtils screenUtils;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -118,6 +124,34 @@ public class GroupInfoActivity extends BaseActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.layoutFragmentContainer, groupsGridFragment);
         fragmentTransaction.commit();
+
+        subscriptions.add(groupsGridFragment.imageGoToMembersClicked().subscribe(aVoid -> {
+            goToGroupMembers();
+        }));
+
+    }
+
+    private void goToMain() {
+        screenUtils.hideKeyboard(this);
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.anim.fragment_in_from_left, R.anim.fragment_out_from_right);
+        fragmentTransaction.replace(R.id.layoutFragmentContainer, groupsGridFragment);
+        fragmentTransaction.commit();
+    }
+
+    private void goToGroupMembers() {
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("groupMemberList", groupsGridFragment.getGroupMemberList());
+        groupMemberFragment = GroupMemberFragment.newInstance(bundle);
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.anim.fragment_in_from_right, R.anim.fragment_out_from_left);
+        fragmentTransaction.add(R.id.layoutFragmentContainer, groupMemberFragment);
+        fragmentTransaction.addToBackStack("GroupMember");
+        fragmentTransaction.commit();
+
+        subscriptions.add(groupMemberFragment.imageBackClicked().subscribe(aVoid -> {
+            goToMain();
+        }));
     }
 
     /**

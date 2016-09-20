@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.adapter.delegate.group;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -71,11 +72,11 @@ public class GroupMemberAdapterDelegate extends RxAdapterDelegate<List<GroupMemb
         vh.txtDisplayName.setText(groupMember.getDisplayName());
         vh.txtUsername.setText("@" + groupMember.getUsername());
         if (groupMember.isFriend()) vh.layoutSelected.setBackground(ContextCompat.getDrawable(context, R.drawable.picto_connected_icon));
-        else vh.layoutSelected.setBackground(ContextCompat.getDrawable(context, R.drawable.picto_plus));
+        else vh.layoutSelected.setBackground(ContextCompat.getDrawable(context, R.drawable.picto_plus_black));
         if (groupMember.isAdmin()) vh.imageFriendPicBadge.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.picto_badge_admin));
         else vh.imageFriendPicBadge.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.picto_badge_more));
         vh.itemView.setTag(R.id.tag_position, position);
-
+        if (groupMember.isCurrentUser()) vh.layoutFriendItem.setForeground(new ColorDrawable(ContextCompat.getColor(context, R.color.white_opacity_40)));
 
         try {
             Glide.with(context)
@@ -94,6 +95,7 @@ public class GroupMemberAdapterDelegate extends RxAdapterDelegate<List<GroupMemb
 
     static class GroupMemberViewHolder extends RecyclerView.ViewHolder {
 
+        @BindView(R.id.layoutFriendItem) public FrameLayout layoutFriendItem;
         @BindView(R.id.imageFriendPic) public ImageView imageFriendPic;
         @BindView(R.id.txtDisplayName) public TextViewFont txtDisplayName;
         @BindView(R.id.txtUsername) public TextViewFont txtUsername;

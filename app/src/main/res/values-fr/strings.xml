@@ -106,6 +106,8 @@
 	<string name="grid_friendship_status_new_messages">Affichez !</string>
 	<string name="grid_friendship_status_loading">Chargement</string>
 	<string name="grid_friendship_status_reply">À votre tour</string>
+	<string name="grid_support_title">Des questions?</string>
+	<string name="grid_support_description">Chat avec le CEO</string>
 	<string name="grid_ghost">Pas encore inscrit</string>
 	<string name="grid_friendship_recording_tap_to_cancel">Préparation</string>
 	<string name="grid_friendship_recording_validated">Prêt à envoyer !</string>
@@ -330,21 +332,16 @@
 	<string name="points_HundredGroupMembers_description">Chaque fois que 100 nouveaux membres rejoignent votre groupe public</string>
 	
 	<!-- Level -->
-	<string name="level_noob_title">Noob</string>
-	<string name="level_coolkid_title">Coolkid</string>
-	<string name="level_alien_title">Alien</string>
-	<string name="level_unicorn_title">Unicorn</string>
-	<string name="level_bot_title">Bot</string>
 	<string name="level_rookie_title">Rookie</string>
-	<string name="level_baller_title">Baller</string>
-	<string name="level_stud_title">Stud</string>
+	<string name="level_heating_up_title">Heating up</string>
+	<string name="level_rising_star_title">Rising star</string>
+	<string name="level_on_fire_title">On fire</string>
 	<string name="level_rockstar_title">Rockstar</string>
-	<string name="level_allstar_title">All Star</string>
 	<string name="level_champ_title">Champ</string>
-	<string name="level_goat_title">GOAT</string>
-	<string name="level_mvp">MVP</string>
-	<string name="level_legend_title">Legend</string>
-	<string name="level_king_title">King</string>
+	<string name="level_icon_title">Icon</string>
+	<string name="level_greatness_title">Greatness</string>
+	<string name="level_royalty_title">Royalty</string>
+	<string name="level_unicorn_title">Unicorn</string>
 	
 	<!-- Notification -->
 	<string name="notification_pending">Un message en attente. Glissez pour renvoyer &#11013;&#65039;</string>
@@ -428,4 +425,7 @@
 	<string name="tutorial_message_close_message">Fermer les messages</string>
 	<string name="tutorial_message_contacts">Tape pour ajouter des amis</string>
 	<string name="tutorial_message_groups">Tape pour créer un groupe</string>
+	<string name="tutorial_message_reply">Appuie pour enregister\nta réponse</string>
+	<string name="tutorial_message_release">Relâche ton doigt\npour terminer le message</string>
+	<string name="tutorial_message_tap_to_cancel">Pour pour annuler si besoin</string>
 </resources>
