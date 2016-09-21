@@ -18,9 +18,11 @@
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtSectionBody"
         style="@style/Body.One.Black40"
-        android:layout_width="195dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginRight="60dp"
+        android:layout_marginTop="25dp"
+        android:maxLines="2"
         />
 
     <Switch
@@ -43,6 +45,7 @@
         android:id="@+id/imageSyncIcon"
         android:layout_width="15dp"
         android:layout_height="15dp"
+        android:layout_marginTop="2.5dp"
         android:visibility="invisible"
         />
 
@@ -51,7 +54,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|end"
-        android:layout_marginEnd="20dp"
         android:src="@drawable/picto_back"
         android:scaleX="-1"
         android:visibility="invisible"

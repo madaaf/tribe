@@ -13,6 +13,7 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ButtonPointsAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactsGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.contact.ContactsHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SeparatorAdapterDelegate;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
@@ -59,6 +60,7 @@ public class ContactsGridAdapter extends RecyclerView.Adapter {
 
         delegatesManager.addDelegate(new ContactsGridAdapterDelegate(context));
         delegatesManager.addDelegate(new SeparatorAdapterDelegate(context));
+        delegatesManager.addDelegate(new ContactsHeaderAdapterDelegate(context));
 
         setHasStableIds(true);
     }
@@ -117,6 +119,7 @@ public class ContactsGridAdapter extends RecyclerView.Adapter {
         this.items.add(new String());
         this.items.add(fb);
         this.items.add(new String());
+        this.items.add(R.string.contacts_section_addressbook_title);
         this.items.addAll(items);
 
         this.notifyDataSetChanged();
@@ -142,8 +145,10 @@ public class ContactsGridAdapter extends RecyclerView.Adapter {
 
     public void updateSearch(SearchResult searchResult, List<Contact> contactList) {
         this.items.clear();
+        this.items.add(R.string.contacts_section_search_usernames);
         this.items.add(searchResult);
         this.items.add(new String());
+        this.items.add(R.string.contacts_section_search_friends);
         this.items.addAll(contactList);
         this.notifyDataSetChanged();
     }

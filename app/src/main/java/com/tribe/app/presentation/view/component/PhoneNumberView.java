@@ -157,9 +157,11 @@ public class PhoneNumberView extends FrameLayout {
         if (enabled) {
             imageViewNextIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.picto_next_icon_black));
             imageViewNextIcon.setClickable(true);
+            imageViewNextIcon.setEnabled(true);
         } else {
             imageViewNextIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.picto_next_icon));
             imageViewNextIcon.setClickable(false);
+            imageViewNextIcon.setEnabled(false);
         }
     }
 

@@ -122,7 +122,7 @@ public class Navigator {
         if (activity != null) {
             Intent intent = ScoreActivity.getCallingIntent(activity);
             activity.startActivity(intent);
-            activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+            activity.overridePendingTransition(R.anim.activity_in_from_right, R.anim.activity_out_scale_down);
         }
     }
 
@@ -147,8 +147,8 @@ public class Navigator {
     public void navigateToSettings(Activity activity, int result) {
         if (activity != null) {
             Intent intent = SettingActivity.getCallingIntent(activity);
-            activity.overridePendingTransition(R.anim.activity_in_from_right, R.anim.activity_out_scale_down);
             activity.startActivityForResult(intent, result);
+            activity.overridePendingTransition(R.anim.activity_in_from_right, R.anim.activity_out_scale_down);
         }
     }
 

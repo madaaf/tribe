@@ -42,6 +42,12 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class SettingActivity extends BaseActivity implements SettingView {
 
+    private static final String SETTING_FRAGMENT = "settingFragment";
+    private static final String SETTING_PROFILE_FRAGMENT = "settingUpdateProfileFragment";
+    private static final String SETTING_BLOCK_FRAGMENT = "settingBlockFragment";
+    private static final String IMG_URI = "imgUri";
+    private static final String BITMAP = "bitmap";
+
     public static Intent getCallingIntent(Context context) {
         return new Intent(context, SettingActivity.class);
     }
@@ -66,6 +72,8 @@ public class SettingActivity extends BaseActivity implements SettingView {
     private SettingFragment settingFragment;
     private SettingUpdateProfileFragment settingUpdateProfileFragment;
     private SettingBlockFragment settingBlockFragment;
+    private Uri imgUri = null;
+    private Bitmap bitmap = null;
 
     private int shortDuration = 150;
 
@@ -81,9 +89,21 @@ public class SettingActivity extends BaseActivity implements SettingView {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        initUi();
+        initUi(savedInstanceState);
         initDependencyInjector();
         initPresenter();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (settingUpdateProfileFragment != null && settingUpdateProfileFragment.isAdded()) {
+            fragmentManager.putFragment(outState, SETTING_PROFILE_FRAGMENT, settingUpdateProfileFragment);
+            fragmentManager.putFragment(outState, SETTING_FRAGMENT, settingFragment);
+        }
+
+        if (imgUri != null) outState.putParcelable(IMG_URI, imgUri);
+        if (bitmap != null) outState.putParcelable(BITMAP, bitmap);
     }
 
     @Override
@@ -96,7 +116,7 @@ public class SettingActivity extends BaseActivity implements SettingView {
     @Override
     protected void onDestroy() {
         if (unbinder != null) unbinder.unbind();
-
+        bitmap = null;
         super.onDestroy();
     }
 
@@ -132,26 +152,46 @@ public class SettingActivity extends BaseActivity implements SettingView {
                             })
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(bitmap -> {
-                                settingUpdateProfileFragment.setImgProfilePic(bitmap, Uri.fromFile(FileUtils.bitmapToFile(AVATAR, bitmap, this)).toString());
+                            .subscribe(newBitmap -> {
+                                imgUri = Uri.fromFile(FileUtils.bitmapToFile(AVATAR, newBitmap, this));
+                                bitmap = newBitmap;
+                                settingUpdateProfileFragment.setImgProfilePic(bitmap, imgUri.toString());
                             })
             );
         }
     }
 
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
+    }
 
-    private void initUi() {
+    private void initUi(Bundle savedInstanceState) {
         setContentView(R.layout.activity_setting);
         unbinder = ButterKnife.bind(this);
 
-        settingFragment = SettingFragment.newInstance();
-        settingUpdateProfileFragment = SettingUpdateProfileFragment.newInstance();
-        settingBlockFragment = SettingBlockFragment.newInstance();
-
         fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.layoutFragmentContainer, settingFragment);
-        fragmentTransaction.commit();
+
+        if (savedInstanceState == null) {
+            settingUpdateProfileFragment = SettingUpdateProfileFragment.newInstance();
+            settingFragment = SettingFragment.newInstance();
+
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.layoutFragmentContainer, settingFragment);
+            fragmentTransaction.commit();
+        } else {
+            settingUpdateProfileFragment = (SettingUpdateProfileFragment) fragmentManager.getFragment(savedInstanceState, SETTING_PROFILE_FRAGMENT);
+            settingFragment = (SettingFragment) fragmentManager.getFragment(savedInstanceState, SETTING_FRAGMENT);
+
+            if (savedInstanceState.get(BITMAP) != null && savedInstanceState.get(IMG_URI) != null) {
+                bitmap = savedInstanceState.getParcelable(BITMAP);
+                imgUri = savedInstanceState.getParcelable(IMG_URI);
+                settingUpdateProfileFragment.setImgProfilePic(bitmap, imgUri.toString());
+            }
+        }
+
+        settingBlockFragment = SettingBlockFragment.newInstance();
 
         subscriptions.add(RxView.clicks(imgBack).subscribe(aVoid -> {
             goToMain();

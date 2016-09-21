@@ -332,21 +332,16 @@
 	<string name="points_HundredGroupMembers_description">Every 100 members in Public Group</string>
 	
 	<!-- Level -->
-	<string name="level_noob_title">Noob</string>
-	<string name="level_coolkid_title">Coolkid</string>
-	<string name="level_alien_title">Alien</string>
-	<string name="level_unicorn_title">Unicorn</string>
-	<string name="level_bot_title">Bot</string>
 	<string name="level_rookie_title">Rookie</string>
-	<string name="level_baller_title">Baller</string>
-	<string name="level_stud_title">Stud</string>
+	<string name="level_heating_up_title">Heating up</string>
+	<string name="level_rising_star_title">Rising star</string>
+	<string name="level_on_fire_title">On fire</string>
 	<string name="level_rockstar_title">Rockstar</string>
-	<string name="level_allstar_title">All Star</string>
 	<string name="level_champ_title">Champ</string>
-	<string name="level_goat_title">GOAT</string>
-	<string name="level_mvp">MVP</string>
-	<string name="level_legend_title">Legend</string>
-	<string name="level_king_title">King</string>
+	<string name="level_icon_title">Icon</string>
+	<string name="level_greatness_title">Greatness</string>
+	<string name="level_royalty_title">Royalty</string>
+	<string name="level_unicorn_title">Unicorn</string>
 	
 	<!-- Notification -->
 	<string name="notification_pending">A pending message. Swipe to resend &#11013;&#65039;</string>

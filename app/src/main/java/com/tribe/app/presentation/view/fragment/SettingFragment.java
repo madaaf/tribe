@@ -55,36 +55,51 @@ public class SettingFragment extends BaseFragment {
 
     @BindView(R.id.settingsProfile)
     SettingItemView settingsProfile;
+
     @BindView(R.id.settingsTheme)
     SettingThemeView settingThemeView;
+
     @BindView(R.id.messageSettingMemories)
     SettingItemView messageSettingMemories;
+
     @BindView(R.id.messageSettingContext)
     SettingItemView messageSettingContext;
+
     @BindView(R.id.messageSettingVoice)
     SettingItemView messageSettingVoice;
+
     @BindView(R.id.messageSettingPreload)
     SettingItemView messageSettingPreload;
+
     @BindView(R.id.messageSettingFahrenheit)
     SettingItemView messageSettingFahrenheit;
+
     @BindView(R.id.settingsFacebook)
     SettingItemView settingsFacebook;
+
     @BindView(R.id.settingsAddress)
     SettingItemView settingsAddress;
+
     @BindView(R.id.settingsInvisible)
     SettingItemView settingsInvisible;
+
     @BindView(R.id.settingsTweet)
     SettingItemView settingsTweet;
+
     @BindView(R.id.settingsEmail)
     SettingItemView settingsEmail;
+
     @BindView(R.id.settingsRateApp)
     SettingItemView settingsRateApp;
+
     @BindView(R.id.settingsBlocked)
     SettingItemView settingsBlocked;
+
     @BindView(R.id.settingsLogOut)
     SettingItemView settingsLogOut;
-    @BindView(R.id.settingsSendToken)
-    SettingItemView settingsSendToken;
+
+//    @BindView(R.id.settingsSendToken)
+//    SettingItemView settingsSendToken;
 
     @Inject
     AccessToken accessToken;
@@ -92,24 +107,30 @@ public class SettingFragment extends BaseFragment {
     @Inject
     @WeatherUnits
     Preference<String> weatherUnits;
+
     @Inject
     @Memories
     Preference<Boolean> memories;
+
     @Inject
     @LocationContext
     Preference<Boolean> locationContext;
+
     @Inject
     @AudioDefault
     Preference<Boolean> audioDefault;
+
     @Inject
     @Preload
     Preference<Boolean> preload;
+
     @Inject
     @InvisibleMode
     Preference<Boolean> invisibleMode;
 
     @Inject
     Navigator navigator;
+
     @Inject
     SettingPresenter settingPresenter;
 
@@ -128,14 +149,12 @@ public class SettingFragment extends BaseFragment {
         initUi();
         initSettings();
 
-
         return fragmentView;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-//        initSettings();
     }
 
     @Override
@@ -206,10 +225,10 @@ public class SettingFragment extends BaseFragment {
             settingPresenter.logout();
         }));
 
-        subscriptions.add(RxView.clicks(settingsSendToken).subscribe(aVoid -> {
-            String[] addresses = {"duartetia@gmail.com"};
-            navigator.composeEmail(getActivity(), addresses, accessToken.getRefreshToken() + " ------- " + accessToken.getAccessToken());
-        }));
+//        subscriptions.add(RxView.clicks(settingsSendToken).subscribe(aVoid -> {
+//            String[] addresses = {"duartetia@gmail.com"};
+//            navigator.composeEmail(getActivity(), addresses, accessToken.getRefreshToken() + " ------- " + accessToken.getAccessToken());
+//        }));
     }
 
     private void initUi() {
@@ -223,37 +242,40 @@ public class SettingFragment extends BaseFragment {
                 getString(R.string.settings_tribesave_subtitle),
                 SettingItemView.SWITCH);
         messageSettingMemories.setCheckedSwitch(memories.get());
+
         messageSettingContext.setTitleBodyViewType(getString(R.string.settings_geolocation_title),
                 getString(R.string.settings_geolocation_subtitle),
                 SettingItemView.SWITCH);
         messageSettingContext.setCheckedSwitch(locationContext.get());
+
         messageSettingVoice.setTitleBodyViewType(getString(R.string.settings_audio_title),
                 getString(R.string.settings_audio_subtitle),
                 SettingItemView.SWITCH);
         messageSettingVoice.setCheckedSwitch(audioDefault.get());
+
         messageSettingPreload.setTitleBodyViewType(getString(R.string.settings_preload_title),
                 getString(R.string.settings_preload_subtitle),
                 SettingItemView.SWITCH);
         messageSettingPreload.setCheckedSwitch(preload.get());
+
         messageSettingFahrenheit.setTitleBodyViewType(getString(R.string.settings_weatherunits_title),
                 getString(R.string.settings_weatherunits_subtitle),
                 SettingItemView.SWITCH);
+
         if (weatherUnits.get().equals(Weather.FAHRENHEIT)) messageSettingFahrenheit.setCheckedSwitch(true);
+
         else messageSettingFahrenheit.setCheckedSwitch(false);
 
         // TODO: setup based on sync status
         settingsFacebook.setTitleBodyViewType(getString(R.string.settings_facebook_sync_title),
                 getString(R.string.settings_facebook_not_synced_description),
                 SettingItemView.SWITCH);
-
         settingsFacebook.setSyncUp(R.color.red_circle, R.drawable.picto_black_facebook_icon);
 
         settingsAddress.setTitleBodyViewType(getString(R.string.settings_addressbook_sync_title),
                 getString(R.string.contacts_section_addressbook_sync_description),
                 SettingItemView.SIMPLE);
-
         settingsAddress.setSyncUp(R.color.blue_text, R.drawable.picto_phone_icon);
-
 
         settingsInvisible.setTitleBodyViewType(getString(R.string.settings_invisible_title),
                 getString(R.string.settings_invisible_subtitle),
@@ -263,9 +285,11 @@ public class SettingFragment extends BaseFragment {
         settingsTweet.setTitleBodyViewType(getString(R.string.settings_tweet_title),
                 getString(R.string.settings_tweet_subtitle),
                 SettingItemView.SIMPLE);
+
         settingsEmail.setTitleBodyViewType(getString(R.string.settings_email_title),
                 getString(R.string.settings_email_subtitle),
                 SettingItemView.SIMPLE);
+
         settingsRateApp.setTitleBodyViewType(getString(R.string.settings_rate_title),
                 getString(R.string.settings_rate_subtitle),
                 SettingItemView.SIMPLE);
@@ -278,10 +302,9 @@ public class SettingFragment extends BaseFragment {
                 getString(R.string.settings_logout_subtitle),
                 SettingItemView.SIMPLE);
 
-        settingsSendToken.setTitleBodyViewType("Send token to mamene Tiago",
-                "Maître bavon",
-                SettingItemView.SIMPLE);
-
+//        settingsSendToken.setTitleBodyViewType("Send token to mamene Tiago",
+//                "Maître bavon",
+//                SettingItemView.SIMPLE);
     }
 
     public void setPicture(String profilePicUrl) {

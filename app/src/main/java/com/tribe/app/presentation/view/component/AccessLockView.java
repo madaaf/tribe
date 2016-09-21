@@ -40,6 +40,7 @@ import rx.subscriptions.CompositeSubscription;
 public class AccessLockView extends FrameLayout {
 
     private final static int DURATION = 300;
+    private final static int DURATION_SHORT = 100;
     private final static int PULSATING_DURATION = 1200;
 
     private static final int STATE_GET_ACCESS = 0;
@@ -122,14 +123,7 @@ public class AccessLockView extends FrameLayout {
      */
 
     public void setToAccess() {
-        viewState = STATE_GET_ACCESS;
-
-        subscriptions.clear();
-        greyPulse();
-
-        txtNumFriends.setText("0");
-        progressBar.setProgress(0);
-        progressBar.setVisibility(INVISIBLE);
+        setAccessState();
 
         AnimationUtils.fadeViewDownOut(layoutFriends, new AnimatorListenerAdapter() {
             @Override
@@ -147,16 +141,22 @@ public class AccessLockView extends FrameLayout {
     }
 
     public void setToAccessFirstTime() {
+        setAccessState();
+        imgLockIcon.setAlpha(1f);
+        imgLockIcon.setTranslationY(0);
+
+        AnimationUtils.fadeViewDownOut(layoutFriends, null);
+    }
+
+    private void setAccessState() {
         viewState = STATE_GET_ACCESS;
 
         subscriptions.clear();
         greyPulse();
 
+        txtNumFriends.setText("0");
+        progressBar.setProgress(0);
         progressBar.setVisibility(INVISIBLE);
-        imgLockIcon.setAlpha(1f);
-        imgLockIcon.setTranslationY(0);
-
-        AnimationUtils.fadeViewDownOut(layoutFriends, null);
     }
 
     public void fadeBigLockIn() {
@@ -187,7 +187,7 @@ public class AccessLockView extends FrameLayout {
             imgLockIcon.animate()
                     .alpha(0)
                     .setDuration(DURATION)
-                    .translationY(screenUtils.dpToPx(50))
+                    .translationY(screenUtils.dpToPx(25))
                     .setStartDelay(0)
                     .setListener(new AnimatorListenerAdapter() {
                         @Override
@@ -207,17 +207,14 @@ public class AccessLockView extends FrameLayout {
     public void setToSorry() {
         viewState = STATE_SORRY;
 
+        if (viewState == STATE_SORRY) fadeLockIn();
+
         layoutFriends.animate()
                 .alpha(0)
                 .setDuration(DURATION)
                 .translationY(screenUtils.dpToPx(25))
                 .setStartDelay(0)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        if (viewState == STATE_SORRY) fadeLockIn();
-                    }
-                }).start();
+                .start();
 
         subscriptions.clear();
         redPulse();
@@ -234,6 +231,7 @@ public class AccessLockView extends FrameLayout {
     public void setViewWidthHeight(int whiteCircleWidth, int pulseWidth) {
         setNewWidthAndHeight(whiteCircle, whiteCircleWidth, whiteCircleWidth);
         setNewWidthAndHeight(progressBar, whiteCircleWidth, whiteCircleWidth);
+        setNewWidthAndHeight(layoutFriends, whiteCircleWidth - screenUtils.dpToPx(20), whiteCircleWidth - screenUtils.dpToPx(20));
         setNewWidthAndHeight(viewPulse, pulseWidth, pulseWidth);
     }
 

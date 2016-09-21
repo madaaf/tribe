@@ -60,6 +60,7 @@ import rx.subscriptions.CompositeSubscription;
 public class AccessFragment extends Fragment implements AccessView {
 
     private static final int DURATION = 300;
+    private static final int DURATION_SMALL = 175;
     private static final int DURATION_SHORT = 100;
 
     public static AccessFragment newInstance() {
@@ -214,7 +215,7 @@ public class AccessFragment extends Fragment implements AccessView {
         float lockViewWidthDp, pulseWidthDp, whiteCircleWidthDp;
         int lockViewWidth, pulseWidth, whiteCircleWidth;
 
-        whiteCircleWidthDp = screenUtils.getWidthDp() / 3;
+        whiteCircleWidthDp = screenUtils.getWidthDp() * 0.4f;
         pulseWidthDp = whiteCircleWidthDp + screenUtils.dpToPx(20);
         lockViewWidthDp = (float) (pulseWidthDp * 1.2);
 
@@ -316,14 +317,6 @@ public class AccessFragment extends Fragment implements AccessView {
     private void goToSorry() {
         viewState = STATE_SORRY;
 
-        textFriendsView.animate()
-                .alpha(1)
-                .setDuration(DURATION)
-                .translationY(0)
-                .setStartDelay(0);
-
-        AnimationUtils.animateBottomMargin(txtAccessDesc, screenUtils.dpToPx(170), DURATION);
-
         accessLockView.setToSorry();
         accessBottomBarView.setClickable(false);
         accessBottomBarView.animate()
@@ -333,6 +326,15 @@ public class AccessFragment extends Fragment implements AccessView {
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
+                        textFriendsView.animate()
+                                .alpha(1)
+                                .setDuration(DURATION)
+                                .translationY(0)
+                                .setStartDelay(0);
+
+                        AnimationUtils.animateBottomMargin(accessLockView, screenUtils.dpToPx(80), DURATION);
+                        AnimationUtils.animateBottomMargin(txtAccessDesc, screenUtils.dpToPx(170), DURATION);
+
                         changeBaseView(getString(R.string.onboarding_queue_declined_title),
                                 R.color.red_deep,
                                 getString(R.string.onboarding_queue_declined_description),
@@ -342,7 +344,8 @@ public class AccessFragment extends Fragment implements AccessView {
                         accessBottomBarView.animate()
                                 .setDuration(DURATION)
                                 .setListener(null)
-                                .translationY(0);
+                                .translationY(0)
+                                .start();
 
                         accessBottomBarView.setClickable(true);
                     }
@@ -410,6 +413,7 @@ public class AccessFragment extends Fragment implements AccessView {
      */
 
     private void cleanUpSorry() {
+        AnimationUtils.animateBottomMargin(accessLockView, screenUtils.dpToPx(50), DURATION);
         AnimationUtils.animateBottomMargin(txtAccessDesc, screenUtils.dpToPx(112), DURATION);
 
         textFriendsView.animate()
@@ -489,7 +493,14 @@ public class AccessFragment extends Fragment implements AccessView {
                         numFriends++;
                         accessLockView.setToHangTight(numFriends);
 
-                        if (numFriends == relationsInApp.values().size()) goToCongrats();
+                        if (numFriends == relationsInApp.values().size()) {
+                            subscriptions.add(Observable.timer(750, TimeUnit.MILLISECONDS)
+                                    .subscribeOn(Schedulers.newThread())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(time -> {
+                                        goToCongrats();
+                                    }));
+                        }
                     });
         } else {
             goToSorry();

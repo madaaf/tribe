@@ -1,10 +1,11 @@
 package com.tribe.app.presentation.view.component;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -12,9 +13,13 @@ import android.widget.Switch;
 
 import com.bumptech.glide.Glide;
 import com.tribe.app.R;
+import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,21 +32,8 @@ import rx.subjects.PublishSubject;
  */
 public class SettingItemView extends FrameLayout {
 
-    public SettingItemView(Context context) {
-        super(context);
-    }
-
-    public SettingItemView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public SettingItemView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
-    public SettingItemView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
+    @Inject
+    ScreenUtils screenUtils;
 
     @BindView(R.id.txtSectionTitle)
     TextViewFont txtSectionTitle;
@@ -71,6 +63,23 @@ public class SettingItemView extends FrameLayout {
 
     private PublishSubject<Boolean> checkedSwitch = PublishSubject.create();
 
+    public SettingItemView(Context context) {
+        super(context);
+    }
+
+    public SettingItemView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public SettingItemView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public SettingItemView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+    }
+
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -78,20 +87,14 @@ public class SettingItemView extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.view_setting_item, this);
         unbinder = ButterKnife.bind(this);
 
-//        initDependencyInjector();
-        setupSwitch();
+        ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
 
+        setupSwitch();
     }
 
     @Override
     protected void onDetachedFromWindow() {
-        unbinder.unbind();
-
-//        if (subscriptions.hasSubscriptions()) {
-//            subscriptions.unsubscribe();
-//            subscriptions.clear();
-//        }
-
+        if (unbinder != null) unbinder.unbind();
         super.onDetachedFromWindow();
     }
 
@@ -130,7 +133,6 @@ public class SettingItemView extends FrameLayout {
             default:
                 break;
         }
-
     }
 
     private void setFrameClickable() {
@@ -147,7 +149,6 @@ public class SettingItemView extends FrameLayout {
         txtSectionTitle.setLayoutParams(titleViewLayoutParams);
 
         txtSectionBody.setTextColor(ContextCompat.getColor(getContext(), textColor));
-
     }
 
     public void setPicture(String picUrl) {
@@ -156,9 +157,11 @@ public class SettingItemView extends FrameLayout {
         int size = getContext().getResources().getDimensionPixelSize(R.dimen.setting_pic_size);
 
         if (!StringUtils.isEmpty(picUrl)) {
-            Glide.with(getContext())
-                    .load(picUrl)
+            Glide.with(getContext()).load(picUrl)
+                    .override(size, size)
+                    .centerCrop()
                     .bitmapTransform(new CropCircleTransformation(getContext()))
+                    .crossFade()
                     .into(imageProf);
         }
 
@@ -168,6 +171,7 @@ public class SettingItemView extends FrameLayout {
 
         FrameLayout.LayoutParams bodyViewLayoutParams = (FrameLayout.LayoutParams) txtSectionBody.getLayoutParams();
         bodyViewLayoutParams.setMarginStart(dpToPx(55));
+        bodyViewLayoutParams.setMarginEnd(dpToPx(55));
         txtSectionBody.setLayoutParams(bodyViewLayoutParams);
     }
 
@@ -188,7 +192,6 @@ public class SettingItemView extends FrameLayout {
     }
 
     public int dpToPx(int dp) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getContext().getResources().getDisplayMetrics());
+        return screenUtils.dpToPx(dp);
     }
-
 }

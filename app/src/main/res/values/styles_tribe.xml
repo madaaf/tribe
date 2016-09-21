@@ -36,6 +36,10 @@
         <item name="android:textColor">@color/red.circle</item>
     </style>
 
+    <style name="Body.One.Blue" parent="@style/Body.One">
+        <item name="android:textColor">@color/blue.text</item>
+    </style>
+
     <style name="Body.Two.Blue" parent="@style/Body.Two">
         <item name="android:textColor">@color/blue.text</item>
     </style>

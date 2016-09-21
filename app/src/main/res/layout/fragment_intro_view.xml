@@ -16,6 +16,14 @@
         android:src="@drawable/picto_tribe_onboarding_logo"
         />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="@dimen/bottom_bar_height"
+        android:background="@drawable/shadow_top"
+        />
+
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtIntroMessage"
         android:layout_width="wrap_content"
@@ -33,13 +41,14 @@
     <com.tribe.app.presentation.view.widget.CustomViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="@dimen/bottom_bar_height"
+        android:layout_gravity="bottom"
         >
 
         <com.tribe.app.presentation.view.component.PhoneNumberView
             android:id="@+id/viewPhoneNumber"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:background="@null"
             />
 
@@ -51,7 +60,7 @@
             />
         <com.tribe.app.presentation.view.component.ConnectedView
             android:id="@+id/viewConnected"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_width="wrap_content"/>
 
     </com.tribe.app.presentation.view.widget.CustomViewPager>

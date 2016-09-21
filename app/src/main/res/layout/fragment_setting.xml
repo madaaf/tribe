@@ -16,20 +16,12 @@
             android:background="@drawable/shape_white_rect_grey_border"
             android:orientation="vertical">
 
-
-            <LinearLayout
+            <com.tribe.app.presentation.view.component.SettingItemView
+                android:id="@+id/settingsProfile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/shape_white_rect_grey_border"
-                android:orientation="vertical">
-
-                <com.tribe.app.presentation.view.component.SettingItemView
-                    android:id="@+id/settingsProfile"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="@dimen/section_button_vertical_padding" />
-
-            </LinearLayout>
+                android:paddingTop="@dimen/section_button_vertical_padding" />
 
             <View
                 android:layout_width="match_parent"
@@ -117,7 +109,6 @@
             android:layout_height="5dp"
             android:background="@color/grey.background.profile_info" />
 
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -154,13 +145,15 @@
             <com.tribe.app.presentation.view.component.SettingItemView
                 android:id="@+id/settingsEmail"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                />
 
             <com.tribe.app.presentation.view.component.SettingItemView
                 android:id="@+id/settingsRateApp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/section_button_vertical_padding"/>
+                android:paddingBottom="@dimen/section_button_vertical_padding"
+                />
 
         </LinearLayout>
 
@@ -206,7 +199,7 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <!--<LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_white_rect_grey_border"
@@ -220,7 +213,7 @@
                 android:paddingBottom="@dimen/section_button_vertical_padding"
                 />
 
-        </LinearLayout>
+        </LinearLayout>-->
 
         <ImageView
             android:layout_marginTop="10dp"

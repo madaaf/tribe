@@ -61,6 +61,7 @@ import com.tribe.app.presentation.view.adapter.delegate.text.VideoMessageAdapter
 import com.tribe.app.presentation.view.camera.view.HistogramVisualizerView;
 import com.tribe.app.presentation.view.component.PullToSearchContainer;
 import com.tribe.app.presentation.view.component.PullToSearchView;
+import com.tribe.app.presentation.view.component.SettingItemView;
 import com.tribe.app.presentation.view.component.TribeComponentView;
 import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
@@ -116,6 +117,7 @@ public interface ApplicationComponent {
     void inject(SearchResultGridAdapterDelegate searchResultGridAdapterDelegate);
     void inject(PullToSearchContainer pullToSearchContainer);
     void inject(PullToSearchView pullToSearchView);
+    void inject(SettingItemView settingItemView);
 
     // JOBS
     void inject(SendTribeJob sendTribeJob);

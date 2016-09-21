@@ -53,6 +53,11 @@ import rx.subscriptions.CompositeSubscription;
 
 public class IntroActivity extends BaseActivity {
 
+    private static final String AVATAR = "AVATAR";
+    private static final int PAGE_INTRO = 0,
+            PAGE_PROFILE_INFO = 1,
+            PAGE_ACCESS = 2;
+
     public static Intent getCallingIntent(Context context) {
         return new Intent(context, IntroActivity.class);
     }
@@ -61,15 +66,11 @@ public class IntroActivity extends BaseActivity {
      * Globals
      */
 
-    private static final String AVATAR = "AVATAR";
-    private static final int PAGE_INTRO = 0,
-            PAGE_PROFILE_INFO = 1,
-            PAGE_ACCESS = 2;
-
     private IntroViewFragment introViewFragment;
     private ProfileInfoFragment profileInfoFragment;
     private AccessFragment accessFragment;
 
+    // OBSERVABLES
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
@@ -95,6 +96,7 @@ public class IntroActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         initUi();
         initDependencyInjector();
         initViewPager();
@@ -157,8 +159,8 @@ public class IntroActivity extends BaseActivity {
                             })
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(bitmap -> {
-                                profileInfoFragment.setImgProfilePic(bitmap, Uri.fromFile(FileUtils.bitmapToFile(AVATAR, bitmap, this)).toString());
+                            .subscribe(newBitmap -> {
+                                profileInfoFragment.setImgProfilePic(newBitmap, Uri.fromFile(FileUtils.bitmapToFile(AVATAR, newBitmap, this)).toString());
                             })
             );
         }
@@ -170,8 +172,8 @@ public class IntroActivity extends BaseActivity {
                             .map(bitmap -> ImageUtils.formatForUpload(bitmap))
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(bitmap -> {
-                                profileInfoFragment.setImgProfilePic(bitmap, Uri.fromFile(FileUtils.bitmapToFile(AVATAR, bitmap, this)).toString());
+                            .subscribe(newBitmap -> {
+                                profileInfoFragment.setImgProfilePic(newBitmap, Uri.fromFile(FileUtils.bitmapToFile(AVATAR, newBitmap, this)).toString());
                             })
             );
         }
@@ -260,6 +262,24 @@ public class IntroActivity extends BaseActivity {
             }
         }
 
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            switch (position) {
+                case 0:
+                    introViewFragment = (IntroViewFragment) super.instantiateItem(container, position);
+                    return introViewFragment;
+                case 1:
+                    profileInfoFragment = (ProfileInfoFragment) super.instantiateItem(container, position);
+                    return profileInfoFragment;
+                case 2:
+                    accessFragment = (AccessFragment) super.instantiateItem(container, position);
+                    accessFragment.setUser(currentUser);
+                    return accessFragment;
+                default:
+                    introViewFragment = (IntroViewFragment) super.instantiateItem(container, position);
+                    return introViewFragment;
+            }
+        }
     }
 
     private class IntroPageTransformer implements ViewPager.PageTransformer {
