@@ -234,6 +234,11 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     }
 
     @Override
+    public void refreshGrid() {
+        reloadGrid();
+    }
+
+    @Override
     public void showError(String message) {
         this.showToastMessage(message);
     }
@@ -431,6 +436,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
 
         if (recipient instanceof Group) {
             moreTypes.add(new MoreType(getString(R.string.grid_menu_group_infos), MoreType.GROUP_INFO));
+            moreTypes.add(new MoreType(getString(R.string.grid_menu_group_leave), MoreType.GROUP_LEAVE));
+            moreTypes.add(new MoreType(getString(R.string.grid_menu_group_delete), MoreType.GROUP_DELETE));
         }
 
         prepareBottomSheetMore(recipient, moreTypes);
@@ -462,6 +469,12 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                     }
                     if (moreType.getMoreType().equals(MoreType.GROUP_INFO)) {
                         navigator.navigateToGroupInfo(getActivity(),  recipient.getId());
+                    }
+                    if (moreType.getMoreType().equals(MoreType.GROUP_LEAVE)) {
+                        homeGridPresenter.leaveGroup(recipient.getId());
+                    }
+                    if (moreType.getMoreType().equals(MoreType.GROUP_DELETE)) {
+                        homeGridPresenter.removeGroup(recipient.getId());
                     }
 
                     dismissDialogSheetMore();

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="80dp"
+    android:id="@+id/layoutFriendItem"
     android:paddingTop="@dimen/vertical_margin"
     android:paddingBottom="@dimen/vertical_margin"
     android:paddingStart="@dimen/setting_block_item_horizontal_padding"
@@ -10,6 +11,13 @@
         android:id="@+id/imageFriendPic"
         android:layout_width="@dimen/setting_pic_size"
         android:layout_height="@dimen/setting_pic_size" />
+
+    <ImageView
+        android:id="@+id/imageFriendPicBadge"
+        android:layout_width="@dimen/image_badge_size"
+        android:layout_height="@dimen/image_badge_size"
+        android:scaleType="fitCenter"
+        android:layout_gravity="bottom"/>
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtDisplayName"

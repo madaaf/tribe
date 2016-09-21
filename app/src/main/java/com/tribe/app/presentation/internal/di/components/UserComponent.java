@@ -5,6 +5,7 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.internal.di.modules.UserModule;
 import com.tribe.app.presentation.mvp.presenter.GroupPresenter;
 import com.tribe.app.presentation.mvp.presenter.SettingPresenter;
+import com.tribe.app.presentation.mvp.view.GroupMemberView;
 import com.tribe.app.presentation.utils.facebook.FacebookHiddenActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.GroupInfoActivity;
@@ -20,6 +21,7 @@ import com.tribe.app.presentation.view.component.SettingThemeView;
 import com.tribe.app.presentation.view.dialog_fragment.ShareDialogFragment;
 import com.tribe.app.presentation.view.fragment.AccessFragment;
 import com.tribe.app.presentation.view.fragment.ContactsGridFragment;
+import com.tribe.app.presentation.view.fragment.GroupMemberFragment;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
 import com.tribe.app.presentation.view.fragment.IntroViewFragment;
@@ -59,4 +61,5 @@ public interface UserComponent extends ActivityComponent {
     void inject(GroupPresenter groupPresenter);
     void inject(GroupInfoActivity groupInfoActivity);
     void inject(GroupInfoView groupInfoView);
+    void inject(GroupMemberFragment groupMemberFragment);
 }

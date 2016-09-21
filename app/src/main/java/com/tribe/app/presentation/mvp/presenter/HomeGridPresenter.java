@@ -24,6 +24,8 @@ import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.DiskMarkTribeListAsRead;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
+import com.tribe.app.domain.interactor.user.LeaveGroup;
+import com.tribe.app.domain.interactor.user.RemoveGroup;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.SendTribeView;
 import com.tribe.app.presentation.mvp.view.View;
@@ -52,6 +54,8 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
     private UseCaseDisk diskGetMessageReceivedListUsecase;
     private UseCaseDisk diskGetPendingTribeListUsecase;
     private DiskMarkTribeListAsRead diskMarkTribeListAsRead;
+    private final LeaveGroup leaveGroup;
+    private final RemoveGroup removeGroup;
 
     // SUBSCRIBERS
     private TribePendingListSubscriber tribePendingListSubscriber;
@@ -64,12 +68,16 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
                              @Named("diskDeleteTribe") DeleteTribe diskDeleteTribe,
                              @Named("diskGetReceivedMessages") UseCaseDisk diskGetReceivedMessageList,
                              @Named("diskGetPendingTribes") UseCaseDisk diskGetPendingTribeList,
-                             @Named("diskMarkTribeListAsRead") DiskMarkTribeListAsRead diskMarkTribeListAsRead) {
+                             @Named("diskMarkTribeListAsRead") DiskMarkTribeListAsRead diskMarkTribeListAsRead,
+                             LeaveGroup leaveGroup,
+                             RemoveGroup removeGroup) {
         super(jobManager, diskSaveTribe, diskDeleteTribe);
         this.diskUserInfosUsecase = diskUserInfos;
         this.diskGetMessageReceivedListUsecase = diskGetReceivedMessageList;
         this.diskGetPendingTribeListUsecase = diskGetPendingTribeList;
         this.diskMarkTribeListAsRead = diskMarkTribeListAsRead;
+        this.leaveGroup = leaveGroup;
+        this.removeGroup = removeGroup;
     }
 
     @Override
@@ -193,6 +201,17 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         jobManager.addJobInBackground(new MarkTribeListAsReadJob(recipient, recipient.getReceivedTribes()));
     }
 
+
+    public void leaveGroup(String groupId) {
+        leaveGroup.prepare(groupId);
+        leaveGroup.execute(new LeaveGroupSubscriber());
+    }
+
+    public void removeGroup(String groupId) {
+        removeGroup.prepare(groupId);
+        removeGroup.execute(new RemoveGroupSubscriber());
+    }
+
     @Override
     protected SendTribeView getView() {
         return homeGridView;
@@ -249,6 +268,40 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
         @Override
         public void onNext(List<TribeMessage> tribes) {
             updatePendingTribes(tribes);
+        }
+    }
+
+    private final class LeaveGroupSubscriber extends DefaultSubscriber<Void> {
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(Void aVoid) {
+            homeGridView.refreshGrid();
+        }
+    }
+
+    private final class RemoveGroupSubscriber extends DefaultSubscriber<Void> {
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(Void aVoid) {
+            homeGridView.refreshGrid();
         }
     }
 }

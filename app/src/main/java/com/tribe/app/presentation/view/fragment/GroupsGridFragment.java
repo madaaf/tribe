@@ -25,6 +25,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.CameraType;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
+import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -63,6 +64,7 @@ import butterknife.Unbinder;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -70,18 +72,17 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class GroupsGridFragment extends BaseFragment implements GroupView {
 
-    public GroupsGridFragment() {
-        setRetainInstance(true);
-    }
-
     public static GroupsGridFragment newInstance(Bundle args) {
-
         GroupsGridFragment fragment = new GroupsGridFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
-    Unbinder unbinder;
+    public GroupsGridFragment() {
+        setRetainInstance(true);
+    }
+
+    private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
     // Bind view
@@ -112,15 +113,11 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     // VARIABLES
     private BottomSheetDialog dialogCamera;
-    private RecyclerView recyclerViewCameraType;
     private LabelSheetAdapter cameraTypeAdapter;
-    private int animDuration = 300 * 2;
-    private int loadingAnimDuration = 1000 * 2;
     private List<Friendship> friendshipsList = new ArrayList<>();
     private List<Friendship> friendshipsListCopy = new ArrayList<>();
     List<User> members;
     private LinearLayoutManager linearLayoutManager;
-    private Group currentGroup;
     private boolean groupInfoValid = false;
 
     // Group Info
@@ -130,15 +127,22 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     private String groupPictureUri = null;
     private boolean privateGroup = true;
     private List<String> groupMemberIds = new ArrayList<>();
+    ArrayList<GroupMember> groupMemberList;
 
     // Animation Variables
-    int moveUpY = 138;
-    int moveGroupName = 60;
-    int presentEditInfoTranslation = 20;
-    int layoutCreateInviteInfoPositionY = 255;
-    int startTranslationDoneIcon = 200;
+    private int moveUpY = 138;
+    private int presentEditInfoTranslation = 20;
+    private int layoutCreateInviteInfoPositionY = 255;
+    private int startTranslationDoneIcon = 200;
+    private int animDuration = 300 * 2;
+    private int loadingAnimDuration = 1000 * 2;
+    private int smallMargin = 5;
 
-    int smallMargin = 5;
+    // Observables
+    private PublishSubject<Void> imageGoToMembersClicked = PublishSubject.create();
+    public Observable<Void> imageGoToMembersClicked() {
+        return imageGoToMembersClicked;
+    }
 
     /**
      * View lifecycle methods
@@ -199,6 +203,14 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         super.onDestroy();
     }
 
+    public ArrayList<GroupMember> getGroupMemberList() {
+        return groupMemberList;
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
     /**
      * Setup UI
      * Includes subscription setup
@@ -221,8 +233,9 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         subscriptions.add(groupInfoView.imageEditGroupClicked().subscribe(aVoid -> {
             presentEditInfo();
         }));
-
-
+        subscriptions.add(groupInfoView.imageGoToMembersClicked().subscribe(aVoid -> {
+            imageGoToMembersClicked.onNext(null);
+        }));
         groupPresenter.getGroupMembers(groupId);
     }
 
@@ -232,15 +245,12 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             groupPresenter.updateGroup(groupId, groupName, groupPictureUri);
             backFromEditInfo();
         }));
-
         subscriptions.add(RxView.clicks(imageDone).subscribe(aVoid -> {
             groupPresenter.addMembersToGroup(groupId, memberIds);
         }));
-
         subscriptions.add(groupInfoView.imageGroupClicked().subscribe(aVoid -> {
             setupBottomSheetCamera();
         }));
-
     }
 
     @Override
@@ -261,6 +271,34 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         initFriendshipListExcluding(members);
         friendAdapter.setItems(friendshipsList);
         friendAdapter.notifyDataSetChanged();
+
+        // Setup Group Member View info
+        List<User> admins = group.getAdmins();
+        User user = getCurrentUser();
+        List<Friendship> friendsList = user.getFriendships();
+        List<User> friendsUsers = new ArrayList<>();
+        for (Friendship friendship : friendsList) {
+            friendsUsers.add(friendship.getFriend());
+        }
+        groupMemberList = new ArrayList<>();
+        for (User member : members) {
+            GroupMember groupMember = new GroupMember(
+                    member.getId(),
+                    member.getDisplayName(),
+                    member.getUsername(),
+                    member.getProfilePicture());
+            if (groupMember.getUserId().equals(user.getId())) groupMember.setCurrentUser(true);
+            for (int i = 0; i < friendsUsers.size(); i++) {
+                if (friendsUsers.get(i).getId().equals(member.getId())) {
+                    groupMember.setFriend(true);
+                    groupMember.setFriendshipId(friendsList.get(i).getFriendshipId());
+                }
+            }
+            for (User admin : admins) {
+                if (admin.getId().equals(member.getId())) groupMember.setAdmin(true);
+            }
+            groupMemberList.add(groupMember);
+        }
     }
 
     /**
@@ -623,7 +661,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     private void prepareBottomSheetCamera(List<LabelType> items) {
         View view = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_camera_type, null);
-        recyclerViewCameraType = (RecyclerView) view.findViewById(R.id.recyclerViewCameraType);
+        RecyclerView recyclerViewCameraType = (RecyclerView) view.findViewById(R.id.recyclerViewCameraType);
         recyclerViewCameraType.setHasFixedSize(true);
         recyclerViewCameraType.setLayoutManager(new LinearLayoutManager(getActivity()));
         cameraTypeAdapter = new LabelSheetAdapter(getContext(), items);

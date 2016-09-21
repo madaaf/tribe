@@ -13,6 +13,7 @@ import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.Group;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,6 +108,8 @@ public class DiskUserDataStore implements UserDataStore {
         return contactCache.findContactsByValue(username);
     }
 
+    // TODO: setup groups in db
+
     @Override
     public Observable<FriendshipRealm> createFriendship(String userId) {
         return null;
@@ -133,12 +136,37 @@ public class DiskUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<Void> updateGroup(String groupId, String groupName, String pictureUri) {
+    public Observable<GroupRealm> updateGroup(String groupId, String groupName, String pictureUri) {
         return null;
     }
 
     @Override
     public Observable<Void> addMembersToGroup(String groupId, List<String> memberIds) {
+        return null;
+    }
+
+    @Override
+    public Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds) {
+        return null;
+    }
+
+    @Override
+    public Observable<Void> addAdminsToGroup(String groupId, List<String> memberIds) {
+        return null;
+    }
+
+    @Override
+    public Observable<Void> removeAdminsFromGroup(String groupId, List<String> memberIds) {
+        return null;
+    }
+
+    @Override
+    public Observable<Void> removeGroup(String groupId) {
+        return null;
+    }
+
+    @Override
+    public Observable<Void> leaveGroup(String groupId) {
         return null;
     }
 

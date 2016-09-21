@@ -121,14 +121,34 @@ public interface TribeApi {
 
     @FormUrlEncoded
     @POST("/graphql")
-    Observable<Void> updateGroup(@Field("query") String query);
+    Observable<GroupRealm> updateGroup(@Field("query") String query);
 
     @Multipart
     @POST("/graphql")
-    Observable<Void> updateGroupMedia(@Part("query") RequestBody query, @Part MultipartBody.Part file);
+    Observable<GroupRealm> updateGroupMedia(@Part("query") RequestBody query, @Part MultipartBody.Part file);
 
     @FormUrlEncoded
     @POST("/graphql")
     Observable<Void> addMembersToGroup(@Field("query") String query);
+
+    @FormUrlEncoded
+    @POST("/graphql")
+    Observable<Void> removeMembersFromGroup(@Field("query") String query);
+
+    @FormUrlEncoded
+    @POST("/graphql")
+    Observable<Void> addAdminsToGroup(@Field("query") String query);
+
+    @FormUrlEncoded
+    @POST("/graphql")
+    Observable<Void> removeAdminsFromGroup(@Field("query") String query);
+
+    @FormUrlEncoded
+    @POST("/graphql")
+    Observable<Void> removeGroup(@Field("query") String query);
+
+    @FormUrlEncoded
+    @POST("/graphql")
+    Observable<Void> leaveGroup(@Field("query") String query);
 
 }

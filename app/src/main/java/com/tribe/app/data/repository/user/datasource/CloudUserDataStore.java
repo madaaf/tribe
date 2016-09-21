@@ -36,8 +36,10 @@ import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.data.realm.mapper.GroupRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.user.contact.RxContacts;
+import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -52,10 +54,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.realm.RealmList;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -87,6 +91,7 @@ public class CloudUserDataStore implements UserDataStore {
     private Preference<String> lastMessageRequest;
     private Preference<String> lastUserRequest;
     private SimpleDateFormat utcSimpleDate = null;
+    private GroupRealmDataMapper groupRealmDataMapper;
     private UserRealmDataMapper userRealmDataMapper;
 
     /**
@@ -104,6 +109,7 @@ public class CloudUserDataStore implements UserDataStore {
                               AccessToken accessToken, Installation installation,
                               ReactiveLocationProvider reactiveLocationProvider, Context context,
                               Preference<String> lastMessageRequest, Preference<String> lastUserRequest, SimpleDateFormat utcSimpleDate,
+                            GroupRealmDataMapper groupRealmDataMapper,
                               UserRealmDataMapper userRealmDataMapper) {
         this.userCache = userCache;
         this.tribeCache = tribeCache;
@@ -121,6 +127,7 @@ public class CloudUserDataStore implements UserDataStore {
         this.lastMessageRequest = lastMessageRequest;
         this.lastUserRequest = lastUserRequest;
         this.utcSimpleDate = utcSimpleDate;
+        this.groupRealmDataMapper = groupRealmDataMapper;
         this.userRealmDataMapper = userRealmDataMapper;
     }
 
@@ -770,7 +777,10 @@ public class CloudUserDataStore implements UserDataStore {
         String privateGroup = isPrivate ? "PRIVATE" : "PUBLIC";
         final String request = context.getString(R.string.create_group, groupName, privateGroup, idList, context.getString(R.string.groupfragment_info));
         if (pictureUri == null) {
-            return this.tribeApi.createGroup(request);
+            return this.tribeApi.createGroup(request)
+                    .doOnNext(groupRealm -> {
+                        userCache.createGroup(accessToken.getUserId(), groupRealm.getId(), groupName, memberIds, isPrivate, groupRealm.getPicture());
+                    });
         } else {
             RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
 
@@ -795,20 +805,24 @@ public class CloudUserDataStore implements UserDataStore {
             requestFile = RequestBody.create(MediaType.parse("image/jpeg"), file);
             body = MultipartBody.Part.createFormData("group_pic", "group_pic.jpg", requestFile);
 
-            return this.tribeApi.createGroupMedia(query, body);
+            return this.tribeApi.createGroupMedia(query, body)
+                    .doOnNext(groupRealm -> {
+                        userCache.createGroup(accessToken.getUserId(), groupRealm.getId(), groupName, memberIds, isPrivate, groupRealm.getPicture());
+                    });
         }
     }
 
     @Override
-    public Observable<Void> updateGroup(String groupId, String groupName, String pictureUri) {
-
-        GroupRealm groupDb = userCache.groupInfos(groupId);
-
-        if (groupName == null) groupName = groupDb.getName();
-
-        String request = context.getString(R.string.update_group, groupId, groupName);
+    public Observable<GroupRealm> updateGroup(String groupId, String groupName, String pictureUri) {
+        String request = context.getString(R.string.update_group, groupId, groupName, context.getString(R.string.groupfragment_info));
         if (pictureUri == null) {
-            return this.tribeApi.updateGroup(request);
+            return this.tribeApi.updateGroup(request)
+                    .doOnError(throwable -> {
+                        throwable.printStackTrace();
+                    })
+                    .doOnNext(groupRealm -> {
+                        userCache.updateGroup(groupId, groupName, pictureUri);
+                    });
         } else {
             RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
 
@@ -833,7 +847,13 @@ public class CloudUserDataStore implements UserDataStore {
             requestFile = RequestBody.create(MediaType.parse("image/jpeg"), file);
             body = MultipartBody.Part.createFormData("group_pic", "group_pic.jpg", requestFile);
 
-            return this.tribeApi.updateGroupMedia(query, body);
+            return this.tribeApi.updateGroupMedia(query, body)
+                    .doOnError(throwable -> {
+                        throwable.printStackTrace();
+                    })
+                    .doOnNext(groupRealm -> {
+                        userCache.updateGroup(groupId, groupName, pictureUri);
+                    });
         }
 
     }
@@ -842,7 +862,61 @@ public class CloudUserDataStore implements UserDataStore {
     public Observable<Void> addMembersToGroup(String groupId, List<String> memberIds) {
         String memberIdsJson = listToJson(memberIds);
         String request = context.getString(R.string.add_members_group, groupId, memberIdsJson);
-        return this.tribeApi.addMembersToGroup(request);
+        return this.tribeApi.addMembersToGroup(request)
+                .doOnNext(aVoid -> {
+                    userCache.addMembersToGroup(groupId, memberIds);
+                });
+    }
+
+    @Override
+    public Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds) {
+        String memberIdsJson = listToJson(memberIds);
+        String request = context.getString(R.string.remove_members_group, groupId, memberIdsJson);
+        return this.tribeApi.removeMembersFromGroup(request)
+                .doOnNext(aVoid -> {
+                    userCache.removeMembersFromGroup(groupId, memberIds);
+                });
+    }
+
+    @Override
+    public Observable<Void> addAdminsToGroup(String groupId, List<String> memberIds) {
+        String memberIdsJson = listToJson(memberIds);
+        String request = context.getString(R.string.add_admins_group, groupId, memberIdsJson);
+        return this.tribeApi.addAdminsToGroup(request)
+                .doOnNext(aVoid -> {
+                    userCache.addAdminsToGroup(groupId, memberIds);
+                });
+    }
+
+    @Override
+    public Observable<Void> removeAdminsFromGroup(String groupId, List<String> memberIds) {
+        String memberIdsJson = listToJson(memberIds);
+        String request = context.getString(R.string.remove_admins_group, groupId, memberIdsJson);
+        return this.tribeApi.removeAdminsFromGroup(request)
+                .doOnNext(aVoid -> {
+                    userCache.removeAdminsFromGroup(groupId, memberIds);
+                });
+    }
+
+    @Override
+    public Observable<Void> removeGroup(String groupId) {
+        String request = context.getString(R.string.remove_group, groupId);
+        return this.tribeApi.removeGroup(request)
+                .doOnError(throwable -> {
+                    throwable.printStackTrace();
+                })
+                .doOnNext(aVoid -> {
+                    userCache.removeGroup(groupId);
+                });
+    }
+
+    @Override
+    public Observable<Void> leaveGroup(String groupId) {
+        String request = context.getString(R.string.leave_group, groupId);
+        return this.tribeApi.leaveGroup(request)
+                .doOnNext(aVoid -> {
+                    userCache.removeGroup(groupId);
+                });
     }
 
     public String listToJson(List<String> list) {

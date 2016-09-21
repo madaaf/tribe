@@ -68,6 +68,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center" />
+        <ImageView
+            android:id="@+id/imageGoToMembers"
+            android:layout_width="@dimen/nav_icon_size"
+            android:layout_height="@dimen/nav_icon_size"
+            android:layout_gravity="center_vertical|end"
+            android:src="@drawable/picto_back"
+            android:scaleType="centerInside"
+            android:scaleX="-1"
+            />
     </FrameLayout>
 
     <com.tribe.app.presentation.view.widget.EditTextFont

@@ -384,6 +384,9 @@
                 members {
                     ...UserInfos
                 }
+                admins {
+                    ...UserInfos
+                }
             }
         }
 
@@ -409,9 +412,10 @@
             updateGroup(id : \"%1$s\", group: {
                 name : \"%2$s\"
             }) {
-                id
+                ...GroupInfo
             }
         }
+        %3$s
     </string>
 
     <string name="add.members.group" translatable="false">
@@ -419,6 +423,42 @@
             addMembersToGroup(id : \"%1$s\", members: [\"%2$s\"]) {
                 id
             }
+        }
+    </string>
+
+    <string name="remove.members.group" translatable="false">
+        mutation {
+            removeMembersFromGroup(id : \"%1$s\", members: [\"%2$s\"]) {
+                id
+            }
+        }
+    </string>
+
+    <string name="add.admins.group" translatable="false">
+        mutation {
+            addAdminsToGroup(id : \"%1$s\", admins: [\"%2$s\"]) {
+                id
+            }
+        }
+    </string>
+
+    <string name="remove.admins.group" translatable="false">
+        mutation {
+            removeAdminsFromGroup(id : \"%1$s\", admins: [\"%2$s\"]) {
+                id
+            }
+        }
+    </string>
+
+    <string name="remove.group" translatable="false">
+        mutation {
+            removeGroup(id : \"%1$s\")
+        }
+    </string>
+
+    <string name="leave.group" translatable="false">
+        mutation {
+            leaveGroup(id: \"%1$s\")
         }
     </string>
 

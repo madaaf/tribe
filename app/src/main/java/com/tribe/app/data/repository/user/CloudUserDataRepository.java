@@ -2,6 +2,7 @@ package com.tribe.app.data.repository.user;
 
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
 import com.tribe.app.data.realm.mapper.GroupRealmDataMapper;
@@ -202,14 +203,45 @@ public class CloudUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<Void> updateGroup(String groupId, String groupName, String pictureUri) {
+    public Observable<Group> updateGroup(String groupId, String groupName, String pictureUri) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-        return  cloudDataStore.updateGroup(groupId, groupName, pictureUri);
+        return  cloudDataStore.updateGroup(groupId, groupName, pictureUri)
+                .map(this.groupRealmDataMapper::transform);
     }
 
     @Override
     public Observable<Void> addMembersToGroup(String groupId, List<String> memberIds) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
         return cloudDataStore.addMembersToGroup(groupId, memberIds);
+    }
+
+    @Override
+    public Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.removeMembersFromGroup(groupId, memberIds);
+    }
+
+    @Override
+    public Observable<Void> addAdminsToGroup(String groupId, List<String> memberIds) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.addAdminsToGroup(groupId, memberIds);
+    }
+
+    @Override
+    public Observable<Void> removeAdminsFromGroup(String groupId, List<String> memberIds) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.removeAdminsFromGroup(groupId, memberIds);
+    }
+
+    @Override
+    public Observable<Void> removeGroup(String groupId) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.removeGroup(groupId);
+    }
+
+    @Override
+    public Observable<Void> leaveGroup(String groupId) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.leaveGroup(groupId);
     }
 }

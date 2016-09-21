@@ -6,8 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.LabelType;
-import com.tribe.app.presentation.view.adapter.delegate.friend.FriendAdapterDelegate;
+import com.tribe.app.domain.entity.GroupMember;
+import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.group.GroupMemberAdapterDelegate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,23 +16,21 @@ import java.util.List;
 import javax.inject.Inject;
 
 import rx.Observable;
-import rx.subjects.PublishSubject;
 
 /**
- * Created by horatiothomas on 9/7/16.
+ * Created by horatiothomas on 9/19/16.
  */
-public class FriendAdapter extends RecyclerView.Adapter {
+public class GroupMemberAdapter extends RecyclerView.Adapter {
 
-    protected RxAdapterDelegatesManager<List<Friendship>> delegatesManager;
-    private List<Friendship> items;
-    private FriendAdapterDelegate friendAdapterDelegate;
-
+    protected RxAdapterDelegatesManager<List<GroupMember>> delegatesManager;
+    private List<GroupMember> items;
+    private GroupMemberAdapterDelegate groupMemberAdapterDelegate;
 
     @Inject
-    public FriendAdapter(Context context) {
+    public GroupMemberAdapter(Context context) {
         delegatesManager = new RxAdapterDelegatesManager<>();
-        friendAdapterDelegate = new FriendAdapterDelegate(context);
-        delegatesManager.addDelegate(friendAdapterDelegate);
+        groupMemberAdapterDelegate = new GroupMemberAdapterDelegate(context);
+        delegatesManager.addDelegate(groupMemberAdapterDelegate);
         items = new ArrayList<>();
     }
 
@@ -56,16 +55,16 @@ public class FriendAdapter extends RecyclerView.Adapter {
     }
 
     private void releaseSubscriptions() {
-        delegatesManager.releaseSubscriptions();
+        delegatesManager.releaseSubscriptions();;
     }
 
-    public void setItems(List<Friendship> friendshipList) {
+    public void setItems(List<GroupMember> groupMemberList) {
         items.clear();
-        items.addAll(friendshipList);
+        items.addAll(groupMemberList);
         notifyDataSetChanged();
     }
 
-    public Friendship getItemAtPosition(int position) {
+    public GroupMember getItemAtPosition(int position) {
         if (items.size() > 0 && position < items.size()) {
             return items.get(position);
         } else {
@@ -73,7 +72,8 @@ public class FriendAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public Observable<View> clickFriendItem() {
-        return friendAdapterDelegate.clickFriendItem();
+    public Observable<View> clickMemberItem() {
+        return groupMemberAdapterDelegate.clickMemberItem();
     }
+
 }
