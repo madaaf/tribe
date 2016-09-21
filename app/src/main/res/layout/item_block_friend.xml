@@ -7,17 +7,25 @@
     android:paddingStart="@dimen/setting_block_item_horizontal_padding"
     android:paddingEnd="@dimen/setting_block_item_horizontal_padding">
 
-    <ImageView
-        android:id="@+id/imageFriendPic"
-        android:layout_width="@dimen/setting_pic_size"
-        android:layout_height="@dimen/setting_pic_size" />
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/imageFriendPicBadge"
-        android:layout_width="@dimen/image_badge_size"
-        android:layout_height="@dimen/image_badge_size"
-        android:scaleType="fitCenter"
-        android:layout_gravity="bottom"/>
+        <ImageView
+            android:id="@+id/imageFriendPic"
+            android:layout_width="@dimen/setting_pic_size"
+            android:layout_height="@dimen/setting_pic_size" />
+
+        <ImageView
+            android:id="@+id/imageFriendPicBadge"
+            android:layout_width="@dimen/image_badge_size"
+            android:layout_height="@dimen/image_badge_size"
+            android:scaleType="fitCenter"
+            android:layout_gravity="bottom|end"/>
+
+    </FrameLayout>
+
+
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtDisplayName"

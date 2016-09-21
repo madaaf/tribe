@@ -15,6 +15,8 @@
 	
 	<!-- Errors -->
 	<string name="error_unknown">Uh oh.. Un léger problème est apparu. Réessayez dans 30s.</string>
+	<string name="error_technical">Oups &#128561;\nErreur technique !</string>
+	<string name="error_no_network">Oups &#128561;\nPas de connexion !</string>
 	
 	<!-- Image Picker -->
 	<string name="image_picker_camera">Appareil photo</string>
@@ -417,7 +419,7 @@
 	<string name="tribe_event_year_1_past">Il y a %1$d an</string>
 	<string name="tribe_event_year_n_future">Dans %1$d ans</string>
 	<string name="tribe_event_year_n_past">Il y a %1$d ans</string>
-	<string name="tribe_event_title_suggestion">Dinner,Beer,Call,Camping,Coffee,Concert,Date,Dentist,Doctor,Drink,Facetime,Flight,Boat,Bus,Meeting,Movie,Office,Party,Repair,Run,Shopping,Skype,Sleep,Train,Travel,TV,Vacation,Workout,Chill</string>
+	<string name="tribe_event_title_suggestion">Dîner,Bière,Appel,Camping,Café,Concert,Date,Dentiste,Docteur,Verre,Facetime,Vol,Avion,Bateau,Bus,Réunion,Rendez-vous,Film,Cinéma,Bureau,Fête,Soirée,Réparer,Courir,Course,Shopping,Courses,Skype,Dormir,Train,Voyage,TV,Télé,Vacances,Exercice,Repos</string>
 	
 	<!-- Tutorial -->
 	<string name="tutorial_message_support">%1$d messages de l\'équipe</string>

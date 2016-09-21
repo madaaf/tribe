@@ -123,7 +123,7 @@ public class GroupPresenter implements Presenter {
 
         @Override
         public void onNext(Group group) {
-
+            groupView.setGroupId(group.getId());
         }
     }
 

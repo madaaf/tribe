@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,7 @@ import android.widget.ImageView;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.domain.entity.GroupType;
@@ -90,6 +93,8 @@ public class GroupMemberFragment extends BaseFragment implements GroupMemberView
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View fragmentView = inflater.inflate(R.layout.fragment_group_member, container, false);
         unbinder = ButterKnife.bind(this, fragmentView);
+        groupId = getArguments().getString("groupId");
+        groupMemberList = getArguments().getParcelableArrayList("groupMemberList");
         initDependencyInjector();
         initUi();
         initGroupMemberList();
@@ -114,6 +119,7 @@ public class GroupMemberFragment extends BaseFragment implements GroupMemberView
         subscriptions.add(RxView.clicks(imgBack).subscribe(aVoid -> {
             imageBackClicked.onNext(null);
         }));
+        txtTitle.setText(getString(R.string.group_member));
     }
 
     public Observable<Void> imageBackClicked() {
@@ -125,8 +131,24 @@ public class GroupMemberFragment extends BaseFragment implements GroupMemberView
      */
 
     private void initGroupMemberList() {
-        groupId = getArguments().getString("groupId");
-        groupMemberList = getArguments().getParcelableArrayList("groupMemberList");
+
+        editTextSearchGroupMembers.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                filter(editable.toString());
+            }
+        });
+
         groupMemberListCopy = new ArrayList<>();
         groupMemberPresenter.attachView(this);
         if (groupMemberList != null) {
@@ -163,6 +185,24 @@ public class GroupMemberFragment extends BaseFragment implements GroupMemberView
             labelTypes.add(new GroupType(getString(R.string.action_cancel), GroupType.CANCEL));
             prepareBottomSheet(labelTypes);
         }));
+    }
+
+    private void filter(String text) {
+        if (text.isEmpty()) {
+            groupMemberList.clear();
+            groupMemberList.addAll(groupMemberListCopy);
+        } else {
+            ArrayList<GroupMember> result = new ArrayList<>();
+            text = text.toLowerCase();
+            for (GroupMember item : groupMemberListCopy) {
+                if (item.getDisplayName().toLowerCase().contains(text) || item.getDisplayName().toLowerCase().contains(text)) {
+                    result.add(item);
+                }
+            }
+            groupMemberList.clear();
+            groupMemberList.addAll(result);
+        }
+        groupMemberAdapter.setItems(groupMemberList);
     }
 
     private void prepareBottomSheet(List<LabelType> items) {

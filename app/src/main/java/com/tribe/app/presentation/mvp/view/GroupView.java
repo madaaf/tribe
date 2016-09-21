@@ -9,7 +9,9 @@ import java.util.List;
  */
 public interface GroupView extends LoadDataView {
     void getGroupMembers(String groupId);
+    void setGroupId(String groupId);
     void setupGroup(Group group);
-    void createGroup(String groupName, List<String> memberIds, boolean isPrivate, String pictureUri);
+    void groupCreatedSuccessfully();
+    void groupCreationFailed();
     void backToHome();
 }

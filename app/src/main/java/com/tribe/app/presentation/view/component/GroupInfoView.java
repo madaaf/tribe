@@ -27,12 +27,16 @@ import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -205,6 +209,14 @@ public class GroupInfoView extends FrameLayout {
     }
 
     public void expand(int animDuration) {
+        enableIcons(false);
+        Observable.timer(animDuration, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(time -> {
+                    enableIcons(true);
+                        });
+
         // Setup group image
         imageGroup.setEnabled(true);
         imageGroup.animate()
@@ -248,6 +260,13 @@ public class GroupInfoView extends FrameLayout {
 
     public void collapse(int animDuration, Activity activity) {
         screenUtils.hideKeyboard(activity);
+        enableIcons(false);
+        Observable.timer(animDuration, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(time -> {
+                    enableIcons(true);
+                });
         // Setup group image
         imageGroup.setEnabled(false);
         imageGroup.animate()
@@ -293,6 +312,11 @@ public class GroupInfoView extends FrameLayout {
     public void presentEditIcons(int animDuration) {
         bringInIcon(imageEditGroup, animDuration);
         bringOutIcon(imageDoneEdit, animDuration);
+    }
+
+    public void enableIcons(boolean enabled) {
+            imageDoneEdit.setEnabled(enabled);
+            imageEditGroup.setEnabled(enabled);
     }
 
 

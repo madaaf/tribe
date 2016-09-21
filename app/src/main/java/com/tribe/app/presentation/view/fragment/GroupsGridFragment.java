@@ -190,6 +190,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         return groupInfoView;
     }
 
+
     @Override
     public void onDestroy() {
 
@@ -209,6 +210,11 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     public String getGroupId() {
         return groupId;
+    }
+
+    @Override
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
     }
 
     /**
@@ -739,8 +745,15 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     }
 
+    // method called after group is successfully created
     @Override
-    public void createGroup(String groupName, List<String> memberIds, boolean isPrivate, String pictureUri) {
+    public void groupCreatedSuccessfully() {
+
+    }
+
+    // method called if there was an error creating a group
+    @Override
+    public void groupCreationFailed() {
 
     }
 
