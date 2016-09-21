@@ -13,6 +13,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
@@ -76,6 +77,8 @@ public class GroupInfoView extends FrameLayout {
     FrameLayout layoutDividerBackground;
     @BindView(R.id.layoutGroupMembers)
     FrameLayout layoutGroupMembers;
+    @BindView(R.id.circularProgressView)
+    CircularProgressView circularProgressView;
     @BindView(R.id.privatePublicView)
     PrivatePublicView privatePublicView;
     @BindView(R.id.viewPrivacyStatus)
@@ -190,12 +193,25 @@ public class GroupInfoView extends FrameLayout {
                 .into(imageGroup);
     }
 
+    public void enableButtons() {
+        imageGroup.setEnabled(true);
+        privatePublicView.setEnabled(true);
+    }
+
     public void disableButtons() {
         imageGroup.setEnabled(false);
         privatePublicView.setEnabled(false);
     }
 
-
+    public void setLoading(boolean isLoading) {
+        if (isLoading) {
+            imageDoneEdit.setVisibility(INVISIBLE);
+            circularProgressView.setVisibility(VISIBLE);
+        } else {
+            circularProgressView.setVisibility(INVISIBLE);
+            imageDoneEdit.setVisibility(VISIBLE);
+        }
+    }
 
     public void collapsePrivatePublic(Boolean privateGroup, int animDuration) {
         AnimationUtils.collapseScale(privatePublicView, animDuration);

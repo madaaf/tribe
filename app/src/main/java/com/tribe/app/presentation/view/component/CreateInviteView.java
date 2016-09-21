@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
@@ -49,7 +50,7 @@ public class CreateInviteView extends FrameLayout {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    Unbinder unbinder;
+    private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private PublishSubject<Void> createPressed = PublishSubject.create();
     private PublishSubject<Void> invitePressed = PublishSubject.create();
@@ -64,6 +65,8 @@ public class CreateInviteView extends FrameLayout {
     View viewCreateGroupBg2;
     @BindView(R.id.imageInvite)
     ImageView imageInvite;
+
+    ObjectAnimator createGroupAnim;
 
     @Override
     protected void onFinishInflate() {
@@ -130,24 +133,37 @@ public class CreateInviteView extends FrameLayout {
 
     public void loadingAnimation(int animDuration, ScreenUtils screenUtils, Activity activity) {
         screenUtils.hideKeyboard(activity);
+        textCreateInvite.setText(activity.getString(R.string.group_button_creating));
         Rect rect = new Rect();
         viewCreateGroupBg2.getLocalVisibleRect(rect);
         Rect from = new Rect(rect);
         Rect to = new Rect(rect);
         from.right = 0;
         viewCreateGroupBg2.setAlpha(1f);
-        ObjectAnimator anim = ObjectAnimator.ofObject(viewCreateGroupBg2,
+        createGroupAnim = ObjectAnimator.ofObject(viewCreateGroupBg2,
                 "clipBounds",
                 new RectEvaluator(),
                 from, to);
-        anim.setDuration(animDuration);
-        anim.start();
-        Observable.timer(animDuration, TimeUnit.MILLISECONDS)
+        createGroupAnim.setDuration(animDuration);
+        createGroupAnim.start();
+    }
+
+    public void loaded() {
+        createGroupAnim.end();
+        Observable.timer(AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(time -> {
                     viewCreateGroupBg2.setVisibility(View.INVISIBLE);
                 });
+    }
+
+    public void creationFailed(Boolean privateGroup) {
+        createGroupAnim.end();
+        viewCreateGroupBg2.setAlpha(0f);
+        textCreateInvite.setText(getContext().getString(R.string.group_create_title));
+        Toast.makeText(getContext(), getContext().getString(R.string.error_unknown), Toast.LENGTH_LONG).show();
+        enableCreate(privateGroup);
     }
 
     public void scaleInInviteImage(int animDuration) {

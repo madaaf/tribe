@@ -430,4 +430,8 @@
 	<string name="tutorial_message_reply">Hold down to record\nyour response</string>
 	<string name="tutorial_message_release">Release your finger\nto end recording</string>
 	<string name="tutorial_message_tap_to_cancel">Tap to cancel if needed</string>
+	
+	<!-- NewLevelPopup -->
+	<string name="newlevel_share">Share</string>
+	<string name="newlevel_close">Lit!</string>
 </resources>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -28,11 +29,28 @@
     <ImageView
         android:id="@+id/imageDoneEdit"
         android:clickable="true"
-        android:layout_width="@dimen/nav_icon_size"
-        android:layout_height="@dimen/nav_icon_size"
-        android:scaleType="centerInside"
+        android:layout_marginTop="@dimen/vertical_margin"
+        android:layout_marginEnd="@dimen/horizontal_margin"
+        android:layout_width="@dimen/group_cpv_size"
+        android:layout_height="@dimen/group_cpv_size"
         android:layout_gravity="end"
         android:src="@drawable/picto_done_black_circle" />
+
+    <com.github.rahatarmanahmed.cpv.CircularProgressView
+        android:id="@+id/circularProgressView"
+        android:layout_width="@dimen/group_cpv_size"
+        android:layout_height="@dimen/group_cpv_size"
+        android:layout_marginTop="@dimen/vertical_margin"
+        android:layout_marginEnd="@dimen/horizontal_margin"
+        android:layout_gravity="end"
+        android:background="@drawable/shape_oval_black"
+        android:visibility="invisible"
+        android:padding="@dimen/cpv_padding"
+        app:cpv_animAutostart="true"
+        app:cpv_color="@android:color/white"
+        app:cpv_indeterminate="true"
+        app:cpv_thickness="2dp"
+        />
 
     <ImageView
         android:id="@+id/imageGroup"

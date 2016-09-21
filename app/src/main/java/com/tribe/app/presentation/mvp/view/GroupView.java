@@ -8,10 +8,12 @@ import java.util.List;
  * Created by horatiothomas on 9/14/16.
  */
 public interface GroupView extends LoadDataView {
-    void getGroupMembers(String groupId);
     void setGroupId(String groupId);
     void setupGroup(Group group);
     void groupCreatedSuccessfully();
     void groupCreationFailed();
-    void backToHome();
+    void groupUpdatedSuccessfully();
+    void groupUpdatedFailed();
+    void memberAddedSuccessfully();
+    void memberAddedFailed();
 }

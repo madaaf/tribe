@@ -83,11 +83,27 @@
 
     <ImageView
         android:id="@+id/imageDone"
-        android:layout_width="45dp"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/nav_icon_size"
+        android:layout_height="@dimen/nav_icon_size"
         android:layout_gravity="bottom|end"
+        android:scaleType="fitCenter"
         android:layout_marginEnd="@dimen/horizontal_margin_small"
         android:src="@drawable/picto_done_green" />
 
+    <com.github.rahatarmanahmed.cpv.CircularProgressView
+        android:id="@+id/circularProgressViewDone"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="@dimen/horizontal_margin"
+        android:layout_marginBottom="5dp"
+        android:padding="@dimen/cpv_padding"
+        android:background="@drawable/bg_group_enabled"
+        android:visibility="invisible"
+        app:cpv_animAutostart="true"
+        app:cpv_color="@android:color/white"
+        app:cpv_indeterminate="true"
+        app:cpv_thickness="2dp"
+        />
 
 </android.support.design.widget.CoordinatorLayout>

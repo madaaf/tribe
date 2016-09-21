@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
@@ -19,6 +20,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
@@ -90,12 +92,16 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     ImageView imageDone;
     @BindView(R.id.editTextInviteSearch)
     EditTextFont editTextInviteSearch;
+    @BindView(R.id.circularProgressViewDone)
+    CircularProgressView circularProgressView;
     @BindView(R.id.layoutInvite)
     NestedScrollView layoutInvite;
     @BindView(R.id.recyclerViewInvite)
     RecyclerView recyclerViewInvite;
     @BindView(R.id.appBarLayout)
     AppBarLayout appBarLayout;
+    @BindView(R.id.main_collapsing)
+    CollapsingToolbarLayout collapsingToolbarLayout;
     @BindView(R.id.createInviteView)
     CreateInviteView createInviteView;
     @BindView(R.id.groupInfoView)
@@ -131,11 +137,10 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     // Animation Variables
     private int moveUpY = 138;
-    private int presentEditInfoTranslation = 20;
+    private int currentEditTranslation;
     private int layoutCreateInviteInfoPositionY = 255;
     private int startTranslationDoneIcon = 200;
     private int animDuration = 300 * 2;
-    private int loadingAnimDuration = 1000 * 2;
     private int smallMargin = 5;
 
     // Observables
@@ -153,7 +158,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         final View fragmentView = inflater.inflate(R.layout.fragment_groups_grid, container, false);
         unbinder = ButterKnife.bind(this, fragmentView);
         initDependencyInjector();
-        initForBoth();
         initPresenter();
 
         Bundle bundle = getArguments();
@@ -181,6 +185,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                 }
             });
         }
+        initForBoth();
         initSearchView();
         fragmentView.setTag(HomeActivity.GROUPS_FRAGMENT_PAGE);
         return fragmentView;
@@ -224,6 +229,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     private void initGroupInfoUi(String groupId) {
         this.groupId = groupId;
+        currentEditTranslation = 20;
         screenUtils.setTopMargin(createInviteView, screenUtils.dpToPx(layoutCreateInviteInfoPositionY));
         createInviteView.setInvite(privateGroup);
         createInviteView.enableInvitePress();
@@ -236,9 +242,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         subscriptions.add(groupInfoView.imageBackClicked().subscribe(aVoid -> {
             navigator.navigateToHome(getActivity());
         }));
-        subscriptions.add(groupInfoView.imageEditGroupClicked().subscribe(aVoid -> {
-            presentEditInfo();
-        }));
+
         subscriptions.add(groupInfoView.imageGoToMembersClicked().subscribe(aVoid -> {
             imageGoToMembersClicked.onNext(null);
         }));
@@ -246,17 +250,23 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     }
 
     public void initForBoth() {
-        subscriptions.add(groupInfoView.imageDoneEditClicked().subscribe(aVoid -> {
-            groupName = groupInfoView.getGroupName();
-            groupPresenter.updateGroup(groupId, groupName, groupPictureUri);
-            backFromEditInfo();
-        }));
         subscriptions.add(RxView.clicks(imageDone).subscribe(aVoid -> {
             groupPresenter.addMembersToGroup(groupId, memberIds);
+            imageDone.setEnabled(false);
+            circularProgressView.setVisibility(View.VISIBLE);
         }));
         subscriptions.add(groupInfoView.imageGroupClicked().subscribe(aVoid -> {
             setupBottomSheetCamera();
         }));
+        subscriptions.add(groupInfoView.imageEditGroupClicked().subscribe(aVoid -> {
+            presentEdit(currentEditTranslation);
+        }));
+        subscriptions.add(groupInfoView.imageDoneEditClicked().subscribe(aVoid -> {
+            groupName = groupInfoView.getGroupName();
+            groupPresenter.updateGroup(groupId, groupName, groupPictureUri);
+            groupInfoView.setLoading(true);
+        }));
+
     }
 
     @Override
@@ -312,12 +322,12 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
      */
 
     private void initUi() {
-        // Setup top-right icons
+        currentEditTranslation = 25;
         groupInfoView.setUpInitialUi();
         imageDone.setTranslationY(screenUtils.dpToPx(startTranslationDoneIcon));
 
         createInviteView.disable();
-        layoutInvite.setNestedScrollingEnabled(false);
+        enableScrolling(false);
         layoutInvite.setTranslationY(screenUtils.dpToPx(moveUpY));
         layoutInvite.setVisibility(View.INVISIBLE);
         recyclerViewInvite.setTranslationY(screenUtils.dpToPx(moveUpY));
@@ -346,33 +356,13 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             groupInfoView.disableButtons();
             groupName = groupInfoView.getGroupName();
             groupPresenter.createGroup(groupName, memberIds, privateGroup, groupPictureUri);
-
-            createInviteView.loadingAnimation(loadingAnimDuration, screenUtils, getActivity());
-            Observable.timer(loadingAnimDuration, TimeUnit.MILLISECONDS)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(time -> {
-                        animSet1();
-                    });
-
-
-            Observable.timer(loadingAnimDuration + animDuration, TimeUnit.MILLISECONDS)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(time -> {
-                        animSet2();
-                    });
-
-            Observable.timer(loadingAnimDuration + animDuration * 2, TimeUnit.MILLISECONDS)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(time -> {
-                        animSet3();
-                    });
+            createInviteView.loadingAnimation(AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
         }));
 
-        subscriptions.add(groupInfoView.imageEditGroupClicked().subscribe(aVoid -> {
-            presentEdit();
+        subscriptions.add(groupInfoView.imageDoneEditClicked().subscribe(aVoid -> {
+            groupName = groupInfoView.getGroupName();
+            groupPresenter.updateGroup(groupId, groupName, groupPictureUri);
+            backFromEdit(currentEditTranslation);
         }));
 
         subscriptions.add((createInviteView.invitePressed()).subscribe(aVoid -> {
@@ -384,19 +374,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         }));
     }
 
-    private void resetLayoutInvite() {
-        layoutInvite.animate()
-                .translationY(AnimationUtils.TRANSLATION_RESET)
-                .setDuration(animDuration)
-                .start();
-        recyclerViewInvite.animate()
-                .translationY(AnimationUtils.TRANSLATION_RESET)
-                .setDuration(animDuration)
-                .start();
-
-        AnimationUtils.animateBottomMargin(recyclerViewInvite, AnimationUtils.TRANSLATION_RESET, animDuration);
-    }
-
     private void setGroupPrivacy(boolean isPrivate) {
         groupInfoView.setPrivacy(isPrivate);
         createInviteView.switchColors(isPrivate);
@@ -406,92 +383,31 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     /**
      * Methods to switch between edit and non-edit modes
      */
-    private void backFromEdit() {
-        groupInfoView.collapseInfo(animDuration, getActivity());
-        imageDone.animate()
-                .translationY(AnimationUtils.TRANSLATION_RESET)
-                .setDuration(animDuration)
-                .start();
 
-        createInviteView.animate()
-                .translationY(-screenUtils.dpToPx(moveUpY))
-                .setDuration(animDuration)
-                .start();
-        resetLayoutInvite();
-
-    }
-
-    private void backFromEditInfo() {
+    private void backFromEdit(int translation) {
         groupInfoView.collapseInfo(animDuration, getActivity());
 
         AnimationUtils.animateHeightCoordinatorLayout(appBarLayout,
-                appBarLayout.getHeight(), appBarLayout.getHeight() - screenUtils.dpToPx(presentEditInfoTranslation),
+                appBarLayout.getHeight(), appBarLayout.getHeight() - screenUtils.dpToPx(translation),
                 animDuration);
 
         createInviteView.animate()
                 .setDuration(animDuration)
-                .y(-screenUtils.dpToPx(presentEditInfoTranslation) + createInviteView.getY())
+                .y(-screenUtils.dpToPx(translation) + createInviteView.getY())
                 .start();
-
-        layoutInvite.animate()
-                .setDuration(animDuration)
-                .y(-screenUtils.dpToPx(presentEditInfoTranslation) + layoutInvite.getY())
-                .start();
-        recyclerViewInvite.animate()
-                .setDuration(animDuration)
-                .y(-screenUtils.dpToPx(presentEditInfoTranslation) + recyclerViewInvite.getY())
-                .start();
-
     }
 
-    private void presentEdit() {
-        // Setup top-right icon
-        imageDone.animate()
-                .translationY(screenUtils.dpToPx(startTranslationDoneIcon))
-                .setDuration(animDuration)
-                .start();
-
-        groupInfoView.expand(animDuration);
-
-        // Small move of bottom half off view
-        int presentEditTranslation = screenUtils.dpToPx(25);
-        createInviteView.animate()
-                .setDuration(animDuration)
-                .y(presentEditTranslation + createInviteView.getY())
-                .start();
-        layoutInvite.animate()
-                .setDuration(animDuration)
-                .y(presentEditTranslation + layoutInvite.getY())
-                .start();
-        recyclerViewInvite.animate()
-                .setDuration(animDuration)
-                .y(presentEditTranslation + recyclerViewInvite.getY())
-                .start();
-
-
-        AnimationUtils.animateBottomMargin(recyclerViewInvite, screenUtils.dpToPx(25), animDuration);
-    }
-
-    private void presentEditInfo() {
+    private void presentEdit(int translation) {
         groupInfoView.expandInfo(animDuration);
 
         appBarLayout.bringToFront();
         AnimationUtils.animateHeightCoordinatorLayout(appBarLayout,
-                appBarLayout.getHeight(), appBarLayout.getHeight() + screenUtils.dpToPx(presentEditInfoTranslation),
+                appBarLayout.getHeight(), appBarLayout.getHeight() + screenUtils.dpToPx(translation),
                 animDuration);
 
         createInviteView.animate()
                 .setDuration(animDuration)
-                .y(screenUtils.dpToPx(presentEditInfoTranslation) + createInviteView.getY())
-                .start();
-
-        layoutInvite.animate()
-                .setDuration(animDuration)
-                .y(screenUtils.dpToPx(presentEditInfoTranslation) + layoutInvite.getY())
-                .start();
-        recyclerViewInvite.animate()
-                .setDuration(animDuration)
-                .y(screenUtils.dpToPx(presentEditInfoTranslation) + recyclerViewInvite.getY())
+                .y(screenUtils.dpToPx(translation) + createInviteView.getY())
                 .start();
     }
 
@@ -538,7 +454,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                 .start();;
 
         createInviteView.enableInvitePress();
-        layoutInvite.setNestedScrollingEnabled(true);
+        enableScrolling(true);
     }
 
     private void showShareDialogFragment() {
@@ -706,7 +622,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         cameraTypes.add(new CameraType(getString(R.string.image_picker_library), CameraType.OPEN_PHOTOS));
 
         prepareBottomSheetCamera(cameraTypes);
-
     }
 
     private boolean dismissDialogSheetCamera() {
@@ -716,6 +631,13 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         }
 
         return false;
+    }
+
+    private void enableScrolling(boolean scrollable) {
+        AppBarLayout.LayoutParams layoutParams = (AppBarLayout.LayoutParams) collapsingToolbarLayout.getLayoutParams();
+        if (scrollable) layoutParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL|AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED);
+        else layoutParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP);
+        collapsingToolbarLayout.setLayoutParams(layoutParams);
     }
 
     /**
@@ -740,26 +662,51 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         groupPresenter.attachView(this);
     }
 
-    @Override
-    public void getGroupMembers(String groupId) {
 
-    }
-
-    // method called after group is successfully created
     @Override
     public void groupCreatedSuccessfully() {
-
+        createInviteView.loaded();
+        animSet1();
+        Observable.timer(animDuration, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(time -> {
+                    animSet2();
+                });
+        Observable.timer(animDuration * 2, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(time -> {
+                    animSet3();
+                });
     }
 
-    // method called if there was an error creating a group
     @Override
     public void groupCreationFailed() {
-
+        createInviteView.creationFailed(privateGroup);
+        groupInfoView.enableButtons();
     }
 
     @Override
-    public void backToHome() {
+    public void groupUpdatedSuccessfully() {
+        groupInfoView.setLoading(false);
+        backFromEdit(currentEditTranslation);
+    }
+
+    @Override
+    public void groupUpdatedFailed() {
+        groupInfoView.setLoading(false);
+    }
+
+    @Override
+    public void memberAddedSuccessfully() {
         navigator.navigateToHome(getActivity());
+    }
+
+    @Override
+    public void memberAddedFailed() {
+        circularProgressView.setVisibility(View.INVISIBLE);
+        imageDone.setEnabled(true);
     }
 
     @Override

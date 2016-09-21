@@ -430,4 +430,8 @@
 	<string name="tutorial_message_reply">Appuie pour enregister\nta réponse</string>
 	<string name="tutorial_message_release">Relâche ton doigt\npour terminer le message</string>
 	<string name="tutorial_message_tap_to_cancel">Pour pour annuler si besoin</string>
+	
+	<!-- NewLevelPopup -->
+	<string name="newlevel_share">Partager</string>
+	<string name="newlevel_close">Cool!</string>
 </resources>

@@ -78,9 +78,8 @@ public class Navigator {
     public void navigateToHome(Activity activity) {
         if (activity != null) {
             Intent intent = HomeActivity.getCallingIntent(activity);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             activity.startActivity(intent);
-            activity.finish();
         }
     }
 

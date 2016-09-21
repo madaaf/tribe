@@ -31,6 +31,7 @@ public class AnimationUtils {
     public static final int NO_START_DELAY = 0;
     public static final int ALPHA_FULL = 1;
     public static final int ALPHA_NONE = 0;
+    public static final int ANIMATION_DURATION_EXTRA_SHORT = 100;
     public static final int ANIMATION_DURATION_SHORT = 300;
 
     public static Animation fadeInAnimation(final View view, long duration, long delay) {

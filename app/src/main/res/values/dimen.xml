@@ -39,6 +39,7 @@
     <dimen name="text_padding">15dp</dimen>
     <dimen name="section_button_vertical_padding">12dp</dimen>
     <dimen name="setting_block_item_horizontal_padding">15dp</dimen>
+    <dimen name="cpv_padding">10dp</dimen>
 
     <!-- HEIGHTS -->
     <dimen name="top_bar_height">65dp</dimen>
@@ -104,6 +105,7 @@
     <dimen name="pull_to_search_letter_size">30dp</dimen>
     <dimen name="pull_to_search_letter_selected_size">40dp</dimen>
     <dimen name="image_badge_size">20dp</dimen>
+    <dimen name="group_cpv_size">28dp</dimen>
 
     <!-- THRESHOLDS -->
     <dimen name="threshold_dismiss">100dp</dimen>

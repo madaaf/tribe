@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
@@ -29,32 +30,24 @@ public class GroupPresenter implements Presenter {
     private final CreateGroup createGroup;
     private final UpdateGroup updateGroup;
     private final AddMembersToGroup addMembersToGroup;
-    private final RemoveMembersFromGroup removeMembersFromGroup;
-    private final AddAdminsToGroup addAdminsToGroup;
-    private final RemoveAdminsFromGroup removeAdminsFromGroup;
-
 
     private GroupView groupView;
 
     @Inject
-    GroupPresenter(GetGroupMembers getGroupMembers, CreateGroup createGroup, UpdateGroup updateGroup,
-                   AddMembersToGroup addMembersToGroup, RemoveMembersFromGroup removeMembersFromGroup,
-                   AddAdminsToGroup addAdminsToGroup, RemoveAdminsFromGroup removeAdminsFromGroup) {
+    GroupPresenter(GetGroupMembers getGroupMembers,
+                   CreateGroup createGroup,
+                   UpdateGroup updateGroup,
+                   AddMembersToGroup addMembersToGroup) {
         this.getGroupMembers = getGroupMembers;
         this.createGroup = createGroup;
         this.updateGroup = updateGroup;
         this.addMembersToGroup = addMembersToGroup;
-        this.removeMembersFromGroup = removeMembersFromGroup;
-        this.addAdminsToGroup = addAdminsToGroup;
-        this.removeAdminsFromGroup = removeAdminsFromGroup;
+
 
     }
 
     public void setupMembers(Group group) {
         this.groupView.setupGroup(group);
-    }
-    public void backToHome() {
-        this.groupView.backToHome();
     }
 
     public void getGroupMembers(String groupId) {
@@ -76,23 +69,6 @@ public class GroupPresenter implements Presenter {
         addMembersToGroup.prepare(groupId, memberIds);
         addMembersToGroup.execute(new AddMembersToGroupSubscriber());
     }
-
-    public void removeMembersFromGroup(String groupId, List<String> memberIds) {
-        removeMembersFromGroup.prepare(groupId, memberIds);
-        removeMembersFromGroup.execute(new RemoveMembersFromGroupSubscriber());
-    }
-
-    public void addAdminsToGroup(String groupId, List<String> memberIds) {
-        addAdminsToGroup.prepare(groupId, memberIds);
-        addAdminsToGroup.execute(new AddAdminsToGroupSubscriber());
-    }
-
-    public void removeAdminsFromGroup(String groupId, List<String> memberIds) {
-        removeAdminsFromGroup.prepare(groupId, memberIds);
-        removeAdminsFromGroup.execute(new RemoveAdminsFromGroupSubscriber());
-    }
-
-
 
     private final class GetGroupMemberSubscriber extends DefaultSubscriber<Group> {
         @Override
@@ -118,16 +94,18 @@ public class GroupPresenter implements Presenter {
 
         @Override
         public void onError(Throwable e) {
+            groupView.groupCreationFailed();
             e.printStackTrace();
         }
 
         @Override
         public void onNext(Group group) {
+            groupView.groupCreatedSuccessfully();
             groupView.setGroupId(group.getId());
         }
     }
 
-    private final class UpdateGroupSubscriber extends DefaultSubscriber<Void> {
+    private final class UpdateGroupSubscriber extends DefaultSubscriber<Group> {
         @Override
         public void onCompleted() {
         }
@@ -135,11 +113,12 @@ public class GroupPresenter implements Presenter {
         @Override
         public void onError(Throwable e) {
             e.printStackTrace();
+            groupView.groupUpdatedFailed();
         }
 
         @Override
-        public void onNext(Void aVoid) {
-
+        public void onNext(Group group) {
+            groupView.groupUpdatedSuccessfully();
         }
     }
 
@@ -152,64 +131,16 @@ public class GroupPresenter implements Presenter {
         @Override
         public void onError(Throwable e) {
             e.printStackTrace();
+            groupView.memberAddedFailed();
         }
 
         @Override
-        public void onNext(Void aVoid) {
-            backToHome();
+        public void onNext(Void aVoid)
+        {
+            groupView.memberAddedSuccessfully();
         }
     }
 
-    private final class RemoveMembersFromGroupSubscriber extends DefaultSubscriber<Void> {
-        @Override
-        public void onCompleted() {
-
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-
-        @Override
-        public void onNext(Void aVoid) {
-
-        }
-    }
-
-    private final class AddAdminsToGroupSubscriber extends DefaultSubscriber<Void> {
-        @Override
-        public void onCompleted() {
-
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-
-        @Override
-        public void onNext(Void aVoid) {
-
-        }
-    }
-
-    private final class RemoveAdminsFromGroupSubscriber extends DefaultSubscriber<Void> {
-        @Override
-        public void onCompleted() {
-
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-
-        @Override
-        public void onNext(Void aVoid) {
-
-        }
-    }
 
     @Override
     public void onStart() {
