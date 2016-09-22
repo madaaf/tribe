@@ -141,7 +141,6 @@ public class GroupPresenter implements Presenter {
         }
     }
 
-
     @Override
     public void onStart() {
 

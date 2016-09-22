@@ -51,22 +51,26 @@
                 android:layout_height="@dimen/icons_end"
                 android:background="@drawable/shape_white_rect_grey_border" />
 
-            <ImageView
-                android:id="@+id/searchIconImageView"
-                android:layout_width="@dimen/icons_end"
-                android:layout_height="@dimen/icons_end"
-                android:background="@drawable/shape_white_rect_grey_horizontal_border"
-                android:scaleType="centerInside"
-                android:src="@drawable/picto_search_icon" />
-
-            <com.tribe.app.presentation.view.widget.EditTextFont
-                android:id="@+id/editTextInviteSearch"
+            <com.tribe.app.presentation.view.component.SearchFriendsView
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/icons_end"
-                android:layout_marginStart="@dimen/icons_end"
-                android:background="@drawable/shape_white_rect_grey_horizontal_border"
-                android:hint="@string/group_search_friends_placeholder"
-                android:singleLine="true" />
+                android:layout_height="wrap_content"/>
+
+            <!--<ImageView-->
+                <!--android:id="@+id/searchIconImageView"-->
+                <!--android:layout_width="@dimen/icons_end"-->
+                <!--android:layout_height="@dimen/icons_end"-->
+                <!--android:background="@drawable/shape_white_rect_grey_horizontal_border"-->
+                <!--android:scaleType="centerInside"-->
+                <!--android:src="@drawable/picto_search_icon" />-->
+
+            <!--<com.tribe.app.presentation.view.widget.EditTextFont-->
+                <!--android:id="@+id/editTextInviteSearch"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="@dimen/icons_end"-->
+                <!--android:layout_marginStart="@dimen/icons_end"-->
+                <!--android:background="@drawable/shape_white_rect_grey_horizontal_border"-->
+                <!--android:hint="@string/group_search_friends_placeholder"-->
+                <!--android:singleLine="true" />-->
 
 
         </FrameLayout>

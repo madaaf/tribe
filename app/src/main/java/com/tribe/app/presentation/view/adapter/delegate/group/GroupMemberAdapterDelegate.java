@@ -60,13 +60,11 @@ public class GroupMemberAdapterDelegate extends RxAdapterDelegate<List<GroupMemb
                 .map(friend -> vh.itemView)
                 .subscribe(clickMemberItem));
 
-
         return vh;
     }
 
     @Override
     public void onBindViewHolder(@NonNull List<GroupMember> items, int position, @NonNull RecyclerView.ViewHolder holder) {
-
         GroupMemberViewHolder vh = (GroupMemberViewHolder) holder;
         GroupMember groupMember = items.get(position);
         vh.txtDisplayName.setText(groupMember.getDisplayName());
@@ -86,7 +84,6 @@ public class GroupMemberAdapterDelegate extends RxAdapterDelegate<List<GroupMemb
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-
     }
 
     public Observable<View> clickMemberItem() {
@@ -103,13 +100,10 @@ public class GroupMemberAdapterDelegate extends RxAdapterDelegate<List<GroupMemb
         @BindView(R.id.imageFriendPicBadge) public ImageView imageFriendPicBadge;
         public boolean selected;
 
-
         public GroupMemberViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             selected = false;
         }
     }
-
-
 }

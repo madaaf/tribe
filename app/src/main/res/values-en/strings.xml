@@ -101,7 +101,7 @@
 	<string name="grid_user_points">Points</string>
 	<string name="grid_friendship_status_default">Tap &amp; hold!</string>
 	<string name="grid_friendship_status_sending">Sending</string>
-	<string name="grid_friendship_status_processing">Processing</string>
+	<string name="grid_friendship_status_processing">Sending</string>
 	<string name="grid_friendship_status_sent">Sent</string>
 	<string name="grid_friendship_status_opened">Opened</string>
 	<string name="grid_friendship_status_opened_plural">Opened</string>
@@ -257,6 +257,8 @@
 	<string name="settings_section_exit">Exit</string>
 	<string name="settings_logout_title">Log out</string>
 	<string name="settings_logout_subtitle">Disconnect my account from this device.</string>
+	<string name="settings_logout_confirm_message">Are you sure you want to log out?</string>
+	<string name="settings_logout_wait">Logging you out...</string>
 	<string name="settings_remove_title">Delete account</string>
 	<string name="settings_remove_subtitle">Say goodbye to your\nfriendships, points and more.</string>
 	<string name="settings_version">Version %1$s (%2$s) handcrafted in San Francisco, CA</string>
@@ -355,6 +357,7 @@
 	
 	<!-- Share -->
 	<string name="share_add_friends_addressbook_suggestions">I was able to get access to Tribe. Just noticed that you already have %1$d friends on this app. I can get you in: %2$s</string>
+	<string name="share_group_public_link">Here is your invite to join the %1$s group on Tribe. %2$s</string>
 	<string name="share_group_private_link">Here is your invite to join the %1$s group on Tribe. Join quickly because this invite will expire in 1 hour! %2$s</string>
 	<string name="share_add_friends_handle">I’ve locked up %1$s handle on Tribe. Reserve yours now before its gone on %2$s</string>
 	<string name="share_score">I have %1$s points on Tribe %2$s</string>
@@ -432,6 +435,9 @@
 	<string name="tutorial_message_tap_to_cancel">Tap to cancel if needed</string>
 	
 	<!-- NewLevelPopup -->
+	<string name="newlevel_title">%1$s pts!</string>
+	<string name="newlevel_description">Congrats dude. Everyone can\nsee that you’re a %1$s now.</string>
 	<string name="newlevel_share">Share</string>
 	<string name="newlevel_close">Lit!</string>
+	<string name="newlevel_notification_title">%1$s level reached! Brag now? &#129304;&#127996;</string>
 </resources>

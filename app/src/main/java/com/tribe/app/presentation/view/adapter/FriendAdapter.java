@@ -55,6 +55,12 @@ public class FriendAdapter extends RecyclerView.Adapter {
         return items.size();
     }
 
+    @Override
+    public long getItemId(int position) {
+        Object obj = getItemAtPosition(position);
+        return obj.hashCode();
+    }
+
     private void releaseSubscriptions() {
         delegatesManager.releaseSubscriptions();
     }

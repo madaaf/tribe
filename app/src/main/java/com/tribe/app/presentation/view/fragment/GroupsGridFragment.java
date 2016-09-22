@@ -90,8 +90,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     // Bind view
     @BindView(R.id.imageDone)
     ImageView imageDone;
-    @BindView(R.id.editTextInviteSearch)
-    EditTextFont editTextInviteSearch;
+//    @BindView(R.id.editTextInviteSearch)
+//    EditTextFont editTextInviteSearch;
     @BindView(R.id.circularProgressViewDone)
     CircularProgressView circularProgressView;
     @BindView(R.id.layoutInvite)
@@ -369,9 +369,9 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             showShareDialogFragment();
         }));
 
-        subscriptions.add(RxView.clicks(editTextInviteSearch).subscribe(aVoid -> {
-            appBarLayout.setExpanded(false);
-        }));
+//        subscriptions.add(RxView.clicks(editTextInviteSearch).subscribe(aVoid -> {
+//            appBarLayout.setExpanded(false);
+//        }));
     }
 
     private void setGroupPrivacy(boolean isPrivate) {
@@ -500,12 +500,13 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     private void initFriendshipListExcluding(List<User> usersToExclude) {
         User user = getCurrentUser();
         friendshipsList.addAll(user.getFriendships());
-        for(Iterator<Friendship> iterFriendship = friendshipsList.iterator(); iterFriendship.hasNext();) {
+        for (Iterator<Friendship> iterFriendship = friendshipsList.iterator(); iterFriendship.hasNext();) {
             final User frienshipUser = iterFriendship.next().getFriend();
             for (Iterator<User> iterMember = usersToExclude.iterator(); iterMember.hasNext();) {
                 if (frienshipUser.getId().equals(iterMember.next().getId())) iterFriendship.remove();
             }
         }
+
         friendshipsListCopy = new ArrayList<>();
         if (friendshipsList != null) {
             friendshipsListCopy.addAll(friendshipsList);
@@ -532,31 +533,31 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     private void initSearchView() {
         setupSearchView();
-        editTextInviteSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                filter(editable.toString());
-            }
-        });
+//        editTextInviteSearch.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable editable) {
+//                filter(editable.toString());
+//            }
+//        });
     }
 
     private void setupSearchView() {
-        subscriptions.add(RxView.focusChanges(editTextInviteSearch).subscribe(aBoolean -> {
-            if (aBoolean) appBarLayout.setExpanded(false);
-        }));
-        subscriptions.add(RxView.clicks(editTextInviteSearch).subscribe(aVoid -> {
-            appBarLayout.setExpanded(false);
-        }));
+//        subscriptions.add(RxView.focusChanges(editTextInviteSearch).subscribe(aBoolean -> {
+//            if (aBoolean) appBarLayout.setExpanded(false);
+//        }));
+//        subscriptions.add(RxView.clicks(editTextInviteSearch).subscribe(aVoid -> {
+//            appBarLayout.setExpanded(false);
+//        }));
     }
 
     private void filter(String text) {
@@ -700,6 +701,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     @Override
     public void memberAddedSuccessfully() {
+        //TODO: navigate to home fragment
+        // reset view
         navigator.navigateToHome(getActivity());
     }
 

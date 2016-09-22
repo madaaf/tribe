@@ -58,7 +58,7 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
                     if (blockFriendViewHolder.selected) {
                         blockFriendViewHolder.imageSelected.setImageDrawable(null);
                         blockFriendViewHolder.itemView.setTag(R.id.tag_selected, false);
-                        blockFriendViewHolder.selected = true;
+                        blockFriendViewHolder.selected = false;
                     } else {
                         blockFriendViewHolder.imageSelected.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.picto_oval_green_fill));
                         blockFriendViewHolder.itemView.setTag(R.id.tag_selected, true);
@@ -84,13 +84,11 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
         vh.itemView.setTag(R.id.tag_position, position);
 
 
-        try {
+        if (friendship.getProfilePicture() != null) {
             Glide.with(context)
                     .load(friendship.getProfilePicture())
                     .bitmapTransform(new CropCircleTransformation(context))
                     .into(vh.imageFriendPic);
-        } catch (NullPointerException e) {
-            e.printStackTrace();
         }
 
     }

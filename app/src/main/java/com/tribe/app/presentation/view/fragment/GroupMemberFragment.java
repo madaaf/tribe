@@ -168,6 +168,7 @@ public class GroupMemberFragment extends BaseFragment implements GroupMemberView
         // Set up bottom sheet
         subscriptions.add(groupMemberAdapter.clickMemberItem().subscribe(groupMemberView -> {
             itemPosition = (Integer) groupMemberView.getTag(R.id.tag_position);
+            
             GroupMember groupMember = groupMemberAdapter.getItemAtPosition(itemPosition);
             groupMemberClicked = groupMember;
             List<LabelType> labelTypes = new ArrayList<>();
