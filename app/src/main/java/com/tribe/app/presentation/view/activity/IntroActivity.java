@@ -3,11 +3,9 @@ package com.tribe.app.presentation.view.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -32,6 +30,9 @@ import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -53,6 +54,11 @@ import rx.subscriptions.CompositeSubscription;
 
 public class IntroActivity extends BaseActivity {
 
+    private static final String AVATAR = "AVATAR";
+    private static final int PAGE_INTRO = 0,
+            PAGE_PROFILE_INFO = 1,
+            PAGE_ACCESS = 2;
+
     public static Intent getCallingIntent(Context context) {
         return new Intent(context, IntroActivity.class);
     }
@@ -61,15 +67,11 @@ public class IntroActivity extends BaseActivity {
      * Globals
      */
 
-    private static final String AVATAR = "AVATAR";
-    private static final int PAGE_INTRO = 0,
-            PAGE_PROFILE_INFO = 1,
-            PAGE_ACCESS = 2;
-
     private IntroViewFragment introViewFragment;
     private ProfileInfoFragment profileInfoFragment;
     private AccessFragment accessFragment;
 
+    // OBSERVABLES
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
@@ -95,6 +97,7 @@ public class IntroActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         initUi();
         initDependencyInjector();
         initViewPager();
@@ -146,19 +149,29 @@ public class IntroActivity extends BaseActivity {
             subscriptions.add(
                     Observable.just(data.getData())
                             .map(uri -> {
-                                String[] filePathColumn = { MediaStore.Images.Media.DATA };
-                                Cursor cursor = getContentResolver().query(uri, filePathColumn, null, null, null);
-                                cursor.moveToFirst();
-                                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                                String picturePath = cursor.getString(columnIndex);
-                                cursor.close();
+                                InputStream inputStream = null;
+                                Bitmap bitmap = null;
+                                try {
+                                    inputStream = getContentResolver().openInputStream(uri);
+                                    bitmap = ImageUtils.loadFromInputStream(inputStream);
+                                } catch (FileNotFoundException e) {
+                                    e.printStackTrace();
+                                } finally {
+                                    try {
+                                        inputStream.close();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
 
-                                return ImageUtils.formatForUpload(ImageUtils.loadFromPath(picturePath));
+                                    return bitmap;
+                                }
                             })
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(bitmap -> {
-                                profileInfoFragment.setImgProfilePic(bitmap, Uri.fromFile(FileUtils.bitmapToFile(AVATAR, bitmap, this)).toString());
+                            .subscribe(newBitmap -> {
+                                if (newBitmap != null) {
+                                    profileInfoFragment.setImgProfilePic(newBitmap, Uri.fromFile(FileUtils.bitmapToFile(AVATAR, newBitmap, this)).toString());
+                                }
                             })
             );
         }
@@ -170,8 +183,8 @@ public class IntroActivity extends BaseActivity {
                             .map(bitmap -> ImageUtils.formatForUpload(bitmap))
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(bitmap -> {
-                                profileInfoFragment.setImgProfilePic(bitmap, Uri.fromFile(FileUtils.bitmapToFile(AVATAR, bitmap, this)).toString());
+                            .subscribe(newBitmap -> {
+                                profileInfoFragment.setImgProfilePic(newBitmap, Uri.fromFile(FileUtils.bitmapToFile(AVATAR, newBitmap, this)).toString());
                             })
             );
         }
@@ -260,6 +273,24 @@ public class IntroActivity extends BaseActivity {
             }
         }
 
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            switch (position) {
+                case 0:
+                    introViewFragment = (IntroViewFragment) super.instantiateItem(container, position);
+                    return introViewFragment;
+                case 1:
+                    profileInfoFragment = (ProfileInfoFragment) super.instantiateItem(container, position);
+                    return profileInfoFragment;
+                case 2:
+                    accessFragment = (AccessFragment) super.instantiateItem(container, position);
+                    accessFragment.setUser(currentUser);
+                    return accessFragment;
+                default:
+                    introViewFragment = (IntroViewFragment) super.instantiateItem(container, position);
+                    return introViewFragment;
+            }
+        }
     }
 
     private class IntroPageTransformer implements ViewPager.PageTransformer {

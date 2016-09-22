@@ -202,6 +202,6 @@ public class ScoreActivity extends BaseActivity implements ScoreView {
     @Override
     public void finish() {
         super.finish();
-        overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
+        overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
     }
 }

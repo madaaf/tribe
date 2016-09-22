@@ -137,4 +137,18 @@
         style="@style/Title.2"
         />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:background="@color/black.opacity.40"
+        android:layout_gravity="bottom"
+        />
+
+    <View
+        android:id="@+id/viewBGProgress"
+        android:layout_width="0dp"
+        android:layout_height="6dp"
+        android:layout_gravity="bottom"
+        />
+
 </merge>

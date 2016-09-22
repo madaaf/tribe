@@ -1,10 +1,10 @@
 package com.tribe.app.presentation.view.component;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
-import android.media.Image;
+import android.os.Build;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
@@ -32,25 +32,6 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class SettingThemeView extends FrameLayout {
 
-    public SettingThemeView(Context context) {
-        super(context);
-    }
-
-    public SettingThemeView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public SettingThemeView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
-    public SettingThemeView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
-    private Unbinder unbinder;
-    private CompositeSubscription subscriptions = new CompositeSubscription();
-
     @BindView(R.id.imgThemeUnderline)
     ImageView imgThemeUnderline;
 
@@ -70,6 +51,27 @@ public class SettingThemeView extends FrameLayout {
     @Theme
     Preference<Integer> theme;
 
+    // OBSERVABLES
+    private Unbinder unbinder;
+    private CompositeSubscription subscriptions = new CompositeSubscription();
+
+    public SettingThemeView(Context context) {
+        super(context);
+    }
+
+    public SettingThemeView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public SettingThemeView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public SettingThemeView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+    }
+
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -78,7 +80,6 @@ public class SettingThemeView extends FrameLayout {
         unbinder = ButterKnife.bind(this);
 
         initUi();
-
     }
 
     private void initUi() {
@@ -109,15 +110,15 @@ public class SettingThemeView extends FrameLayout {
             theme.set(0);
         }));
 
-        subscriptions.add(RxView.clicks(imageTheme2).subscribe(aVoid -> {
-            setUpUnderline(imageTheme2);
-            theme.set(1);
-        }));
-
-        subscriptions.add(RxView.clicks(imageTheme3).subscribe(aVoid -> {
-            setUpUnderline(imageTheme3);
-            theme.set(2);
-        }));
+//        subscriptions.add(RxView.clicks(imageTheme2).subscribe(aVoid -> {
+//            setUpUnderline(imageTheme2);
+//            theme.set(1);
+//        }));
+//
+//        subscriptions.add(RxView.clicks(imageTheme3).subscribe(aVoid -> {
+//            setUpUnderline(imageTheme3);
+//            theme.set(2);
+//        }));
     }
 
     private void setUpUnderline(ImageView imageView) {
@@ -128,7 +129,6 @@ public class SettingThemeView extends FrameLayout {
                 .x(location[0])
                 .start();
     }
-
 
     @Override
     protected void onDetachedFromWindow() {

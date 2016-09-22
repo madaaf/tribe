@@ -7,25 +7,24 @@ import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
 import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.presentation.mvp.view.SettingView;
+import com.tribe.app.presentation.mvp.view.UpdateUserView;
 import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.utils.facebook.RxFacebook;
 
 import javax.inject.Inject;
 
 /**
  * Created by horatiothomas on 8/31/16.
  */
-public class SettingPresenter implements Presenter {
+public class SettingPresenter extends UpdateUserPresenter {
 
-    private final UpdateUser updateUser;
     private final RemoveInstall removeInstall;
-    private final Context context;
 
     private SettingView settingView;
 
     @Inject
-    SettingPresenter(UpdateUser updateUser, RemoveInstall removeInstall, Context context) {
-        this.context = context;
-        this.updateUser = updateUser;
+    SettingPresenter(UpdateUser updateUser, RxFacebook rxFacebook, RemoveInstall removeInstall, Context context) {
+        super(updateUser, rxFacebook, context);
         this.removeInstall = removeInstall;
     }
 
@@ -64,12 +63,6 @@ public class SettingPresenter implements Presenter {
 
     }
 
-
-    public void updateUser(String username, String displayName, String pictureUri, String fbid) {
-        updateUser.prepare(username, displayName, pictureUri, fbid);
-        updateUser.execute(new UpdateUserSubscriber());
-    }
-
     public void logout() {
         removeInstall.execute(new RemoveInstallSubscriber());
     }
@@ -78,7 +71,13 @@ public class SettingPresenter implements Presenter {
         this.settingView.goToLauncher();
     }
 
+    @Override
+    protected UpdateUserView getUpdateUserView() {
+        return settingView;
+    }
+
     private final class RemoveInstallSubscriber extends DefaultSubscriber<User> {
+
         @Override
         public void onCompleted() {
 
@@ -92,23 +91,6 @@ public class SettingPresenter implements Presenter {
         @Override
         public void onNext(User user) {
             goToLauncher();
-        }
-    }
-
-    private final class UpdateUserSubscriber extends DefaultSubscriber<User> {
-        @Override
-        public void onCompleted() {
-
-        }
-
-        @Override
-        public void onError(Throwable e) {
-
-        }
-
-        @Override
-        public void onNext(User user) {
-            settingView.setProfilePic(user.getProfilePicture());
         }
     }
 }

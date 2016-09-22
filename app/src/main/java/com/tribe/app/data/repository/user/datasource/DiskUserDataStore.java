@@ -1,5 +1,7 @@
 package com.tribe.app.data.repository.user.datasource;
 
+import android.util.Pair;
+
 import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.entity.LoginEntity;
@@ -13,7 +15,6 @@ import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.domain.entity.Group;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +80,7 @@ public class DiskUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<UserRealm> updateUser(String username, String displayName, String pictureUri, String fbid) {
+    public Observable<UserRealm> updateUser(List<Pair<String, String>> values) {
         return null;
     }
 

@@ -104,7 +104,7 @@ public class ContactsGridPresenter implements Presenter {
         contactsView = (ContactsView) v;
     }
 
-    public void diskFindByValue(String value) {
+    public void findByValue(String value) {
         if (findByValueSubscriber != null)
             findByValueSubscriber.unsubscribe();
 
@@ -113,7 +113,7 @@ public class ContactsGridPresenter implements Presenter {
         findContactByValue.execute(findByValueSubscriber);
     }
 
-    public void cloudFindByUsername(String username) {
+    public void findByUsername(String username) {
         if (findByUsernameSubscriber != null)
             findByUsernameSubscriber.unsubscribe();
 

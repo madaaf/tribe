@@ -2,7 +2,6 @@ package com.tribe.app.presentation.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.os.Environment;
 import android.support.annotation.StringDef;
 
 import java.io.ByteArrayOutputStream;
@@ -13,9 +12,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * Created by tiago on 28/06/2016.
  */
+@Singleton
 public class FileUtils {
 
     @StringDef({VIDEO, PHOTO})
@@ -24,8 +27,14 @@ public class FileUtils {
     public static final String VIDEO = "video";
     public static final String PHOTO = "photo";
 
-    private static File pathOrigin = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+    private static File pathOrigin;
     private static String pathEnd = "/TribeMessage/Sent";
+
+    @Inject
+    public FileUtils(Context context) {
+       pathOrigin = context.getFilesDir();
+       //pathOrigin = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+    }
 
     public static String generateFile(String id, @MessageType String type) {
         return getFile(id, type).getAbsolutePath();
@@ -102,5 +111,23 @@ public class FileUtils {
         }
 
         return file;
+    }
+
+    public static boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+
+        return dir.delete();
+    }
+
+    public static File getCacheDir() {
+        return pathOrigin;
     }
 }

@@ -145,6 +145,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private String pictureUri;
     private boolean isRecording;
     private boolean navVisible = true;
+    private boolean isFirstInit = true;
 
     // DIMEN
     private int sizeNavMax, sizeNavSmall, marginHorizontalSmall, translationBackToTop;
@@ -165,13 +166,17 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     protected void onResume() {
         super.onResume();
 
-        subscriptions.add(Observable.just("")
-                .observeOn(Schedulers.newThread())
-                .delay(1000, TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(o1 -> {
-                    cameraWrapper.showCamera();
-                }));
+        if (!isFirstInit) {
+            subscriptions.add(Observable.just("")
+                    .observeOn(Schedulers.newThread())
+                    .delay(1000, TimeUnit.MILLISECONDS)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(o1 -> {
+                        cameraWrapper.showCamera();
+                    }));
+        } else {
+            isFirstInit = false;
+        }
 
         subscriptions.add(Observable.
                 from(PERMISSIONS_CAMERA)
@@ -284,8 +289,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                         else cameraWrapper.showPermissions();
                     });
         }));
-
-        cameraWrapper.hideCamera();
     }
 
     private void initViewPager() {

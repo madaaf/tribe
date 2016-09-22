@@ -177,7 +177,6 @@ public class IntroPresenter implements Presenter {
 
         @Override
         public void onCompleted() {
-            hideViewLoading();
         }
 
         @Override

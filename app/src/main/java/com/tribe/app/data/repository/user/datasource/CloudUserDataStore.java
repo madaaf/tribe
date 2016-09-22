@@ -39,7 +39,6 @@ import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.GroupRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.user.contact.RxContacts;
-import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -51,15 +50,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.realm.RealmList;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -227,7 +225,6 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<List<MessageRealmInterface>> messages() {
-        String initRequest = utcSimpleDate.format(new Date());
         StringBuffer idsTribes = new StringBuffer();
 
         Set<String> toIds = new HashSet<>();
@@ -305,37 +302,68 @@ public class CloudUserDataStore implements UserDataStore {
 
                     return messageRealmInterfaceList;
                 })
-                .doOnNext(messages -> this.lastMessageRequest.set(initRequest))
+                .doOnNext(messages -> {
+                    if (messages != null && messages.size() > 0) {
+                        List<MessageRealmInterface> subMessages = new ArrayList<MessageRealmInterface>();
+
+                        for (MessageRealmInterface message : messages) {
+                            if (message.getRecordedAt() != null) subMessages.add(message);
+                        }
+
+                        Collections.sort(subMessages, (one, two) -> {
+                            if (one == null ^ two == null) {
+                                return (one == null) ? -1 : 1;
+                            }
+
+                            if (one == null && two == null) return 0;
+
+                            if (one.getUpdatedAt() == null ^ two.getUpdatedAt() == null) {
+                                return (one.getUpdatedAt() == null) ? -1 : 1;
+                            }
+
+                            if (one.getUpdatedAt() == null && two.getUpdatedAt() == null) {
+                                return one.getRecordedAt().before(two.getRecordedAt()) ? -1 : 1;
+                            }
+
+                            return one.getUpdatedAt().before(two.getUpdatedAt()) ? -1 : 1;
+                        });
+
+                        if (subMessages != null && subMessages.size() > 0) {
+                            Date date = new Date(subMessages.get(subMessages.size() - 1).getRecordedAt().getTime() + 1000);
+                            this.lastMessageRequest.set(utcSimpleDate.format(date));
+                        }
+                    }
+                })
                 .doOnNext(saveToCacheMessages);
     }
 
     @Override
-    public Observable<UserRealm> updateUser(String username, String displayName, String pictureUri, String fbid) {
+    public Observable<UserRealm> updateUser(List<Pair<String, String>> values) {
+        String pictureUri = "";
+        StringBuilder userInputBuilder = new StringBuilder();
 
-        String usernameParam;
-        String displayNameParam;
+        for (Pair<String, String> value : values) {
+            if (value.first.equals(UserRealm.TRIBE_SAVE) || value.first.equals(UserRealm.INVISIBLE_MODE)) {
+                userInputBuilder.append(value.first + ": " + Boolean.valueOf(value.second));
+                userInputBuilder.append(",");
+            } else {
+                userInputBuilder.append(value.first + ": \"" + value.second + "\"");
+                userInputBuilder.append(",");
+            }
 
-        UserRealm userDb = userCache.userInfosNoObs(accessToken.getUserId());
-
-        if (username == null) {
-            usernameParam = userDb.getUsername();
-        } else {
-            usernameParam = username;
+            if (value.first.equals(UserRealm.PROFILE_PICTURE)) {
+                pictureUri = value.second;
+            }
         }
 
-        if (displayName == null) {
-            displayNameParam = userDb.getDisplayName();
-        } else {
-            displayNameParam = displayName;
-        }
+        String userInput = userInputBuilder.length() > 0 ? userInputBuilder.substring(0, userInputBuilder.length() - 1) : "";
 
-        if (pictureUri == null) {
-            String request = context.getString(R.string.user_mutate, usernameParam, displayNameParam, fbid, context.getString(R.string.userfragment_infos));
-
+        if (StringUtils.isEmpty(pictureUri)) {
+            String request = context.getString(R.string.user_mutate, userInput, context.getString(R.string.userfragment_infos));
             return this.tribeApi.updateUser(request)
                     .doOnNext(saveToCacheUpdateUser);
         } else {
-            String request = context.getString(R.string.user_mutate, usernameParam, displayNameParam, fbid, context.getString(R.string.userfragment_infos));
+            String request = context.getString(R.string.user_mutate, userInput, context.getString(R.string.userfragment_infos));
             RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
 
             File file = new File(Uri.parse(pictureUri).getPath());
@@ -361,7 +389,6 @@ public class CloudUserDataStore implements UserDataStore {
 
             return tribeApi.updateUserMedia(query, body)
                     .doOnNext(saveToCacheUpdateUser);
-
         }
     }
 
@@ -680,16 +707,6 @@ public class CloudUserDataStore implements UserDataStore {
 
     private final Action1<UserRealm> saveToCacheUser = userRealm -> {
         if (userRealm != null) {
-//            user.setId(userRealm.getId());
-//            user.setDisplayName(userRealm.getDisplayName());
-//            user.setUsername(userRealm.getUsername());
-//            user.setFriendships(userRealmDataMapper.getFriendshipRealmDataMapper().transform(userRealm.getFriendships()));
-//            user.setGroupList(userRealmDataMapper.getGroupRealmDataMapper().transform(userRealm.getGroups()));
-//            user.setLocation(userRealmDataMapper.getLocationRealmDataMapper().transform(userRealm.getLocation()));
-//            user.setFbid(userRealm.getFbid());
-//            user.setProfilePicture(userRealm.getProfilePicture());
-//            user.setScore(userRealm.getScore());
-//            user.setPhone(userRealm.getPhone());
             CloudUserDataStore.this.userCache.put(userRealm);
         }
     };

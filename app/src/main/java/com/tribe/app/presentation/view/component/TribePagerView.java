@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.drawable.TransitionDrawable;
+import android.os.Build;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -176,6 +177,7 @@ public class TribePagerView extends FrameLayout {
     private boolean inSnoozeMode = false;
     private @CameraWrapper.TribeMode String tribeMode;
     private boolean inReplyMode = false;
+    private int color;
 
     // DIMENS
     private int thresholdEnd;
@@ -289,8 +291,9 @@ public class TribePagerView extends FrameLayout {
     }
 
     private void initViewPager() {
+        tribePagerAdapter.setColor(color);
         viewPager.setAdapter(tribePagerAdapter);
-        viewPager.setOffscreenPageLimit(5);
+        viewPager.setOffscreenPageLimit(2);
         viewPager.setScrollDurationFactor(1.0f);
         viewPager.setCurrentItem(0);
         viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_ALL);
@@ -299,7 +302,6 @@ public class TribePagerView extends FrameLayout {
             public void onPageScrollStateChanged(int state) {}
 
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
             }
 
             public void onPageSelected(int currentPosition) {
@@ -317,6 +319,10 @@ public class TribePagerView extends FrameLayout {
     }
 
     private void initUI() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            imgSpeed.setVisibility(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? VISIBLE : GONE);
+        }
+
         springSystem = SpringSystem.create();
 
         springLeft = springSystem.createSpring();
@@ -437,9 +443,11 @@ public class TribePagerView extends FrameLayout {
         subscriptions.add(cameraWrapper.tribeMode().subscribe(mode -> tribeMode = mode));
     }
 
-    public void setItems(List<TribeMessage> items) {
+    public void setItems(List<TribeMessage> items, int color) {
+        this.color = color;
         this.tribeList = items;
         this.tribeListSeens.add(tribeList.get(0));
+        this.tribePagerAdapter.setColor(color);
         this.tribePagerAdapter.setItems(items);
         updateNbTribes();
     }
@@ -708,6 +716,7 @@ public class TribePagerView extends FrameLayout {
 
     @Override
     public void setBackgroundColor(int color) {
+        this.color = color;
 //        ColorDrawable[] colorList = {
 //                new ColorDrawable(getResources().getColor(R.color.black_tribe)),
 //                new ColorDrawable(color),

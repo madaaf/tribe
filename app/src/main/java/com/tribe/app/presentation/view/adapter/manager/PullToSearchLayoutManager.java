@@ -14,4 +14,9 @@ public class PullToSearchLayoutManager extends GridLayoutManager {
     public PullToSearchLayoutManager(Context context) {
         super(context, spanCount);
     }
+
+    @Override
+    public boolean canScrollVertically() {
+        return false;
+    }
 }

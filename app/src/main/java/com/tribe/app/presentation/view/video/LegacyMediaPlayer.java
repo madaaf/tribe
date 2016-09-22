@@ -172,4 +172,9 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
     public void seekTo(long position) {
         mediaPlayer.seekTo((int) position);
     }
+
+    @Override
+    public long getDuration() {
+        return mediaPlayer.getDuration();
+    }
 }

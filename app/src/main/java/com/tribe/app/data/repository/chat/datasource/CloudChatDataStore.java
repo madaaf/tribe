@@ -20,6 +20,7 @@ import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
+import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import org.eclipse.paho.client.mqttv3.IMqttToken;
@@ -97,7 +98,7 @@ public class CloudChatDataStore implements ChatDataStore {
                 chatRealm.isToGroup() ? chatRealm.getGroup().getId() : chatRealm.getFriendshipRealm().getFriend().getId(),
                 chatRealm.getType(),
                 simpleDateFormat.format(chatRealm.getRecordedAt()),
-                chatRealm.getContent().replaceAll("\"", "\\\"")
+                chatRealm.getContent().replaceAll("\"", "")
         );
 
         String request;
@@ -279,6 +280,8 @@ public class CloudChatDataStore implements ChatDataStore {
                         }
 
                         chatRealmListMappedUsers.add(message);
+
+                        message.setMessageReceivingStatus(MessageReceivingStatus.STATUS_NOT_SEEN);
                     }
                 }
             }

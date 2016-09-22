@@ -56,6 +56,7 @@
             display_name
             picture
             created_at
+            tribe_save
         }
     </string>
 
@@ -72,15 +73,13 @@
     <string name="user.mutate" translatable="false">
         mutation {
             updateUser(user: {
-                username: \"%1$s\",
-                display_name: \"%2$s\",
-                fbid: \"%3$s\"
+                %1$s
             }) {
                 ...UserInfos
             }
         }
 
-        %4$s
+        %2$s
     </string>
 
     <string name="tribe.send.solo" translatable="false">

@@ -282,6 +282,11 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         this.layoutManager = new HomeLayoutManager(context());
         this.recyclerViewFriends.setLayoutManager(layoutManager);
         this.recyclerViewFriends.setItemAnimator(null);
+        List<Recipient> recipientList = new ArrayList<>();
+        Friendship friendship = new Friendship(currentUser.getId());
+        friendship.setFriend(currentUser);
+        recipientList.add(0, friendship);
+        homeGridAdapter.setItems(recipientList);
         this.recyclerViewFriends.setAdapter(homeGridAdapter);
 
         // TODO HACK FIND ANOTHER WAY OF OPTIMIZING THE VIEW?

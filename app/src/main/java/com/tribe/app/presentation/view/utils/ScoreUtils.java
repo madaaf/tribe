@@ -8,16 +8,16 @@ import com.tribe.app.R;
 public class ScoreUtils {
 
     public enum Level {
-        NOOB        (R.string.level_noob_title, 0, R.drawable.picto_noob),
-        ROOKIE      (R.string.level_rookie_title, 2000, R.drawable.picto_rookie),
-        COOL_KID    (R.string.level_coolkid_title, 10000, R.drawable.picto_cool_kid),
-        CHAMP       (R.string.level_champ_title, 25000, R.drawable.picto_champ),
-        ROCKSTAR    (R.string.level_rockstar_title, 50000, R.drawable.picto_rockstar),
-        LEGEND      (R.string.level_legend_title, 100000, R.drawable.picto_legend),
-        KING        (R.string.level_king_title, 200000, R.drawable.picto_king),
-        ALIEN       (R.string.level_alien_title, 400000, R.drawable.picto_alien),
-        UNICORN     (R.string.level_unicorn_title, 700000, R.drawable.picto_unicorn),
-        BOT         (R.string.level_bot_title, 1000000, R.drawable.picto_bot);
+        ROOKIE          (R.string.level_rookie_title, 0, R.drawable.picto_cool_kid),
+        HEATING_UP      (R.string.level_heating_up_title, 2000, R.drawable.picto_heating_up),
+        RISING_STAR     (R.string.level_rising_star_title, 10000, R.drawable.picto_rising),
+        ON_FIRE         (R.string.level_on_fire_title, 25000, R.drawable.picto_fire),
+        ROCKSTAR        (R.string.level_rockstar_title, 50000, R.drawable.picto_rockstar),
+        CHAMP           (R.string.level_champ_title, 100000, R.drawable.picto_champ),
+        ICON            (R.string.level_icon_title, 200000, R.drawable.picto_icon),
+        GREATNESS       (R.string.level_greatness_title, 400000, R.drawable.picto_greatness),
+        ROYALTY         (R.string.level_royalty_title, 700000, R.drawable.picto_royalty),
+        UNICORN         (R.string.level_unicorn_title, 1000000, R.drawable.picto_unicorn);
 
         private final int stringId;
         private final int points;

@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 
 import javax.inject.Inject;
@@ -17,6 +18,9 @@ public class LauncherActivity extends BaseActivity {
 
     @Inject
     User currentUser;
+
+    @Inject
+    FileUtils fileUtils;
 
     public static Intent getCallingIntent(Context context) {
         return new Intent(context, LauncherActivity.class);
@@ -36,7 +40,7 @@ public class LauncherActivity extends BaseActivity {
                     || currentUser.getFriendshipList().size() == 0) {
                 navigator.navigateToLogin(this);
             } else {
-                navigator.navigateToHome(this);
+                navigator.navigateToHome(this, true);
             }
         }
 

@@ -15,6 +15,7 @@ public class SearchResult implements Serializable {
     private Friendship friendship;
     private boolean searchDone = false;
     private boolean shouldAnimateAdd = false;
+    private boolean isMyself = false;
 
     public String getId() {
         return id;
@@ -78,6 +79,14 @@ public class SearchResult implements Serializable {
 
     public boolean isInvisibleMode() {
         return invisible_mode;
+    }
+
+    public boolean isMyself() {
+        return isMyself;
+    }
+
+    public void setMyself(boolean myself) {
+        isMyself = myself;
     }
 
     @Override

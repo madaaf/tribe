@@ -76,7 +76,7 @@
     <com.github.rahatarmanahmed.cpv.CircularProgressView
         android:id="@+id/circularProgressViewCode"
         android:layout_width="wrap_content"
-        android:layout_height="28dp"
+        android:layout_height="20dp"
         android:layout_gravity="end|center_vertical"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:visibility="invisible"

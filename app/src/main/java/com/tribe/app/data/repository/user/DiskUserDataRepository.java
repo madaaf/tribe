@@ -1,5 +1,7 @@
 package com.tribe.app.data.repository.user;
 
+import android.util.Pair;
+
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
@@ -172,7 +174,7 @@ public class DiskUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<User> updateUser(String username, String displayName, String pictureUri, String fbid) {
+    public Observable<User> updateUser(List<Pair<String, String>> values) {
         return null;
     }
 

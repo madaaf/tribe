@@ -47,7 +47,7 @@ public class LetterAdapterDelegate extends RxAdapterDelegate<List<PTSEntity>> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
         LetterViewHolder vh = new LetterViewHolder(layoutInflater.inflate(R.layout.item_pts_letter, parent, false));
-        vh.txtLetter.setOnClickListener(v -> clickLetter.onNext(vh.txtLetter));
+
         return vh;
     }
 
@@ -57,8 +57,11 @@ public class LetterAdapterDelegate extends RxAdapterDelegate<List<PTSEntity>> {
         LetterViewHolder letterViewHolder = (LetterViewHolder) holder;
         letterViewHolder.txtLetter.setText(ptsEntity.getLetter());
         letterViewHolder.txtLetter.setAlpha(ptsEntity.isActivated() ? 1 : 0.25f);
-
         letterViewHolder.txtLetter.setTag(R.id.tag_position, position);
+
+        if (ptsEntity.isActivated()) {
+            letterViewHolder.txtLetter.setOnClickListener(v -> clickLetter.onNext(letterViewHolder.txtLetter));
+        }
     }
 
     public Observable<TextViewFont> onClickLetter() {

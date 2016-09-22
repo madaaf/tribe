@@ -16,6 +16,12 @@ public class UserRealm extends RealmObject {
     @StringDef({UPDATED_AT})
     public @interface UserRealmAttributes {}
 
+    public static final String DISPLAY_NAME = "display_name";
+    public static final String USERNAME = "username";
+    public static final String PROFILE_PICTURE = "picture";
+    public static final String FBID = "fbid";
+    public static final String INVISIBLE_MODE = "invisible_mode";
+    public static final String TRIBE_SAVE = "tribe_save";
     public static final String UPDATED_AT = "updated_at";
 
     @PrimaryKey
@@ -29,13 +35,8 @@ public class UserRealm extends RealmObject {
     private String fbid;
     private String picture;
     private int score;
-    private String email;
-    private boolean emailVerified;
-    private boolean isReal;
-    private boolean isInvited;
     private LocationRealm location;
-    private boolean disableSaveTribe;
-    private boolean hideUsername;
+    private boolean tribe_save = false;
     private RealmList<FriendshipRealm> friendships;
     private RealmList<UserRealm> reported;
     private RealmList<GroupRealm> groups;
@@ -89,52 +90,12 @@ public class UserRealm extends RealmObject {
         this.score = score;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public boolean isEmailVerified() {
-        return emailVerified;
-    }
-
-    public void setEmailVerified(boolean emailVerified) {
-        this.emailVerified = emailVerified;
-    }
-
-    public boolean isReal() {
-        return isReal;
-    }
-
-    public void setReal(boolean real) {
-        isReal = real;
-    }
-
     public LocationRealm getLocation() {
         return location;
     }
 
     public void setLocation(LocationRealm location) {
         this.location = location;
-    }
-
-    public boolean isInvited() {
-        return isInvited;
-    }
-
-    public void setInvited(boolean invited) {
-        isInvited = invited;
-    }
-
-    public boolean isDisableSaveTribe() {
-        return disableSaveTribe;
-    }
-
-    public void setDisableSaveTribe(boolean disableSaveTribe) {
-        this.disableSaveTribe = disableSaveTribe;
     }
 
     public String getUsername() {
@@ -151,14 +112,6 @@ public class UserRealm extends RealmObject {
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public boolean isHideUsername() {
-        return hideUsername;
-    }
-
-    public void setHideUsername(boolean hideUsername) {
-        this.hideUsername = hideUsername;
     }
 
     public RealmList<FriendshipRealm> getFriendships() {
@@ -200,4 +153,14 @@ public class UserRealm extends RealmObject {
     public void setInvisibleMode(boolean invisibleMode) {
         this.invisible_mode = invisibleMode;
     }
+
+    public boolean isTribeSave() {
+        return tribe_save;
+    }
+
+    public void setTribeSave(boolean tribeSave) {
+        this.tribe_save = tribeSave;
+    }
+
+
 }

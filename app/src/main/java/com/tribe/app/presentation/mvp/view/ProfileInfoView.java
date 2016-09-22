@@ -9,7 +9,7 @@ public interface ProfileInfoView extends LoadDataView {
     void errorFacebookLogin();
     void loadFacebookInfos(FacebookEntity facebookEntity);
     void usernameResult(Boolean available);
-    void userRegistered();
+    void userRegistered(User user);
     void goToAccess(User user);
 }
 

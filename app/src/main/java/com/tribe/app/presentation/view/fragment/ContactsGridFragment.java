@@ -42,6 +42,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
@@ -211,10 +212,10 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
                     searchResult = new SearchResult();
                     searchResult.setUsername(s);
                     updateSearch();
-                    contactsGridPresenter.diskFindByValue(s);
+                    contactsGridPresenter.findByValue(s);
                 })
                 .debounce(500, TimeUnit.MILLISECONDS)
-                .subscribe(s -> contactsGridPresenter.cloudFindByUsername(s));
+                .subscribe(s -> contactsGridPresenter.findByUsername(s));
 
         searchContactList = new ArrayList<>();
         btnCloseSearch.setTranslationX(screenUtils.getWidthPx() >> 1);
@@ -264,7 +265,8 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
                 .subscribe(o -> {
                     if (o instanceof SearchResult) {
                         SearchResult searchResult = (SearchResult) o;
-                        contactsGridPresenter.createFriendship(searchResult.getId());
+                        if (!searchResult.getUsername().equals(currentUser.getUsername()))
+                            contactsGridPresenter.createFriendship(searchResult.getId());
                     }
                 }));
 
@@ -325,7 +327,14 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
 
     @Override
     public void onAddSuccess(Friendship friendship) {
-
+        subscriptions.add(
+                Observable
+                        .timer(1000, TimeUnit.MILLISECONDS)
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(aLong -> {
+                            closeSearch();
+                        }));
     }
 
     @Override
@@ -341,6 +350,7 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
                 searchResult.setShouldAnimateAdd(true);
 
             this.searchResult = searchResult;
+            this.searchResult.setMyself(searchResult.getUsername().equals(currentUser.getUsername()));
             updateSearch();
         }
     }

@@ -43,7 +43,7 @@
             android:layout_marginTop="5dp"
             android:layout_below="@id/txtName"
             android:singleLine="true"
-            style="@style/Body.Two.Blue"
+            style="@style/Body.One.Blue"
             />
 
         <com.tribe.app.presentation.view.widget.TextViewFont

@@ -4,6 +4,8 @@ package com.tribe.app.domain.interactor.user;
  * Created by tiago on 04/05/2016.
  */
 
+import android.util.Pair;
+
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
@@ -80,7 +82,7 @@ public interface UserRepository {
      * Get an {@link Observable} which will emit a {@link User} containing infos
      * about the user updated.
      */
-    Observable<User> updateUser(String username, String displayName, String pictureUri, String fbid);
+    Observable<User> updateUser(List<Pair<String, String>> values);
 
     /**
      * Get an {@link Observable} which will emit a {@link List <Contact>} containing infos

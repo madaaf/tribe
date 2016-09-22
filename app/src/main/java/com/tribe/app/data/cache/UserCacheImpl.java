@@ -8,11 +8,9 @@ import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.LocationRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.domain.entity.Group;
-
-import java.util.List;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -59,7 +57,20 @@ public class UserCacheImpl implements UserCache {
                     if (groupDB != null) {
                         groupDB.setName(groupRealm.getName());
                         groupDB.setPicture(groupRealm.getPicture());
-                        groupDB.setMembers(groupRealm.getMembers());
+
+                        RealmList<UserRealm> membersEnd = new RealmList<>();
+
+                        for (UserRealm member : groupRealm.getMembers()) {
+                            UserRealm memberDB = obsRealm.where(UserRealm.class).equalTo("id", member.getId()).findFirst();
+
+                            if (memberDB == null) {
+                                memberDB = obsRealm.copyToRealmOrUpdate(member);
+                            }
+
+                            membersEnd.add(memberDB);
+                        }
+
+                        groupDB.setMembers(membersEnd);
                     } else {
                         groupRealm.setUpdatedAt(new Date());
                         GroupRealm addedGroup = obsRealm.copyToRealmOrUpdate(groupRealm);
@@ -109,6 +120,8 @@ public class UserCacheImpl implements UserCache {
                 userDB.setDisplayName(userRealm.getDisplayName());
                 userDB.setProfilePicture(userRealm.getProfilePicture());
                 userDB.setFbid(userRealm.getFbid());
+                userDB.setTribeSave(userRealm.isTribeSave());
+                userDB.setInvisibleMode(userRealm.isInvisibleMode());
 
                 if (userRealm.getLocation() != null) {
                     LocationRealm locationRealm = obsRealm.copyToRealmOrUpdate(userRealm.getLocation());
