@@ -81,7 +81,7 @@ public class SettingBlockFragment extends BaseFragment {
             if (friendship.isBlocked()) friendshipsList.add(friendship);
         }
         // TODO: remove after ui testing
-        friendshipsList.add(allFriendships.get(1));
+        //friendshipsList.add(allFriendships.get(1));
 
         friendshipsListCopy = new ArrayList<>();
         friendshipsListCopy.addAll(friendshipsList);

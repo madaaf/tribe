@@ -1,11 +1,9 @@
 package com.tribe.app.presentation.view.fragment;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetDialog;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,12 +13,9 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import com.jakewharton.rxbinding.view.RxView;
-import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.CameraType;
 import com.tribe.app.domain.entity.Friendship;
@@ -40,16 +35,10 @@ import com.tribe.app.presentation.view.adapter.FriendAdapter;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.component.CreateInviteView;
 import com.tribe.app.presentation.view.component.GroupInfoView;
-import com.tribe.app.presentation.view.component.MemberPhotoViewList;
-import com.tribe.app.presentation.view.component.PrivatePublicView;
-import com.tribe.app.presentation.view.component.ViewPrivacyStatus;
 import com.tribe.app.presentation.view.dialog_fragment.ShareDialogFragment;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
-import com.tribe.app.presentation.view.utils.ImageUtils;
-import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
-import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -228,7 +217,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         recyclerViewInvite.setTranslationY(screenUtils.dpToPx(smallMargin));
 
         subscriptions.add(groupInfoView.imageBackClicked().subscribe(aVoid -> {
-            navigator.navigateToHome(getActivity());
+            navigator.navigateToHome(getActivity(), false);
         }));
         subscriptions.add(groupInfoView.imageEditGroupClicked().subscribe(aVoid -> {
             presentEditInfo();
@@ -746,7 +735,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     @Override
     public void backToHome() {
-        navigator.navigateToHome(getActivity());
+        navigator.navigateToHome(getActivity(), false);
     }
 
     @Override

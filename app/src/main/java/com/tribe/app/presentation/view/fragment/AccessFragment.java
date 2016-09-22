@@ -405,7 +405,7 @@ public class AccessFragment extends Fragment implements AccessView {
     }
 
     private void goToHome() {
-        navigator.navigateToHome(getActivity());
+        navigator.navigateToHome(getActivity(), false);
     }
 
     /**
@@ -461,7 +461,7 @@ public class AccessFragment extends Fragment implements AccessView {
         Map<String, Object> relationsInApp = new HashMap<>();
 
         for (User user : userList) {
-            relationsInApp.put(user.getId(), user);
+            if (!user.isInvisibleMode()) relationsInApp.put(user.getId(), user);
         }
 
         if (currentUser.getFriendships() != null) {

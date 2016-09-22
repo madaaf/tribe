@@ -1,5 +1,7 @@
 package com.tribe.app.data.repository.user.datasource;
 
+import android.util.Pair;
+
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
@@ -73,13 +75,10 @@ public interface UserDataStore {
 
     /**
      *
-     * @param username
-     * @param displayName
-     * @param pictureUri
-     * @param fbid
+     * @param values
      * @return the new user value
      */
-    Observable<UserRealm> updateUser(String username, String displayName, String pictureUri, String fbid);
+    Observable<UserRealm> updateUser(List<Pair<String, String>> values);
 
     /**
      * Get an {@link Observable} which will emit a {@link List <ContactInterface>} containing infos

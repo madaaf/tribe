@@ -3,11 +3,10 @@ package com.tribe.app.presentation.view.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.ImageView;
@@ -25,6 +24,10 @@ import com.tribe.app.presentation.view.fragment.SettingUpdateProfileFragment;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 import javax.inject.Inject;
 
@@ -103,7 +106,7 @@ public class SettingActivity extends BaseActivity implements SettingView {
         }
 
         if (imgUri != null) outState.putParcelable(IMG_URI, imgUri);
-        if (bitmap != null) outState.putParcelable(BITMAP, bitmap);
+        if (bitmap != null && !bitmap.isRecycled()) outState.putParcelable(BITMAP, bitmap);
     }
 
     @Override
@@ -141,21 +144,31 @@ public class SettingActivity extends BaseActivity implements SettingView {
             subscriptions.add(
                     Observable.just(data.getData())
                             .map(uri -> {
-                                String[] filePathColumn = { MediaStore.Images.Media.DATA };
-                                Cursor cursor = getContentResolver().query(uri, filePathColumn, null, null, null);
-                                cursor.moveToFirst();
-                                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                                String picturePath = cursor.getString(columnIndex);
-                                cursor.close();
+                                InputStream inputStream = null;
+                                Bitmap bitmap = null;
+                                try {
+                                    inputStream = getContentResolver().openInputStream(uri);
+                                    bitmap = ImageUtils.loadFromInputStream(inputStream);
+                                } catch (FileNotFoundException e) {
+                                    e.printStackTrace();
+                                } finally {
+                                    try {
+                                        inputStream.close();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
 
-                                return ImageUtils.formatForUpload(ImageUtils.loadFromPath(picturePath));
+                                    return bitmap;
+                                }
                             })
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(newBitmap -> {
-                                imgUri = Uri.fromFile(FileUtils.bitmapToFile(AVATAR, newBitmap, this));
-                                bitmap = newBitmap;
-                                settingUpdateProfileFragment.setImgProfilePic(bitmap, imgUri.toString());
+                                if (newBitmap != null) {
+                                    imgUri = Uri.fromFile(FileUtils.bitmapToFile(AVATAR, newBitmap, this));
+                                    bitmap = newBitmap;
+                                    settingUpdateProfileFragment.setImgProfilePic(bitmap, imgUri.toString());
+                                }
                             })
             );
         }
@@ -198,18 +211,19 @@ public class SettingActivity extends BaseActivity implements SettingView {
         }));
 
         subscriptions.add(RxView.clicks(imgDone).subscribe(aVoid -> {
+            Fragment fr = fragmentManager.findFragmentById(R.id.layoutFragmentContainer);
 
-            if (fragmentManager.findFragmentById(R.id.layoutFragmentContainer) instanceof SettingFragment) {
+            if (fr instanceof SettingFragment) {
                 Intent resultIntent = new Intent();
                 setResult(BaseActivity.RESULT_OK, resultIntent);
                 finish();
             }
-            if (fragmentManager.findFragmentById(R.id.layoutFragmentContainer) instanceof SettingUpdateProfileFragment) {
+
+            if (fr instanceof SettingUpdateProfileFragment) {
                 settingPresenter.updateUser(
                         settingUpdateProfileFragment.getUsername(),
                         settingUpdateProfileFragment.getDisplayName(),
-                        settingUpdateProfileFragment.getImgUri(),
-                        getCurrentUser().getFbid()
+                        settingUpdateProfileFragment.getImgUri()
                 );
 
                 goToMain();
@@ -279,12 +293,6 @@ public class SettingActivity extends BaseActivity implements SettingView {
         updateAnim();
     }
 
-
-    @Override
-    public void updateUser(String username, String displayName, String pictureUri) {
-
-    }
-
     @Override
     public void goToLauncher() {
         navigator.navigateToLauncher(this);
@@ -324,6 +332,16 @@ public class SettingActivity extends BaseActivity implements SettingView {
     @Override
     public void setProfilePic(String profilePicUrl) {
         settingFragment.setPicture(profilePicUrl);
+    }
+
+    @Override
+    public void successFacebookLogin() {
+
+    }
+
+    @Override
+    public void errorFacebookLogin() {
+
     }
 
     private void initPresenter() {

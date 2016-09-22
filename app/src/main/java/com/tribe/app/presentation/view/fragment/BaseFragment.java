@@ -5,6 +5,8 @@ import android.widget.Toast;
 
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
 
 /**
@@ -31,5 +33,17 @@ public abstract class BaseFragment extends Fragment {
 
     protected User getCurrentUser() {
         return ((AndroidApplication) getActivity().getApplication()).getApplicationComponent().currentUser();
+    }
+
+    protected ApplicationComponent getApplicationComponent() {
+        return ((AndroidApplication) getActivity().getApplication()).getApplicationComponent();
+    }
+
+    protected ActivityModule getActivityModule() {
+        return new ActivityModule(getActivity());
+    }
+
+    protected AndroidApplication getApplication() {
+        return (AndroidApplication) getContext().getApplicationContext();
     }
 }

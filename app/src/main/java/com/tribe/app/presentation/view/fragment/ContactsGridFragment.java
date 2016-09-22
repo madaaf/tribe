@@ -265,7 +265,8 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
                 .subscribe(o -> {
                     if (o instanceof SearchResult) {
                         SearchResult searchResult = (SearchResult) o;
-                        contactsGridPresenter.createFriendship(searchResult.getId());
+                        if (!searchResult.getUsername().equals(currentUser.getUsername()))
+                            contactsGridPresenter.createFriendship(searchResult.getId());
                     }
                 }));
 
@@ -349,6 +350,7 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
                 searchResult.setShouldAnimateAdd(true);
 
             this.searchResult = searchResult;
+            this.searchResult.setMyself(searchResult.getUsername().equals(currentUser.getUsername()));
             updateSearch();
         }
     }

@@ -68,6 +68,9 @@ public class IntroViewFragment extends Fragment implements IntroView {
      * Globals
      */
     @Inject
+    User currentUser;
+
+    @Inject
     IntroPresenter introPresenter;
 
     @Inject
@@ -279,7 +282,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
 
     @Override
     public void goToHome() {
-        navigator.navigateToHome(getActivity());
+        navigator.navigateToHome(getActivity(), false);
     }
 
     @Override
@@ -294,6 +297,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
 
     @Override
     public void goToConnected(User user) {
+        currentUser.copy(user);
         txtIntroMessage.setText("");
         screenUtils.hideKeyboard(getActivity());
 

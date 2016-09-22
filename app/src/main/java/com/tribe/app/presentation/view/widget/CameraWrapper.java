@@ -17,8 +17,10 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.internal.di.scope.AudioDefault;
 import com.tribe.app.presentation.view.camera.shader.fx.GlLutShader;
 import com.tribe.app.presentation.view.camera.view.CameraView;
 import com.tribe.app.presentation.view.camera.view.GlPreview;
@@ -59,6 +61,9 @@ public class CameraWrapper extends FrameLayout {
     private static final int RATIO = 3;
 
     @Inject ScreenUtils screenUtils;
+
+    @Inject @AudioDefault
+    Preference<Boolean> audioDefault;
 
     @BindView(R.id.cameraView)
     CameraView cameraView;
@@ -143,7 +148,7 @@ public class CameraWrapper extends FrameLayout {
     }
 
     public void onResume(boolean animate) {
-        if (animate) {
+        if (animate && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             int cx = getWidth();
             int cy = getHeight();
 
@@ -152,8 +157,7 @@ public class CameraWrapper extends FrameLayout {
             int dy = Math.max(cy, getHeight() - cy);
             float finalRadius = (float) Math.hypot(dx, dy);
 
-            Animator animator =
-                    ViewAnimationUtils.createCircularReveal(layoutCameraPermissions, cx, cy, finalRadius, 0);
+            Animator animator = ViewAnimationUtils.createCircularReveal(layoutCameraPermissions, cx, cy, finalRadius, 0);
             animator.setInterpolator(new AccelerateDecelerateInterpolator());
             animator.setDuration(DURATION);
             animator.start();
@@ -163,6 +167,10 @@ public class CameraWrapper extends FrameLayout {
 
         if (preview == null)
             resumeCamera();
+
+        if (audioDefault.get()) {
+            activateSound();
+        }
     }
 
     public void showPermissions() {

@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.internal.di.components;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.f2prateek.rx.preferences.Preference;
@@ -49,6 +50,7 @@ import com.tribe.app.presentation.internal.di.scope.Theme;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.service.TribeFirebaseInstanceIDService;
 import com.tribe.app.presentation.utils.DateUtils;
+import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
@@ -215,4 +217,8 @@ public interface ApplicationComponent {
     Preference<String> lastMessageRequest();
 
     RxFacebook rxFacebook();
+
+    SharedPreferences sharedPreferences();
+
+    FileUtils fileUtils();
 }

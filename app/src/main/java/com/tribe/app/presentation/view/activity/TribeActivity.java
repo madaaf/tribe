@@ -117,8 +117,9 @@ public class TribeActivity extends BaseActivity implements TribeView {
     }
 
     private void initTribePagerView() {
-        viewTribePager.setItems(recipient.getReceivedTribes());
-        viewTribePager.setBackgroundColor(PaletteGrid.get(position - 1));
+        int color = PaletteGrid.get(position - 1);
+        viewTribePager.setBackgroundColor(color);
+        viewTribePager.setItems(recipient.getReceivedTribes(), color);
         viewTribePager.initWithInfo(recipient);
     }
 

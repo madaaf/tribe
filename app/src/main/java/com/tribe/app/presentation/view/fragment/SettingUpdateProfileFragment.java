@@ -92,5 +92,4 @@ public class SettingUpdateProfileFragment extends BaseFragment {
 
         super.onDestroy();
     }
-
 }

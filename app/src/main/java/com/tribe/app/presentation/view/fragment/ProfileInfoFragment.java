@@ -59,6 +59,9 @@ public class ProfileInfoFragment extends Fragment implements com.tribe.app.prese
      */
 
     @Inject
+    User user;
+
+    @Inject
     ProfileInfoPresenter profileInfoPresenter;
 
     @Inject
@@ -169,18 +172,20 @@ public class ProfileInfoFragment extends Fragment implements com.tribe.app.prese
     @Override
     public void usernameResult(Boolean available) {
         boolean usernameValid = available;
-        profileInfoView.setUsernameValid(usernameValid);
+        profileInfoView.setUsernameValid(usernameValid || profileInfoView.getUsername().equals(user.getUsername()));
         refactorNext();
     }
 
     @Override
-    public void userRegistered() {
-        profileInfoPresenter.updateUser(null, null, profileInfoView.getImgUri(),
+    public void userRegistered(User user) {
+        this.user.copy(user);
+        profileInfoPresenter.updateUser(user.getUsername(), user.getDisplayName(), profileInfoView.getImgUri(),
                 facebookEntity != null && !StringUtils.isEmpty(facebookEntity.getId()) ? facebookEntity.getId() : null);
     }
 
     @Override
     public void goToAccess(User user) {
+        this.user.copy(user);
         ((IntroActivity) getActivity()).goToAccess(user);
     }
 

@@ -145,6 +145,11 @@ public class ExoMediaPlayer extends TribeMediaPlayer implements MediaCodecVideoT
     }
 
     @Override
+    public long getDuration() {
+        return exoPlayer.getDuration();
+    }
+
+    @Override
     public void onDroppedFrames(int count, long elapsed) {}
 
     @Override

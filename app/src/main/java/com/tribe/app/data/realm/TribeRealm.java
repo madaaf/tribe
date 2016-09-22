@@ -198,4 +198,5 @@ public class TribeRealm extends RealmObject implements MessageRealmInterface {
     public void setTranscript(String transcript) {
         this.transcript = transcript;
     }
+
 }

@@ -1,7 +1,10 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.util.Pair;
+
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
@@ -11,8 +14,12 @@ import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.presentation.mvp.view.ProfileInfoView;
 import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -140,8 +147,15 @@ public class ProfileInfoPresenter implements Presenter {
         if (updateUserSubscriber != null)
             updateUserSubscriber.unsubscribe();
 
+        List<Pair<String, String>> values = new ArrayList<>();
+        values.add(new Pair<>(UserRealm.DISPLAY_NAME, displayName));
+        values.add(new Pair<>(UserRealm.USERNAME, username));
+        if (!StringUtils.isEmpty(pictureUri))
+            values.add(new Pair<>(UserRealm.PROFILE_PICTURE, pictureUri));
+        values.add(new Pair<>(UserRealm.FBID, fbid));
+
         updateUserSubscriber = new UpdateUserSubscriber();
-        updateUser.prepare(username, displayName, pictureUri, fbid);
+        updateUser.prepare(values);
         updateUser.execute(new UpdateUserSubscriber());
     }
 
@@ -230,7 +244,7 @@ public class ProfileInfoPresenter implements Presenter {
 
         @Override
         public void onNext(User user) {
-            if (user != null) profileInfoView.userRegistered();
+            if (user != null) profileInfoView.userRegistered(user);
         }
     }
 }

@@ -15,6 +15,8 @@
 	
 	<!-- Errors -->
 	<string name="error_unknown">Uh oh.. Un léger problème est apparu. Réessayez dans 30s.</string>
+	<string name="error_technical">Oups &#128561;\nErreur technique !</string>
+	<string name="error_no_network">Oups &#128561;\nPas de connexion !</string>
 	
 	<!-- Image Picker -->
 	<string name="image_picker_camera">Appareil photo</string>
@@ -99,7 +101,7 @@
 	<string name="grid_user_points">Points</string>
 	<string name="grid_friendship_status_default">Appuyez !</string>
 	<string name="grid_friendship_status_sending">Envoi</string>
-	<string name="grid_friendship_status_processing">Traitement</string>
+	<string name="grid_friendship_status_processing">Envoi</string>
 	<string name="grid_friendship_status_sent">Envoyé</string>
 	<string name="grid_friendship_status_opened">Ouvert</string>
 	<string name="grid_friendship_status_opened_plural">Opened</string>
@@ -255,6 +257,8 @@
 	<string name="settings_section_exit">Sortie</string>
 	<string name="settings_logout_title">Déconnexion</string>
 	<string name="settings_logout_subtitle">Déconnecter ce compte de ce terminal.</string>
+	<string name="settings_logout_confirm_message">Êtes-vous sûr de vouloir déconnecter ce compte de ce terminal ?</string>
+	<string name="settings_logout_wait">Déconnexion en cours...</string>
 	<string name="settings_remove_title">Supprimer ce compte</string>
 	<string name="settings_remove_subtitle">Dites aurevoir à vos amis, vos groupes et votre nombre de points.</string>
 	<string name="settings_version">Version %1$s (%2$s) réalisée à San Francisco, CA.</string>
@@ -353,6 +357,7 @@
 	
 	<!-- Share -->
 	<string name="share_add_friends_addressbook_suggestions">I was able to get access to Tribe. Just noticed that you already have %1$d friends on this app. I can get you in: %2$s</string>
+	<string name="share_group_public_link">Here is your invite to join the %1$s group on Tribe. %2$s</string>
 	<string name="share_group_private_link">Here is your invite to join the %1$s group on Tribe. Join quickly because this invite will expire in 1 hour! %2$s</string>
 	<string name="share_add_friends_handle">I’ve locked up %1$s handle on Tribe. Reserve yours now before its gone on %2$s</string>
 	<string name="share_score">I have %1$s points on Tribe %2$s</string>
@@ -417,7 +422,7 @@
 	<string name="tribe_event_year_1_past">Il y a %1$d an</string>
 	<string name="tribe_event_year_n_future">Dans %1$d ans</string>
 	<string name="tribe_event_year_n_past">Il y a %1$d ans</string>
-	<string name="tribe_event_title_suggestion">Dinner,Beer,Call,Camping,Coffee,Concert,Date,Dentist,Doctor,Drink,Facetime,Flight,Boat,Bus,Meeting,Movie,Office,Party,Repair,Run,Shopping,Skype,Sleep,Train,Travel,TV,Vacation,Workout,Chill</string>
+	<string name="tribe_event_title_suggestion">Dîner,Bière,Appel,Camping,Café,Concert,Date,Dentiste,Docteur,Verre,Facetime,Vol,Avion,Bateau,Bus,Réunion,Rendez-vous,Film,Cinéma,Bureau,Fête,Soirée,Réparer,Courir,Course,Shopping,Courses,Skype,Dormir,Train,Voyage,TV,Télé,Vacances,Exercice,Repos</string>
 	
 	<!-- Tutorial -->
 	<string name="tutorial_message_support">%1$d messages de l\'équipe</string>
@@ -428,4 +433,11 @@
 	<string name="tutorial_message_reply">Appuie pour enregister\nta réponse</string>
 	<string name="tutorial_message_release">Relâche ton doigt\npour terminer le message</string>
 	<string name="tutorial_message_tap_to_cancel">Pour pour annuler si besoin</string>
+	
+	<!-- NewLevelPopup -->
+	<string name="newlevel_title">%1$s pts!</string>
+	<string name="newlevel_description">Félicitations. Tout le monde peut\nvoir que tu es un %1$s maintenant.</string>
+	<string name="newlevel_share">Partager</string>
+	<string name="newlevel_close">Cool!</string>
+	<string name="newlevel_notification_title">%1$s niveau atteint! Brag now? &#129304;&#127996;</string>
 </resources>

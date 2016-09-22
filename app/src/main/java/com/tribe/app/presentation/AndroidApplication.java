@@ -2,6 +2,7 @@ package com.tribe.app.presentation;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.multidex.MultiDex;
 
 import com.facebook.FacebookSdk;
@@ -11,6 +12,8 @@ import com.tribe.app.BuildConfig;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerApplicationComponent;
 import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
+import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -76,5 +79,29 @@ public class AndroidApplication extends Application {
     private void initializeFacebook() {
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
+    }
+
+    public void logoutUser() {
+        Realm realm = applicationComponent.realm();
+        try {
+            realm.beginTransaction();
+            realm.deleteAll();
+            realm.commitTransaction();
+        } catch (IllegalStateException ex) {
+            if (realm.isInTransaction()) realm.cancelTransaction();
+            ex.printStackTrace();
+        } finally {
+            realm.close();
+        }
+
+        FacebookUtils.logout();
+
+        SharedPreferences preferences = applicationComponent.sharedPreferences();
+        preferences.edit().clear().commit();
+
+        applicationComponent.accessToken().clear();
+        applicationComponent.currentUser().clear();
+
+        FileUtils.deleteDir(FileUtils.getCacheDir());
     }
 }

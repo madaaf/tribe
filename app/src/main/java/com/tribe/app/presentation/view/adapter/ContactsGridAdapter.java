@@ -148,8 +148,10 @@ public class ContactsGridAdapter extends RecyclerView.Adapter {
         this.items.add(R.string.contacts_section_search_usernames);
         this.items.add(searchResult);
         this.items.add(new String());
-        this.items.add(R.string.contacts_section_search_friends);
-        this.items.addAll(contactList);
+        if (contactList != null && contactList.size() > 0) {
+            this.items.add(R.string.contacts_section_search_friends);
+            this.items.addAll(contactList);
+        }
         this.notifyDataSetChanged();
     }
 

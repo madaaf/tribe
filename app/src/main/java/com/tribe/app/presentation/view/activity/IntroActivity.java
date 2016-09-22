@@ -3,11 +3,9 @@ package com.tribe.app.presentation.view.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -32,6 +30,9 @@ import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -148,19 +149,29 @@ public class IntroActivity extends BaseActivity {
             subscriptions.add(
                     Observable.just(data.getData())
                             .map(uri -> {
-                                String[] filePathColumn = { MediaStore.Images.Media.DATA };
-                                Cursor cursor = getContentResolver().query(uri, filePathColumn, null, null, null);
-                                cursor.moveToFirst();
-                                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                                String picturePath = cursor.getString(columnIndex);
-                                cursor.close();
+                                InputStream inputStream = null;
+                                Bitmap bitmap = null;
+                                try {
+                                    inputStream = getContentResolver().openInputStream(uri);
+                                    bitmap = ImageUtils.loadFromInputStream(inputStream);
+                                } catch (FileNotFoundException e) {
+                                    e.printStackTrace();
+                                } finally {
+                                    try {
+                                        inputStream.close();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
 
-                                return ImageUtils.formatForUpload(ImageUtils.loadFromPath(picturePath));
+                                    return bitmap;
+                                }
                             })
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(newBitmap -> {
-                                profileInfoFragment.setImgProfilePic(newBitmap, Uri.fromFile(FileUtils.bitmapToFile(AVATAR, newBitmap, this)).toString());
+                                if (newBitmap != null) {
+                                    profileInfoFragment.setImgProfilePic(newBitmap, Uri.fromFile(FileUtils.bitmapToFile(AVATAR, newBitmap, this)).toString());
+                                }
                             })
             );
         }

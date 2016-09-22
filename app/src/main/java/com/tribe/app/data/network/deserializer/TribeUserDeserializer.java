@@ -39,6 +39,7 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
         userRealm.setPhone(result.get("phone").getAsString());
         userRealm.setFbid(result.get("fbid") != null && !result.get("fbid").isJsonNull() ? result.get("fbid").getAsString() : "");
         userRealm.setInvisibleMode(result.get("invisible_mode").getAsBoolean());
+        userRealm.setTribeSave(result.get("tribe_save").getAsBoolean());
         userRealm.setScore(result.get("score").getAsInt());
         userRealm.setUsername(result.get("username").getAsString());
         userRealm.setDisplayName(result.get("display_name").getAsString());

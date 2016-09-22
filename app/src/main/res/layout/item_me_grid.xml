@@ -75,7 +75,6 @@
             android:layout_height="@dimen/avatar_size_small"
             android:layout_centerVertical="true"
             android:layout_marginLeft="@dimen/horizontal_margin_small"
-            android:src="@drawable/picto_legend"
             android:scaleType="centerInside"
             />
 

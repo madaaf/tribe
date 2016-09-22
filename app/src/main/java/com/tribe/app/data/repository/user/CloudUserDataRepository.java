@@ -1,8 +1,9 @@
 package com.tribe.app.data.repository.user;
 
+import android.util.Pair;
+
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
-import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
 import com.tribe.app.data.realm.mapper.GroupRealmDataMapper;
@@ -117,9 +118,9 @@ public class CloudUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<User> updateUser(String username, String displayName, String pictureUri, String fbid) {
+    public Observable<User> updateUser(List<Pair<String, String>> values) {
         final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-        return userDataStore.updateUser(username, displayName, pictureUri, fbid)
+        return userDataStore.updateUser(values)
                 .map(userRealm -> this.userRealmDataMapper.transform(userRealm));
     }
 

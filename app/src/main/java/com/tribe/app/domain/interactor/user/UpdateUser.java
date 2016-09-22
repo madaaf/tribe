@@ -1,9 +1,13 @@
 package com.tribe.app.domain.interactor.user;
 
+import android.util.Pair;
+
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -15,10 +19,7 @@ import rx.Observable;
 public class UpdateUser extends UseCase {
 
     private UserRepository userRepository;
-    private String username;
-    private String displayName;
-    private String pictureUri;
-    private String fbid;
+    private List<Pair<String, String>> values;
 
     @Inject
     protected UpdateUser(CloudUserDataRepository userDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
@@ -26,15 +27,12 @@ public class UpdateUser extends UseCase {
         this.userRepository = userDataRepository;
     }
 
-    public void prepare(String username, String displayName, String pictureUri, String fbid) {
-        this.username = username;
-        this.displayName = displayName;
-        this.pictureUri = pictureUri;
-        this.fbid = fbid;
+    public void prepare(List<Pair<String, String>> values) {
+        this.values = values;
     }
 
     @Override
     protected Observable buildUseCaseObservable() {
-        return this.userRepository.updateUser(username, displayName, pictureUri, fbid);
+        return this.userRepository.updateUser(values);
     }
 }

@@ -47,4 +47,11 @@ public class AccessToken extends RealmObject {
     public void setUserId(String user_id) {
         this.user_id = user_id;
     }
+
+    public void clear() {
+        access_token = null;
+        token_type = null;
+        refresh_token = null;
+        user_id = null;
+    }
 }

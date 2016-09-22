@@ -53,6 +53,7 @@ import com.tribe.app.presentation.UIThread;
 import com.tribe.app.presentation.internal.di.scope.Theme;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
+import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
@@ -78,6 +79,7 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 public class ApplicationModule {
 
     private final AndroidApplication application;
+    private UserRealm userRealm;
 
     public ApplicationModule(AndroidApplication application) {
         this.application = application;
@@ -208,11 +210,14 @@ public class ApplicationModule {
     @Provides
     @Singleton
     User provideCurrentUser(Realm realm, AccessToken accessToken, UserRealmDataMapper userRealmDataMapper) {
-        User user = new User("-1");
+        final User user = new User("-1");
 
-        final UserRealm userRealm = realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
-        if (userRealm != null)
-            user = userRealmDataMapper.transform(realm.copyFromRealm(userRealm));
+        userRealm = realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
+        if (userRealm != null) {
+            userRealm.addChangeListener(element -> user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealm))));
+
+            user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealm)));
+        }
 
         return user;
     }
@@ -239,6 +244,12 @@ public class ApplicationModule {
     @Singleton
     PaletteGrid providePaletteGrid(Context context, @Theme Preference<Integer> theme) {
         return new PaletteGrid(context, theme);
+    }
+
+    @Provides
+    @Singleton
+    FileUtils provideFileUtils(Context context) {
+        return new FileUtils(context);
     }
 
     @Provides

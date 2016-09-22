@@ -28,6 +28,7 @@ public class TribePagerAdapter extends PagerAdapter {
     private LayoutInflater layoutInflater;
     private List<TribeMessage> tribeList;
     private int currentPosition;
+    private int color;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions;
@@ -47,6 +48,7 @@ public class TribePagerAdapter extends PagerAdapter {
 
         TribeComponentView tribeComponentView = (TribeComponentView) itemView.findViewById(R.id.viewTribe);
         tribeComponentView.setTag(position);
+        tribeComponentView.setColor(color);
         tribeComponentView.setTribe(tribeList.get(position));
         tribeComponentView.onClickEnableLocation().subscribe(clickEnableLocation);
         tribeComponentView.preparePlayer(position == currentPosition);
@@ -100,6 +102,10 @@ public class TribePagerAdapter extends PagerAdapter {
 
     public void startTribe(TribeComponentView tribeComponentView) {
         tribeComponentView.play();
+    }
+
+    public void setColor(int color) {
+        this.color = color;
     }
 
     public void onDestroy() {

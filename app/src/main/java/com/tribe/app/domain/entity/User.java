@@ -24,18 +24,14 @@ public class User implements Serializable {
     private String username;
     private String phone;
     private int score = 0;
-    private String email;
-    private boolean emailVerified;
-    private boolean isReal;
-    private boolean isInvited;
     private Location location;
-    private boolean disableSaveTribe;
-    private boolean hideUsername;
+    private boolean tribe_save;
     private List<Friendship> friendships;
     private List<User> reportedList;
     private List<Group> groupList;
     private List<Recipient> friendshipList;
     private String fbid;
+    private boolean invisible_mode;
 
     public int getScore() {
         return score;
@@ -49,52 +45,12 @@ public class User implements Serializable {
         this.score = score;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public boolean isEmailVerified() {
-        return emailVerified;
-    }
-
-    public void setEmailVerified(boolean emailVerified) {
-        this.emailVerified = emailVerified;
-    }
-
-    public boolean isReal() {
-        return isReal;
-    }
-
-    public void setReal(boolean real) {
-        isReal = real;
-    }
-
     public Location getLocation() {
         return location;
     }
 
     public void setLocation(Location location) {
         this.location = location;
-    }
-
-    public boolean isInvited() {
-        return isInvited;
-    }
-
-    public void setInvited(boolean invited) {
-        isInvited = invited;
-    }
-
-    public boolean isDisableSaveTribe() {
-        return disableSaveTribe;
-    }
-
-    public void setDisableSaveTribe(boolean disableSaveTribe) {
-        this.disableSaveTribe = disableSaveTribe;
     }
 
     public String getUsername() {
@@ -115,14 +71,6 @@ public class User implements Serializable {
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public boolean isHideUsername() {
-        return hideUsername;
-    }
-
-    public void setHideUsername(boolean hideUsername) {
-        this.hideUsername = hideUsername;
     }
 
     public List<User> getReportedList() {
@@ -197,6 +145,22 @@ public class User implements Serializable {
         this.fbid = fbid;
     }
 
+    public boolean isTribeSave() {
+        return tribe_save;
+    }
+
+    public void setTribeSave(boolean tribeSave) {
+        this.tribe_save = tribeSave;
+    }
+
+    public boolean isInvisibleMode() {
+        return invisible_mode;
+    }
+
+    public void setInvisibleMode(boolean invisibleMode) {
+        this.invisible_mode = invisibleMode;
+    }
+
     public List<Recipient> getFriendshipList() {
         friendshipList = new ArrayList<>();
         if (friendships != null) friendshipList.addAll(friendships);
@@ -215,5 +179,43 @@ public class User implements Serializable {
         User that = (User) o;
 
         return id != null ? id.equals(that.id) : that.id == null;
+    }
+
+    public void copy(User user) {
+        if (user != null) {
+            setId(user.getId());
+            setCreatedAt(user.getCreatedAt());
+            setUpdatedAt(user.getUpdatedAt());
+            setDisplayName(user.getDisplayName());
+            setUsername(user.getUsername());
+            setProfilePicture(user.getProfilePicture());
+            setScore(user.getScore());
+            setPhone(user.getPhone());
+            setFbid(user.getFbid());
+            setInvisibleMode(user.isInvisibleMode());
+            setTribeSave(user.isTribeSave());
+            if (user.getLocation() != null) setLocation(user.getLocation());
+            if (user.getGroupList() != null) setGroupList(user.getGroupList());
+            if (user.getFriendships() != null) setFriendships(user.getFriendships());
+            if (user.getReportedList() != null) setReportedList(user.getReportedList());
+        }
+    }
+
+    public void clear() {
+        setId(null);
+        setCreatedAt(null);
+        setUpdatedAt(null);
+        setDisplayName(null);
+        setUsername(null);
+        setProfilePicture(null);
+        setScore(0);
+        setPhone(null);
+        setFbid(null);
+        setInvisibleMode(false);
+        setTribeSave(false);
+        setLocation(null);
+        setGroupList(null);
+        setFriendships(null);
+        setReportedList(null);
     }
 }

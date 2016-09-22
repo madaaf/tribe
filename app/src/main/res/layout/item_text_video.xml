@@ -21,10 +21,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/horizontal_margin_small"
+            android:background="@android:color/black"
             android:foreground="@drawable/selectable_button_light"
             android:scaleType="centerCrop"
             android:clickable="true"
-            android:src="@drawable/cage"
             />
 
         <FrameLayout

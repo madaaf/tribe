@@ -141,46 +141,50 @@ public class SearchResultGridAdapterDelegate extends RxAdapterDelegate<List<Obje
     }
 
     private void setClicks(SearchResultViewHolder vh, SearchResult searchResult) {
-        vh.btnAdd.setOnClickListener(v -> {
-            if (searchResult.getFriendship() == null) {
-                AnimatorSet animatorSet = new AnimatorSet();
+        if (!searchResult.isMyself()) {
+            vh.btnAdd.setOnClickListener(v -> {
+                if (searchResult.getFriendship() == null) {
+                    AnimatorSet animatorSet = new AnimatorSet();
 
-                ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(vh.imgPicto, "rotation", 0f, 45f);
-                rotationAnim.setDuration(300);
-                rotationAnim.setInterpolator(new DecelerateInterpolator());
+                    ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(vh.imgPicto, "rotation", 0f, 45f);
+                    rotationAnim.setDuration(300);
+                    rotationAnim.setInterpolator(new DecelerateInterpolator());
 
-                ObjectAnimator alphaAnimAdd = ObjectAnimator.ofFloat(vh.imgPicto, "alpha", 1f, 0f);
-                alphaAnimAdd.setDuration(300);
-                alphaAnimAdd.setInterpolator(new DecelerateInterpolator());
-                alphaAnimAdd.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        vh.imgPicto.setRotation(0);
-                        vh.imgPicto.setAlpha(1f);
-                        vh.imgPicto.setVisibility(View.GONE);
-                    }
-                });
+                    ObjectAnimator alphaAnimAdd = ObjectAnimator.ofFloat(vh.imgPicto, "alpha", 1f, 0f);
+                    alphaAnimAdd.setDuration(300);
+                    alphaAnimAdd.setInterpolator(new DecelerateInterpolator());
+                    alphaAnimAdd.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            vh.imgPicto.setRotation(0);
+                            vh.imgPicto.setAlpha(1f);
+                            vh.imgPicto.setVisibility(View.GONE);
+                        }
+                    });
 
-                ObjectAnimator alphaAnimProgress = ObjectAnimator.ofFloat(vh.progressBarAdd, "alpha", 0f, 1f);
-                alphaAnimProgress.setDuration(300);
-                alphaAnimProgress.setStartDelay(150);
-                alphaAnimProgress.setInterpolator(new DecelerateInterpolator());
-                alphaAnimProgress.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                        vh.progressBarAdd.setAlpha(0f);
-                        vh.progressBarAdd.setVisibility(View.VISIBLE);
-                    }
-                });
+                    ObjectAnimator alphaAnimProgress = ObjectAnimator.ofFloat(vh.progressBarAdd, "alpha", 0f, 1f);
+                    alphaAnimProgress.setDuration(300);
+                    alphaAnimProgress.setStartDelay(150);
+                    alphaAnimProgress.setInterpolator(new DecelerateInterpolator());
+                    alphaAnimProgress.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            vh.progressBarAdd.setAlpha(0f);
+                            vh.progressBarAdd.setVisibility(View.VISIBLE);
+                        }
+                    });
 
-                animatorSet.play(rotationAnim).with(alphaAnimAdd).with(alphaAnimProgress);
-                animatorSet.start();
-                animations.put(vh, animatorSet);
-                clickAdd.onNext(vh.itemView);
-            } else {
-                clickRemove.onNext(vh.itemView);
-            }
-        });
+                    animatorSet.play(rotationAnim).with(alphaAnimAdd).with(alphaAnimProgress);
+                    animatorSet.start();
+                    animations.put(vh, animatorSet);
+                    clickAdd.onNext(vh.itemView);
+                } else {
+                    clickRemove.onNext(vh.itemView);
+                }
+            });
+        } else {
+            vh.btnAdd.setOnClickListener(null);
+        }
     }
 
     private void animateAddSuccessful(SearchResultViewHolder vh) {
@@ -220,20 +224,6 @@ public class SearchResultGridAdapterDelegate extends RxAdapterDelegate<List<Obje
         animatorSet.start();
         animations.put(vh, animatorSet);
     }
-
-//    private void showAdd(SearchResultViewHolder vh) {
-//        if (vh.btnAdd.getTranslationX() > 0) {
-//            vh.btnAdd.clearAnimation();
-//            vh.btnAdd.animate().setDuration(DURATION).translationX(0).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
-//        }
-//    }
-//
-//    private void hideAdd(SearchResultViewHolder vh) {
-//        if (vh.btnAdd.getTranslationX() == 0) {
-//            vh.btnAdd.clearAnimation();
-//            vh.btnAdd.animate().setDuration(DURATION).translationX(screenUtils.getWidthPx() >> 1).setInterpolator(new DecelerateInterpolator()).start();
-//        }
-//    }
 
     // OBSERVABLES
     public Observable<View> onClickAdd() {

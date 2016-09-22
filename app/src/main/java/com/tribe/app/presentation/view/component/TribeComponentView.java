@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.component;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.SurfaceTexture;
@@ -9,6 +10,8 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.TextureView;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -24,6 +27,7 @@ import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.video.TribeMediaPlayer;
 import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.LabelButton;
@@ -49,6 +53,7 @@ import rx.subscriptions.CompositeSubscription;
 public class TribeComponentView extends FrameLayout implements TextureView.SurfaceTextureListener {
 
     @Inject User currentUser;
+    @Inject ScreenUtils screenUtils;
     @Inject @SpeedPlayback Preference<Float> speedPlayack;
     @Inject @DistanceUnits Preference<String> distanceUnits;
     @Inject @WeatherUnits Preference<String> weatherUnits;
@@ -83,6 +88,9 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     @BindView(R.id.txtTranscript)
     TextViewFont txtTranscript;
 
+    @BindView(R.id.viewBGProgress)
+    View viewBGProgress;
+
     // OBSERVABLES
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -93,6 +101,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     private TribeMessage tribe;
     private SurfaceTexture surfaceTexture;
     private long lastPosition = -1L;
+    private ValueAnimator animatorProgress;
 
     public TribeComponentView(Context context) {
         super(context);
@@ -110,6 +119,10 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     @Override
     protected void onDetachedFromWindow() {
         unbinder.unbind();
+
+        if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+        if (animatorProgress != null) animatorProgress.cancel();
+
         super.onDetachedFromWindow();
     }
 
@@ -176,10 +189,28 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
                 videoTextureView.setContentHeight(videoSize.getHeight());
                 videoTextureView.updateTextureViewSize();
             }
+        }));
 
-            subscriptions.add(mediaPlayer.onErrorPlayer().subscribe(error -> {
-                System.out.println("MEDIA PLAYER ERROR");
-            }));
+        subscriptions.add(mediaPlayer.onErrorPlayer().subscribe(error -> {
+            System.out.println("MEDIA PLAYER ERROR");
+        }));
+
+        subscriptions.add(mediaPlayer.onVideoStarted().subscribe(started -> {
+            if (animatorProgress != null)
+                animatorProgress.cancel();
+
+            animatorProgress = ValueAnimator.ofInt(0, screenUtils.getWidthPx());
+            animatorProgress.addUpdateListener(valueAnimator -> {
+                int val = (Integer) valueAnimator.getAnimatedValue();
+                ViewGroup.LayoutParams layoutParams = viewBGProgress.getLayoutParams();
+                layoutParams.width = val;
+                viewBGProgress.setLayoutParams(layoutParams);
+            });
+
+            animatorProgress.setRepeatMode(Animation.INFINITE);
+            animatorProgress.setRepeatCount(Animation.INFINITE);
+            animatorProgress.setDuration(mediaPlayer.getDuration());
+            animatorProgress.start();
         }));
 
         if (lastPosition != -1) mediaPlayer.seekTo(lastPosition);
@@ -228,12 +259,16 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         txtSwipeDown.setAlpha(alpha);
     }
 
-    public Observable<View> onClickEnableLocation() {
-        return clickEnableLocation;
+    public void setColor(int color) {
+        viewBGProgress.setBackgroundColor(color);
     }
 
     public void changeSpeed() {
         mediaPlayer.setPlaybackRate();
+    }
+
+    public Observable<View> onClickEnableLocation() {
+        return clickEnableLocation;
     }
 
     @OnClick(R.id.labelDistance)
@@ -249,10 +284,6 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
             getContext().getApplicationContext().startActivity(intent);
         }
     }
-
-//    private void setTxtSpeed() {
-//        txtSpeed.setText(getContext().getResources().getString(R.string.Tribe_Speed, fmt(speedPlayback.get())));
-//    }
 
     public static String fmt(double d) {
         if (d == (long) d)
