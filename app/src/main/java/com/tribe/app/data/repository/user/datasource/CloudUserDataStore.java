@@ -329,7 +329,7 @@ public class CloudUserDataStore implements UserDataStore {
                         });
 
                         if (subMessages != null && subMessages.size() > 0) {
-                            Date date = new Date(subMessages.get(subMessages.size() - 1).getRecordedAt().getTime() + 60000);
+                            Date date = new Date(subMessages.get(subMessages.size() - 1).getRecordedAt().getTime() + 1000);
                             this.lastMessageRequest.set(utcSimpleDate.format(date));
                         }
                     }
