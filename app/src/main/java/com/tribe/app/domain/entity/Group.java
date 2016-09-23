@@ -1,12 +1,12 @@
 package com.tribe.app.domain.entity;
 
-import java.util.Date;
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by tiago on 30/05/2016.
  */
-public class Group extends Recipient {
+public class Group implements Serializable {
 
     public Group(String id) {
         this.id = id;
@@ -19,55 +19,28 @@ public class Group extends Recipient {
     private List<User> members;
     private List<User> admins;
 
-    @Override
-    public String getProfilePicture() {
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getPicture() {
         return picture;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public void setPicture(String picture) {
         this.picture = picture;
     }
 
-    @Override
-    public String getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
-    @Override
-    public String getFriendshipId() {
-        return id;
-    }
-
-    @Override
-    public String getUsername() {
-        return "";
-    }
-
-    @Override
-    public String getUsernameDisplay() {
-        return "";
-    }
-
-    @Override
-    public Date getUpdatedAt() {
-        return updated_at;
-    }
-
-    public List<User> getMembers() {
-        return members;
-    }
-
-    public void setMembers(List<User> members) {
-        this.members = members;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public boolean isPrivateGroup() {
@@ -76,6 +49,14 @@ public class Group extends Recipient {
 
     public void setPrivateGroup(boolean privateGroup) {
         this.privateGroup = privateGroup;
+    }
+
+    public List<User> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<User> members) {
+        this.members = members;
     }
 
     public List<User> getAdmins() {

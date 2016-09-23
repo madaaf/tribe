@@ -46,6 +46,7 @@ import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
 
 import java.io.File;
@@ -192,7 +193,7 @@ public class NetModule {
 
     @Provides
     @PerApplication
-    TribeApi provideTribeApi(Gson gson, @Named("tribeApiOKHttp") OkHttpClient okHttpClient, TribeAuthorizer tribeAuthorizer,
+    TribeApi provideTribeApi(Context context, Gson gson, @Named("tribeApiOKHttp") OkHttpClient okHttpClient, TribeAuthorizer tribeAuthorizer,
                              final LoginApi loginApi, final AccessToken accessToken,
                              final UserCache userCache) {
         OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
@@ -222,6 +223,8 @@ public class NetModule {
                 accessToken.setRefreshToken(newAccessToken.getRefreshToken());
                 userCache.put(accessToken);
                 tribeAuthorizer.setAccessToken(accessToken);
+            } else {
+                ((AndroidApplication) context.getApplicationContext()).logoutUser();
             }
 
             //responseRefresh.errorBody().close();

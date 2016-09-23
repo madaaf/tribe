@@ -191,7 +191,7 @@ public class TribeCacheImpl implements TribeCache {
             } else if (pair.first.equals(TribeRealm.FRIEND_ID_UPDATED_AT)) {
                 obj.getFrom().setUpdatedAt((Date) pair.second);
             } else if (pair.first.equals(TribeRealm.GROUP_ID_UPDATED_AT)) {
-                obj.getGroup().setUpdatedAt((Date) pair.second);
+                obj.getMembershipRealm().setUpdatedAt((Date) pair.second);
             }
         }
 
@@ -271,16 +271,16 @@ public class TribeCacheImpl implements TribeCache {
                             .beginGroup()
                             .equalTo("from.id", friendshipId)
                             .isNull("friendshipRealm")
-                            .isNull("group")
+                            .isNull("membershipRealm")
                             .endGroup()
                             .or()
                             .beginGroup()
                             .equalTo("friendshipRealm.friend.id", friendshipId)
-                            .isNull("group")
+                            .isNull("membershipRealm")
                             .endGroup()
                             .endGroup()
                             .or()
-                            .equalTo("group.id", friendshipId)
+                            .equalTo("membershipRealm.group.id", friendshipId)
                             .endGroup()
                             .findAllSorted("recorded_at", Sort.ASCENDING);
                 }
@@ -317,15 +317,15 @@ public class TribeCacheImpl implements TribeCache {
                     .beginGroup()
                     .equalTo("from.id", recipientId)
                     .isNull("friendshipRealm")
-                    .isNull("group")
+                    .isNull("membershipRealm")
                     .endGroup()
                     .or()
                     .beginGroup()
                     .equalTo("friendshipRealm.friend.id", recipientId)
-                    .isNull("group")
+                    .isNull("membershipRealm")
                     .endGroup()
                     .or()
-                    .equalTo("group.id", recipientId)
+                    .equalTo("membershipRealm.group.id", recipientId)
                     .endGroup()
                     .endGroup()
                     .findAllSorted("recorded_at", Sort.ASCENDING);
@@ -414,16 +414,16 @@ public class TribeCacheImpl implements TribeCache {
                     .beginGroup()
                     .equalTo("from.id", id)
                     .isNull("friendshipRealm")
-                    .isNull("group")
+                    .isNull("membershipRealm")
                     .endGroup()
                     .or()
                     .beginGroup()
                     .equalTo("friendshipRealm.friend.id", id)
-                    .isNull("group")
+                    .isNull("membershipRealm")
                     .endGroup()
                     .endGroup()
                     .or()
-                    .equalTo("group.id", id)
+                    .equalTo("membershipRealm.group.id", id)
                     .endGroup()
                     .findAllSorted("recorded_at", Sort.ASCENDING);
 

@@ -119,7 +119,7 @@ public class TribeMessage extends Message {
         tribe.setRecordedAt(new Date(System.currentTimeMillis()));
         tribe.setFrom(user);
         tribe.setTo(recipient);
-        tribe.setToGroup(recipient instanceof Group);
+        tribe.setToGroup(recipient instanceof Membership);
         tribe.setType(mode);
         tribe.setMessageSendingStatus(MessageSendingStatus.STATUS_PENDING);
         tribe.setLocation(user.getLocation());

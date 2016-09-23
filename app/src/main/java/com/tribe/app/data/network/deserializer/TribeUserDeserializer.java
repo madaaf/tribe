@@ -10,7 +10,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.tribe.app.data.realm.FriendshipRealm;
-import com.tribe.app.data.realm.GroupRealm;
+import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.UserRealm;
 
 import java.lang.reflect.Type;
@@ -51,9 +51,9 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
         }
 
         JsonArray resultsFriendships = result.getAsJsonArray("friendships");
-        JsonArray resultsGroups = result.getAsJsonArray("groups");
+        JsonArray resultsMemberships = result.getAsJsonArray("memberships");
         RealmList<FriendshipRealm> realmListFriendships = new RealmList();
-        RealmList<GroupRealm> realmListGroups = new RealmList();
+        RealmList<MembershipRealm> realmListMemberships = new RealmList();
 
         if (resultsFriendships != null) {
             for (JsonElement obj : resultsFriendships) {
@@ -64,17 +64,17 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
             }
         }
 
-        if (resultsGroups != null) {
-            for (JsonElement obj : resultsGroups) {
+        if (resultsMemberships != null) {
+            for (JsonElement obj : resultsMemberships) {
                 if (!(obj instanceof JsonNull)) {
-                    GroupRealm groupRealm = gson.fromJson(obj, GroupRealm.class);
-                    realmListGroups.add(groupRealm);
+                    MembershipRealm membershipRealm = gson.fromJson(obj, MembershipRealm.class);
+                    realmListMemberships.add(membershipRealm);
                 }
             }
         }
 
         userRealm.setFriendships(realmListFriendships);
-        userRealm.setGroups(realmListGroups);
+        userRealm.setMemberships(realmListMemberships);
 
         return userRealm;
     }

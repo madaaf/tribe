@@ -15,7 +15,7 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Group;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -470,10 +470,10 @@ public class AccessFragment extends BaseFragment implements AccessView {
             }
         }
 
-        if (currentUser.getGroupList() != null) {
-            for (Group group : currentUser.getGroupList()) {
-                if (!relationsInApp.containsKey(group.getId())) {
-                    relationsInApp.put(group.getId(), group);
+        if (currentUser.getMembershipList() != null) {
+            for (Membership membership : currentUser.getMembershipList()) {
+                if (!relationsInApp.containsKey(membership.getGroup().getId())) {
+                    relationsInApp.put(membership.getGroup().getId(), membership.getGroup());
                 }
             }
         }

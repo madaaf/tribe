@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Group;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
@@ -112,7 +112,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
         currentUser = getCurrentUser();
 
         Bundle bundle = new Bundle();
-        bundle.putString(TagManagerConstants.TYPE, recipient instanceof Group ? TagManagerConstants.TYPE_TRIBE_GROUP : TagManagerConstants.TYPE_TRIBE_USER);
+        bundle.putString(TagManagerConstants.TYPE, recipient instanceof Membership ? TagManagerConstants.TYPE_TRIBE_GROUP : TagManagerConstants.TYPE_TRIBE_USER);
         tagManager.trackEvent(TagManagerConstants.KPI_TRIBES_OPENED, bundle);
     }
 

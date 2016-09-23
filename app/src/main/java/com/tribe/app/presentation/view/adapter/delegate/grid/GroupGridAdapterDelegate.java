@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Group;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public class GroupGridAdapterDelegate extends RecipientGridAdapterDelegate {
 
     @Override
     public boolean isForViewType(@NonNull List<Recipient> items, int position) {
-        return position != 0 && items.get(position) instanceof Group;
+        return position != 0 && items.get(position) instanceof Membership;
     }
 
     @Override

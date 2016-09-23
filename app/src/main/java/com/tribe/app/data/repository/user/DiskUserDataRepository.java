@@ -21,6 +21,7 @@ import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
@@ -150,7 +151,7 @@ public class DiskUserDataRepository implements UserRepository {
         ).map(user -> {
             if (!StringUtils.isEmpty(filterRecipient) && !filterRecipient.equals(PullToSearchView.HOME)) {
                 List<Friendship> filteredFriendshipList = new ArrayList<>();
-                List<Group> filteredGroupList = new ArrayList<>();
+                List<Membership> filteredMembershipList = new ArrayList<>();
 
                 for (Friendship friendship : user.getFriendships()) {
                     if (PullToSearchView.shouldFilter(filterRecipient, friendship)) {
@@ -160,13 +161,13 @@ public class DiskUserDataRepository implements UserRepository {
 
                 user.setFriendships(filteredFriendshipList);
 
-                for (Group group : user.getGroupList()) {
-                    if (PullToSearchView.shouldFilter(filterRecipient, group)) {
-                        filteredGroupList.add(group);
+                for (Membership membership : user.getMembershipList()) {
+                    if (PullToSearchView.shouldFilter(filterRecipient, membership)) {
+                        filteredMembershipList.add(membership);
                     }
                 }
 
-                user.setGroupList(filteredGroupList);
+                user.setMembershipList(filteredMembershipList);
             }
 
             return user;

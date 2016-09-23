@@ -63,7 +63,7 @@ public class CloudTribeDataStore implements TribeDataStore {
     @Override
     public Observable<TribeRealm> sendTribe(TribeRealm tribeRealm) {
         String tribeInput = context.getString(R.string.tribe_input,
-                tribeRealm.isToGroup() ?  tribeRealm.getGroup().getId() : tribeRealm.getFriendshipRealm().getFriend().getId(),
+                tribeRealm.isToGroup() ?  tribeRealm.getMembershipRealm().getGroup().getId() : tribeRealm.getFriendshipRealm().getFriend().getId(),
                 tribeRealm.getType(),
                 simpleDateFormat.format(tribeRealm.getRecordedAt()),
                 0.0,

@@ -11,8 +11,8 @@ import android.view.ViewGroup;
 
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.LabelType;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.entity.PendingType;
@@ -446,7 +446,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
             moreTypes.add(new MoreType(getString(R.string.grid_more_block_hide), MoreType.BLOCK_HIDE));
         }
 
-        if (recipient instanceof Group) {
+        if (recipient instanceof Membership) {
             moreTypes.add(new MoreType(getString(R.string.grid_menu_group_infos), MoreType.GROUP_INFO));
             moreTypes.add(new MoreType(getString(R.string.grid_menu_group_leave), MoreType.GROUP_LEAVE));
             moreTypes.add(new MoreType(getString(R.string.grid_menu_group_delete), MoreType.GROUP_DELETE));

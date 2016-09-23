@@ -277,7 +277,7 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
                 .subscribe(o -> {
                     if (o instanceof SearchResult) {
                         SearchResult searchResult = (SearchResult) o;
-                        contactsGridPresenter.removeFriendship(searchResult.getFriendship().getFriendshipId());
+                        contactsGridPresenter.removeFriendship(searchResult.getFriendship().getId());
                     }
                 }));
 

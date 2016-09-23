@@ -30,7 +30,7 @@ import com.facebook.rebound.SpringSystem;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.ChatMessage;
-import com.tribe.app.domain.entity.Group;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.utils.FileUtils;
@@ -512,7 +512,7 @@ public class TileView extends SquareFrameLayout {
         }
 
         if (type == TYPE_GRID) {
-            if (recipient instanceof Group) {
+            if (recipient instanceof Membership) {
                 txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small, 0, 0, 0);
             } else {
                 txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);

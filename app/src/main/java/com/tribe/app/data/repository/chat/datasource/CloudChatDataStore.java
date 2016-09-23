@@ -11,7 +11,7 @@ import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.FriendshipRealm;
-import com.tribe.app.data.realm.GroupRealm;
+import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.repository.tribe.datasource.TribeDataStore;
@@ -95,7 +95,7 @@ public class CloudChatDataStore implements ChatDataStore {
     @Override
     public Observable<ChatRealm> sendMessage(ChatRealm chatRealm) {
         String messageInput = context.getString(R.string.message_input,
-                chatRealm.isToGroup() ? chatRealm.getGroup().getId() : chatRealm.getFriendshipRealm().getFriend().getId(),
+                chatRealm.isToGroup() ? chatRealm.getMembershipRealm().getGroup().getId() : chatRealm.getFriendshipRealm().getFriend().getId(),
                 chatRealm.getType(),
                 simpleDateFormat.format(chatRealm.getRecordedAt()),
                 chatRealm.getContent().replaceAll("\"", "")
@@ -213,8 +213,8 @@ public class CloudChatDataStore implements ChatDataStore {
             toIds.add(fr.getFriend().getId());
         }
 
-        for (GroupRealm gr : user.getGroups()) {
-            toIds.add(gr.getId());
+        for (MembershipRealm mr : user.getMemberships()) {
+            toIds.add(mr.getGroup().getId());
         }
 
         List<ChatRealm> statusToUpdate = chatCache.messagesToUpdateStatus(toIds);

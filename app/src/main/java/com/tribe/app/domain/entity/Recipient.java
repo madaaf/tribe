@@ -130,8 +130,8 @@ public abstract class Recipient implements Serializable {
     public abstract String getUsername();
     public abstract String getUsernameDisplay();
     public abstract String getProfilePicture();
+    public abstract String getSubId();
     public abstract String getId();
-    public abstract String getFriendshipId();
     public abstract Date getUpdatedAt();
 
     @Override

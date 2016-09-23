@@ -28,7 +28,7 @@ public class TribeRealm extends RealmObject implements MessageRealmInterface {
     public static final String PROGRESS = "progress";
     public static final String TOTAL_SIZE = "totalSize";
     public static final String FRIEND_ID_UPDATED_AT = "friendshipRealm.updated_at";
-    public static final String GROUP_ID_UPDATED_AT = "groupRealm.updated_at";
+    public static final String GROUP_ID_UPDATED_AT = "membershipRealm.updated_at";
 
     @PrimaryKey
     private String localId;
@@ -38,7 +38,7 @@ public class TribeRealm extends RealmObject implements MessageRealmInterface {
     private @CameraWrapper.TribeMode String type;
     private String url;
     private FriendshipRealm friendshipRealm;
-    private GroupRealm group;
+    private MembershipRealm membershipRealm;
     private Date recorded_at;
     private boolean to_group = false;
     private @MessageSendingStatus.Status String messageSendingStatus;
@@ -103,12 +103,12 @@ public class TribeRealm extends RealmObject implements MessageRealmInterface {
         this.recorded_at = recorded_at;
     }
 
-    public GroupRealm getGroup() {
-        return group;
+    public MembershipRealm getMembershipRealm() {
+        return membershipRealm;
     }
 
-    public void setGroup(GroupRealm group) {
-        this.group = group;
+    public void setMembershipRealm(MembershipRealm membershipRealm) {
+        this.membershipRealm = membershipRealm;
     }
 
     public FriendshipRealm getFriendshipRealm() {

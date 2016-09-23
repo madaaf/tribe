@@ -14,16 +14,15 @@
                     }
                 }
 
-                groups %2$s {
-                    id
-                    name
-                    picture
-                    created_at
+                memberships %2$s {
+                    ...MembershipInfo
                 }
             }
         }
 
         %3$s
+        %4$s
+        %5$s
     </string>
 
     <string name="user.infos.list" translatable="false">
@@ -372,6 +371,20 @@
             picture
             link
             created_at
+        }
+    </string>
+
+    <string name="membershipfragment.info" translatable="false">
+        fragment MembershipInfo on Membership {
+            id
+            group {
+                ...GroupInfo
+            }
+            mute
+            is_admin
+            link
+            link_expires_at
+            created_at
             updated_at
         }
     </string>
@@ -380,9 +393,11 @@
         {
             groups (ids : [\"%1$s\"]) {
                 ...GroupInfo
+
                 members {
                     ...UserInfos
                 }
+
                 admins {
                     ...UserInfos
                 }
@@ -397,8 +412,8 @@
        mutation {
             createGroup(group: {
                 name : \"%1$s\",
-   	        type : %2$s
-             }, members: [%3$s]
+   	            type : %2$s
+            }, members: [%3$s]
             ) {
                 ...GroupInfo
             }
@@ -457,8 +472,19 @@
 
     <string name="leave.group" translatable="false">
         mutation {
-            leaveGroup(id: \"%1$s\")
+            removeMembership(id: \"%1$s\")
         }
+    </string>
+
+    <string name="create.membership" translatable="false">
+        mutation {
+            createMembership(groupId: \"%1$s\") {
+                ...MembershipInfo
+            }
+        }
+
+        %2$s
+        %3$s
     </string>
 
 </resources>

@@ -5,7 +5,7 @@ import android.support.v4.util.Pair;
 
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.FriendshipRealm;
-import com.tribe.app.data.realm.GroupRealm;
+import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.MessageRecipientRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
@@ -94,18 +94,18 @@ public class ChatCacheImpl implements ChatCache {
                                         .beginGroup()
                                         .equalTo("from.id", recipientId)
                                         .isNull("friendshipRealm")
-                                        .isNull("group")
+                                        .isNull("membershipRealm")
                                         .endGroup()
                                         .or()
                                         .beginGroup()
                                         .equalTo("friendshipRealm.friend.id", recipientId)
-                                        .isNull("group")
+                                        .isNull("membershipRealm")
                                         .endGroup()
                                         .endGroup()
                                         .endGroup()
                                         .or()
                                         .beginGroup()
-                                        .equalTo("group.id", recipientId)
+                                        .equalTo("membershipRealm.group.id", recipientId)
                                         .endGroup()
                                         .findAllSorted("created_at", Sort.ASCENDING);
                         messages.removeChangeListeners();
@@ -125,12 +125,12 @@ public class ChatCacheImpl implements ChatCache {
         try {
             obsRealm.beginTransaction();
 
-            Set<String> groupSet = new HashSet<>();
+            Set<String> membershipSet = new HashSet<>();
             Set<String> friendshipSet = new HashSet<>();
 
             for (ChatRealm chatRealm : messageListRealm) {
-                if ((chatRealm.isToGroup() && chatRealm.getGroup() != null))
-                    groupSet.add(chatRealm.getGroup().getId());
+                if ((chatRealm.isToGroup() && chatRealm.getMembershipRealm() != null))
+                    membershipSet.add(chatRealm.getMembershipRealm().getGroup().getId());
                 else if (!chatRealm.isToGroup()) {
                     if (chatRealm.getFrom() != null && !chatRealm.getFrom().getId().equals(currentUser.getId()))
                         friendshipSet.add(chatRealm.getFrom().getId());
@@ -177,13 +177,13 @@ public class ChatCacheImpl implements ChatCache {
                         shouldUpdate = true;
                     }
 
-                    if (chatRealm.getGroup() != null && toEdit.getGroup() == null) {
-                        toEdit.setGroup(chatRealm.getGroup());
+                    if (chatRealm.getMembershipRealm() != null && toEdit.getMembershipRealm() == null) {
+                        toEdit.setMembershipRealm(chatRealm.getMembershipRealm());
                         shouldUpdate = true;
-                    } else if (chatRealm.getGroup() != null && toEdit.getGroup() != null
-                            && toEdit.getGroup().getUpdatedAt() != null
-                            && (toEdit.getGroup().getUpdatedAt() == null || toEdit.getGroup().getUpdatedAt().before(chatRealm.getGroup().getUpdatedAt()))) {
-                        toEdit.getGroup().setUpdatedAt(chatRealm.getGroup().getUpdatedAt());
+                    } else if (chatRealm.getMembershipRealm() != null && toEdit.getMembershipRealm() != null
+                            && toEdit.getMembershipRealm().getUpdatedAt() != null
+                            && (toEdit.getMembershipRealm().getUpdatedAt() == null || toEdit.getMembershipRealm().getUpdatedAt().before(chatRealm.getMembershipRealm().getUpdatedAt()))) {
+                        toEdit.getMembershipRealm().setUpdatedAt(chatRealm.getMembershipRealm().getUpdatedAt());
                         shouldUpdate = true;
                     }
 
@@ -196,9 +196,9 @@ public class ChatCacheImpl implements ChatCache {
                 }
             }
 
-            for (String idTo : groupSet) {
+            for (String idTo : membershipSet) {
                 RealmResults<ChatRealm> latest = obsRealm.where(ChatRealm.class)
-                        .equalTo("group.id", idTo)
+                        .equalTo("membership.group.id", idTo)
                         .beginGroup()
                         .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED)
                         .or()
@@ -209,7 +209,7 @@ public class ChatCacheImpl implements ChatCache {
                 if (latest != null && latest.size() > 0) {
                     RealmResults<ChatRealm> toRemoveStatus = obsRealm.where(ChatRealm.class)
                             .lessThan("created_at", latest.get(0).getCreatedAt())
-                            .equalTo("group.id", idTo)
+                            .equalTo("membership.group.id", idTo)
                             .beginGroup()
                             .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
                             .or()
@@ -237,12 +237,12 @@ public class ChatCacheImpl implements ChatCache {
                         .beginGroup()
                         .equalTo("from.id", idTo)
                         .isNull("friendshipRealm")
-                        .isNull("group")
+                        .isNull("membershipRealm")
                         .endGroup()
                         .or()
                         .beginGroup()
                         .equalTo("friendshipRealm.friend.id", idTo)
-                        .isNull("group")
+                        .isNull("membershipRealm")
                         .endGroup()
                         .endGroup()
                         .endGroup()
@@ -264,17 +264,17 @@ public class ChatCacheImpl implements ChatCache {
                             .beginGroup()
                             .equalTo("from.id", idTo)
                             .isNull("friendshipRealm")
-                            .isNull("group")
+                            .isNull("membershipRealm")
                             .endGroup()
                             .or()
                             .beginGroup()
                             .equalTo("friendshipRealm.friend.id", idTo)
-                            .isNull("group")
+                            .isNull("membershipRealm")
                             .endGroup()
                             .endGroup()
                             .endGroup()
                             .or()
-                            .equalTo("group.id", idTo)
+                            .equalTo("membershipRealm.group.id", idTo)
                             .endGroup()
                             .findAllSorted("created_at", Sort.DESCENDING);
 
@@ -336,7 +336,7 @@ public class ChatCacheImpl implements ChatCache {
             ChatRealm obj = obsRealm.where(ChatRealm.class).equalTo("localId", chatRealm.getLocalId()).findFirst();
             if (obj == null) {
                 if (chatRealm.isToGroup()) {
-                    chatRealm.setGroup(obsRealm.where(GroupRealm.class).equalTo("id", chatRealm.getGroup().getId()).findFirst());
+                    chatRealm.setMembershipRealm(obsRealm.where(MembershipRealm.class).equalTo("id", chatRealm.getMembershipRealm().getId()).findFirst());
                 } else {
                     chatRealm.setFriendshipRealm(obsRealm.where(FriendshipRealm.class).equalTo("id", chatRealm.getFriendshipRealm().getId()).findFirst());
                 }
@@ -413,7 +413,7 @@ public class ChatCacheImpl implements ChatCache {
             } else if (pair.first.equals(ChatRealm.FRIEND_ID_UPDATED_AT)) {
                 obj.getFrom().setUpdatedAt((Date) pair.second);
             } else if (pair.first.equals(ChatRealm.GROUP_ID_UPDATED_AT)) {
-                obj.getGroup().setUpdatedAt((Date) pair.second);
+                obj.getMembershipRealm().setUpdatedAt((Date) pair.second);
             }
         }
 
@@ -471,7 +471,7 @@ public class ChatCacheImpl implements ChatCache {
             } else {
                 sentMessages = sentMessages.where()
                         .beginGroup()
-                        .equalTo("group.id", result.getGroup().getId())
+                        .equalTo("membershipRealm.group.id", result.getMembershipRealm().getGroup().getId())
                         .endGroup()
                         .findAllSorted("created_at", Sort.ASCENDING);
             }
@@ -509,17 +509,17 @@ public class ChatCacheImpl implements ChatCache {
                             .beginGroup()
                             .equalTo("from.id", recipientId)
                             .isNull("friendshipRealm")
-                            .isNull("group")
+                            .isNull("membershipRealm")
                             .endGroup()
                             .or()
                             .beginGroup()
                             .equalTo("friendshipRealm.friend.id", recipientId)
-                            .isNull("group")
+                            .isNull("membershipRealm")
                             .endGroup()
                             .endGroup()
                             .endGroup()
                             .or()
-                            .equalTo("group.id", recipientId)
+                            .equalTo("membershipRealm.group.id", recipientId)
                             .findAllSorted("created_at", Sort.ASCENDING);
 
                     if (results != null && results.size() > 0) results.deleteAllFromRealm();
@@ -554,17 +554,17 @@ public class ChatCacheImpl implements ChatCache {
                     .beginGroup()
                     .equalTo("from.id", id)
                     .isNull("friendshipRealm")
-                    .isNull("group")
+                    .isNull("membershipRealm")
                     .endGroup()
                     .or()
                     .beginGroup()
                     .equalTo("friendshipRealm.friend.id", id)
-                    .isNull("group")
+                    .isNull("membershipRealm")
                     .endGroup()
                     .endGroup()
                     .endGroup()
                     .or()
-                    .equalTo("group.id", id)
+                    .equalTo("membershipRealm.group.id", id)
                     .endGroup()
                     .findAllSorted("created_at", Sort.ASCENDING);
 
@@ -589,17 +589,17 @@ public class ChatCacheImpl implements ChatCache {
                         .beginGroup()
                         .equalTo("from.id", recipientId)
                         .isNull("friendshipRealm")
-                        .isNull("group")
+                        .isNull("membershipRealm")
                         .endGroup()
                         .or()
                         .beginGroup()
                         .equalTo("friendshipRealm.friend.id", recipientId)
-                        .isNull("group")
+                        .isNull("membershipRealm")
                         .endGroup()
                         .endGroup()
                         .endGroup()
                         .or()
-                        .equalTo("group.id", recipientId)
+                        .equalTo("membershipRealm.group.id", recipientId)
                         .endGroup()
                         .findAllSorted("created_at", Sort.ASCENDING);
 
@@ -621,17 +621,17 @@ public class ChatCacheImpl implements ChatCache {
                     .beginGroup()
                     .equalTo("from.id", recipientId)
                     .isNull("friendshipRealm")
-                    .isNull("group")
+                    .isNull("membershipRealm")
                     .endGroup()
                     .or()
                     .beginGroup()
                     .equalTo("friendshipRealm.friend.id", recipientId)
-                    .isNull("group")
+                    .isNull("membershipRealm")
                     .endGroup()
                     .endGroup()
                     .endGroup()
                     .or()
-                    .equalTo("group.id", recipientId)
+                    .equalTo("membershipRealm.group.id", recipientId)
                     .endGroup()
                     .findAllSorted("created_at", Sort.ASCENDING);
 
@@ -679,17 +679,17 @@ public class ChatCacheImpl implements ChatCache {
                     .beginGroup()
                     .equalTo("from.id", id)
                     .isNull("friendshipRealm")
-                    .isNull("group")
+                    .isNull("membershipRealm")
                     .endGroup()
                     .or()
                     .beginGroup()
                     .equalTo("friendshipRealm.friend.id", id)
-                    .isNull("group")
+                    .isNull("membershipRealm")
                     .endGroup()
                     .endGroup()
                     .endGroup()
                     .or()
-                    .equalTo("group.id", id)
+                    .equalTo("membershipRealm.group.id", id)
                     .endGroup()
                     .findAllSorted("created_at", Sort.DESCENDING);
 

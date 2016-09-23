@@ -241,9 +241,9 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     @Override
     public void setupGroup(Group group) {
-        groupName = group.getDisplayName();
+        groupName = group.getName();
         groupInfoView.setGroupName(groupName);
-        if (group.getProfilePicture() != null && !group.getProfilePicture().isEmpty()) groupInfoView.setGroupPictureFromUrl(group.getProfilePicture());
+        if (group.getPicture() != null && !group.getPicture().isEmpty()) groupInfoView.setGroupPictureFromUrl(group.getPicture());
         setGroupPrivacy(group.isPrivateGroup());
 
         members = group.getMembers();
@@ -277,7 +277,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             for (int i = 0; i < friendsUsers.size(); i++) {
                 if (friendsUsers.get(i).getId().equals(member.getId())) {
                     groupMember.setFriend(true);
-                    groupMember.setFriendshipId(friendsList.get(i).getFriendshipId());
+                    groupMember.setFriendshipId(friendsList.get(i).getId());
                 }
             }
             for (User admin : admins) {

@@ -217,7 +217,7 @@ public class ChatMessage extends Message {
         chatMessage.setCreatedAt(chatMessage.getRecordedAt());
         chatMessage.setFrom(user);
         chatMessage.setTo(recipient);
-        chatMessage.setToGroup(recipient instanceof Group);
+        chatMessage.setToGroup(recipient instanceof Membership);
         chatMessage.setMessageSendingStatus(MessageSendingStatus.STATUS_PENDING);
         chatMessage.setType(type);
         return chatMessage;
