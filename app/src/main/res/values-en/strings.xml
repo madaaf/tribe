@@ -126,7 +126,7 @@
 	<string name="grid_menu_friendship_block">Block</string>
 	<string name="grid_menu_friendship_unblock">Add</string>
 	<string name="grid_menu_friendship_report">Report</string>
-	<string name="grid_menu_friendship_report_success">Reportedè</string>
+	<string name="grid_menu_friendship_report_success">Reported</string>
 	<string name="grid_menu_friendship_clear_tribes">Clear messages</string>
 	<string name="grid_menu_select_language">Change language</string>
 	

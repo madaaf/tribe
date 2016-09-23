@@ -23,7 +23,7 @@ import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.HomeView;
-import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
@@ -64,9 +64,6 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
 
     @Inject
     ScreenUtils screenUtils;
-
-    @Inject 
-    Navigator navigator;
 
     @BindView(R.id.recyclerViewFriends)
     RecyclerView recyclerViewFriends;
@@ -147,6 +144,10 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         this.homeGridPresenter.attachView(this);
 
         if (savedInstanceState == null) loadData();
+
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(TagManagerConstants.ONBOARDING_GRID_VIEW, true);
+        tagManager.setPropertyOnce(bundle);
     }
 
     @Override
@@ -207,6 +208,12 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                 shouldReloadGrid = false;
                 reloadGrid();
             }
+
+            Bundle bundle = new Bundle();
+            bundle.putInt(TagManagerConstants.COUNT_FRIENDS, currentUser.getFriendships().size());
+            bundle.putInt(TagManagerConstants.COUNT_GROUPS, currentUser.getFriendships().size());
+            tagManager.setProperty(bundle);
+
             if (pullToSearchContainer != null) pullToSearchContainer.updatePTSList(recipientList);
             this.homeGridAdapter.setItems(recipientList);
         }
@@ -282,7 +289,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         this.layoutManager = new HomeLayoutManager(context());
         this.recyclerViewFriends.setLayoutManager(layoutManager);
         this.recyclerViewFriends.setItemAnimator(null);
-        List<Recipient> recipientList = new ArrayList<>();
+        List<Recipient> recipientList = new ArrayList<>(currentUser.getFriendshipList());
         Friendship friendship = new Friendship(currentUser.getId());
         friendship.setFriend(currentUser);
         recipientList.add(0, friendship);

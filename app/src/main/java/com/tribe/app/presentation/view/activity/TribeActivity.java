@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
@@ -12,6 +13,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerTribeComponent;
 import com.tribe.app.presentation.mvp.presenter.TribePresenter;
 import com.tribe.app.presentation.mvp.view.TribeView;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 
@@ -61,10 +63,10 @@ public class TribeActivity extends BaseActivity implements TribeView {
         super.onCreate(savedInstanceState);
         initUi();
         initParams();
-        initializeDependencyInjector();
+        initDependencyInjector();
         initTribePagerView();
         initSubscriptions();
-        initializePresenter();
+        initPresenter();
     }
 
     @Override
@@ -108,6 +110,10 @@ public class TribeActivity extends BaseActivity implements TribeView {
         recipient = (Recipient) getIntent().getSerializableExtra(RECIPIENT);
         position = getIntent().getIntExtra(POSITION, 0);
         currentUser = getCurrentUser();
+
+        Bundle bundle = new Bundle();
+        bundle.putString(TagManagerConstants.TYPE, recipient instanceof Group ? TagManagerConstants.TYPE_TRIBE_GROUP : TagManagerConstants.TYPE_TRIBE_USER);
+        tagManager.trackEvent(TagManagerConstants.KPI_TRIBES_OPENED, bundle);
     }
 
     private void initUi() {
@@ -166,7 +172,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
                 }));
     }
 
-    private void initializeDependencyInjector() {
+    private void initDependencyInjector() {
         DaggerTribeComponent.builder()
                 .applicationComponent(getApplicationComponent())
                 .activityModule(getActivityModule())
@@ -174,7 +180,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
                 .inject(this);
     }
 
-    private void initializePresenter() {
+    private void initPresenter() {
         tribePresenter.onStart();
         tribePresenter.attachView(this);
         tribePresenter.loadTribes(recipient.getId());

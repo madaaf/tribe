@@ -101,6 +101,7 @@ public class AndroidApplication extends Application {
 
         applicationComponent.accessToken().clear();
         applicationComponent.currentUser().clear();
+        applicationComponent.tagManager().clear();
 
         FileUtils.deleteDir(FileUtils.getCacheDir());
     }

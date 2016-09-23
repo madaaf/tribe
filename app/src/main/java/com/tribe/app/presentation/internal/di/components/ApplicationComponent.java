@@ -9,6 +9,7 @@ import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
+import com.tribe.app.data.network.job.BaseJob;
 import com.tribe.app.data.network.job.DownloadChatVideoJob;
 import com.tribe.app.data.network.job.DownloadTribeJob;
 import com.tribe.app.data.network.job.MarkMessageListAsReadJob;
@@ -51,6 +52,7 @@ import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.service.TribeFirebaseInstanceIDService;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
@@ -66,6 +68,7 @@ import com.tribe.app.presentation.view.component.PullToSearchView;
 import com.tribe.app.presentation.view.component.SettingItemView;
 import com.tribe.app.presentation.view.component.TribeComponentView;
 import com.tribe.app.presentation.view.component.TribePagerView;
+import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -96,7 +99,9 @@ import io.realm.Realm;
 @Component(modules = {ApplicationModule.class, NetModule.class})
 public interface ApplicationComponent {
 
+    void inject(BaseFragment baseFragment);
     void inject(BaseActivity baseActivity);
+
     void inject(LauncherActivity launcherActivity);
     void inject(MeGridAdapterDelegate meGridAdapterDelegate);
     void inject(RecipientGridAdapterDelegate recipientGridAdapterDelegate);
@@ -122,6 +127,7 @@ public interface ApplicationComponent {
     void inject(SettingItemView settingItemView);
 
     // JOBS
+    void inject(BaseJob baseJob);
     void inject(SendTribeJob sendTribeJob);
     void inject(DownloadTribeJob downloadTribeJob);
     void inject(SendChatJob sendChatJob);
@@ -221,4 +227,6 @@ public interface ApplicationComponent {
     SharedPreferences sharedPreferences();
 
     FileUtils fileUtils();
+
+    TagManager tagManager();
 }

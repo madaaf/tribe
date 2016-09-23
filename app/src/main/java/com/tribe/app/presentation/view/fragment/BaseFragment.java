@@ -1,6 +1,9 @@
 package com.tribe.app.presentation.view.fragment;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.View;
 import android.widget.Toast;
 
 import com.tribe.app.domain.entity.User;
@@ -8,11 +11,27 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
+import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.analytics.TagManager;
+
+import javax.inject.Inject;
 
 /**
  * Base {@link android.app.Fragment} class for every fragment in this application.
  */
 public abstract class BaseFragment extends Fragment {
+
+    @Inject
+    Navigator navigator;
+
+    @Inject
+    TagManager tagManager;
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        this.getApplicationComponent().inject(this);
+    }
 
     /**
      * Shows a {@link android.widget.Toast} message.

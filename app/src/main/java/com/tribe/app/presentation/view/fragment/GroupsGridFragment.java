@@ -29,7 +29,6 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.GroupPresenter;
 import com.tribe.app.presentation.mvp.view.GroupView;
-import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.FriendAdapter;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
@@ -91,8 +90,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     GroupInfoView groupInfoView;
 
     // Dagger Dependencies
-    @Inject
-    Navigator navigator;
     @Inject
     ScreenUtils screenUtils;
     @Inject

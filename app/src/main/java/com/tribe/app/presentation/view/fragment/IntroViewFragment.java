@@ -2,7 +2,6 @@ package com.tribe.app.presentation.view.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -22,8 +21,8 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.IntroPresenter;
 import com.tribe.app.presentation.mvp.view.IntroView;
-import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.component.CodeView;
 import com.tribe.app.presentation.view.component.ConnectedView;
@@ -53,8 +52,7 @@ import rx.subscriptions.CompositeSubscription;
  * the process of capturing the users phone number, sending, and validating their pin code.
  * Next fragment in onboarding view pager is ProfileInfoFragment.
  */
-// TODO: fix phone number validation. Refactor for maintenance
-public class IntroViewFragment extends Fragment implements IntroView {
+public class IntroViewFragment extends BaseFragment implements IntroView {
 
     public static IntroViewFragment newInstance() {
         Bundle args = new Bundle();
@@ -72,9 +70,6 @@ public class IntroViewFragment extends Fragment implements IntroView {
 
     @Inject
     IntroPresenter introPresenter;
-
-    @Inject
-    Navigator navigator;
 
     @Inject
     ScreenUtils screenUtils;
@@ -273,6 +268,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
      */
     @Override
     public void goToCode(Pin pin) {
+        tagManager.trackEvent(TagManagerConstants.ONBOARDING_SEND_PIN);
         this.pin = pin;
         viewPhoneNumber.fadeOutNext();
         txtIntroMessage.setText(getString(R.string.onboarding_step_code));
@@ -323,6 +319,7 @@ public class IntroViewFragment extends Fragment implements IntroView {
                                 if (user == null || StringUtils.isEmpty(user.getProfilePicture()) || StringUtils.isEmpty(user.getUsername())) {
                                     ((IntroActivity) getActivity()).goToProfileInfo(loginEntity);
                                 } else {
+                                    tagManager.trackEvent(TagManagerConstants.ONBOARDING_CONNECTION);
                                     ((IntroActivity) getActivity()).goToAccess(user);
                                 }
                             }));
