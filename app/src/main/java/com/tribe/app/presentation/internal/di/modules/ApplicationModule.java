@@ -54,6 +54,8 @@ import com.tribe.app.presentation.internal.di.scope.Theme;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.analytics.AmplitudeTagManager;
+import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
@@ -244,6 +246,12 @@ public class ApplicationModule {
     @Singleton
     PaletteGrid providePaletteGrid(Context context, @Theme Preference<Integer> theme) {
         return new PaletteGrid(context, theme);
+    }
+
+    @Provides
+    @Singleton
+    TagManager provideTagManager(AmplitudeTagManager amplitudeTagManager) {
+        return amplitudeTagManager;
     }
 
     @Provides

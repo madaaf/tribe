@@ -1,5 +1,6 @@
 package com.tribe.app.data.network.job;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
@@ -15,6 +16,7 @@ import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import javax.inject.Inject;
@@ -96,6 +98,10 @@ public class  SendTribeJob extends BaseJob {
         @Override
         public void onNext(TribeMessage tribe) {
             setStatus(MessageSendingStatus.STATUS_SENT);
+            Bundle bundle = new Bundle();
+            bundle.putString(TagManagerConstants.TYPE, tribeRealm.isToGroup() ? TagManagerConstants.TYPE_TRIBE_GROUP : TagManagerConstants.TYPE_TRIBE_USER);
+            tagManager.trackEvent(TagManagerConstants.KPI_TRIBES_SENT, bundle);
+            tagManager.increment(TagManagerConstants.COUNT_TRIBES_SENT);
         }
     }
 }

@@ -4,7 +4,6 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +23,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.AccessPresenter;
 import com.tribe.app.presentation.mvp.view.AccessView;
-import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.component.AccessBottomBarView;
 import com.tribe.app.presentation.view.component.AccessLockView;
 import com.tribe.app.presentation.view.component.TextFriendsView;
@@ -57,7 +56,7 @@ import rx.subscriptions.CompositeSubscription;
  * Responsible for making sure user has enough friends on tribe before giving them access to the app.
  * A lot of fancy UI stuff going on here.
  */
-public class AccessFragment extends Fragment implements AccessView {
+public class AccessFragment extends BaseFragment implements AccessView {
 
     private static final int DURATION = 300;
     private static final int DURATION_SMALL = 175;
@@ -78,9 +77,6 @@ public class AccessFragment extends Fragment implements AccessView {
 
     @Inject
     ScreenUtils screenUtils;
-
-    @Inject
-    Navigator navigator;
 
     @Inject
     User currentUser;
@@ -459,6 +455,8 @@ public class AccessFragment extends Fragment implements AccessView {
     @Override
     public void renderFriendList(List<User> userList) {
         Map<String, Object> relationsInApp = new HashMap<>();
+
+        tagManager.trackEvent(TagManagerConstants.ONBOARDING_CONTACTS_SYNC);
 
         for (User user : userList) {
             if (!user.isInvisibleMode()) relationsInApp.put(user.getId(), user);

@@ -82,6 +82,7 @@ public class User implements Serializable {
     }
 
     public List<Group> getGroupList() {
+        if (groupList == null) return new ArrayList<>();
         return groupList;
     }
 
@@ -134,6 +135,8 @@ public class User implements Serializable {
     }
 
     public List<Friendship> getFriendships() {
+        if (friendships == null) return new ArrayList<>();
+
         return friendships;
     }
 

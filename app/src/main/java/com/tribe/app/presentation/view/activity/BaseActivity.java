@@ -10,6 +10,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.analytics.TagManager;
 
 import javax.inject.Inject;
 
@@ -20,6 +21,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Inject
     Navigator navigator;
+
+    @Inject
+    TagManager tagManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

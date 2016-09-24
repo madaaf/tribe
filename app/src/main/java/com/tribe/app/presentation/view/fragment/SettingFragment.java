@@ -19,7 +19,7 @@ import com.tribe.app.presentation.internal.di.scope.Preload;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.mvp.presenter.SettingPresenter;
 import com.tribe.app.presentation.mvp.view.SettingView;
-import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.SettingActivity;
 import com.tribe.app.presentation.view.component.SettingItemView;
@@ -107,9 +107,6 @@ public class SettingFragment extends BaseFragment implements SettingView {
     Preference<Boolean> preload;
 
     @Inject
-    Navigator navigator;
-
-    @Inject
     SettingPresenter settingPresenter;
 
     // VARIABLES
@@ -169,18 +166,30 @@ public class SettingFragment extends BaseFragment implements SettingView {
         }));
 
         subscriptions.add(messageSettingMemories.checkedSwitch().subscribe(isChecked -> {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(TagManagerConstants.MEMORIES_ENABLED, isChecked);
+            tagManager.setProperty(bundle);
             settingPresenter.updateUserTribeSave(isChecked);
         }));
 
         subscriptions.add(messageSettingContext.checkedSwitch().subscribe(isChecked -> {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(TagManagerConstants.LOCATION_ENABLED, isChecked);
+            tagManager.setProperty(bundle);
             locationContext.set(isChecked);
         }));
 
         subscriptions.add(messageSettingVoice.checkedSwitch().subscribe(isChecked -> {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(TagManagerConstants.AUDIO_ONLY_ENABLED, isChecked);
+            tagManager.setProperty(bundle);
             audioDefault.set(isChecked);
         }));
 
         subscriptions.add(messageSettingPreload.checkedSwitch().subscribe(isChecked -> {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(TagManagerConstants.PRELOAD_ENABLED, isChecked);
+            tagManager.setProperty(bundle);
             preload.set(isChecked);
         }));
 
@@ -193,12 +202,18 @@ public class SettingFragment extends BaseFragment implements SettingView {
             if (isChecked)
                 settingPresenter.loginFacebook();
             else {
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(TagManagerConstants.FACEBOOK_CONNECTED, false);
+                tagManager.setProperty(bundle);
                 settingPresenter.updateUserFacebook(null);
                 FacebookUtils.logout();
             }
         }));
 
         subscriptions.add(settingsInvisible.checkedSwitch().subscribe(isChecked -> {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(TagManagerConstants.INVISIBLE_MODE_ENABLED, isChecked);
+            tagManager.setProperty(bundle);
             settingPresenter.updateUserInvisibleMode(isChecked);
         }));
 
@@ -339,6 +354,9 @@ public class SettingFragment extends BaseFragment implements SettingView {
 
     @Override
     public void successFacebookLogin() {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(TagManagerConstants.FACEBOOK_CONNECTED, true);
+        tagManager.setProperty(bundle);
         settingPresenter.updateUserFacebook(com.facebook.AccessToken.getCurrentAccessToken().getUserId());
     }
 

@@ -24,6 +24,7 @@ import com.tribe.app.presentation.mvp.presenter.ContactsGridPresenter;
 import com.tribe.app.presentation.mvp.view.ContactsView;
 import com.tribe.app.presentation.mvp.view.HomeView;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.ContactsGridAdapter;
 import com.tribe.app.presentation.view.adapter.manager.ContactsLayoutManager;
@@ -362,6 +363,7 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
 
     @Override
     public void notifySuccess() {
+        tagManager.trackEvent(TagManagerConstants.USER_FACEBOOK_INVITE);
         contactsGridAdapter.startAnimateFB();
     }
 

@@ -193,7 +193,7 @@
 	<string name="group_public_popup_done">Exciting!</string>
 	<string name="group_search_friends_placeholder">Search friends</string>
 	<string name="group_private_link_description">This link will expire in 1 hr</string>
-	<string name="group_private_link_popup_title">Only %1$s left!</string>
+	<string name="group_private_link_popup_title">Only 59:32 min left!</string>
 	<string name="group_private_link_popup_description">Select where to send this\ntemporary link to your friends!</string>
 	<string name="group_public_link_description">Tips: You can even include emojis</string>
 	<string name="group_invalid_infos_error_message">Be sure to name your group</string>
@@ -349,8 +349,8 @@
 	<string name="points_ConnectFacebook_description">Auto-sync your contacts</string>
 	<string name="points_InviteFacebookFriends_title">Invite Facebook friends</string>
 	<string name="points_InviteFacebookFriends_description">Swipe left on the grid</string>
-	<string name="points_Camera_title">Camera</string>
-	<string name="points_Camera_description">Enable it in the settings</string>
+	<string name="points_HundredGroupMembers_title">100 Group members</string>
+	<string name="points_HundredGroupMembers_description">Every 100 members in Public Group</string>
 	
 	<!-- Level -->
 	<string name="level_rookie_title">Rookie</string>
@@ -375,7 +375,7 @@
 	<!-- Share -->
 	<string name="share_add_friends_addressbook_suggestions">I was able to get access to Tribe. Just noticed that you already have %1$d friends on this app. I can get you in: %2$s</string>
 	<string name="share_group_public_link">Here is your invite to join the %1$s group on Tribe. %2$s</string>
-	<string name="share_group_private_link">Here is your invite to join the %1$s group on Tribe. Join quickly because this invite will expire in %2$s ! %3$s</string>
+	<string name="share_group_private_link">Here is your invite to join the %1$s group on Tribe. Join quickly because this invite will expire in 1 hour! %2$s</string>
 	<string name="share_add_friends_handle">I’ve locked up %1$s handle on Tribe. Reserve yours now before it\'s too late on %2$s</string>
 	<string name="share_score">I have %1$s points on Tribe %2$s</string>
 	<string name="share_onboarding">I just discovered Tribe, but I can’t enter alone. Come now so we can get access together. Waiting for you. Go on %1$s</string>

@@ -15,7 +15,6 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.ScorePresenter;
 import com.tribe.app.presentation.mvp.view.ScoreView;
-import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.adapter.LevelAdapter;
 import com.tribe.app.presentation.view.adapter.manager.LevelLayoutManager;
 import com.tribe.app.presentation.view.decorator.GridDividerTopItemDecoration;
@@ -42,9 +41,6 @@ public class ScoreActivity extends BaseActivity implements ScoreView {
 
     private final int DURATION = 500;
     private final float OVERSHOOT = 1.5f;
-
-    @Inject
-    Navigator navigator;
 
     @Inject
     ScorePresenter scorePresenter;

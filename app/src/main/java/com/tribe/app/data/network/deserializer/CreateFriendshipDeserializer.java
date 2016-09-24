@@ -25,7 +25,7 @@ public class CreateFriendshipDeserializer implements JsonDeserializer<CreateFrie
         List<FriendshipRealm> friendshipRealmList = new ArrayList<>();
         boolean hasResult = true;
 
-        while (hasResult && !results.get("createFriendship" + count).isJsonNull()) {
+        while (hasResult && results.get("createFriendship" + count) != null && !results.get("createFriendship" + count).isJsonNull()) {
             JsonElement element = results.getAsJsonObject("createFriendship" + count);
             if (element != null && !element.isJsonNull()) {
                 friendshipRealmList.add(gson.fromJson(element, FriendshipRealm.class));

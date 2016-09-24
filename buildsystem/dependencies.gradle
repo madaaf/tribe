@@ -49,6 +49,7 @@ ext {
     facebookVersion = '4,5'
     multiDexVersion = '1.0.0'
     confettiVersion = '1.0.0'
+    amplitudeVersion = '2.9.2'
 
     //Testing
     robolectricVersion = '3.0'
@@ -102,7 +103,8 @@ ext {
             glide                   : "com.github.bumptech.glide:glide:${glideVersion}",
             glideOKHttp             : "com.github.bumptech.glide:okhttp3-integration:${glideOKHttpVersion}",
             multiDex                : "com.android.support:multidex:${multiDexVersion}",
-            confetti                : "com.github.jinatonic.confetti:confetti:${confettiVersion}"
+            confetti                : "com.github.jinatonic.confetti:confetti:${confettiVersion}",
+            amplitude               : "com.amplitude:android-sdk:${amplitudeVersion}"
     ]
 
     presentationTestDependencies = [

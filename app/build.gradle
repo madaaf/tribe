@@ -91,6 +91,7 @@ android {
             buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key_debug}\""
             buildConfigField "String", "TRIBE_API", "\"http://api.dev.tribe.pm\""
             buildConfigField "String", "TRIBE_AUTH", "\"http://auth.dev.tribe.pm\""
+            buildConfigField "String", "AMPLITUDE_KEY", "\"${amplitude_debug}\""
         }
 
         tribe2 {
@@ -103,6 +104,7 @@ android {
             buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key_tribe2}\""
             buildConfigField "String", "TRIBE_API", "\"https://api.tribe.pm\""
             buildConfigField "String", "TRIBE_AUTH", "\"https://auth.tribe.pm\""
+            buildConfigField "String", "AMPLITUDE_KEY", "\"${amplitude_prod}\""
         }
     }
 }
@@ -156,6 +158,7 @@ dependencies {
     compile presentationDependencies.facebook
     compile presentationDependencies.multiDex
     compile presentationDependencies.confetti
+    compile presentationDependencies.amplitude
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker

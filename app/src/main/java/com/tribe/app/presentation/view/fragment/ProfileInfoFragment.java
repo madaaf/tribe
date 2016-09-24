@@ -3,7 +3,6 @@ package com.tribe.app.presentation.view.fragment;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +19,8 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.ProfileInfoPresenter;
-import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
@@ -44,7 +43,7 @@ import rx.subscriptions.CompositeSubscription;
  * Responsible for collecting user's profile picture, name, and username.
  * Has ability to retrieve this information from Facebook.
  */
-public class ProfileInfoFragment extends Fragment implements com.tribe.app.presentation.mvp.view.ProfileInfoView {
+public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.presentation.mvp.view.ProfileInfoView {
 
     public static ProfileInfoFragment newInstance() {
         Bundle args = new Bundle();
@@ -70,9 +69,6 @@ public class ProfileInfoFragment extends Fragment implements com.tribe.app.prese
     @Inject
     PhoneUtils phoneUtils;
 
-    @Inject
-    Navigator navigator;
-
     @BindView(R.id.imgNextIcon)
     ImageView imgNextIcon;
 
@@ -91,8 +87,6 @@ public class ProfileInfoFragment extends Fragment implements com.tribe.app.prese
     // VARIABLES
     private LoginEntity loginEntity;
     private FacebookEntity facebookEntity;
-    private boolean profilePictureSelected = false;
-    private boolean textInfoValidated = false;
 
     /**
      * View Lifecycle
@@ -179,6 +173,13 @@ public class ProfileInfoFragment extends Fragment implements com.tribe.app.prese
     @Override
     public void userRegistered(User user) {
         this.user.copy(user);
+
+        if (facebookEntity != null && !StringUtils.isEmpty(facebookEntity.getId())) {
+            tagManager.trackEvent(TagManagerConstants.ONBOARDING_REGISTRATION_FACEBOOK);
+        } else {
+            tagManager.trackEvent(TagManagerConstants.ONBOARDING_REGISTRATION);
+        }
+
         profileInfoPresenter.updateUser(user.getUsername(), user.getDisplayName(), profileInfoView.getImgUri(),
                 facebookEntity != null && !StringUtils.isEmpty(facebookEntity.getId()) ? facebookEntity.getId() : null);
     }
