@@ -44,6 +44,7 @@ import com.tribe.app.presentation.view.component.CreateInviteView;
 import com.tribe.app.presentation.view.component.GroupInfoView;
 import com.tribe.app.presentation.view.component.MemberPhotoViewList;
 import com.tribe.app.presentation.view.component.PrivatePublicView;
+import com.tribe.app.presentation.view.component.SearchFriendsView;
 import com.tribe.app.presentation.view.component.ViewPrivacyStatus;
 import com.tribe.app.presentation.view.dialog_fragment.ShareDialogFragment;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
@@ -106,6 +107,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     CreateInviteView createInviteView;
     @BindView(R.id.groupInfoView)
     GroupInfoView groupInfoView;
+    @BindView(R.id.searchFriendsView)
+    SearchFriendsView searchFriendsView;
 
     // Dagger Dependencies
     @Inject
@@ -163,7 +166,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         Bundle bundle = getArguments();
         if (bundle == null) {
             initUi();
-            initFriendshipList();
+            initFriendshipListExcluding(new ArrayList<>());
         }
         else {
             initGroupInfoUi(bundle.getString("groupId"));
@@ -240,7 +243,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         recyclerViewInvite.setTranslationY(screenUtils.dpToPx(smallMargin));
 
         subscriptions.add(groupInfoView.imageBackClicked().subscribe(aVoid -> {
-            navigator.navigateToHome(getActivity());
+            navigator.navigateToHome(getActivity(), false);
         }));
 
         subscriptions.add(groupInfoView.imageGoToMembersClicked().subscribe(aVoid -> {
@@ -250,6 +253,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     }
 
     public void initForBoth() {
+//        recyclerViewInvite.setVisibility(View.INVISIBLE);
         subscriptions.add(RxView.clicks(imageDone).subscribe(aVoid -> {
             groupPresenter.addMembersToGroup(groupId, memberIds);
             imageDone.setEnabled(false);
@@ -471,31 +475,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
      * Search for friend View
      */
 
-    private void initFriendshipList() {
-        User user = getCurrentUser();
-        friendshipsList = user.getFriendships();
-        friendshipsListCopy = new ArrayList<>();
-        if (friendshipsList != null) {
-            friendshipsListCopy.addAll(friendshipsList);
-            friendAdapter.setHasStableIds(true);
-            friendAdapter.setItems(friendshipsList);
-        }
-
-        linearLayoutManager = new LinearLayoutManager(getActivity());
-        recyclerViewInvite.setLayoutManager(linearLayoutManager);
-        recyclerViewInvite.setAdapter(friendAdapter);
-
-        subscriptions.add(friendAdapter.clickFriendItem()
-            .subscribe(friendView -> {
-                Friendship friendship = friendAdapter.getItemAtPosition((Integer) friendView.getTag(R.id.tag_position));
-                String friendId = friendship.getFriend().getId();
-                if ((Boolean) friendView.getTag(R.id.tag_selected)) {
-                    memberIds.add(friendId);
-                } else {
-                    memberIds.remove(friendId);
-                }
-            }));
-    }
 
     private void initFriendshipListExcluding(List<User> usersToExclude) {
         User user = getCurrentUser();
@@ -524,8 +503,10 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                     String friendId = friendship.getFriend().getId();
                     if ((Boolean) friendView.getTag(R.id.tag_selected)) {
                         memberIds.add(friendId);
+                        searchFriendsView.insertFriend(friendship.getId(), friendship.getProfilePicture());
                     } else {
                         memberIds.remove(friendId);
+                        searchFriendsView.deleteFriend(friendship.getId());
                     }
                 }));
         friendAdapter.notifyDataSetChanged();
@@ -552,12 +533,12 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     }
 
     private void setupSearchView() {
-//        subscriptions.add(RxView.focusChanges(editTextInviteSearch).subscribe(aBoolean -> {
-//            if (aBoolean) appBarLayout.setExpanded(false);
-//        }));
-//        subscriptions.add(RxView.clicks(editTextInviteSearch).subscribe(aVoid -> {
-//            appBarLayout.setExpanded(false);
-//        }));
+        subscriptions.add(RxView.focusChanges(searchFriendsView).subscribe(aBoolean -> {
+            if (aBoolean) appBarLayout.setExpanded(false);
+        }));
+        subscriptions.add(RxView.clicks(searchFriendsView).subscribe(aVoid -> {
+            appBarLayout.setExpanded(false);
+        }));
     }
 
     private void filter(String text) {
@@ -703,7 +684,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     public void memberAddedSuccessfully() {
         //TODO: navigate to home fragment
         // reset view
-        navigator.navigateToHome(getActivity());
+        navigator.navigateToHome(getActivity(), false);
     }
 
     @Override

@@ -14,6 +14,7 @@ import android.view.animation.Interpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import com.tribe.app.R;
 
@@ -29,8 +30,8 @@ public class AnimationUtils {
     public static final float SCALE_INVISIBLE = 0f;
     public static final int TRANSLATION_RESET = 0;
     public static final int NO_START_DELAY = 0;
-    public static final int ALPHA_FULL = 1;
-    public static final int ALPHA_NONE = 0;
+    public static final float ALPHA_FULL = 1;
+    public static final float ALPHA_NONE = 0;
     public static final int ANIMATION_DURATION_EXTRA_SHORT = 100;
     public static final int ANIMATION_DURATION_SHORT = 300;
 
@@ -215,9 +216,9 @@ public class AnimationUtils {
         animator.start();
     }
 
-    public static void animateHeight(View view, int height, int duration) {
+    public static void animateHeightFrameLayout(View view, int startHeight, int endHeight, int duration) {
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) view.getLayoutParams();
-        ValueAnimator animator = ValueAnimator.ofInt(lp.height, height);
+        ValueAnimator animator = ValueAnimator.ofInt(startHeight, endHeight);
         animator.setDuration(duration);
         animator.addUpdateListener(animation -> {
             lp.height = (Integer) animation.getAnimatedValue();
@@ -228,6 +229,18 @@ public class AnimationUtils {
 
     public static void animateHeightCoordinatorLayout(View view, int startHeight, int endHeight, int duration) {
         CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) view.getLayoutParams();
+        ValueAnimator animator = ValueAnimator.ofInt(startHeight, endHeight);
+        animator.setDuration(duration);
+        animator.addUpdateListener(animation -> {
+            lp.height = (Integer) animation.getAnimatedValue();
+            view.getLayoutParams().height = lp.height;
+            view.requestLayout();
+        });
+        animator.start();
+    }
+
+    public static void animateHeightLinearLayout(View view, int startHeight, int endHeight, int duration) {
+        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) view.getLayoutParams();
         ValueAnimator animator = ValueAnimator.ofInt(startHeight, endHeight);
         animator.setDuration(duration);
         animator.addUpdateListener(animation -> {

@@ -75,11 +75,16 @@ public class Navigator {
      *
      * @param activity An activity needed to open the destiny activity.
      */
-    public void navigateToHome(Activity activity) {
+    public void navigateToHome(Activity activity, boolean start) {
         if (activity != null) {
             Intent intent = HomeActivity.getCallingIntent(activity);
-//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            activity.startActivity(intent);
+            if (start) {
+                activity.startActivity(intent);
+            } else {
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                activity.startActivity(intent);
+//                activity.finish();
+            }
         }
     }
 
@@ -157,6 +162,18 @@ public class Navigator {
             intent.putExtra("groupId", groupId);
             activity.startActivity(intent);
             activity.overridePendingTransition(R.anim.activity_in_from_right, R.anim.activity_out_scale_down);
+        }
+    }
+
+    /**
+     * Logout -> new login
+     * @param activity
+     */
+    public void navigateToLogout(Activity activity) {
+        if (activity != null) {
+            Intent i = new Intent(activity, IntroActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            activity.startActivity(i);
         }
     }
 

@@ -32,9 +32,6 @@ public class MemberPhotoView extends FrameLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    public MemberPhotoView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
 
     @BindView(R.id.imageMember)
     ImageView imageMember;

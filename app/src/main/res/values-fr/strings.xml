@@ -92,6 +92,8 @@
 	<string name="tribe_more_save">Sauvegarder dans Bibliothèque</string>
 	<string name="tribe_more_save_success">Sauvegardé !</string>
 	<string name="tribe_more_report">Reporter</string>
+	<string name="tribe_more_set_speed_1x">Diminuer la vitesse (1x)</string>
+	<string name="tribe_more_set_speed_2x">Augmenter la vitesse (2x)</string>
 	<string name="tribe_distance_menu_directions">Se rendre à cet endroit</string>
 	<string name="tribe_metadata_activate_location">Location</string>
 	<string name="tribe_metadata_get_directions">Itinéraire</string>
@@ -128,7 +130,7 @@
 	<string name="grid_menu_friendship_report">Signaler</string>
 	<string name="grid_menu_friendship_report_success">Signalé !</string>
 	<string name="grid_menu_friendship_clear_tribes">Effacer vos messages</string>
-	<string name="grid_menu_select_language">Changer de langue</string>
+	<string name="grid_menu_select_language">Langues de sous-titres</string>
 	
 	<!-- Chat -->
 	<string name="chat_tutorial_content">Discutez ici si vous n\'êtes pas en mesure d\'envoyer une vidéo ou si vous avez besoin d\'envoyer une address, un numéro de téléphone ou un nom d\'utilisateur.</string>
@@ -149,7 +151,7 @@
 	<string name="chat_are_typing">sont en train d\'écrire</string>
 	<string name="chat_and">et</string>
 	
-	<!-- Group -->
+	<!-- Private Group -->
 	<string name="group_family_title">&#127969; Famille</string>
 	<string name="group_roomies_title">&#127829; Collocataires</string>
 	<string name="group_bffs_title">&#128293; BFFs</string>
@@ -159,6 +161,17 @@
 	<string name="group_teammates_title">&#127942; Équipe</string>
 	<string name="group_baddest_title">&#128074;&#127996; Les boys</string>
 	<string name="group_not_allowed_title">&#128133;&#127997; Les Girls</string>
+	
+	<!-- Public Group -->
+	<string name="group_public_family_title">&#127969; Famille</string>
+	<string name="group_public_roomies_title">&#127829; Collocataires</string>
+	<string name="group_public_bffs_title">&#128293; BFFs</string>
+	<string name="group_public_abroad_title">&#9992;&#65039; Étranger</string>
+	<string name="group_public_work_title">&#128188; Travail</string>
+	<string name="group_public_classmates_title">&#127891; Classe</string>
+	<string name="group_public_teammates_title">&#127942; Équipe</string>
+	<string name="group_public_baddest_title">&#128074;&#127996; Les boys</string>
+	<string name="group_public_not_allowed_title">&#128133;&#127997; Les Girls</string>
 	
 	<!-- Create group -->
 	<string name="group_create_title">Créer un groupe</string>
@@ -180,13 +193,17 @@
 	<string name="group_public_popup_done">Super!</string>
 	<string name="group_search_friends_placeholder">Rechercher vos amis</string>
 	<string name="group_private_link_description">Ce lien expire au bout d\'1h</string>
-	<string name="group_private_link_popup_title">Il reste seulement 59:32 !</string>
+	<string name="group_private_link_popup_title">Il reste seulement %1$s !</string>
 	<string name="group_private_link_popup_description">Choisis où envoyer ce lien\ntemporaire à tes amis !</string>
 	<string name="group_public_link_description">Astuce : Vous pouvez ajouter des emojis</string>
 	<string name="group_invalid_infos_error_message">N\'oubliez pas de nommer votre groupe</string>
 	<string name="group_valid_infos_message">Ajoutez des members une fois le groupe créé</string>
 	<string name="group_button_share">Lien magique pour inviter via ...</string>
-	<string name="group_share_description">Ajoutez vos amis qui n\'ont pas encore rejoins sur Tribe</string>
+	<string name="group_button_share_generate"></string>
+	<string name="group_button_share_generating"></string>
+	<string name="group_button_share_deleting"></string>
+	<string name="group_share_description">Envoyez un lien en dehors de l\'app</string>
+	<string name="group_share_description_expiration">Ce lien sera supprimé dans %1$s</string>
 	<string name="group_button_create">Créer</string>
 	<string name="group_button_creating">Création en cours...</string>
 	<string name="group_empty_list">Groupe privé pour vos conversations privées</string>
@@ -308,8 +325,8 @@
 	
 	<!-- Points System -->
 	<string name="points_system_title">Comment obtenir des points</string>
-	<string name="points_AppOpened_title">Rester sur l\'app</string>
-	<string name="points_AppOpened_description">Toutes les 15s</string>
+	<string name="points_Subtitles_title">Activer les sous-titres</string>
+	<string name="points_Subtitles_description">Pour chaque ami</string>
 	<string name="points_SendReceiveChat_title">Envoyer ou recevoir des messages</string>
 	<string name="points_SendReceiveChat_description">Message texte</string>
 	<string name="points_SendReceiveTribe_title">Envoyer ou recevoir des messages</string>
@@ -324,16 +341,16 @@
 	<string name="points_RateApp_description">Rendez-vous sur l\'App Store</string>
 	<string name="points_ShareProfile_title">Partage ton profil</string>
 	<string name="points_ShareProfile_description">Rendez-vous à gauche de la grille</string>
-	<string name="points_LocationPermission_title">TODO</string>
-	<string name="points_LocationPermission_description">TODO</string>
-	<string name="points_PushPermission_title">TODO</string>
-	<string name="points_PushPermission_description">TODO</string>
+	<string name="points_LocationPermission_title">Géolocalisation</string>
+	<string name="points_LocationPermission_description">Activez-la dans les réglages</string>
+	<string name="points_PushPermission_title">Notifications</string>
+	<string name="points_PushPermission_description">Activez-les dans les réglages</string>
 	<string name="points_ConnectFacebook_title">Connecter Facebook</string>
 	<string name="points_ConnectFacebook_description">Synchroniser vos amis</string>
 	<string name="points_InviteFacebookFriends_title">Notifier vos amis Facebook</string>
 	<string name="points_InviteFacebookFriends_description">Rendez-vous à gauche de la grille</string>
-	<string name="points_HundredGroupMembers_title">100 membres</string>
-	<string name="points_HundredGroupMembers_description">Chaque fois que 100 nouveaux membres rejoignent votre groupe public</string>
+	<string name="points_Camera_title">Appareil photo</string>
+	<string name="points_Camera_description">Activez-le dans les réglages</string>
 	
 	<!-- Level -->
 	<string name="level_rookie_title">Rookie</string>
@@ -358,7 +375,7 @@
 	<!-- Share -->
 	<string name="share_add_friends_addressbook_suggestions">I was able to get access to Tribe. Just noticed that you already have %1$d friends on this app. I can get you in: %2$s</string>
 	<string name="share_group_public_link">Here is your invite to join the %1$s group on Tribe. %2$s</string>
-	<string name="share_group_private_link">Here is your invite to join the %1$s group on Tribe. Join quickly because this invite will expire in 1 hour! %2$s</string>
+	<string name="share_group_private_link">Here is your invite to join the %1$s group on Tribe. Join quickly because this invite will expire in %2$s ! %3$s</string>
 	<string name="share_add_friends_handle">I’ve locked up %1$s handle on Tribe. Reserve yours now before its gone on %2$s</string>
 	<string name="share_score">I have %1$s points on Tribe %2$s</string>
 	<string name="share_onboarding">I just discovered Tribe, but I can’t enter alone. Come now so we can get access together. Waiting for you. Go on %1$s</string>
@@ -430,6 +447,7 @@
 	<string name="tutorial_message_close_message">Fermer les messages</string>
 	<string name="tutorial_message_contacts">Tape pour ajouter des amis</string>
 	<string name="tutorial_message_groups">Tape pour créer un groupe</string>
+	<string name="tutorial_message_refresh">Tape pour recharger</string>
 	<string name="tutorial_message_reply">Appuie pour enregister\nta réponse</string>
 	<string name="tutorial_message_release">Relâche ton doigt\npour terminer le message</string>
 	<string name="tutorial_message_tap_to_cancel">Pour pour annuler si besoin</string>
@@ -440,4 +458,13 @@
 	<string name="newlevel_share">Partager</string>
 	<string name="newlevel_close">Cool!</string>
 	<string name="newlevel_notification_title">%1$s niveau atteint! Brag now? &#129304;&#127996;</string>
+	
+	<!-- SubtitlesPopup -->
+	<string name="subtitles_popup_title">Tu viens de partler %1$s n\'est-ce pas ?</string>
+	<string name="subtitles_popup_description">Ajouter des sous titres en “mute mode”,\net de meilleurs Magic Words.</string>
+	<string name="subtitles_popup_language_description_solo">Langue parlée avec %1$s.</string>
+	<string name="subtitles_popup_language_description_group">Langue parlée dans %1$s.</string>
+	<string name="subtitles_popup_points">Autoriser les “sous-titres”</string>
+	<string name="subtitles_popup_no">Annuler</string>
+	<string name="subtitles_popup_yes">C\'est ça!</string>
 </resources>

@@ -16,6 +16,7 @@ import com.tribe.app.presentation.view.activity.ScoreActivity;
 import com.tribe.app.presentation.view.activity.SettingActivity;
 import com.tribe.app.presentation.view.component.GroupInfoView;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
+import com.tribe.app.presentation.view.component.SearchFriendsView;
 import com.tribe.app.presentation.view.component.SettingItemView;
 import com.tribe.app.presentation.view.component.SettingThemeView;
 import com.tribe.app.presentation.view.dialog_fragment.ShareDialogFragment;
@@ -62,4 +63,5 @@ public interface UserComponent extends ActivityComponent {
     void inject(GroupInfoActivity groupInfoActivity);
     void inject(GroupInfoView groupInfoView);
     void inject(GroupMemberFragment groupMemberFragment);
+    void inject(SearchFriendsView searchFriendsView);
 }

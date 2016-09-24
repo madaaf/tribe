@@ -27,9 +27,6 @@ public class MemberPhotoViewList extends FrameLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    public MemberPhotoViewList(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
 
     Unbinder unbinder;
 
