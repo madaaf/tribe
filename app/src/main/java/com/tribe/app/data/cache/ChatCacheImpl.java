@@ -407,7 +407,7 @@ public class ChatCacheImpl implements ChatCache {
             } else if (pair.first.equals(ChatRealm.MESSAGE_RECEIVING_STATUS)) {
                 obj.setMessageReceivingStatus((String) pair.second);
             } else if (pair.first.equals(ChatRealm.PROGRESS)) {
-                obj.setProgress((Integer) pair.second);
+                obj.setProgress((Long) pair.second);
             } else if (pair.first.equals(ChatRealm.TOTAL_SIZE)) {
                 obj.setTotalSize((Long) pair.second);
             } else if (pair.first.equals(ChatRealm.FRIEND_ID_UPDATED_AT)) {

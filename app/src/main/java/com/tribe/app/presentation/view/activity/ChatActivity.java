@@ -331,7 +331,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
         chatPresenter.attachView(this);
         chatPresenter.loadChatMessages(recipient);
         chatPresenter.loadThumbnail(radiusGalleryImg);
-        chatPresenter.updateErrorMessages(recipient.getId());
+        chatPresenter.updateErrorMessages(recipient.getSubId());
     }
 
     private void initInfos() {
@@ -343,7 +343,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
         DialogFactory.createConfirmationDialog(this, getString(R.string.chat_erase_conversation_title),
                     getString(R.string.chat_erase_conversation_message),
                     getString(R.string.common_delete),
-                    (dialog, which) -> chatPresenter.deleteConversation(recipient.getId()))
+                    (dialog, which) -> chatPresenter.deleteConversation(recipient.getSubId()))
                 .show();
     }
 

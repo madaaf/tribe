@@ -13,6 +13,9 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.WindowManager;
 
+import com.tribe.app.presentation.view.utils.CameraUtils;
+import com.tribe.app.presentation.view.utils.Degrees;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -458,7 +461,13 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
 
     @Override
     public void setDisplayOrientation(final int degrees) {
+        System.out.println("Display Orientation set : " + degrees);
         getCamera().setDisplayOrientation(degrees);
+    }
+
+    @Override
+    public void setRotation(int degrees) {
+        getCamera().getParameters().setRotation(degrees);
     }
 
     @Override
@@ -524,7 +533,32 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
         } else {  // back-facing
             result = (info.orientation - degrees + 360) % 360;
         }
+
+        System.out.println("OPTIMAL ORIENTATION : " + result);
+
         return result;
+    }
+
+    @Override
+    public int getPreviewOrientation() {
+        final CameraHelper.CameraInfoCompat info = getCameraInfo();
+        final int deviceOrientation = Degrees.getDisplayRotation(context);
+        int displayOrientationVideo = Degrees.getDisplayOrientation(
+                info.orientation, deviceOrientation, info.facing == CameraHelper.CameraInfoCompat.CAMERA_FACING_FRONT);
+        Log.d("CameraFragment", String.format("Orientations: Sensor = %d˚, Device = %d˚, Display = %d˚",
+                info.orientation, deviceOrientation, displayOrientationVideo));
+
+        int previewOrientation = 0;
+
+        if (CameraUtils.isArcWelder()) {
+            previewOrientation = 0;
+        } else {
+            previewOrientation = displayOrientationVideo;
+            if (Degrees.isPortrait(deviceOrientation) && info.facing == CameraHelper.CameraInfoCompat.CAMERA_FACING_FRONT)
+                previewOrientation = Degrees.mirror(displayOrientationVideo);
+        }
+
+        return previewOrientation;
     }
 
     @Override

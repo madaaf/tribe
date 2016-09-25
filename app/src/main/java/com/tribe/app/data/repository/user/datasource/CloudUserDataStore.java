@@ -181,7 +181,9 @@ public class CloudUserDataStore implements UserDataStore {
 
                     return userRealm;
                 })
-                .doOnNext(user -> lastUserRequest.set(initRequest))
+                .doOnNext(user -> {
+                    lastUserRequest.set(initRequest);
+                })
                 .doOnNext(saveToCacheUser);
     }
 
@@ -927,21 +929,15 @@ public class CloudUserDataStore implements UserDataStore {
     public Observable<Void> removeGroup(String groupId) {
         String request = context.getString(R.string.remove_group, groupId);
         return this.tribeApi.removeGroup(request)
-                .doOnError(throwable -> {
-                    throwable.printStackTrace();
-                })
-                .doOnNext(aVoid -> {
-                    userCache.removeGroup(groupId);
-                });
+                .doOnError(throwable -> throwable.printStackTrace())
+                .doOnNext(aVoid -> userCache.removeGroup(groupId));
     }
 
     @Override
-    public Observable<Void> leaveGroup(String groupId) {
-        String request = context.getString(R.string.leave_group, groupId);
+    public Observable<Void> leaveGroup(String membershipId) {
+        String request = context.getString(R.string.leave_group, membershipId);
         return this.tribeApi.leaveGroup(request)
-                .doOnNext(aVoid -> {
-                    userCache.removeGroup(groupId);
-                });
+                .doOnNext(aVoid -> userCache.removeGroupFromMembership(membershipId));
     }
 
     public String listToJson(List<String> list) {

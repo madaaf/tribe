@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.view.component.TribeComponentView;
+import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ public class TribePagerAdapter extends PagerAdapter {
     // OBSERVABLES
     private CompositeSubscription subscriptions;
     private final PublishSubject<View> clickEnableLocation = PublishSubject.create();
+    private final PublishSubject<TribeMessage> onErrorTribe = PublishSubject.create();
 
     @Inject
     public TribePagerAdapter(Context context) {
@@ -45,19 +47,24 @@ public class TribePagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         View itemView = layoutInflater.inflate(R.layout.item_tribe, container, false);
+        TribeMessage tribe = tribeList.get(position);
+
+        System.out.println("Instantiate Item : " + position);
 
         TribeComponentView tribeComponentView = (TribeComponentView) itemView.findViewById(R.id.viewTribe);
         tribeComponentView.setTag(position);
         tribeComponentView.setColor(color);
-        tribeComponentView.setTribe(tribeList.get(position));
+        tribeComponentView.setTribe(tribe);
         tribeComponentView.onClickEnableLocation().subscribe(clickEnableLocation);
-        tribeComponentView.preparePlayer(position == currentPosition);
+        tribeComponentView.onErrorTribe().subscribe(onErrorTribe);
 
-        if (position == currentPosition) {
-            tribeComponentView.play();
+        if (tribe.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADED))
+            tribeComponentView.preparePlayer(position == currentPosition);
+        else if (tribe.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADING)) {
+            tribeComponentView.showProgress();
         }
 
-        itemView.setTag(R.id.tag_tribe, position);
+        itemView.setTag(tribe.getLocalId());
 
         container.addView(itemView);
         return itemView;
@@ -65,6 +72,7 @@ public class TribePagerAdapter extends PagerAdapter {
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object obj) {
+        System.out.println("Detroy Item : " + position);
         container.removeView((View) obj);
     }
 
@@ -81,10 +89,6 @@ public class TribePagerAdapter extends PagerAdapter {
     @Override
     public float getPageWidth(int position) {
         return (float) 1;
-    }
-
-    public int getItemPosition(Object object) {
-        return POSITION_NONE;
     }
 
     public void setItems(List<TribeMessage> tribeList) {
@@ -114,5 +118,9 @@ public class TribePagerAdapter extends PagerAdapter {
 
     public Observable<View> onClickEnableLocation() {
         return clickEnableLocation;
+    }
+
+    public Observable<TribeMessage> onErrorTribe() {
+        return onErrorTribe;
     }
 }

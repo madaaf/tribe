@@ -29,7 +29,7 @@ public class MarkTribeListAsReadJob extends BaseJob {
     private List<TribeMessage> tribeList;
 
     public MarkTribeListAsReadJob(Recipient recipient, List<TribeMessage> tribeList) {
-        super(new Params(Priority.MID).requireNetwork().persist().groupBy(recipient.getId()));
+        super(new Params(Priority.MID).requireNetwork().persist().groupBy(recipient.getSubId()));
         this.tribeList = tribeList;
     }
 

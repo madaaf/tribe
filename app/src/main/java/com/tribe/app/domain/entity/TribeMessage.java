@@ -1,6 +1,7 @@
 package com.tribe.app.domain.entity;
 
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 
@@ -111,6 +112,10 @@ public class TribeMessage extends Message {
 
     public String getTranscript() {
         return transcript;
+    }
+
+    public boolean isDownloadPending() {
+        return messageDownloadingStatus.equals(MessageDownloadingStatus.STATUS_DOWNLOADING);
     }
 
     public static TribeMessage createTribe(User user, Recipient recipient, @CameraWrapper.TribeMode String mode) {

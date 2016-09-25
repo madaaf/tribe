@@ -49,6 +49,10 @@ public interface CameraHelper {
 
     void setDisplayOrientation(int degrees);
 
+    void setRotation(int degrees);
+
+    int getPreviewOrientation();
+
     void setPreviewCallback(Camera.PreviewCallback cb);
 
     void setPreviewDisplay(SurfaceHolder holder) throws IOException;

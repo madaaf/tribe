@@ -66,6 +66,8 @@ public class TribeRealmDataMapper {
             tribe.setWeather(weatherRealmDataMapper.transform(tribeRealm.getWeatherRealm()));
             tribe.setRecipientList(messageRecipientRealmDataMapper.transform(tribeRealm.getRecipientList()));
             tribe.setTranscript(tribeRealm.getTranscript());
+            tribe.setProgress(tribeRealm.getProgress());
+            tribe.setTotalSize(tribeRealm.getTotalSize());
         }
 
         return tribe;
@@ -104,6 +106,8 @@ public class TribeRealmDataMapper {
             tribeRealm.setWeatherRealm(weatherRealmDataMapper.transform(tribe.getWeather()));
             tribeRealm.setRecipientList(messageRecipientRealmDataMapper.transform(tribe.getRecipientList()));
             tribeRealm.setTranscript(tribe.getTranscript());
+            tribeRealm.setProgress(tribe.getProgress());
+            tribeRealm.setTotalSize(tribe.getTotalSize());
         }
 
         return tribeRealm;

@@ -241,8 +241,8 @@ public class CloudUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<Void> leaveGroup(String groupId) {
+    public Observable<Void> leaveGroup(String membershipId) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-        return cloudDataStore.leaveGroup(groupId);
+        return cloudDataStore.leaveGroup(membershipId);
     }
 }

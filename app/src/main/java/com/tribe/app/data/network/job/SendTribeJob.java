@@ -46,7 +46,7 @@ public class  SendTribeJob extends BaseJob {
     private TribeRealm tribeRealm;
 
     public SendTribeJob(TribeMessage tribe) {
-        super(new Params(Priority.HIGH).groupBy(tribe.getTo().getId()).setSingleId(tribe.getLocalId()));
+        super(new Params(Priority.HIGH).groupBy(tribe.getTo().getSubId()).setSingleId(tribe.getLocalId()));
         this.tribe = tribe;
     }
 

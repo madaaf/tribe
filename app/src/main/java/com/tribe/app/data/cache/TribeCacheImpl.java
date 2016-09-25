@@ -35,6 +35,7 @@ public class TribeCacheImpl implements TribeCache {
     private RealmResults<TribeRealm> pendingTribes;
     private RealmResults<TribeRealm> tribesNotSeen;
     private RealmResults<TribeRealm> tribesReceived;
+    private RealmResults<TribeRealm> tribesForARecipient;
 
     @Inject
     public TribeCacheImpl(Context context, Realm realm, User currentUser) {
@@ -192,6 +193,10 @@ public class TribeCacheImpl implements TribeCache {
                 obj.getFrom().setUpdatedAt((Date) pair.second);
             } else if (pair.first.equals(TribeRealm.GROUP_ID_UPDATED_AT)) {
                 obj.getMembershipRealm().setUpdatedAt((Date) pair.second);
+            } else if (pair.first.equals(TribeRealm.PROGRESS)) {
+                obj.setProgress((Long) pair.second);
+            } else if (pair.first.equals(TribeRealm.TOTAL_SIZE)) {
+                obj.setTotalSize((Long) pair.second);
             }
         }
 
@@ -339,11 +344,11 @@ public class TribeCacheImpl implements TribeCache {
     }
 
     @Override
-    public Observable<List<TribeRealm>> tribesReceived(String friendshipId) {
+    public Observable<List<TribeRealm>> tribesReceived(String recipientId) {
         return Observable.create(new Observable.OnSubscribe<List<TribeRealm>>() {
             @Override
             public void call(final Subscriber<? super List<TribeRealm>> subscriber) {
-                if (friendshipId == null) {
+                if (recipientId == null) {
                     tribesReceived = realm.where(TribeRealm.class)
                             .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_RECEIVED)
                             .notEqualTo("from.id", currentUser.getId())
@@ -355,6 +360,38 @@ public class TribeCacheImpl implements TribeCache {
                     subscriber.onNext(realm.copyFromRealm(tribesUpdated));
                 });
                 subscriber.onNext(realm.copyFromRealm(tribesReceived));
+            }
+        });
+    }
+
+    @Override
+    public Observable<List<TribeRealm>> tribesForARecipient(String recipientId) {
+        return Observable.create(new Observable.OnSubscribe<List<TribeRealm>>() {
+            @Override
+            public void call(final Subscriber<? super List<TribeRealm>> subscriber) {
+                tribesForARecipient = realm.where(TribeRealm.class)
+                        .beginGroup()
+                        .beginGroup()
+                        .equalTo("from.id", recipientId)
+                        .isNull("friendshipRealm")
+                        .isNull("membershipRealm")
+                        .endGroup()
+                        .or()
+                        .equalTo("membershipRealm.group.id", recipientId)
+                        .endGroup()
+                        .notEqualTo("from.id", currentUser.getId())
+                        .beginGroup()
+                        .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_RECEIVED)
+                        .or()
+                        .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_NOT_SEEN)
+                        .endGroup()
+                        .findAllSorted("recorded_at", Sort.ASCENDING);
+
+                tribesForARecipient.removeChangeListeners();
+                tribesForARecipient.addChangeListener(tribesUpdated -> {
+                    subscriber.onNext(realm.copyFromRealm(tribesUpdated));
+                });
+                subscriber.onNext(realm.copyFromRealm(tribesForARecipient));
             }
         });
     }

@@ -77,6 +77,8 @@ public class CloudTribeDataStore implements TribeDataStore {
         else
             request = context.getString(R.string.tribe_send_solo, tribeInput);
 
+        System.out.println("REQUEST : " + request);
+
         RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
 
         File file = new File(FileUtils.getPathForId(tribeRealm.getLocalId(), FileUtils.VIDEO));
@@ -96,6 +98,11 @@ public class CloudTribeDataStore implements TribeDataStore {
 
     @Override
     public Observable<List<TribeRealm>> tribesReceived(String friendshipId) {
+        return null;
+    }
+
+    @Override
+    public Observable<List<TribeRealm>> tribesForARecipient(String recipientId) {
         return null;
     }
 

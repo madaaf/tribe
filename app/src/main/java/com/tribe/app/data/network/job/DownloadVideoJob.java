@@ -53,9 +53,9 @@ public abstract class DownloadVideoJob extends BaseJob {
                 if (response.isSuccessful()) {
                     Observable.just("")
                             .doOnNext(s -> {
-                                if (DEBUG) Log.d(getTag(), "server contacted and has file");
+                                //if (DEBUG) Log.d(getTag(), "server contacted and has file");
                                 boolean writtenToDisk = writeResponseBodyToDisk(response.body());
-                                if (DEBUG) Log.d(getTag(), "file download was a success? " + writtenToDisk);
+                                //if (DEBUG) Log.d(getTag(), "file download was a success? " + writtenToDisk);
                                 saveResult(writtenToDisk);
                             })
                             .subscribeOn(Schedulers.newThread())
@@ -90,6 +90,7 @@ public abstract class DownloadVideoJob extends BaseJob {
 
             InputStream inputStream = null;
             OutputStream outputStream = null;
+            long previousDownloaded = 0;
 
             try {
                 byte[] fileReader = new byte[4096];
@@ -111,7 +112,10 @@ public abstract class DownloadVideoJob extends BaseJob {
 
                     outputStream.write(fileReader, 0, read);
                     fileSizeDownloaded += read;
-                    setProgress(fileSizeDownloaded);
+                    if ((fileSizeDownloaded - previousDownloaded) > ((float) fileSize / 10)) {
+                        previousDownloaded = fileSizeDownloaded;
+                        setProgress(fileSizeDownloaded);
+                    }
                     if (DEBUG) Log.d(getTag(), "file download: " + fileSizeDownloaded + " of " + fileSize);
                 }
 

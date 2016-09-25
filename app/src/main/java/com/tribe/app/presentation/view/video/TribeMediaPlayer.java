@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.video;
 
 import android.content.Context;
 import android.graphics.SurfaceTexture;
+import android.os.Build;
 import android.support.annotation.StringDef;
 
 import com.tribe.app.presentation.view.utils.DeviceUtils;
@@ -107,7 +108,10 @@ public abstract class TribeMediaPlayer {
         }
 
         public TribeMediaPlayer build() {
-            return (!DeviceUtils.supportsExoPlayer(context) || changeSpeed || forceLegacy) ? new LegacyMediaPlayer(this) : new ExoMediaPlayer(this);
+            return (!DeviceUtils.supportsExoPlayer(context)
+                    || (changeSpeed && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                    || forceLegacy)
+                    ? new LegacyMediaPlayer(this) : new ExoMediaPlayer(this);
         }
 
         public String getMedia() {

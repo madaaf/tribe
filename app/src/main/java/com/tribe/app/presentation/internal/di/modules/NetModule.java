@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.internal.di.modules;
 
 import android.content.Context;
+import android.os.ConditionVariable;
 import android.util.Base64;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
@@ -27,6 +28,7 @@ import com.tribe.app.data.network.deserializer.GroupDeserializer;
 import com.tribe.app.data.network.deserializer.HowManyFriendsDeserializer;
 import com.tribe.app.data.network.deserializer.LookupDeserializer;
 import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
+import com.tribe.app.data.network.deserializer.NewMembershipDeserializer;
 import com.tribe.app.data.network.deserializer.NewMessageDeserializer;
 import com.tribe.app.data.network.deserializer.NewTribeDeserializer;
 import com.tribe.app.data.network.deserializer.SearchResultDeserializer;
@@ -41,6 +43,7 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.TribeRealm;
@@ -64,6 +67,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Named;
 import javax.net.ssl.SSLContext;
@@ -81,6 +85,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 @Module(
@@ -89,6 +95,8 @@ import rx.schedulers.Schedulers;
 public class NetModule {
 
     static final int DISK_CACHE_SIZE = (int) DecimalByteUnit.MEGABYTES.toBytes(50);
+    static final ConditionVariable LOCK = new ConditionVariable(true);
+    static final AtomicBoolean isRefreshing = new AtomicBoolean(false);
 
     @Provides
     @PerApplication
@@ -124,6 +132,7 @@ public class NetModule {
                 .registerTypeAdapter(CreateFriendshipEntity.class, new CreateFriendshipDeserializer())
                 .registerTypeAdapter(new TypeToken<List<Integer>>(){}.getType(), new HowManyFriendsDeserializer())
                 .registerTypeAdapter(SearchResultRealm.class, new SearchResultDeserializer())
+                .registerTypeAdapter(MembershipRealm.class, new NewMembershipDeserializer())
                 .registerTypeHierarchyAdapter(Collection.class, new CollectionAdapter())
                 .create();
     }
@@ -214,25 +223,50 @@ public class NetModule {
         });
 
         httpClientBuilder.authenticator((route, response) -> {
-            Call<AccessToken> newAccessTokenReq = loginApi.refreshToken(new RefreshEntity(accessToken.getRefreshToken()));
-            Response<AccessToken> responseRefresh = newAccessTokenReq.execute();
+            if (isRefreshing.compareAndSet(false, true)) {
+                LOCK.close();
 
-            if (responseRefresh.isSuccessful() && responseRefresh.body() != null) {
-                AccessToken newAccessToken = responseRefresh.body();
-                accessToken.setAccessToken(newAccessToken.getAccessToken());
-                accessToken.setRefreshToken(newAccessToken.getRefreshToken());
-                userCache.put(accessToken);
-                tribeAuthorizer.setAccessToken(accessToken);
+                Call<AccessToken> newAccessTokenReq = loginApi.refreshToken(new RefreshEntity(accessToken.getRefreshToken()));
+                Response<AccessToken> responseRefresh = newAccessTokenReq.execute();
+
+                if (responseRefresh.isSuccessful() && responseRefresh.body() != null) {
+                    AccessToken newAccessToken = responseRefresh.body();
+                    accessToken.setAccessToken(newAccessToken.getAccessToken());
+                    accessToken.setRefreshToken(newAccessToken.getRefreshToken());
+                    userCache.put(accessToken);
+                    tribeAuthorizer.setAccessToken(accessToken);
+                } else {
+                    if (response != null && response.body() != null) {
+                        response.body().close();
+                    }
+
+                    if (responseRefresh != null && responseRefresh.errorBody() != null) {
+                        responseRefresh.errorBody().close();
+                    }
+
+                    Observable.just("")
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(s -> ((AndroidApplication) context.getApplicationContext()).logoutUser());
+                }
+
+                LOCK.open();
+                isRefreshing.set(false);
+
+                return response.request().newBuilder()
+                        .header("Authorization", accessToken.getTokenType()
+                                + " " + accessToken.getAccessToken())
+                        .build();
             } else {
-                ((AndroidApplication) context.getApplicationContext()).logoutUser();
+                boolean conditionOpened = LOCK.block(60000);
+                if (conditionOpened) {
+                    return response.request().newBuilder()
+                            .header("Authorization", accessToken.getTokenType()
+                                    + " " + accessToken.getAccessToken())
+                            .build();
+                }
+
+                return null;
             }
-
-            //responseRefresh.errorBody().close();
-
-            return response.request().newBuilder()
-                    .header("Authorization", accessToken.getTokenType()
-                            + " " + accessToken.getAccessToken())
-                    .build();
         });
 
         if (BuildConfig.DEBUG) {

@@ -323,7 +323,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                             && recipient.getReceivedTribes().size() > 0
                             && recipient.hasLoadedTribes();
 
-                    if (!filter) homeGridPresenter.downloadMessages(new ArrayList<>(recipient.getReceivedTribes()));
+                    if (!filter) homeGridPresenter.downloadMessages(recipient.getReceivedTribes().toArray(new Message[recipient.getReceivedTribes().size()]));
 
                     return filter;
                 })
@@ -480,13 +480,13 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                         homeGridPresenter.markTribeListAsRead(recipient);
                     }
                     if (moreType.getMoreType().equals(MoreType.GROUP_INFO)) {
-                        navigator.navigateToGroupInfo(getActivity(),  recipient.getId());
+                        navigator.navigateToGroupInfo(getActivity(), recipient.getSubId());
                     }
                     if (moreType.getMoreType().equals(MoreType.GROUP_LEAVE)) {
                         homeGridPresenter.leaveGroup(recipient.getId());
                     }
                     if (moreType.getMoreType().equals(MoreType.GROUP_DELETE)) {
-                        homeGridPresenter.removeGroup(recipient.getId());
+                        homeGridPresenter.removeGroup(recipient.getSubId());
                     }
 
                     dismissDialogSheetMore();

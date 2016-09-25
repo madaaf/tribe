@@ -1,12 +1,6 @@
 package com.tribe.app.presentation.mvp.presenter;
 
-import android.Manifest;
-
 import com.birbit.android.jobqueue.JobManager;
-import com.birbit.android.jobqueue.JobStatus;
-import com.birbit.android.jobqueue.TagConstraint;
-import com.tbruyelle.rxpermissions.RxPermissions;
-import com.tribe.app.data.network.job.DownloadTribeJob;
 import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
 import com.tribe.app.data.network.job.UpdateMessagesJob;
 import com.tribe.app.data.network.job.UpdateTribeDownloadedJob;
@@ -29,20 +23,13 @@ import com.tribe.app.domain.interactor.user.RemoveGroup;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.SendTribeView;
 import com.tribe.app.presentation.mvp.view.View;
-import com.tribe.app.presentation.utils.FileUtils;
-import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 
-import java.io.File;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-
-public class HomeGridPresenter extends SendTribePresenter implements Presenter {
+public class HomeGridPresenter extends SendTribePresenter {
 
     private static final int PRELOAD_MAX = 5;
 
@@ -82,12 +69,7 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
 
     @Override
     public void onCreate() {
-        jobManager.addJobInBackground(new UpdateTribeDownloadedJob());
-        jobManager.addJobInBackground(new UpdateTribesErrorStatusJob());
-        jobManager.addJobInBackground(new UpdateUserJob());
-        loadFriendList(null);
-        loadTribeList();
-        loadPendingTribeList();
+        onResume();
     }
 
     @Override
@@ -97,7 +79,12 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
 
     @Override
     public void onResume() {
-        // Unused
+        jobManager.addJobInBackground(new UpdateTribeDownloadedJob());
+        jobManager.addJobInBackground(new UpdateTribesErrorStatusJob());
+        jobManager.addJobInBackground(new UpdateUserJob());
+        loadFriendList(null);
+        loadTribeList();
+        loadPendingTribeList();
     }
 
     @Override
@@ -107,16 +94,18 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
 
     @Override
     public void onPause() {
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+        super.onPause();
         diskDeleteTribeUsecase.unsubscribe();
         diskSaveTribeUsecase.unsubscribe();
         diskGetMessageReceivedListUsecase.unsubscribe();
         diskGetPendingTribeListUsecase.unsubscribe();
         diskMarkTribeListAsRead.unsubscribe();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        onPause();
     }
 
     @Override
@@ -154,45 +143,12 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
     }
 
     private void updateReceivedMessageList(List<Message> messageList) {
-        downloadMessages(messageList);
+        downloadMessages(messageList.toArray(new Message[messageList.size()]));
         this.homeGridView.updateReceivedMessages(messageList);
     }
 
     private void updatePendingTribes(List<TribeMessage> pendingTribes) {
         this.homeGridView.updatePendingTribes(pendingTribes);
-    }
-
-    public void downloadMessages(List<Message> messageList) {
-        if (RxPermissions.getInstance(homeGridView.context()).isGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            Observable
-                .just("")
-                .doOnNext(o -> {
-                    for (Message message : messageList) {
-                        if (message instanceof TribeMessage) {
-                            boolean shouldDownload = false;
-
-                            JobStatus jobStatus = jobManager.getJobStatus(message.getLocalId());
-                            File file = FileUtils.getFile(message.getId(), FileUtils.VIDEO);
-
-                            if (jobStatus.equals(JobStatus.UNKNOWN) && (!file.exists() || file.length() == 0)
-                                    && (message.getMessageDownloadingStatus() == null || message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD))) {
-                                shouldDownload = true;
-                                message.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
-                                jobManager.cancelJobsInBackground(null, TagConstraint.ALL, message.getId());
-                            }
-
-                            if (shouldDownload
-                                    && message.getMessageDownloadingStatus() != null
-                                    && message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD)
-                                    && message.getFrom() != null) {
-                                jobManager.addJobInBackground(new DownloadTribeJob((TribeMessage) message));
-                            }
-                        }
-                    }
-                }).subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe();
-        }
     }
 
     public void markTribeListAsRead(Recipient recipient) {
@@ -202,8 +158,8 @@ public class HomeGridPresenter extends SendTribePresenter implements Presenter {
     }
 
 
-    public void leaveGroup(String groupId) {
-        leaveGroup.prepare(groupId);
+    public void leaveGroup(String membershipId) {
+        leaveGroup.prepare(membershipId);
         leaveGroup.execute(new LeaveGroupSubscriber());
     }
 

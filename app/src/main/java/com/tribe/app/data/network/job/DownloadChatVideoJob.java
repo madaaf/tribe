@@ -40,7 +40,7 @@ public class DownloadChatVideoJob extends DownloadVideoJob {
 
     public DownloadChatVideoJob(ChatMessage chatMessage) {
         super(new Params(Priority.HIGH).requireNetwork().groupBy(
-                (chatMessage.isToGroup() ? chatMessage.getTo().getId() : chatMessage.getFrom().getId())
+                (chatMessage.isToGroup() ? chatMessage.getTo().getSubId() : chatMessage.getFrom().getId())
         ).setSingleId(chatMessage.getId()).addTags(chatMessage.getId()));
 
         this.chatMessage = chatMessage;

@@ -159,10 +159,15 @@ public class MessageRealmListDeserializer {
 
         LocationRealm locationRealm = new LocationRealm();
         locationRealm.setId(from.getId());
-        locationRealm.setLatitude(json.get("lat") instanceof JsonNull ? 0.0D : json.get("lat").getAsDouble());
-        locationRealm.setLongitude(json.get("lng") instanceof JsonNull ? 0.0D : json.get("lng").getAsDouble());
+
+        if (!(json.get("coord") instanceof JsonNull)) {
+            JsonObject coord = json.get("coord").getAsJsonObject();
+            locationRealm.setLatitude(coord.get("latitude").getAsDouble());
+            locationRealm.setLongitude(coord.get("longitude").getAsDouble());
+            locationRealm.setHasLocation(true);
+        }
+
         locationRealm.setCity(!(json.get("location") instanceof JsonNull) ? json.getAsJsonObject("location").get("city").getAsString() : null);
-        locationRealm.setHasLocation(!(json.get("lat") instanceof JsonNull));
         tribeRealm.setLocationRealm(locationRealm);
 
         tribeRealm.setMessageReceivingStatus(MessageReceivingStatus.STATUS_RECEIVED);

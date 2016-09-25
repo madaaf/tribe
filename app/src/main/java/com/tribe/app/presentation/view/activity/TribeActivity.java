@@ -15,6 +15,7 @@ import com.tribe.app.presentation.mvp.view.TribeView;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.component.TribePagerView;
+import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 
 import java.util.List;
@@ -78,11 +79,13 @@ public class TribeActivity extends BaseActivity implements TribeView {
     protected void onResume() {
         super.onResume();
         viewTribePager.onResume();
+        tribePresenter.onResume();
     }
 
     @Override
     protected void onPause() {
         viewTribePager.onPause();
+        tribePresenter.onPause();
         super.onPause();
     }
 
@@ -132,19 +135,24 @@ public class TribeActivity extends BaseActivity implements TribeView {
     private void initSubscriptions() {
         subscriptions = new CompositeSubscription();
 
-        subscriptions.add(viewTribePager.onDismissHorizontal().doOnNext(aVoid -> {
-            tribePresenter.markTribeListAsRead(recipient, viewTribePager.getTribeListSeens());
-        }).delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
+        subscriptions.add(
+                viewTribePager
+                .onDismissHorizontal()
+                .doOnNext(aVoid -> tribePresenter.markTribeListAsRead(recipient, viewTribePager.getTribeListSeens()))
+                .delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
 
-        subscriptions.add(viewTribePager.onDismissVertical().doOnNext(aVoid -> {
-            tribePresenter.markTribeListAsRead(recipient, viewTribePager.getTribeListSeens());
-        }).delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
+        subscriptions.add(
+                viewTribePager
+                .onDismissVertical()
+                .doOnNext(aVoid -> tribePresenter.markTribeListAsRead(recipient, viewTribePager.getTribeListSeens()))
+                .delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
 
         subscriptions.add(viewTribePager.onRecordStart()
                 .map(view -> tribePresenter.createTribe(currentUser, recipient, viewTribePager.getTribeMode()))
                 .subscribe(tribe -> viewTribePager.startRecording(tribe.getLocalId())));
 
-        subscriptions.add(viewTribePager.onRecordEnd()
+        subscriptions.add(
+                viewTribePager.onRecordEnd()
                 .subscribe(view -> {
                     viewTribePager.stopRecording();
                     viewTribePager.showTapToCancel(currentTribe);
@@ -170,6 +178,13 @@ public class TribeActivity extends BaseActivity implements TribeView {
                     startActivity(intent);
                     finish();
                 }));
+
+        subscriptions.add(viewTribePager.onErrorTribe()
+                .subscribe(tribeMessage -> {
+                    FileUtils.delete(tribeMessage.getLocalId(), FileUtils.VIDEO);
+                    tribeMessage.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
+                    tribePresenter.downloadMessages(tribeMessage);
+                }));
     }
 
     private void initDependencyInjector() {
@@ -183,7 +198,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
     private void initPresenter() {
         tribePresenter.onStart();
         tribePresenter.attachView(this);
-        tribePresenter.loadTribes(recipient.getId());
+        tribePresenter.loadTribes(recipient.getSubId());
     }
 
     @Override
@@ -230,6 +245,10 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
     @Override
     public void updateNewTribes(List<TribeMessage> tribeList) {
-        viewTribePager.addItems(tribeList);
+        for (TribeMessage tribe : tribeList) {
+            if (tribe.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD)) tribePresenter.downloadMessages(tribe);
+        }
+
+        viewTribePager.updateItems(tribeList);
     }
 }

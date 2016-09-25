@@ -14,7 +14,7 @@ public class LocationRealm extends RealmObject {
     private double longitude;
     private double latitude;
     private String city;
-    private boolean hasLocation;
+    private boolean hasLocation = false;
 
     public LocationRealm() {
 

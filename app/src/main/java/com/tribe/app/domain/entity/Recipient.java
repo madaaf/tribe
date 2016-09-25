@@ -58,14 +58,7 @@ public abstract class Recipient implements Serializable {
     public boolean hasLoadedTribes() {
         if (!(receivedTribes != null && receivedTribes.size() > 0)) return false;
 
-        for (TribeMessage tribe : receivedTribes) {
-            if (tribe.getMessageDownloadingStatus() != null
-                    && tribe.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADED)) {
-                return true;
-            }
-        }
-
-        return false;
+        return receivedTribes.get(0).getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADED);
     }
 
     public List<TribeMessage> getReceivedTribes() {

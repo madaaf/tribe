@@ -39,7 +39,9 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -173,6 +175,7 @@ public class TribePagerView extends FrameLayout {
     private int currentOffsetBottom;
     private List<TribeMessage> tribeList;
     private List<TribeMessage> tribeListSeens;
+    private Map<String, TribeMessage> toUpdate;
     private TribeComponentView currentView;
     private boolean inSnoozeMode = false;
     private @CameraWrapper.TribeMode String tribeMode;
@@ -209,7 +212,7 @@ public class TribePagerView extends FrameLayout {
     private final PublishSubject<View> recordStarted = PublishSubject.create();
     private final PublishSubject<View> recordEnded = PublishSubject.create();
     private final PublishSubject<View> clickEnableLocation = PublishSubject.create();
-
+    private final PublishSubject<TribeMessage> onErrorTribe = PublishSubject.create();
 
     public TribePagerView(Context context) {
         super(context);
@@ -242,9 +245,7 @@ public class TribePagerView extends FrameLayout {
         springAlpha.addListener(springAlphaListener);
         springAlphaSwipeDown.addListener(springAlphaSwipeDownListener);
 
-        if (currentView == null)
-            computeCurrentView();
-
+        computeCurrentView();
         currentView.releasePlayer();
 
         tribePagerAdapter.onDestroy();
@@ -269,6 +270,7 @@ public class TribePagerView extends FrameLayout {
         screenUtils = applicationComponent.screenUtils();
 
         tribeListSeens = new ArrayList<>();
+        toUpdate = new HashMap<>();
 
         initViewPager();
         initDimen();
@@ -283,10 +285,7 @@ public class TribePagerView extends FrameLayout {
     public void onPause() {
         cameraWrapper.onPause(false);
 
-        if (currentView == null) {
-            computeCurrentView();
-        }
-
+        computeCurrentView();
         currentView.pausePlayer();
     }
 
@@ -305,17 +304,24 @@ public class TribePagerView extends FrameLayout {
             }
 
             public void onPageSelected(int currentPosition) {
-                tribeListSeens.add(tribeList.get(currentPosition));
+                TribeMessage tribe = tribeList.get(currentPosition);
+                if (!tribe.isDownloadPending()) tribeListSeens.add(tribe);
                 updateNbTribes();
                 tribePagerAdapter.setCurrentPosition(currentPosition);
-                currentView = (TribeComponentView) viewPager.findViewWithTag(currentPosition);
-                tribePagerAdapter.releaseTribe((TribeComponentView) viewPager.findViewWithTag(previousPosition));
-                tribePagerAdapter.startTribe(currentView);
+                computeCurrentView();
+                tribePagerAdapter.releaseTribe((TribeComponentView) viewPager.findViewWithTag(tribeList.get(previousPosition).getId()));
+                Observable.timer(500, TimeUnit.MILLISECONDS)
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(t -> {
+                            if (!tribe.isDownloadPending()) tribePagerAdapter.startTribe(currentView);
+                        });
                 previousPosition = currentPosition;
             }
         });
 
         subscriptions.add(tribePagerAdapter.onClickEnableLocation().subscribe(clickEnableLocation));
+        subscriptions.add(tribePagerAdapter.onErrorTribe().subscribe(onErrorTribe));
     }
 
     private void initUI() {
@@ -380,7 +386,6 @@ public class TribePagerView extends FrameLayout {
                 .subscribe(bool -> {
                     cameraWrapper.setVisibility(View.VISIBLE);
                     cameraWrapper.onResume(false);
-
                     computeCurrentView();
                     currentView.pausePlayer();
                     inReplyMode = true;
@@ -444,6 +449,12 @@ public class TribePagerView extends FrameLayout {
     }
 
     public void setItems(List<TribeMessage> items, int color) {
+        for (TribeMessage message : items) {
+            if (message.isDownloadPending() && !toUpdate.containsKey(message)) {
+                toUpdate.put(message.getLocalId(), message);
+            }
+        }
+
         this.color = color;
         this.tribeList = items;
         this.tribeListSeens.add(tribeList.get(0));
@@ -452,13 +463,35 @@ public class TribePagerView extends FrameLayout {
         updateNbTribes();
     }
 
-    public void addItems(List<TribeMessage> items) {
+    public void updateItems(List<TribeMessage> items) {
         List<TribeMessage> newTribeList = new ArrayList<>();
         Date newestDate = this.tribeList.get(this.tribeList.size() - 1).getRecordedAt();
 
         for (TribeMessage message : items) {
             if (message.getRecordedAt().after(newestDate)) {
                 newTribeList.add(message);
+            }
+
+            if (message.isDownloadPending() && !toUpdate.containsKey(message)) {
+                toUpdate.put(message.getLocalId(), message);
+            }
+
+            if (message.isDownloadPending()) {
+                TribeComponentView viewToUpdate = (TribeComponentView) viewPager.findViewWithTag(message.getId());
+                if (viewToUpdate != null) {
+                    viewToUpdate.setTribe(message);
+                    viewToUpdate.showProgress();
+                }
+            } else if (toUpdate.containsKey(message.getLocalId())) {
+                toUpdate.remove(message.getLocalId());
+
+                TribeComponentView viewToUpdate = (TribeComponentView) viewPager.findViewWithTag(message.getLocalId());
+                if (viewToUpdate != null) {
+                    viewToUpdate.setTribe(message);
+                    tribeListSeens.add(message);
+                    boolean isCurrent = tribeList.get(viewPager.getCurrentItem()).getLocalId().equals(message.getLocalId());
+                    viewToUpdate.preparePlayer(isCurrent);
+                }
             }
         }
 
@@ -472,6 +505,8 @@ public class TribePagerView extends FrameLayout {
     private void updateNbTribes() {
         int nb = (tribeList.size() - tribeListSeens.size());
         if (nb > 0) {
+            this.imgCancelReply.setTranslationX(screenUtils.getWidthPx());
+            this.layoutNbTribes.setVisibility(View.VISIBLE);
             this.txtNbTribes.setText("" + nb);
         } else {
             this.imgCancelReply.setTranslationX(0);
@@ -796,7 +831,6 @@ public class TribePagerView extends FrameLayout {
         public void onSpringUpdate(Spring spring) {
             if (isAttachedToWindow()) {
                 float value = (float) spring.getCurrentValue();
-
                 computeCurrentView();
                 currentView.setIconsAlpha(value);
             }
@@ -808,7 +842,6 @@ public class TribePagerView extends FrameLayout {
         public void onSpringUpdate(Spring spring) {
             if (isAttachedToWindow()) {
                 float value = (float) spring.getCurrentValue();
-
                 computeCurrentView();
                 currentView.setSwipeDownAlpha(value);
             }
@@ -1026,7 +1059,7 @@ public class TribePagerView extends FrameLayout {
     }
 
     private void computeCurrentView() {
-        if (currentView == null) currentView = (TribeComponentView) viewPager.findViewWithTag(viewPager.getCurrentItem());
+        currentView = (TribeComponentView) viewPager.findViewWithTag(tribeList.get(viewPager.getCurrentItem()).getId());
     }
 
     private void computeUpToRight(float offsetX) {
@@ -1156,5 +1189,9 @@ public class TribePagerView extends FrameLayout {
 
     public Observable<View> onClickEnableLocation() {
         return clickEnableLocation;
+    }
+
+    public Observable<TribeMessage> onErrorTribe() {
+        return onErrorTribe;
     }
 }

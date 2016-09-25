@@ -114,11 +114,11 @@ public class DiskUserDataRepository implements UserRepository {
 
                         for (TribeMessage tribe : tribes) {
                             if (tribe.getFrom() != null) {
-                                if (!tribe.getFrom().getId().equals(user.getId()) && (tribe.isToGroup() && tribe.getTo().getId().equals(recipient.getId()))
-                                        || (!tribe.isToGroup() && tribe.getFrom().getId().equals(recipient.getId()))) {
+                                if (!tribe.getFrom().getId().equals(user.getId()) && (tribe.isToGroup() && tribe.getTo().getSubId().equals(recipient.getSubId()))
+                                        || (!tribe.isToGroup() && tribe.getFrom().getId().equals(recipient.getSubId()))) {
                                     receivedTribes.add(tribe);
                                 } else if (tribe.getFrom().getId().equals(user.getId())
-                                        && tribe.getTo().getId().equals(recipient.getId())) {
+                                        && tribe.getTo().getSubId().equals(recipient.getSubId())) {
                                     if (tribe.getMessageSendingStatus().equals(MessageSendingStatus.STATUS_ERROR))
                                         errorTribes.add(tribe);
                                     else sentTribes.add(tribe);
@@ -132,8 +132,8 @@ public class DiskUserDataRepository implements UserRepository {
 
                         for (ChatMessage chatMessage : chatMessages) {
                             if (chatMessage.getFrom() != null) {
-                                if (!chatMessage.getFrom().getId().equals(user.getId()) && (chatMessage.isToGroup() && chatMessage.getTo().getId().equals(recipient.getId()))
-                                        || (!chatMessage.isToGroup() && chatMessage.getFrom().getId().equals(recipient.getId()))) {
+                                if (!chatMessage.getFrom().getId().equals(user.getId()) && (chatMessage.isToGroup() && chatMessage.getTo().getSubId().equals(recipient.getSubId()))
+                                        || (!chatMessage.isToGroup() && chatMessage.getFrom().getId().equals(recipient.getSubId()))) {
                                     receivedChatMessage.add(chatMessage);
                                 }
                             }

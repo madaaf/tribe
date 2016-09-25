@@ -9,6 +9,7 @@ import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.DiskMarkTribeListAsRead;
 import com.tribe.app.domain.interactor.tribe.GetNotSeenDiskTribeList;
 import com.tribe.app.domain.interactor.tribe.GetPendingTribeList;
+import com.tribe.app.domain.interactor.tribe.GetReceivedDiskTribeList;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.domain.interactor.user.AddMembersToGroup;
@@ -38,7 +39,6 @@ import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
-import retrofit2.http.POST;
 
 /**
  * Created by tiago on 19/05/2016.
@@ -131,6 +131,13 @@ public class UserModule {
     @Named("diskGetNotSeenTribes")
     UseCaseDisk provideDiskGetNotSeenTribes(GetNotSeenDiskTribeList getNotSeenDiskTribeList) {
         return getNotSeenDiskTribeList;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("diskGetReceivedTribeList")
+    UseCaseDisk provideDiskGetReceivedTribes(GetReceivedDiskTribeList getReceivedDiskTribeList) {
+        return getReceivedDiskTribeList;
     }
 
     @Provides

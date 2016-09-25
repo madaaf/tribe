@@ -43,7 +43,7 @@ public class SendChatJob extends BaseJob {
     private ChatRealm chatRealm;
 
     public SendChatJob(ChatMessage chatMessage) {
-        super(new Params(Priority.HIGH).groupBy(chatMessage.getTo().getId()).setSingleId(chatMessage.getLocalId()));
+        super(new Params(Priority.HIGH).groupBy(chatMessage.getTo().getSubId()).setSingleId(chatMessage.getLocalId()));
         this.chatMessage = chatMessage;
     }
 

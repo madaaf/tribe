@@ -70,7 +70,7 @@ public class ExoMediaPlayer extends TribeMediaPlayer implements MediaCodecVideoT
 
             @Override
             public void onPlayerError(ExoPlaybackException error) {
-                onErrorPlayer.onNext(ERROR);
+                onErrorPlayer.onNext(error.toString());
                 error.printStackTrace();
             }
         });

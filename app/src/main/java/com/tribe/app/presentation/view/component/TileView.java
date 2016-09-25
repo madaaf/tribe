@@ -536,15 +536,15 @@ public class TileView extends SquareFrameLayout {
 
     public void setStatus(List<TribeMessage> receivedTribes, List<TribeMessage> sentTribes,
                           List<TribeMessage> errorTribes, List<ChatMessage> receivedMessages) {
-        TribeMessage lastSentTribe = computeMostRecentSentTribe(sentTribes);
+        TribeMessage lastTribe = computeMostRecentTribe(receivedTribes, sentTribes, errorTribes);
 
         boolean isFinalStatus = false, isLoading = false;
         int label = R.string.grid_friendship_status_default;
         int drawableRes = R.drawable.picto_tap_to_view;
         int textAppearence = R.style.Caption_Black_40;
 
-        if (lastSentTribe != null && lastSentTribe.getMessageSendingStatus() != null) {
-            switch (lastSentTribe.getMessageSendingStatus()) {
+        if (lastTribe != null && lastTribe.getMessageSendingStatus() != null) {
+            switch (lastTribe.getMessageSendingStatus()) {
                 case MessageSendingStatus.STATUS_SENDING:case MessageSendingStatus.STATUS_PENDING:
                     label = R.string.grid_friendship_status_sending;
                     drawableRes = R.drawable.picto_sending;
@@ -569,15 +569,14 @@ public class TileView extends SquareFrameLayout {
         }
 
         if (!isFinalStatus && receivedTribes != null && receivedTribes.size() > 0) {
-            int nbUnseenReceived = 0;
+            boolean firstLoaded = false;
+            TribeMessage tribeMessage = receivedTribes.get(0);
 
-            for (TribeMessage message : receivedTribes) {
-                if (message.getMessageDownloadingStatus() != null && message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADED)) {
-                    nbUnseenReceived++;
-                }
+            if (tribeMessage.getMessageDownloadingStatus() != null && tribeMessage.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADED)) {
+                firstLoaded = true;
             }
 
-            if (nbUnseenReceived > 0) {
+            if (firstLoaded) {
                 label = R.string.grid_friendship_status_new_messages;
                 drawableRes = R.drawable.picto_tap_to_view;
                 textAppearence = R.style.Caption_Black_40;

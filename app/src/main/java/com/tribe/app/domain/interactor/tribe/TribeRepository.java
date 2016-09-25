@@ -33,17 +33,25 @@ public interface TribeRepository {
      * Get an {@link Observable} which will emit a {@link List< TribeMessage >} containing infos
      * about the tribes not seen and sent.
      *
-     * @param friendshipId (friendship or group)
+     * @param recipientId (friendship or group)
      */
-    Observable<List<TribeMessage>> tribesNotSeen(String friendshipId);
+    Observable<List<TribeMessage>> tribesNotSeen(String recipientId);
 
     /**
      * Get an {@link Observable} which will emit a {@link List< TribeMessage >} containing infos
      * about the tribes received.
      *
-     * @param friendshipId (friendship or group)
+     * @param recipientId (friendship or group)
      */
-    Observable<List<TribeMessage>> tribesReceived(String friendshipId);
+    Observable<List<TribeMessage>> tribesReceived(String recipientId);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link List< TribeMessage >} containing infos
+     * about the tribes received and not seen.
+     *
+     * @param recipientId (friendship or group)
+     */
+    Observable<List<TribeMessage>> tribesForARecipient(String recipientId);
 
     /**
      * Get an {@link Observable} which will emit a {@link List< TribeMessage >} containing infos

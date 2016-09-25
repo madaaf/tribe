@@ -71,6 +71,7 @@ public class DefaultPreview extends SurfaceView implements Preview, Camera.Pictu
         requestLayout();
 
         cameraHelper.setDisplayOrientation(cameraHelper.getOptimalOrientation());
+        cameraHelper.setRotation(cameraHelper.getOptimalOrientation());
 
         try {
             cameraHelper.setPreviewDisplay(getHolder());

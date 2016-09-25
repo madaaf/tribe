@@ -36,5 +36,6 @@ public interface UserCache {
     void addAdminsToGroup(String groupId, List<String> memberIds);
     void removeAdminsFromGroup(String groupId, List<String> memberIds);
     void removeGroup(String groupId);
+    void removeGroupFromMembership(String membershipId);
     void insertMembership(String userId, MembershipRealm membershipRealm);
 }

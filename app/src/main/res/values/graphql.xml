@@ -102,8 +102,10 @@
             to: \"%1$s\",
             type: \"%2$s\",
             recorded_at: \"%3$s\",
-            lat: %4$s,
-            lng: %5$s
+            coord : {
+                latitude : %4$s,
+                longitude : %5$s
+            }
         }
     </string>
 
@@ -162,8 +164,10 @@
                     to_group
                     type url
                     recorded_at
-                    lat
-                    lng
+                    coord {
+                        latitude
+                        longitude
+                    }
 
                     weather {
                         temp_f
@@ -472,7 +476,7 @@
 
     <string name="leave.group" translatable="false">
         mutation {
-            removeMembership(id: \"%1$s\")
+            removeMembership(membershipId: \"%1$s\")
         }
     </string>
 

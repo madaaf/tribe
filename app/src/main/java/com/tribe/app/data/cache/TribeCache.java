@@ -40,10 +40,11 @@ public interface TribeCache {
 
     RealmList<MessageRecipientRealm> createTribeRecipientRealm(List<MessageRecipientRealm> tribeRecipientRealm);
     Observable<Void> delete(TribeRealm tribeRealm);
-    Observable<List<TribeRealm>> tribesNotSeen(String friendshipId);
-    List<TribeRealm> tribesNotSeenNoObs(String friendshipId);
-    Observable<List<TribeRealm>> tribesReceived(String friendshipId);
-    List<TribeRealm> tribesReceivedNoObs(String friendshipId);
+    Observable<List<TribeRealm>> tribesNotSeen(String recipientId);
+    List<TribeRealm> tribesNotSeenNoObs(String recipientId);
+    Observable<List<TribeRealm>> tribesReceived(String recipientId);
+    Observable<List<TribeRealm>> tribesForARecipient(String recipientId);
+    List<TribeRealm> tribesReceivedNoObs(String recipientId);
     Observable<List<TribeRealm>> tribesPending();
     List<TribeRealm> tribesNotSent();
     List<TribeRealm> tribesSent(Set<String> toIds);

@@ -50,8 +50,8 @@ public class TribeRealm extends RealmObject implements MessageRealmInterface {
     private LocationRealm locationRealm;
     private RealmList<MessageRecipientRealm> recipientList;
     private String transcript;
-    private int progress;
-    private long totalSize;
+    private long progress = 0L;
+    private long totalSize = 0L;
 
     public void setId(String id) {
         this.id = id;
@@ -197,6 +197,23 @@ public class TribeRealm extends RealmObject implements MessageRealmInterface {
 
     public void setTranscript(String transcript) {
         this.transcript = transcript;
+    }
+
+
+    public long getProgress() {
+        return progress;
+    }
+
+    public void setProgress(long progress) {
+        this.progress = progress;
+    }
+
+    public long getTotalSize() {
+        return totalSize;
+    }
+
+    public void setTotalSize(long totalSize) {
+        this.totalSize = totalSize;
     }
 
 }

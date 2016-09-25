@@ -61,20 +61,22 @@ public class UserCacheImpl implements UserCache {
 
                         RealmList<UserRealm> membersEnd = new RealmList<>();
 
-                        for (UserRealm member : membershipRealm.getGroup().getMembers()) {
-                            UserRealm memberDB = obsRealm.where(UserRealm.class).equalTo("id", member.getId()).findFirst();
+                        if (membershipRealm.getGroup().getMembers() != null) {
+                            for (UserRealm member : membershipRealm.getGroup().getMembers()) {
+                                UserRealm memberDB = obsRealm.where(UserRealm.class).equalTo("id", member.getId()).findFirst();
 
-                            if (memberDB == null) {
-                                memberDB = obsRealm.copyToRealmOrUpdate(member);
+                                if (memberDB == null) {
+                                    memberDB = obsRealm.copyToRealmOrUpdate(member);
+                                }
+
+                                membersEnd.add(memberDB);
                             }
-
-                            membersEnd.add(memberDB);
                         }
 
                         membershipDB.getGroup().setMembers(membersEnd);
                     } else {
-                        membershipDB.setUpdatedAt(new Date());
-                        MembershipRealm addedMembership = obsRealm.copyToRealmOrUpdate(membershipDB);
+                        membershipRealm.setUpdatedAt(new Date());
+                        MembershipRealm addedMembership = obsRealm.copyToRealmOrUpdate(membershipRealm);
                         userDB.getMemberships().add(addedMembership);
                     }
 
@@ -338,11 +340,33 @@ public class UserCacheImpl implements UserCache {
     @Override
     public void removeGroup(String groupId) {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        GroupRealm groupRealm = realm.where(GroupRealm.class).equalTo("id", groupId).findFirst();
-        if (groupRealm != null) groupRealm.deleteFromRealm();
-        realm.commitTransaction();
-        realm.close();
+        try {
+            realm.beginTransaction();
+            MembershipRealm membershipRealm = realm.where(MembershipRealm.class).equalTo("group.id", groupId).findFirst();
+            if (membershipRealm != null) membershipRealm.deleteFromRealm();
+            realm.commitTransaction();
+        } catch (IllegalStateException ex) {
+            ex.printStackTrace();
+            if (realm.isInTransaction()) realm.cancelTransaction();
+        } finally {
+            realm.close();
+        }
+    }
+
+    @Override
+    public void removeGroupFromMembership(String membershipId) {
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            realm.beginTransaction();
+            MembershipRealm membershipRealm = realm.where(MembershipRealm.class).equalTo("id", membershipId).findFirst();
+            if (membershipRealm != null) membershipRealm.deleteFromRealm();
+            realm.commitTransaction();
+        } catch (IllegalStateException ex) {
+            ex.printStackTrace();
+            if (realm.isInTransaction()) realm.cancelTransaction();
+        } finally {
+            realm.close();
+        }
     }
 
     @Override

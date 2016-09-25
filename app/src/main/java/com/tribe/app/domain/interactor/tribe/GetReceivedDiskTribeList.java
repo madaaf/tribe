@@ -28,6 +28,6 @@ public class GetReceivedDiskTribeList extends UseCaseDisk {
 
     @Override
     protected Observable buildUseCaseObservable() {
-        return tribeRepository.tribesReceived(recipientId);
+        return tribeRepository.tribesForARecipient(recipientId);
     }
 }

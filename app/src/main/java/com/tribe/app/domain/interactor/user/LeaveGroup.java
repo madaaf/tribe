@@ -15,7 +15,7 @@ import rx.Observable;
 public class LeaveGroup extends UseCase {
 
     private UserRepository userRepository;
-    private String groupId;
+    private String membershipId;
 
     @Inject
     LeaveGroup(CloudUserDataRepository userDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
@@ -23,12 +23,12 @@ public class LeaveGroup extends UseCase {
         this.userRepository = userDataRepository;
     }
 
-    public void prepare(String groupId) {
-        this.groupId = groupId;
+    public void prepare(String membershipId) {
+        this.membershipId = membershipId;
     }
 
     @Override
     protected Observable buildUseCaseObservable() {
-        return this.userRepository.leaveGroup(groupId);
+        return this.userRepository.leaveGroup(membershipId);
     }
 }
