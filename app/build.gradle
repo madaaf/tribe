@@ -95,8 +95,8 @@ android {
         }
 
         tribe2 {
-            debuggable false
-            signingConfig signingConfigs.release
+            debuggable true
+            signingConfig signingConfigs.debug
             applicationIdSuffix = ".Tribe2"
             resValue "string", "app_name", "Tribe2"
 

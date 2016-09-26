@@ -42,7 +42,7 @@ public class UpdateChatHistoryJob extends BaseJob {
 
     @Override
     public void onRun() throws Throwable {
-        manageChatHistory.prepare(recipient instanceof Membership, recipient.getId());
+        manageChatHistory.prepare(recipient instanceof Membership, recipient instanceof Membership ? recipient.getSubId() : recipient.getId());
         manageChatHistory.execute(new UpdateChatHistorySubscriber());
     }
 
