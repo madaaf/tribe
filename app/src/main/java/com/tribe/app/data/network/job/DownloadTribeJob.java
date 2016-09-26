@@ -37,8 +37,8 @@ public class DownloadTribeJob extends DownloadVideoJob {
 
     public DownloadTribeJob(TribeMessage tribe) {
         super(new Params(Priority.HIGH).requireNetwork().groupBy(
-                (tribe.isToGroup() ? tribe.getTo().getId() : tribe.getFrom().getId())
-        ).setSingleId(tribe.getId()).addTags(tribe.getId()));
+                (tribe.isToGroup() ? tribe.getTo().getSubId() : tribe.getFrom().getId())
+        ).setSingleId(tribe.getLocalId()).singleInstanceBy(tribe.getLocalId()).addTags(tribe.getLocalId()));
 
         this.tribe = tribe;
     }
@@ -88,12 +88,14 @@ public class DownloadTribeJob extends DownloadVideoJob {
 
     @Override
     protected void setProgress(long progress) {
-
+        Pair<String, Object> updatePair = Pair.create(TribeRealm.PROGRESS, progress);
+        update(updatePair);
     }
 
     @Override
     protected void setTotalSize(long totalSize) {
-
+        Pair<String, Object> updatePair = Pair.create(TribeRealm.TOTAL_SIZE, totalSize);
+        update(updatePair);
     }
 
     @Override

@@ -30,6 +30,7 @@ import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.LocationRealm;
+import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PhoneRealm;
 import com.tribe.app.data.realm.PinRealm;
@@ -164,7 +165,9 @@ public class CloudUserDataStore implements UserDataStore {
         return Observable.zip(this.tribeApi.getUserInfos(context.getString(R.string.user_infos,
                 !StringUtils.isEmpty(lastUserRequest.get()) ? context.getString(R.string.input_start, lastUserRequest.get()) : "",
                 !StringUtils.isEmpty(lastUserRequest.get()) ? context.getString(R.string.input_start, lastUserRequest.get()) : "",
-                context.getString(R.string.userfragment_infos))),
+                context.getString(R.string.userfragment_infos),
+                context.getString(R.string.groupfragment_info),
+                context.getString(R.string.membershipfragment_info))),
                 reactiveLocationProvider.getLastKnownLocation().onErrorReturn(throwable -> null).defaultIfEmpty(null),
                 (userRealm, location) -> {
                     if (location != null) {
@@ -178,7 +181,9 @@ public class CloudUserDataStore implements UserDataStore {
 
                     return userRealm;
                 })
-                .doOnNext(user -> lastUserRequest.set(initRequest))
+                .doOnNext(user -> {
+                    lastUserRequest.set(initRequest);
+                })
                 .doOnNext(saveToCacheUser);
     }
 
@@ -213,14 +218,7 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<Installation> removeInstall() {
-        return this.tribeApi.removeInstall(context.getString(R.string.install_remove, installation.getId())).doOnNext(aVoid -> {
-                    //                    accessToken.setAccessToken(null);
-                    //                    installation.setId(null);
-                    //                    userCache.put((UserRealm) null);
-                    // TODO: remove all files and clear databasee
-
-                }
-        );
+        return this.tribeApi.removeInstall(context.getString(R.string.install_remove, installation.getId()));
     }
 
     @Override
@@ -774,12 +772,12 @@ public class CloudUserDataStore implements UserDataStore {
         String request = context.getString(R.string.get_group_members, groupId, context.getString(R.string.userfragment_infos), context.getString(R.string.groupfragment_info));
         return this.tribeApi.getGroupMembers(request)
                 .doOnNext(groupRealm -> {
-                    List<GroupRealm> dbGroups = userCache.userInfosNoObs(accessToken.getUserId()).getGroups();
+                    List<MembershipRealm> dbMemberships = userCache.userInfosNoObs(accessToken.getUserId()).getMemberships();
                     GroupRealm dbGroup = null;
 
-                    for (GroupRealm group : dbGroups) {
-                        if (group.getId().equals(groupId)) {
-                            dbGroup = group;
+                    for (MembershipRealm membershipRealm : dbMemberships) {
+                        if (membershipRealm.getGroup().getId().equals(groupId)) {
+                            dbGroup = membershipRealm.getGroup();
                         }
                     }
 
@@ -795,8 +793,15 @@ public class CloudUserDataStore implements UserDataStore {
         final String request = context.getString(R.string.create_group, groupName, privateGroup, idList, context.getString(R.string.groupfragment_info));
         if (pictureUri == null) {
             return this.tribeApi.createGroup(request)
-                    .doOnNext(groupRealm -> {
-                        userCache.createGroup(accessToken.getUserId(), groupRealm.getId(), groupName, memberIds, isPrivate, groupRealm.getPicture());
+                    .doOnNext(groupRealm -> userCache.insertGroup(groupRealm))
+                    .flatMap(groupRealm -> {
+                        final String requestCreateMembership = context.getString(R.string.create_membership, groupRealm.getId(),
+                                context.getString(R.string.membershipfragment_info),
+                                context.getString(R.string.groupfragment_info));
+                        return this.tribeApi.createMembership(requestCreateMembership);
+                    }, (groupRealm, newMembership) -> {
+                        userCache.insertMembership(user.getId(), newMembership);
+                        return groupRealm;
                     });
         } else {
             RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
@@ -823,8 +828,13 @@ public class CloudUserDataStore implements UserDataStore {
             body = MultipartBody.Part.createFormData("group_pic", "group_pic.jpg", requestFile);
 
             return this.tribeApi.createGroupMedia(query, body)
-                    .doOnNext(groupRealm -> {
-                        userCache.createGroup(accessToken.getUserId(), groupRealm.getId(), groupName, memberIds, isPrivate, groupRealm.getPicture());
+                    .doOnNext(groupRealm -> userCache.insertGroup(groupRealm))
+                    .flatMap(groupRealm -> {
+                        final String requestCreateMembership = context.getString(R.string.create_membership, groupRealm.getId(), context.getString(R.string.membershipfragment_info));
+                        return this.tribeApi.createMembership(requestCreateMembership);
+                    }, (groupRealm, newMembership) -> {
+                        userCache.insertMembership(user.getId(), newMembership);
+                        return groupRealm;
                     });
         }
     }
@@ -919,21 +929,15 @@ public class CloudUserDataStore implements UserDataStore {
     public Observable<Void> removeGroup(String groupId) {
         String request = context.getString(R.string.remove_group, groupId);
         return this.tribeApi.removeGroup(request)
-                .doOnError(throwable -> {
-                    throwable.printStackTrace();
-                })
-                .doOnNext(aVoid -> {
-                    userCache.removeGroup(groupId);
-                });
+                .doOnError(throwable -> throwable.printStackTrace())
+                .doOnNext(aVoid -> userCache.removeGroup(groupId));
     }
 
     @Override
-    public Observable<Void> leaveGroup(String groupId) {
-        String request = context.getString(R.string.leave_group, groupId);
+    public Observable<Void> leaveGroup(String membershipId) {
+        String request = context.getString(R.string.leave_group, membershipId);
         return this.tribeApi.leaveGroup(request)
-                .doOnNext(aVoid -> {
-                    userCache.removeGroup(groupId);
-                });
+                .doOnNext(aVoid -> userCache.removeGroupFromMembership(membershipId));
     }
 
     public String listToJson(List<String> list) {

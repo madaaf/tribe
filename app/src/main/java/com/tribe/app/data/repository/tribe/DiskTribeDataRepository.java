@@ -61,15 +61,21 @@ public class DiskTribeDataRepository implements TribeRepository {
     }
 
     @Override
-    public Observable<List<TribeMessage>> tribesNotSeen(String friendshipId) {
+    public Observable<List<TribeMessage>> tribesNotSeen(String recipientId) {
         final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
-        return tribeDataStore.tribesNotSeen(friendshipId).map(collection -> tribeRealmDataMapper.transform(collection));
+        return tribeDataStore.tribesNotSeen(recipientId).map(collection -> tribeRealmDataMapper.transform(collection));
     }
 
     @Override
-    public Observable<List<TribeMessage>> tribesReceived(String friendshipId) {
+    public Observable<List<TribeMessage>> tribesReceived(String recipientId) {
         final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
-        return tribeDataStore.tribesReceived(friendshipId).map(collection -> tribeRealmDataMapper.transform(collection));
+        return tribeDataStore.tribesReceived(recipientId).map(collection -> tribeRealmDataMapper.transform(collection));
+    }
+
+    @Override
+    public Observable<List<TribeMessage>> tribesForARecipient(String recipientId) {
+        final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
+        return tribeDataStore.tribesForARecipient(recipientId).map(collection -> tribeRealmDataMapper.transform(collection));
     }
 
     @Override
@@ -84,6 +90,4 @@ public class DiskTribeDataRepository implements TribeRepository {
         return tribeDataStore.markTribeListAsRead(tribeRealmDataMapper.transform(tribeList))
                 .map(collection -> tribeRealmDataMapper.transform(collection));
     }
-
-
 }

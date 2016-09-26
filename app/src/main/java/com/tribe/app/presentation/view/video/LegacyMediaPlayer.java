@@ -45,13 +45,14 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
-        onErrorPlayer.onNext(ERROR);
+        onErrorPlayer.onNext("Error : " + what + " / extra : " + extra);
         return false;
     }
 
     @Override
     public void onPrepared(MediaPlayer mp) {
         onPreparedPlayer.onNext(true);
+        mediaPlayer.seekTo(0);
 
         if (autoStart) {
             play();

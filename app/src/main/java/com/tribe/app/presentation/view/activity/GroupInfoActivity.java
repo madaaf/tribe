@@ -12,7 +12,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.fragment.GroupMemberFragment;
@@ -138,7 +137,7 @@ public class GroupInfoActivity extends BaseActivity {
 
     private void goToGroupMembers() {
         Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList("groupMemberList", groupsGridFragment.getGroupMemberList());
+        //bundle.putParcelableArrayList("groupMemberList", groupsGridFragment.getGroupMemberList());
         bundle.putString("groupId", groupsGridFragment.getGroupId());
         groupMemberFragment = GroupMemberFragment.newInstance(bundle);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

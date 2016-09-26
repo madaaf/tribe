@@ -5,6 +5,7 @@ import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.TribeRealm;
@@ -151,4 +152,11 @@ public interface TribeApi {
     @POST("/graphql")
     Observable<Void> leaveGroup(@Field("query") String query);
 
+    @FormUrlEncoded
+    @POST("/graphql")
+    Observable<MembershipRealm> createMembership(@Field("query") String query);
+
+    @FormUrlEncoded
+    @POST("/graphql")
+    Observable<UserRealm> updateScore(@Field("query") String query);
 }

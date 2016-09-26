@@ -14,8 +14,10 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.f2prateek.rx.preferences.Preference;
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Location;
 import com.tribe.app.domain.entity.TribeMessage;
@@ -27,6 +29,7 @@ import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.video.TribeMediaPlayer;
 import com.tribe.app.presentation.view.widget.AvatarView;
@@ -51,6 +54,8 @@ import rx.subscriptions.CompositeSubscription;
  * Created by tiago on 10/06/2016.
  */
 public class TribeComponentView extends FrameLayout implements TextureView.SurfaceTextureListener {
+
+    private static final int DURATION = 200;
 
     @Inject User currentUser;
     @Inject ScreenUtils screenUtils;
@@ -91,10 +96,20 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     @BindView(R.id.viewBGProgress)
     View viewBGProgress;
 
+    @BindView(R.id.layoutDownloadProgress)
+    ViewGroup layoutDownloadProgress;
+
+    @BindView(R.id.progressBarDownload)
+    ProgressBar progressBarDownload;
+
+    @BindView(R.id.progressBarDownloadIndeterminate)
+    CircularProgressView progressBarDownloadIndeterminate;
+
     // OBSERVABLES
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private final PublishSubject<View> clickEnableLocation = PublishSubject.create();
+    private final PublishSubject<TribeMessage> onPlayerError = PublishSubject.create();
 
     // PLAYER
     private TribeMediaPlayer mediaPlayer;
@@ -172,48 +187,82 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     }
 
     public void preparePlayer(boolean autoStart) {
-        mediaPlayer = new TribeMediaPlayer.TribeMediaPlayerBuilder(getContext(), FileUtils.getPathForId(tribe.getId(), FileUtils.VIDEO))
-                .autoStart(autoStart)
-                .looping(true)
-                .mute(false)
-                .canChangeSpeed(true)
-                .build();
+        if (layoutDownloadProgress.getVisibility() == View.VISIBLE) {
+            AnimationUtils.fadeOut(layoutDownloadProgress, DURATION);
+        }
 
-        subscriptions.add(mediaPlayer.onPreparedPlayer().subscribe(prepared -> {
+        if (!tribe.isDownloadPending()) {
+            mediaPlayer = new TribeMediaPlayer.TribeMediaPlayerBuilder(getContext(), FileUtils.getPathForId(tribe.getId(), FileUtils.VIDEO))
+                    .autoStart(autoStart)
+                    .looping(true)
+                    .mute(false)
+                    .canChangeSpeed(true)
+                    .build();
 
-        }));
+            if (surfaceTexture != null)
+                mediaPlayer.setSurface(surfaceTexture);
 
-        subscriptions.add(mediaPlayer.onVideoSizeChanged().subscribe(videoSize -> {
-            if (videoTextureView != null && videoTextureView.getContentHeight() != videoSize.getHeight()) {
-                videoTextureView.setContentWidth(videoSize.getWidth());
-                videoTextureView.setContentHeight(videoSize.getHeight());
-                videoTextureView.updateTextureViewSize();
+            subscriptions.add(mediaPlayer.onPreparedPlayer().subscribe(prepared -> {
+
+            }));
+
+            subscriptions.add(mediaPlayer.onVideoSizeChanged().subscribe(videoSize -> {
+                if (videoTextureView != null && videoTextureView.getContentHeight() != videoSize.getHeight()) {
+                    videoTextureView.setContentWidth(videoSize.getWidth());
+                    videoTextureView.setContentHeight(videoSize.getHeight());
+                    videoTextureView.updateTextureViewSize();
+                }
+            }));
+
+            subscriptions.add(mediaPlayer.onErrorPlayer().subscribe(error -> {
+                onPlayerError.onNext(tribe);
+            }));
+
+            subscriptions.add(mediaPlayer.onVideoStarted().subscribe(started -> {
+                if (animatorProgress != null)
+                    animatorProgress.cancel();
+
+                animatorProgress = ValueAnimator.ofInt(0, screenUtils.getWidthPx());
+                animatorProgress.addUpdateListener(valueAnimator -> {
+                    int val = (Integer) valueAnimator.getAnimatedValue();
+                    ViewGroup.LayoutParams layoutParams = viewBGProgress.getLayoutParams();
+                    layoutParams.width = val;
+                    viewBGProgress.setLayoutParams(layoutParams);
+                });
+
+                animatorProgress.setRepeatMode(Animation.INFINITE);
+                animatorProgress.setRepeatCount(Animation.INFINITE);
+                animatorProgress.setDuration(mediaPlayer.getDuration());
+                animatorProgress.start();
+            }));
+
+            if (lastPosition != -1) mediaPlayer.seekTo(lastPosition);
+        }
+    }
+
+    public void showProgress() {
+        System.out.println("PROGRESS : " + tribe.getProgress());
+        System.out.println("TOTAL SIZE : " + tribe.getTotalSize());
+
+        if (layoutDownloadProgress.getVisibility() == View.GONE) {
+            System.out.println("FADING IN");
+            layoutDownloadProgress.setVisibility(View.VISIBLE);
+        }
+
+        if (tribe.getTotalSize() <= 0) {
+            progressBarDownload.setVisibility(View.GONE);
+            progressBarDownloadIndeterminate.setVisibility(View.VISIBLE);
+        } else {
+            System.out.println("TOTAL SIZE > 0");
+            progressBarDownload.setVisibility(View.VISIBLE);
+            progressBarDownloadIndeterminate.setVisibility(View.GONE);
+
+            if (progressBarDownload.getMax() != tribe.getTotalSize()) {
+                progressBarDownload.setMax((int) tribe.getTotalSize());
             }
-        }));
+        }
 
-        subscriptions.add(mediaPlayer.onErrorPlayer().subscribe(error -> {
-            System.out.println("MEDIA PLAYER ERROR");
-        }));
-
-        subscriptions.add(mediaPlayer.onVideoStarted().subscribe(started -> {
-            if (animatorProgress != null)
-                animatorProgress.cancel();
-
-            animatorProgress = ValueAnimator.ofInt(0, screenUtils.getWidthPx());
-            animatorProgress.addUpdateListener(valueAnimator -> {
-                int val = (Integer) valueAnimator.getAnimatedValue();
-                ViewGroup.LayoutParams layoutParams = viewBGProgress.getLayoutParams();
-                layoutParams.width = val;
-                viewBGProgress.setLayoutParams(layoutParams);
-            });
-
-            animatorProgress.setRepeatMode(Animation.INFINITE);
-            animatorProgress.setRepeatCount(Animation.INFINITE);
-            animatorProgress.setDuration(mediaPlayer.getDuration());
-            animatorProgress.start();
-        }));
-
-        if (lastPosition != -1) mediaPlayer.seekTo(lastPosition);
+        progressBarDownload.setProgress((int) tribe.getProgress());
     }
 
     public void releasePlayer() {
@@ -229,12 +278,13 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     }
 
     public void play() {
+        System.out.println("Tribe : " + tribe);
+        System.out.println("SurfaceTexture : " + surfaceTexture);
+        System.out.println("MediaPlayer : " + mediaPlayer);
         if (mediaPlayer != null) {
             mediaPlayer.play();
         } else {
             preparePlayer(true);
-            if (surfaceTexture != null)
-                mediaPlayer.setSurface(surfaceTexture);
         }
     }
 
@@ -271,6 +321,10 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         return clickEnableLocation;
     }
 
+    public Observable<TribeMessage> onErrorTribe() {
+        return onPlayerError;
+    }
+
     @OnClick(R.id.labelDistance)
     void enableDistance(View view) {
         if (currentUser.getLocation() == null || !currentUser.getLocation().hasLocation()) {
@@ -295,7 +349,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         surfaceTexture = surface;
-        mediaPlayer.setSurface(surface);
+        if (mediaPlayer != null) mediaPlayer.setSurface(surface);
     }
 
     @Override

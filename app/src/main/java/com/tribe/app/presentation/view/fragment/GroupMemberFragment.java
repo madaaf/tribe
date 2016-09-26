@@ -14,8 +14,6 @@ import android.widget.ImageView;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.domain.entity.GroupType;
 import com.tribe.app.domain.entity.LabelType;
@@ -131,7 +129,6 @@ public class GroupMemberFragment extends BaseFragment implements GroupMemberView
      */
 
     private void initGroupMemberList() {
-
         editTextSearchGroupMembers.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -149,6 +146,7 @@ public class GroupMemberFragment extends BaseFragment implements GroupMemberView
             }
         });
 
+        groupId = getArguments().getString("groupId");
         groupMemberListCopy = new ArrayList<>();
         groupMemberPresenter.attachView(this);
         if (groupMemberList != null) {

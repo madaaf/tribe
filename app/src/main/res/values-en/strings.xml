@@ -94,6 +94,7 @@
 	<string name="tribe_more_report">Report</string>
 	<string name="tribe_more_set_speed_1x">Decrease speed (1x)</string>
 	<string name="tribe_more_set_speed_2x">Increase speed (2x)</string>
+	<string name="tribe_more_set_language">Change subtitles language</string>
 	<string name="tribe_distance_menu_directions">Get me there</string>
 	<string name="tribe_metadata_activate_location">Location</string>
 	<string name="tribe_metadata_get_directions">Directions</string>
@@ -103,7 +104,7 @@
 	<string name="grid_user_points">Points</string>
 	<string name="grid_friendship_status_default">Tap &amp; hold!</string>
 	<string name="grid_friendship_status_sending">Sending</string>
-	<string name="grid_friendship_status_processing">Sending</string>
+	<string name="grid_friendship_status_confirmed">Confirmed</string>
 	<string name="grid_friendship_status_sent">Sent</string>
 	<string name="grid_friendship_status_opened">Opened</string>
 	<string name="grid_friendship_status_opened_plural">Opened</string>
@@ -193,7 +194,7 @@
 	<string name="group_public_popup_done">Exciting!</string>
 	<string name="group_search_friends_placeholder">Search friends</string>
 	<string name="group_private_link_description">This link will expire in 1 hr</string>
-	<string name="group_private_link_popup_title">Only 59:32 min left!</string>
+	<string name="group_private_link_popup_title">Only %1$s left!</string>
 	<string name="group_private_link_popup_description">Select where to send this\ntemporary link to your friends!</string>
 	<string name="group_public_link_description">Tips: You can even include emojis</string>
 	<string name="group_invalid_infos_error_message">Be sure to name your group</string>
@@ -349,8 +350,8 @@
 	<string name="points_ConnectFacebook_description">Auto-sync your contacts</string>
 	<string name="points_InviteFacebookFriends_title">Invite Facebook friends</string>
 	<string name="points_InviteFacebookFriends_description">Swipe left on the grid</string>
-	<string name="points_HundredGroupMembers_title">100 Group members</string>
-	<string name="points_HundredGroupMembers_description">Every 100 members in Public Group</string>
+	<string name="points_Camera_title">Camera</string>
+	<string name="points_Camera_description">Enable it in the settings</string>
 	
 	<!-- Level -->
 	<string name="level_rookie_title">Rookie</string>
@@ -375,7 +376,7 @@
 	<!-- Share -->
 	<string name="share_add_friends_addressbook_suggestions">I was able to get access to Tribe. Just noticed that you already have %1$d friends on this app. I can get you in: %2$s</string>
 	<string name="share_group_public_link">Here is your invite to join the %1$s group on Tribe. %2$s</string>
-	<string name="share_group_private_link">Here is your invite to join the %1$s group on Tribe. Join quickly because this invite will expire in 1 hour! %2$s</string>
+	<string name="share_group_private_link">Here is your invite to join the %1$s group on Tribe. Join quickly because this invite will expire in %2$s ! %3$s</string>
 	<string name="share_add_friends_handle">I’ve locked up %1$s handle on Tribe. Reserve yours now before it\'s too late on %2$s</string>
 	<string name="share_score">I have %1$s points on Tribe %2$s</string>
 	<string name="share_onboarding">I just discovered Tribe, but I can’t enter alone. Come now so we can get access together. Waiting for you. Go on %1$s</string>
@@ -467,4 +468,13 @@
 	<string name="subtitles_popup_points">Enable “subtitles”</string>
 	<string name="subtitles_popup_no">Dont\' care.</string>
 	<string name="subtitles_popup_yes">Exactly!</string>
+	
+	<!-- Language -->
+	<string name="language_title">Subtitles language</string>
+	<string name="language_search_placeholder">Search for language</string>
+	<string name="language_suggested_title">Suggested language</string>
+	<string name="language_most_spoken_title">Most spoken languages</string>
+	<string name="language_most_spoken_values">en_US,es_ES,pt_BR,hi_IN,ar_DZ,ja_JP,ru_RU</string>
+	<string name="language_supported_title">Supported languages</string>
+	<string name="language_supported_values">af_ZA,id_ID,ms_MY,ca_ES,cs_CZ,da_DK,de_DE,en_AU,en_CA,en_GB,en_IN,en_IE,en_NZ,en_PH,en_ZA,en_US,es_AR,es_BO,es_CL,es_CO,es_CR,es_EC,es_SV,es_ES,es_US,es_GT,es_HN,es_MX,es_NI,es_PA,es_PY,es_PE,es_PR,es_DO,es_UY,es_VE,eu_ES,fil_PH,fr_FR,gl_ES,hr_HR,zu_ZA,is_IS,it_IT,lt_LT,hu_HU,nl_NL,nb_NO,pl_PL,pt_BR,pt_PT,ro_RO,sk_SK,sl_SI,fi_FI,sv_SE,vi_VN,tr_TR,el_GR,bg_BG,ru_RU,sr_RS,uk_UA,he_IL,ar_IL,ar_JO,ar_AE,ar_BH,ar_DZ,ar_SA,ar_IQ,ar_KW,ar_MA,ar_TN,ar_OM,ar_PS,ar_QA,ar_LB,ar_EG,fa_IR,hi_IN,th_TH,ko_KR,cmn_Hant_TW,yue_Hant_HK,ja_JP,cmn_Hans_HK,cmn_Hans_CN</string>
 </resources>

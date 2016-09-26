@@ -38,8 +38,7 @@ public class UserRealm extends RealmObject {
     private LocationRealm location;
     private boolean tribe_save = false;
     private RealmList<FriendshipRealm> friendships;
-    private RealmList<UserRealm> reported;
-    private RealmList<GroupRealm> groups;
+    private RealmList<MembershipRealm> memberships;
     private boolean invisible_mode;
 
     public String getId() {
@@ -122,22 +121,6 @@ public class UserRealm extends RealmObject {
         this.friendships = friendships;
     }
 
-    public RealmList<UserRealm> getReported() {
-        return reported;
-    }
-
-    public void setReported(RealmList<UserRealm> reported) {
-        this.reported = reported;
-    }
-
-    public RealmList<GroupRealm> getGroups() {
-        return groups;
-    }
-
-    public void setGroups(RealmList<GroupRealm> groups) {
-        this.groups = groups;
-    }
-
     public String getFbid() {
         return fbid;
     }
@@ -162,5 +145,11 @@ public class UserRealm extends RealmObject {
         this.tribe_save = tribeSave;
     }
 
+    public RealmList<MembershipRealm> getMemberships() {
+        return memberships;
+    }
 
+    public void setMemberships(RealmList<MembershipRealm> memberships) {
+        this.memberships = memberships;
+    }
 }

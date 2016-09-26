@@ -20,9 +20,9 @@ import rx.Observable;
 @Singleton
 public interface ChatCache {
 
-    public boolean isExpired();
-    public boolean isCached(String messageId);
-    public Observable<ChatRealm> put(ChatRealm chatRealm);
+    boolean isExpired();
+    boolean isCached(String messageId);
+    Observable<ChatRealm> put(ChatRealm chatRealm);
 
     void insert(ChatRealm chatRealm);
 
@@ -39,16 +39,17 @@ public interface ChatCache {
      */
     void update(Map<String, List<Pair<String, Object>>> valuesToUpdate);
 
-    public void put(List<ChatRealm> messageListRealm);
-    public Observable<List<ChatRealm>> messages();
-    public Observable<List<ChatRealm>> messages(String friendshipId);
-    public Observable<Void> delete(ChatRealm chatRealm);
-    public ChatRealm updateLocalWithServerRealm(ChatRealm local, ChatRealm server);
-    public Observable<Void> deleteConversation(String friendshipId);
-    public List<ChatRealm> messagesSent(Set<String> idsRecipient);
-    public List<ChatRealm> messagesToUpdateStatus(Set<String> idsRecipient);
-    public Observable<List<ChatRealm>> messagesError(String recipientId);
-    public List<ChatRealm> messagesPending(String recipientId);
-    public RealmList<MessageRecipientRealm> createMessageRecipientRealm(List<MessageRecipientRealm> messageRecipientRealmList);
-    public Observable<List<ChatRealm>> messagesReceived(String friendshipId);
+    void put(List<ChatRealm> messageListRealm);
+    Observable<List<ChatRealm>> messages();
+    Observable<List<ChatRealm>> messages(String friendshipId);
+    List<ChatRealm> messagesNoObs(String recipientId);
+    Observable<Void> delete(ChatRealm chatRealm);
+    ChatRealm updateLocalWithServerRealm(ChatRealm local, ChatRealm server);
+    Observable<Void> deleteConversation(String friendshipId);
+    List<ChatRealm> messagesSent(Set<String> idsRecipient);
+    List<ChatRealm> messagesToUpdateStatus(Set<String> idsRecipient);
+    Observable<List<ChatRealm>> messagesError(String recipientId);
+    List<ChatRealm> messagesPending(String recipientId);
+    RealmList<MessageRecipientRealm> createMessageRecipientRealm(List<MessageRecipientRealm> messageRecipientRealmList);
+    Observable<List<ChatRealm>> messagesReceived(String friendshipId);
 }

@@ -14,16 +14,15 @@
                     }
                 }
 
-                groups %2$s {
-                    id
-                    name
-                    picture
-                    created_at
+                memberships %2$s {
+                    ...MembershipInfo
                 }
             }
         }
 
         %3$s
+        %4$s
+        %5$s
     </string>
 
     <string name="user.infos.list" translatable="false">
@@ -103,8 +102,10 @@
             to: \"%1$s\",
             type: \"%2$s\",
             recorded_at: \"%3$s\",
-            lat: %4$s,
-            lng: %5$s
+            coord : {
+                latitude : %4$s,
+                longitude : %5$s
+            }
         }
     </string>
 
@@ -163,8 +164,10 @@
                     to_group
                     type url
                     recorded_at
-                    lat
-                    lng
+                    coord {
+                        latitude
+                        longitude
+                    }
 
                     weather {
                         temp_f
@@ -372,6 +375,20 @@
             picture
             link
             created_at
+        }
+    </string>
+
+    <string name="membershipfragment.info" translatable="false">
+        fragment MembershipInfo on Membership {
+            id
+            group {
+                ...GroupInfo
+            }
+            mute
+            is_admin
+            link
+            link_expires_at
+            created_at
             updated_at
         }
     </string>
@@ -380,9 +397,11 @@
         {
             groups (ids : [\"%1$s\"]) {
                 ...GroupInfo
+
                 members {
                     ...UserInfos
                 }
+
                 admins {
                     ...UserInfos
                 }
@@ -397,8 +416,8 @@
        mutation {
             createGroup(group: {
                 name : \"%1$s\",
-   	        type : %2$s
-             }, members: [%3$s]
+   	            type : %2$s
+            }, members: [%3$s]
             ) {
                 ...GroupInfo
             }
@@ -457,8 +476,29 @@
 
     <string name="leave.group" translatable="false">
         mutation {
-            leaveGroup(id: \"%1$s\")
+            removeMembership(membershipId: \"%1$s\")
         }
+    </string>
+
+    <string name="create.membership" translatable="false">
+        mutation {
+            createMembership(groupId: \"%1$s\") {
+                ...MembershipInfo
+            }
+        }
+
+        %2$s
+        %3$s
+    </string>
+
+    <string name="user.mutate.score" translatable="false">
+        mutation {
+            updateScore(action: %1$s) {
+                ...UserInfos
+            }
+        }
+
+        %2$s
     </string>
 
 </resources>

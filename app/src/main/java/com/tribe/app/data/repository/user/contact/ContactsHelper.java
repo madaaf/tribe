@@ -95,11 +95,6 @@ public class ContactsHelper {
         contact.setId(id);
         contact.setName(c.getString(c.getColumnIndex(Contacts.DISPLAY_NAME_PRIMARY)));
 
-        if (contact.getName().equals("Cyril Paglino") || contact.getName().equals("nicolas bradier")) {
-            System.out.println("HEY");
-        }
-
-        // misc
         long lastTimeContacted = c.getLong(c.getColumnIndex(Contacts.LAST_TIME_CONTACTED));
         contact.setLastTimeContacted(lastTimeContacted);
 

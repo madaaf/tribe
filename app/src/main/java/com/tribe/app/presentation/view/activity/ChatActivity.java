@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.OvershootInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -210,6 +211,9 @@ public class ChatActivity extends BaseActivity implements MessageView {
         subscriptions.add(messageAdapter
                 .clickPhoto()
                 .subscribe(imageViewFrom -> {
+                    ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
+                            .hideSoftInputFromWindow(recyclerViewText.getWindowToken(), 0);
+
                     imageViewClicked = null;
 
                     int position = (Integer) imageViewFrom.getTag(R.id.tag_position);
@@ -235,6 +239,9 @@ public class ChatActivity extends BaseActivity implements MessageView {
         subscriptions.add(messageAdapter
                 .clickVideo()
                 .subscribe(imageViewFrom -> {
+                    ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
+                            .hideSoftInputFromWindow(recyclerViewText.getWindowToken(), 0);
+
                     tribeVideoView = null;
 
                     int position = (Integer) imageViewFrom.getTag(R.id.tag_position);
@@ -331,7 +338,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
         chatPresenter.attachView(this);
         chatPresenter.loadChatMessages(recipient);
         chatPresenter.loadThumbnail(radiusGalleryImg);
-        chatPresenter.updateErrorMessages(recipient.getId());
+        chatPresenter.updateErrorMessages(recipient.getSubId());
     }
 
     private void initInfos() {
@@ -343,7 +350,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
         DialogFactory.createConfirmationDialog(this, getString(R.string.chat_erase_conversation_title),
                     getString(R.string.chat_erase_conversation_message),
                     getString(R.string.common_delete),
-                    (dialog, which) -> chatPresenter.deleteConversation(recipient.getId()))
+                    (dialog, which) -> chatPresenter.deleteConversation(recipient.getSubId()))
                 .show();
     }
 

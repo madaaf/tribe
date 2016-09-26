@@ -11,8 +11,8 @@ import android.view.ViewGroup;
 
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.LabelType;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.entity.PendingType;
@@ -209,6 +209,12 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                 reloadGrid();
             }
 
+            for (Recipient recipient : recipientList) {
+                if (recipient.getReceivedTribes() != null && recipient.getReceivedTribes().size() > 0) {
+                    homeGridPresenter.downloadMessages(recipient.getReceivedTribes().toArray(new TribeMessage[recipient.getReceivedTribes().size()]));
+                }
+            }
+
             Bundle bundle = new Bundle();
             bundle.putInt(TagManagerConstants.COUNT_FRIENDS, currentUser.getFriendships().size());
             bundle.putInt(TagManagerConstants.COUNT_GROUPS, currentUser.getFriendships().size());
@@ -323,7 +329,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                             && recipient.getReceivedTribes().size() > 0
                             && recipient.hasLoadedTribes();
 
-                    if (!filter) homeGridPresenter.downloadMessages(new ArrayList<>(recipient.getReceivedTribes()));
+                    if (!filter) homeGridPresenter.downloadMessages(recipient.getReceivedTribes().toArray(new Message[recipient.getReceivedTribes().size()]));
 
                     return filter;
                 })
@@ -446,7 +452,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
             moreTypes.add(new MoreType(getString(R.string.grid_more_block_hide), MoreType.BLOCK_HIDE));
         }
 
-        if (recipient instanceof Group) {
+        if (recipient instanceof Membership) {
             moreTypes.add(new MoreType(getString(R.string.grid_menu_group_infos), MoreType.GROUP_INFO));
             moreTypes.add(new MoreType(getString(R.string.grid_menu_group_leave), MoreType.GROUP_LEAVE));
             moreTypes.add(new MoreType(getString(R.string.grid_menu_group_delete), MoreType.GROUP_DELETE));
@@ -480,13 +486,13 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                         homeGridPresenter.markTribeListAsRead(recipient);
                     }
                     if (moreType.getMoreType().equals(MoreType.GROUP_INFO)) {
-                        navigator.navigateToGroupInfo(getActivity(),  recipient.getId());
+                        navigator.navigateToGroupInfo(getActivity(), recipient.getSubId());
                     }
                     if (moreType.getMoreType().equals(MoreType.GROUP_LEAVE)) {
                         homeGridPresenter.leaveGroup(recipient.getId());
                     }
                     if (moreType.getMoreType().equals(MoreType.GROUP_DELETE)) {
-                        homeGridPresenter.removeGroup(recipient.getId());
+                        homeGridPresenter.removeGroup(recipient.getSubId());
                     }
 
                     dismissDialogSheetMore();

@@ -63,7 +63,7 @@ public class CloudTribeDataStore implements TribeDataStore {
     @Override
     public Observable<TribeRealm> sendTribe(TribeRealm tribeRealm) {
         String tribeInput = context.getString(R.string.tribe_input,
-                tribeRealm.isToGroup() ?  tribeRealm.getGroup().getId() : tribeRealm.getFriendshipRealm().getFriend().getId(),
+                tribeRealm.isToGroup() ?  tribeRealm.getMembershipRealm().getGroup().getId() : tribeRealm.getFriendshipRealm().getFriend().getId(),
                 tribeRealm.getType(),
                 simpleDateFormat.format(tribeRealm.getRecordedAt()),
                 0.0,
@@ -76,6 +76,8 @@ public class CloudTribeDataStore implements TribeDataStore {
             request = context.getString(R.string.tribe_send_group, tribeInput);
         else
             request = context.getString(R.string.tribe_send_solo, tribeInput);
+
+        System.out.println("REQUEST : " + request);
 
         RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
 
@@ -96,6 +98,11 @@ public class CloudTribeDataStore implements TribeDataStore {
 
     @Override
     public Observable<List<TribeRealm>> tribesReceived(String friendshipId) {
+        return null;
+    }
+
+    @Override
+    public Observable<List<TribeRealm>> tribesForARecipient(String recipientId) {
         return null;
     }
 

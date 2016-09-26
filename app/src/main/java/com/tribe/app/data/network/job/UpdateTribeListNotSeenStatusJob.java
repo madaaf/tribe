@@ -74,8 +74,8 @@ public class UpdateTribeListNotSeenStatusJob extends BaseJob {
             List<Pair<String, Object>> values = new ArrayList<>();
             values.add(Pair.create(TribeRealm.MESSAGE_RECEIVING_STATUS, MessageReceivingStatus.STATUS_NOT_SEEN));
 
-            if (tribeRealm.isToGroup() && tribeRealm.getGroup() != null
-                    && (tribeRealm.getGroup().getUpdatedAt() == null || tribeRealm.getGroup().getUpdatedAt().before(tribeRealm.getRecordedAt()))) {
+            if (tribeRealm.isToGroup() && tribeRealm.getMembershipRealm() != null
+                    && (tribeRealm.getMembershipRealm().getUpdatedAt() == null || tribeRealm.getMembershipRealm().getUpdatedAt().before(tribeRealm.getRecordedAt()))) {
                 values.add(Pair.create(TribeRealm.GROUP_ID_UPDATED_AT, tribeRealm.getRecordedAt()));
             } else if (!tribeRealm.isToGroup() && tribeRealm.getFrom() != null
                     && (tribeRealm.getFrom().getUpdatedAt() == null || tribeRealm.getFrom().getUpdatedAt().before(tribeRealm.getRecordedAt()))) {
@@ -91,8 +91,8 @@ public class UpdateTribeListNotSeenStatusJob extends BaseJob {
             List<Pair<String, Object>> values = new ArrayList<>();
             values.add(Pair.create(ChatRealm.MESSAGE_RECEIVING_STATUS, MessageReceivingStatus.STATUS_NOT_SEEN));
 
-            if (chatRealm.isToGroup() && chatRealm.getGroup() != null
-                    && (chatRealm.getGroup().getUpdatedAt() == null || chatRealm.getGroup().getUpdatedAt().before(chatRealm.getRecordedAt()))) {
+            if (chatRealm.isToGroup() && chatRealm.getMembershipRealm() != null
+                    && (chatRealm.getMembershipRealm().getUpdatedAt() == null || chatRealm.getMembershipRealm().getUpdatedAt().before(chatRealm.getRecordedAt()))) {
                 values.add(Pair.create(ChatRealm.GROUP_ID_UPDATED_AT, chatRealm.getRecordedAt()));
             } else if (!chatRealm.isToGroup() && chatRealm.getFrom() != null
                     && (chatRealm.getFrom().getUpdatedAt() == null || chatRealm.getFrom().getUpdatedAt().before(chatRealm.getRecordedAt()))) {

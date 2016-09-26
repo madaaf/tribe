@@ -19,13 +19,13 @@ import io.realm.RealmList;
 public class UserRealmDataMapper {
 
     LocationRealmDataMapper locationRealmDataMapper;
-    GroupRealmDataMapper groupRealmDataMapper;
+    MembershipRealmDataMapper membershipRealmDataMapper;
     FriendshipRealmDataMapper friendshipRealmDataMapper;
 
     @Inject
     public UserRealmDataMapper(LocationRealmDataMapper locationRealmDataMapper) {
         this.locationRealmDataMapper = locationRealmDataMapper;
-        this.groupRealmDataMapper = new GroupRealmDataMapper(this);
+        this.membershipRealmDataMapper = new MembershipRealmDataMapper(new GroupRealmDataMapper(this));
         this.friendshipRealmDataMapper = new FriendshipRealmDataMapper(this);
     }
 
@@ -50,9 +50,8 @@ public class UserRealmDataMapper {
             user.setFbid(userRealm.getFbid());
             if (userRealm.getLocation() != null) user.setLocation(locationRealmDataMapper.transform(userRealm.getLocation()));
             user.setTribeSave(userRealm.isTribeSave());
-            if (userRealm.getGroups() != null) user.setGroupList(groupRealmDataMapper.transform(userRealm.getGroups()));
+            if (userRealm.getMemberships() != null) user.setMembershipList(membershipRealmDataMapper.transform(userRealm.getMemberships()));
             if (userRealm.getFriendships() != null) user.setFriendships(friendshipRealmDataMapper.transform(userRealm.getFriendships()));
-            if (userRealm.getReported() != null) user.setReportedList(transform(userRealm.getReported()));
         }
 
         return user;
@@ -102,9 +101,8 @@ public class UserRealmDataMapper {
             userRealm.setPhone(user.getPhone());
             if (user.getLocation() != null) userRealm.setLocation(locationRealmDataMapper.transform(user.getLocation()));
             userRealm.setTribeSave(user.isTribeSave());
-            if (user.getGroupList() != null) userRealm.setGroups(groupRealmDataMapper.transformGroups(user.getGroupList()));
+            if (user.getMembershipList() != null) userRealm.setMemberships(membershipRealmDataMapper.transformMemberships(user.getMembershipList()));
             if (user.getFriendships() != null) userRealm.setFriendships(friendshipRealmDataMapper.transformFriendships(user.getFriendships()));
-            if (user.getReportedList() != null) userRealm.setReported(transformList(user.getReportedList()));
         }
 
         return userRealm;
@@ -156,13 +154,5 @@ public class UserRealmDataMapper {
 
     public FriendshipRealmDataMapper getFriendshipRealmDataMapper() {
         return friendshipRealmDataMapper;
-    }
-
-    public GroupRealmDataMapper getGroupRealmDataMapper() {
-        return groupRealmDataMapper;
-    }
-
-    public LocationRealmDataMapper getLocationRealmDataMapper() {
-        return locationRealmDataMapper;
     }
 }

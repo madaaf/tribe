@@ -1,6 +1,5 @@
 package com.tribe.app.data.network.deserializer;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
@@ -11,12 +10,8 @@ import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.domain.entity.User;
-
-import org.json.JSONObject;
 
 import java.lang.reflect.Type;
-import java.util.List;
 
 import io.realm.RealmList;
 
@@ -52,9 +47,8 @@ public class GroupDeserializer implements JsonDeserializer<GroupRealm> {
 
         groupRealm.setId(group.get("id").getAsString());
         groupRealm.setName(group.get("name").getAsString());
-        if (!group.get("picture").isJsonNull()) groupRealm.setPicture(group.get("picture").getAsString());
+        groupRealm.setPicture(group.get("picture") != null && !group.get("picture").isJsonNull() ? group.get("picture").getAsString() : null);
         groupRealm.setPrivateGroup(group.get("type").getAsString().equals("PRIVATE"));
-
 
         return groupRealm;
     }

@@ -11,4 +11,5 @@
     <item type="id" name="tag_selected" />
     <item type="id" name="profile_picture" />
     <item type="id" name="chat_id" />
+    <item type="id" name="old_score" />
 </resources>

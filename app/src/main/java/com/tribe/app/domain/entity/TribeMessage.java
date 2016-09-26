@@ -1,6 +1,7 @@
 package com.tribe.app.domain.entity;
 
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 
@@ -113,13 +114,17 @@ public class TribeMessage extends Message {
         return transcript;
     }
 
+    public boolean isDownloadPending() {
+        return messageDownloadingStatus.equals(MessageDownloadingStatus.STATUS_DOWNLOADING);
+    }
+
     public static TribeMessage createTribe(User user, Recipient recipient, @CameraWrapper.TribeMode String mode) {
         TribeMessage tribe = new TribeMessage();
         tribe.setLocalId(FileUtils.generateIdForMessage());
         tribe.setRecordedAt(new Date(System.currentTimeMillis()));
         tribe.setFrom(user);
         tribe.setTo(recipient);
-        tribe.setToGroup(recipient instanceof Group);
+        tribe.setToGroup(recipient instanceof Membership);
         tribe.setType(mode);
         tribe.setMessageSendingStatus(MessageSendingStatus.STATUS_PENDING);
         tribe.setLocation(user.getLocation());

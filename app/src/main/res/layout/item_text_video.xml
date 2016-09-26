@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@null"
@@ -31,7 +32,6 @@
             android:id="@+id/viewPlay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:layout_marginRight="@dimen/horizontal_margin_small">
 
             <ProgressBar
@@ -41,7 +41,19 @@
                 android:layout_height="65dp"
                 android:layout_gravity="center"
                 android:progressDrawable="@drawable/progress_circular"
-                android:background="@drawable/shape_oval_black40"
+                android:background="@drawable/shape_oval_white40"
+                />
+
+            <com.github.rahatarmanahmed.cpv.CircularProgressView
+                android:id="@+id/progressBarIndeterminate"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                app:cpv_animAutostart="true"
+                app:cpv_indeterminate="true"
+                app:cpv_color="@android:color/white"
+                app:cpv_thickness="5sp"
                 />
 
             <ImageView

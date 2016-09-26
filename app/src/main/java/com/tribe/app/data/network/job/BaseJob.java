@@ -18,6 +18,7 @@
 package com.tribe.app.data.network.job;
 
 import com.birbit.android.jobqueue.Job;
+import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.Params;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.utils.analytics.TagManager;
@@ -27,10 +28,13 @@ import javax.inject.Inject;
 abstract public class BaseJob extends Job {
 
     @Inject
+    JobManager jobManager;
+
+    @Inject
     TagManager tagManager;
 
     // VARIABLES
-    protected static final boolean DEBUG = true;
+    protected static final boolean DEBUG = false;
 
     public BaseJob(Params params) {
         super(params);

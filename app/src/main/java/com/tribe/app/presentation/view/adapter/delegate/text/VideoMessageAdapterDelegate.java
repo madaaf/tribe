@@ -9,11 +9,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 import java.util.List;
@@ -84,37 +84,28 @@ public class VideoMessageAdapterDelegate extends BaseMessageAdapterDelegate {
 
         ChatMessage chatMessage = items.get(position);
 
-        if (chatMessage.getMessageDownloadingStatus() != null
-                && chatMessage.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADING)
-                && chatMessage.getTotalSize() != 0) {
+        if (chatMessage.isDownloadPending()) {
             vh.progressBar.setMax((int) chatMessage.getTotalSize());
             vh.progressBar.setProgress((int) chatMessage.getProgress());
 
-//            ObjectAnimator animation = (ObjectAnimator) vh.progressBar.getTag(R.id.progress_bar_animation);
-//
-//            if (animation != null) {
-//                animation.cancel();
-//            }
+            if (chatMessage.getTotalSize() <= 0) {
+                vh.progressBar.setVisibility(View.GONE);
+                vh.progressBarIndeterminate.setVisibility(View.VISIBLE);
+            } else {
+                vh.progressBar.setVisibility(View.VISIBLE);
+                vh.progressBarIndeterminate.setVisibility(View.GONE);
 
-            //animation = ObjectAnimator.ofInt(vh.progressBar, "progress", vh.progressBar.getProgress(), (int) chatMessage.getProgress());
-            //animation.setDuration(1000);
-            //animation.setInterpolator(new DecelerateInterpolator());
-            //animation.start();
+                if (vh.progressBar.getMax() != chatMessage.getTotalSize()) {
+                    vh.progressBar.setMax((int) chatMessage.getTotalSize());
+                }
+            }
 
-            //vh.progressBar.setTag(R.id.progress_bar_animation, animation);
             vh.imgPlay.setVisibility(View.GONE);
         } else {
-//            if (vh.progressBar.getTag(R.id.progress_bar_animation) != null) {
-//                ObjectAnimator animation = (ObjectAnimator) vh.progressBar.getTag(R.id.progress_bar_animation);
-//                if (animation != null) {
-//                    animation.cancel();
-//                }
-//
-//                vh.progressBar.setTag(R.id.progress_bar_animation, null);
-//            }
-
             vh.imgPlay.setVisibility(View.VISIBLE);
             vh.progressBar.setProgress(0);
+            vh.progressBar.setVisibility(View.VISIBLE);
+            vh.progressBarIndeterminate.setVisibility(View.GONE);
         }
 
         vh.imgVideoThumbnail.setTag(R.id.tag_position, position);
@@ -135,6 +126,7 @@ public class VideoMessageAdapterDelegate extends BaseMessageAdapterDelegate {
         @BindView(R.id.viewPlay) public ViewGroup viewPlay;
         @BindView(R.id.imgPlay) public ImageView imgPlay;
         @BindView(R.id.progressBar) public ProgressBar progressBar;
+        @BindView(R.id.progressBarIndeterminate) public CircularProgressView progressBarIndeterminate;
         @BindView(R.id.layoutContent) public ViewGroup layoutContent;
 
         public VideoViewHolder(View itemView) {

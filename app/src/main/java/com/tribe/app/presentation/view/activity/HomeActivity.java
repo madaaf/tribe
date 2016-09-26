@@ -211,7 +211,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SETTINGS_RESULT || requestCode == TRIBES_RESULT) reloadGrid();
+        if (requestCode == SETTINGS_RESULT || requestCode == TRIBES_RESULT) {
+            homeViewPagerAdapter.getHomeGridFragment().reloadGrid();
+        }
 
         if (requestCode == OPEN_CAMERA_RESULT && resultCode == Activity.RESULT_OK && data != null) {
             subscriptions.add(

@@ -151,4 +151,32 @@
         android:layout_gravity="bottom"
         />
 
+    <FrameLayout
+        android:id="@+id/layoutDownloadProgress"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:background="@color/black.opacity.40">
+
+        <ProgressBar
+            android:id="@+id/progressBarDownload"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_gravity="center"
+            android:progressDrawable="@drawable/progress_circular_download"
+            />
+
+        <com.github.rahatarmanahmed.cpv.CircularProgressView
+            android:id="@+id/progressBarDownloadIndeterminate"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_gravity="center"
+            app:cpv_animAutostart="true"
+            app:cpv_indeterminate="true"
+            app:cpv_color="@android:color/white"
+            app:cpv_thickness="5sp"
+            />
+
+    </FrameLayout>
 </merge>

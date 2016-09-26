@@ -144,5 +144,5 @@ public interface UserDataStore {
 
     Observable<Void> removeGroup(String groupId);
 
-    Observable<Void> leaveGroup(String groupId);
+    Observable<Void> leaveGroup(String membershipId);
 }

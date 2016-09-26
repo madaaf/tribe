@@ -6,6 +6,7 @@ import android.support.v4.util.Pair;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import java.util.ArrayList;
@@ -217,7 +218,7 @@ public class ChatMessage extends Message {
         chatMessage.setCreatedAt(chatMessage.getRecordedAt());
         chatMessage.setFrom(user);
         chatMessage.setTo(recipient);
-        chatMessage.setToGroup(recipient instanceof Group);
+        chatMessage.setToGroup(recipient instanceof Membership);
         chatMessage.setMessageSendingStatus(MessageSendingStatus.STATUS_PENDING);
         chatMessage.setType(type);
         return chatMessage;
@@ -249,6 +250,10 @@ public class ChatMessage extends Message {
         stringBuilder.append("\n*******************************");
 
         return stringBuilder.toString();
+    }
+
+    public boolean isDownloadPending() {
+        return messageDownloadingStatus.equals(MessageDownloadingStatus.STATUS_DOWNLOADING);
     }
 
     public static List<ChatMessage> computeMessageList(ChatMessage tutorial, List<ChatMessage> chatMessageList) {

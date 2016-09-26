@@ -3,7 +3,7 @@ package com.tribe.app.data.realm.mapper;
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Group;
+import com.tribe.app.domain.entity.Membership;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,7 +18,7 @@ import javax.inject.Singleton;
 @Singleton
 public class ChatRealmDataMapper {
 
-    private final GroupRealmDataMapper groupRealmDataMapper;
+    private final MembershipRealmDataMapper membershipRealmDataMapper;
     private final UserRealmDataMapper userRealmDataMapper;
     private final FriendshipRealmDataMapper friendshipRealmDataMapper;
     private final MessageRecipientRealmDataMapper messageRecipientRealmDataMapper;
@@ -27,7 +27,7 @@ public class ChatRealmDataMapper {
     public ChatRealmDataMapper(GroupRealmDataMapper groupRealmDataMapper,
                                UserRealmDataMapper userRealmDataMapper,
                                MessageRecipientRealmDataMapper messageRecipientRealmDataMapper) {
-        this.groupRealmDataMapper = groupRealmDataMapper;
+        this.membershipRealmDataMapper = new MembershipRealmDataMapper(groupRealmDataMapper);
         this.userRealmDataMapper = userRealmDataMapper;
         this.friendshipRealmDataMapper = new FriendshipRealmDataMapper(userRealmDataMapper);
         this.messageRecipientRealmDataMapper = messageRecipientRealmDataMapper;
@@ -47,7 +47,7 @@ public class ChatRealmDataMapper {
             chatMessage.setId(chatRealm.getId());
             chatMessage.setLocalId(chatRealm.getLocalId());
             chatMessage.setContent(chatRealm.getContent());
-            chatMessage.setTo(chatRealm.isToGroup() ? groupRealmDataMapper.transform(chatRealm.getGroup()) : friendshipRealmDataMapper.transform(chatRealm.getFriendshipRealm()));
+            chatMessage.setTo(chatRealm.isToGroup() ? membershipRealmDataMapper.transform(chatRealm.getMembershipRealm()) : friendshipRealmDataMapper.transform(chatRealm.getFriendshipRealm()));
             chatMessage.setType(chatRealm.getType());
             chatMessage.setFrom(userRealmDataMapper.transform(chatRealm.getFrom()));
             chatMessage.setRecordedAt(chatRealm.getRecordedAt());
@@ -81,7 +81,7 @@ public class ChatRealmDataMapper {
             chatRealm.setContent(chatMessage.getContent());
 
             if (chatMessage.isToGroup()) {
-                chatRealm.setGroup(groupRealmDataMapper.transform((Group) chatMessage.getTo()));
+                chatRealm.setMembershipRealm(membershipRealmDataMapper.transform((Membership) chatMessage.getTo()));
             } else {
                 chatRealm.setFriendshipRealm(friendshipRealmDataMapper.transform((Friendship) chatMessage.getTo()));
             }

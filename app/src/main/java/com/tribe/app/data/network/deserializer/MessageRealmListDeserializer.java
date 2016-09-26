@@ -49,7 +49,7 @@ public class MessageRealmListDeserializer {
         for (JsonElement obj : array) {
             ChatRealm chatRealm = parseChat(obj);
 
-            if (((chatRealm.isToGroup() && chatRealm.getGroup() != null) || !chatRealm.isToGroup()))
+            if (((chatRealm.isToGroup() && chatRealm.getMembershipRealm() != null) || !chatRealm.isToGroup()))
                 chatRealmList.add(chatRealm);
         }
 
@@ -80,7 +80,7 @@ public class MessageRealmListDeserializer {
         boolean toGroup = json.get("to_group").getAsBoolean();
 
         if (toGroup) {
-            chatRealm.setGroup(userCache.groupInfos(json.get("to").getAsString()));
+            chatRealm.setMembershipRealm(userCache.membershipForGroupId(json.get("to").getAsString()));
         } else {
             if (!currentUser.getId().equals(json.get("to").getAsString())) {
                 chatRealm.setFriendshipRealm(userCache.friendshipForUserId(json.get("to").getAsString()));
@@ -115,7 +115,7 @@ public class MessageRealmListDeserializer {
         List<TribeRealm> tribeRealmList = new ArrayList<>();
         for (JsonElement obj : array) {
             TribeRealm tribeRealm = parseTribe(obj);
-            if (((tribeRealm.isToGroup() && tribeRealm.getGroup() != null) || !tribeRealm.isToGroup()))
+            if (((tribeRealm.isToGroup() && tribeRealm.getMembershipRealm() != null) || !tribeRealm.isToGroup()))
                 tribeRealmList.add(tribeRealm);
         }
 
@@ -144,7 +144,7 @@ public class MessageRealmListDeserializer {
         boolean toGroup = json.get("to_group").getAsBoolean();
 
         if (toGroup) {
-            tribeRealm.setGroup(userCache.groupInfos(json.get("to").getAsString()));
+            tribeRealm.setMembershipRealm(userCache.membershipForGroupId(json.get("to").getAsString()));
         } else {
             if (!currentUser.getId().equals(json.get("to").getAsString())) {
                 tribeRealm.setFriendshipRealm(userCache.friendshipForUserId(json.get("to").getAsString()));
@@ -159,10 +159,15 @@ public class MessageRealmListDeserializer {
 
         LocationRealm locationRealm = new LocationRealm();
         locationRealm.setId(from.getId());
-        locationRealm.setLatitude(json.get("lat") instanceof JsonNull ? 0.0D : json.get("lat").getAsDouble());
-        locationRealm.setLongitude(json.get("lng") instanceof JsonNull ? 0.0D : json.get("lng").getAsDouble());
+
+        if (!(json.get("coord") instanceof JsonNull)) {
+            JsonObject coord = json.get("coord").getAsJsonObject();
+            locationRealm.setLatitude(coord.get("latitude").getAsDouble());
+            locationRealm.setLongitude(coord.get("longitude").getAsDouble());
+            locationRealm.setHasLocation(true);
+        }
+
         locationRealm.setCity(!(json.get("location") instanceof JsonNull) ? json.getAsJsonObject("location").get("city").getAsString() : null);
-        locationRealm.setHasLocation(!(json.get("lat") instanceof JsonNull));
         tribeRealm.setLocationRealm(locationRealm);
 
         tribeRealm.setMessageReceivingStatus(MessageReceivingStatus.STATUS_RECEIVED);

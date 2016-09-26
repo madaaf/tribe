@@ -21,6 +21,7 @@ import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
@@ -113,11 +114,11 @@ public class DiskUserDataRepository implements UserRepository {
 
                         for (TribeMessage tribe : tribes) {
                             if (tribe.getFrom() != null) {
-                                if (!tribe.getFrom().getId().equals(user.getId()) && (tribe.isToGroup() && tribe.getTo().getId().equals(recipient.getId()))
-                                        || (!tribe.isToGroup() && tribe.getFrom().getId().equals(recipient.getId()))) {
+                                if (!tribe.getFrom().getId().equals(user.getId()) && (tribe.isToGroup() && tribe.getTo().getSubId().equals(recipient.getSubId()))
+                                        || (!tribe.isToGroup() && tribe.getFrom().getId().equals(recipient.getSubId()))) {
                                     receivedTribes.add(tribe);
                                 } else if (tribe.getFrom().getId().equals(user.getId())
-                                        && tribe.getTo().getId().equals(recipient.getId())) {
+                                        && tribe.getTo().getSubId().equals(recipient.getSubId())) {
                                     if (tribe.getMessageSendingStatus().equals(MessageSendingStatus.STATUS_ERROR))
                                         errorTribes.add(tribe);
                                     else sentTribes.add(tribe);
@@ -131,8 +132,8 @@ public class DiskUserDataRepository implements UserRepository {
 
                         for (ChatMessage chatMessage : chatMessages) {
                             if (chatMessage.getFrom() != null) {
-                                if (!chatMessage.getFrom().getId().equals(user.getId()) && (chatMessage.isToGroup() && chatMessage.getTo().getId().equals(recipient.getId()))
-                                        || (!chatMessage.isToGroup() && chatMessage.getFrom().getId().equals(recipient.getId()))) {
+                                if (!chatMessage.getFrom().getId().equals(user.getId()) && (chatMessage.isToGroup() && chatMessage.getTo().getSubId().equals(recipient.getSubId()))
+                                        || (!chatMessage.isToGroup() && chatMessage.getFrom().getId().equals(recipient.getSubId()))) {
                                     receivedChatMessage.add(chatMessage);
                                 }
                             }
@@ -150,7 +151,7 @@ public class DiskUserDataRepository implements UserRepository {
         ).map(user -> {
             if (!StringUtils.isEmpty(filterRecipient) && !filterRecipient.equals(PullToSearchView.HOME)) {
                 List<Friendship> filteredFriendshipList = new ArrayList<>();
-                List<Group> filteredGroupList = new ArrayList<>();
+                List<Membership> filteredMembershipList = new ArrayList<>();
 
                 for (Friendship friendship : user.getFriendships()) {
                     if (PullToSearchView.shouldFilter(filterRecipient, friendship)) {
@@ -160,13 +161,13 @@ public class DiskUserDataRepository implements UserRepository {
 
                 user.setFriendships(filteredFriendshipList);
 
-                for (Group group : user.getGroupList()) {
-                    if (PullToSearchView.shouldFilter(filterRecipient, group)) {
-                        filteredGroupList.add(group);
+                for (Membership membership : user.getMembershipList()) {
+                    if (PullToSearchView.shouldFilter(filterRecipient, membership)) {
+                        filteredMembershipList.add(membership);
                     }
                 }
 
-                user.setGroupList(filteredGroupList);
+                user.setMembershipList(filteredMembershipList);
             }
 
             return user;

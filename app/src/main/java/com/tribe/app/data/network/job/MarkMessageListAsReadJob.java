@@ -29,7 +29,7 @@ public class MarkMessageListAsReadJob extends BaseJob {
     private List<ChatMessage> messageList;
 
     public MarkMessageListAsReadJob(Recipient recipient, List<ChatMessage> messageList) {
-        super(new Params(Priority.MID).requireNetwork().persist().groupBy(recipient.getId()));
+        super(new Params(Priority.MID).requireNetwork().persist().groupBy(recipient.getSubId()));
         this.messageList = messageList;
     }
 

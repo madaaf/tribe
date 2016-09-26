@@ -2,7 +2,7 @@ package com.tribe.app.data.realm.mapper;
 
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Group;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.TribeMessage;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import javax.inject.Singleton;
 public class TribeRealmDataMapper {
 
     LocationRealmDataMapper locationRealmDataMapper;
-    GroupRealmDataMapper groupRealmDataMapper;
+    MembershipRealmDataMapper membershipRealmDataMapper;
     UserRealmDataMapper userRealmDataMapper;
     WeatherRealmDataMapper weatherRealmDataMapper;
     FriendshipRealmDataMapper friendshipRealmDataMapper;
@@ -32,10 +32,10 @@ public class TribeRealmDataMapper {
                                 WeatherRealmDataMapper weatherRealmDataMapper,
                                 MessageRecipientRealmDataMapper messageRecipientRealmDataMapper) {
         this.locationRealmDataMapper = locationRealmDataMapper;
-        this.groupRealmDataMapper = groupRealmDataMapper;
         this.userRealmDataMapper = userRealmDataMapper;
         this.weatherRealmDataMapper = weatherRealmDataMapper;
         this.friendshipRealmDataMapper = new FriendshipRealmDataMapper(userRealmDataMapper);
+        this.membershipRealmDataMapper = new MembershipRealmDataMapper(groupRealmDataMapper);
         this.messageRecipientRealmDataMapper = messageRecipientRealmDataMapper;
     }
 
@@ -52,7 +52,7 @@ public class TribeRealmDataMapper {
             tribe = new TribeMessage();
             tribe.setId(tribeRealm.getId());
             tribe.setLocalId(tribeRealm.getLocalId());
-            tribe.setTo(tribeRealm.isToGroup() ? groupRealmDataMapper.transform(tribeRealm.getGroup()) : friendshipRealmDataMapper.transform(tribeRealm.getFriendshipRealm()));
+            tribe.setTo(tribeRealm.isToGroup() ? membershipRealmDataMapper.transform(tribeRealm.getMembershipRealm()) : friendshipRealmDataMapper.transform(tribeRealm.getFriendshipRealm()));
             tribe.setType(tribeRealm.getType());
             tribe.setFrom(userRealmDataMapper.transform(tribeRealm.getFrom()));
             tribe.setRecordedAt(tribeRealm.getRecordedAt());
@@ -66,6 +66,8 @@ public class TribeRealmDataMapper {
             tribe.setWeather(weatherRealmDataMapper.transform(tribeRealm.getWeatherRealm()));
             tribe.setRecipientList(messageRecipientRealmDataMapper.transform(tribeRealm.getRecipientList()));
             tribe.setTranscript(tribeRealm.getTranscript());
+            tribe.setProgress(tribeRealm.getProgress());
+            tribe.setTotalSize(tribeRealm.getTotalSize());
         }
 
         return tribe;
@@ -86,7 +88,7 @@ public class TribeRealmDataMapper {
             tribeRealm.setLocalId(tribe.getLocalId());
 
             if (tribe.isToGroup()) {
-                tribeRealm.setGroup(groupRealmDataMapper.transform((Group) tribe.getTo()));
+                tribeRealm.setMembershipRealm(membershipRealmDataMapper.transform((Membership) tribe.getTo()));
             } else {
                 tribeRealm.setFriendshipRealm(friendshipRealmDataMapper.transform((Friendship) tribe.getTo()));
             }
@@ -104,6 +106,8 @@ public class TribeRealmDataMapper {
             tribeRealm.setWeatherRealm(weatherRealmDataMapper.transform(tribe.getWeather()));
             tribeRealm.setRecipientList(messageRecipientRealmDataMapper.transform(tribe.getRecipientList()));
             tribeRealm.setTranscript(tribe.getTranscript());
+            tribeRealm.setProgress(tribe.getProgress());
+            tribeRealm.setTotalSize(tribe.getTotalSize());
         }
 
         return tribeRealm;

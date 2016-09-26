@@ -20,10 +20,6 @@ import java.io.OutputStream;
 import javax.inject.Inject;
 
 import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -45,32 +41,19 @@ public abstract class DownloadVideoJob extends BaseJob {
 
         if (file.exists() && file.length() > 0) throw new FileAlreadyExists();
 
-        Call<ResponseBody> call = fileApi.downloadFileWithUrl(getUrl());
-
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    Observable.just("")
-                            .doOnNext(s -> {
-                                if (DEBUG) Log.d(getTag(), "server contacted and has file");
-                                boolean writtenToDisk = writeResponseBodyToDisk(response.body());
-                                if (DEBUG) Log.d(getTag(), "file download was a success? " + writtenToDisk);
-                                saveResult(writtenToDisk);
-                            })
-                            .subscribeOn(Schedulers.newThread())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(s -> {});
-                } else {
-                    if (DEBUG) Log.d(getTag(), "server contact failed");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                if (DEBUG) Log.e(getTag(), "error : " + t.getMessage());
-            }
-        });
+        fileApi.downloadFileWithUrl(getUrl())
+                .doOnError(throwable -> throwable.printStackTrace())
+                .map(response -> {
+                    if (DEBUG) Log.d(getTag(), "server contacted and has file");
+                    boolean writtenToDisk = writeResponseBodyToDisk(response);
+                    if (DEBUG) Log.d(getTag(), "file download was a success? " + writtenToDisk);
+                    return writtenToDisk;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(writtenToDisk -> {
+                    saveResult(writtenToDisk);
+                });
     }
 
     @Override
@@ -90,6 +73,7 @@ public abstract class DownloadVideoJob extends BaseJob {
 
             InputStream inputStream = null;
             OutputStream outputStream = null;
+            long previousDownloaded = 0;
 
             try {
                 byte[] fileReader = new byte[4096];
@@ -111,7 +95,10 @@ public abstract class DownloadVideoJob extends BaseJob {
 
                     outputStream.write(fileReader, 0, read);
                     fileSizeDownloaded += read;
-                    setProgress(fileSizeDownloaded);
+                    if ((fileSizeDownloaded - previousDownloaded) > ((float) fileSize / 10)) {
+                        previousDownloaded = fileSizeDownloaded;
+                        setProgress(fileSizeDownloaded);
+                    }
                     if (DEBUG) Log.d(getTag(), "file download: " + fileSizeDownloaded + " of " + fileSize);
                 }
 

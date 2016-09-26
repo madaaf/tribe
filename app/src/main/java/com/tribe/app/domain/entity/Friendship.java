@@ -13,7 +13,6 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
     private boolean blocked;
     private String category;
     private User friend;
-    private boolean isAdmin;
 
     public Friendship(String id) {
         this.id = id;
@@ -52,7 +51,7 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
     }
 
     @Override
-    public String getFriendshipId() {
+    public String getId() {
         return id;
     }
 
@@ -67,7 +66,7 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
     }
 
     @Override
-    public String getId() {
+    public String getSubId() {
         if (id.equals(Recipient.ID_EMPTY)) return id;
 
         return friend.getId();
@@ -92,7 +91,6 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
     public int compareTo(Friendship other) {
         if (other == null) return 1;
 
-        //remove accent
         String name1 = Normalizer.normalize(this.getDisplayName(), Normalizer.Form.NFD);
         name1 = name1.replaceAll("[^\\p{ASCII}]", "");
         String name2 = Normalizer.normalize(other.getDisplayName(), Normalizer.Form.NFD);

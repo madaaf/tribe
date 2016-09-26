@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.Manifest;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.provider.MediaStore;
@@ -7,12 +8,14 @@ import android.provider.MediaStore;
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.JobStatus;
 import com.birbit.android.jobqueue.TagConstraint;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.data.network.job.DownloadChatVideoJob;
 import com.tribe.app.data.network.job.MarkMessageListAsReadJob;
 import com.tribe.app.data.network.job.SendChatJob;
 import com.tribe.app.data.network.job.UpdateChatHistoryJob;
 import com.tribe.app.data.network.job.UpdateChatMessagesJob;
 import com.tribe.app.data.network.job.UpdateMessagesErrorStatusJob;
+import com.tribe.app.data.network.job.UpdateMessagesVideoErrorStatusJob;
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
@@ -115,6 +118,9 @@ public class ChatPresenter implements Presenter {
 //        subscribingMQTT.unsubscribe();
 //        disconnectMQTT.unsubscribe();
         diskGetChatMessages.unsubscribe();
+        deleteDiskConversation.unsubscribe();
+        diskMarkMessageListAsRead.unsubscribe();
+        getPendingMessageList.unsubscribe();
     }
 
     @Override
@@ -124,14 +130,15 @@ public class ChatPresenter implements Presenter {
 
     public void updateErrorMessages(String recipientId) {
         jobManager.addJobInBackground(new UpdateMessagesErrorStatusJob(recipientId));
+        jobManager.addJobInBackground(new UpdateMessagesVideoErrorStatusJob(recipientId));
     }
 
     public void loadChatMessages(Recipient recipient) {
         jobManager.addJobInBackground(new UpdateChatHistoryJob(recipient));
-        jobManager.addJobInBackground(new UpdateChatMessagesJob(recipient.getId()));
-        diskGetChatMessages.setRecipientId(recipient.getId());
+        jobManager.addJobInBackground(new UpdateChatMessagesJob(recipient.getSubId()));
+        diskGetChatMessages.setRecipientId(recipient.getSubId());
         diskGetChatMessages.execute(new ChatMessageListSubscriber());
-        getPendingMessageList.setRecipientId(recipient.getId());
+        getPendingMessageList.setRecipientId(recipient.getSubId());
         getPendingMessageList.execute(new PendingChatMessageListSubscriber());
     }
 
@@ -181,30 +188,31 @@ public class ChatPresenter implements Presenter {
     }
 
     public void loadVideo(ChatMessage message) {
-        Observable
-            .just("")
-            .doOnNext(o -> {
-                boolean shouldDownload = false;
+        if (RxPermissions.getInstance(messageView.context()).isGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            Observable
+                    .just("")
+                    .doOnNext(o -> {
+                        boolean shouldDownload = false;
 
-                JobStatus jobStatus = jobManager.getJobStatus(message.getLocalId());
-                File file = FileUtils.getFile(message.getId(), FileUtils.VIDEO);
+                        JobStatus jobStatus = jobManager.getJobStatus(message.getLocalId());
+                        File file = FileUtils.getFile(message.getId(), FileUtils.VIDEO);
 
-                if (jobStatus.equals(JobStatus.UNKNOWN) && (!file.exists() || file.length() == 0)
-                        && (message.getMessageDownloadingStatus() == null || message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD))) {
-                    shouldDownload = true;
-                    message.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
-                    jobManager.cancelJobsInBackground(null, TagConstraint.ALL, message.getId());
-                }
+                        if (jobStatus.equals(JobStatus.UNKNOWN) && (!file.exists() || file.length() == 0)
+                                && (!message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADED))) {
+                            shouldDownload = true;
+                            message.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
+                            jobManager.cancelJobsInBackground(null, TagConstraint.ALL, message.getId());
+                        }
 
-                if (shouldDownload
-                        && message.getMessageDownloadingStatus() != null
-                        && message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD)
-                        && message.getFrom() != null) {
-                    jobManager.addJobInBackground(new DownloadChatVideoJob(message));
-                }
-            }).subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe();
+                        if (shouldDownload
+                                && message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD)
+                                && message.getFrom() != null) {
+                            jobManager.addJobInBackground(new DownloadChatVideoJob(message));
+                        }
+                    }).subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe();
+        }
     }
 
     public void subscribe(String id) {
@@ -228,7 +236,7 @@ public class ChatPresenter implements Presenter {
 
         for (ChatMessage message : messageList) {
             if (!message.getFrom().equals(currentUser) && message.getMessageReceivingStatus() != null
-                    && message.getMessageReceivingStatus().equals(MessageReceivingStatus.STATUS_NOT_SEEN)) {
+                    && !message.getMessageReceivingStatus().equals(MessageReceivingStatus.STATUS_SEEN)) {
                 onlyNonRead.add(message);
             }
         }

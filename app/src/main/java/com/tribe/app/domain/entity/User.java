@@ -27,8 +27,7 @@ public class User implements Serializable {
     private Location location;
     private boolean tribe_save;
     private List<Friendship> friendships;
-    private List<User> reportedList;
-    private List<Group> groupList;
+    private List<Membership> membershipList;
     private List<Recipient> friendshipList;
     private String fbid;
     private boolean invisible_mode;
@@ -71,23 +70,6 @@ public class User implements Serializable {
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public List<User> getReportedList() {
-        return reportedList;
-    }
-
-    public void setReportedList(List<User> reportedList) {
-        this.reportedList = reportedList;
-    }
-
-    public List<Group> getGroupList() {
-        if (groupList == null) return new ArrayList<>();
-        return groupList;
-    }
-
-    public void setGroupList(List<Group> groupList) {
-        this.groupList = groupList;
     }
 
     public String getProfilePicture() {
@@ -140,6 +122,16 @@ public class User implements Serializable {
         return friendships;
     }
 
+    public void setMembershipList(List<Membership> membershipList) {
+        this.membershipList = membershipList;
+    }
+
+    public List<Membership> getMembershipList() {
+        if (friendships == null) return new ArrayList<>();
+
+        return membershipList;
+    }
+
     public String getFbid() {
         return fbid;
     }
@@ -167,7 +159,7 @@ public class User implements Serializable {
     public List<Recipient> getFriendshipList() {
         friendshipList = new ArrayList<>();
         if (friendships != null) friendshipList.addAll(friendships);
-        if (groupList != null) friendshipList.addAll(groupList);
+        if (membershipList != null) friendshipList.addAll(membershipList);
 
         Collections.sort(friendshipList, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
 
@@ -198,9 +190,8 @@ public class User implements Serializable {
             setInvisibleMode(user.isInvisibleMode());
             setTribeSave(user.isTribeSave());
             if (user.getLocation() != null) setLocation(user.getLocation());
-            if (user.getGroupList() != null) setGroupList(user.getGroupList());
+            if (user.getMembershipList() != null) setMembershipList(user.getMembershipList());
             if (user.getFriendships() != null) setFriendships(user.getFriendships());
-            if (user.getReportedList() != null) setReportedList(user.getReportedList());
         }
     }
 
@@ -217,8 +208,7 @@ public class User implements Serializable {
         setInvisibleMode(false);
         setTribeSave(false);
         setLocation(null);
-        setGroupList(null);
+        setMembershipList(null);
         setFriendships(null);
-        setReportedList(null);
     }
 }

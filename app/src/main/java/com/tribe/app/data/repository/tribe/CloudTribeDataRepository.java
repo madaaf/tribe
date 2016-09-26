@@ -66,6 +66,11 @@ public class CloudTribeDataRepository implements TribeRepository {
     }
 
     @Override
+    public Observable<List<TribeMessage>> tribesForARecipient(String recipientId) {
+        return null;
+    }
+
+    @Override
     public Observable<List<TribeMessage>> tribesPending() {
         return null;
     }
