@@ -252,6 +252,7 @@ public class CloudUserDataStore implements UserDataStore {
         return tribeApi.messages(req)
                 .flatMap(messageRealmInterfaceList -> {
                     Set<String> idsFrom = new HashSet<>();
+                    Set<String> idsMembershipToCreate = new HashSet<>();
 
                     for (MessageRealmInterface message : messageRealmInterfaceList) {
                         if (message.getFrom() != null) {
@@ -263,6 +264,10 @@ public class CloudUserDataStore implements UserDataStore {
                                 message.setFrom(userRealm);
                             }
                         }
+
+//                        if (message.isToGroup() && message.getRecipient() != null) {
+//                            idsMembershipToCreate.add(message.getRecipient().getSubId());
+//                        }
                     }
 
                     if (idsFrom.size() > 0) {

@@ -8,7 +8,7 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by tiago on 05/08/2016.
  */
-public class FriendshipRealm extends RealmObject {
+public class FriendshipRealm extends RealmObject implements RecipientRealmInterface {
 
     @PrimaryKey
     private String id;
@@ -74,5 +74,10 @@ public class FriendshipRealm extends RealmObject {
 
     public void setUpdatedAt(Date updated_at) {
         this.updated_at = updated_at;
+    }
+
+    @Override
+    public String getSubId() {
+        return null;
     }
 }

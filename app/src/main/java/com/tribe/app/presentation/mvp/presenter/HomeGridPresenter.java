@@ -69,19 +69,19 @@ public class HomeGridPresenter extends SendTribePresenter {
 
     @Override
     public void onCreate() {
+        jobManager.addJobInBackground(new UpdateTribeDownloadedJob());
+        jobManager.addJobInBackground(new UpdateTribesErrorStatusJob());
+        jobManager.addJobInBackground(new UpdateUserJob());
         onResume();
     }
 
     @Override
     public void onStart() {
-        // Unused
+
     }
 
     @Override
     public void onResume() {
-        jobManager.addJobInBackground(new UpdateTribeDownloadedJob());
-        jobManager.addJobInBackground(new UpdateTribesErrorStatusJob());
-        jobManager.addJobInBackground(new UpdateUserJob());
         loadFriendList(null);
         loadTribeList();
         loadPendingTribeList();
@@ -100,6 +100,8 @@ public class HomeGridPresenter extends SendTribePresenter {
         diskGetMessageReceivedListUsecase.unsubscribe();
         diskGetPendingTribeListUsecase.unsubscribe();
         diskMarkTribeListAsRead.unsubscribe();
+        leaveGroup.unsubscribe();
+        removeGroup.unsubscribe();
     }
 
     @Override

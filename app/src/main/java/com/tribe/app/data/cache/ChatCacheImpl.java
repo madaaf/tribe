@@ -237,7 +237,7 @@ public class ChatCacheImpl implements ChatCache {
 
             for (String idTo : membershipSet) {
                 RealmResults<ChatRealm> latest = obsRealm.where(ChatRealm.class)
-                        .equalTo("membership.group.id", idTo)
+                        .equalTo("membershipRealm.group.id", idTo)
                         .beginGroup()
                         .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED)
                         .or()
@@ -248,7 +248,7 @@ public class ChatCacheImpl implements ChatCache {
                 if (latest != null && latest.size() > 0) {
                     RealmResults<ChatRealm> toRemoveStatus = obsRealm.where(ChatRealm.class)
                             .lessThan("created_at", latest.get(0).getCreatedAt())
-                            .equalTo("membership.group.id", idTo)
+                            .equalTo("membershipRealm.group.id", idTo)
                             .beginGroup()
                             .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
                             .or()

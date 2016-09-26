@@ -210,11 +210,11 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
             if (shouldReloadGrid) {
                 shouldReloadGrid = false;
                 reloadGrid();
-            }
-
-            for (Recipient recipient : recipientList) {
-                if (recipient.getReceivedTribes() != null && recipient.getReceivedTribes().size() > 0) {
-                    homeGridPresenter.downloadMessages(recipient.getReceivedTribes().toArray(new TribeMessage[recipient.getReceivedTribes().size()]));
+            } else {
+                for (Recipient recipient : recipientList) {
+                    if (recipient.getReceivedTribes() != null && recipient.getReceivedTribes().size() > 0) {
+                        homeGridPresenter.downloadMessages(recipient.getReceivedTribes().toArray(new TribeMessage[recipient.getReceivedTribes().size()]));
+                    }
                 }
             }
 
