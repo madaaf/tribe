@@ -76,6 +76,7 @@ import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.video.LegacyMediaPlayer;
 import com.tribe.app.presentation.view.widget.AvatarView;
+import com.tribe.app.presentation.view.widget.ButtonCardView;
 import com.tribe.app.presentation.view.widget.ButtonPointsView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
@@ -92,6 +93,7 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import io.realm.Realm;
+import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 
 /**
  * A component whose lifetime is the life of the application.
@@ -127,6 +129,7 @@ public interface ApplicationComponent {
     void inject(PullToSearchContainer pullToSearchContainer);
     void inject(PullToSearchView pullToSearchView);
     void inject(SettingItemView settingItemView);
+    void inject(ButtonCardView buttonCardView);
 
     // JOBS
     void inject(BaseJob baseJob);
@@ -233,4 +236,6 @@ public interface ApplicationComponent {
     FileUtils fileUtils();
 
     TagManager tagManager();
+
+    ReactiveLocationProvider reactiveLocationProvider();
 }

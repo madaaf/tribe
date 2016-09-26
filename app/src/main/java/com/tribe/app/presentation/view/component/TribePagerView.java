@@ -1167,6 +1167,12 @@ public class TribePagerView extends FrameLayout {
         }
     }
 
+    public void updateCurrentView() {
+        computeCurrentView();
+        currentView.updateLocation();
+        currentView.play();
+    }
+
     //////////////////////
     //   OBSERVABLES    //
     //////////////////////

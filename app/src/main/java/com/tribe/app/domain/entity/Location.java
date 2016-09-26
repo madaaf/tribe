@@ -19,6 +19,7 @@ public class Location implements Serializable {
     private double longitude;
     private double latitude;
     private String city;
+    private String countryCode;
     private boolean hasLocation;
 
     public Location(double longitude, double latitude) {
@@ -64,6 +65,14 @@ public class Location implements Serializable {
 
     public void setHasLocation(boolean hasLocation) {
         this.hasLocation = hasLocation;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
     }
 
     /***

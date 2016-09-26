@@ -130,6 +130,8 @@ public class UserCacheImpl implements UserCache {
                 if (userRealm.getLocation() != null) {
                     LocationRealm locationRealm = obsRealm.copyToRealmOrUpdate(userRealm.getLocation());
                     userDB.setLocation(locationRealm);
+                } else {
+                    userDB.setLocation(null);
                 }
             } else {
                 obsRealm.copyToRealmOrUpdate(userRealm);

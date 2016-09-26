@@ -30,10 +30,11 @@ import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.ScoreUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.video.TribeMediaPlayer;
 import com.tribe.app.presentation.view.widget.AvatarView;
-import com.tribe.app.presentation.view.widget.LabelButton;
+import com.tribe.app.presentation.view.widget.ButtonCardView;
 import com.tribe.app.presentation.view.widget.ScalableTextureView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.VideoTextureView;
@@ -72,8 +73,17 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     @BindView(R.id.imgMore)
     ImageView imgMore;
 
-    @BindView(R.id.labelDistance)
-    LabelButton labelDistance;
+    @BindView(R.id.labelLevel)
+    ButtonCardView labelLevel;
+
+    @BindView(R.id.labelCity)
+    ButtonCardView labelCity;
+
+    @BindView(R.id.labelLocation)
+    ButtonCardView labelLocation;
+
+    @BindView(R.id.labelWeather)
+    ButtonCardView labelWeather;
 
     @BindView(R.id.txtName)
     TextViewFont txtName;
@@ -81,14 +91,8 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     @BindView(R.id.txtTime)
     TextViewFont txtTime;
 
-    @BindView(R.id.labelCity)
-    LabelButton labelCity;
-
     @BindView(R.id.txtSwipeDown)
     TextViewFont txtSwipeDown;
-
-    @BindView(R.id.labelWeather)
-    LabelButton labelWeather;
 
     @BindView(R.id.txtTranscript)
     TextViewFont txtTranscript;
@@ -158,15 +162,31 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         avatarView.load(tribe.getFrom().getProfilePicture());
         txtTime.setText(DateUtils.getRelativeTimeSpanString(tribe.getRecordedAt().getTime(), new Date().getTime(), DateUtils.SECOND_IN_MILLIS));
 
-        if (tribe.getLocation() != null && tribe.getLocation().hasLocation()) {
-            labelCity.setVisibility(View.VISIBLE);
-            labelDistance.setVisibility(View.VISIBLE);
+        ScoreUtils.Level level = ScoreUtils.getLevelForScore(tribe.getFrom().getScore());
+        labelLevel.setText(level.getStringId());
+        labelLevel.setDrawableResource(level.getDrawableId());
 
+        updateLocation();
+
+        if (!StringUtils.isEmpty(tribe.getTranscript())) {
+            txtTranscript.setText(tribe.getTranscript());
+        }
+    }
+
+    public void updateLocation() {
+        if (tribe.getLocation() != null && tribe.getLocation().hasLocation()) {
             Location location = tribe.getLocation();
             Weather weatherObj = tribe.getWeather();
-            labelCity.setText(location.getCity());
-            labelDistance.setText(currentUser.getLocation() != null ? currentUser.getLocation().distanceTo(getContext(), distanceUnits.get(), tribe.getLocation()) : getContext().getString(R.string.tribe_distance_enable));
-            labelDistance.setType(currentUser.getLocation() != null ? LabelButton.INFOS : LabelButton.ACTION);
+
+            if (!StringUtils.isEmpty(location.getCity()) && !StringUtils.isEmpty(location.getCountryCode())) {
+                labelCity.setText(location.getCity());
+                labelCity.setDrawableResource(getResources().getIdentifier("picto_flag_" + location.getCountryCode().toLowerCase(), "drawable", getContext().getPackageName()));
+                labelCity.setVisibility(View.VISIBLE);
+            } else {
+                labelCity.setVisibility(View.GONE);
+            }
+
+            labelLocation.setText(currentUser.getLocation() != null ? currentUser.getLocation().distanceTo(getContext(), distanceUnits.get(), tribe.getLocation()) : getContext().getString(R.string.tribe_distance_enable));
 
             if (tribe.getWeather() != null) {
                 labelWeather.setVisibility(View.VISIBLE);
@@ -177,12 +197,8 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
             }
         } else {
             labelCity.setVisibility(View.GONE);
-            labelDistance.setVisibility(View.GONE);
+            labelLocation.setVisibility(View.GONE);
             labelWeather.setVisibility(View.GONE);
-        }
-
-        if (!StringUtils.isEmpty(tribe.getTranscript())) {
-            txtTranscript.setText(tribe.getTranscript());
         }
     }
 
@@ -245,7 +261,6 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         System.out.println("TOTAL SIZE : " + tribe.getTotalSize());
 
         if (layoutDownloadProgress.getVisibility() == View.GONE) {
-            System.out.println("FADING IN");
             layoutDownloadProgress.setVisibility(View.VISIBLE);
         }
 
@@ -253,7 +268,6 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
             progressBarDownload.setVisibility(View.GONE);
             progressBarDownloadIndeterminate.setVisibility(View.VISIBLE);
         } else {
-            System.out.println("TOTAL SIZE > 0");
             progressBarDownload.setVisibility(View.VISIBLE);
             progressBarDownloadIndeterminate.setVisibility(View.GONE);
 
@@ -299,7 +313,8 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         avatarView.setAlpha(alpha);
         imgMore.setAlpha(alpha);
         labelCity.setAlpha(alpha);
-        labelDistance.setAlpha(alpha);
+        labelLocation.setAlpha(alpha);
+        labelLevel.setAlpha(alpha);
         txtName.setAlpha(alpha);
         txtTime.setAlpha(alpha);
         labelWeather.setAlpha(alpha);
@@ -325,7 +340,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         return onPlayerError;
     }
 
-    @OnClick(R.id.labelDistance)
+    @OnClick(R.id.labelLocation)
     void enableDistance(View view) {
         if (currentUser.getLocation() == null || !currentUser.getLocation().hasLocation()) {
             clickEnableLocation.onNext(this);

@@ -214,6 +214,14 @@
         <item name="android:textColor">@color/black.opacity.40</item>
     </style>
 
+    <style name="Points.Small" parent="Points">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="Points.Small.White" parent="Points.Small">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
     <style name="Points.Large" parent="Points.Reg.Black">
         <item name="android:textSize">35sp</item>
     </style>

@@ -102,10 +102,14 @@
             to: \"%1$s\",
             type: \"%2$s\",
             recorded_at: \"%3$s\",
-            coord : {
-                latitude : %4$s,
-                longitude : %5$s
-            }
+            %4$s
+        }
+    </string>
+
+    <string name="tribe.coord.input" translatable="false">
+        coord : {
+            latitude : %1$s,
+            longitude : %2$s
         }
     </string>
 
@@ -177,6 +181,7 @@
 
                     location {
                         city
+                        country
                     }
 
                     recipients {

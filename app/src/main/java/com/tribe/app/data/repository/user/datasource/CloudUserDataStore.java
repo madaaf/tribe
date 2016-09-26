@@ -177,6 +177,8 @@ public class CloudUserDataStore implements UserDataStore {
                         locationRealm.setHasLocation(true);
                         locationRealm.setId(userRealm.getId());
                         userRealm.setLocation(locationRealm);
+                    } else {
+                        userRealm.setLocation(null);
                     }
 
                     return userRealm;
@@ -246,7 +248,7 @@ public class CloudUserDataStore implements UserDataStore {
         }
 
         String req = context.getString(R.string.messages_infos,
-                !StringUtils.isEmpty(lastMessageRequest.get()) ? context.getString(R.string.input_start, lastMessageRequest.get()) : "",
+                "",//!StringUtils.isEmpty(lastMessageRequest.get()) ? context.getString(R.string.input_start, lastMessageRequest.get()) : "",
                 !StringUtils.isEmpty(idsTribes.toString()) ? context.getString(R.string.tribe_sent_infos, idsTribes) : "");
 
         return tribeApi.messages(req)

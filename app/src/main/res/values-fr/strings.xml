@@ -207,7 +207,7 @@
 	<string name="group_share_description_expiration">Ce lien sera supprimé dans %1$s</string>
 	<string name="group_button_create">Créer</string>
 	<string name="group_button_creating">Création en cours...</string>
-	<string name="group_empty_list">Groupe privé pour vos conversations privées</string>
+	<string name="group_empty_list">Pas d\'autres amis à ajouter à ce groupe</string>
 	
 	<!-- Group Infos -->
 	<string name="group_infos_title">Détails du groupe</string>
