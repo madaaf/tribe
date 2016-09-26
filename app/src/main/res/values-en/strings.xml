@@ -200,13 +200,13 @@
 	<string name="group_invalid_infos_error_message">Be sure to name your group</string>
 	<string name="group_valid_infos_message">Add members after creating the group</string>
 	<string name="group_button_share">Magic link to send via...</string>
-	<string name="group_button_share_generate">Generate a static link</string>
-	<string name="group_button_share_generating">Generating link...</string>
+	<string name="group_button_share_generate">Create a sharing link</string>
+	<string name="group_button_share_generating">Creating link...</string>
 	<string name="group_button_share_deleting">Deleting link...</string>
 	<string name="group_share_description">Send a group link outside the app</string>
 	<string name="group_share_description_expiration">This sharing link will be deleted in %1$s</string>
 	<string name="group_button_create">Create</string>
-	<string name="group_button_creating">Creating...</string>
+	<string name="group_button_creating">Creating group...</string>
 	<string name="group_empty_list">No friends to add to the group</string>
 	
 	<!-- Group Infos -->

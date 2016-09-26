@@ -140,8 +140,9 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     private int currentEditTranslation;
     private int layoutCreateInviteInfoPositionY = 255;
     private int startTranslationDoneIcon = 200;
-    private int animDuration = 300 * 2;
+    private int animDuration = AnimationUtils.ANIMATION_DURATION_SHORT;
     private int smallMargin = 5;
+    private boolean friendAdapterClickable = true;
 
     // Observables
     private PublishSubject<Void> imageGoToMembersClicked = PublishSubject.create();
@@ -498,12 +499,15 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                 .subscribe(friendView -> {
                     Friendship friendship = friendAdapter.getItemAtPosition((Integer) friendView.getTag(R.id.tag_position));
                     String friendId = friendship.getFriend().getId();
-                    if ((Boolean) friendView.getTag(R.id.tag_selected)) {
-                        memberIds.add(friendId);
-                        searchFriendsView.insertFriend(friendship.getId(), friendship.getProfilePicture());
-                    } else {
-                        memberIds.remove(friendId);
-                        searchFriendsView.deleteFriend(friendship.getId());
+                    if (friendAdapterClickable) {
+                        if ((Boolean) friendView.getTag(R.id.tag_selected)) {
+                            memberIds.add(friendId);
+                            searchFriendsView.insertFriend(friendship.getId(), friendship.getProfilePicture());
+
+                        } else {
+                            memberIds.remove(friendId);
+                            searchFriendsView.deleteFriend(friendship.getId());
+                        }
                     }
                 }));
         friendAdapter.notifyDataSetChanged();

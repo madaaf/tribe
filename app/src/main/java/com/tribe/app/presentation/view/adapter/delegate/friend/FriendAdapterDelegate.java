@@ -16,13 +16,17 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
 /**
@@ -54,6 +58,13 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
 
         subscriptions.add(RxView.clicks(vh.itemView)
                 .doOnNext(aVoid -> {
+                    vh.itemView.setEnabled(false);
+                    Observable.timer(AnimationUtils.ANIMATION_DURATION_SHORT, TimeUnit.MILLISECONDS)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(time -> {
+                                vh.itemView.setEnabled(true);
+                            });
                     BlockFriendViewHolder blockFriendViewHolder = (BlockFriendViewHolder) vh;
                     if (blockFriendViewHolder.selected) {
                         blockFriendViewHolder.imageSelected.setImageDrawable(null);
