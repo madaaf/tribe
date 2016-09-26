@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
+import com.tribe.app.data.network.job.UpdateScoreJob;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.SearchResult;
@@ -16,6 +17,7 @@ import com.tribe.app.presentation.mvp.view.ContactsView;
 import com.tribe.app.presentation.mvp.view.View;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
+import com.tribe.app.presentation.view.utils.ScoreUtils;
 
 import java.util.List;
 
@@ -231,7 +233,10 @@ public class ContactsGridPresenter implements Presenter {
         @Override
         public void onNext(Friendship friendship) {
             if (friendship == null) contactsView.onAddError();
-            else contactsView.onAddSuccess(friendship);
+            else {
+                jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.NEW_FRIENDSHIP));
+                contactsView.onAddSuccess(friendship);
+            }
         }
     }
 

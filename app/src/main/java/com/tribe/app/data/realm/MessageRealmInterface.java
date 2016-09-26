@@ -8,7 +8,9 @@ import java.util.Date;
 public interface MessageRealmInterface {
 
     UserRealm getFrom();
+    RecipientRealmInterface getRecipient();
     void setFrom(UserRealm userRealm);
+    boolean isToGroup();
     Date getUpdatedAt();
     Date getRecordedAt();
 }

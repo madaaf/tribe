@@ -126,6 +126,7 @@ public abstract class Recipient implements Serializable {
     public abstract String getSubId();
     public abstract String getId();
     public abstract Date getUpdatedAt();
+    public abstract void setScore(int score);
 
     @Override
     public int hashCode() {

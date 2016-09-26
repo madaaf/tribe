@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.tribe.app.data.cache.ChatCache;
@@ -37,8 +38,11 @@ public class ChatHistoryDeserializer extends MessageRealmListDeserializer implem
                 results = data.getAsJsonArray("messages");
                 return deserializeChatRealmArray(results.getAsJsonArray());
             } else if (data.getAsJsonArray("groups") != null) {
-                results = data.getAsJsonArray("groups").get(0).getAsJsonObject().getAsJsonArray("messages");
-                return new Gson().fromJson(results, typeOfT);
+                JsonElement element = data.getAsJsonArray("groups").get(0);
+                if (element != null && !(element instanceof JsonNull)) {
+                    results =  element.getAsJsonObject().getAsJsonArray("messages");
+                    return new Gson().fromJson(results, typeOfT);
+                }
             } else if (data.getAsJsonArray("friendships") != null) {
                 results = data.getAsJsonArray("friendships").get(0).getAsJsonObject().getAsJsonArray("messages");
                 return new Gson().fromJson(results, typeOfT);

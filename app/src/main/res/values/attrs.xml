@@ -59,4 +59,14 @@
         <attr name="buttonPoints" format="integer" />
         <attr name="buttonBGColor" format="integer" />
     </declare-styleable>
+
+    <declare-styleable name="ButtonCardView">
+        <attr name="buttonCardDrawable" format="integer" />
+        <attr name="buttonCardType" format="enum">
+            <enum name="points" value="0" />
+            <enum name="meteo" value="1" />
+            <enum name="location" value="2" />
+            <enum name="city" value="3" />
+        </attr>
+    </declare-styleable>
 </resources>

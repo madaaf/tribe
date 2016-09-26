@@ -52,6 +52,11 @@ public class Membership extends Recipient {
         return updated_at;
     }
 
+    @Override
+    public void setScore(int score) {
+
+    }
+
     public void setId(String id) {
         this.id = id;
     }

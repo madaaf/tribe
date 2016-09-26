@@ -88,6 +88,11 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
     }
 
     @Override
+    public void setScore(int score) {
+        friend.setScore(score);
+    }
+
+    @Override
     public int compareTo(Friendship other) {
         if (other == null) return 1;
 

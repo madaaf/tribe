@@ -72,6 +72,11 @@ public class ChatRealm extends RealmObject implements MessageRealmInterface {
     }
 
     @Override
+    public RecipientRealmInterface getRecipient() {
+        return to_group ? membershipRealm : friendshipRealm;
+    }
+
+    @Override
     public void setFrom(UserRealm from) {
         this.from = from;
     }
@@ -84,6 +89,7 @@ public class ChatRealm extends RealmObject implements MessageRealmInterface {
         this.type = type;
     }
 
+    @Override
     public boolean isToGroup() {
         return to_group;
     }

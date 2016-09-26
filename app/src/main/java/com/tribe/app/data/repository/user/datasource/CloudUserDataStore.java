@@ -177,6 +177,8 @@ public class CloudUserDataStore implements UserDataStore {
                         locationRealm.setHasLocation(true);
                         locationRealm.setId(userRealm.getId());
                         userRealm.setLocation(locationRealm);
+                    } else {
+                        userRealm.setLocation(null);
                     }
 
                     return userRealm;
@@ -246,11 +248,13 @@ public class CloudUserDataStore implements UserDataStore {
         }
 
         String req = context.getString(R.string.messages_infos,
-                !StringUtils.isEmpty(lastMessageRequest.get()) ? context.getString(R.string.input_start, lastMessageRequest.get()) : "",
+                "",//!StringUtils.isEmpty(lastMessageRequest.get()) ? context.getString(R.string.input_start, lastMessageRequest.get()) : "",
                 !StringUtils.isEmpty(idsTribes.toString()) ? context.getString(R.string.tribe_sent_infos, idsTribes) : "");
 
-        return tribeApi.messages(req).flatMap(messageRealmInterfaceList -> {
+        return tribeApi.messages(req)
+                .flatMap(messageRealmInterfaceList -> {
                     Set<String> idsFrom = new HashSet<>();
+                    Set<String> idsMembershipToCreate = new HashSet<>();
 
                     for (MessageRealmInterface message : messageRealmInterfaceList) {
                         if (message.getFrom() != null) {
@@ -262,6 +266,10 @@ public class CloudUserDataStore implements UserDataStore {
                                 message.setFrom(userRealm);
                             }
                         }
+
+//                        if (message.isToGroup() && message.getRecipient() != null) {
+//                            idsMembershipToCreate.add(message.getRecipient().getSubId());
+//                        }
                     }
 
                     if (idsFrom.size() > 0) {

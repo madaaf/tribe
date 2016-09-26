@@ -23,6 +23,7 @@ import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.HomeView;
+import com.tribe.app.presentation.mvp.view.UpdateScore;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
@@ -52,7 +53,7 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Fragment that shows a list of Recipients.
  */
-public class HomeGridFragment extends BaseFragment implements HomeGridView {
+public class HomeGridFragment extends BaseFragment implements HomeGridView, UpdateScore {
 
     private static final int TIME_MIN_RECORDING = 1500; // IN MS
 
@@ -154,12 +155,14 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
     public void onResume() {
         super.onResume();
         this.homeGridPresenter.onResume();
+        currentUser.addScoreListener(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         this.homeGridPresenter.onPause();
+        currentUser.removeScoreListener(this);
     }
 
     @Override
@@ -207,11 +210,11 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
             if (shouldReloadGrid) {
                 shouldReloadGrid = false;
                 reloadGrid();
-            }
-
-            for (Recipient recipient : recipientList) {
-                if (recipient.getReceivedTribes() != null && recipient.getReceivedTribes().size() > 0) {
-                    homeGridPresenter.downloadMessages(recipient.getReceivedTribes().toArray(new TribeMessage[recipient.getReceivedTribes().size()]));
+            } else {
+                for (Recipient recipient : recipientList) {
+                    if (recipient.getReceivedTribes() != null && recipient.getReceivedTribes().size() > 0) {
+                        homeGridPresenter.downloadMessages(recipient.getReceivedTribes().toArray(new TribeMessage[recipient.getReceivedTribes().size()]));
+                    }
                 }
             }
 
@@ -579,5 +582,13 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
         subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS).subscribe(t ->  {
             if (isAdded()) this.homeGridPresenter.onCreate();
         }));
+    }
+
+    @Override
+    public void updateScore() {
+        if (homeGridAdapter != null && homeGridAdapter.getItems().size() > 0) {
+            homeGridAdapter.getItemAtPosition(0).setScore(currentUser.getScore());
+            homeGridAdapter.notifyItemChanged(0);
+        }
     }
 }

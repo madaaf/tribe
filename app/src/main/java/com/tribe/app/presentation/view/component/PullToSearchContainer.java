@@ -146,7 +146,7 @@ public class PullToSearchContainer extends FrameLayout {
                 .doOnNext(letter -> {
                     selectedLetter = letter;
                 })
-                .delay(500, TimeUnit.MILLISECONDS)
+                .delay(300, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
