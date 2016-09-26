@@ -70,38 +70,45 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="71.5dp"
-        android:layout_marginLeft="@dimen/horizontal_margin_small"
+        android:layout_marginLeft="5dp"
         android:layout_marginRight="@dimen/horizontal_margin_small"
         android:orientation="vertical"
         >
 
-        <com.tribe.app.presentation.view.widget.LabelButton
+        <com.tribe.app.presentation.view.widget.ButtonCardView
+            android:id="@+id/labelLevel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:buttonCardType="points"
+            />
+
+        <com.tribe.app.presentation.view.widget.ButtonCardView
             android:id="@+id/labelCity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="-10dp"
             android:orientation="horizontal"
-            app:type="infos"
+            app:buttonCardType="city"
             />
 
-        <com.tribe.app.presentation.view.widget.LabelButton
-            android:id="@+id/labelDistance"
+        <com.tribe.app.presentation.view.widget.ButtonCardView
+            android:id="@+id/labelLocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/horizontal_margin_small"
+            android:layout_marginTop="-10dp"
             android:orientation="horizontal"
-            app:type="infos"
-            app:drawable="@drawable/picto_map"
+            app:buttonCardType="location"
             />
 
-        <com.tribe.app.presentation.view.widget.LabelButton
+        <com.tribe.app.presentation.view.widget.ButtonCardView
             android:id="@+id/labelWeather"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/horizontal_margin_small"
+            android:layout_marginTop="-10dp"
             android:orientation="horizontal"
-            app:type="infos"
+            app:buttonCardType="meteo"
             />
-
     </LinearLayout>
 
     <com.tribe.app.presentation.view.widget.TextViewFont

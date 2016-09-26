@@ -1,10 +1,13 @@
 package com.tribe.app.presentation.view.activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Location;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
@@ -26,10 +29,12 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 import rx.subscriptions.CompositeSubscription;
 
 public class TribeActivity extends BaseActivity implements TribeView {
 
+    public static final String[] PERMISSIONS_LOCATION = new String[]{ Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION };
     public static final String RECIPIENT = "RECIPIENT";
     public static final String POSITION = "POSITION";
 
@@ -45,6 +50,9 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
     @Inject
     PaletteGrid paletteGrid;
+
+    @Inject
+    ReactiveLocationProvider reactiveLocationProvider;
 
     @BindView(R.id.viewTribePager)
     TribePagerView viewTribePager;
@@ -173,10 +181,27 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
         subscriptions.add(viewTribePager.onClickEnableLocation()
                 .subscribe(view -> {
-                    Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    finish();
+                    subscriptions.add(RxPermissions.getInstance(this)
+                            .request(PERMISSIONS_LOCATION)
+                            .subscribe(granted -> {
+                                if (granted) {
+                                    subscriptions.add(reactiveLocationProvider
+                                            .getLastKnownLocation().subscribe(locationProvided -> {
+                                                if (locationProvided != null) {
+                                                    Location location = new Location(locationProvided.getLongitude(), locationProvided.getLatitude());
+                                                    location.setLatitude(location.getLatitude());
+                                                    location.setLongitude(location.getLongitude());
+                                                    location.setHasLocation(true);
+                                                    location.setId(currentUser.getId());
+                                                    currentUser.setLocation(location);
+                                                } else {
+                                                    currentUser.setLocation(null);
+                                                }
+
+                                                updateCurrentView();
+                                            }));
+                                }
+                            }));
                 }));
 
         subscriptions.add(viewTribePager.onErrorTribe()
@@ -250,5 +275,9 @@ public class TribeActivity extends BaseActivity implements TribeView {
         }
 
         viewTribePager.updateItems(tribeList);
+    }
+
+    private void updateCurrentView() {
+        viewTribePager.updateCurrentView();
     }
 }

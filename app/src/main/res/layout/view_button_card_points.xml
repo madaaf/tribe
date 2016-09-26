@@ -4,23 +4,25 @@
     android:layout_width="match_parent"
     android:layout_height="33dp"
     android:background="@null"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="@dimen/cards_icon_size"
         android:layout_height="@dimen/cards_icon_size"
         android:scaleType="centerInside"
+        android:src="@drawable/picto_flag_tc"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:layout_marginLeft="10dp"
+        android:layout_marginBottom="1.5dp"
         android:text="Location"
         android:singleLine="true"
-        style="@style/Body.Two.White"
+        style="@style/Points.Small.White"
         />
 </merge>

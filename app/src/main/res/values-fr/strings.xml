@@ -207,7 +207,7 @@
 	<string name="group_share_description_expiration">Ce lien sera supprimé dans %1$s</string>
 	<string name="group_button_create">Créer</string>
 	<string name="group_button_creating">Création en cours...</string>
-	<string name="group_empty_list">Groupe privé pour vos conversations privées</string>
+	<string name="group_empty_list">Pas d\'autres amis à ajouter à ce groupe</string>
 	
 	<!-- Group Infos -->
 	<string name="group_infos_title">Détails du groupe</string>
@@ -461,7 +461,7 @@
 	<string name="newlevel_notification_title">%1$s niveau atteint! Brag now? &#129304;&#127996;</string>
 	
 	<!-- SubtitlesPopup -->
-	<string name="subtitles_popup_title">Tu viens de partler %1$s n\'est-ce pas ?</string>
+	<string name="subtitles_popup_title">Tu viens de parler %1$s n\'est-ce pas ?</string>
 	<string name="subtitles_popup_description">Ajouter des sous titres en “mute mode”,\net de meilleurs Magic Words.</string>
 	<string name="subtitles_popup_language_description_solo">Langue parlée avec %1$s.</string>
 	<string name="subtitles_popup_language_description_group">Langue parlée dans %1$s.</string>

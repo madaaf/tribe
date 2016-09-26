@@ -11,6 +11,7 @@ import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import java.io.File;
@@ -62,12 +63,18 @@ public class CloudTribeDataStore implements TribeDataStore {
 
     @Override
     public Observable<TribeRealm> sendTribe(TribeRealm tribeRealm) {
+        String coordInput = "";
+
+        if (tribeRealm.getLocationRealm() != null && tribeRealm.getLocationRealm().hasLocation()) {
+             coordInput = context.getString(R.string.tribe_coord_input,
+                    tribeRealm.getLocationRealm().getLatitude(), tribeRealm.getLocationRealm().getLongitude());
+        }
+
         String tribeInput = context.getString(R.string.tribe_input,
-                tribeRealm.isToGroup() ?  tribeRealm.getMembershipRealm().getGroup().getId() : tribeRealm.getFriendshipRealm().getFriend().getId(),
+                tribeRealm.isToGroup() ? tribeRealm.getMembershipRealm().getGroup().getId() : tribeRealm.getFriendshipRealm().getFriend().getId(),
                 tribeRealm.getType(),
                 simpleDateFormat.format(tribeRealm.getRecordedAt()),
-                0.0,
-                0.0
+                !StringUtils.isEmpty(coordInput) ? coordInput : ""
         );
 
         String request;

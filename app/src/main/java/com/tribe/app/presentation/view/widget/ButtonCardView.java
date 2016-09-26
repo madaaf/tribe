@@ -1,25 +1,18 @@
 package com.tribe.app.presentation.view.widget;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.bumptech.glide.Glide;
 import com.tribe.app.R;
-import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.transformer.RoundedCornersTransformation;
+import com.tribe.app.presentation.view.utils.ScoreUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 import javax.inject.Inject;
@@ -45,9 +38,6 @@ public class ButtonCardView extends LinearLayout {
     @Inject
     ScreenUtils screenUtils;
 
-    @BindView(R.id.viewBG)
-    View viewBG;
-
     @BindView(R.id.imageView)
     ImageView imageView;
 
@@ -59,24 +49,15 @@ public class ButtonCardView extends LinearLayout {
     @BindView(R.id.txtPoints)
     TextViewFont txtPoints;
 
-    @BindView(R.id.viewBGProgress)
-    View viewBGProgress;
-
     // VARIABLES
     private int drawableId;
     private int type;
-    private int label;
-    private int subLabel;
-    private int points;
 
     // RESOURCES
-    private int radiusImage;
     private int margin;
 
     // OBSERVABLES
     private final PublishSubject<View> clickButton = PublishSubject.create();
-    private final PublishSubject<View> syncFBDone = PublishSubject.create();
-    private final PublishSubject<View> notifyDone = PublishSubject.create();
 
     public ButtonCardView(Context context) {
         this(context, null);
@@ -89,115 +70,53 @@ public class ButtonCardView extends LinearLayout {
     }
 
     private void init(Context context, AttributeSet attrs) {
+        margin = context.getResources().getDimensionPixelSize(R.dimen.vertical_margin);
+
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ButtonCardView);
+
+        type =  a.getInt(R.styleable.ButtonCardView_buttonCardType, LOCATION);
+
+        if (a.hasValue(R.styleable.ButtonCardView_buttonCardDrawable))
+            setDrawableResource(a.getResourceId(R.styleable.ButtonCardView_buttonCardDrawable, 0));
+
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.view_button_points, this, true);
+        if (type == POINTS)
+            inflater.inflate(R.layout.view_button_card_points, this, true);
+        else
+            inflater.inflate(R.layout.view_button_card, this, true);
         ButterKnife.bind(this);
 
-        ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
-
-        radiusImage = context.getResources().getDimensionPixelSize(R.dimen.radius_share_img);
-        margin = context.getResources().getDimensionPixelSize(R.dimen.vertical_margin_xsmall);
-
-        setOrientation(VERTICAL);
+        setBackgroundCard();
+        setOrientation(HORIZONTAL);
+        setGravity(Gravity.CENTER);
         setPadding(margin, margin, margin, margin);
-
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ButtonPointsView);
-
-        setType(a.getInt(R.styleable.ButtonPointsView_buttonType, PROFILE));
-
-        if (a.hasValue(R.styleable.ButtonPointsView_buttonDrawable))
-            setDrawableResource(a.getResourceId(R.styleable.ButtonPointsView_buttonDrawable, 0));
-
-        setLabel(a.getResourceId(R.styleable.ButtonPointsView_buttonLabel, R.string.contacts_share_profile_button));
-        setSubLabel(a.getResourceId(R.styleable.ButtonPointsView_buttonSubLabel, R.string.contacts_share_profile_description));
-        setPoints(a.getInteger(R.styleable.ButtonPointsView_buttonPoints, 0));
-
-        if (type != FB_DISABLED)
-            viewBG.setOnClickListener(v -> clickButton.onNext(this));
 
         a.recycle();
     }
 
-    public void setType(int type) {
-        this.type = type;
-
-        if (type == PROFILE) {
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+    private void setBackgroundCard() {
+        if (type == LOCATION) {
+            setBackgroundResource(R.drawable.bg_cards_location);
         } else {
-            imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            setBackgroundResource(R.drawable.bg_cards);
         }
-
-        setBackgroundButton();
-    }
-
-    public void setBackgroundButton() {
-        if (type == PROFILE)
-            viewBG.setBackgroundResource(R.drawable.bg_button_blue_text);
-        else if (type == FB_SYNC || type == FB_NOTIFY)
-            viewBG.setBackgroundResource(R.drawable.bg_button_fb_light);
-        else if (type == FB_DISABLED)
-            viewBG.setBackgroundResource(R.drawable.bg_button_disabled);
     }
 
     public void setDrawableResource(int res) {
         this.drawableId = res;
-
-        if (type != PROFILE) {
-            imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            imageView.setImageResource(drawableId);
-        }
+        imageView.setImageResource(drawableId);
     }
 
-    public void setLabel(int res) {
-        label = res;
-        txtLabel.setText(label);
+    public void setText(String str) {
+        txtLabel.setText(str);
     }
 
-    public void setSubLabel(int res) {
-        subLabel = res;
-        txtSubLabel.setText(res);
+    public void setText(int str) {
+        txtLabel.setText(str);
     }
 
-    public void setDrawable(String url) {
-        if (type == PROFILE) {
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
-            if (!StringUtils.isEmpty(url)) {
-                Glide.with(getContext()).load(url).centerCrop()
-                        .bitmapTransform(new RoundedCornersTransformation(getContext(), radiusImage, 0, RoundedCornersTransformation.CornerType.LEFT))
-                        .crossFade()
-                        .into(imageView);
-            }
-        }
-    }
-
-    public void setPoints(int points) {
-        txtPoints.setText(getContext().getString(R.string.points_suffix, points));
-    }
-
-    public void animateProgress() {
-        ViewGroup.LayoutParams params = viewBGProgress.getLayoutParams();
-        ValueAnimator widthAnimator = ValueAnimator.ofInt(0, viewBG.getWidth());
-        widthAnimator.setDuration(1500);
-        widthAnimator.setInterpolator(new DecelerateInterpolator());
-        widthAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                viewBGProgress.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                viewBGProgress.setVisibility(View.GONE);
-                if (type == FB_SYNC) syncFBDone.onNext(ButtonCardView.this);
-                else if (type == FB_NOTIFY) notifyDone.onNext(ButtonCardView.this);
-            }
-        });
-        widthAnimator.addUpdateListener(animation -> {
-            params.width = (Integer) animation.getAnimatedValue();
-            viewBGProgress.setLayoutParams(params);
-        });
-        widthAnimator.start();
+    public void setLevel(ScoreUtils.Level level) {
+        txtPoints.setText(level.getStringId());
     }
 
     @Override
@@ -208,13 +127,5 @@ public class ButtonCardView extends LinearLayout {
     // OBSERVABLES
     public Observable<View> onClick() {
         return clickButton;
-    }
-
-    public Observable<View> onFBSyncDone() {
-        return syncFBDone;
-    }
-
-    public Observable<View> onNotifyDone() {
-        return notifyDone;
     }
 }

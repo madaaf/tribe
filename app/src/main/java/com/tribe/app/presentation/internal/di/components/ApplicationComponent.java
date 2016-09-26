@@ -93,6 +93,7 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import io.realm.Realm;
+import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 
 /**
  * A component whose lifetime is the life of the application.
@@ -235,4 +236,6 @@ public interface ApplicationComponent {
     FileUtils fileUtils();
 
     TagManager tagManager();
+
+    ReactiveLocationProvider reactiveLocationProvider();
 }

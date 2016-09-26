@@ -164,11 +164,16 @@ public class MessageRealmListDeserializer {
             JsonObject coord = json.get("coord").getAsJsonObject();
             locationRealm.setLatitude(coord.get("latitude").getAsDouble());
             locationRealm.setLongitude(coord.get("longitude").getAsDouble());
+
+            if (json.get("location") != null && !json.get("location").isJsonNull()) {
+                JsonObject location = json.get("location").getAsJsonObject();
+                locationRealm.setCity((location.get("city") != null && !location.get("city").isJsonNull()) ? location.get("city").getAsString() : "");
+                locationRealm.setCountryCode((location.get("country") != null && !location.get("country").isJsonNull()) ? location.get("country").getAsString() : "");
+            }
+
+            tribeRealm.setLocationRealm(locationRealm);
             locationRealm.setHasLocation(true);
         }
-
-        locationRealm.setCity(!(json.get("location") instanceof JsonNull) ? json.getAsJsonObject("location").get("city").getAsString() : null);
-        tribeRealm.setLocationRealm(locationRealm);
 
         tribeRealm.setMessageReceivingStatus(MessageReceivingStatus.STATUS_RECEIVED);
         tribeRealm.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_TO_DOWNLOAD);

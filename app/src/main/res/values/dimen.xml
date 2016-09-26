@@ -106,6 +106,7 @@
     <dimen name="pull_to_search_letter_selected_size">40dp</dimen>
     <dimen name="image_badge_size">20dp</dimen>
     <dimen name="group_cpv_size">28dp</dimen>
+    <dimen name="cards_icon_size">15dp</dimen>
 
     <!-- THRESHOLDS -->
     <dimen name="threshold_dismiss">100dp</dimen>
