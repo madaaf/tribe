@@ -249,7 +249,8 @@ public class CloudUserDataStore implements UserDataStore {
                 !StringUtils.isEmpty(lastMessageRequest.get()) ? context.getString(R.string.input_start, lastMessageRequest.get()) : "",
                 !StringUtils.isEmpty(idsTribes.toString()) ? context.getString(R.string.tribe_sent_infos, idsTribes) : "");
 
-        return tribeApi.messages(req).flatMap(messageRealmInterfaceList -> {
+        return tribeApi.messages(req)
+                .flatMap(messageRealmInterfaceList -> {
                     Set<String> idsFrom = new HashSet<>();
 
                     for (MessageRealmInterface message : messageRealmInterfaceList) {

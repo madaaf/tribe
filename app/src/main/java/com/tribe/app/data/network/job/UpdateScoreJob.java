@@ -41,7 +41,7 @@ public class UpdateScoreJob extends BaseJob {
 
     @Override
     public void onAdded() {
-        userCache.updateScore(currentUser.getId(), point);
+
     }
 
     @Override
@@ -50,7 +50,7 @@ public class UpdateScoreJob extends BaseJob {
                 getApplicationContext().getString(R.string.userfragment_infos)))
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe();
+                .subscribe(userRealm -> userCache.put(userRealm));
     }
 
     @Override

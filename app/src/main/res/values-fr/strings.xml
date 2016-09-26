@@ -200,9 +200,9 @@
 	<string name="group_invalid_infos_error_message">N\'oubliez pas de nommer votre groupe</string>
 	<string name="group_valid_infos_message">Ajoutez des members une fois le groupe créé</string>
 	<string name="group_button_share">Lien magique pour inviter via ...</string>
-	<string name="group_button_share_generate"></string>
-	<string name="group_button_share_generating"></string>
-	<string name="group_button_share_deleting"></string>
+	<string name="group_button_share_generate">Générer un lien</string>
+	<string name="group_button_share_generating">Génération en cours...</string>
+	<string name="group_button_share_deleting">Suppression en cours...</string>
 	<string name="group_share_description">Envoyez un lien en dehors de l\'app</string>
 	<string name="group_share_description_expiration">Ce lien sera supprimé dans %1$s</string>
 	<string name="group_button_create">Créer</string>

@@ -15,6 +15,7 @@ import com.tribe.app.domain.interactor.text.DeleteChat;
 import com.tribe.app.domain.interactor.text.SendChat;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
+import com.tribe.app.presentation.view.utils.ScoreUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -100,6 +101,7 @@ public class SendChatJob extends BaseJob {
 
         @Override
         public void onNext(ChatMessage chatMessage) {
+            jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.SEND_RECEIVE_CHAT));
             setStatus(MessageSendingStatus.STATUS_SENT);
         }
     }

@@ -1,5 +1,7 @@
 package com.tribe.app.domain.entity;
 
+import com.tribe.app.presentation.mvp.view.UpdateScore;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,11 +14,6 @@ import java.util.List;
 public class User implements Serializable {
 
     private String id;
-
-    public User(String id) {
-        this.id = id;
-    }
-
     private String profilePicture;
     private String displayName;
     private Date created_at;
@@ -31,6 +28,13 @@ public class User implements Serializable {
     private List<Recipient> friendshipList;
     private String fbid;
     private boolean invisible_mode;
+
+    private List<UpdateScore> scoreListenerList;
+
+    public User(String id) {
+        this.id = id;
+        scoreListenerList = new ArrayList<>();
+    }
 
     public int getScore() {
         return score;
@@ -156,6 +160,10 @@ public class User implements Serializable {
         this.invisible_mode = invisibleMode;
     }
 
+    public List<UpdateScore> getScoreListenerList() {
+        return scoreListenerList;
+    }
+
     public List<Recipient> getFriendshipList() {
         friendshipList = new ArrayList<>();
         if (friendships != null) friendshipList.addAll(friendships);
@@ -184,7 +192,9 @@ public class User implements Serializable {
             setDisplayName(user.getDisplayName());
             setUsername(user.getUsername());
             setProfilePicture(user.getProfilePicture());
+            int previousScore = score;
             setScore(user.getScore());
+            if (previousScore != score) notifyAllScoreListeners();
             setPhone(user.getPhone());
             setFbid(user.getFbid());
             setInvisibleMode(user.isInvisibleMode());
@@ -210,5 +220,17 @@ public class User implements Serializable {
         setLocation(null);
         setMembershipList(null);
         setFriendships(null);
+    }
+
+    public void addScoreListener(UpdateScore listener) {
+        if (!scoreListenerList.contains(listener)) scoreListenerList.add(listener);
+    }
+
+    public void removeScoreListener(UpdateScore listener) {
+        scoreListenerList.remove(listener);
+    }
+
+    private void notifyAllScoreListeners() {
+        for (UpdateScore updateScore : scoreListenerList) updateScore.updateScore();
     }
 }
