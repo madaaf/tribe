@@ -76,6 +76,7 @@ import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.video.LegacyMediaPlayer;
 import com.tribe.app.presentation.view.widget.AvatarView;
+import com.tribe.app.presentation.view.widget.ButtonCardView;
 import com.tribe.app.presentation.view.widget.ButtonPointsView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
@@ -127,6 +128,7 @@ public interface ApplicationComponent {
     void inject(PullToSearchContainer pullToSearchContainer);
     void inject(PullToSearchView pullToSearchView);
     void inject(SettingItemView settingItemView);
+    void inject(ButtonCardView buttonCardView);
 
     // JOBS
     void inject(BaseJob baseJob);
