@@ -33,7 +33,8 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
         UserRealm userRealm = new UserRealm();
 
         JsonObject result = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("user");
-        if (result == null) result =  je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("updateUser");
+        if (result == null) result = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("updateUser");
+        if (result == null) result = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("updateScore");
 
         userRealm.setId(result.get("id").getAsString());
         userRealm.setPhone(result.get("phone").getAsString());

@@ -18,6 +18,7 @@ import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
+import com.tribe.app.presentation.view.utils.ScoreUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -64,7 +65,7 @@ public class  SendTribeJob extends BaseJob {
 
     @Override
     protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
-
+        throwable.printStackTrace();
     }
 
     @Override
@@ -97,6 +98,7 @@ public class  SendTribeJob extends BaseJob {
 
         @Override
         public void onNext(TribeMessage tribe) {
+            jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.SEND_RECEIVE_TRIBE));
             setStatus(MessageSendingStatus.STATUS_SENT);
             Bundle bundle = new Bundle();
             bundle.putString(TagManagerConstants.TYPE, tribeRealm.isToGroup() ? TagManagerConstants.TYPE_TRIBE_GROUP : TagManagerConstants.TYPE_TRIBE_USER);

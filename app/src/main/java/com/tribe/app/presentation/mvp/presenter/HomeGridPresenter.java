@@ -143,7 +143,6 @@ public class HomeGridPresenter extends SendTribePresenter {
     }
 
     private void updateReceivedMessageList(List<Message> messageList) {
-        downloadMessages(messageList.toArray(new Message[messageList.size()]));
         this.homeGridView.updateReceivedMessages(messageList);
     }
 

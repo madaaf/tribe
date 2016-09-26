@@ -155,4 +155,8 @@ public interface TribeApi {
     @FormUrlEncoded
     @POST("/graphql")
     Observable<MembershipRealm> createMembership(@Field("query") String query);
+
+    @FormUrlEncoded
+    @POST("/graphql")
+    Observable<UserRealm> updateScore(@Field("query") String query);
 }

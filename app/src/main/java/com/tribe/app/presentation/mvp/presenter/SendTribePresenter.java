@@ -23,8 +23,6 @@ import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -93,28 +91,23 @@ public abstract class SendTribePresenter implements Presenter {
             Observable
                     .just("")
                     .doOnNext(o -> {
-                        Set<String> recipientIdsLoaded = new HashSet<String>();
-
                         for (Message message : messageList) {
                             if (message instanceof TribeMessage) {
                                 boolean shouldDownload = false;
 
                                 JobStatus jobStatus = jobManager.getJobStatus(message.getLocalId());
-                                File file = FileUtils.getFile(message.getId(), FileUtils.VIDEO);
+                                File file = FileUtils.getFile(message.getLocalId(), FileUtils.VIDEO);
 
                                 if (jobStatus.equals(JobStatus.UNKNOWN) && (!file.exists() || file.length() == 0)
-                                        && (!message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADED))
-                                        && !recipientIdsLoaded.contains(message.isToGroup() ? message.getTo().getId() : message.getFrom().getId())) {
+                                        && !message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADED)) {
                                     shouldDownload = true;
                                     message.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
-                                    jobManager.cancelJobsInBackground(null, TagConstraint.ALL, message.getId());
+                                    jobManager.cancelJobsInBackground(null, TagConstraint.ALL, message.getLocalId());
                                 }
 
                                 if (shouldDownload
-                                        && message.getMessageDownloadingStatus() != null
                                         && message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD)
                                         && message.getFrom() != null) {
-                                    recipientIdsLoaded.add(message.isToGroup() ? message.getTo().getId() : message.getFrom().getId());
                                     jobManager.addJobInBackground(new DownloadTribeJob((TribeMessage) message));
                                 }
                             }

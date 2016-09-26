@@ -304,6 +304,7 @@ public class NetModule {
         return new Retrofit.Builder()
             .baseUrl(BuildConfig.TRIBE_API)
             .callFactory(httpClientBuilder.build())
+            .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
             //.addCallAdapterFactory(RxErrorHandlingCallAdapterFactory.create())
             .build().create(FileApi.class);
     }

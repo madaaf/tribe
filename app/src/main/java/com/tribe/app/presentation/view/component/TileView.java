@@ -580,7 +580,7 @@ public class TileView extends SquareFrameLayout {
                 label = R.string.grid_friendship_status_new_messages;
                 drawableRes = R.drawable.picto_tap_to_view;
                 textAppearence = R.style.Caption_Black_40;
-            } else {
+            } else if (!firstLoaded && tribeMessage.isDownloadPending()) {
                 isLoading = true;
                 label = R.string.grid_friendship_status_loading;
                 drawableRes = R.drawable.picto_loading;
@@ -601,9 +601,11 @@ public class TileView extends SquareFrameLayout {
             txtStatus.setText(label);
             txtStatus.setCompoundDrawablesWithIntrinsicBounds(getContext().getResources().getDrawable(drawableRes), null, null, null);
 
-            if (isLoading && circularProgressView.getVisibility() == View.GONE) {
-                txtNbTribes.setVisibility(View.GONE);
-                circularProgressView.setVisibility(View.VISIBLE);
+            if (isLoading) {
+                if (circularProgressView.getVisibility() == View.GONE) {
+                    txtNbTribes.setVisibility(View.GONE);
+                    circularProgressView.setVisibility(View.VISIBLE);
+                }
             } else if (circularProgressView.getVisibility() == View.VISIBLE) {
                 txtNbTribes.setVisibility(View.VISIBLE);
                 circularProgressView.setVisibility(View.GONE);

@@ -77,15 +77,13 @@ public class TribeCacheImpl implements TribeCache {
                 }
             }
 
-            if (realm.isInTransaction()) {
-                realm.commitTransaction();
-            }
+            realm.commitTransaction();
         } catch (IllegalStateException ex) {
             ex.printStackTrace();
-        } finally {
             if (realm.isInTransaction()) {
                 realm.cancelTransaction();
             }
+        } finally {
             realm.close();
         }
     }
@@ -104,6 +102,24 @@ public class TribeCacheImpl implements TribeCache {
                     TribeRealm obj = obsRealm.where(TribeRealm.class).equalTo("localId", tribeRealm.getLocalId()).findFirst();
                     if (obj == null) {
                         obj = obsRealm.copyToRealmOrUpdate(tribeRealm);
+                    }
+
+                    if (!tribeRealm.isToGroup()) {
+                        RealmResults<TribeRealm> tribesSentToRecipient = realm.where(TribeRealm.class)
+                                .equalTo("friendshipRealm.id", tribeRealm.getFriendshipRealm().getId())
+                                .equalTo("from.id", currentUser.getId())
+                                .notEqualTo("id", tribeRealm.getLocalId())
+                                .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
+                                .findAllSorted("recorded_at", Sort.ASCENDING);
+                        if (tribesSentToRecipient != null) tribesSentToRecipient.deleteAllFromRealm();
+                    } else {
+                        RealmResults<TribeRealm> tribesSentToRecipient = realm.where(TribeRealm.class)
+                                .equalTo("membershipRealm.id", tribeRealm.getMembershipRealm().getId())
+                                .equalTo("from.id", currentUser.getId())
+                                .notEqualTo("id", tribeRealm.getLocalId())
+                                .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
+                                .findAllSorted("recorded_at", Sort.ASCENDING);
+                        if (tribesSentToRecipient != null) tribesSentToRecipient.deleteAllFromRealm();
                     }
 
                     obsRealm.commitTransaction();

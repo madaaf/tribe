@@ -187,7 +187,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     }
 
     public void preparePlayer(boolean autoStart) {
-        if (progressBarDownload.getVisibility() == View.VISIBLE) {
+        if (layoutDownloadProgress.getVisibility() == View.VISIBLE) {
             AnimationUtils.fadeOut(layoutDownloadProgress, DURATION);
         }
 
@@ -256,7 +256,10 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
             System.out.println("TOTAL SIZE > 0");
             progressBarDownload.setVisibility(View.VISIBLE);
             progressBarDownloadIndeterminate.setVisibility(View.GONE);
-            progressBarDownload.setMax((int) tribe.getTotalSize());
+
+            if (progressBarDownload.getMax() != tribe.getTotalSize()) {
+                progressBarDownload.setMax((int) tribe.getTotalSize());
+            }
         }
 
         progressBarDownload.setProgress((int) tribe.getProgress());

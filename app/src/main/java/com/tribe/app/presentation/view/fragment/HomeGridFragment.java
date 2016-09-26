@@ -209,6 +209,12 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView {
                 reloadGrid();
             }
 
+            for (Recipient recipient : recipientList) {
+                if (recipient.getReceivedTribes() != null && recipient.getReceivedTribes().size() > 0) {
+                    homeGridPresenter.downloadMessages(recipient.getReceivedTribes().toArray(new TribeMessage[recipient.getReceivedTribes().size()]));
+                }
+            }
+
             Bundle bundle = new Bundle();
             bundle.putInt(TagManagerConstants.COUNT_FRIENDS, currentUser.getFriendships().size());
             bundle.putInt(TagManagerConstants.COUNT_GROUPS, currentUser.getFriendships().size());

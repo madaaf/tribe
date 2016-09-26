@@ -120,6 +120,45 @@ public class ChatCacheImpl implements ChatCache {
     }
 
     @Override
+    public List<ChatRealm> messagesNoObs(String recipientId) {
+        Realm newRealm = Realm.getDefaultInstance();
+        List<ChatRealm> finalResults = new ArrayList<>();
+
+        try {
+            RealmResults<ChatRealm> results =
+                    newRealm.where(ChatRealm.class)
+                            .beginGroup()
+                            .beginGroup()
+                            .beginGroup()
+                            .equalTo("from.id", recipientId)
+                            .isNull("friendshipRealm")
+                            .isNull("membershipRealm")
+                            .endGroup()
+                            .or()
+                            .beginGroup()
+                            .equalTo("friendshipRealm.friend.id", recipientId)
+                            .isNull("membershipRealm")
+                            .endGroup()
+                            .endGroup()
+                            .endGroup()
+                            .or()
+                            .beginGroup()
+                            .equalTo("membershipRealm.group.id", recipientId)
+                            .endGroup()
+                            .findAllSorted("created_at", Sort.ASCENDING);
+
+            if (results != null && results.size() > 0) {
+                finalResults.addAll(newRealm.copyFromRealm(results));
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            newRealm.close();
+            return finalResults;
+        }
+    }
+
+    @Override
     public void put(List<ChatRealm> messageListRealm) {
         Realm obsRealm = Realm.getDefaultInstance();
         try {

@@ -7,6 +7,7 @@ import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +46,7 @@ public class DiskTribeDataStore implements TribeDataStore {
 
     @Override
     public Observable<List<TribeRealm>> tribesNotSeen(String recipientId) {
-        return tribeCache.tribesNotSeen(recipientId);
+        return tribeCache.tribesNotSeen(recipientId).debounce(500, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -55,7 +56,7 @@ public class DiskTribeDataStore implements TribeDataStore {
 
     @Override
     public Observable<List<TribeRealm>> tribesForARecipient(String recipientId) {
-        return tribeCache.tribesForARecipient(recipientId);
+        return tribeCache.tribesForARecipient(recipientId).debounce(500, TimeUnit.MILLISECONDS);
     }
 
     @Override

@@ -9,6 +9,7 @@ import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.LocationRealm;
 import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.presentation.view.utils.ScoreUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -383,6 +384,24 @@ public class UserCacheImpl implements UserCache {
             if (realm.isInTransaction()) realm.cancelTransaction();
         } finally {
             realm.close();
+        }
+    }
+
+    @Override
+    public void updateScore(String userId, ScoreUtils.Point point) {
+        Realm obsRealm = Realm.getDefaultInstance();
+
+        try {
+            obsRealm.beginTransaction();
+            UserRealm userDB = obsRealm.where(UserRealm.class).equalTo("id", userId).findFirst();
+            if (userDB != null) {
+                userDB.setScore(userDB.getScore() + point.getPoints());
+            }
+        } catch (IllegalStateException ex) {
+            ex.printStackTrace();
+            if (obsRealm.isInTransaction()) obsRealm.cancelTransaction();
+        } finally {
+            obsRealm.close();
         }
     }
 }

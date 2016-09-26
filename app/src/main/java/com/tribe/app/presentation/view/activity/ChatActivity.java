@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.OvershootInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -210,6 +211,9 @@ public class ChatActivity extends BaseActivity implements MessageView {
         subscriptions.add(messageAdapter
                 .clickPhoto()
                 .subscribe(imageViewFrom -> {
+                    ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
+                            .hideSoftInputFromWindow(recyclerViewText.getWindowToken(), 0);
+
                     imageViewClicked = null;
 
                     int position = (Integer) imageViewFrom.getTag(R.id.tag_position);
@@ -235,6 +239,9 @@ public class ChatActivity extends BaseActivity implements MessageView {
         subscriptions.add(messageAdapter
                 .clickVideo()
                 .subscribe(imageViewFrom -> {
+                    ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
+                            .hideSoftInputFromWindow(recyclerViewText.getWindowToken(), 0);
+
                     tribeVideoView = null;
 
                     int position = (Integer) imageViewFrom.getTag(R.id.tag_position);

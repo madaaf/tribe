@@ -22,6 +22,8 @@ import com.tribe.app.data.network.job.UpdateChatHistoryJob;
 import com.tribe.app.data.network.job.UpdateChatMessagesJob;
 import com.tribe.app.data.network.job.UpdateMessagesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateMessagesJob;
+import com.tribe.app.data.network.job.UpdateMessagesVideoErrorStatusJob;
+import com.tribe.app.data.network.job.UpdateScoreJob;
 import com.tribe.app.data.network.job.UpdateTribeDownloadedJob;
 import com.tribe.app.data.network.job.UpdateTribeListNotSeenStatusJob;
 import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
@@ -144,6 +146,8 @@ public interface ApplicationComponent {
     void inject(UpdateChatHistoryJob updateChatHistoryJob);
     void inject(SynchroContactsJob synchroContactsJob);
     void inject(RefreshHowManyFriendsJob refreshHowManyFriendsJob);
+    void inject(UpdateMessagesVideoErrorStatusJob messagesVideoErrorStatusJob);
+    void inject(UpdateScoreJob updateScoreJob);
 
     //Exposed to sub-graphs.
     Context context();

@@ -41,7 +41,7 @@ public class DownloadChatVideoJob extends DownloadVideoJob {
     public DownloadChatVideoJob(ChatMessage chatMessage) {
         super(new Params(Priority.HIGH).requireNetwork().groupBy(
                 (chatMessage.isToGroup() ? chatMessage.getTo().getSubId() : chatMessage.getFrom().getId())
-        ).setSingleId(chatMessage.getId()).addTags(chatMessage.getId()));
+        ).setSingleId(chatMessage.getLocalId()).singleInstanceBy(chatMessage.getLocalId()).addTags(chatMessage.getLocalId()));
 
         this.chatMessage = chatMessage;
     }
@@ -72,7 +72,7 @@ public class DownloadChatVideoJob extends DownloadVideoJob {
 
     @Override
     protected String getFileId() {
-        return chatMessage.getId();
+        return chatMessage.getLocalId();
     }
 
     @Override

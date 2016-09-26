@@ -12,7 +12,6 @@ import android.widget.ImageView;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.domain.entity.GroupType;
 import com.tribe.app.domain.entity.LabelType;
@@ -126,7 +125,7 @@ public class GroupMemberFragment extends BaseFragment implements GroupMemberView
 
     private void initGroupMemberList() {
         groupId = getArguments().getString("groupId");
-        groupMemberList = getArguments().getParcelableArrayList("groupMemberList");
+        //groupMemberList = getArguments().getParcelableArrayList("groupMemberList");
         groupMemberListCopy = new ArrayList<>();
         groupMemberPresenter.attachView(this);
         if (groupMemberList != null) {

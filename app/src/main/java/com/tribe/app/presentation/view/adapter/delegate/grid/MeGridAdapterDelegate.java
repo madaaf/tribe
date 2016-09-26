@@ -78,7 +78,12 @@ public class MeGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>> {
         User me = ((Friendship) items.get(position)).getFriend();
 
         vh.txtName.setText(me.getDisplayName());
-        vh.txtPoints.setText(me.getScoreStr());
+
+        int score = me.getScore();
+        int oldScore = vh.txtPoints.getTag(R.id.old_score) != null ? (Integer) vh.txtPoints.getTag(R.id.old_score) : score;
+        ScoreUtils.setScore(context, vh.txtPoints, oldScore, score, -1);
+        vh.txtPoints.setTag(R.id.old_score, score);
+
         vh.imgLevel.setImageResource(ScoreUtils.getLevelForScore(me.getScore()).getDrawableId());
 
         if (!StringUtils.isEmpty(me.getProfilePicture())) {

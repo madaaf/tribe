@@ -38,7 +38,7 @@ public class DownloadTribeJob extends DownloadVideoJob {
     public DownloadTribeJob(TribeMessage tribe) {
         super(new Params(Priority.HIGH).requireNetwork().groupBy(
                 (tribe.isToGroup() ? tribe.getTo().getSubId() : tribe.getFrom().getId())
-        ).setSingleId(tribe.getId()).addTags(tribe.getId()));
+        ).setSingleId(tribe.getLocalId()).singleInstanceBy(tribe.getLocalId()).addTags(tribe.getLocalId()));
 
         this.tribe = tribe;
     }

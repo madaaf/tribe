@@ -305,16 +305,22 @@ public class TribePagerView extends FrameLayout {
 
             public void onPageSelected(int currentPosition) {
                 TribeMessage tribe = tribeList.get(currentPosition);
-                if (!tribe.isDownloadPending()) tribeListSeens.add(tribe);
-                updateNbTribes();
                 tribePagerAdapter.setCurrentPosition(currentPosition);
                 computeCurrentView();
                 tribePagerAdapter.releaseTribe((TribeComponentView) viewPager.findViewWithTag(tribeList.get(previousPosition).getId()));
+
+                if (!toUpdate.containsKey(tribe.getLocalId())) {
+                    tribeListSeens.add(tribe);
+                    updateNbTribes();
+                }
+
                 Observable.timer(500, TimeUnit.MILLISECONDS)
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(t -> {
-                            if (!tribe.isDownloadPending()) tribePagerAdapter.startTribe(currentView);
+                            if (!toUpdate.containsKey(tribe.getLocalId())) {
+                                tribePagerAdapter.startTribe(currentView);
+                            }
                         });
                 previousPosition = currentPosition;
             }
@@ -489,6 +495,7 @@ public class TribePagerView extends FrameLayout {
                 if (viewToUpdate != null) {
                     viewToUpdate.setTribe(message);
                     tribeListSeens.add(message);
+                    updateNbTribes();
                     boolean isCurrent = tribeList.get(viewPager.getCurrentItem()).getLocalId().equals(message.getLocalId());
                     viewToUpdate.preparePlayer(isCurrent);
                 }
