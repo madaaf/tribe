@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/horizontal_margin_small"
-            android:layout_marginStart="@dimen/horizontal_margin_small"
+            android:layout_marginStart="@dimen/group_suggestion_margin_mid"
             android:layout_marginTop="40dp">
 
             <!-- wrapped text views in framelayout to solve problem of no margins in predicate layout-->
@@ -30,7 +30,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <TextView
+                <com.tribe.app.presentation.view.widget.TextViewFont
+                    android:id="@+id/textFamily"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/group_suggestion_margin"
@@ -48,7 +49,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <TextView
+                <com.tribe.app.presentation.view.widget.TextViewFont
+                    android:id="@+id/textRoomies"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/group_suggestion_margin"
@@ -66,7 +68,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <TextView
+                <com.tribe.app.presentation.view.widget.TextViewFont
+                    android:id="@+id/textBffs"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/group_suggestion_margin"
@@ -84,7 +87,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <TextView
+                <com.tribe.app.presentation.view.widget.TextViewFont
+                    android:id="@+id/textAbroad"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/group_suggestion_margin"
@@ -102,7 +106,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <TextView
+                <com.tribe.app.presentation.view.widget.TextViewFont
+                    android:id="@+id/textWork"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/group_suggestion_margin"
@@ -120,7 +125,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <TextView
+                <com.tribe.app.presentation.view.widget.TextViewFont
+                    android:id="@+id/textClassmates"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/group_suggestion_margin"
@@ -138,7 +144,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <TextView
+                <com.tribe.app.presentation.view.widget.TextViewFont
+                    android:id="@+id/textTeammates"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/group_suggestion_margin"
@@ -156,7 +163,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <TextView
+                <com.tribe.app.presentation.view.widget.TextViewFont
+                    android:id="@+id/textBaddest"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/group_suggestion_margin"
@@ -174,7 +182,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <TextView
+                <com.tribe.app.presentation.view.widget.TextViewFont
+                    android:id="@+id/textNotAllowed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/group_suggestion_margin"

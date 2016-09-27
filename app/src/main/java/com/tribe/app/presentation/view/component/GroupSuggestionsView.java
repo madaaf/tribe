@@ -5,10 +5,17 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 
+import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 
+import org.w3c.dom.Text;
+
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -27,12 +34,28 @@ public class GroupSuggestionsView extends FrameLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    public GroupSuggestionsView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
+    private PublishSubject<String> groupSuggestionClicked = PublishSubject.create();
+
+    @BindView(R.id.textFamily)
+    TextViewFont textFamily;
+    @BindView(R.id.textRoomies)
+    TextViewFont textRoomies;
+    @BindView(R.id.textBffs)
+    TextViewFont textBffs;
+    @BindView(R.id.textAbroad)
+    TextViewFont textAbroad;
+    @BindView(R.id.textWork)
+    TextViewFont textWork;
+    @BindView(R.id.textClassmates)
+    TextViewFont textClassmates;
+    @BindView(R.id.textTeammates)
+    TextViewFont textTeammates;
+    @BindView(R.id.textBaddest)
+    TextViewFont textBaddest;
+    @BindView(R.id.textNotAllowed)
+    TextViewFont textNotAllowed;
 
     @Override
     protected void onFinishInflate() {
@@ -40,6 +63,35 @@ public class GroupSuggestionsView extends FrameLayout {
 
         LayoutInflater.from(getContext()).inflate(R.layout.view_group_suggestions, this);
         unbinder = ButterKnife.bind(this);
+
+        // Subscriptions
+        subscriptions.add(RxView.clicks(textFamily).subscribe(aVoid -> {
+            groupSuggestionClicked.onNext(textFamily.getText().toString());
+        }));
+        subscriptions.add(RxView.clicks(textRoomies).subscribe(aVoid -> {
+            groupSuggestionClicked.onNext(textRoomies.getText().toString());
+        }));
+        subscriptions.add(RxView.clicks(textBffs).subscribe(aVoid -> {
+            groupSuggestionClicked.onNext(textBffs.getText().toString());
+        }));
+        subscriptions.add(RxView.clicks(textAbroad).subscribe(aVoid -> {
+            groupSuggestionClicked.onNext(textAbroad.getText().toString());
+        }));
+        subscriptions.add(RxView.clicks(textWork).subscribe(aVoid -> {
+            groupSuggestionClicked.onNext(textWork.getText().toString());
+        }));
+        subscriptions.add(RxView.clicks(textClassmates).subscribe(aVoid -> {
+            groupSuggestionClicked.onNext(textClassmates.getText().toString());
+        }));
+        subscriptions.add(RxView.clicks(textTeammates).subscribe(aVoid -> {
+            groupSuggestionClicked.onNext(textTeammates.getText().toString());
+        }));
+        subscriptions.add(RxView.clicks(textBaddest).subscribe(aVoid -> {
+            groupSuggestionClicked.onNext(textBaddest.getText().toString());
+        }));
+        subscriptions.add(RxView.clicks(textNotAllowed).subscribe(aVoid -> {
+            groupSuggestionClicked.onNext(textNotAllowed.getText().toString());
+        }));
 
     }
 
@@ -53,6 +105,10 @@ public class GroupSuggestionsView extends FrameLayout {
         }
 
         super.onDetachedFromWindow();
+    }
+
+    public Observable<String> groupSuggestionClicked() {
+        return groupSuggestionClicked;
     }
 
 }

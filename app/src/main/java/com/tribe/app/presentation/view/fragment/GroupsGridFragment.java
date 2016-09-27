@@ -278,7 +278,9 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             if (isEditing) groupSuggestionsView.setVisibility(View.VISIBLE);
             else  groupSuggestionsView.setVisibility(View.INVISIBLE);
         }));
-
+        subscriptions.add(groupSuggestionsView.groupSuggestionClicked().subscribe(suggestionName -> {
+            groupInfoView.setGroupName(suggestionName);
+        }));
     }
 
     @Override
