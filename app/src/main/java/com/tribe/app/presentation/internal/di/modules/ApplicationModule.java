@@ -57,6 +57,7 @@ import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.analytics.AmplitudeTagManager;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
+import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -402,6 +403,12 @@ public class ApplicationModule {
     @Singleton
     RxFacebook provideRxFacebook(Context context) {
         return new RxFacebook(context);
+    }
+
+    @Provides
+    @Singleton
+    RxImagePicker provideRxImagePicker(Context context) {
+        return new RxImagePicker(context);
     }
 
     // DATES

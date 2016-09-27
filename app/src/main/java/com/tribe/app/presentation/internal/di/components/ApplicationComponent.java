@@ -56,6 +56,7 @@ import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
+import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
@@ -230,6 +231,8 @@ public interface ApplicationComponent {
     Preference<String> lastMessageRequest();
 
     RxFacebook rxFacebook();
+
+    RxImagePicker rxImagePicker();
 
     SharedPreferences sharedPreferences();
 

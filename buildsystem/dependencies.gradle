@@ -50,6 +50,7 @@ ext {
     multiDexVersion = '1.0.0'
     confettiVersion = '1.0.0'
     amplitudeVersion = '2.9.2'
+    imageCropperVersion = '2.3.1'
 
     //Testing
     robolectricVersion = '3.0'
@@ -104,7 +105,8 @@ ext {
             glideOKHttp             : "com.github.bumptech.glide:okhttp3-integration:${glideOKHttpVersion}",
             multiDex                : "com.android.support:multidex:${multiDexVersion}",
             confetti                : "com.github.jinatonic.confetti:confetti:${confettiVersion}",
-            amplitude               : "com.amplitude:android-sdk:${amplitudeVersion}"
+            amplitude               : "com.amplitude:android-sdk:${amplitudeVersion}",
+            imageCropper            : "com.theartofdev.edmodo:android-image-cropper:${imageCropperVersion}"
     ]
 
     presentationTestDependencies = [

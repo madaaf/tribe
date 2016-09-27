@@ -95,14 +95,14 @@ public class AnimationUtils {
         scaleUp(view, duration, 0, interpolator);
     }
 
-    public static void scaleDown(final View view, long duration, long delay) {
+    public static void scaleDown(final View view, long duration, long delay, Interpolator interpolator) {
         view.setScaleX(1);
         view.setScaleY(1);
-        view.animate().scaleX(0).scaleY(0).setInterpolator(new DecelerateInterpolator()).setDuration(duration).setStartDelay(delay).start();
+        view.animate().scaleX(0).scaleY(0).setInterpolator(interpolator).setDuration(duration).setStartDelay(delay).start();
     }
 
-    public static void scaleDown(final View view, long duration) {
-        scaleDown(view, duration, 0);
+    public static void scaleDown(final View view, long duration, Interpolator interpolator) {
+        scaleDown(view, duration, 0, interpolator);
     }
 
     public static void fadeOut(View v, long duration) {

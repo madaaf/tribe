@@ -455,8 +455,8 @@ public class TileView extends SquareFrameLayout {
     public void resetViewAfterTapToCancel(boolean hasFinished) {
         System.out.println("ResetView");
         if (isTapToCancel) {
-            if (hasFinished) AnimationUtils.scaleDown(imgDone, SCALE_DURATION);
-            else AnimationUtils.scaleDown(imgCancel, SCALE_DURATION);
+            if (hasFinished) AnimationUtils.scaleDown(imgDone, SCALE_DURATION, new DecelerateInterpolator());
+            else AnimationUtils.scaleDown(imgCancel, SCALE_DURATION, new DecelerateInterpolator());
         }
 
         AnimationUtils.fadeOut(viewForeground, 0);
@@ -663,7 +663,7 @@ public class TileView extends SquareFrameLayout {
         animation.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                AnimationUtils.scaleDown(imgCancel, SCALE_DURATION);
+                AnimationUtils.scaleDown(imgCancel, SCALE_DURATION, new DecelerateInterpolator());
                 AnimationUtils.scaleUp(imgDone, SCALE_DURATION, SCALE_DURATION, new OvershootInterpolator(OVERSHOOT));
 
                 //txtSending.setText(R.string.Grid_User_Sent);

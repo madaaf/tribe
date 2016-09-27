@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
 import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.presentation.mvp.view.SettingView;
@@ -12,6 +13,7 @@ import com.tribe.app.presentation.mvp.view.View;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Created by horatiothomas on 8/31/16.
@@ -23,8 +25,9 @@ public class SettingPresenter extends UpdateUserPresenter {
     private SettingView settingView;
 
     @Inject
-    SettingPresenter(UpdateUser updateUser, RxFacebook rxFacebook, RemoveInstall removeInstall, Context context) {
-        super(updateUser, rxFacebook, context);
+    SettingPresenter(UpdateUser updateUser, @Named("lookupByUsername") LookupUsername lookupUsername,
+                     RxFacebook rxFacebook, RemoveInstall removeInstall, Context context) {
+        super(updateUser, lookupUsername, rxFacebook);
         this.removeInstall = removeInstall;
     }
 

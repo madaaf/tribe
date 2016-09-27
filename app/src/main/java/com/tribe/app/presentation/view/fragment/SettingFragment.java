@@ -348,7 +348,7 @@ public class SettingFragment extends BaseFragment implements SettingView {
     }
 
     @Override
-    public void setProfilePic(String profilePicUrl) {
+    public void successUpdateUser(User user) {
 
     }
 
@@ -363,6 +363,11 @@ public class SettingFragment extends BaseFragment implements SettingView {
     @Override
     public void errorFacebookLogin() {
         settingsFacebook.setCheckedSwitch(false);
+    }
+
+    @Override
+    public void usernameResult(Boolean available) {
+
     }
 
     @Override

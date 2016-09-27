@@ -1,42 +1,45 @@
 package com.tribe.app.presentation.view.component;
 
-import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Build;
+import android.support.design.widget.BottomSheetDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.FrameLayout;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
-import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.CameraType;
 import com.tribe.app.domain.entity.FacebookEntity;
+import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.navigation.Navigator;
-import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
+import com.tribe.app.presentation.utils.mediapicker.Sources;
+import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ImageUtils;
-import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
-import com.tribe.app.presentation.view.widget.TextViewFont;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -52,52 +55,50 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by horatiothomas on 9/6/16.
  */
-public class ProfileInfoView extends FrameLayout {
+public class ProfileInfoView extends LinearLayout {
 
-    private final static String AVATAR = "AVATAR";
-    public final static int RESULT_LOAD_IMAGE = 5, CAMERA_REQUEST = 6;
+    private static final int DURATION = 100;
 
-    @BindView(R.id.imgProfilePic)
-    ImageView imgProfilePic;
-
-    @BindView(R.id.txtOpenCameraRoll)
-    TextViewFont txtOpenCameraRoll;
-
-    @BindView(R.id.txtTakeASelfie)
-    TextViewFont txtTakeASelfie;
+    @BindView(R.id.imgAvatar)
+    ImageView imgAvatar;
 
     @BindView(R.id.editDisplayName)
     EditTextFont editDisplayName;
 
-    @BindView(R.id.viewDisplayNameValid)
-    View viewDisplayNameValid;
+    @BindView(R.id.imgDisplayNameInd)
+    ImageView imgDisplayNameInd;
 
     @BindView(R.id.editUsername)
     EditTextFont editUsername;
 
-    @BindView(R.id.viewUsernameValid)
-    View viewUsernameValid;
+    @BindView(R.id.imgUsernameInd)
+    ImageView imgUsernameInd;
+
+    @BindView(R.id.circularProgressUsername)
+    CircularProgressView circularProgressUsername;
 
     @Inject
-    Navigator navigator;
+    RxImagePicker rxImagePicker;
 
     @Inject
     ScreenUtils screenUtils;
 
     // VARIABLES
-    private boolean profilePictureSelected = false, usernameSelected = false,
+    private String usernameInit;
+    private String displayNameInit;
+    private boolean avatarSelected = false, usernameSelected = false,
             displayNameSelected = false, displayNameChanged = false;
-    private int profilePicSize;
+    private int avatarSize;
     private String imgUri;
+    private BottomSheetDialog dialogCamera;
+    private LabelSheetAdapter cameraTypeAdapter;
 
     // OBSERVABLES
     Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private PublishSubject<String> usernameInput = PublishSubject.create();
     private PublishSubject<String> displayNameInput = PublishSubject.create();
-
-    private static final String[] PERMISSIONS_CAMERA = new String[]{Manifest.permission.CAMERA,
-            Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private PublishSubject<Boolean> infoValid = PublishSubject.create();
 
     public ProfileInfoView(Context context) {
         super(context);
@@ -139,27 +140,23 @@ public class ProfileInfoView extends FrameLayout {
         super.onDetachedFromWindow();
     }
 
-    public void setImgProfilePic(Bitmap bitmap, String imgUri) {
-        RoundedCornersTransformation roundedCornersTransformation = new RoundedCornersTransformation(bitmap.getWidth() >> 1, 0, RoundedCornersTransformation.CornerType.ALL);
-        imgProfilePic.setImageBitmap(roundedCornersTransformation.transform(bitmap));
-
-        this.imgUri = imgUri;
-        profilePictureSelected = true;
-    }
-
-    public void setUrlProfilePic(String imageUrl) {
-        Glide.with(getContext()).load(imageUrl)
-                .override(profilePicSize, profilePicSize)
+    public void loadAvatar(String url) {
+        avatarSelected = true;
+        refactorInfosValid();
+        Glide.with(getContext()).load(url)
+                .override(avatarSize, avatarSize)
                 .bitmapTransform(new CropCircleTransformation(getContext()))
                 .crossFade()
-                .into(imgProfilePic);
+                .into(imgAvatar);
     }
 
     public void setEditDisplayName(String displayName) {
+        this.displayNameInit = displayName;
         editDisplayName.setText(displayName);
     }
 
     public void setEditUsername(String username) {
+        this.usernameInit = username;
         editUsername.setText(username);
     }
 
@@ -171,8 +168,8 @@ public class ProfileInfoView extends FrameLayout {
         return editUsername.getText().toString();
     }
 
-    public boolean isProfilePictureSelected() {
-        return profilePictureSelected;
+    public boolean isAvatarSelected() {
+        return avatarSelected;
     }
 
     public boolean isDisplayNameSelected() {
@@ -184,31 +181,11 @@ public class ProfileInfoView extends FrameLayout {
     }
 
     private void initDimens() {
-        profilePicSize = getResources().getDimensionPixelSize(R.dimen.avatar_size);
+        avatarSize = getResources().getDimensionPixelSize(R.dimen.avatar_size_with_shadow);
     }
 
     private void initUi() {
-        subscriptions.add(RxView.clicks(txtOpenCameraRoll).subscribe(aVoid -> {
-            RxPermissions.getInstance(getContext())
-                    .request(PERMISSIONS_CAMERA)
-                    .subscribe(granted -> {
-                        if (granted) navigator.getImageFromCameraRoll((Activity) getContext(), RESULT_LOAD_IMAGE);
-                        else
-                            // TODO: get string from laurent
-                            Toast.makeText(getContext(), "You must grant permissions to access your pictures", Toast.LENGTH_LONG).show();
-                    });
-        }));
-
-        subscriptions.add(RxView.clicks(txtTakeASelfie).subscribe(aVoid -> {
-            RxPermissions.getInstance(getContext())
-                    .request(PERMISSIONS_CAMERA)
-                    .subscribe(granted -> {
-                        if (granted) navigator.getImageFromCamera((Activity) getContext(), CAMERA_REQUEST);
-                        else
-                            // TODO: get string from laurent
-                            Toast.makeText(getContext(), "You must grant permissions to access the camera", Toast.LENGTH_LONG).show();
-                    });
-        }));
+        setOrientation(VERTICAL);
 
         subscriptions.add(
                 RxTextView.textChanges(editUsername)
@@ -216,9 +193,17 @@ public class ProfileInfoView extends FrameLayout {
                         .debounce(500, TimeUnit.MILLISECONDS)
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .doOnNext(s -> setUsernameValid(false))
+                        .doOnNext(s -> {
+                            if (s.toString().equals(usernameInit)) {
+                                setUsernameValid(true);
+                            } else {
+                                showUsernameProgress();
+                            }
+                        })
                         .map(CharSequence::toString)
-                        .subscribe(usernameInput)
+                        .subscribe(s -> {
+                            usernameInput.onNext(s);
+                        })
         );
 
         subscriptions.add(
@@ -235,58 +220,173 @@ public class ProfileInfoView extends FrameLayout {
                             }
                         })
         );
+
+        subscriptions.add(
+                RxView.clicks(imgAvatar)
+                        .subscribe(aVoid -> setupBottomSheetCamera())
+        );
     }
 
     public void setInfoFromFacebook(FacebookEntity facebookEntity) {
         Glide.with(getContext()).load(facebookEntity.getProfilePicture())
-                .override(profilePicSize, profilePicSize)
+                .override(avatarSize, avatarSize)
                 .centerCrop()
                 .bitmapTransform(new CropCircleTransformation(getContext()))
                 .crossFade()
-                .into(imgProfilePic);
+                .into(imgAvatar);
 
         Glide.with(getContext()).load(facebookEntity.getProfilePicture())
                 .override(ImageUtils.IMG_SIZE, ImageUtils.IMG_SIZE)
                 .into(new SimpleTarget<GlideDrawable>() {
                     @Override
                     public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                        imgUri = Uri.fromFile(FileUtils.bitmapToFile(AVATAR, ((GlideBitmapDrawable) resource.getCurrent()).getBitmap(), getContext())).toString();
+                        //imgUri = Uri.fromFile(FileUtils.bitmapToFile(AVATAR, ((GlideBitmapDrawable) resource.getCurrent()).getBitmap(), getContext())).toString();
                     }
                 });
 
-        profilePictureSelected = true;
+        avatarSelected = true;
         editDisplayName.setText(facebookEntity.getName());
         editUsername.setText(facebookEntity.getUsername());
     }
 
     public void setUsernameValid(boolean valid) {
+        hideUsernameProgress();
+
         if (valid) {
             usernameSelected = true;
-            viewUsernameValid.setBackgroundResource(R.drawable.shape_oval_green);
-            viewUsernameValid.setVisibility(View.VISIBLE);
+            imgUsernameInd.setImageResource(R.drawable.picto_valid);
         } else {
             usernameSelected = false;
-            viewUsernameValid.setBackgroundResource(R.drawable.shape_oval_red);
-            viewUsernameValid.setVisibility(View.VISIBLE);
+            imgUsernameInd.setImageResource(R.drawable.picto_wrong);
+        }
+
+        showUsernameInd();
+        refactorInfosValid();
+    }
+
+    public void showUsernameInd() {
+        if (imgUsernameInd.getScaleX() == 0) {
+            AnimationUtils.scaleUp(imgUsernameInd, DURATION, new DecelerateInterpolator());
+        }
+    }
+
+    public void hideUsernameInd() {
+        if (imgUsernameInd.getScaleX() == 1) {
+            AnimationUtils.scaleDown(imgUsernameInd, DURATION, new DecelerateInterpolator());
+        }
+    }
+
+    public void showUsernameProgress() {
+        usernameSelected = false;
+        refactorInfosValid();
+
+        if (circularProgressUsername.getScaleX() == 0) {
+            hideUsernameInd();
+            AnimationUtils.scaleUp(circularProgressUsername, DURATION, new DecelerateInterpolator());
+        }
+    }
+
+    public void hideUsernameProgress() {
+        if (circularProgressUsername.getScaleX() == 1) {
+            showUsernameInd();
+            AnimationUtils.scaleDown(circularProgressUsername, DURATION, new DecelerateInterpolator());
         }
     }
 
     public void setDisplayNameValid(boolean valid) {
         if (valid) {
             displayNameSelected = true;
-            viewDisplayNameValid.setBackgroundResource(R.drawable.shape_oval_green);
-            viewDisplayNameValid.setVisibility(View.VISIBLE);
+            imgDisplayNameInd.setImageResource(R.drawable.picto_valid);
         } else {
             displayNameSelected = false;
-            viewDisplayNameValid.setBackgroundResource(R.drawable.shape_oval_red);
-            viewDisplayNameValid.setVisibility(View.VISIBLE);
+            imgDisplayNameInd.setImageResource(R.drawable.picto_wrong);
         }
+
+        showDisplayNameInd();
+        refactorInfosValid();
+    }
+
+    public void showDisplayNameInd() {
+        if (imgDisplayNameInd.getScaleX() == 0) AnimationUtils.scaleUp(imgDisplayNameInd, DURATION, new DecelerateInterpolator());
     }
 
     public String getImgUri() {
         return imgUri;
     }
 
+    private void refactorInfosValid() {
+        infoValid.onNext(displayNameSelected && avatarSelected && usernameSelected);
+    }
+
+    /**
+     * Bottom sheet set-up
+     */
+    private void prepareBottomSheetCamera(List<LabelType> items) {
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.bottom_sheet_camera_type, null);
+        RecyclerView recyclerViewCameraType = (RecyclerView) view.findViewById(R.id.recyclerViewCameraType);
+        recyclerViewCameraType.setHasFixedSize(true);
+        recyclerViewCameraType.setLayoutManager(new LinearLayoutManager(getContext()));
+        cameraTypeAdapter = new LabelSheetAdapter(getContext(), items);
+        cameraTypeAdapter.setHasStableIds(true);
+        recyclerViewCameraType.setAdapter(cameraTypeAdapter);
+        subscriptions.add(cameraTypeAdapter.clickLabelItem()
+                .map((View labelView) -> cameraTypeAdapter.getItemAtPosition((Integer) labelView.getTag(R.id.tag_position)))
+                .subscribe(labelType -> {
+                    CameraType cameraType = (CameraType) labelType;
+
+                    if (cameraType.getCameraTypeDef().equals(CameraType.OPEN_CAMERA)) {
+                        subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA)
+                                .doOnNext(selectedUri -> imgUri = selectedUri.toString())
+                                .subscribe(uri -> {
+                                    avatarSelected = true;
+                                    loadAvatar(uri.toString());
+                                }));
+                    } else if (cameraType.getCameraTypeDef().equals(CameraType.OPEN_PHOTOS)) {
+                        subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY)
+                                .doOnNext(selectedUri -> imgUri = selectedUri.toString())
+                                .subscribe(uri -> {
+                                    avatarSelected = true;
+                                    loadAvatar(uri.toString());
+                                }));
+                    }
+
+                    dismissDialogSheetCamera();
+                }));
+
+        dialogCamera = new BottomSheetDialog(getContext());
+        dialogCamera.setContentView(view);
+        dialogCamera.show();
+        dialogCamera.setOnDismissListener(dialog -> {
+            cameraTypeAdapter.releaseSubscriptions();
+            dialogCamera = null;
+        });
+
+    }
+
+    private void setupBottomSheetCamera() {
+        if (dismissDialogSheetCamera()) {
+            return;
+        }
+
+        List<LabelType> cameraTypes = new ArrayList<>();
+        cameraTypes.add(new CameraType(getContext().getString(R.string.image_picker_camera), CameraType.OPEN_CAMERA));
+        cameraTypes.add(new CameraType(getContext().getString(R.string.image_picker_library), CameraType.OPEN_PHOTOS));
+
+        prepareBottomSheetCamera(cameraTypes);
+    }
+
+    private boolean dismissDialogSheetCamera() {
+        if (dialogCamera != null && dialogCamera.isShowing()) {
+            dialogCamera.dismiss();
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * DEPENDENCIES
+     */
     protected ApplicationComponent getApplicationComponent() {
         return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
     }
@@ -311,5 +411,9 @@ public class ProfileInfoView extends FrameLayout {
 
     public Observable<String> onDisplayNameInput() {
         return displayNameInput;
+    }
+
+    public Observable<Boolean> onInfoValid() {
+        return infoValid;
     }
 }

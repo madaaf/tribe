@@ -1,88 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:background="@color/grey.background.profile_info"
-    android:orientation="vertical"
-    >
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider_size"
-        android:background="@color/grey.light"
-        android:layout_alignParentTop="true"
-        />
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/avatar_size_intermediate"
-        android:orientation="horizontal"
+        android:layout_height="142dp"
         android:background="@android:color/white"
-        >
+        android:gravity="center">
 
-        <LinearLayout
-            android:id="@+id/layoutAvatar"
-            android:layout_width="@dimen/avatar_size_intermediate"
-            android:layout_height="@dimen/avatar_size_intermediate"
-            android:background="@null"
-            android:gravity="center">
-
-            <ImageView
-                android:id="@+id/imgProfilePic"
-                android:layout_width="@dimen/avatar_size"
-                android:layout_height="@dimen/avatar_size"
-                android:scaleType="centerCrop"
-                android:src="@drawable/picto_profile_pic_placeholder"
-                />
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="@dimen/divider_size"
-            android:layout_height="match_parent"
-            android:background="@color/grey.light"
-            android:layout_alignParentTop="true"
+        <ImageView
+            android:id="@+id/imgAvatar"
+            android:layout_width="@dimen/avatar_size_with_shadow"
+            android:layout_height="@dimen/avatar_size_with_shadow"
+            android:layout_gravity="center"
+            android:padding="2.5dp"
+            android:src="@drawable/picto_photo"
+            android:background="@drawable/bg_oval_onboarding"
+            android:scaleType="centerInside"
+            android:clickable="true"
             />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <com.tribe.app.presentation.view.widget.TextViewFont
-                android:id="@+id/txtOpenCameraRoll"
-                android:layout_width="match_parent"
-                android:layout_height="49dp"
-                android:layout_gravity="top"
-                android:gravity="center_vertical"
-                android:paddingStart="@dimen/text_padding"
-                android:paddingEnd="@dimen/text_padding"
-                android:background="@null"
-                android:text="@string/onboarding_user_avatar_library"
-                android:clickable="true"
-                style="@style/Body.Two.Black"
-                />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/divider_size"
-                android:background="@color/grey.light"
-                android:layout_alignParentTop="true"
-                />
-
-            <com.tribe.app.presentation.view.widget.TextViewFont
-                android:id="@+id/txtTakeASelfie"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/onboarding_choose_picture_button_height"
-                android:layout_gravity="top"
-                android:gravity="center_vertical"
-                android:paddingStart="@dimen/text_padding"
-                android:paddingEnd="@dimen/text_padding"
-                android:background="@null"
-                android:text="@string/onboarding_user_avatar_selfie"
-                android:clickable="true"
-                style="@style/Body.Two.Black"
-                />
-        </LinearLayout>
     </LinearLayout>
 
     <View
@@ -90,14 +27,6 @@
         android:layout_height="@dimen/divider_size"
         android:background="@color/grey.light"
         android:layout_alignParentTop="true"
-        />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider_size"
-        android:layout_marginTop="5dp"
-        android:layout_alignParentTop="true"
-        android:background="@color/grey.light"
         />
 
     <FrameLayout
@@ -109,9 +38,11 @@
             android:id="@+id/editDisplayName"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:paddingStart="@dimen/horizontal_margin_xlarge"
+            android:paddingEnd="@dimen/horizontal_margin_xlarge"
             android:background="@null"
-            android:layout_marginStart="@dimen/horizontal_margin_small"
-            android:layout_marginEnd="@dimen/horizontal_margin_small"
+            android:gravity="center"
             android:hint="@string/onboarding_user_displayname_placeholder"
             style="@style/Title.1.Black"
             android:textColorHint="@color/black.opacity.40"
@@ -119,27 +50,23 @@
             android:imeOptions="actionDone"
             />
 
-        <View
-            android:id="@+id/viewDisplayNameValid"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+        <ImageView
+            android:id="@+id/imgDisplayNameInd"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
             android:layout_marginEnd="@dimen/horizontal_margin_small"
             android:layout_gravity="right|center_vertical"
-            android:background="@drawable/shape_oval_green"
-            android:visibility="gone"
+            android:scaleType="centerInside"
+            android:src="@drawable/picto_valid"
+            android:scaleX="0"
+            android:scaleY="0"
             />
+
     </FrameLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_size"
-        android:background="@color/grey.light"
-        />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider_size"
-        android:layout_marginTop="5dp"
         android:background="@color/grey.light"
         />
 
@@ -152,9 +79,10 @@
             android:id="@+id/editUsername"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:paddingStart="@dimen/horizontal_margin_xlarge"
+            android:paddingEnd="@dimen/horizontal_margin_xlarge"
             android:background="@null"
-            android:layout_marginStart="@dimen/horizontal_margin_small"
-            android:layout_marginEnd="@dimen/horizontal_margin_small"
+            android:gravity="center"
             android:hint="@string/onboarding_user_username_placeholder"
             style="@style/Title.1.Black"
             android:textColorHint="@color/black.opacity.40"
@@ -163,14 +91,30 @@
             android:digits="abcdefghijklmnopqrstuvwxyz1234567890"
             />
 
-        <View
-            android:id="@+id/viewUsernameValid"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+        <ImageView
+            android:id="@+id/imgUsernameInd"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
             android:layout_marginEnd="@dimen/horizontal_margin_small"
-            android:layout_gravity="right|center_vertical"
-            android:background="@drawable/shape_oval_green"
-            android:visibility="gone"
+            android:layout_gravity="end|center_vertical"
+            android:scaleType="centerInside"
+            android:src="@drawable/picto_valid"
+            android:scaleX="0"
+            android:scaleY="0"
+            />
+
+        <com.github.rahatarmanahmed.cpv.CircularProgressView
+            android:id="@+id/circularProgressUsername"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginEnd="@dimen/horizontal_margin_small"
+            android:scaleX="0"
+            android:scaleY="0"
+            app:cpv_animAutostart="true"
+            app:cpv_indeterminate="true"
+            app:cpv_color="@android:color/black"
+            app:cpv_thickness="2dp"
             />
     </FrameLayout>
 
@@ -180,5 +124,4 @@
         android:layout_alignParentTop="true"
         android:background="@color/grey.light"
         />
-
-</LinearLayout>
+</merge>
