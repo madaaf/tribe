@@ -16,6 +16,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -41,6 +42,7 @@ import com.tribe.app.presentation.view.adapter.FriendAdapter;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.component.CreateInviteView;
 import com.tribe.app.presentation.view.component.GroupInfoView;
+import com.tribe.app.presentation.view.component.GroupSuggestionsView;
 import com.tribe.app.presentation.view.component.MemberPhotoViewList;
 import com.tribe.app.presentation.view.component.PrivatePublicView;
 import com.tribe.app.presentation.view.component.SearchFriendsView;
@@ -86,6 +88,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
+    private FriendAdapter friendAdapter;
 
     // Bind view
     @BindView(R.id.imageDone)
@@ -108,12 +111,13 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     GroupInfoView groupInfoView;
     @BindView(R.id.searchFriendsView)
     SearchFriendsView searchFriendsView;
+    @BindView(R.id.groupSuggestionsView)
+    GroupSuggestionsView groupSuggestionsView;
 
     // Dagger Dependencies
     @Inject
     ScreenUtils screenUtils;
-    @Inject
-    FriendAdapter friendAdapter;
+
     @Inject
     GroupPresenter groupPresenter;
 
@@ -236,7 +240,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         createInviteView.enableInvitePress();
         groupInfoView.setupGroupInfoUi(privateGroup);
         imageDone.setVisibility(View.VISIBLE);
-
+        if (!privateGroup)circularProgressView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_public));
         layoutInvite.setTranslationY(screenUtils.dpToPx(smallMargin));
         recyclerViewInvite.setTranslationY(screenUtils.dpToPx(smallMargin));
 
@@ -251,6 +255,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     }
 
     public void initForBoth() {
+
 //        recyclerViewInvite.setVisibility(View.INVISIBLE);
         subscriptions.add(RxView.clicks(imageDone).subscribe(aVoid -> {
             groupPresenter.addMembersToGroup(groupId, memberIds);
@@ -269,6 +274,11 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             groupInfoView.setLoading(true);
         }));
 
+        subscriptions.add(groupInfoView.isEditingGroupName().subscribe(isEditing -> {
+            if (isEditing) groupSuggestionsView.setVisibility(View.VISIBLE);
+            else  groupSuggestionsView.setVisibility(View.INVISIBLE);
+        }));
+
     }
 
     @Override
@@ -277,6 +287,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         groupInfoView.setGroupName(groupName);
         if (group.getPicture() != null && !group.getPicture().isEmpty()) groupInfoView.setGroupPictureFromUrl(group.getPicture());
         setGroupPrivacy(group.isPrivateGroup());
+        privateGroup = group.isPrivateGroup();
 
         members = group.getMembers();
         int memberPhotos;
@@ -448,7 +459,10 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     private void animSet3() {
         createInviteView.scaleInInviteImage(animDuration);
 
-        if (!privateGroup) imageDone.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_done_purple));;
+        if (!privateGroup) {
+            imageDone.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_done_purple));
+            circularProgressView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_public));
+        }
 
         imageDone.animate()
                 .translationY(AnimationUtils.TRANSLATION_RESET)
@@ -483,7 +497,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                 if (frienshipUser.getId().equals(iterMember.next().getId())) iterFriendship.remove();
             }
         }
-
+        friendAdapter = new FriendAdapter(getContext(), privateGroup);
         friendshipsListCopy = new ArrayList<>();
         if (friendshipsList != null) {
             friendshipsListCopy.addAll(friendshipsList);

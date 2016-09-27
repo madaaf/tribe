@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/grey.background.profile_info">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            style="@style/Body.Two.Black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/horizontal_margin_small"
+            android:layout_marginTop="@dimen/vertical_margin_small"
+            android:text="@string/group_suggestions_title"
+            android:textSize="15sp" />
+
+        <com.tribe.app.presentation.view.widget.PredicateLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/horizontal_margin_small"
+            android:layout_marginStart="@dimen/horizontal_margin_small"
+            android:layout_marginTop="40dp">
+
+            <!-- wrapped text views in framelayout to solve problem of no margins in predicate layout-->
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/group_suggestion_margin"
+                    android:background="@drawable/shape_oval_white_grey_border"
+                    android:paddingBottom="@dimen/padding_small"
+                    android:paddingEnd="@dimen/padding_mid"
+                    android:paddingStart="@dimen/padding_mid"
+                    android:paddingTop="@dimen/padding_small"
+                    android:text="@string/group_public_family_title"
+                    android:textSize="@dimen/group_suggestion_text_size" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/group_suggestion_margin"
+                    android:background="@drawable/shape_oval_white_grey_border"
+                    android:paddingBottom="@dimen/padding_small"
+                    android:paddingEnd="@dimen/padding_mid"
+                    android:paddingStart="@dimen/padding_mid"
+                    android:paddingTop="@dimen/padding_small"
+                    android:text="@string/group_public_roomies_title"
+                    android:textSize="@dimen/group_suggestion_text_size" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/group_suggestion_margin"
+                    android:background="@drawable/shape_oval_white_grey_border"
+                    android:paddingBottom="@dimen/padding_small"
+                    android:paddingEnd="@dimen/padding_mid"
+                    android:paddingStart="@dimen/padding_mid"
+                    android:paddingTop="@dimen/padding_small"
+                    android:text="@string/group_public_bffs_title"
+                    android:textSize="@dimen/group_suggestion_text_size" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/group_suggestion_margin"
+                    android:background="@drawable/shape_oval_white_grey_border"
+                    android:paddingBottom="@dimen/padding_small"
+                    android:paddingEnd="@dimen/padding_mid"
+                    android:paddingStart="@dimen/padding_mid"
+                    android:paddingTop="@dimen/padding_small"
+                    android:text="@string/group_public_abroad_title"
+                    android:textSize="@dimen/group_suggestion_text_size" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/group_suggestion_margin"
+                    android:background="@drawable/shape_oval_white_grey_border"
+                    android:paddingBottom="@dimen/padding_small"
+                    android:paddingEnd="@dimen/padding_mid"
+                    android:paddingStart="@dimen/padding_mid"
+                    android:paddingTop="@dimen/padding_small"
+                    android:text="@string/group_public_work_title"
+                    android:textSize="@dimen/group_suggestion_text_size" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/group_suggestion_margin"
+                    android:background="@drawable/shape_oval_white_grey_border"
+                    android:paddingBottom="@dimen/padding_small"
+                    android:paddingEnd="@dimen/padding_mid"
+                    android:paddingStart="@dimen/padding_mid"
+                    android:paddingTop="@dimen/padding_small"
+                    android:text="@string/group_public_classmates_title"
+                    android:textSize="@dimen/group_suggestion_text_size" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/group_suggestion_margin"
+                    android:background="@drawable/shape_oval_white_grey_border"
+                    android:paddingBottom="@dimen/padding_small"
+                    android:paddingEnd="@dimen/padding_mid"
+                    android:paddingStart="@dimen/padding_mid"
+                    android:paddingTop="@dimen/padding_small"
+                    android:text="@string/group_public_teammates_title"
+                    android:textSize="@dimen/group_suggestion_text_size" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/group_suggestion_margin"
+                    android:background="@drawable/shape_oval_white_grey_border"
+                    android:paddingBottom="@dimen/padding_small"
+                    android:paddingEnd="@dimen/padding_mid"
+                    android:paddingStart="@dimen/padding_mid"
+                    android:paddingTop="@dimen/padding_small"
+                    android:text="@string/group_public_baddest_title"
+                    android:textSize="@dimen/group_suggestion_text_size" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/group_suggestion_margin"
+                    android:background="@drawable/shape_oval_white_grey_border"
+                    android:paddingBottom="@dimen/padding_small"
+                    android:paddingEnd="@dimen/padding_mid"
+                    android:paddingStart="@dimen/padding_mid"
+                    android:paddingTop="@dimen/padding_small"
+                    android:text="@string/group_public_not_allowed_title"
+                    android:textSize="@dimen/group_suggestion_text_size" />
+
+            </FrameLayout>
+
+        </com.tribe.app.presentation.view.widget.PredicateLayout>
+
+    </FrameLayout>
+
+</ScrollView>

@@ -6,11 +6,15 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
@@ -28,6 +32,7 @@ import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 
+import java.security.PublicKey;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -92,15 +97,20 @@ public class GroupInfoView extends FrameLayout {
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
     // view vars
-    int moveGroupName = 60;
-    int startTranslationEditIcons = -200;
-    int privacyFinalPosition = -48;
-    float groupPicScaleDownF = .7f;
-    int layoutViewBackgroundInfoPositionY = 185;
-    int groupLayoutOffSet = 20;
+    private int moveGroupName = 60;
+    private int startTranslationEditIcons = -200;
+    private int privacyFinalPosition = -48;
+    private float groupPicScaleDownF = .7f;
+    private int layoutViewBackgroundInfoPositionY = 185;
+    private int groupLayoutOffSet = 20;
+    private float originalGroupNameMargin;
+    private float originalGroupBackgroundMargin;
+    private int animDuration = AnimationUtils.ANIMATION_DURATION_SHORT;
+
 
     private PublishSubject<Boolean> isPrivate = PublishSubject.create();
     private PublishSubject<Boolean> isGroupNameValid = PublishSubject.create();
+    private PublishSubject<Boolean> isEditingGroupName = PublishSubject.create();
     private PublishSubject<Void> imageGroupClicked = PublishSubject.create();
     private PublishSubject<Void> imageEditGroupClicked = PublishSubject.create();
     private PublishSubject<Void> imageDoneEditClicked = PublishSubject.create();
@@ -122,6 +132,15 @@ public class GroupInfoView extends FrameLayout {
             if (editTextGroupName.getText().toString().length() > 0) isGroupNameValid.onNext(true);
             else isGroupNameValid.onNext(false);
         }));
+        subscriptions.add(RxView.clicks(editTextGroupName).subscribe(aVoid -> {
+            bringGroupNameToTop(animDuration);
+            Observable.timer(animDuration, TimeUnit.MILLISECONDS)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(time -> {
+                        isEditingGroupName.onNext(true);
+                    });
+        }));
         subscriptions.add(RxView.clicks(imageGroup).subscribe(aVoid -> {
             imageGroupClicked.onNext(null);
         }));
@@ -138,6 +157,16 @@ public class GroupInfoView extends FrameLayout {
         subscriptions.add(RxView.clicks(imageGoToMembers).subscribe(aVoid -> {
             imageGoToMembersClicked.onNext(null);
         }));
+
+        editTextGroupName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
+                    bringGroupNameDown(animDuration);
+                    isEditingGroupName.onNext(false);
+                }
+                return false;
+            }
+        });
     }
 
     @Override
@@ -172,6 +201,9 @@ public class GroupInfoView extends FrameLayout {
     }
     public Observable<Boolean> isGroupNameValid() {
         return isGroupNameValid;
+    }
+    public Observable<Boolean> isEditingGroupName() {
+        return isEditingGroupName;
     }
 
 
@@ -384,6 +416,37 @@ public class GroupInfoView extends FrameLayout {
             imageBackClicked.onNext(null);
         }));
     }
+
+    private void bringGroupNameToTop(int animDuration) {
+        originalGroupBackgroundMargin =layoutDividerBackground.getY();
+        originalGroupNameMargin = editTextGroupName.getY();
+        layoutDividerBackground.animate()
+                .y(0)
+                .setDuration(animDuration)
+                .setStartDelay(AnimationUtils.NO_START_DELAY)
+                .start();
+        int editTextGroupTopMargin = 22;
+        editTextGroupName.animate()
+                .y(screenUtils.dpToPx(editTextGroupTopMargin))
+                .setDuration(animDuration)
+                .setStartDelay(AnimationUtils.NO_START_DELAY)
+                .start();
+    }
+
+    private void bringGroupNameDown(int animDuration) {
+        layoutDividerBackground.animate()
+                .y(originalGroupBackgroundMargin)
+                .setDuration(animDuration)
+                .setStartDelay(AnimationUtils.NO_START_DELAY)
+                .start();
+        editTextGroupName.animate()
+                .y(originalGroupNameMargin)
+                .setDuration(animDuration)
+                .setStartDelay(AnimationUtils.NO_START_DELAY)
+                .start();
+    }
+
+
 
     public String getGroupName() {
         return editTextGroupName.getText().toString();

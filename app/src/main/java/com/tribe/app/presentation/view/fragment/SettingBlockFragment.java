@@ -46,9 +46,7 @@ public class SettingBlockFragment extends BaseFragment {
 
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private Unbinder unbinder;
-
-    @Inject
-    FriendAdapter friendAdapter;
+    private FriendAdapter friendAdapter;
 
     @BindView(R.id.editTextSearchBlockFriends)
     EditTextFont editTextSearchBlockFriends;
@@ -75,6 +73,7 @@ public class SettingBlockFragment extends BaseFragment {
 
     private void initFriendshipList() {
         User user = getCurrentUser();
+        friendAdapter = new FriendAdapter(getContext(), true);
         List<Friendship> allFriendships = user.getFriendships();
         friendshipsList = new ArrayList<>();
         for(Friendship friendship : allFriendships) {

@@ -4,11 +4,15 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.utils.FontCache;
+
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 18/05/2016.
@@ -41,4 +45,5 @@ public class EditTextFont extends EditText {
         setTypeface(tf);
         return true;
     }
+
 }
