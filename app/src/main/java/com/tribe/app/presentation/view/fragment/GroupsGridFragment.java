@@ -194,7 +194,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             });
         }
         initForBoth();
-        initSearchView();
         fragmentView.setTag(HomeActivity.GROUPS_FRAGMENT_PAGE);
         return fragmentView;
     }
@@ -252,9 +251,11 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         }));
 
         subscriptions.add(groupInfoView.imageGoToMembersClicked().subscribe(aVoid -> {
+            searchFriendsView.requestFocus();
             imageGoToMembersClicked.onNext(null);
         }));
         groupPresenter.getGroupMembers(groupId);
+        searchFriendsView.requestFocus();
     }
 
     public void initForBoth() {
@@ -286,10 +287,12 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             groupInfoView.bringGroupNameDown(animDuration);
             groupSuggestionsView.setVisibility(View.INVISIBLE);
         }));
+        setupSearchView();
     }
 
     @Override
     public void setupGroup(Group group) {
+        appBarLayout.setExpanded(true);
         groupName = group.getName();
         groupInfoView.setGroupName(groupName);
         if (group.getPicture() != null && !group.getPicture().isEmpty()) groupInfoView.setGroupPictureFromUrl(group.getPicture());
@@ -554,31 +557,11 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         friendAdapter.notifyDataSetChanged();
     }
 
-    private void initSearchView() {
-        setupSearchView();
-//        editTextInviteSearch.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable editable) {
-//                filter(editable.toString());
-//            }
-//        });
-    }
-
     private void setupSearchView() {
         subscriptions.add(RxView.focusChanges(searchFriendsView).subscribe(aBoolean -> {
             if (aBoolean) appBarLayout.setExpanded(false);
         }));
-        subscriptions.add(RxView.clicks(searchFriendsView).subscribe(aVoid -> {
+        subscriptions.add(searchFriendsView.editTextSearchClicked().subscribe(aVoid -> {
             appBarLayout.setExpanded(false);
         }));
     }
