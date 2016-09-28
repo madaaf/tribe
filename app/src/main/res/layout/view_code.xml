@@ -21,8 +21,7 @@
     <FrameLayout
         android:layout_width="116dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/horizontal_margin"
-        android:layout_gravity="bottom|center">
+        android:layout_gravity="center">
 
         <com.tribe.app.presentation.view.widget.EditTextFont
             android:layout_width="0dp"
@@ -50,7 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            style="@style/Title.1.Black"
+            style="@style/Title.1.Black.Input"
             />
 
         <ImageView
@@ -67,7 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="34dp"
             android:layout_gravity="center_vertical"
-            style="@style/Title.1.Black"
+            style="@style/Title.1.Black.Input"
             />
 
         <ImageView
@@ -84,7 +83,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="68dp"
             android:layout_gravity="center_vertical"
-            style="@style/Title.1.Black"
+            style="@style/Title.1.Black.Input"
             />
 
         <ImageView
@@ -101,7 +100,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="102dp"
             android:layout_gravity="center_vertical"
-            style="@style/Title.1.Black"
+            style="@style/Title.1.Black.Input"
             />
 
     </FrameLayout>

@@ -120,6 +120,10 @@
         <item name="android:textColor">@android:color/black</item>
     </style>
 
+    <style name="Title.1.Black.Input" parent="@style/Title.1.Black">
+        <item name="android:textSize">19sp</item>
+    </style>
+
     <style name="Title.1.Blue" parent="@style/Title.1">
         <item name="android:textColor">@color/blue.text</item>
     </style>
