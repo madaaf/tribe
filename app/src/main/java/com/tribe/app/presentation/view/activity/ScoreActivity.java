@@ -19,6 +19,7 @@ import com.tribe.app.presentation.view.adapter.LevelAdapter;
 import com.tribe.app.presentation.view.adapter.manager.LevelLayoutManager;
 import com.tribe.app.presentation.view.decorator.GridDividerTopItemDecoration;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.Arrays;
@@ -44,6 +45,9 @@ public class ScoreActivity extends BaseActivity implements ScoreView {
 
     @Inject
     ScorePresenter scorePresenter;
+
+    @Inject
+    ScreenUtils screenUtils;
 
     @Inject
     User currentUser;
@@ -73,7 +77,6 @@ public class ScoreActivity extends BaseActivity implements ScoreView {
     TextViewFont txtPointsLeft;
 
     // RESOURCES
-    private int scoreMaxHeight;
     private int marginVerticalSmall;
 
     // BINDERS / SUBSCRIPTIONS
@@ -84,13 +87,13 @@ public class ScoreActivity extends BaseActivity implements ScoreView {
     private LevelLayoutManager levelLayoutManager;
     private LevelAdapter levelAdapter;
     private List<ScoreUtils.Level> levelList;
-    private ValueAnimator animatorHeight;
+    private ValueAnimator animatorWidth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initResources();
         initDependencyInjector();
+        initResources();
         initUi();
         initSubscriptions();
         initRecyclerView();
@@ -110,7 +113,7 @@ public class ScoreActivity extends BaseActivity implements ScoreView {
 
     @Override
     protected void onDestroy() {
-        animatorHeight.cancel();
+        animatorWidth.cancel();
 
         if (unbinder != null) unbinder.unbind();
         if (scorePresenter != null) scorePresenter.onDestroy();
@@ -124,7 +127,6 @@ public class ScoreActivity extends BaseActivity implements ScoreView {
     }
 
     private void initResources() {
-        scoreMaxHeight = getResources().getDimensionPixelSize(R.dimen.score_progress_height);
         marginVerticalSmall = getResources().getDimensionPixelSize(R.dimen.vertical_margin_small);
     }
 
@@ -144,18 +146,18 @@ public class ScoreActivity extends BaseActivity implements ScoreView {
         int pointsLeftForNext = ScoreUtils.getRestForNextLevel(currentUser.getScore());
         txtPointsLeft.setText(getString(R.string.points_suffix, pointsLeftForNext));
 
-        int progressHeight = (int) (((float) scoreMaxHeight / nextLevel.getPoints()) * currentUser.getScore());
+        int progressHeight = (int) (((float) screenUtils.getWidthPx() / nextLevel.getPoints()) * currentUser.getScore());
 
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) viewScoreProgress.getLayoutParams();
-        animatorHeight = ValueAnimator.ofInt(0, progressHeight);
-        animatorHeight.setDuration(DURATION);
-        animatorHeight.setInterpolator(new OvershootInterpolator(OVERSHOOT));
-        animatorHeight.setStartDelay(1000);
-        animatorHeight.addUpdateListener(animation -> {
-            params.height = (Integer) animation.getAnimatedValue();
+        animatorWidth = ValueAnimator.ofInt(0, progressHeight);
+        animatorWidth.setDuration(DURATION);
+        animatorWidth.setInterpolator(new OvershootInterpolator(OVERSHOOT));
+        animatorWidth.setStartDelay(1000);
+        animatorWidth.addUpdateListener(animation -> {
+            params.width = (Integer) animation.getAnimatedValue();
             viewScoreProgress.setLayoutParams(params);
         });
-        animatorHeight.start();
+        animatorWidth.start();
     }
 
     private void initRecyclerView() {

@@ -72,11 +72,69 @@
 
     </RelativeLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_size"
+        android:background="@color/grey.light"
+        />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="49dp">
+
+        <View
+            android:id="@+id/viewScoreMax"
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/yellow.opacity.40"
+            />
+
+        <View
+            android:id="@+id/viewScoreProgress"
+            android:layout_width="0dp"
+            android:layout_height="6dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/yellow"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="@dimen/horizontal_margin_small"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            >
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                style="@style/Body.Two.Black40"
+                android:text="@string/score_next_level"
+                />
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:id="@+id/txtPointsLeft"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:singleLine="true"
+                style="@style/Points.Reg.Yellow"
+                />
+
+        </LinearLayout>
+    </RelativeLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:background="@color/grey.light"
-        android:padding="@dimen/horizontal_margin_small"
+        android:background="@null"
+        android:paddingTop="@dimen/vertical_margin_small"
+        android:paddingBottom="@dimen/vertical_margin_small"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:orientation="horizontal">
         
         <FrameLayout
@@ -88,10 +146,10 @@
 
             <ImageView
                 android:id="@+id/imgLevelSmall"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_gravity="center_vertical"
-                android:layout_margin="@dimen/horizontal_margin_small"
+                android:layout_margin="10dp"
                 android:scaleType="centerInside"
                 />
 
@@ -120,76 +178,6 @@
                 />
         </FrameLayout>
     </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider_size"
-        android:background="@color/grey.light"
-        />
-    
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="76dp">
-
-        <View
-            android:id="@+id/viewScoreMax"
-            android:layout_width="6dp"
-            android:layout_height="@dimen/score_progress_height"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/horizontal_margin_small"
-            android:background="@drawable/shape_rect_rounded_yellow_alpha40"
-            />
-
-        <View
-            android:id="@+id/viewScoreProgress"
-            android:layout_width="6dp"
-            android:layout_height="0dp"
-            android:layout_alignLeft="@id/viewScoreMax"
-            android:layout_alignBottom="@id/viewScoreMax"
-            android:background="@drawable/shape_rect_rounded_yellow"
-            />
-
-        <ImageView
-            android:id="@+id/imgLock"
-            android:layout_width="@dimen/score_circle_size"
-            android:layout_height="@dimen/score_circle_size"
-            android:layout_toRightOf="@id/viewScoreMax"
-            android:layout_marginLeft="@dimen/horizontal_margin_small"
-            android:layout_centerVertical="true"
-            android:src="@drawable/picto_lock_white"
-            android:background="@drawable/shape_oval_dark_grey"
-            android:scaleType="centerInside"
-            />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/imgLock"
-            android:layout_marginLeft="@dimen/horizontal_margin_small"
-            android:orientation="vertical"
-            >
-
-            <com.tribe.app.presentation.view.widget.TextViewFont
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:singleLine="true"
-                style="@style/Body.Two.Black40"
-                android:text="@string/score_next_level"
-                />
-
-            <com.tribe.app.presentation.view.widget.TextViewFont
-                android:id="@+id/txtPointsLeft"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:singleLine="true"
-                style="@style/Points.Reg.Yellow"
-                />
-
-        </LinearLayout>
-    </RelativeLayout>
 
     <View
         android:layout_width="match_parent"

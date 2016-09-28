@@ -350,6 +350,8 @@
 	<string name="notification_pending_action_later">Plus tard</string>
 	<string name="notification_pending_action_decline">Refuser</string>
 	<string name="notification_snoozed">Snoozed: Message de %1$s</string>
+	<string name="notification_open_message">Ouvrir le message</string>
+	<string name="notification_reply_chat">Répondre en chat</string>
 	
 	<!-- Share -->
 	<string name="share_add_friends_addressbook_suggestions">I was able to get access to Tribe. Just noticed that you already have %1$d friends on this app. I can get you in: %2$s</string>

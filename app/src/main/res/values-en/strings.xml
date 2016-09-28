@@ -350,6 +350,8 @@
 	<string name="notification_pending_action_later">Later</string>
 	<string name="notification_pending_action_decline">Decline</string>
 	<string name="notification_snoozed">Snoozed: Message from %1$s</string>
+	<string name="notification_open_message">Open message</string>
+	<string name="notification_reply_chat">Reply in sidechat</string>
 	
 	<!-- Share -->
 	<string name="share_add_friends_addressbook_suggestions">I was able to get access to Tribe. Just noticed that you already have %1$d friends on this app. I can get you in: %2$s</string>

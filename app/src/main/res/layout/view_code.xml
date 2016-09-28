@@ -21,14 +21,12 @@
     <FrameLayout
         android:layout_width="116dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="55dp"
-        android:layout_marginEnd="55dp"
         android:layout_marginBottom="@dimen/horizontal_margin"
         android:layout_gravity="bottom|center">
 
         <com.tribe.app.presentation.view.widget.EditTextFont
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:id="@+id/editTextCode"
             android:background="@null"
             android:textColor="@android:color/black"
@@ -47,6 +45,14 @@
             android:layout_gravity="center_vertical"
             android:src="@drawable/picto_pin_circle"/>
 
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtCode1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            style="@style/Title.1.Black"
+            />
+
         <ImageView
             android:id="@+id/pinCircle2"
             android:layout_width="14dp"
@@ -55,13 +61,31 @@
             android:layout_gravity="center_vertical"
             android:src="@drawable/picto_pin_circle"/>
 
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtCode2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="34dp"
+            android:layout_gravity="center_vertical"
+            style="@style/Title.1.Black"
+            />
+
         <ImageView
             android:id="@+id/pinCircle3"
-            android:layout_width="14dp"
-            android:layout_height="14dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="68dp"
             android:layout_gravity="center_vertical"
             android:src="@drawable/picto_pin_circle"/>
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtCode3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="68dp"
+            android:layout_gravity="center_vertical"
+            style="@style/Title.1.Black"
+            />
 
         <ImageView
             android:id="@+id/pinCircle4"
@@ -70,6 +94,15 @@
             android:layout_marginStart="102dp"
             android:layout_gravity="center_vertical"
             android:src="@drawable/picto_pin_circle"/>
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtCode4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="102dp"
+            android:layout_gravity="center_vertical"
+            style="@style/Title.1.Black"
+            />
 
     </FrameLayout>
 

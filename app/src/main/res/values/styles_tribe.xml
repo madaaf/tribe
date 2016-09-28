@@ -237,7 +237,7 @@
         <item name="android:textColorHint">@color/black.opacity.40</item>
     </style>
     <style name="Text.Input.PhoneNumber" parent="Text.Input">
-        <item name="android:textSize">17sp</item>
+        <item name="android:textSize">19sp</item>
     </style>
 
     <style name="Text.Input.Search">

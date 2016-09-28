@@ -13,6 +13,7 @@ import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,6 +49,18 @@ public class CodeView extends FrameLayout {
 
     @BindView(R.id.pinCircle4)
     ImageView pinCircle4;
+
+    @BindView(R.id.txtCode1)
+    TextViewFont txtCode1;
+
+    @BindView(R.id.txtCode2)
+    TextViewFont txtCode2;
+
+    @BindView(R.id.txtCode3)
+    TextViewFont txtCode3;
+
+    @BindView(R.id.txtCode4)
+    TextViewFont txtCode4;
 
     @BindView(R.id.imgConnectedIcon)
     ImageView imgConnectedIcon;
@@ -90,10 +103,6 @@ public class CodeView extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.view_code, this);
         unbinder = ButterKnife.bind(this);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            editTextCode.setLetterSpacing((float) 1.5);
-        }
-
         imgConnectedIcon.setScaleX(0);
         imgConnectedIcon.setScaleY(0);
 
@@ -105,32 +114,41 @@ public class CodeView extends FrameLayout {
                             pinCircle2.setVisibility(VISIBLE);
                             pinCircle3.setVisibility(VISIBLE);
                             pinCircle4.setVisibility(VISIBLE);
+                            txtCode1.setText("");
                             break;
                         case 1:
                             pinCircle1.setVisibility(INVISIBLE);
                             pinCircle2.setVisibility(VISIBLE);
                             pinCircle3.setVisibility(VISIBLE);
                             pinCircle4.setVisibility(VISIBLE);
+                            txtCode1.setText(s);
+                            txtCode2.setText("");
                             break;
                         case 2:
                             pinCircle1.setVisibility(INVISIBLE);
                             pinCircle2.setVisibility(INVISIBLE);
                             pinCircle3.setVisibility(VISIBLE);
                             pinCircle4.setVisibility(VISIBLE);
+                            txtCode2.setText(s.substring(1));
+                            txtCode3.setText("");
                             break;
                         case 3:
                             pinCircle1.setVisibility(INVISIBLE);
                             pinCircle2.setVisibility(INVISIBLE);
                             pinCircle3.setVisibility(INVISIBLE);
                             pinCircle4.setVisibility(VISIBLE);
+                            txtCode3.setText(s.substring(2));
+                            txtCode4.setText("");
                             break;
                         case 4:
                             pinCircle1.setVisibility(INVISIBLE);
                             pinCircle2.setVisibility(INVISIBLE);
                             pinCircle3.setVisibility(INVISIBLE);
                             pinCircle4.setVisibility(INVISIBLE);
+                            txtCode4.setText(s.substring(3));
                             break;
                     }
+
                     return s.length() == 4;
                 })
                 .subscribe(codeValid);
