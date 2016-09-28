@@ -27,21 +27,18 @@ public class FileUtils {
     public static final String VIDEO = "video";
     public static final String PHOTO = "photo";
 
-    private static File pathOrigin;
     private static String pathEnd = "/TribeMessage/Sent";
 
     @Inject
-    public FileUtils(Context context) {
-       pathOrigin = context.getFilesDir();
-       //pathOrigin = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+    public FileUtils() {
     }
 
-    public static String generateFile(String id, @MessageType String type) {
-        return getFile(id, type).getAbsolutePath();
+    public static String generateFile(Context context, String id, @MessageType String type) {
+        return getFile(context, id, type).getAbsolutePath();
     }
 
-    public static File getFile(String id, @MessageType String type) {
-        File endDir = new File(pathOrigin + pathEnd);
+    public static File getFile(Context context, String id, @MessageType String type) {
+        File endDir = new File(context.getFilesDir() + pathEnd);
 
         if (!endDir.exists()) {
             endDir.mkdirs();
@@ -54,8 +51,8 @@ public class FileUtils {
         return new File(dir, getTribeFilenameForId(id, type));
     }
 
-    public static String getPathForId(String id, @MessageType String type) {
-        File endDir = new File(pathOrigin + pathEnd);
+    public static String getPathForId(Context context, String id, @MessageType String type) {
+        File endDir = new File(getCacheDir(context) + pathEnd);
         return generateOutputFile(endDir, id, type).getAbsolutePath();
     }
 
@@ -63,8 +60,8 @@ public class FileUtils {
         return id + (type == PHOTO ? ".jpeg" : ".mp4");
     }
 
-    public static void delete(String id, @MessageType String type) {
-        File endDir = new File(pathOrigin + pathEnd);
+    public static void delete(Context context, String id, @MessageType String type) {
+        File endDir = new File(getCacheDir(context) + pathEnd);
         generateOutputFile(endDir, id, type).delete();
     }
 
@@ -127,7 +124,7 @@ public class FileUtils {
         return dir.delete();
     }
 
-    public static File getCacheDir() {
-        return pathOrigin;
+    public static File getCacheDir(Context context) {
+        return context.getFilesDir();
     }
 }

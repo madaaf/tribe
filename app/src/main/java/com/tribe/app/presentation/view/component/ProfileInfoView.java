@@ -3,10 +3,15 @@ package com.tribe.app.presentation.view.component;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Build;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputFilter;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
@@ -29,6 +35,8 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
@@ -39,6 +47,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -187,22 +196,32 @@ public class ProfileInfoView extends LinearLayout {
     private void initUi() {
         setOrientation(VERTICAL);
 
+        ArrayList<InputFilter> inputFilters = new ArrayList<InputFilter>(Arrays.asList(editUsername.getFilters()));
+        inputFilters.add(0, filterAlphanumeric);
+        inputFilters.add(1, filterSpace);
+        inputFilters.add(2, filterLowercase);
+        InputFilter[] newInputFilters = inputFilters.toArray(new InputFilter[inputFilters.size()]);
+        editUsername.setFilters(newInputFilters);
+
         subscriptions.add(
                 RxTextView.textChanges(editUsername)
-                        .filter(charSequence -> charSequence.length() > 1)
-                        .debounce(500, TimeUnit.MILLISECONDS)
+                        .debounce(200, TimeUnit.MILLISECONDS)
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .observeOn(AndroidSchedulers.mainThread())
+                        .map(CharSequence::toString)
                         .doOnNext(s -> {
-                            if (s.toString().equals(usernameInit)) {
-                                setUsernameValid(true);
+                            if (!StringUtils.isEmpty(s)) {
+                                if (s.equals(usernameInit)) {
+                                    setUsernameValid(true);
+                                } else if (!StringUtils.isEmpty(s)) {
+                                    showUsernameProgress();
+                                }
                             } else {
-                                showUsernameProgress();
+                                setUsernameValid(false);
                             }
                         })
-                        .map(CharSequence::toString)
                         .subscribe(s -> {
-                            usernameInput.onNext(s);
+                            if (!StringUtils.isEmpty(s)) usernameInput.onNext(s);
                         })
         );
 
@@ -240,7 +259,7 @@ public class ProfileInfoView extends LinearLayout {
                 .into(new SimpleTarget<GlideDrawable>() {
                     @Override
                     public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                        //imgUri = Uri.fromFile(FileUtils.bitmapToFile(AVATAR, ((GlideBitmapDrawable) resource.getCurrent()).getBitmap(), getContext())).toString();
+                        imgUri = Uri.fromFile(FileUtils.bitmapToFile("avatar", ((GlideBitmapDrawable) resource.getCurrent()).getBitmap(), getContext())).toString();
                     }
                 });
 
@@ -317,6 +336,51 @@ public class ProfileInfoView extends LinearLayout {
     private void refactorInfosValid() {
         infoValid.onNext(displayNameSelected && avatarSelected && usernameSelected);
     }
+
+    private static InputFilter filterSpace = (source, start, end, dest, dstart, dend) -> {
+        for (int i = start; i < end; i++) {
+            if (Character.isSpaceChar(source.charAt(i))) {
+                return "";
+            }
+        }
+
+        return null;
+    };
+
+    private static InputFilter filterAlphanumeric = (source, start, end, dest, dstart, dend) -> {
+        StringBuilder builder = new StringBuilder();
+        for (int i = start; i < end; i++) {
+            char c = source.charAt(i);
+            if (Character.isLetterOrDigit(c)) {
+                builder.append(c);
+            }
+        }
+
+        // If all characters are valid, return null, otherwise only return the filtered characters
+        boolean allCharactersValid = (builder.length() == end - start);
+        return allCharactersValid ? null : builder.toString();
+    };
+
+    private static InputFilter filterLowercase = (source, start, end, dest, dstart, dend) -> {
+        for (int i = start; i < end; i++) {
+            if (!Character.isLowerCase(source.charAt(i))) {
+                char[] v = new char[end - start];
+                TextUtils.getChars(source, start, end, v, 0);
+                String s = new String(v).toLowerCase();
+
+                if (source instanceof Spanned) {
+                    SpannableString sp = new SpannableString(s);
+                    TextUtils.copySpansFrom((Spanned) source,
+                            start, end, null, sp, 0);
+                    return sp;
+                } else {
+                    return s;
+                }
+            }
+        }
+
+        return null; // keep original
+    };
 
     /**
      * Bottom sheet set-up

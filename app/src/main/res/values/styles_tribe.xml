@@ -120,6 +120,10 @@
         <item name="android:textColor">@android:color/black</item>
     </style>
 
+    <style name="Title.1.Blue" parent="@style/Title.1">
+        <item name="android:textColor">@color/blue.text</item>
+    </style>
+
     <style name="Title.1.Black40" parent="@style/Title.1">
         <item name="android:textColor">@color/black.opacity.40</item>
     </style>

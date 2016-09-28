@@ -44,6 +44,7 @@ import com.tribe.app.presentation.internal.di.scope.AudioDefault;
 import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
 import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
+import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
 import com.tribe.app.presentation.internal.di.scope.Memories;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
@@ -229,6 +230,9 @@ public interface ApplicationComponent {
 
     @LastMessageRequest
     Preference<String> lastMessageRequest();
+
+    @LastUserRequest
+    Preference<String> lastUserRequest();
 
     RxFacebook rxFacebook();
 

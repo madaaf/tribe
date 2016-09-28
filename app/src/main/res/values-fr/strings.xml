@@ -4,7 +4,6 @@
 	<string name="app_name">Tribe</string>
 	
 	<!-- Actions -->
-	<string name="action_ok">OK</string>
 	<string name="action_cancel">Annuler</string>
 	<string name="action_delete">Supprimer</string>
 	<string name="action_done">Terminé</string>
@@ -19,6 +18,7 @@
 	<string name="error_no_network">Oups &#128561;\nPas de connexion !</string>
 	
 	<!-- Image Picker -->
+	<string name="image_picker_title">Choisis une photo</string>
 	<string name="image_picker_camera">Appareil photo</string>
 	<string name="image_picker_library">Bibliothèque</string>
 	
@@ -26,18 +26,12 @@
 	<string name="contacts_search_placeholder">Rechercher un(e) ami(e)</string>
 	<string name="contacts_share_profile_button">Partage ton profile</string>
 	<string name="contacts_share_profile_description">Passer le message</string>
-	<string name="contacts_section_facebook_sync_disabled">Amis Facebook non synchronisés</string>
-	<string name="contacts_section_facebook_sync_enabled">Amis Facebook synchronisés</string>
 	<string name="contacts_section_facebook_sync_title">Synchroniser vos ami(e)s</string>
 	<string name="contacts_section_facebook_sync_description">Inviter vos amis Facebook</string>
 	<string name="contacts_section_facebook_invite_title">Notifier vos amis manquants</string>
-	<string name="contacts_section_facebook_invite_description">Préviens tes amis une fois par jour</string>
 	<string name="contacts_section_facebook_syncing">Synchronisation en cours</string>
 	<string name="contacts_section_facebook_notifying">Notifications en cours</string>
 	<string name="contacts_section_facebook_next_sync">Notifiez-les encore dans %1$s</string>
-	<string name="contacts_section_addressbook_sync_disabled">Contacts non synchronisés</string>
-	<string name="contacts_section_addressbook_sync_enabled">Contacts synchronisés</string>
-	<string name="contacts_section_addressbook_sync_title">Synchronisation automatique des contacts</string>
 	<string name="contacts_section_addressbook_sync_description">Synchronise automatiquement\ntes contacts</string>
 	<string name="contacts_section_addressbook_syncing">Synchronisation</string>
 	<string name="contacts_section_addressbook_empty">Plus aucun contact à inviter</string>
@@ -74,11 +68,9 @@
 	<string name="invitation_sms_error_parse_number_message">%1$s\n\nCe numéro de téléphone n\'inclue pas de code pays. Nous avons essayé d\'ajouter %2$s mais ça n\'a pas fonctionner. Souhaitez-vous jeter un oeil ?</string>
 	<string name="invitation_sms_error_parse_number_action_edit">Corriger le numéro</string>
 	<string name="invitation_sms_error_parse_number_action_use">Utiliser sans corriger</string>
-	<string name="invitation_sms_invite_friend"></string>
 	
 	<!-- Tribe -->
 	<string name="tribe_gesture_close_text">Glisser vers le bas pour fermer</string>
-	<string name="tribe_gesture_reply_text"></string>
 	<string name="tribe_gesture_reply_close_text">Retour au message</string>
 	<string name="tribe_distance_nearby">Proche</string>
 	<string name="tribe_snooze_title">Reporter à plus tard</string>
@@ -86,7 +78,6 @@
 	<string name="tribe_snooze_6_hours_title">Dans 6 heures</string>
 	<string name="tribe_snooze_tomorrow_title">Demain</string>
 	<string name="tribe_snooze_this_weekend_title">Ce week-end</string>
-	<string name="tribe_empty_list">Uh oh.. Le téléchargement des messages n\'a pas fonctionné. Réessayez dans 30s.</string>
 	<string name="tribe_more_add_friend">Ajouter en ami</string>
 	<string name="tribe_more_add_friend_success">Ajouté aux amis</string>
 	<string name="tribe_more_save">Sauvegarder dans Bibliothèque</string>
@@ -95,7 +86,6 @@
 	<string name="tribe_more_set_speed_1x">Diminuer la vitesse (1x)</string>
 	<string name="tribe_more_set_speed_2x">Augmenter la vitesse (2x)</string>
 	<string name="tribe_more_set_language">Mettre à jour la langue des sous-titres</string>
-	<string name="tribe_distance_menu_directions">Se rendre à cet endroit</string>
 	<string name="tribe_metadata_activate_location">Location</string>
 	<string name="tribe_metadata_get_directions">Itinéraire</string>
 	<string name="tribe_event_saved">Ajouté au calendrier</string>
@@ -132,17 +122,17 @@
 	<string name="grid_menu_friendship_report_success">Signalé !</string>
 	<string name="grid_menu_friendship_clear_tribes">Effacer vos messages</string>
 	<string name="grid_menu_select_language">Langues de sous-titres</string>
+	<string name="grid_menu_group_mute">Désactiver notifications</string>
+	<string name="grid_menu_group_unmute">Activer notifications</string>
+	<string name="grid_menu_group_mute_confirm">Confirmez-vous ?</string>
 	
 	<!-- Chat -->
-	<string name="chat_tutorial_content">Discutez ici si vous n\'êtes pas en mesure d\'envoyer une vidéo ou si vous avez besoin d\'envoyer une address, un numéro de téléphone ou un nom d\'utilisateur.</string>
 	<string name="chat_tutorial_statuses_title">Statuts des messages</string>
 	<string name="chat_status_sending">Envoi en cours</string>
 	<string name="chat_status_sent">Envoyé</string>
 	<string name="chat_status_read_partly">Lu par une partie des destinataires</string>
 	<string name="chat_status_read">Lu par tous les destinataires</string>
 	<string name="chat_status_error">Pas de réseau</string>
-	<string name="chat_caption_photo">Image de l\'album photo</string>
-	<string name="chat_caption_video">Vidéo de l\'album photo</string>
 	<string name="chat_text_placeholder">Message...</string>
 	<string name="chat_date_today">Aujourd\'hui</string>
 	<string name="chat_author_you">Vous</string>
@@ -183,20 +173,12 @@
 	<string name="group_private_title">Privé</string>
 	<string name="group_private_description">Groupe fermés pour vos conversations privées</string>
 	<string name="group_private_create">Créer un groupe privé</string>
-	<string name="group_private_popup_title">Pars à l\'aventure\navec les groupes privés !</string>
-	<string name="group_private_popup_title_description">Groupe ouvert que tout le monde peut rejoindre</string>
-	<string name="group_private_popup_done">Super!</string>
 	<string name="group_public_title">Public</string>
 	<string name="group_public_description">Groupe public, tout le monde pourra le rejoindre</string>
 	<string name="group_public_create">Créer un groupe public</string>
-	<string name="group_public_popup_title">Pars à l\'aventure\navec les groupes publics !</string>
-	<string name="group_public_popup_title_description">Chat about hot topics, current, events, sports, music, and more !</string>
-	<string name="group_public_popup_done">Super!</string>
 	<string name="group_search_friends_placeholder">Rechercher vos amis</string>
-	<string name="group_private_link_description">Ce lien expire au bout d\'1h</string>
 	<string name="group_private_link_popup_title">Il reste seulement %1$s !</string>
 	<string name="group_private_link_popup_description">Choisis où envoyer ce lien\ntemporaire à tes amis !</string>
-	<string name="group_public_link_description">Astuce : Vous pouvez ajouter des emojis</string>
 	<string name="group_invalid_infos_error_message">N\'oubliez pas de nommer votre groupe</string>
 	<string name="group_valid_infos_message">Ajoutez des members une fois le groupe créé</string>
 	<string name="group_button_share">Lien magique pour inviter via ...</string>
@@ -205,12 +187,10 @@
 	<string name="group_button_share_deleting">Suppression en cours...</string>
 	<string name="group_share_description">Envoyez un lien en dehors de l\'app</string>
 	<string name="group_share_description_expiration">Ce lien sera supprimé dans %1$s</string>
-	<string name="group_button_create">Créer</string>
 	<string name="group_button_creating">Création en cours...</string>
 	<string name="group_empty_list">Pas d\'autres amis à ajouter à ce groupe</string>
 	
 	<!-- Group Infos -->
-	<string name="group_infos_title">Détails du groupe</string>
 	<string name="group_infos_add_new_members_placeholder">Ajouter de nouveaux membres</string>
 	<string name="group_infos_empty_list">Pas d\'autres amis à ajouter à ce groupe</string>
 	<string name="group_infos_error_edit_not_admin">Uniquement les admins peuvent éditer un groupe</string>
@@ -272,7 +252,6 @@
 	<string name="settings_rate_subtitle">Le moyen le plus simple de nous envoyer du love.</string>
 	<string name="settings_blocked_title">Contacts bloqués</string>
 	<string name="settings_blocked_subtitle">Retrouvez la liste des contacts que vous avez bloqué</string>
-	<string name="settings_section_exit">Sortie</string>
 	<string name="settings_logout_title">Déconnexion</string>
 	<string name="settings_logout_subtitle">Déconnecter ce compte de ce terminal.</string>
 	<string name="settings_logout_confirm_message">Êtes-vous sûr de vouloir déconnecter ce compte de ce terminal ?</string>
@@ -289,7 +268,6 @@
 	<string name="onboarding_step_phone">Entre ton numéro de téléphone pour démarrer.</string>
 	<string name="onboarding_step_code">Nous venons de t\'envoyer un code par SMS.</string>
 	<string name="onboarding_phone_number">Numéro de téléphone</string>
-	<string name="onboarding_code">Code</string>
 	<string name="onboarding_connected">Connecté</string>
 	<string name="onboarding_user_title">Hello ! Préparez-vous.</string>
 	<string name="onboarding_user_avatar_library">Bibliothèque</string>
@@ -405,9 +383,6 @@
 	
 	<!-- TribeLocationPopup -->
 	<string name="tribe_location_popup_population">Habitants</string>
-	<string name="tribe_location_popup_directions">Itinéraire</string>
-	<string name="tribe_location_popup_no_temperature">Temperature inconnue</string>
-	<string name="tribe_location_popup_no_population">Population inconnue</string>
 	
 	<!-- TribeLevelPopup -->
 	<string name="tribe_level_popup_late">Tu es en retard !</string>
@@ -416,8 +391,6 @@
 	<string name="tribe_level_popup_advance">D\'avance</string>
 	
 	<!-- TribeEventPopup -->
-	<string name="tribe_event_popup_title">Titre</string>
-	<string name="tribe_event_popup_title_default">Nouvel évènement</string>
 	<string name="tribe_event_popup_date">Date</string>
 	<string name="tribe_event_popup_start">De</string>
 	<string name="tribe_event_popup_end">À</string>

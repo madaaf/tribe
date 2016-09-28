@@ -208,7 +208,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         }
 
         if (!tribe.isDownloadPending()) {
-            mediaPlayer = new TribeMediaPlayer.TribeMediaPlayerBuilder(getContext(), FileUtils.getPathForId(tribe.getId(), FileUtils.VIDEO))
+            mediaPlayer = new TribeMediaPlayer.TribeMediaPlayerBuilder(getContext(), FileUtils.getPathForId(getContext(), tribe.getId(), FileUtils.VIDEO))
                     .autoStart(autoStart)
                     .looping(true)
                     .mute(false)

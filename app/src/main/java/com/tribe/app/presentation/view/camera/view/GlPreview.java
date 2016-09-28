@@ -192,7 +192,7 @@ public class GlPreview extends GLSurfaceView implements Preview, Camera.PictureC
     public void startRecording(String fileId, AudioVisualizerCallback visualizerCallback) {
         if (muxerWrapper == null) {
             try {
-                muxerWrapper = new TribeMuxerWrapper(fileId);
+                muxerWrapper = new TribeMuxerWrapper(getContext(), fileId);
                 if (visualizerCallback == null) {
                     mediaVideoEncoder = new MediaVideoEncoder(getContext(), muxerWrapper);
                     queueEvent(() -> renderer.setMediaVideoEncoder(mediaVideoEncoder));

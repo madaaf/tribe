@@ -168,7 +168,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
         subscriptions.add(viewTribePager.onClickTapToCancel()
                 .subscribe(friendship -> {
-                    FileUtils.delete(currentTribe.getLocalId(), FileUtils.VIDEO);
+                    FileUtils.delete(context(), currentTribe.getLocalId(), FileUtils.VIDEO);
                     tribePresenter.deleteTribe(currentTribe);
                     currentTribe = null;
                 }));
@@ -206,7 +206,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
         subscriptions.add(viewTribePager.onErrorTribe()
                 .subscribe(tribeMessage -> {
-                    FileUtils.delete(tribeMessage.getLocalId(), FileUtils.VIDEO);
+                    FileUtils.delete(context(), tribeMessage.getLocalId(), FileUtils.VIDEO);
                     tribeMessage.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
                     tribePresenter.downloadMessages(tribeMessage);
                 }));

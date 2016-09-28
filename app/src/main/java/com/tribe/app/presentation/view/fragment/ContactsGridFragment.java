@@ -105,8 +105,6 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.getComponent(UserComponent.class).inject(this);
-        this.currentUser = getCurrentUser();
     }
 
     @Override
@@ -197,6 +195,9 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
     }
 
     private void init() {
+        this.getComponent(UserComponent.class).inject(this);
+        this.currentUser = getCurrentUser();
+
         RxTextView.textChanges(editTextSearchContact).map(CharSequence::toString)
                 .doOnNext(s -> {
                     if (StringUtils.isEmpty(s)) {

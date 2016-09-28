@@ -70,7 +70,7 @@ public abstract class SendTribePresenter implements Presenter {
 
     public void deleteTribe(TribeMessage... tribeList) {
         for (TribeMessage tribe : tribeList) {
-            FileUtils.delete(tribe.getLocalId(), FileUtils.VIDEO);
+            FileUtils.delete(getView().context(), tribe.getLocalId(), FileUtils.VIDEO);
 
             if (tribeDeleteSubscriber == null) {
                 tribeDeleteSubscriber = new TribeDeleteSubscriber();
@@ -96,7 +96,7 @@ public abstract class SendTribePresenter implements Presenter {
                                 boolean shouldDownload = false;
 
                                 JobStatus jobStatus = jobManager.getJobStatus(message.getLocalId());
-                                File file = FileUtils.getFile(message.getLocalId(), FileUtils.VIDEO);
+                                File file = FileUtils.getFile(getView().context(), message.getLocalId(), FileUtils.VIDEO);
 
                                 if (jobStatus.equals(JobStatus.UNKNOWN) && (!file.exists() || file.length() == 0)
                                         && !message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADED)) {

@@ -135,7 +135,7 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
             profileInfoPresenter.lookupUsername(s);
         }));
 
-        subscriptions.add(profileInfoView.onDisplayNameInput().subscribe(s -> refactorNext()));
+        subscriptions.add(profileInfoView.onInfoValid().subscribe(isValid -> refactorNext()));
     }
 
     /**

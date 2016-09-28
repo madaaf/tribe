@@ -48,6 +48,7 @@
             android:textColorHint="@color/black.opacity.40"
             android:singleLine="true"
             android:imeOptions="actionDone"
+            android:inputType="textCapWords"
             />
 
         <ImageView
@@ -84,11 +85,11 @@
             android:background="@null"
             android:gravity="center"
             android:hint="@string/onboarding_user_username_placeholder"
-            style="@style/Title.1.Black"
+            style="@style/Title.1.Blue"
             android:textColorHint="@color/black.opacity.40"
             android:singleLine="true"
             android:imeOptions="actionDone"
-            android:digits="abcdefghijklmnopqrstuvwxyz1234567890"
+            android:inputType="textNoSuggestions"
             />
 
         <ImageView

@@ -37,7 +37,7 @@ public abstract class DownloadVideoJob extends BaseJob {
 
     @Override
     public void onRun() throws Throwable {
-        File file = FileUtils.getFile(getFileId(), FileUtils.VIDEO);
+        File file = FileUtils.getFile(getApplicationContext(), getFileId(), FileUtils.VIDEO);
 
         if (file.exists() && file.length() > 0) throw new FileAlreadyExists();
 
@@ -58,7 +58,7 @@ public abstract class DownloadVideoJob extends BaseJob {
 
     @Override
     protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
-        File file = FileUtils.getFile(getFileId(), FileUtils.VIDEO);
+        File file = FileUtils.getFile(getApplicationContext(), getFileId(), FileUtils.VIDEO);
         setStatus(file.exists() && file.length() > 0 ? MessageDownloadingStatus.STATUS_DOWNLOADED : MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
     }
 
@@ -69,7 +69,7 @@ public abstract class DownloadVideoJob extends BaseJob {
 
     private boolean writeResponseBodyToDisk(ResponseBody body) {
         try {
-            File file = FileUtils.getFile(getFileId(), FileUtils.VIDEO);
+            File file = FileUtils.getFile(getApplicationContext(), getFileId(), FileUtils.VIDEO);
 
             InputStream inputStream = null;
             OutputStream outputStream = null;

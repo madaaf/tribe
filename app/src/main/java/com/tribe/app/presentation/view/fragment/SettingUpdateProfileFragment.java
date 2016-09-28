@@ -56,7 +56,7 @@ public class SettingUpdateProfileFragment extends BaseFragment {
 
     @Override
     public void onDestroy() {
-        unbinder.unbind();
+        if (unbinder != null) unbinder.unbind();
 
         if (subscriptions.hasSubscriptions()) {
             subscriptions.unsubscribe();

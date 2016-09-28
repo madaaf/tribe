@@ -59,7 +59,7 @@ public class UpdateMessagesVideoErrorStatusJob extends BaseJob {
             if (chatRealm.getMessageDownloadingStatus() != null && chatRealm.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADING) &&
                     jobManager.getJobStatus(chatRealm.getLocalId()).equals(JobStatus.UNKNOWN)) {
                 values.add(Pair.create(ChatRealm.MESSAGE_DOWNLOADING_STATUS, MessageDownloadingStatus.STATUS_TO_DOWNLOAD));
-                FileUtils.delete(chatRealm.getLocalId(), FileUtils.VIDEO);
+                FileUtils.delete(getApplicationContext(), chatRealm.getLocalId(), FileUtils.VIDEO);
             }
 
             chatUpdates.put(chatRealm.getLocalId(), values);

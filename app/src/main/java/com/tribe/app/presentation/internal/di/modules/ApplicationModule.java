@@ -150,8 +150,8 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    RxContacts provideRxContacts(Context context, UserRealm userRealm, PhoneUtils phoneUtils) {
-        return new RxContacts(context, userRealm, phoneUtils);
+    RxContacts provideRxContacts(Context context, User user, PhoneUtils phoneUtils) {
+        return new RxContacts(context, user, phoneUtils);
     }
 
     @Provides
@@ -257,8 +257,8 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    FileUtils provideFileUtils(Context context) {
-        return new FileUtils(context);
+    FileUtils provideFileUtils() {
+        return new FileUtils();
     }
 
     @Provides

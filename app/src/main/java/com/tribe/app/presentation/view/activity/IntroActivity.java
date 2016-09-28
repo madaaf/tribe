@@ -12,10 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
+import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -75,6 +78,14 @@ public class IntroActivity extends BaseActivity {
     @Inject
     User currentUser;
 
+    @Inject
+    @LastMessageRequest
+    Preference<String> lastMessageRequest;
+
+    @Inject
+    @LastUserRequest
+    Preference<String> lastUserRequest;
+
     @BindView(R.id.viewPager)
     CustomViewPager viewPager;
 
@@ -92,6 +103,9 @@ public class IntroActivity extends BaseActivity {
         initUi();
         initDependencyInjector();
         initViewPager();
+
+        lastMessageRequest.set("");
+        lastUserRequest.set("");
     }
 
     @Override
@@ -148,11 +162,13 @@ public class IntroActivity extends BaseActivity {
         viewPager.setAdapter(introViewPagerAdapter);
         viewPager.setOffscreenPageLimit(4);
         viewPager.setScrollDurationFactor(2f);
+
         if (currentUser == null || StringUtils.isEmpty(currentUser.getUsername())) {
             viewPager.setCurrentItem(PAGE_INTRO);
         } else if (currentUser.getFriendshipList().size() == 0) {
             viewPager.setCurrentItem(PAGE_ACCESS);
         }
+
         viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_NONE);
         viewPager.setPageTransformer(false, new IntroPageTransformer());
         viewPager.setSwipeable(false);

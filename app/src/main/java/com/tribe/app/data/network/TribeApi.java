@@ -46,6 +46,10 @@ public interface TribeApi {
 
     @FormUrlEncoded
     @POST("/graphql")
+    Observable<List<Installation>> getInstallList(@Field("query") String query);
+
+    @FormUrlEncoded
+    @POST("/graphql")
     Observable<Installation> removeInstall(@Field("query") String query);
 
     @FormUrlEncoded

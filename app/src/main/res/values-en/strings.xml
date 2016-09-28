@@ -4,7 +4,6 @@
 	<string name="app_name">Tribe</string>
 	
 	<!-- Actions -->
-	<string name="action_ok">OK</string>
 	<string name="action_cancel">Cancel</string>
 	<string name="action_delete">Delete</string>
 	<string name="action_done">Done</string>
@@ -19,6 +18,7 @@
 	<string name="error_no_network">Oops &#128561;\nNo network!</string>
 	
 	<!-- Image Picker -->
+	<string name="image_picker_title">Pick an avatar</string>
 	<string name="image_picker_camera">Selfie camera</string>
 	<string name="image_picker_library">Camera roll</string>
 	
@@ -26,18 +26,12 @@
 	<string name="contacts_search_placeholder">Search for a friend</string>
 	<string name="contacts_share_profile_button">Share your handle</string>
 	<string name="contacts_share_profile_description">Spread the word</string>
-	<string name="contacts_section_facebook_sync_disabled">Facebook friends aren’t synced</string>
-	<string name="contacts_section_facebook_sync_enabled">Facebook friends are synced</string>
 	<string name="contacts_section_facebook_sync_title">Synchronize friends</string>
 	<string name="contacts_section_facebook_sync_description">Facebook invites</string>
 	<string name="contacts_section_facebook_invite_title">Notify missing friends</string>
-	<string name="contacts_section_facebook_invite_description">Ping friends once every 24h</string>
 	<string name="contacts_section_facebook_syncing">Syncing</string>
 	<string name="contacts_section_facebook_notifying">Notifying</string>
 	<string name="contacts_section_facebook_next_sync">Notify them again in %1$s</string>
-	<string name="contacts_section_addressbook_sync_disabled">Address book isn’t synced</string>
-	<string name="contacts_section_addressbook_sync_enabled">Address book is synced</string>
-	<string name="contacts_section_addressbook_sync_title">Address book Auto-Sync</string>
 	<string name="contacts_section_addressbook_sync_description">Automatically sync your Address Book contacts when they join</string>
 	<string name="contacts_section_addressbook_syncing">Syncing</string>
 	<string name="contacts_section_addressbook_empty">No more contacts to invite</string>
@@ -74,11 +68,9 @@
 	<string name="invitation_sms_error_parse_number_message">%1$s\n\nThis contact didn\'t have a country prefix. We tried to add %2$s but it didn\'t work. Please manually edit</string>
 	<string name="invitation_sms_error_parse_number_action_edit">Fix the number</string>
 	<string name="invitation_sms_error_parse_number_action_use">Use it anyway</string>
-	<string name="invitation_sms_invite_friend"></string>
 	
 	<!-- Tribe -->
 	<string name="tribe_gesture_close_text">Swipe down to close</string>
-	<string name="tribe_gesture_reply_text"></string>
 	<string name="tribe_gesture_reply_close_text">Back to message</string>
 	<string name="tribe_distance_nearby">Nearby</string>
 	<string name="tribe_snooze_title">Snooze it</string>
@@ -86,7 +78,6 @@
 	<string name="tribe_snooze_6_hours_title">In 6 hours</string>
 	<string name="tribe_snooze_tomorrow_title">Tomorrow</string>
 	<string name="tribe_snooze_this_weekend_title">This weekend</string>
-	<string name="tribe_empty_list">Uh oh... Something went wrong while downloading messages. Try again in 30s.</string>
 	<string name="tribe_more_add_friend">Add as friend</string>
 	<string name="tribe_more_add_friend_success">Added as a friend</string>
 	<string name="tribe_more_save">Save in Camera roll</string>
@@ -95,7 +86,6 @@
 	<string name="tribe_more_set_speed_1x">Decrease speed (1x)</string>
 	<string name="tribe_more_set_speed_2x">Increase speed (2x)</string>
 	<string name="tribe_more_set_language">Change subtitles language</string>
-	<string name="tribe_distance_menu_directions">Get me there</string>
 	<string name="tribe_metadata_activate_location">Location</string>
 	<string name="tribe_metadata_get_directions">Directions</string>
 	<string name="tribe_event_saved">Added to calendar</string>
@@ -132,17 +122,17 @@
 	<string name="grid_menu_friendship_report_success">Reported</string>
 	<string name="grid_menu_friendship_clear_tribes">Clear messages</string>
 	<string name="grid_menu_select_language">Subtitles language</string>
+	<string name="grid_menu_group_mute">Deactivate notifications</string>
+	<string name="grid_menu_group_unmute">Activate notifications</string>
+	<string name="grid_menu_group_mute_confirm">Please confirm</string>
 	
 	<!-- Chat -->
-	<string name="chat_tutorial_content">Chat here if you can\'t send a video or if you need to text something such as an address, a phone or a handle.</string>
 	<string name="chat_tutorial_statuses_title">Message statuses</string>
 	<string name="chat_status_sending">Sending</string>
 	<string name="chat_status_sent">Sent</string>
 	<string name="chat_status_read_partly">Read by part of the recipients</string>
 	<string name="chat_status_read">Read by everyone</string>
 	<string name="chat_status_error">No network</string>
-	<string name="chat_caption_photo">Image from camera roll</string>
-	<string name="chat_caption_video">Video from camera roll</string>
 	<string name="chat_text_placeholder">Message...</string>
 	<string name="chat_date_today">Today</string>
 	<string name="chat_author_you">You</string>
@@ -183,20 +173,12 @@
 	<string name="group_private_title">Private</string>
 	<string name="group_private_description">Closed groups for your private conversations</string>
 	<string name="group_private_create">Create a private group</string>
-	<string name="group_private_popup_title">Go into the wild\nwith Private Groups!</string>
-	<string name="group_private_popup_title_description">Open conversations that anyone can join</string>
-	<string name="group_private_popup_done">Exciting!</string>
 	<string name="group_public_title">Public</string>
 	<string name="group_public_description">Accessible chats for anyone to join</string>
 	<string name="group_public_create">Create public group</string>
-	<string name="group_public_popup_title">Go into the wild\nwith Public Groups!</string>
-	<string name="group_public_popup_title_description">Chat about hot topics, current events, sports, music, and more!</string>
-	<string name="group_public_popup_done">Exciting!</string>
 	<string name="group_search_friends_placeholder">Search friends</string>
-	<string name="group_private_link_description">This link will expire in 1 hr</string>
 	<string name="group_private_link_popup_title">Only %1$s left!</string>
 	<string name="group_private_link_popup_description">Select where to send this\ntemporary link to your friends!</string>
-	<string name="group_public_link_description">Tips: You can even include emojis</string>
 	<string name="group_invalid_infos_error_message">Be sure to name your group</string>
 	<string name="group_valid_infos_message">Add members after creating the group</string>
 	<string name="group_button_share">Magic link to send via...</string>
@@ -205,12 +187,10 @@
 	<string name="group_button_share_deleting">Deleting link...</string>
 	<string name="group_share_description">Send a group link outside the app</string>
 	<string name="group_share_description_expiration">This sharing link will be deleted in %1$s</string>
-	<string name="group_button_create">Create</string>
 	<string name="group_button_creating">Creating group...</string>
 	<string name="group_empty_list">No friends to add to the group</string>
 	
 	<!-- Group Infos -->
-	<string name="group_infos_title">Group details</string>
 	<string name="group_infos_add_new_members_placeholder">Add new members</string>
 	<string name="group_infos_empty_list">No other friends to add to the group</string>
 	<string name="group_infos_error_edit_not_admin">Only admins can edit the group</string>
@@ -272,7 +252,6 @@
 	<string name="settings_rate_subtitle">We appreciate the love that you give us!</string>
 	<string name="settings_blocked_title">Blocked contacts</string>
 	<string name="settings_blocked_subtitle">Get access to the list of contacts you have blocked.</string>
-	<string name="settings_section_exit">Exit</string>
 	<string name="settings_logout_title">Log out</string>
 	<string name="settings_logout_subtitle">Disconnect my account from this device.</string>
 	<string name="settings_logout_confirm_message">Are you sure you want to log out?</string>
@@ -289,7 +268,6 @@
 	<string name="onboarding_step_phone">Use your phone number to connect</string>
 	<string name="onboarding_step_code">We just texted you a verification code.</string>
 	<string name="onboarding_phone_number">Phone number</string>
-	<string name="onboarding_code">Code</string>
 	<string name="onboarding_connected">Connected</string>
 	<string name="onboarding_user_title">Hi there! Set yourself up.</string>
 	<string name="onboarding_user_avatar_library">Camera roll</string>
@@ -405,9 +383,6 @@
 	
 	<!-- TribeLocationPopup -->
 	<string name="tribe_location_popup_population">Population</string>
-	<string name="tribe_location_popup_directions">Get directions</string>
-	<string name="tribe_location_popup_no_temperature">No temperature</string>
-	<string name="tribe_location_popup_no_population">Unknown population</string>
 	
 	<!-- TribeLevelPopup -->
 	<string name="tribe_level_popup_late">You\'re late!</string>
@@ -416,8 +391,6 @@
 	<string name="tribe_level_popup_advance">In advance</string>
 	
 	<!-- TribeEventPopup -->
-	<string name="tribe_event_popup_title">Title</string>
-	<string name="tribe_event_popup_title_default">New event</string>
 	<string name="tribe_event_popup_date">Date</string>
 	<string name="tribe_event_popup_start">From</string>
 	<string name="tribe_event_popup_end">To</string>

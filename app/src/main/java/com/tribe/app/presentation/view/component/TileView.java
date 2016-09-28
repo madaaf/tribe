@@ -381,7 +381,7 @@ public class TileView extends SquareFrameLayout {
                         && (spring.getCurrentValue() == TAP_TO_CANCEL_SPRING_VALUE || spring.getCurrentValue() == REPLY_TAP_TO_CANCEL)
                         && currentTribeMode != null && currentTribeMode.equals(CameraWrapper.VIDEO)
                         && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    playerView.createPlayer(FileUtils.getPathForId(currentTribe.getLocalId(), FileUtils.VIDEO));
+                    playerView.createPlayer(FileUtils.getPathForId(getContext(), currentTribe.getLocalId(), FileUtils.VIDEO));
 
                     if (currentTribeMode.equals(CameraWrapper.VIDEO)) {
                         subscriptionVideoStarted = playerView.videoStarted()

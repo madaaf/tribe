@@ -275,10 +275,22 @@
         %1$s: markMessageAsSeen(id: \"%2$s\")
     </string>
 
+    <string name="installs" translatable="false">
+        {
+            user {
+                installs {
+                    id
+                    token
+                }
+            }
+        }
+    </string>
+
     <string name="install.create" translatable="false">
         mutation {
             createInstall(install: %1$s) {
                 id
+                token
             }
         }
     </string>
@@ -287,6 +299,7 @@
         mutation {
             updateInstall(id: \"%1$s\", install: %2$s) {
                 id
+                token
             }
         }
     </string>

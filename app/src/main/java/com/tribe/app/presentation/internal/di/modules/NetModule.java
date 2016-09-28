@@ -26,6 +26,7 @@ import com.tribe.app.data.network.deserializer.CreateFriendshipDeserializer;
 import com.tribe.app.data.network.deserializer.DateDeserializer;
 import com.tribe.app.data.network.deserializer.GroupDeserializer;
 import com.tribe.app.data.network.deserializer.HowManyFriendsDeserializer;
+import com.tribe.app.data.network.deserializer.InstallsDeserializer;
 import com.tribe.app.data.network.deserializer.LookupDeserializer;
 import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
 import com.tribe.app.data.network.deserializer.NewMembershipDeserializer;
@@ -133,6 +134,7 @@ public class NetModule {
                 .registerTypeAdapter(new TypeToken<List<Integer>>(){}.getType(), new HowManyFriendsDeserializer())
                 .registerTypeAdapter(SearchResultRealm.class, new SearchResultDeserializer())
                 .registerTypeAdapter(MembershipRealm.class, new NewMembershipDeserializer())
+                .registerTypeAdapter(new TypeToken<List<Installation>>(){}.getType(), new InstallsDeserializer())
                 .registerTypeHierarchyAdapter(Collection.class, new CollectionAdapter())
                 .create();
     }

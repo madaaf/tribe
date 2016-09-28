@@ -105,10 +105,6 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
     private String filter = null;
     private boolean shouldReloadGrid = false;
 
-    public HomeGridFragment() {
-        setRetainInstance(true);
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -121,8 +117,6 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.getComponent(UserComponent.class).inject(this);
-        this.currentUser = getCurrentUser();
     }
 
     @Override
@@ -288,6 +282,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
     }
 
     private void init() {
+        this.getComponent(UserComponent.class).inject(this);
+        this.currentUser = getCurrentUser();
     }
 
     private void initResources() {
