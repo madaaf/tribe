@@ -38,6 +38,8 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.GroupPresenter;
 import com.tribe.app.presentation.mvp.view.GroupView;
+import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
+import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.GroupInfoActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
@@ -123,6 +125,9 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     @Inject
     GroupPresenter groupPresenter;
+
+    @Inject
+    RxImagePicker rxImagePicker;
 
     // VARIABLES
     private BottomSheetDialog dialogCamera;
@@ -600,11 +605,22 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                 .map((View labelView) -> cameraTypeAdapter.getItemAtPosition((Integer) labelView.getTag(R.id.tag_position)))
                 .subscribe(labelType -> {
                     CameraType cameraType = (CameraType) labelType;
+//                    if (cameraType.getCameraTypeDef().equals(CameraType.OPEN_CAMERA)) {
+//                        navigator.getImageFromCamera(getActivity(), HomeActivity.OPEN_CAMERA_RESULT);
+//                    }
+//                    if (cameraType.getCameraTypeDef().equals(CameraType.OPEN_PHOTOS)) {
+//                        navigator.getImageFromCameraRoll(getActivity(), HomeActivity.OPEN_GALLERY_RESULT);
+//                    }
                     if (cameraType.getCameraTypeDef().equals(CameraType.OPEN_CAMERA)) {
-                        navigator.getImageFromCamera(getActivity(), HomeActivity.OPEN_CAMERA_RESULT);
-                    }
-                    if (cameraType.getCameraTypeDef().equals(CameraType.OPEN_PHOTOS)) {
-                        navigator.getImageFromCameraRoll(getActivity(), HomeActivity.OPEN_GALLERY_RESULT);
+                        subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA)
+                                .subscribe(uri -> {
+                                    groupInfoView.setGroupPictureFromUrl(uri.toString());
+                                }));
+                    } else if (cameraType.getCameraTypeDef().equals(CameraType.OPEN_PHOTOS)) {
+                        subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY)
+                                .subscribe(uri -> {
+                                    groupInfoView.setGroupPictureFromUrl(uri.toString());
+                                }));
                     }
                     dismissDialogSheetCamera();
                 }));
