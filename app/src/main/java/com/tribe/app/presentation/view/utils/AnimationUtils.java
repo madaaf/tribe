@@ -193,6 +193,13 @@ public class AnimationUtils {
         view.startAnimation(scaleAnimation);
     }
 
+    public static void expandScale(View view, int duration) {
+        ScaleAnimation scaleAnimation = new ScaleAnimation(1f, 1f, 0f, 1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0f);
+        scaleAnimation.setDuration(duration);
+        scaleAnimation.setFillAfter(true);
+        view.startAnimation(scaleAnimation);
+    }
+
     public static void animateBottomMargin(View view, int margin, int duration) {
         ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         ValueAnimator animator = ValueAnimator.ofInt(lp.bottomMargin, margin);

@@ -110,7 +110,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_bar_height"
         android:gravity="center"
-        android:text="@string/group_private_popup_done"
+        android:text="@string/action_done"
         style="@style/Title.2.Black"
         />
 

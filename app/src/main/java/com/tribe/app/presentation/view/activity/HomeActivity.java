@@ -464,6 +464,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         finish();
     }
 
+    public void goToHome() {
+        viewPager.setCurrentItem(GRID_FRAGMENT_PAGE, true);
+    }
+
     @OnClick(R.id.imgNavGroups)
     public void goToGroups() {
         if (!isRecording) viewPager.setCurrentItem(GROUPS_FRAGMENT_PAGE, true);

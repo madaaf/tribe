@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -37,6 +38,8 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.GroupPresenter;
 import com.tribe.app.presentation.mvp.view.GroupView;
+import com.tribe.app.presentation.view.activity.BaseActivity;
+import com.tribe.app.presentation.view.activity.GroupInfoActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.FriendAdapter;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
@@ -280,6 +283,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         }));
         subscriptions.add(groupSuggestionsView.groupSuggestionClicked().subscribe(suggestionName -> {
             groupInfoView.setGroupName(suggestionName);
+            groupInfoView.bringGroupNameDown(animDuration);
+            groupSuggestionsView.setVisibility(View.INVISIBLE);
         }));
     }
 
@@ -367,6 +372,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         }));
 
         subscriptions.add(createInviteView.createPressed().subscribe(aVoid -> {
+            groupSuggestionsView.setVisibility(View.INVISIBLE);
+            groupInfoView.bringGroupNameDown(animDuration);
             createInviteView.disable();
             groupInfoView.disableButtons();
             groupName = groupInfoView.getGroupName();
@@ -429,13 +436,31 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     /**
      * Animations performed after step 1
      */
-
     private void animSet1() {
         groupInfoView.collapsePrivatePublic(privateGroup, animDuration);
         groupInfoView.collapse(animDuration, getActivity());
         createInviteView.disable();
         createInviteView.setInvite(privateGroup);
         ((HomeActivity) getActivity()).disableNavigation();
+    }
+
+    private void resetCreateGroupView() {
+        groupInfoView.expand(0);
+        groupInfoView.setGroupName("");
+        groupInfoView.bringOutIcons(0);
+        groupInfoView.enableButtons();
+        groupPictureUri = null;
+        createInviteView.disable();
+        createInviteView.setDefault();
+        AnimationUtils.animateHeightCoordinatorLayout(appBarLayout, appBarLayout.getHeight(), appBarLayout.getHeight() + screenUtils.dpToPx(116), 0);
+        groupInfoView.resetPrivatePublic();
+        imageDone.setEnabled(true);
+        createInviteView.setTranslationY(AnimationUtils.TRANSLATION_RESET);
+        layoutInvite.setVisibility(View.INVISIBLE);
+        recyclerViewInvite.setVisibility(View.INVISIBLE);
+        imageDone.setTranslationY(screenUtils.dpToPx(startTranslationDoneIcon));
+        enableScrolling(false);
+        circularProgressView.setVisibility(View.INVISIBLE);
     }
 
     private void animSet2() {
@@ -700,8 +725,15 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     @Override
     public void memberAddedSuccessfully() {
         //TODO: navigate to home fragment
-        // reset view
-        navigator.navigateToHome(getActivity(), false);
+        if (getActivity() instanceof GroupInfoActivity) {
+            Intent resultIntent = new Intent();
+            getActivity().setResult(BaseActivity.RESULT_OK, resultIntent);
+            getActivity().finish();
+        }
+        if (getActivity() instanceof  HomeActivity) {
+            resetCreateGroupView();
+            ((HomeActivity) getActivity()).goToHome();
+        }
     }
 
     @Override
