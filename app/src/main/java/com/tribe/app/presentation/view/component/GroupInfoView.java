@@ -158,6 +158,11 @@ public class GroupInfoView extends FrameLayout {
             imageGoToMembersClicked.onNext(null);
         }));
 
+        subscriptions.add(editTextGroupName.keyBackPressed().subscribe(aVoid -> {
+            bringGroupNameDown(animDuration);
+            isEditingGroupName.onNext(false);
+        }));
+
         editTextGroupName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
@@ -167,6 +172,7 @@ public class GroupInfoView extends FrameLayout {
                 return false;
             }
         });
+
     }
 
     @Override

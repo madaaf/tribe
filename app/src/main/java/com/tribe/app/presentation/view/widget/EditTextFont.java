@@ -19,6 +19,8 @@ import rx.subjects.PublishSubject;
  */
 public class EditTextFont extends EditText {
 
+    PublishSubject<Void> keyBackPressed = PublishSubject.create();
+
     public EditTextFont(Context context) {
         super(context);
     }
@@ -45,5 +47,18 @@ public class EditTextFont extends EditText {
         setTypeface(tf);
         return true;
     }
+
+    @Override
+    public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+            keyBackPressed.onNext(null);
+        }
+        return super.dispatchKeyEvent(event);
+    }
+
+    public Observable<Void> keyBackPressed() {
+        return keyBackPressed;
+    }
+
 
 }
