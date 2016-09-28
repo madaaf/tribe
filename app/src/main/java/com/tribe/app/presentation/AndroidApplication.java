@@ -103,6 +103,6 @@ public class AndroidApplication extends Application {
         applicationComponent.currentUser().clear();
         applicationComponent.tagManager().clear();
 
-        FileUtils.deleteDir(FileUtils.getCacheDir());
+        FileUtils.deleteDir(FileUtils.getCacheDir(getApplicationContext()));
     }
 }

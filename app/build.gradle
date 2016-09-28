@@ -159,6 +159,7 @@ dependencies {
     compile presentationDependencies.multiDex
     compile presentationDependencies.confetti
     compile presentationDependencies.amplitude
+    compile presentationDependencies.imageCropper
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker

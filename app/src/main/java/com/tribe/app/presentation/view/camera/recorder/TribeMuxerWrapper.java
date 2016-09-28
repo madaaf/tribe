@@ -24,8 +24,8 @@ public class TribeMuxerWrapper {
     private boolean isStarted;
     private MediaEncoder videoEncoder, audioEncoder;
 
-    public TribeMuxerWrapper(String fileId) throws IOException {
-        outputPath = FileUtils.generateFile(fileId, FileUtils.VIDEO);
+    public TribeMuxerWrapper(Context context, String fileId) throws IOException {
+        outputPath = FileUtils.generateFile(context, fileId, FileUtils.VIDEO);
         mediaMuxer = new MediaMuxer(outputPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
         encoderCount = startedCount = 0;
         isStarted = false;

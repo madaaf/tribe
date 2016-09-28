@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.utils;
+package com.tribe.app.presentation.utils.mediapicker;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -42,11 +42,9 @@ public class RxImageConverters {
         OutputStream out = new FileOutputStream(file);
         byte[] buf = new byte[10 * 1024];
         int len;
-
         while ((len = in.read(buf)) > 0) {
             out.write(buf, 0, len);
         }
-
         out.close();
         in.close();
     }
@@ -79,7 +77,6 @@ public class RxImageConverters {
                         final String[] imageColumns = {MediaStore.Images.Media.DATA};
 
                         Uri uri;
-
                         if (Environment.getExternalStorageState().equalsIgnoreCase(Environment.MEDIA_MOUNTED)) {
                             uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
                         } else {

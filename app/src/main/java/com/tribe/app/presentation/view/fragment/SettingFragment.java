@@ -210,6 +210,10 @@ public class SettingFragment extends BaseFragment implements SettingView {
             }
         }));
 
+        subscriptions.add(RxView.clicks(settingsAddress).subscribe(aVoid -> {
+            settingPresenter.lookupContacts();
+        }));
+
         subscriptions.add(settingsInvisible.checkedSwitch().subscribe(isChecked -> {
             Bundle bundle = new Bundle();
             bundle.putBoolean(TagManagerConstants.INVISIBLE_MODE_ENABLED, isChecked);
@@ -348,7 +352,7 @@ public class SettingFragment extends BaseFragment implements SettingView {
     }
 
     @Override
-    public void setProfilePic(String profilePicUrl) {
+    public void successUpdateUser(User user) {
 
     }
 
@@ -363,6 +367,11 @@ public class SettingFragment extends BaseFragment implements SettingView {
     @Override
     public void errorFacebookLogin() {
         settingsFacebook.setCheckedSwitch(false);
+    }
+
+    @Override
+    public void usernameResult(Boolean available) {
+
     }
 
     @Override

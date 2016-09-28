@@ -485,7 +485,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
         tribeVideoView.setAutoStart(true);
         tribeVideoView.setSpeedControl(false);
         tribeVideoView.setScaleType(ScalableTextureView.CENTER_CROP);
-        tribeVideoView.createPlayer(message.getContent().contains("content://") ? message.getContent() : FileUtils.getPathForId(message.getId(), FileUtils.VIDEO));
+        tribeVideoView.createPlayer(message.getContent().contains("content://") ? message.getContent() : FileUtils.getPathForId(context(), message.getId(), FileUtils.VIDEO));
         subscriptions.add(tribeVideoView.videoSize().subscribe(videoSize -> {
             this.videoSize = videoSize;
             if (!recyclerViewText.isEnabled()) animateFullScreen(tribeVideoView);

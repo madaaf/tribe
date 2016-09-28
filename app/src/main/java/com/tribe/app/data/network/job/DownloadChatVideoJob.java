@@ -54,7 +54,7 @@ public class DownloadChatVideoJob extends DownloadVideoJob {
 
     @Override
     protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
-        File file = FileUtils.getFile(chatMessage.getId(), FileUtils.VIDEO);
+        File file = FileUtils.getFile(getApplicationContext(), chatMessage.getId(), FileUtils.VIDEO);
 
         setStatus(file.exists() && file.length() > 0 ? MessageDownloadingStatus.STATUS_DOWNLOADED : MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
     }

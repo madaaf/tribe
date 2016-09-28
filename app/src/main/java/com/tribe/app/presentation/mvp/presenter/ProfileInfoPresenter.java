@@ -1,10 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
-import android.util.Pair;
-
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
-import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
@@ -13,36 +10,25 @@ import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.presentation.mvp.view.ProfileInfoView;
+import com.tribe.app.presentation.mvp.view.UpdateUserView;
 import com.tribe.app.presentation.mvp.view.View;
-import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import rx.subscriptions.CompositeSubscription;
-
-public class ProfileInfoPresenter implements Presenter {
+public class ProfileInfoPresenter extends UpdateUserPresenter {
 
     // VIEW ATTACHED
     private ProfileInfoView profileInfoView;
 
     // USECASES
-    private final RxFacebook rxFacebook;
-    private final LookupUsername lookupUsername;
     private final DoRegister doRegister;
-    private final UpdateUser updateUser;
     private final GetCloudUserInfos cloudUserInfos;
 
     // SUBSCRIBERS
-    private CompositeSubscription subscriptions = new CompositeSubscription();
-    private LookupUsernameSubscriber lookupUsernameSubscriber;
     private RegisterSubscriber registerSubscriber;
-    private UpdateUserSubscriber updateUserSubscriber;
     private UserInfoSubscriber userInfoSubscriber;
 
     @Inject
@@ -51,11 +37,8 @@ public class ProfileInfoPresenter implements Presenter {
                                 DoRegister doRegister,
                                 UpdateUser updateUser,
                                 GetCloudUserInfos cloudUserInfos) {
-        super();
-        this.rxFacebook = rxFacebook;
-        this.lookupUsername = lookupUsername;
+        super(updateUser, lookupUsername, rxFacebook);
         this.doRegister = doRegister;
-        this.updateUser = updateUser;
         this.cloudUserInfos = cloudUserInfos;
     }
 
@@ -111,17 +94,13 @@ public class ProfileInfoPresenter implements Presenter {
         }
     }
 
-    public void loadFacebookInfos() {
-        subscriptions.add(rxFacebook.requestInfos().subscribe(new FacebookInfosSubscriber()));
+    @Override
+    protected UpdateUserView getUpdateUserView() {
+        return profileInfoView;
     }
 
-    public void lookupUsername(String username) {
-        if (lookupUsernameSubscriber != null)
-            lookupUsernameSubscriber.unsubscribe();
-
-        lookupUsernameSubscriber = new LookupUsernameSubscriber();
-        lookupUsername.setUsername(username);
-        lookupUsername.execute(lookupUsernameSubscriber);
+    public void loadFacebookInfos() {
+        subscriptions.add(rxFacebook.requestInfos().subscribe(new FacebookInfosSubscriber()));
     }
 
     public void register(String displayName, String username, LoginEntity loginEntity) {
@@ -143,22 +122,6 @@ public class ProfileInfoPresenter implements Presenter {
         cloudUserInfos.execute(new UserInfoSubscriber());
     }
 
-    public void updateUser(String username, String displayName, String pictureUri, String fbid) {
-        if (updateUserSubscriber != null)
-            updateUserSubscriber.unsubscribe();
-
-        List<Pair<String, String>> values = new ArrayList<>();
-        values.add(new Pair<>(UserRealm.DISPLAY_NAME, displayName));
-        values.add(new Pair<>(UserRealm.USERNAME, username));
-        if (!StringUtils.isEmpty(pictureUri))
-            values.add(new Pair<>(UserRealm.PROFILE_PICTURE, pictureUri));
-        values.add(new Pair<>(UserRealm.FBID, fbid));
-
-        updateUserSubscriber = new UpdateUserSubscriber();
-        updateUser.prepare(values);
-        updateUser.execute(new UpdateUserSubscriber());
-    }
-
     private class FacebookInfosSubscriber extends DefaultSubscriber<FacebookEntity> {
 
         @Override
@@ -172,23 +135,6 @@ public class ProfileInfoPresenter implements Presenter {
         @Override
         public void onNext(FacebookEntity facebookEntity) {
             if (facebookEntity != null) profileInfoView.loadFacebookInfos(facebookEntity);
-        }
-    }
-
-    private class LookupUsernameSubscriber extends DefaultSubscriber<Boolean> {
-
-        @Override
-        public void onCompleted() { }
-
-        @Override
-        public void onError(Throwable e) {
-            profileInfoView.usernameResult(false);
-            e.printStackTrace();
-        }
-
-        @Override
-        public void onNext(Boolean available) {
-            profileInfoView.usernameResult(available);
         }
     }
 
@@ -207,26 +153,6 @@ public class ProfileInfoPresenter implements Presenter {
         @Override
         public void onNext(AccessToken accessToken) {
             if (accessToken != null) getUserInfo();
-        }
-    }
-
-    private final class UpdateUserSubscriber extends DefaultSubscriber<User> {
-
-        @Override
-        public void onCompleted() {
-
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-            profileInfoView.hideLoading();
-        }
-
-        @Override
-        public void onNext(User user) {
-            profileInfoView.hideLoading();
-            if (user != null) profileInfoView.goToAccess(user);
         }
     }
 

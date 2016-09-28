@@ -5,8 +5,8 @@ import android.database.Cursor;
 import android.util.Log;
 
 import com.tribe.app.data.realm.ContactABRealm;
-import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 
 import javax.inject.Inject;
@@ -18,8 +18,7 @@ import rx.Subscriber;
 @Singleton
 public class RxContacts {
 
-    private Context context;
-    private String phone;
+    private User user;
     private int countryCode;
     private boolean withPhones;
     private Sorter sorter;
@@ -28,16 +27,13 @@ public class RxContacts {
     private ContactsHelper helper;
 
     @Inject
-    public RxContacts(Context context, UserRealm userRealm, PhoneUtils phoneUtils) {
-        this.context = context;
+    public RxContacts(Context context, User user, PhoneUtils phoneUtils) {
+        this.user = user;
         this.phoneUtils = phoneUtils;
-        this.phone = userRealm.getPhone();
-        this.countryCode = phoneUtils.getCountryCode(phone);
         withPhones = true;
         sorter = Sorter.LAST_TIME_CONTACTED;
         filter = new Filter[] { Filter.HAS_PHONE };
         helper = new ContactsHelper(context, phoneUtils);
-        helper.setCountryCode(countryCode);
     }
 
     private Observable<ContactABRealm> contactsObservable;
@@ -47,6 +43,9 @@ public class RxContacts {
      * @return
      */
     public Observable<ContactABRealm> getContacts() {
+        this.countryCode = phoneUtils.getCountryCode(user.getPhone());
+        helper.setCountryCode(countryCode);
+
         if (contactsObservable == null)
             contactsObservable = Observable.create((Subscriber<? super ContactABRealm> subscriber) -> {
                 emit(null, withPhones, sorter, filter, subscriber);

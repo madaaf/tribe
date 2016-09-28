@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.view.fragment;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,11 +7,14 @@ import android.view.ViewGroup;
 
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.view.activity.SettingActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -32,9 +34,13 @@ public class SettingUpdateProfileFragment extends BaseFragment {
     @BindView(R.id.profileInfoView)
     ProfileInfoView profileInfoView;
 
-    private CompositeSubscription subscriptions = new CompositeSubscription();
+    // VARIABLES
     private Unbinder unbinder;
     private User user;
+
+    // OBSERVABLES
+    private CompositeSubscription subscriptions = new CompositeSubscription();
+    private PublishSubject<String> usernameSearch = PublishSubject.create();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -48,11 +54,23 @@ public class SettingUpdateProfileFragment extends BaseFragment {
         return fragmentView;
     }
 
+    @Override
+    public void onDestroy() {
+        if (unbinder != null) unbinder.unbind();
+
+        if (subscriptions.hasSubscriptions()) {
+            subscriptions.unsubscribe();
+            subscriptions.clear();
+        }
+
+        super.onDestroy();
+    }
+
     private void initUi() {
         user = getCurrentUser();
 
         try {
-            profileInfoView.setUrlProfilePic(user.getProfilePicture());
+            profileInfoView.loadAvatar(user.getProfilePicture());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
@@ -60,13 +78,13 @@ public class SettingUpdateProfileFragment extends BaseFragment {
         profileInfoView.setEditDisplayName(user.getDisplayName());
         profileInfoView.setEditUsername(user.getUsername());
 
-//        subscriptions.add(profileInfoView.infoValid().subscribe(isValid -> {
-//            ((SettingActivity) getActivity()).setImgDoneEnabled(isValid);
-//        }));
-    }
+        subscriptions.add(profileInfoView.onInfoValid().subscribe(isValid -> {
+            ((SettingActivity) getActivity()).setImgDoneEnabled(isValid);
+        }));
 
-    public void setImgProfilePic(Bitmap bitmap, String imgUri) {
-        profileInfoView.setImgProfilePic(bitmap, imgUri);
+        subscriptions.add(profileInfoView.onUsernameInput().subscribe(s -> {
+            usernameSearch.onNext(s);
+        }));
     }
 
     public String getImgUri() {
@@ -81,15 +99,14 @@ public class SettingUpdateProfileFragment extends BaseFragment {
         return profileInfoView.getDisplayName();
     }
 
-    @Override
-    public void onDestroy() {
-        unbinder.unbind();
+    public void setUsernameValid(boolean valid) {
+        profileInfoView.setUsernameValid(valid);
+    }
 
-        if (subscriptions.hasSubscriptions()) {
-            subscriptions.unsubscribe();
-            subscriptions.clear();
-        }
-
-        super.onDestroy();
+    /**
+     * OBSERVABLES
+     */
+    public Observable<String> onUsernameSearch() {
+        return usernameSearch;
     }
 }

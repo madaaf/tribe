@@ -48,7 +48,7 @@ public class UpdateTribeDownloadedJob extends BaseJob {
         for (TribeRealm tribeRealm : tribeRealmList) {
             List<Pair<String, Object>> values = new ArrayList<>();
 
-            File file = FileUtils.getFile(tribeRealm.getId(), FileUtils.VIDEO);
+            File file = FileUtils.getFile(getApplicationContext(), tribeRealm.getId(), FileUtils.VIDEO);
             if (file.exists() && file.length() > 0) {
                 values.add(Pair.create(TribeRealm.MESSAGE_DOWNLOADING_STATUS, MessageDownloadingStatus.STATUS_DOWNLOADED));
             }

@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -46,6 +47,7 @@ import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -219,8 +221,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(bitmap -> {
-                                homeViewPagerAdapter.groupsGridFragment.setPictureUri(Uri.fromFile(FileUtils.bitmapToFile(GROUP_AVATAR, bitmap, this)).toString());
-                                homeViewPagerAdapter.groupsGridFragment.getGroupInfoView().setGroupPicture(bitmap);
+                                homeViewPagerAdapter.getGroupsGridFragment().setPictureUri(Uri.fromFile(FileUtils.bitmapToFile(GROUP_AVATAR, bitmap, this)).toString());
+                                homeViewPagerAdapter.getGroupsGridFragment().getGroupInfoView().setGroupPicture(bitmap);
                             })
             );
         }
@@ -241,8 +243,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(bitmap -> {
-                                homeViewPagerAdapter.groupsGridFragment.setPictureUri(Uri.fromFile(FileUtils.bitmapToFile(GROUP_AVATAR, bitmap, this)).toString());
-                                homeViewPagerAdapter.groupsGridFragment.getGroupInfoView().setGroupPicture(bitmap);
+                                homeViewPagerAdapter.getGroupsGridFragment().setPictureUri(Uri.fromFile(FileUtils.bitmapToFile(GROUP_AVATAR, bitmap, this)).toString());
+                                homeViewPagerAdapter.getGroupsGridFragment().getGroupInfoView().setGroupPicture(bitmap);
                             }));
         }
     }
@@ -554,9 +556,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     public class HomeViewPagerAdapter extends FragmentStatePagerAdapter {
 
         public String[] pagers = new String[]{"Discover", "Home", "Media"};
-        public HomeGridFragment homeGridFragment;
-        public ContactsGridFragment contactsGridFragment;
-        public GroupsGridFragment groupsGridFragment;
+        private WeakReference<HomeGridFragment> homeGridFragment;
+        private WeakReference<ContactsGridFragment> contactsGridFragment;
+        private WeakReference<GroupsGridFragment> groupsGridFragment;
 
         public HomeViewPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
@@ -585,13 +587,13 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             // Save the appropriate reference depending on position
             switch (position) {
                 case 0:
-                    contactsGridFragment = (ContactsGridFragment) createdFragment;
+                    contactsGridFragment = new WeakReference<>((ContactsGridFragment) createdFragment);
                     break;
                 case 1:
-                    homeGridFragment = (HomeGridFragment) createdFragment;
+                    homeGridFragment = new WeakReference<>((HomeGridFragment) createdFragment);
                     break;
                 case 2:
-                    groupsGridFragment = (GroupsGridFragment) createdFragment;
+                    groupsGridFragment = new WeakReference<>((GroupsGridFragment) createdFragment);
                     break;
             }
 
@@ -599,19 +601,24 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         }
 
         public HomeGridFragment getHomeGridFragment() {
-            return homeGridFragment;
+            return homeGridFragment.get();
         }
 
         public ContactsGridFragment getContactsGridFragment() {
-            return contactsGridFragment;
+            return contactsGridFragment.get();
         }
 
         public GroupsGridFragment getGroupsGridFragment() {
-            return groupsGridFragment;
+            return groupsGridFragment.get();
         }
 
         public void setGroupsGridFragment(GroupsGridFragment groupsGridFragment) {
             groupsGridFragment = groupsGridFragment;
+        }
+
+        @Override
+        public Parcelable saveState() {
+            return null;
         }
     }
 

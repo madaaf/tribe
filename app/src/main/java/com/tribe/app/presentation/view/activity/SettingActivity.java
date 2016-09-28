@@ -1,10 +1,7 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,30 +10,21 @@ import android.widget.ImageView;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.SettingPresenter;
 import com.tribe.app.presentation.mvp.view.SettingView;
-import com.tribe.app.presentation.utils.FileUtils;
-import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.fragment.SettingBlockFragment;
 import com.tribe.app.presentation.view.fragment.SettingFragment;
 import com.tribe.app.presentation.view.fragment.SettingUpdateProfileFragment;
-import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -48,14 +36,10 @@ public class SettingActivity extends BaseActivity implements SettingView {
     private static final String SETTING_FRAGMENT = "settingFragment";
     private static final String SETTING_PROFILE_FRAGMENT = "settingUpdateProfileFragment";
     private static final String SETTING_BLOCK_FRAGMENT = "settingBlockFragment";
-    private static final String IMG_URI = "imgUri";
-    private static final String BITMAP = "bitmap";
 
     public static Intent getCallingIntent(Context context) {
         return new Intent(context, SettingActivity.class);
     }
-
-    private static final String AVATAR = "AVATAR";
 
     @BindView(R.id.imgBack)
     ImageView imgBack;
@@ -75,8 +59,6 @@ public class SettingActivity extends BaseActivity implements SettingView {
     private SettingFragment settingFragment;
     private SettingUpdateProfileFragment settingUpdateProfileFragment;
     private SettingBlockFragment settingBlockFragment;
-    private Uri imgUri = null;
-    private Bitmap bitmap = null;
 
     private int shortDuration = 150;
 
@@ -85,8 +67,6 @@ public class SettingActivity extends BaseActivity implements SettingView {
 
     @Inject
     ScreenUtils screenUtils;
-
-    private static final int CAMERA_REQUEST = 6;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -104,9 +84,6 @@ public class SettingActivity extends BaseActivity implements SettingView {
             fragmentManager.putFragment(outState, SETTING_PROFILE_FRAGMENT, settingUpdateProfileFragment);
             fragmentManager.putFragment(outState, SETTING_FRAGMENT, settingFragment);
         }
-
-        if (imgUri != null) outState.putParcelable(IMG_URI, imgUri);
-        if (bitmap != null && !bitmap.isRecycled()) outState.putParcelable(BITMAP, bitmap);
     }
 
     @Override
@@ -119,59 +96,7 @@ public class SettingActivity extends BaseActivity implements SettingView {
     @Override
     protected void onDestroy() {
         if (unbinder != null) unbinder.unbind();
-        bitmap = null;
         super.onDestroy();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
-            subscriptions.add(
-                Observable.just((Bitmap) data.getExtras().get("data"))
-                        .map(bitmap -> ImageUtils.formatForUpload(bitmap))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(bitmap -> {
-                            settingUpdateProfileFragment.setImgProfilePic(bitmap, Uri.fromFile(FileUtils.bitmapToFile(AVATAR, bitmap, this)).toString());
-                        })
-            );
-        }
-
-        // 2. Get image from Gallery
-        if (requestCode == ProfileInfoView.RESULT_LOAD_IMAGE && resultCode == Activity.RESULT_OK) {
-            subscriptions.add(
-                    Observable.just(data.getData())
-                            .map(uri -> {
-                                InputStream inputStream = null;
-                                Bitmap bitmap = null;
-                                try {
-                                    inputStream = getContentResolver().openInputStream(uri);
-                                    bitmap = ImageUtils.loadFromInputStream(inputStream);
-                                } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
-                                } finally {
-                                    try {
-                                        inputStream.close();
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-
-                                    return bitmap;
-                                }
-                            })
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(newBitmap -> {
-                                if (newBitmap != null) {
-                                    imgUri = Uri.fromFile(FileUtils.bitmapToFile(AVATAR, newBitmap, this));
-                                    bitmap = newBitmap;
-                                    settingUpdateProfileFragment.setImgProfilePic(bitmap, imgUri.toString());
-                                }
-                            })
-            );
-        }
     }
 
     @Override
@@ -196,12 +121,6 @@ public class SettingActivity extends BaseActivity implements SettingView {
         } else {
             settingUpdateProfileFragment = (SettingUpdateProfileFragment) fragmentManager.getFragment(savedInstanceState, SETTING_PROFILE_FRAGMENT);
             settingFragment = (SettingFragment) fragmentManager.getFragment(savedInstanceState, SETTING_FRAGMENT);
-
-            if (savedInstanceState.get(BITMAP) != null && savedInstanceState.get(IMG_URI) != null) {
-                bitmap = savedInstanceState.getParcelable(BITMAP);
-                imgUri = savedInstanceState.getParcelable(IMG_URI);
-                settingUpdateProfileFragment.setImgProfilePic(bitmap, imgUri.toString());
-            }
         }
 
         settingBlockFragment = SettingBlockFragment.newInstance();
@@ -223,7 +142,8 @@ public class SettingActivity extends BaseActivity implements SettingView {
                 settingPresenter.updateUser(
                         settingUpdateProfileFragment.getUsername(),
                         settingUpdateProfileFragment.getDisplayName(),
-                        settingUpdateProfileFragment.getImgUri()
+                        settingUpdateProfileFragment.getImgUri(),
+                        getCurrentUser().getFbid()
                 );
 
                 goToMain();
@@ -280,6 +200,10 @@ public class SettingActivity extends BaseActivity implements SettingView {
         fragmentTransaction.commit();
         txtTitle.setText(getString(R.string.settings_profile_title));
         updateAnim();
+
+        subscriptions.add(settingUpdateProfileFragment.onUsernameSearch().subscribe(s -> {
+            settingPresenter.lookupUsername(s);
+        }));
     }
 
     public void goToBlock() {
@@ -325,13 +249,12 @@ public class SettingActivity extends BaseActivity implements SettingView {
 
     @Override
     public Context context() {
-        return null;
+        return this;
     }
 
-
     @Override
-    public void setProfilePic(String profilePicUrl) {
-        settingFragment.setPicture(profilePicUrl);
+    public void successUpdateUser(User user) {
+        settingFragment.setPicture(user.getProfilePicture());
     }
 
     @Override
@@ -342,6 +265,12 @@ public class SettingActivity extends BaseActivity implements SettingView {
     @Override
     public void errorFacebookLogin() {
 
+    }
+
+    @Override
+    public void usernameResult(Boolean available) {
+        boolean usernameValid = available;
+        settingUpdateProfileFragment.setUsernameValid(usernameValid || settingUpdateProfileFragment.getUsername().equals(getCurrentUser().getUsername()));
     }
 
     private void initPresenter() {

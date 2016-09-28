@@ -3,8 +3,6 @@ package com.tribe.app.presentation.view.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,25 +12,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
+import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.Extras;
-import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.fragment.AccessFragment;
 import com.tribe.app.presentation.view.fragment.IntroViewFragment;
 import com.tribe.app.presentation.view.fragment.ProfileInfoFragment;
-import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -54,7 +49,6 @@ import rx.subscriptions.CompositeSubscription;
 
 public class IntroActivity extends BaseActivity {
 
-    private static final String AVATAR = "AVATAR";
     private static final int PAGE_INTRO = 0,
             PAGE_PROFILE_INFO = 1,
             PAGE_ACCESS = 2;
@@ -84,6 +78,14 @@ public class IntroActivity extends BaseActivity {
     @Inject
     User currentUser;
 
+    @Inject
+    @LastMessageRequest
+    Preference<String> lastMessageRequest;
+
+    @Inject
+    @LastUserRequest
+    Preference<String> lastUserRequest;
+
     @BindView(R.id.viewPager)
     CustomViewPager viewPager;
 
@@ -101,6 +103,9 @@ public class IntroActivity extends BaseActivity {
         initUi();
         initDependencyInjector();
         initViewPager();
+
+        lastMessageRequest.set("");
+        lastUserRequest.set("");
     }
 
     @Override
@@ -141,53 +146,6 @@ public class IntroActivity extends BaseActivity {
         if (requestCode == Navigator.REQUEST_COUNTRY && resultCode == Activity.RESULT_OK) {
             introViewFragment.initPhoneNumberViewWithCountryCode(data.getStringExtra(Extras.COUNTRY_CODE));
         }
-
-        // Load image into profile info
-
-        // 2. Get image from Gallery
-        if (requestCode == ProfileInfoView.RESULT_LOAD_IMAGE && resultCode == Activity.RESULT_OK) {
-            subscriptions.add(
-                    Observable.just(data.getData())
-                            .map(uri -> {
-                                InputStream inputStream = null;
-                                Bitmap bitmap = null;
-                                try {
-                                    inputStream = getContentResolver().openInputStream(uri);
-                                    bitmap = ImageUtils.loadFromInputStream(inputStream);
-                                } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
-                                } finally {
-                                    try {
-                                        inputStream.close();
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-
-                                    return bitmap;
-                                }
-                            })
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(newBitmap -> {
-                                if (newBitmap != null) {
-                                    profileInfoFragment.setImgProfilePic(newBitmap, Uri.fromFile(FileUtils.bitmapToFile(AVATAR, newBitmap, this)).toString());
-                                }
-                            })
-            );
-        }
-
-        // 3. Capture image
-        if (requestCode == ProfileInfoView.CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-            subscriptions.add(
-                    Observable.just((Bitmap) data.getExtras().get("data"))
-                            .map(bitmap -> ImageUtils.formatForUpload(bitmap))
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(newBitmap -> {
-                                profileInfoFragment.setImgProfilePic(newBitmap, Uri.fromFile(FileUtils.bitmapToFile(AVATAR, newBitmap, this)).toString());
-                            })
-            );
-        }
     }
 
     /**
@@ -204,11 +162,13 @@ public class IntroActivity extends BaseActivity {
         viewPager.setAdapter(introViewPagerAdapter);
         viewPager.setOffscreenPageLimit(4);
         viewPager.setScrollDurationFactor(2f);
+
         if (currentUser == null || StringUtils.isEmpty(currentUser.getUsername())) {
             viewPager.setCurrentItem(PAGE_INTRO);
         } else if (currentUser.getFriendshipList().size() == 0) {
             viewPager.setCurrentItem(PAGE_ACCESS);
         }
+
         viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_NONE);
         viewPager.setPageTransformer(false, new IntroPageTransformer());
         viewPager.setSwipeable(false);

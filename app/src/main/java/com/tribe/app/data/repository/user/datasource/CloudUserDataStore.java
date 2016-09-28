@@ -85,7 +85,7 @@ public class CloudUserDataStore implements UserDataStore {
     private final Context context;
     private AccessToken accessToken = null;
     private User user = null;
-    private final Installation installation;
+    private Installation installation = null;
     private final ReactiveLocationProvider reactiveLocationProvider;
     private Preference<String> lastMessageRequest;
     private Preference<String> lastUserRequest;
@@ -191,10 +191,37 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<Installation> createOrUpdateInstall(String token) {
+        if (installation == null || StringUtils.isEmpty(installation.getToken())) {
+            String req = context.getString(R.string.installs);
+            return this.tribeApi.getInstallList(req)
+                    .flatMap(installations -> {
+                        Installation installation = null;
+
+                        for (Installation install : installations) {
+                            if (install.getToken().equals(token)) {
+                                installation = install;
+                            }
+                        }
+
+                        return Observable.just(installation);
+                    }).flatMap(installation -> {
+                        if (installation == null) {
+                            return createInstallation(token, null);
+                        }
+
+                        return Observable.just(installation).doOnNext(saveToCacheInstall);
+                    });
+        } else {
+            return createInstallation(token, installation);
+        }
+    }
+
+    private Observable<Installation> createInstallation(String token, Installation installation) {
         TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
         String operatorName = telephonyManager.getNetworkOperatorName();
         PackageManager manager = context.getPackageManager();
         PackageInfo info = null;
+
         try {
             info = manager.getPackageInfo(context.getPackageName(), 0);
         } catch (PackageManager.NameNotFoundException e) {
@@ -214,8 +241,23 @@ public class CloudUserDataStore implements UserDataStore {
                 operatorName
         );
 
-        String req = installation == null || installation.getId() == null ? context.getString(R.string.install_create, base) : context.getString(R.string.install_update, installation.getId(), base);
-        return this.tribeApi.createOrUpdateInstall(req).doOnNext(saveToCacheInstall);
+        String req = installation == null || StringUtils.isEmpty(installation.getToken()) ? context.getString(R.string.install_create, base) : context.getString(R.string.install_update, installation.getId(), base);
+        return this.tribeApi.createOrUpdateInstall(req)
+                .onErrorResumeNext(throwable -> {
+                    this.installation.setToken("");
+                    this.installation.setId("");
+                    return createOrUpdateInstall(token);
+                })
+                .flatMap(installationRecent -> {
+                    if (installationRecent == null && this.installation != null && !StringUtils.isEmpty(this.installation.getId())) {
+                        this.installation.setToken("");
+                        this.installation.setId("");
+                        return createInstallation(token, this.installation);
+                    }
+
+                    return Observable.just(installationRecent);
+                })
+                .doOnNext(installation1 -> installation1.setToken(token)).doOnNext(saveToCacheInstall);
     }
 
     @Override
@@ -248,7 +290,7 @@ public class CloudUserDataStore implements UserDataStore {
         }
 
         String req = context.getString(R.string.messages_infos,
-                "",//!StringUtils.isEmpty(lastMessageRequest.get()) ? context.getString(R.string.input_start, lastMessageRequest.get()) : "",
+                !StringUtils.isEmpty(lastMessageRequest.get()) ? context.getString(R.string.input_start, lastMessageRequest.get()) : "",
                 !StringUtils.isEmpty(idsTribes.toString()) ? context.getString(R.string.tribe_sent_infos, idsTribes) : "");
 
         return tribeApi.messages(req)
@@ -376,7 +418,7 @@ public class CloudUserDataStore implements UserDataStore {
 
             if (!(file != null && file.exists() && file.length() > 0)) {
                 InputStream inputStream = null;
-                file = FileUtils.getFile(FileUtils.generateIdForMessage(), FileUtils.PHOTO);
+                file = FileUtils.getFile(context, FileUtils.generateIdForMessage(), FileUtils.PHOTO);
                 try {
                     inputStream = context.getContentResolver().openInputStream(Uri.parse(pictureUri));
                     FileUtils.copyInputStreamToFile(inputStream, file);
@@ -719,6 +761,12 @@ public class CloudUserDataStore implements UserDataStore {
 
     private final Action1<Installation> saveToCacheInstall = installRealm -> {
         if (installRealm != null) {
+            if (this.installation == null) {
+                this.installation = new Installation();
+            }
+
+            this.installation.setId(installRealm.getId());
+            this.installation.setToken(installRealm.getToken());
             CloudUserDataStore.this.userCache.put(installRealm);
         }
     };
@@ -818,7 +866,7 @@ public class CloudUserDataStore implements UserDataStore {
 
             if (!(file != null && file.exists() && file.length() > 0)) {
                 InputStream inputStream = null;
-                file = FileUtils.getFile(FileUtils.generateIdForMessage(), FileUtils.PHOTO);
+                file = FileUtils.getFile(context, FileUtils.generateIdForMessage(), FileUtils.PHOTO);
                 try {
                     inputStream = context.getContentResolver().openInputStream(Uri.parse(pictureUri));
                     FileUtils.copyInputStreamToFile(inputStream, file);
@@ -865,7 +913,7 @@ public class CloudUserDataStore implements UserDataStore {
 
             if (!(file != null && file.exists() && file.length() > 0)) {
                 InputStream inputStream = null;
-                file = FileUtils.getFile(FileUtils.generateIdForMessage(), FileUtils.PHOTO);
+                file = FileUtils.getFile(context, FileUtils.generateIdForMessage(), FileUtils.PHOTO);
                 try {
                     inputStream = context.getContentResolver().openInputStream(Uri.parse(pictureUri));
                     FileUtils.copyInputStreamToFile(inputStream, file);

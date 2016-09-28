@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.view.fragment;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -136,17 +135,12 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
             profileInfoPresenter.lookupUsername(s);
         }));
 
-        subscriptions.add(profileInfoView.onDisplayNameInput().subscribe(s -> refactorNext()));
+        subscriptions.add(profileInfoView.onInfoValid().subscribe(isValid -> refactorNext()));
     }
 
     /**
      * Helper methods
      */
-
-    public void setImgProfilePic(Bitmap bitmap, String uri) {
-        profileInfoView.setImgProfilePic(bitmap, uri);
-    }
-
     @Override
     public void successFacebookLogin() {
         getInfoFromFacebook();
@@ -185,7 +179,7 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
     }
 
     @Override
-    public void goToAccess(User user) {
+    public void successUpdateUser(User user) {
         this.user.copy(user);
         ((IntroActivity) getActivity()).goToAccess(user);
     }
@@ -195,7 +189,7 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
     }
 
     public void refactorNext() {
-        if (profileInfoView.isUsernameSelected() && profileInfoView.isDisplayNameSelected()) {
+        if (profileInfoView.isUsernameSelected() && profileInfoView.isDisplayNameSelected() && profileInfoView.isAvatarSelected()) {
             imgNextIcon.setImageDrawable(getContext().getResources().getDrawable(R.drawable.picto_next_icon_black));
             imgNextIcon.setClickable(true);
         } else {

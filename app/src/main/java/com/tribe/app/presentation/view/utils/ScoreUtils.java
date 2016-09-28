@@ -52,14 +52,16 @@ public class ScoreUtils {
     }
 
     public enum Point {
-        APP_OPENED              ("", R.string.points_AppOpened_title, R.string.points_AppOpened_description, 1, R.drawable.picto_points_time),
-        SEND_RECEIVE_CHAT       ("TEXT", R.string.points_SendReceiveChat_title, R.string.points_SendReceiveChat_description, 2, R.drawable.picto_text),
-        SEND_RECEIVE_TRIBE      ("TRIBE", R.string.points_SendReceiveTribe_title, R.string.points_SendReceiveTribe_description, 10, R.drawable.picto_camera),
-        NEW_FRIENDSHIP          ("NEW_FRIENDSHIP", R.string.points_NewFriendship_title, R.string.points_NewFriendship_description, 30, R.drawable.picto_points_friend),
-        INVITE                  ("INVITE_FRIEND", R.string.points_InviteTribe_title, R.string.points_InviteTribe_description, 50, R.drawable.picto_points_invite),
-        CREATE_GROUP            ("CREATE_GROUP", R.string.points_CreateGroup_title, R.string.points_CreateGroup_description, 100, R.drawable.picto_group),
-        RATE_APP                ("RATE_APP", R.string.points_RateApp_title, R.string.points_RateApp_description, 500, R.drawable.picto_points_rate),
-        SHARE_PROFILE           ("SHARE_PROFILE", R.string.points_ShareProfile_title, R.string.points_ShareProfile_description, 1000, R.drawable.picto_share),
+        SEND_RECEIVE_CHAT       ("TEXT", R.string.points_SendReceiveChat_title, R.string.points_SendReceiveChat_description, 1, R.drawable.picto_text),
+        SEND_RECEIVE_TRIBE      ("TRIBE", R.string.points_SendReceiveTribe_title, R.string.points_SendReceiveTribe_description, 5, R.drawable.picto_camera),
+        NEW_FRIENDSHIP          ("NEW_FRIENDSHIP", R.string.points_NewFriendship_title, R.string.points_NewFriendship_description, 15, R.drawable.picto_points_friend),
+        INVITE                  ("INVITE_FRIEND", R.string.points_InviteTribe_title, R.string.points_InviteTribe_description, 30, R.drawable.picto_points_invite),
+        CREATE_GROUP            ("CREATE_GROUP", R.string.points_CreateGroup_title, R.string.points_CreateGroup_description, 50, R.drawable.picto_group),
+        CAMERA                  ("ENABLE_CAMERA", R.string.points_Camera_title, R.string.points_Camera_description, 100, R.drawable.picto_photo_white),
+        RATE_APP                ("RATE_APP", R.string.points_RateApp_title, R.string.points_RateApp_description, 200, R.drawable.picto_points_rate),
+        SHARE_PROFILE           ("SHARE_PROFILE", R.string.points_ShareProfile_title, R.string.points_ShareProfile_description, 300, R.drawable.picto_share),
+        LOCATION                ("ENABLE_LOCATION", R.string.points_LocationPermission_title, R.string.points_LocationPermission_description, 350, R.drawable.picto_location),
+        SYNCHRONIZE_FRIENDS     ("SYNC_FACEBOOK", R.string.points_ConnectFacebook_title, R.string.points_ConnectFacebook_description, 350, R.drawable.picto_points_facebook),
         INVITE_FACEBOOK         ("FB_INVITE_ALL", R.string.points_InviteFacebookFriends_title, R.string.points_InviteFacebookFriends_description, 1500, R.drawable.picto_points_facebook),
         GROUP_100_MEMBERS       ("", R.string.points_HundredGroupMembers_title, R.string.points_HundredGroupMembers_description, 2000, R.drawable.picto_points_public_group);
 

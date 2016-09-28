@@ -253,7 +253,7 @@ public class ChatMessage extends Message {
     }
 
     public boolean isDownloadPending() {
-        return messageDownloadingStatus.equals(MessageDownloadingStatus.STATUS_DOWNLOADING);
+        return messageDownloadingStatus != null && messageDownloadingStatus.equals(MessageDownloadingStatus.STATUS_DOWNLOADING);
     }
 
     public static List<ChatMessage> computeMessageList(ChatMessage tutorial, List<ChatMessage> chatMessageList) {

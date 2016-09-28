@@ -118,7 +118,7 @@ public class CloudChatDataStore implements ChatDataStore {
 
             InputStream inputStream = null;
             Bitmap bitmap = null;
-            File file = FileUtils.getFile(chatRealm.getLocalId(), chatRealm.getType().equals(ChatMessage.PHOTO) ? FileUtils.PHOTO : FileUtils.VIDEO);
+            File file = FileUtils.getFile(context, chatRealm.getLocalId(), chatRealm.getType().equals(ChatMessage.PHOTO) ? FileUtils.PHOTO : FileUtils.VIDEO);
             try {
                 inputStream = context.getContentResolver().openInputStream(Uri.parse(chatRealm.getContent()));
                 if (chatRealm.getType().equals(ChatMessage.PHOTO)) {
@@ -273,7 +273,7 @@ public class CloudChatDataStore implements ChatDataStore {
                     if (userRealm != null) {
                         message.setFrom(userRealm);
 
-                        File file = FileUtils.getFile(message.getId(), FileUtils.VIDEO);
+                        File file = FileUtils.getFile(context, message.getId(), FileUtils.VIDEO);
 
                         if (file.exists() && file.length() > 0) {
                             message.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_DOWNLOADED);
