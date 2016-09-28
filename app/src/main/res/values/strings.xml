@@ -144,4 +144,5 @@
     <string name="onboarding_queue_valid_button_title">Enter now!</string>
 
     <string name="facebook_app_id">1743579545897830</string>
+    <string name="no_profile_picture_url">http://no</string>
 </resources>
