@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="80dp"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layoutFriendItem"
     android:paddingTop="@dimen/vertical_margin"
     android:paddingBottom="@dimen/vertical_margin"
@@ -57,6 +59,49 @@
             android:layout_gravity="center"
             />
 
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/btnAdd"
+        android:layout_width="@dimen/setting_pic_size"
+        android:layout_height="@dimen/setting_pic_size"
+        android:layout_gravity="end"
+        android:background="@drawable/shape_oval_grey"
+        android:foreground="@drawable/selectable_button_oval"
+        android:clickable="true"
+        android:clipToPadding="false"
+        android:visibility="invisible"
+        >
+
+        <View
+            android:id="@+id/btnAddBG"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@drawable/shape_circle_blue"
+            android:visibility="gone"
+            />
+
+        <ImageView
+            android:id="@+id/imgPicto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/picto_add"
+            android:scaleType="centerInside"
+            />
+
+        <com.github.rahatarmanahmed.cpv.CircularProgressView
+            android:id="@+id/progressBarAdd"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            app:cpv_thickness="2dp"
+            app:cpv_indeterminate="true"
+            app:cpv_color="@color/grey.light"
+            app:cpv_animAutostart="true"
+            android:visibility="gone"
+            />
     </FrameLayout>
 
 </FrameLayout>

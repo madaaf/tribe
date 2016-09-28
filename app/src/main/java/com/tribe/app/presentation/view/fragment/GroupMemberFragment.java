@@ -250,6 +250,7 @@ public class GroupMemberFragment extends BaseFragment implements GroupMemberView
     @Override
     public void createFriendship() {
         groupMemberClicked.setFriend(true);
+        groupMemberClicked.setShouldAnimateAddFriend(true);
         groupMemberAdapter.notifyDataSetChanged();
     }
 
@@ -262,19 +263,24 @@ public class GroupMemberFragment extends BaseFragment implements GroupMemberView
     @Override
     public void setAdmin() {
         groupMemberClicked.setAdmin(true);
+        groupMemberClicked.setShouldAnimateAddAdmin(true);
         groupMemberAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void removeAdmin() {
         groupMemberClicked.setAdmin(false);
+        groupMemberClicked.setShouldAnimateRemoveAdmin(true);
         groupMemberAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void removeMember() {
         groupMemberList.remove(itemPosition);
-        groupMemberAdapter.setItems(groupMemberList);
+        groupMemberListCopy.clear();
+        groupMemberListCopy.addAll(groupMemberList);
+        groupMemberList.clear();
+        groupMemberList.addAll(groupMemberListCopy);
         groupMemberAdapter.notifyDataSetChanged();
     }
 

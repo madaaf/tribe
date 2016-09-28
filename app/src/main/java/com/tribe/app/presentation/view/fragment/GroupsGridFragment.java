@@ -17,6 +17,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -260,7 +261,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             imageGoToMembersClicked.onNext(null);
         }));
         groupPresenter.getGroupMembers(groupId);
-        searchFriendsView.requestFocus();
+        appBarLayout.setExpanded(true);
     }
 
     public void initForBoth() {
@@ -292,12 +293,20 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             groupInfoView.bringGroupNameDown(animDuration);
             groupSuggestionsView.setVisibility(View.INVISIBLE);
         }));
+        searchFriendsView.requestFocus();
+        appBarLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                appBarLayout.setExpanded(true);
+                searchFriendsView.setAlpha(AnimationUtils.ALPHA_FULL);
+                appBarLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
         setupSearchView();
     }
 
     @Override
     public void setupGroup(Group group) {
-        appBarLayout.setExpanded(true);
         groupName = group.getName();
         groupInfoView.setGroupName(groupName);
         if (group.getPicture() != null && !group.getPicture().isEmpty()) groupInfoView.setGroupPictureFromUrl(group.getPicture());
@@ -563,6 +572,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     }
 
     private void setupSearchView() {
+        searchFriendsView.setAlpha(AnimationUtils.ALPHA_NONE);
         subscriptions.add(RxView.focusChanges(searchFriendsView).subscribe(aBoolean -> {
             if (aBoolean) appBarLayout.setExpanded(false);
         }));
