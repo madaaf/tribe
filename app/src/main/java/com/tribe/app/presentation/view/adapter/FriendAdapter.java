@@ -26,11 +26,9 @@ public class FriendAdapter extends RecyclerView.Adapter {
     private List<Friendship> items;
     private FriendAdapterDelegate friendAdapterDelegate;
 
-
-    @Inject
-    public FriendAdapter(Context context) {
+    public FriendAdapter(Context context, boolean privateGroup) {
         delegatesManager = new RxAdapterDelegatesManager<>();
-        friendAdapterDelegate = new FriendAdapterDelegate(context);
+        friendAdapterDelegate = new FriendAdapterDelegate(context, privateGroup);
         delegatesManager.addDelegate(friendAdapterDelegate);
         items = new ArrayList<>();
     }

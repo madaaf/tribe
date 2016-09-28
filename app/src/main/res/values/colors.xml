@@ -47,6 +47,7 @@
     <color name="grey.darker">#4A4A4A</color>
     <color name="grey.circle">#F6F6F6</color>
     <color name="grey.group">#747474</color>
+    <color name="grey.suggestion">#DCE3EB</color>
 
     <!-- BLUE -->
     <color name="blue.text">#02ADF2</color>

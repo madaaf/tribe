@@ -16,13 +16,17 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
 /**
@@ -36,10 +40,12 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
     private final PublishSubject<View> clickFriendItem = PublishSubject.create();
 
     private Context context;
+    private boolean privateGroup;
 
-    public FriendAdapterDelegate(Context context) {
+    public FriendAdapterDelegate(Context context, boolean privateGroup) {
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.context = context;
+        this.privateGroup = privateGroup;
     }
 
     @Override
@@ -54,13 +60,30 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
 
         subscriptions.add(RxView.clicks(vh.itemView)
                 .doOnNext(aVoid -> {
+                    vh.itemView.setEnabled(false);
+                    Observable.timer(AnimationUtils.ANIMATION_DURATION_SHORT, TimeUnit.MILLISECONDS)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(time -> {
+                                vh.itemView.setEnabled(true);
+                            });
                     BlockFriendViewHolder blockFriendViewHolder = (BlockFriendViewHolder) vh;
                     if (blockFriendViewHolder.selected) {
-                        blockFriendViewHolder.imageSelected.setImageDrawable(null);
+                        blockFriendViewHolder.imageSelected.animate()
+                                .scaleX(AnimationUtils.SCALE_INVISIBLE)
+                                .scaleY(AnimationUtils.SCALE_INVISIBLE)
+                                .setDuration(AnimationUtils.ANIMATION_DURATION_SHORT)
+                                .setStartDelay(AnimationUtils.NO_START_DELAY)
+                                .start();
                         blockFriendViewHolder.itemView.setTag(R.id.tag_selected, false);
                         blockFriendViewHolder.selected = false;
                     } else {
-                        blockFriendViewHolder.imageSelected.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.picto_oval_green_fill));
+                        blockFriendViewHolder.imageSelected.animate()
+                                .scaleX(AnimationUtils.SCALE_RESET)
+                                .scaleY(AnimationUtils.SCALE_RESET)
+                                .setDuration(AnimationUtils.ANIMATION_DURATION_SHORT)
+                                .setStartDelay(AnimationUtils.NO_START_DELAY)
+                                .start();
                         blockFriendViewHolder.itemView.setTag(R.id.tag_selected, true);
                         blockFriendViewHolder.selected = true;
                     }
@@ -81,6 +104,10 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
         vh.txtDisplayName.setText(friendship.getDisplayName());
         vh.txtUsername.setText("@" + friendship.getUsername());
         vh.layoutSelected.setBackground(ContextCompat.getDrawable(context, R.drawable.picto_oval));
+        if (privateGroup) vh.imageSelected.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.picto_oval_green_fill));
+        else vh.imageSelected.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.shape_oval_purple_fill));
+        vh.imageSelected.setScaleY(AnimationUtils.SCALE_INVISIBLE);
+        vh.imageSelected.setScaleX(AnimationUtils.SCALE_INVISIBLE);
         vh.itemView.setTag(R.id.tag_position, position);
 
 

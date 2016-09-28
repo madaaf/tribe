@@ -33,6 +33,8 @@
     <dimen name="setting_block_item_left_margin">45dp</dimen>
     <dimen name="setting_block_search_bar_height">64dp</dimen>
     <dimen name="group_member_image_overlap_margin">-15dp</dimen>
+    <dimen name="group_suggestion_margin">5dp</dimen>
+    <dimen name="group_suggestion_margin_mid">10dp</dimen>
 
     <!-- PADDING -->
     <dimen name="icons_padding">3.75dp</dimen>
@@ -40,6 +42,8 @@
     <dimen name="section_button_vertical_padding">12dp</dimen>
     <dimen name="setting_block_item_horizontal_padding">15dp</dimen>
     <dimen name="cpv_padding">10dp</dimen>
+    <dimen name="padding_small">10dp</dimen>
+    <dimen name="padding_mid">15dp</dimen>
 
     <!-- HEIGHTS -->
     <dimen name="top_bar_height">65dp</dimen>
@@ -57,6 +61,7 @@
     <dimen name="setting_section_bar_height">40dp</dimen>
     <dimen name="create_invite_view_height">115dp</dimen>
     <dimen name="group_info_bar_height">64dp</dimen>
+    <dimen name="group_search_height">50dp</dimen>
 
     <!-- WIDTHS -->
     <dimen name="snooze_mode_width">93dp</dimen>
@@ -107,6 +112,7 @@
     <dimen name="image_badge_size">20dp</dimen>
     <dimen name="group_cpv_size">28dp</dimen>
     <dimen name="cards_icon_size">15dp</dimen>
+    <dimen name="group_suggestion_text_size">13sp</dimen>
 
     <!-- THRESHOLDS -->
     <dimen name="threshold_dismiss">100dp</dimen>

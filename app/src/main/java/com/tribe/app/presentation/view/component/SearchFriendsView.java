@@ -2,15 +2,14 @@ package com.tribe.app.presentation.view.component;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
 import com.tribe.app.R;
@@ -23,23 +22,14 @@ import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 
-import android.widget.LinearLayout;
-
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by horatiothomas on 9/22/16.
@@ -87,6 +77,8 @@ public class SearchFriendsView extends FrameLayout {
     private boolean columnCountSet;
     private boolean searchMoved;
 
+    private final String TAG = "SearchFriendsDebug";
+
     public SearchFriendsView(Context context) {
         super(context);
     }
@@ -128,27 +120,6 @@ public class SearchFriendsView extends FrameLayout {
         searchMoved = false;
     }
 
-    // INSERTION
-    // use a hashmap to track pic location in view <String : userId, int : location>
-    // Check if there is space in first row
-    //  if there is space to fit both image and search text
-    //    1. add image view to layout in front
-    //    2. animate image view appearing and move search text over as well as rest of images
-    //  if there is not
-    //    check if there is space just to fit one
-    //      check if search bar has been moved down
-    //        2. if not animate move search bar down
-    //     1. add image to layout
-    //     2. animate image appearing
-    //     if there isnt move image view down
-    // DELETION
-    // find view by location gotten from hashmap
-    // 1. animate view fade out
-    //   check if there is enough room to move view in next row up
-    //    if there isnt just animate everything right
-    //    if there is animate view up as well
-    // 1. if not
-
     @Override
     protected void onDetachedFromWindow() {
         unbinder.unbind();
@@ -176,12 +147,14 @@ public class SearchFriendsView extends FrameLayout {
             }
             currColumn++;
         } else {
-            forwardFullRow(currentRow);
             if (!columnCountSet) {
                 columnCount = size - 1;
                 columnCountSet = true;
             }
-            searchMoved = false;
+            // column count needs to be set before below is called
+            forwardFullRow(currentRow);
+            // TODO: change in future
+//            searchMoved = false;
             // move text right
             currColumn = 1;
             moveSearch(moveRightPixels);
@@ -189,20 +162,42 @@ public class SearchFriendsView extends FrameLayout {
         }
         size++;
         addImageToFrontOfLayoutWithAnimation(pictureUrl);
+        Log.d(TAG, "currColumn: " + currColumn);
     }
 
     public void deleteFriend(String friendId) {
-//        int removeLoc  = updateRemoveLocationMap(friendId);
-//        fadeImageAndRemoveFromLayout(removeLoc);
-//        moveImagesAndSearchLeft(removeLoc);
-
+        int removeLoc = updateRemoveLocationMap(friendId);
+        size--;
+        currColumn--;
+        Log.d(TAG, "removeLoc: " + removeLoc);
+        Log.d(TAG, "currColumn: " + currColumn);
+        fadeImageAndRemoveFromLayout(removeLoc);
+        if (currentRow > 1) {
+            backFullRow(currentRow, removeLoc);
+            moveSearch(moveLeftPixels);
+            currentRow--;
+            currColumn = columnCount;
+        } else if (searchMoved) {
+            moveImagesLeft(removeLoc);
+            // TODO: this will not work
+            if (roomToMoveRight(layoutUserPicContainer.getChildAt(layoutUserPicContainer.getChildCount()-1))) {
+                searchMoved = false;
+                collapseViewAndMoveSearch();
+            }
+        } else {
+            if (currColumn > 1) {
+                moveImagesAndSearchLeft(removeLoc);
+            } else {
+                moveSearch(moveLeftPixels);
+            }
+        }
     }
 
     private int updateRemoveLocationMap(String friendId) {
         int removeLoc = userPicChildLocation.remove(friendId);
         for(Map.Entry<String, Integer> entry : userPicChildLocation.entrySet()) {
             if (entry.getValue() > removeLoc) {
-                userPicChildLocation.put(entry.getKey(), entry.getValue() + 1);
+                userPicChildLocation.put(entry.getKey(), entry.getValue() - 1);
             }
         }
         return removeLoc;
@@ -236,12 +231,15 @@ public class SearchFriendsView extends FrameLayout {
     }
 
     private void moveImagesLeft(int removeLoc) {
-        if (columnCountSet) {
-
-        } else {
-            if (layoutUserPicContainer.getChildAt(removeLoc + 1) != null)
-            moveViewsLeft(layoutUserPicContainer, removeLoc+1, currColumn*currentRow -1);
-        }
+//        if (columnCountSet) {
+//            moveViewsLeft(layoutUserPicContainer, removeLoc, (currentRow-1) * (columnCount +1) + currColumn);
+//        } else {
+            if (layoutUserPicContainer.getChildAt(removeLoc) != null) {
+                int moveLeftEnd = currColumn * currentRow - 1;
+                moveViewsLeft(layoutUserPicContainer, removeLoc, moveLeftEnd);
+                Log.d(TAG, "remove loc -> " + removeLoc + " moveLeftEnd ->" + moveLeftEnd);
+            }
+//        }
     }
 
     private void moveSearch(int pixels) {
@@ -250,17 +248,39 @@ public class SearchFriendsView extends FrameLayout {
 
     private void forwardFullRow(int rows) {
         for (int i = 1; i <= rows; i++) {
-            int idxMoveRightStart  =  (i-1) * columnCount + i -1;
-            int idxMoveRightEnd = i * columnCount + i -1;
-            int idxMoveDown = i * columnCount + i -1;
+            int idxMoveRightStart  =  (i - 1) * columnCount + i - 1;
+            int idxMoveRightEnd = i * columnCount + i - 1;
+            int idxMoveDown = i * columnCount + i - 1;
             moveViewsRight(layoutUserPicContainer, idxMoveRightStart, idxMoveRightEnd);
-            moveView(layoutUserPicContainer.getChildAt(idxMoveDown), 0, i * imageSize);
+            moveView(layoutUserPicContainer.getChildAt(idxMoveDown), imageMargin, i * moveRightPixels);
         }
     }
 
 
-    private void backFullRow() {
-        currColumn--;
+    private void backFullRow(int rows, int removeLoc) {
+        for (int i = rows; i >= 1; i--) {
+            int idxMoveUp = (i - 1) * columnCount;
+            int idxStart = idxMoveUp + 1;
+            int idxEnd = i * columnCount;
+            if (idxStart > size - 1) idxStart = size - 1;
+            if (idxEnd > size - 1) idxEnd = size - 1;
+            if (idxStart < removeLoc) {
+                idxStart = removeLoc;
+                moveViewsLeft(layoutUserPicContainer, idxStart, idxEnd);
+                break;
+            }
+            if (i == 1) {
+                moveViewsLeft(layoutUserPicContainer, idxStart, idxEnd);
+            } else {
+                moveViewsLeft(layoutUserPicContainer, idxStart, idxEnd);
+                if (idxMoveUp < removeLoc) {
+                    idxMoveUp = removeLoc;
+                    moveView(layoutUserPicContainer.getChildAt(idxMoveUp), imageMargin, (i - 2) * imageSize);
+                    break;
+                }
+                moveView(layoutUserPicContainer.getChildAt(idxMoveUp), screenUtils.getWidthPx() - imageMargin - moveRightPixels, (i - 2) * imageSize);
+            }
+        }
     }
 
     private void addImageToFrontOfLayoutWithAnimation(String imageUrl) {
@@ -269,10 +289,14 @@ public class SearchFriendsView extends FrameLayout {
         imageView.setLayoutParams(imageViewLp);
         imageView.setAlpha(AnimationUtils.ALPHA_NONE);
         layoutUserPicContainer.addView(imageView, 0);
-        if (imageUrl == null || imageUrl.isEmpty()) imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_avatar_placeholder));
-        else Glide.with(getContext()).load(imageUrl)
-                .bitmapTransform(new CropCircleTransformation(getContext()))
-                .into(imageView);
+        FrameLayout.LayoutParams imageViewFlp = (FrameLayout.LayoutParams) imageView.getLayoutParams();
+        imageViewFlp.leftMargin = imageMargin;
+        imageView.setLayoutParams(imageViewFlp);
+        if (imageUrl != null || !imageUrl.isEmpty()) {
+            Glide.with(getContext()).load(imageUrl)
+                    .bitmapTransform(new CropCircleTransformation(getContext()))
+                    .into(imageView);
+        }
         imageView.animate()
                 .setDuration(animationDuration)
                 .setStartDelay(startDelay)
@@ -290,9 +314,15 @@ public class SearchFriendsView extends FrameLayout {
     }
 
     private void expandViewAndMoveSearch() {
-        AnimationUtils.animateHeightFrameLayout(layoutParent, layoutParent.getHeight(), layoutParent.getHeight() + imageSize, animationDuration);
-        AnimationUtils.animateHeightFrameLayout(layoutUserPicContainer, layoutUserPicContainer.getHeight(), layoutUserPicContainer.getHeight() + imageSize, animationDuration);
-        moveView(editTextSearch, 0, imageSize *currentRow);
+        AnimationUtils.animateHeightFrameLayout(layoutParent, layoutParent.getHeight(), layoutParent.getHeight() + moveRightPixels, animationDuration);
+        AnimationUtils.animateHeightFrameLayout(layoutUserPicContainer, layoutUserPicContainer.getHeight(), layoutUserPicContainer.getHeight() + moveRightPixels, animationDuration);
+        moveView(editTextSearch, imageMargin, moveRightPixels *currentRow);
+    }
+
+    private void collapseViewAndMoveSearch() {
+        AnimationUtils.animateHeightFrameLayout(layoutParent, layoutParent.getHeight(), layoutParent.getHeight() - moveRightPixels, animationDuration);
+        AnimationUtils.animateHeightFrameLayout(layoutUserPicContainer, layoutUserPicContainer.getHeight(), layoutUserPicContainer.getHeight() - moveRightPixels, animationDuration);
+        moveView(editTextSearch, (currColumn - 1) * moveRightPixels + imageMargin, (currentRow - 1) * moveRightPixels);
     }
 
     private boolean roomToMoveRight(View lastView) {
@@ -349,7 +379,4 @@ public class SearchFriendsView extends FrameLayout {
                 .applicationComponent(getApplicationComponent())
                 .build().inject(this);
     }
-
-
-
 }
