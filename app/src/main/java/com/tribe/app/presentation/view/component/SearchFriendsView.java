@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.component;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -292,7 +293,9 @@ public class SearchFriendsView extends FrameLayout {
         FrameLayout.LayoutParams imageViewFlp = (FrameLayout.LayoutParams) imageView.getLayoutParams();
         imageViewFlp.leftMargin = imageMargin;
         imageView.setLayoutParams(imageViewFlp);
-        if (imageUrl != null || !imageUrl.isEmpty()) {
+        if (imageUrl.equals(getContext().getString(R.string.no_profile_picture_url))) {
+            imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_avatar_placeholder));
+        } else {
             Glide.with(getContext()).load(imageUrl)
                     .bitmapTransform(new CropCircleTransformation(getContext()))
                     .into(imageView);

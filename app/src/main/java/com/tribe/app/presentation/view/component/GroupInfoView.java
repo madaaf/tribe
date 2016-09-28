@@ -158,6 +158,11 @@ public class GroupInfoView extends FrameLayout {
             imageGoToMembersClicked.onNext(null);
         }));
 
+        subscriptions.add(editTextGroupName.keyBackPressed().subscribe(aVoid -> {
+            bringGroupNameDown(animDuration);
+            isEditingGroupName.onNext(false);
+        }));
+
         editTextGroupName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
@@ -167,6 +172,7 @@ public class GroupInfoView extends FrameLayout {
                 return false;
             }
         });
+
     }
 
     @Override
@@ -252,8 +258,13 @@ public class GroupInfoView extends FrameLayout {
                 .alpha(AnimationUtils.ALPHA_NONE)
                 .setDuration(animDuration)
                 .start();
-
         viewPrivacyStatus.setup(privateGroup);
+    }
+
+    public void resetPrivatePublic() {
+        AnimationUtils.expandScale(privatePublicView, 0);
+        privatePublicView.setAlpha(AnimationUtils.ALPHA_FULL);
+        privatePublicView.bringToFront();
     }
 
     public void expand(int animDuration) {
@@ -344,6 +355,7 @@ public class GroupInfoView extends FrameLayout {
         presentEditIcons(animDuration);
     }
 
+
     public void collapseInfo(int animDuration, Activity activity) {
         collapse(animDuration, activity);
         layoutGroupMembers.animate()
@@ -365,6 +377,11 @@ public class GroupInfoView extends FrameLayout {
     public void enableIcons(boolean enabled) {
             imageDoneEdit.setEnabled(enabled);
             imageEditGroup.setEnabled(enabled);
+    }
+
+    public void bringOutIcons(int animDuration) {
+        bringOutIcon(imageEditGroup, animDuration);
+        bringOutIcon(imageDoneEdit, animDuration);
     }
 
 
@@ -433,7 +450,7 @@ public class GroupInfoView extends FrameLayout {
                 .start();
     }
 
-    private void bringGroupNameDown(int animDuration) {
+    public void bringGroupNameDown(int animDuration) {
         layoutDividerBackground.animate()
                 .y(originalGroupBackgroundMargin)
                 .setDuration(animDuration)

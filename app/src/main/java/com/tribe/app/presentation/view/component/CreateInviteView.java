@@ -121,6 +121,17 @@ public class CreateInviteView extends FrameLayout {
         viewCreateGroupBg1.setEnabled(false);
     }
 
+    public void setDefault() {
+        textCreateInvite.setText(getContext().getString(R.string.group_create_title));
+        textCreateInviteDesc.setText(getContext().getString(R.string.group_private_description ));
+        viewCreateGroupBg2.setVisibility(VISIBLE);
+        viewCreateGroupBg2.setAlpha(AnimationUtils.ALPHA_NONE);
+        viewCreateGroupBg2.setEnabled(true);
+        imageInvite.setScaleX(AnimationUtils.SCALE_INVISIBLE);
+        imageInvite.setScaleY(AnimationUtils.SCALE_INVISIBLE);
+        imageInvite.setVisibility(INVISIBLE);
+    }
+
     public void setCreateGrey() {
         viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_disabled));
     }

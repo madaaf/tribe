@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -111,13 +112,14 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
         vh.itemView.setTag(R.id.tag_position, position);
 
 
-        if (friendship.getProfilePicture() != null) {
+        if (friendship.getProfilePicture().equals(context.getString(R.string.no_profile_picture_url))) {
+            vh.imageFriendPic.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.picto_avatar_placeholder));
+        } else {
             Glide.with(context)
                     .load(friendship.getProfilePicture())
                     .bitmapTransform(new CropCircleTransformation(context))
                     .into(vh.imageFriendPic);
         }
-
     }
 
     public Observable<View> clickFriendItem() {
@@ -127,6 +129,7 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
     static class BlockFriendViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.imageFriendPic) public ImageView imageFriendPic;
+        @BindView(R.id.imageFriendPicBadge) public ImageView imageFriendPicBadge;
         @BindView(R.id.txtDisplayName) public TextViewFont txtDisplayName;
         @BindView(R.id.txtUsername) public TextViewFont txtUsername;
         @BindView(R.id.layoutSelected) public FrameLayout layoutSelected;
