@@ -14,8 +14,8 @@
 	
 	<!-- Errors -->
 	<string name="error_unknown">Uh oh... Something went wrong. Try again in 30s.</string>
-	<string name="error_technical">Oops &#128561;\nTechnical error!</string>
-	<string name="error_no_network">Oops &#128561;\nNo network!</string>
+	<string name="error_technical">Oops :scream:\nTechnical error!</string>
+	<string name="error_no_network">Oops :scream:\nNo network!</string>
 	
 	<!-- Image Picker -->
 	<string name="image_picker_title">Pick an avatar</string>
@@ -105,7 +105,7 @@
 	<string name="grid_support_description">Chat with the CEO</string>
 	<string name="grid_ghost">Has not joined yet</string>
 	<string name="grid_friendship_recording_tap_to_cancel">Wrapping up</string>
-	<string name="grid_friendship_recording_validated">Ready to send</string>
+	<string name="grid_friendship_recording_validated">Ready!</string>
 	<string name="grid_unsent_tribes_action_resend">Resend</string>
 	<string name="grid_unsent_tribes_action_delete">Delete</string>
 	<string name="grid_unsent_tribes_action_resend_all">Resend all</string>
@@ -143,26 +143,26 @@
 	<string name="chat_and">and</string>
 	
 	<!-- Private Group -->
-	<string name="group_family_title">&#127969; Family</string>
-	<string name="group_roomies_title">&#127829; Roomies</string>
-	<string name="group_bffs_title">&#128293; Best friends</string>
-	<string name="group_abroad_title">&#9992;&#65039; Friends abroad</string>
-	<string name="group_work_title">&#128188; Work team</string>
-	<string name="group_classmates_title">&#127891; Classmates</string>
-	<string name="group_teammates_title">&#127942; Teammates</string>
-	<string name="group_baddest_title">&#128074;&#127996; Squad goals</string>
-	<string name="group_not_allowed_title">&#128133;&#127997; The Girls</string>
+	<string name="group_family_title">:house_with_garden: Family</string>
+	<string name="group_roomies_title">:pizza: Roomies</string>
+	<string name="group_bffs_title">:fire: Best friends</string>
+	<string name="group_abroad_title">:airplane: Friends abroad</string>
+	<string name="group_work_title">:briefcase: Work team</string>
+	<string name="group_classmates_title">:mortar_board: Classmates</string>
+	<string name="group_teammates_title">:trophy: Teammates</string>
+	<string name="group_baddest_title">:punch: Squad goals</string>
+	<string name="group_not_allowed_title">:nail_care: The Girls</string>
 	
 	<!-- Public Group -->
-	<string name="group_public_family_title">&#127969; Family</string>
-	<string name="group_public_roomies_title">&#127829; Roomies</string>
-	<string name="group_public_bffs_title">&#128293; Best friends</string>
-	<string name="group_public_abroad_title">&#9992;&#65039; Friends abroad</string>
-	<string name="group_public_work_title">&#128188; Work team</string>
-	<string name="group_public_classmates_title">&#127891; Classmates</string>
-	<string name="group_public_teammates_title">&#127942; Teammates</string>
-	<string name="group_public_baddest_title">&#128074;&#127996; Squad goals</string>
-	<string name="group_public_not_allowed_title">&#128133;&#127997; The Girls</string>
+	<string name="group_public_family_title">:house_with_garden: Family</string>
+	<string name="group_public_roomies_title">:pizza: Roomies</string>
+	<string name="group_public_bffs_title">:fire: Best friends</string>
+	<string name="group_public_abroad_title">:airplane: Friends abroad</string>
+	<string name="group_public_work_title">:briefcase: Work team</string>
+	<string name="group_public_classmates_title">:mortar_board: Classmates</string>
+	<string name="group_public_teammates_title">:trophy: Teammates</string>
+	<string name="group_public_baddest_title">:punch: Squad goals</string>
+	<string name="group_public_not_allowed_title">:nail_care: The Girls</string>
 	
 	<!-- Create group -->
 	<string name="group_create_title">Create group</string>
@@ -281,8 +281,8 @@
 	<string name="onboarding_queue_loading_title">Hang tight…</string>
 	<string name="onboarding_queue_loading_description">Looking if one of your\nfriends is already on Tribe.</string>
 	<string name="onboarding_queue_loading_friends">friends</string>
-	<string name="onboarding_queue_declined_title">Uh oh... You don\'t have access yet &#128532;</string>
-	<string name="onboarding_queue_declined_description">You need at least one friend\nto enter. Send invites!&#128171;</string>
+	<string name="onboarding_queue_declined_title">Uh oh... You don\'t have access yet :pensive:</string>
+	<string name="onboarding_queue_declined_description">You need at least one friend\nto enter. Send invites! :dizzy:</string>
 	<string name="onboarding_queue_declined_message_button">Text friends</string>
 	<string name="onboarding_queue_declined_button_title">Try again</string>
 	<string name="onboarding_queue_declined_popup_title">Get notified!</string>
@@ -344,8 +344,8 @@
 	<string name="level_unicorn_title">Unicorn</string>
 	
 	<!-- Notification -->
-	<string name="notification_pending">A pending message. Swipe to resend &#11013;&#65039;</string>
-	<string name="notification_pending_plural">%1$d pending messages. Swipe to resend &#11013;&#65039;</string>
+	<string name="notification_pending">A pending message. Swipe to resend :arrow_left:</string>
+	<string name="notification_pending_plural">%1$d pending messages. Swipe to resend :arrow_left:</string>
 	<string name="notification_pending_action_resend">Resend</string>
 	<string name="notification_pending_action_later">Later</string>
 	<string name="notification_pending_action_decline">Decline</string>
@@ -433,7 +433,7 @@
 	<string name="newlevel_description">Congrats dude. Everyone can\nsee that you’re a %1$s now.</string>
 	<string name="newlevel_share">Share</string>
 	<string name="newlevel_close">Lit!</string>
-	<string name="newlevel_notification_title">%1$s level reached! Brag now? &#129304;&#127996;</string>
+	<string name="newlevel_notification_title">%1$s level reached! Brag now? :metal:</string>
 	
 	<!-- SubtitlesPopup -->
 	<string name="subtitles_popup_title">You just spoke %1$s right ?</string>

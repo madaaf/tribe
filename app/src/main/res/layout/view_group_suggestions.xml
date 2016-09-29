@@ -44,7 +44,6 @@
                     android:paddingEnd="@dimen/padding_mid"
                     android:paddingStart="@dimen/padding_mid"
                     android:paddingTop="@dimen/padding_small"
-                    android:text="@string/group_public_family_title"
                     android:textSize="@dimen/group_suggestion_text_size" />
 
             </FrameLayout>
@@ -63,7 +62,6 @@
                     android:paddingEnd="@dimen/padding_mid"
                     android:paddingStart="@dimen/padding_mid"
                     android:paddingTop="@dimen/padding_small"
-                    android:text="@string/group_public_roomies_title"
                     android:textSize="@dimen/group_suggestion_text_size" />
 
             </FrameLayout>
@@ -82,7 +80,6 @@
                     android:paddingEnd="@dimen/padding_mid"
                     android:paddingStart="@dimen/padding_mid"
                     android:paddingTop="@dimen/padding_small"
-                    android:text="@string/group_public_bffs_title"
                     android:textSize="@dimen/group_suggestion_text_size" />
 
             </FrameLayout>
@@ -101,7 +98,6 @@
                     android:paddingEnd="@dimen/padding_mid"
                     android:paddingStart="@dimen/padding_mid"
                     android:paddingTop="@dimen/padding_small"
-                    android:text="@string/group_public_abroad_title"
                     android:textSize="@dimen/group_suggestion_text_size" />
 
             </FrameLayout>
@@ -120,7 +116,6 @@
                     android:paddingEnd="@dimen/padding_mid"
                     android:paddingStart="@dimen/padding_mid"
                     android:paddingTop="@dimen/padding_small"
-                    android:text="@string/group_public_work_title"
                     android:textSize="@dimen/group_suggestion_text_size" />
 
             </FrameLayout>
@@ -139,7 +134,6 @@
                     android:paddingEnd="@dimen/padding_mid"
                     android:paddingStart="@dimen/padding_mid"
                     android:paddingTop="@dimen/padding_small"
-                    android:text="@string/group_public_classmates_title"
                     android:textSize="@dimen/group_suggestion_text_size" />
 
             </FrameLayout>
@@ -158,7 +152,6 @@
                     android:paddingEnd="@dimen/padding_mid"
                     android:paddingStart="@dimen/padding_mid"
                     android:paddingTop="@dimen/padding_small"
-                    android:text="@string/group_public_teammates_title"
                     android:textSize="@dimen/group_suggestion_text_size" />
 
             </FrameLayout>
@@ -177,7 +170,6 @@
                     android:paddingEnd="@dimen/padding_mid"
                     android:paddingStart="@dimen/padding_mid"
                     android:paddingTop="@dimen/padding_small"
-                    android:text="@string/group_public_baddest_title"
                     android:textSize="@dimen/group_suggestion_text_size" />
 
             </FrameLayout>
@@ -196,15 +188,11 @@
                     android:paddingEnd="@dimen/padding_mid"
                     android:paddingStart="@dimen/padding_mid"
                     android:paddingTop="@dimen/padding_small"
-                    android:text="@string/group_public_not_allowed_title"
                     android:textSize="@dimen/group_suggestion_text_size" />
 
             </FrameLayout>
 
         </com.tribe.app.presentation.view.widget.PredicateLayout>
-
     </FrameLayout>
-
     </ScrollView>
-
 </FrameLayout>

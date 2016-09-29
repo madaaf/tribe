@@ -14,8 +14,8 @@
 	
 	<!-- Errors -->
 	<string name="error_unknown">Uh oh.. Un léger problème est apparu. Réessayez dans 30s.</string>
-	<string name="error_technical">Oups &#128561;\nErreur technique !</string>
-	<string name="error_no_network">Oups &#128561;\nPas de connexion !</string>
+	<string name="error_technical">Oups :scream:\nErreur technique !</string>
+	<string name="error_no_network">Oups :scream:\nPas de connexion !</string>
 	
 	<!-- Image Picker -->
 	<string name="image_picker_title">Choisis une photo</string>
@@ -143,26 +143,26 @@
 	<string name="chat_and">et</string>
 	
 	<!-- Private Group -->
-	<string name="group_family_title">&#127969; Famille</string>
-	<string name="group_roomies_title">&#127829; Collocataires</string>
-	<string name="group_bffs_title">&#128293; BFFs</string>
-	<string name="group_abroad_title">&#9992;&#65039; Étranger</string>
-	<string name="group_work_title">&#128188; Travail</string>
-	<string name="group_classmates_title">&#127891; Classe</string>
-	<string name="group_teammates_title">&#127942; Équipe</string>
-	<string name="group_baddest_title">&#128074;&#127996; Les boys</string>
-	<string name="group_not_allowed_title">&#128133;&#127997; Les Girls</string>
+	<string name="group_family_title">:house_with_garden: Famille</string>
+	<string name="group_roomies_title">:pizza: Collocataires</string>
+	<string name="group_bffs_title">:fire: BFFs</string>
+	<string name="group_abroad_title">:airplane: Étranger</string>
+	<string name="group_work_title">:briefcase: Travail</string>
+	<string name="group_classmates_title">:mortar_board: Classe</string>
+	<string name="group_teammates_title">:trophy: Équipe</string>
+	<string name="group_baddest_title">:punch: Les boys</string>
+	<string name="group_not_allowed_title">:nail_care: Les Girls</string>
 	
 	<!-- Public Group -->
-	<string name="group_public_family_title">&#127969; Famille</string>
-	<string name="group_public_roomies_title">&#127829; Collocataires</string>
-	<string name="group_public_bffs_title">&#128293; BFFs</string>
-	<string name="group_public_abroad_title">&#9992;&#65039; Étranger</string>
-	<string name="group_public_work_title">&#128188; Travail</string>
-	<string name="group_public_classmates_title">&#127891; Classe</string>
-	<string name="group_public_teammates_title">&#127942; Équipe</string>
-	<string name="group_public_baddest_title">&#128074;&#127996; Les boys</string>
-	<string name="group_public_not_allowed_title">&#128133;&#127997; Les Girls</string>
+	<string name="group_public_family_title">:house_with_garden: Famille</string>
+	<string name="group_public_roomies_title">:pizza: Collocataires</string>
+	<string name="group_public_bffs_title">:fire: BFFs</string>
+	<string name="group_public_abroad_title">:airplane: Étranger</string>
+	<string name="group_public_work_title">:briefcase: Travail</string>
+	<string name="group_public_classmates_title">:mortar_board: Classe</string>
+	<string name="group_public_teammates_title">:trophy: Équipe</string>
+	<string name="group_public_baddest_title">:punch: Les boys</string>
+	<string name="group_public_not_allowed_title">:nail_care: Les Girls</string>
 	
 	<!-- Create group -->
 	<string name="group_create_title">Créer un groupe</string>
@@ -344,8 +344,8 @@
 	<string name="level_unicorn_title">Unicorn</string>
 	
 	<!-- Notification -->
-	<string name="notification_pending">Un message en attente. Glissez pour renvoyer &#11013;&#65039;</string>
-	<string name="notification_pending_plural">%1$d messages en attente. Glissez pour renvoyer &#11013;&#65039;</string>
+	<string name="notification_pending">Un message en attente. Glissez pour renvoyer :arrow_left:</string>
+	<string name="notification_pending_plural">%1$d messages en attente. Glissez pour renvoyer :arrow_left:</string>
 	<string name="notification_pending_action_resend">Renvoyer</string>
 	<string name="notification_pending_action_later">Plus tard</string>
 	<string name="notification_pending_action_decline">Refuser</string>
@@ -433,7 +433,7 @@
 	<string name="newlevel_description">Félicitations. Tout le monde peut\nvoir que tu es un %1$s maintenant.</string>
 	<string name="newlevel_share">Partager</string>
 	<string name="newlevel_close">Cool!</string>
-	<string name="newlevel_notification_title">%1$s niveau atteint! Brag now? &#129304;&#127996;</string>
+	<string name="newlevel_notification_title">%1$s niveau atteint! Brag now? :metal:</string>
 	
 	<!-- SubtitlesPopup -->
 	<string name="subtitles_popup_title">Tu viens de parler %1$s n\'est-ce pas ?</string>
