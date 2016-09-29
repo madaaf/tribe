@@ -8,7 +8,6 @@ import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.TribeRealm;
-import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -22,7 +21,6 @@ import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import rx.Observable;
-import rx.functions.Action1;
 
 /**
  * {@link TribeDataStore} implementation based on connections to the api (Cloud).
@@ -133,9 +131,11 @@ public class CloudTribeDataStore implements TribeDataStore {
         return this.tribeApi.markTribeListAsSeen(req);
     }
 
-    private final Action1<UserRealm> saveToCacheUser = userRealm -> {
-        if (userRealm != null) {
-            CloudTribeDataStore.this.userCache.put(userRealm);
-        }
-    };
+    @Override
+    public Observable<Void> markTribeAsSave(TribeRealm tribeRealm) {
+        String markAsSaved = context.getString(R.string.tribe_markAsSave_item, "tribe" + tribeRealm.getId(), tribeRealm.getId());
+
+        String req = context.getString(R.string.mutation, markAsSaved);
+        return this.tribeApi.markTribeAsSave(req);
+    }
 }

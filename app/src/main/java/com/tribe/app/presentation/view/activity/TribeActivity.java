@@ -216,7 +216,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
                 }));
 
         subscriptions.add(viewTribePager.onClickMore().subscribe(tribeMessage -> {
-            setupBottomSheetMore();
+            setupBottomSheetMore(tribeMessage);
         }));
 
         subscriptions.add(viewTribePager.onErrorTribe()
@@ -299,7 +299,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
     /**
      * Bottom sheet set-up
      */
-    private void prepareBottomSheetCamera(List<LabelType> items) {
+    private void prepareBottomSheetCamera(TribeMessage tribe, List<LabelType> items) {
         View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_more, null);
         RecyclerView recyclerViewMore = (RecyclerView) view.findViewById(R.id.recyclerViewMore);
         recyclerViewMore.setHasFixedSize(true);
@@ -310,6 +310,14 @@ public class TribeActivity extends BaseActivity implements TribeView {
         subscriptions.add(moreTypeAdapter.clickLabelItem()
                 .map((View labelView) -> moreTypeAdapter.getItemAtPosition((Integer) labelView.getTag(R.id.tag_position)))
                 .subscribe(labelType -> {
+                    MoreType moreType = (MoreType) labelType;
+
+                    if (moreType.getMoreType().equals(MoreType.TRIBE_SAVE)) {
+                        FileUtils.saveToMediaStore(this, FileUtils.getPathForId(this, tribe.getId(), FileUtils.VIDEO));
+                    }
+
+                    tribePresenter.markTribeAsSave(recipient, tribe);
+
                     dismissDialogSheetMore();
                 }));
 
@@ -320,10 +328,9 @@ public class TribeActivity extends BaseActivity implements TribeView {
             moreTypeAdapter.releaseSubscriptions();
             dialogMore = null;
         });
-
     }
 
-    private void setupBottomSheetMore() {
+    private void setupBottomSheetMore(TribeMessage tribe) {
         if (dismissDialogSheetMore()) {
             return;
         }
@@ -331,7 +338,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
         List<LabelType> moreType = new ArrayList<>();
         moreType.add(new MoreType(getString(R.string.tribe_more_save), MoreType.TRIBE_SAVE));
 
-        prepareBottomSheetCamera(moreType);
+        prepareBottomSheetCamera(tribe, moreType);
     }
 
     private boolean dismissDialogSheetMore() {

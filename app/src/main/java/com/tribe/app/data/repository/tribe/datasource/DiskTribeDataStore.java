@@ -7,7 +7,6 @@ import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,5 +76,10 @@ public class DiskTribeDataStore implements TribeDataStore {
         tribeCache.update(tribeUpdates);
 
         return Observable.just(tribeRealmList);
+    }
+
+    @Override
+    public Observable<Void> markTribeAsSave(TribeRealm tribeRealm) {
+        return null;
     }
 }

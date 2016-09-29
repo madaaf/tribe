@@ -15,9 +15,10 @@ import rx.subjects.PublishSubject;
  */
 public abstract class TribeMediaPlayer {
 
-    public static final String ERROR = "error";
+    public static final String GENERAL_ERROR = "error";
+    public static final String FILE_NOT_FOUND_ERROR = "fileNotFound";
 
-    @StringDef({ERROR})
+    @StringDef({GENERAL_ERROR, FILE_NOT_FOUND_ERROR})
     public @interface TribeMediaPlayerError {}
 
     protected Context context;

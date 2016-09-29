@@ -61,4 +61,11 @@ public interface TribeDataStore {
      * about the tribes pending.
      */
     Observable<List<TribeRealm>> markTribeListAsRead(List<TribeRealm> tribeRealmList);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link TribeRealm } containing info about the tribe saved.
+     *
+     * @param tribeRealm the TribeRealm to put as saved
+     */
+    Observable<Void> markTribeAsSave(final TribeRealm tribeRealm);
 }

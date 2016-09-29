@@ -124,6 +124,7 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
                 e.printStackTrace();
             }
         } catch (FileNotFoundException e) {
+            onErrorPlayer.onNext(FILE_NOT_FOUND_ERROR);
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();

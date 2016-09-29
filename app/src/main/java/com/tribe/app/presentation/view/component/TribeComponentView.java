@@ -140,7 +140,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         unbinder.unbind();
 
         if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
-        if (animatorProgress != null) animatorProgress.cancel();
+        cancelProgress();
 
         super.onDetachedFromWindow();
     }
@@ -296,15 +296,14 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     public void pausePlayer() {
         if (mediaPlayer != null) {
             lastPosition = mediaPlayer.getPosition();
-            animatorProgress.cancel();
+            cancelProgress();
         }
 
         releasePlayer();
     }
 
     private void animateProgress() {
-        if (animatorProgress != null)
-            animatorProgress.cancel();
+        cancelProgress();
 
         animatorProgress = ValueAnimator.ofInt(lastPosition != -1 ? (int) lastPosition : 0, screenUtils.getWidthPx());
         animatorProgress.addUpdateListener(valueAnimator -> {
@@ -316,6 +315,11 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
         animatorProgress.setDuration((int) (mediaPlayer.getDuration() / speedPlayack.get()));
         animatorProgress.start();
+    }
+
+    private void cancelProgress() {
+        if (animatorProgress != null)
+            animatorProgress.cancel();
     }
 
     public void setIconsAlpha(float alpha) {
@@ -369,7 +373,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         }
     }
 
-    @OnClick(R.id.btnMore)
+    @OnClick(R.id.imgMore)
     void clickMore(View v) {
         clickMore.onNext(tribe);
     }

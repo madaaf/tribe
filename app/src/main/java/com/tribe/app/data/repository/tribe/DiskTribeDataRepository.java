@@ -90,4 +90,9 @@ public class DiskTribeDataRepository implements TribeRepository {
         return tribeDataStore.markTribeListAsRead(tribeRealmDataMapper.transform(tribeList))
                 .map(collection -> tribeRealmDataMapper.transform(collection));
     }
+
+    @Override
+    public Observable<Void> markTribeAsSave(final TribeMessage tribe) {
+        return null;
+    }
 }

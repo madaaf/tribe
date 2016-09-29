@@ -240,6 +240,10 @@
         %1$s: markTribeAsSeen(id: \"%2$s\")
     </string>
 
+    <string name="tribe.markAsSave.item" translatable="false">
+        %1$s: markTribeAsSaved(id: \"%2$s\")
+    </string>
+
      <string name="message.sent.infos" translatable="false">
         messages (ids: [%1$s]) {
             id

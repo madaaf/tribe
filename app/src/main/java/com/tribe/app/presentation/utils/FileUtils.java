@@ -8,6 +8,9 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.StringDef;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.tribe.app.R;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -34,8 +37,8 @@ public class FileUtils {
     public static final String VIDEO = "video";
     public static final String PHOTO = "photo";
 
-    private static String pathEnd = "/TribeMessage/Sent";
-    private static String pathSave = "/TribeMessage/Sent";
+    private static String pathEnd = "/Tribe/Sent";
+    private static String pathSave = "/Tribe";
 
 
     @Inject
@@ -151,6 +154,8 @@ public class FileUtils {
 
         ContentResolver cr = context.getContentResolver();
         cr.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+
+        Toast.makeText(context, R.string.tribe_more_save_success, Toast.LENGTH_SHORT).show();
     }
 
     public static void copyFile(String inputPath, String outputPath) {
