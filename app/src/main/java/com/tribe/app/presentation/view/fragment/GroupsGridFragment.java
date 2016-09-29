@@ -287,7 +287,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         screenUtils.setTopMargin(createInviteView, screenUtils.dpToPx(layoutCreateInviteInfoPositionY));
         createInviteView.setInvite(privateGroup);
         createInviteView.enableInvitePress();
-        groupInfoView.setupGroupInfoUi(privateGroup);
+        groupInfoView.setupGroupInfoUi(privateGroup, 1);
         imageDone.setVisibility(View.VISIBLE);
         if (!privateGroup)circularProgressView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_public));
         layoutInvite.setTranslationY(screenUtils.dpToPx(smallMargin));
@@ -343,7 +343,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         groupName = group.getName();
         groupInfoView.setGroupName(groupName);
         if (group.getPicture() != null && !group.getPicture().isEmpty()) groupInfoView.setGroupPictureFromUrl(group.getPicture());
-        setGroupPrivacy(group.isPrivateGroup());
         privateGroup = group.isPrivateGroup();
         members = group.getMembers();
         // Setup Group Member View info
@@ -377,6 +376,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         initFriendshipListExcluding(groupMemberList);
         friendAdapter.setItems(friendshipsList);
         friendAdapter.notifyDataSetChanged();
+        setGroupPrivacy(privateGroup, groupMemberList.size());
     }
 
     public void addMemberPhotos(List<GroupMember> groupMemberList) {
@@ -405,8 +405,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
 
 
-    private void setGroupPrivacy(boolean isPrivate) {
-        groupInfoView.setPrivacy(isPrivate);
+    private void setGroupPrivacy(boolean isPrivate, int memberCount) {
+        groupInfoView.setPrivacy(isPrivate, memberCount);
         createInviteView.switchColors(isPrivate);
         if (!isPrivate) imageDone.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_done_purple));
     }
@@ -448,7 +448,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
      * Animations performed after step 1
      */
     private void animSet1() {
-        groupInfoView.collapsePrivatePublic(privateGroup, animDuration);
+        groupInfoView.collapsePrivatePublic(privateGroup, animDuration, 1);
         groupInfoView.collapse(animDuration, getActivity());
         createInviteView.disable();
         createInviteView.setInvite(privateGroup);

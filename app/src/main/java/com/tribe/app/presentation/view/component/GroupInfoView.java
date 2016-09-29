@@ -256,14 +256,14 @@ public class GroupInfoView extends FrameLayout {
         }
     }
 
-    public void collapsePrivatePublic(Boolean privateGroup, int animDuration) {
+    public void collapsePrivatePublic(Boolean privateGroup, int animDuration, int memberCount) {
         AnimationUtils.collapseScale(privatePublicView, animDuration);
         privatePublicView.animate()
                 .setStartDelay(AnimationUtils.NO_START_DELAY)
                 .alpha(AnimationUtils.ALPHA_NONE)
                 .setDuration(animDuration)
                 .start();
-        viewPrivacyStatus.setup(privateGroup);
+        viewPrivacyStatus.setup(privateGroup, memberCount);
     }
 
     public void resetPrivatePublic() {
@@ -412,7 +412,7 @@ public class GroupInfoView extends FrameLayout {
 
     }
 
-    public void setupGroupInfoUi(boolean privateGroup) {
+    public void setupGroupInfoUi(boolean privateGroup, int memberCount) {
         imageDoneEdit.setTranslationY(-500);
         privatePublicView.setVisibility(View.INVISIBLE);
 
@@ -428,7 +428,7 @@ public class GroupInfoView extends FrameLayout {
         editTextGroupName.setTranslationY(-screenUtils.dpToPx(moveGroupName));
         viewPrivacyStatus.setAlpha(AnimationUtils.ALPHA_FULL);
         viewPrivacyStatus.setTranslationY(screenUtils.dpToPx(privacyFinalPosition));
-        viewPrivacyStatus.setup(privateGroup);
+        viewPrivacyStatus.setup(privateGroup, memberCount);
         imageBackIcon.setVisibility(View.VISIBLE);
         imageBackIcon.setClickable(true);
 
@@ -478,8 +478,8 @@ public class GroupInfoView extends FrameLayout {
         editTextGroupName.setText(groupName);
     }
 
-    public void setPrivacy(boolean isPrivate) {
-            viewPrivacyStatus.setup(isPrivate);
+    public void setPrivacy(boolean isPrivate, int memberCount) {
+            viewPrivacyStatus.setup(isPrivate, memberCount);
     }
 
     protected ApplicationComponent getApplicationComponent() {
