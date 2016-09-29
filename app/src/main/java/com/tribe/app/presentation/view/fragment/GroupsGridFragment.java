@@ -275,12 +275,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             createInviteView.loadingAnimation(AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
         }));
 
-        subscriptions.add(groupInfoView.imageDoneEditClicked().subscribe(aVoid -> {
-            groupName = groupInfoView.getGroupName();
-            groupPresenter.updateGroup(groupId, groupName, groupPictureUri);
-            backFromEdit(currentEditTranslation);
-        }));
-
         subscriptions.add((createInviteView.invitePressed()).subscribe(aVoid -> {
             showShareDialogFragment();
         }));
@@ -422,7 +416,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
      */
 
     private void backFromEdit(int translation) {
-        groupInfoView.collapseInfo(animDuration, getActivity());
+        if (translation > 20) groupInfoView.collapse(animDuration, getActivity());
+        else groupInfoView.collapseInfo(animDuration, getActivity());
 
         AnimationUtils.animateHeightCoordinatorLayout(appBarLayout,
                 appBarLayout.getHeight(), appBarLayout.getHeight() - screenUtils.dpToPx(translation),
@@ -435,7 +430,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     }
 
     private void presentEdit(int translation) {
-        groupInfoView.expandInfo(animDuration);
+        if (translation > 20) groupInfoView.expand(animDuration);
+        else groupInfoView.expandInfo(animDuration);
 
         appBarLayout.bringToFront();
         AnimationUtils.animateHeightCoordinatorLayout(appBarLayout,
