@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.VoiceInteractor;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -60,10 +61,6 @@ public class GroupInfoView extends FrameLayout {
 
     public GroupInfoView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-    }
-
-    public GroupInfoView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
     }
 
     @BindView(R.id.imageGroup)
@@ -216,6 +213,14 @@ public class GroupInfoView extends FrameLayout {
 
     public void addMemberPhoto(String profPic) {
         memberPhotoViewList.addMemberPhoto(profPic);
+    }
+
+    public void addMemberPhotoDrawable(Drawable drawable) {
+        memberPhotoViewList.addMemberPhotoDrawable(drawable);
+    }
+
+    public void clearMemberPhotos() {
+        memberPhotoViewList.clearPhotos();
     }
 
     public void setGroupPicture(Bitmap bitmap) {

@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.component;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
@@ -59,7 +60,6 @@ public class MemberPhotoViewList extends FrameLayout {
 
 
     public void addMemberPhoto(String imageUrl) {
-
         MemberPhotoView memberPhotoView = new MemberPhotoView(getContext());
         memberPhotoView.initUi(R.layout.view_member_photo);
         memberPhotoView.setPicture(imageUrl);
@@ -82,6 +82,40 @@ public class MemberPhotoViewList extends FrameLayout {
 
         }
         numMembers++;
+    }
+
+    public void addMemberPhotoDrawable(Drawable drawable) {
+        MemberPhotoView memberPhotoView = new MemberPhotoView(getContext());
+        memberPhotoView.initUi(R.layout.view_member_photo);
+        memberPhotoView.setPictureDrawable(drawable);
+        switch (numMembers) {
+            case 0:
+                layoutMember1.addView(memberPhotoView);
+                break;
+            case 1:
+                layoutMember2.addView(memberPhotoView);
+                break;
+            case 2:
+                layoutMember3.addView(memberPhotoView);
+                break;
+            case 3:
+                layoutMember4.addView(memberPhotoView);
+                break;
+            case 4:
+                layoutMember5.addView(memberPhotoView);
+                break;
+
+        }
+        numMembers++;
+    }
+
+    public void clearPhotos() {
+        if (numMembers > 0)layoutMember1.removeViewAt(0);
+        if (numMembers > 1) layoutMember2.removeViewAt(0);
+        if (numMembers > 2) layoutMember3.removeViewAt(0);
+        if (numMembers > 3) layoutMember4.removeViewAt(0);
+        if (numMembers > 4) layoutMember5.removeViewAt(0);
+        numMembers = 0;
     }
 
     public void initUi(int layout) {

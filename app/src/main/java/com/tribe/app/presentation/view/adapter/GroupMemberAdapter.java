@@ -64,6 +64,10 @@ public class GroupMemberAdapter extends RecyclerView.Adapter {
         notifyDataSetChanged();
     }
 
+    public void removeItemAtPosition(int position) {
+        items.remove(position);
+    }
+
     public GroupMember getItemAtPosition(int position) {
         if (items.size() > 0 && position < items.size()) {
             return items.get(position);

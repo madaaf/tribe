@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.component;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
@@ -70,5 +71,9 @@ public class MemberPhotoView extends FrameLayout {
                 .bitmapTransform(new CropCircleTransformation(getContext()))
                 .crossFade()
                 .into(imageMember);
+    }
+
+    public void setPictureDrawable(Drawable drawable) {
+        imageMember.setImageDrawable(drawable);
     }
 }

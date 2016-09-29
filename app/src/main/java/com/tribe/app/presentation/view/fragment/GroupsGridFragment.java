@@ -299,19 +299,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         if (group.getPicture() != null && !group.getPicture().isEmpty()) groupInfoView.setGroupPictureFromUrl(group.getPicture());
         setGroupPrivacy(group.isPrivateGroup());
         privateGroup = group.isPrivateGroup();
-
         members = group.getMembers();
-        int memberPhotos;
-        if (group.getMembers().size() < 5) memberPhotos = group.getMembers().size();
-        else memberPhotos = 5;
-        for (int i = 0; i < memberPhotos; i++) {
-            String profPic = members.get(i).getProfilePicture();
-            if (profPic != null) groupInfoView.addMemberPhoto(profPic);
-        }
-        initFriendshipListExcluding(members);
-        friendAdapter.setItems(friendshipsList);
-        friendAdapter.notifyDataSetChanged();
-
         // Setup Group Member View info
         List<User> admins = group.getAdmins();
         User user = getCurrentUser();
@@ -339,6 +327,30 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             }
             groupMemberList.add(groupMember);
         }
+        addMemberPhotos(groupMemberList);
+        initFriendshipListExcluding(groupMemberList);
+        friendAdapter.setItems(friendshipsList);
+        friendAdapter.notifyDataSetChanged();
+    }
+
+    public void addMemberPhotos(List<GroupMember> groupMemberList) {
+        int memberPhotos;
+        if (groupMemberList.size() < 5) memberPhotos = groupMemberList.size();
+        else memberPhotos = 5;
+        for (int i = 0; i < memberPhotos; i++) {
+            String profPic = groupMemberList.get(i).getProfilePicture();
+            if (profPic != null) groupInfoView.addMemberPhoto(profPic);
+            if (profPic.equals(getString(R.string.no_profile_picture_url))) groupInfoView.addMemberPhotoDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_avatar_placeholder));
+        }
+    }
+
+    public void setGroupMemberList(ArrayList<GroupMember> groupMemberList) {
+        this.groupMemberList = groupMemberList;
+        friendshipsList.clear();
+        friendshipsListCopy.clear();
+        initFriendshipListExcluding(groupMemberList);
+        groupInfoView.clearMemberPhotos();
+        addMemberPhotos(groupMemberList);
     }
 
     /**
@@ -516,13 +528,13 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
      */
 
 
-    private void initFriendshipListExcluding(List<User> usersToExclude) {
+    private void initFriendshipListExcluding(List<GroupMember> usersToExclude) {
         User user = getCurrentUser();
         friendshipsList.addAll(user.getFriendships());
         for (Iterator<Friendship> iterFriendship = friendshipsList.iterator(); iterFriendship.hasNext();) {
             final User frienshipUser = iterFriendship.next().getFriend();
-            for (Iterator<User> iterMember = usersToExclude.iterator(); iterMember.hasNext();) {
-                if (frienshipUser.getId().equals(iterMember.next().getId())) iterFriendship.remove();
+            for (Iterator<GroupMember> iterMember = usersToExclude.iterator(); iterMember.hasNext();) {
+                if (frienshipUser.getId().equals(iterMember.next().getUserId())) iterFriendship.remove();
             }
         }
         friendAdapter = new FriendAdapter(getContext(), privateGroup);

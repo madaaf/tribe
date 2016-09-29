@@ -106,8 +106,8 @@
 	<string name="grid_ghost">Pas encore inscrit</string>
 	<string name="grid_friendship_recording_tap_to_cancel">Préparation</string>
 	<string name="grid_friendship_recording_validated">Prêt à envoyer !</string>
-	<string name="grid_unsent_tribes_action_resend">Renvoyer</string>
-	<string name="grid_unsent_tribes_action_delete">Supprimer</string>
+	<string name="grid_unsent_tribes_action_resend">Renvoyer %1$s</string>
+	<string name="grid_unsent_tribes_action_delete">Supprimer %1$s</string>
 	<string name="grid_unsent_tribes_action_resend_all">Renvoyer tous</string>
 	<string name="grid_unsent_tribes_action_delete_all">Supprimer tous</string>
 	<string name="grid_menu_group_infos">Informations du groupe</string>

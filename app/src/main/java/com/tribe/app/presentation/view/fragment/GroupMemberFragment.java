@@ -81,8 +81,8 @@ public class GroupMemberFragment extends BaseFragment implements GroupMemberView
     private GroupMember groupMemberClicked;
     private int itemPosition;
     private LabelSheetAdapter labelSheetAdapter;
-    private List<GroupMember> groupMemberList = new ArrayList<>();
-    private List<GroupMember> groupMemberListCopy = new ArrayList<>();
+    private ArrayList<GroupMember> groupMemberList = new ArrayList<>();
+    private ArrayList<GroupMember> groupMemberListCopy = new ArrayList<>();
     private LinearLayoutManager linearLayoutManager;
     private boolean currentUserIsAdmin = false;
     BottomSheetDialog bottomSheetDialog;
@@ -124,6 +124,10 @@ public class GroupMemberFragment extends BaseFragment implements GroupMemberView
         return imageBackClicked;
     }
 
+    public ArrayList<GroupMember> getGroupMemberList() {
+        return  groupMemberList;
+    }
+
     /**
      * Init Search & List
      */
@@ -151,7 +155,7 @@ public class GroupMemberFragment extends BaseFragment implements GroupMemberView
         groupMemberPresenter.attachView(this);
         if (groupMemberList != null) {
             groupMemberListCopy.addAll(groupMemberList);
-            groupMemberAdapter.setHasStableIds(true);
+//            groupMemberAdapter.setHasStableIds(true);
             groupMemberAdapter.setItems(groupMemberList);
         }
 
@@ -277,11 +281,9 @@ public class GroupMemberFragment extends BaseFragment implements GroupMemberView
     @Override
     public void removeMember() {
         groupMemberList.remove(itemPosition);
-        groupMemberListCopy.clear();
-        groupMemberListCopy.addAll(groupMemberList);
-        groupMemberList.clear();
-        groupMemberList.addAll(groupMemberListCopy);
-        groupMemberAdapter.notifyDataSetChanged();
+        groupMemberAdapter.removeItemAtPosition(itemPosition);
+        groupMemberAdapter.notifyItemRemoved(itemPosition);
+        groupMemberAdapter.notifyItemRangeChanged(itemPosition, groupMemberList.size());
     }
 
     @Override
