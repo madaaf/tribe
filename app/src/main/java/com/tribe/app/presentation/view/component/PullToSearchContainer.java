@@ -145,6 +145,8 @@ public class PullToSearchContainer extends FrameLayout {
         subscriptions.add(ptsView.onLetterSelected()
                 .doOnNext(letter -> {
                     selectedLetter = letter;
+                    if (!StringUtils.isEmpty(selectedLetter))
+                        onLetterSelected.onNext(selectedLetter);
                 })
                 .delay(300, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.newThread())
@@ -296,8 +298,6 @@ public class PullToSearchContainer extends FrameLayout {
             super.onSpringAtRest(spring);
             if (spring.getEndValue() == 0) {
                 ptsView.close();
-                if (!StringUtils.isEmpty(selectedLetter))
-                    onLetterSelected.onNext(selectedLetter);
             }
         }
     }

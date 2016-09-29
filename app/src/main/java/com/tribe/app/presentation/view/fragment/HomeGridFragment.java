@@ -200,7 +200,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
 
     @Override
     public void renderRecipientList(List<Recipient> recipientList) {
-        if (recipientList != null) {
+        if (recipientList != null && !isRecording) {
             if (shouldReloadGrid) {
                 shouldReloadGrid = false;
                 reloadGrid();
@@ -217,7 +217,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
             bundle.putInt(TagManagerConstants.COUNT_GROUPS, currentUser.getFriendships().size());
             tagManager.setProperty(bundle);
 
-            if (pullToSearchContainer != null) pullToSearchContainer.updatePTSList(recipientList);
+            // We remove the current user from the list
+            if (pullToSearchContainer != null) pullToSearchContainer.updatePTSList(recipientList.subList(1, recipientList.size() - 1));
             this.homeGridAdapter.setItems(recipientList);
         }
     }
@@ -428,7 +429,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
 
         subscriptions.add(pullToSearchContainer.onLetterSelected().subscribe(s -> {
             filter = s;
-            homeGridPresenter.loadFriendList(filter);
+            homeGridAdapter.filterList(s);
         }));
     }
 

@@ -25,8 +25,6 @@ import javax.microedition.khronos.opengles.GL10;
 
 import static android.opengl.GLSurfaceView.DEBUG_CHECK_GL_ERROR;
 import static android.opengl.GLSurfaceView.DEBUG_LOG_GL_CALLS;
-import static android.opengl.GLSurfaceView.RENDERMODE_CONTINUOUSLY;
-import static android.opengl.GLSurfaceView.RENDERMODE_WHEN_DIRTY;
 import static javax.microedition.khronos.egl.EGL10.EGL_BAD_NATIVE_WINDOW;
 import static javax.microedition.khronos.egl.EGL10.EGL_DEFAULT_DISPLAY;
 import static javax.microedition.khronos.egl.EGL10.EGL_NO_CONTEXT;
@@ -46,6 +44,24 @@ public class GlTextureView extends TextureView implements TextureView.SurfaceTex
     private final static boolean LOG_RENDERER = false;
     private final static boolean LOG_RENDERER_DRAW_FRAME = false;
     private final static boolean LOG_EGL = false;
+
+    /**
+     * The renderer only renders
+     * when the surface is created, or when {@link #requestRender} is called.
+     *
+     * @see #getRenderMode()
+     * @see #setRenderMode(int)
+     * @see #requestRender()
+     */
+    public final static int RENDERMODE_WHEN_DIRTY = 0;
+    /**
+     * The renderer is called
+     * continuously to re-render the scene.
+     *
+     * @see #getRenderMode()
+     * @see #setRenderMode(int)
+     */
+    public final static int RENDERMODE_CONTINUOUSLY = 1;
 
     private static int sGLESVersion;
 
