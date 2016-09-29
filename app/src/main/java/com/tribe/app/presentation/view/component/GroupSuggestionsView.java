@@ -30,10 +30,6 @@ public class GroupSuggestionsView extends FrameLayout {
         super(context, attrs);
     }
 
-    public GroupSuggestionsView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private PublishSubject<String> groupSuggestionClicked = PublishSubject.create();

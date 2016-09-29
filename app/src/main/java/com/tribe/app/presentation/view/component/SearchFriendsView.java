@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
+import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -31,6 +32,9 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.Observable;
+import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by horatiothomas on 9/22/16.
@@ -92,6 +96,13 @@ public class SearchFriendsView extends FrameLayout {
         super(context, attrs, defStyleAttr);
     }
 
+    private CompositeSubscription subscriptions = new CompositeSubscription();
+    private PublishSubject<Void> editTextSearchClicked = PublishSubject.create();
+
+    public Observable<Void> editTextSearchClicked() {
+        return editTextSearchClicked;
+    }
+
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -101,6 +112,10 @@ public class SearchFriendsView extends FrameLayout {
 
         initAnimationConstants();
         initViewManagementConstants();
+
+        subscriptions.add(RxView.clicks(editTextSearch).subscribe(aVoid -> {
+            editTextSearchClicked.onNext(null);
+        }));
     }
 
     private void initAnimationConstants() {
@@ -125,6 +140,11 @@ public class SearchFriendsView extends FrameLayout {
     protected void onDetachedFromWindow() {
         unbinder.unbind();
         super.onDetachedFromWindow();
+
+        if (subscriptions.hasSubscriptions()) {
+            subscriptions.unsubscribe();
+            subscriptions.clear();
+        }
     }
 
     public void insertFriend(String friendId, String pictureUrl) {

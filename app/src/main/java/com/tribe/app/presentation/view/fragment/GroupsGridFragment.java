@@ -17,6 +17,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -38,6 +39,8 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.GroupPresenter;
 import com.tribe.app.presentation.mvp.view.GroupView;
+import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
+import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.GroupInfoActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
@@ -124,6 +127,9 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     @Inject
     GroupPresenter groupPresenter;
 
+    @Inject
+    RxImagePicker rxImagePicker;
+
     // VARIABLES
     private BottomSheetDialog dialogCamera;
     private LabelSheetAdapter cameraTypeAdapter;
@@ -194,7 +200,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             });
         }
         initForBoth();
-        initSearchView();
         fragmentView.setTag(HomeActivity.GROUPS_FRAGMENT_PAGE);
         return fragmentView;
     }
@@ -252,9 +257,11 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         }));
 
         subscriptions.add(groupInfoView.imageGoToMembersClicked().subscribe(aVoid -> {
+            searchFriendsView.requestFocus();
             imageGoToMembersClicked.onNext(null);
         }));
         groupPresenter.getGroupMembers(groupId);
+        appBarLayout.setExpanded(true);
     }
 
     public void initForBoth() {
@@ -286,6 +293,16 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             groupInfoView.bringGroupNameDown(animDuration);
             groupSuggestionsView.setVisibility(View.INVISIBLE);
         }));
+        searchFriendsView.requestFocus();
+        appBarLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                appBarLayout.setExpanded(true);
+                searchFriendsView.setAlpha(AnimationUtils.ALPHA_FULL);
+                appBarLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
+        setupSearchView();
     }
 
     @Override
@@ -554,31 +571,12 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         friendAdapter.notifyDataSetChanged();
     }
 
-    private void initSearchView() {
-        setupSearchView();
-//        editTextInviteSearch.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable editable) {
-//                filter(editable.toString());
-//            }
-//        });
-    }
-
     private void setupSearchView() {
+        searchFriendsView.setAlpha(AnimationUtils.ALPHA_NONE);
         subscriptions.add(RxView.focusChanges(searchFriendsView).subscribe(aBoolean -> {
             if (aBoolean) appBarLayout.setExpanded(false);
         }));
-        subscriptions.add(RxView.clicks(searchFriendsView).subscribe(aVoid -> {
+        subscriptions.add(searchFriendsView.editTextSearchClicked().subscribe(aVoid -> {
             appBarLayout.setExpanded(false);
         }));
     }
@@ -617,11 +615,22 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                 .map((View labelView) -> cameraTypeAdapter.getItemAtPosition((Integer) labelView.getTag(R.id.tag_position)))
                 .subscribe(labelType -> {
                     CameraType cameraType = (CameraType) labelType;
+//                    if (cameraType.getCameraTypeDef().equals(CameraType.OPEN_CAMERA)) {
+//                        navigator.getImageFromCamera(getActivity(), HomeActivity.OPEN_CAMERA_RESULT);
+//                    }
+//                    if (cameraType.getCameraTypeDef().equals(CameraType.OPEN_PHOTOS)) {
+//                        navigator.getImageFromCameraRoll(getActivity(), HomeActivity.OPEN_GALLERY_RESULT);
+//                    }
                     if (cameraType.getCameraTypeDef().equals(CameraType.OPEN_CAMERA)) {
-                        navigator.getImageFromCamera(getActivity(), HomeActivity.OPEN_CAMERA_RESULT);
-                    }
-                    if (cameraType.getCameraTypeDef().equals(CameraType.OPEN_PHOTOS)) {
-                        navigator.getImageFromCameraRoll(getActivity(), HomeActivity.OPEN_GALLERY_RESULT);
+                        subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA)
+                                .subscribe(uri -> {
+                                    groupInfoView.setGroupPictureFromUrl(uri.toString());
+                                }));
+                    } else if (cameraType.getCameraTypeDef().equals(CameraType.OPEN_PHOTOS)) {
+                        subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY)
+                                .subscribe(uri -> {
+                                    groupInfoView.setGroupPictureFromUrl(uri.toString());
+                                }));
                     }
                     dismissDialogSheetCamera();
                 }));

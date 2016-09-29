@@ -16,16 +16,21 @@ public class GroupMember implements Parcelable {
     private boolean isFriend;
     private boolean isAdmin;
     private boolean isCurrentUser;
-
-    public GroupMember(String userId) {
-        this.userId = userId;
-    }
+    private boolean shouldAnimateRemoveFriend;
+    private boolean shouldAnimateAddFriend;
+    private boolean shouldAnimateAddAdmin;
+    private boolean shouldAnimateRemoveAdmin;
 
     public GroupMember(String userId, String displayName, String username, String profilePicture) {
         this.userId = userId;
         this.displayName = displayName;
         this.username = username;
         this.profilePicture = profilePicture;
+        this.isCurrentUser = false;
+        this.shouldAnimateRemoveFriend = false;
+        this.shouldAnimateAddFriend = false;
+        this.shouldAnimateAddAdmin = false;
+        this.shouldAnimateRemoveAdmin = false;
     }
 
     public String getUserId() {
@@ -90,6 +95,38 @@ public class GroupMember implements Parcelable {
 
     public void setCurrentUser(boolean currentUser) {
         isCurrentUser = currentUser;
+    }
+
+    public boolean isShouldAnimateRemoveFriend() {
+        return shouldAnimateRemoveFriend;
+    }
+
+    public void setShouldAnimateRemoveFriend(boolean shouldAnimateRemoveFriend) {
+        this.shouldAnimateRemoveFriend = shouldAnimateRemoveFriend;
+    }
+
+    public boolean isShouldAnimateAddFriend() {
+        return shouldAnimateAddFriend;
+    }
+
+    public void setShouldAnimateAddFriend(boolean shouldAnimateAddFriend) {
+        this.shouldAnimateAddFriend = shouldAnimateAddFriend;
+    }
+
+    public boolean isShouldAnimateAddAdmin() {
+        return shouldAnimateAddAdmin;
+    }
+
+    public void setShouldAnimateAddAdmin(boolean shouldAnimateAddAdmin) {
+        this.shouldAnimateAddAdmin = shouldAnimateAddAdmin;
+    }
+
+    public boolean isShouldAnimateRemoveAdmin() {
+        return shouldAnimateRemoveAdmin;
+    }
+
+    public void setShouldAnimateRemoveAdmin(boolean shouldAnimateRemoveAdmin) {
+        this.shouldAnimateRemoveAdmin = shouldAnimateRemoveAdmin;
     }
 
     protected GroupMember(Parcel in) {

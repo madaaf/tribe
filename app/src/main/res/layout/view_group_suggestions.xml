@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/grey.background.profile_info">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <com.tribe.app.presentation.view.widget.TextViewFont
-            style="@style/Body.Two.Black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/horizontal_margin_small"
             android:layout_marginTop="@dimen/vertical_margin_small"
             android:text="@string/group_suggestions_title"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            style="@style/Body.Two.Black"/>
 
         <com.tribe.app.presentation.view.widget.PredicateLayout
             android:layout_width="match_parent"
@@ -201,4 +205,6 @@
 
     </FrameLayout>
 
-</ScrollView>
+    </ScrollView>
+
+</FrameLayout>

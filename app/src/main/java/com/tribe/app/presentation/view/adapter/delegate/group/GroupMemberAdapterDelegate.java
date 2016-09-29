@@ -1,5 +1,9 @@
 package com.tribe.app.presentation.view.adapter.delegate.group;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
@@ -8,24 +12,31 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.GroupMember;
+import com.tribe.app.presentation.mvp.view.GroupMemberView;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
 /**
@@ -67,14 +78,46 @@ public class GroupMemberAdapterDelegate extends RxAdapterDelegate<List<GroupMemb
     public void onBindViewHolder(@NonNull List<GroupMember> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         GroupMemberViewHolder vh = (GroupMemberViewHolder) holder;
         GroupMember groupMember = items.get(position);
+        vh.btnAdd.setVisibility(View.VISIBLE);
         vh.txtDisplayName.setText(groupMember.getDisplayName());
         vh.txtUsername.setText("@" + groupMember.getUsername());
-        if (groupMember.isFriend()) vh.layoutSelected.setBackground(ContextCompat.getDrawable(context, R.drawable.picto_connected_icon));
-        else vh.layoutSelected.setBackground(ContextCompat.getDrawable(context, R.drawable.picto_plus_black));
-        if (groupMember.isAdmin()) vh.imageFriendPicBadge.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.picto_badge_admin));
-        else vh.imageFriendPicBadge.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.picto_badge_more));
+//        if (groupMember.isFriend()) vh.layoutSelected.setBackground(ContextCompat.getDrawable(context, R.drawable.picto_connected_icon));
+//        else vh.layoutSelected.setBackground(ContextCompat.getDrawable(context, R.drawable.picto_plus_black));
+        if (groupMember.isShouldAnimateAddFriend()) {
+            animateAddSuccessful(vh);
+            groupMember.setShouldAnimateAddFriend(false);
+        } else {
+            if (groupMember.isFriend()) {
+                vh.imgPicto.setVisibility(View.VISIBLE);
+                vh.imgPicto.setImageResource(R.drawable.picto_done_white);
+                vh.btnAddBg.setVisibility(View.VISIBLE);
+                vh.progressBarAdd.setVisibility(View.GONE);
+            } else {
+                vh.imgPicto.setVisibility(View.VISIBLE);
+                vh.imgPicto.setImageResource(R.drawable.picto_add);
+                vh.btnAddBg.setVisibility(View.GONE);
+                vh.progressBarAdd.setVisibility(View.GONE);
+            }
+        }
+        if (groupMember.isShouldAnimateAddAdmin()) {
+            AnimationUtils.scaleOldImageOutNewImageIn(vh.imageFriendPicBadge,
+                    ContextCompat.getDrawable(context, R.drawable.picto_badge_more),
+                    ContextCompat.getDrawable(context, R.drawable.picto_badge_admin));
+            groupMember.setShouldAnimateAddAdmin(false);
+        } else if (groupMember.isShouldAnimateRemoveAdmin()) {
+            AnimationUtils.scaleOldImageOutNewImageIn(vh.imageFriendPicBadge,
+                    ContextCompat.getDrawable(context, R.drawable.picto_badge_admin),
+                    ContextCompat.getDrawable(context, R.drawable.picto_badge_more));
+            groupMember.setShouldAnimateRemoveAdmin(false);
+        } else {
+            if (groupMember.isAdmin())
+                vh.imageFriendPicBadge.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.picto_badge_admin));
+            else
+                vh.imageFriendPicBadge.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.picto_badge_more));
+        }
         vh.itemView.setTag(R.id.tag_position, position);
-        if (groupMember.isCurrentUser()) vh.layoutFriendItem.setForeground(new ColorDrawable(ContextCompat.getColor(context, R.color.white_opacity_40)));
+        if (groupMember.isCurrentUser())
+            vh.layoutFriendItem.setForeground(new ColorDrawable(ContextCompat.getColor(context, R.color.white_opacity_40)));
 
         try {
             Glide.with(context)
@@ -84,6 +127,43 @@ public class GroupMemberAdapterDelegate extends RxAdapterDelegate<List<GroupMemb
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
+    }
+
+    private void animateAddSuccessful(GroupMemberViewHolder vh) {
+        AnimatorSet animatorSet = new AnimatorSet();
+
+        ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(vh.imgPicto, "rotation", -45f, 0f);
+        rotationAnim.setDuration(300);
+        rotationAnim.setInterpolator(new DecelerateInterpolator());
+        rotationAnim.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                vh.imgPicto.setImageResource(R.drawable.picto_done_white);
+                vh.imgPicto.setVisibility(View.VISIBLE);
+                vh.progressBarAdd.setVisibility(View.GONE);
+            }
+        });
+
+        ObjectAnimator scaleXAnim = ObjectAnimator.ofFloat(vh.imgPicto, "scaleX", 0.2f, 1f);
+        scaleXAnim.setDuration(AnimationUtils.ANIMATION_DURATION_SHORT);
+        scaleXAnim.setInterpolator(new DecelerateInterpolator());
+
+        ObjectAnimator scaleYAnim = ObjectAnimator.ofFloat(vh.imgPicto, "scaleY", 0.2f, 1f);
+        scaleYAnim.setDuration(AnimationUtils.ANIMATION_DURATION_SHORT);
+        scaleYAnim.setInterpolator(new DecelerateInterpolator());
+
+        ObjectAnimator alphaBG = ObjectAnimator.ofFloat(vh.btnAddBg, "alpha", 0f, 1f);
+        alphaBG.setDuration(AnimationUtils.ANIMATION_DURATION_SHORT);
+        alphaBG.setInterpolator(new DecelerateInterpolator());
+        alphaBG.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                vh.btnAddBg.setVisibility(View.VISIBLE);
+            }
+        });
+
+        animatorSet.play(rotationAnim).with(scaleXAnim).with(scaleYAnim).with(alphaBG);
+        animatorSet.start();
     }
 
     public Observable<View> clickMemberItem() {
@@ -96,8 +176,11 @@ public class GroupMemberAdapterDelegate extends RxAdapterDelegate<List<GroupMemb
         @BindView(R.id.imageFriendPic) public ImageView imageFriendPic;
         @BindView(R.id.txtDisplayName) public TextViewFont txtDisplayName;
         @BindView(R.id.txtUsername) public TextViewFont txtUsername;
-        @BindView(R.id.layoutSelected) public FrameLayout layoutSelected;
         @BindView(R.id.imageFriendPicBadge) public ImageView imageFriendPicBadge;
+        @BindView(R.id.imgPicto) public ImageView imgPicto;
+        @BindView(R.id.btnAddBG) public View btnAddBg;
+        @BindView(R.id.progressBarAdd) public CircularProgressView progressBarAdd;
+        @BindView(R.id.btnAdd) public FrameLayout btnAdd;
         public boolean selected;
 
         public GroupMemberViewHolder(View itemView) {

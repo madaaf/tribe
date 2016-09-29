@@ -4,19 +4,29 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.tribe.app.R;
+
+import java.util.concurrent.TimeUnit;
+
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by tiago on 26/05/2016.
@@ -95,6 +105,10 @@ public class AnimationUtils {
         scaleUp(view, duration, 0, interpolator);
     }
 
+    public static void scaleUp(final View view, long duration) {
+        scaleUp(view, duration, 0, new LinearInterpolator());
+    }
+
     public static void scaleDown(final View view, long duration, long delay, Interpolator interpolator) {
         view.setScaleX(1);
         view.setScaleY(1);
@@ -103,6 +117,10 @@ public class AnimationUtils {
 
     public static void scaleDown(final View view, long duration, Interpolator interpolator) {
         scaleDown(view, duration, 0, interpolator);
+    }
+
+    public static void scaleDown(final View view, long duration) {
+        scaleDown(view, duration, 0, new LinearInterpolator());
     }
 
     public static void fadeOut(View v, long duration) {
@@ -256,6 +274,18 @@ public class AnimationUtils {
             view.requestLayout();
         });
         animator.start();
+    }
+
+    public static void scaleOldImageOutNewImageIn(ImageView imageView, Drawable oldDrawable, Drawable newDrawable) {
+        imageView.setImageDrawable(oldDrawable);
+        AnimationUtils.scaleDown(imageView, AnimationUtils.ANIMATION_DURATION_SHORT);
+        Observable.timer(AnimationUtils.ANIMATION_DURATION_SHORT, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(time -> {
+                    imageView.setImageDrawable(newDrawable);
+                    AnimationUtils.scaleUp(imageView, ANIMATION_DURATION_SHORT);
+                });
     }
 
 }

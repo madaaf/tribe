@@ -60,46 +60,6 @@ public class GroupInfoActivity extends BaseActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == OPEN_CAMERA_RESULT && resultCode == Activity.RESULT_OK && data != null) {
-            subscriptions.add(
-                    Observable.just((Bitmap) data.getExtras().get("data"))
-                            .map(bitmap -> ImageUtils.formatForUpload(bitmap))
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(bitmap -> {
-                                groupsGridFragment.setPictureUri(Uri.fromFile(FileUtils.bitmapToFile(GROUP_AVATAR, bitmap, this)).toString());
-                                groupsGridFragment.getGroupInfoView().setGroupPicture(bitmap);
-                            })
-            );
-        }
-
-        if (requestCode == OPEN_GALLERY_RESULT && resultCode == Activity.RESULT_OK && data != null) {
-            subscriptions.add(
-                    Observable.just(data.getData())
-                            .map(uri -> {
-                                String[] filePathColumn = {MediaStore.Images.Media.DATA};
-                                Cursor cursor = getContentResolver().query(uri, filePathColumn, null, null, null);
-                                cursor.moveToFirst();
-                                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                                String picturePath = cursor.getString(columnIndex);
-                                cursor.close();
-
-                                return ImageUtils.formatForUpload(ImageUtils.loadFromPath(picturePath));
-                            })
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(bitmap -> {
-                                groupsGridFragment.setPictureUri(Uri.fromFile(FileUtils.bitmapToFile(GROUP_AVATAR, bitmap, this)).toString());
-                                groupsGridFragment.getGroupInfoView().setGroupPicture(bitmap);
-                            }));
-        }
-
-    }
-
-    @Override
     protected void onDestroy() {
         if (unbinder != null) unbinder.unbind();
 
