@@ -121,8 +121,12 @@ public class MediaVideoEncoder extends MediaEncoder {
     @Override
     protected void signalEndOfInputStream() {
         if (DEBUG) Log.d(TAG, "sending EOS to encoder");
-        if (isEncoding)
-            mediaCodec.signalEndOfInputStream();
+        try {
+            if (isEncoding)
+                mediaCodec.signalEndOfInputStream();
+        } catch (IllegalStateException ex) {
+            ex.printStackTrace();
+        }
 
         isEOS = true;
     }

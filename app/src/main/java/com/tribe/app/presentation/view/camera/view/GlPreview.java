@@ -435,10 +435,14 @@ public class GlPreview extends GLSurfaceView implements Preview, Camera.PictureC
             } else {
                 mPreviewShader.draw(mTexName, mMVPMatrix, mSTMatrix, mCameraRatio);
 
-                if (recordShader != null) {
-                    recordShader.setup();
-                    recordShader.setFrameSize(mFramebufferObject.getHeight(), mFramebufferObject.getWidth());
-                    recordShader.draw(mFramebufferObject.getTexName(), fbo);
+                try {
+                    if (recordShader != null && mFramebufferObject != null) {
+                        recordShader.setup();
+                        recordShader.setFrameSize(mFramebufferObject.getHeight(), mFramebufferObject.getWidth());
+                        recordShader.draw(mFramebufferObject.getTexName(), fbo);
+                    }
+                } catch (Exception ex) {
+
                 }
             }
 
