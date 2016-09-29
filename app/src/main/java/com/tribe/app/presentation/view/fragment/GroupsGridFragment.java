@@ -204,11 +204,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         return fragmentView;
     }
 
-    public GroupInfoView getGroupInfoView() {
-        return groupInfoView;
-    }
-
-
     @Override
     public void onDestroy() {
 
@@ -293,16 +288,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             groupInfoView.bringGroupNameDown(animDuration);
             groupSuggestionsView.setVisibility(View.INVISIBLE);
         }));
-        searchFriendsView.requestFocus();
-        appBarLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                appBarLayout.setExpanded(true);
-                searchFriendsView.setAlpha(AnimationUtils.ALPHA_FULL);
-                appBarLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            }
-        });
-        setupSearchView();
+
+        subscriptions.add(searchFriendsView.editTextSearchTextChanged().subscribe(this::filter));
     }
 
     @Override
@@ -407,10 +394,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         subscriptions.add((createInviteView.invitePressed()).subscribe(aVoid -> {
             showShareDialogFragment();
         }));
-
-//        subscriptions.add(RxView.clicks(editTextInviteSearch).subscribe(aVoid -> {
-//            appBarLayout.setExpanded(false);
-//        }));
+        setupSearchView();
     }
 
     private void setGroupPrivacy(boolean isPrivate) {
@@ -572,7 +556,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     }
 
     private void setupSearchView() {
-        searchFriendsView.setAlpha(AnimationUtils.ALPHA_NONE);
         subscriptions.add(RxView.focusChanges(searchFriendsView).subscribe(aBoolean -> {
             if (aBoolean) appBarLayout.setExpanded(false);
         }));
@@ -615,12 +598,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                 .map((View labelView) -> cameraTypeAdapter.getItemAtPosition((Integer) labelView.getTag(R.id.tag_position)))
                 .subscribe(labelType -> {
                     CameraType cameraType = (CameraType) labelType;
-//                    if (cameraType.getCameraTypeDef().equals(CameraType.OPEN_CAMERA)) {
-//                        navigator.getImageFromCamera(getActivity(), HomeActivity.OPEN_CAMERA_RESULT);
-//                    }
-//                    if (cameraType.getCameraTypeDef().equals(CameraType.OPEN_PHOTOS)) {
-//                        navigator.getImageFromCameraRoll(getActivity(), HomeActivity.OPEN_GALLERY_RESULT);
-//                    }
                     if (cameraType.getCameraTypeDef().equals(CameraType.OPEN_CAMERA)) {
                         subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA)
                                 .subscribe(uri -> {

@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
 import com.jakewharton.rxbinding.view.RxView;
+import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -98,9 +99,13 @@ public class SearchFriendsView extends FrameLayout {
 
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private PublishSubject<Void> editTextSearchClicked = PublishSubject.create();
+    private PublishSubject<String> editTextSearchTextChanged = PublishSubject.create();
 
     public Observable<Void> editTextSearchClicked() {
         return editTextSearchClicked;
+    }
+    public Observable<String> editTextSearchTextChanged() {
+        return editTextSearchTextChanged;
     }
 
     @Override
@@ -115,6 +120,9 @@ public class SearchFriendsView extends FrameLayout {
 
         subscriptions.add(RxView.clicks(editTextSearch).subscribe(aVoid -> {
             editTextSearchClicked.onNext(null);
+        }));
+        subscriptions.add(RxTextView.textChanges(editTextSearch).subscribe(text -> {
+            editTextSearchTextChanged.onNext(text.toString());
         }));
     }
 
