@@ -56,9 +56,10 @@ public class ViewPrivacyStatus extends FrameLayout {
         super.onDetachedFromWindow();
     }
 
-    public void setup(Boolean privateGroup) {
+    public void setup(Boolean privateGroup, int memberCount) {
         if (privateGroup) {
-            textPrivacyStatus.setText(getContext().getString(R.string.group_private_title));
+            if (memberCount > 1) textPrivacyStatus.setText(getContext().getString(R.string.group_private_title) + " - " + memberCount  + " " + getContext().getString(R.string.group_members));
+            else textPrivacyStatus.setText(getContext().getString(R.string.group_private_title) + " - " + memberCount  + " " + getContext().getString(R.string.group_member));
             imagePrivacyStatus.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_lock_grey));
         } else {
             textPrivacyStatus.setText(getContext().getString(R.string.group_public_title));

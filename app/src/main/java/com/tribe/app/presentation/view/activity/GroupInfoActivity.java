@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
@@ -66,6 +67,16 @@ public class GroupInfoActivity extends BaseActivity {
         super.onDestroy();
     }
 
+    @Override
+    public void onBackPressed() {
+        Fragment currentFragment = fragmentManager.findFragmentById(R.id.layoutFragmentContainer);
+        if (currentFragment instanceof GroupMemberFragment) {
+            groupsGridFragment.setGroupMemberList(groupMemberFragment.getGroupMemberList());
+        }
+
+        super.onBackPressed();
+    }
+
     private void initUi() {
         setContentView(R.layout.activity_group_info);
         unbinder = ButterKnife.bind(this);
@@ -107,6 +118,7 @@ public class GroupInfoActivity extends BaseActivity {
         fragmentTransaction.commit();
 
         subscriptions.add(groupMemberFragment.imageBackClicked().subscribe(aVoid -> {
+            groupsGridFragment.setGroupMemberList(groupMemberFragment.getGroupMemberList());
             goToMain();
         }));
     }

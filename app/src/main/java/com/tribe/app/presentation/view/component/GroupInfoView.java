@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.VoiceInteractor;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -60,10 +61,6 @@ public class GroupInfoView extends FrameLayout {
 
     public GroupInfoView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-    }
-
-    public GroupInfoView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
     }
 
     @BindView(R.id.imageGroup)
@@ -218,6 +215,14 @@ public class GroupInfoView extends FrameLayout {
         memberPhotoViewList.addMemberPhoto(profPic);
     }
 
+    public void addMemberPhotoDrawable(Drawable drawable) {
+        memberPhotoViewList.addMemberPhotoDrawable(drawable);
+    }
+
+    public void clearMemberPhotos() {
+        memberPhotoViewList.clearPhotos();
+    }
+
     public void setGroupPicture(Bitmap bitmap) {
         RoundedCornersTransformation roundedCornersTransformation = new RoundedCornersTransformation(bitmap.getWidth() >> 1, 0, RoundedCornersTransformation.CornerType.ALL);
         imageGroup.setImageBitmap(roundedCornersTransformation.transform(bitmap));
@@ -251,14 +256,14 @@ public class GroupInfoView extends FrameLayout {
         }
     }
 
-    public void collapsePrivatePublic(Boolean privateGroup, int animDuration) {
+    public void collapsePrivatePublic(Boolean privateGroup, int animDuration, int memberCount) {
         AnimationUtils.collapseScale(privatePublicView, animDuration);
         privatePublicView.animate()
                 .setStartDelay(AnimationUtils.NO_START_DELAY)
                 .alpha(AnimationUtils.ALPHA_NONE)
                 .setDuration(animDuration)
                 .start();
-        viewPrivacyStatus.setup(privateGroup);
+        viewPrivacyStatus.setup(privateGroup, memberCount);
     }
 
     public void resetPrivatePublic() {
@@ -407,7 +412,7 @@ public class GroupInfoView extends FrameLayout {
 
     }
 
-    public void setupGroupInfoUi(boolean privateGroup) {
+    public void setupGroupInfoUi(boolean privateGroup, int memberCount) {
         imageDoneEdit.setTranslationY(-500);
         privatePublicView.setVisibility(View.INVISIBLE);
 
@@ -423,7 +428,7 @@ public class GroupInfoView extends FrameLayout {
         editTextGroupName.setTranslationY(-screenUtils.dpToPx(moveGroupName));
         viewPrivacyStatus.setAlpha(AnimationUtils.ALPHA_FULL);
         viewPrivacyStatus.setTranslationY(screenUtils.dpToPx(privacyFinalPosition));
-        viewPrivacyStatus.setup(privateGroup);
+        viewPrivacyStatus.setup(privateGroup, memberCount);
         imageBackIcon.setVisibility(View.VISIBLE);
         imageBackIcon.setClickable(true);
 
@@ -473,8 +478,8 @@ public class GroupInfoView extends FrameLayout {
         editTextGroupName.setText(groupName);
     }
 
-    public void setPrivacy(boolean isPrivate) {
-            viewPrivacyStatus.setup(isPrivate);
+    public void setPrivacy(boolean isPrivate, int memberCount) {
+            viewPrivacyStatus.setup(isPrivate, memberCount);
     }
 
     protected ApplicationComponent getApplicationComponent() {
