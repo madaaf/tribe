@@ -81,4 +81,10 @@ public class CloudTribeDataRepository implements TribeRepository {
         return tribeDataStore.markTribeListAsRead(tribeRealmDataMapper.transform(tribeList))
                 .map(collection -> tribeRealmDataMapper.transform(collection));
     }
+
+    @Override
+    public Observable<Void> markTribeAsSave(TribeMessage tribe) {
+        final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createCloudDataStore();
+        return tribeDataStore.markTribeAsSave(tribeRealmDataMapper.transform(tribe));
+    }
 }

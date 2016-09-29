@@ -23,6 +23,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.AccessPresenter;
 import com.tribe.app.presentation.mvp.view.AccessView;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.component.AccessBottomBarView;
 import com.tribe.app.presentation.view.component.AccessLockView;
@@ -331,9 +332,9 @@ public class AccessFragment extends BaseFragment implements AccessView {
                         AnimationUtils.animateBottomMargin(accessLockView, screenUtils.dpToPx(80), DURATION);
                         AnimationUtils.animateBottomMargin(txtAccessDesc, screenUtils.dpToPx(170), DURATION);
 
-                        changeBaseView(getString(R.string.onboarding_queue_declined_title),
+                        changeBaseView(EmojiParser.demojizedText(getString(R.string.onboarding_queue_declined_title)),
                                 R.color.red_deep,
-                                getString(R.string.onboarding_queue_declined_description),
+                                EmojiParser.demojizedText(getString(R.string.onboarding_queue_declined_description)),
                                 getString(R.string.onboarding_queue_button_title),
                                 R.drawable.shape_rect_blue_rounded_bottom);
 

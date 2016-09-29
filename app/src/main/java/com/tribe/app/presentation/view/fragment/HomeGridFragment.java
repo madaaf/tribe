@@ -470,7 +470,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
     }
 
     private void prepareBottomSheetMore(Recipient recipient, List<LabelType> items) {
-        View view = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_user_more, null);
+        View view = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_more, null);
         recyclerViewMore = (RecyclerView) view.findViewById(R.id.recyclerViewMore);
         recyclerViewMore.setHasFixedSize(true);
         recyclerViewMore.setLayoutManager(new LinearLayoutManager(getActivity()));

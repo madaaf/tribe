@@ -4,6 +4,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.media.AudioManager;
+import android.os.Build;
 import android.support.annotation.StringDef;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -89,6 +91,7 @@ public class CameraWrapper extends FrameLayout {
     private boolean isAudioMode;
     private PathView pathView;
     private boolean canMove = true;
+    private AudioManager audioManager;
 
     // RESOURCES
     private int marginTopInit, marginLeftInit, marginBottomInit, marginVerticalIcons, marginHorizontalIcons, diffTouch,
@@ -148,6 +151,9 @@ public class CameraWrapper extends FrameLayout {
     }
 
     public void onResume(boolean animate) {
+        if (audioManager == null)
+            audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+
         if (animate && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             int cx = getWidth();
             int cy = getHeight();
@@ -178,6 +184,18 @@ public class CameraWrapper extends FrameLayout {
     }
 
     public void onStartRecord(String fileId) {
+        if (audioManager.isMusicActive()) {
+            int result;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                result = audioManager.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE);
+            else
+                result = audioManager.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+
+            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                System.out.println("AUDIO CUT");
+            }
+        }
+
         if (isAudioMode) {
             hideIcons();
             preview.startRecording(fileId, visualizerView);
@@ -190,6 +208,8 @@ public class CameraWrapper extends FrameLayout {
     }
 
     public void onEndRecord() {
+        if (audioManager != null) audioManager.abandonAudioFocus(null);
+
         if (isAudioMode) {
             showIcons();
             visualizerView.stopRecording();
@@ -420,6 +440,11 @@ public class CameraWrapper extends FrameLayout {
     }
 
     private void pauseCamera(boolean shouldDelay) {
+        if (audioManager != null) {
+            audioManager.abandonAudioFocus(null);
+            audioManager = null;
+        }
+
         if (shouldDelay) {
             Observable.timer(1000, TimeUnit.MILLISECONDS)
                     .subscribeOn(Schedulers.newThread())

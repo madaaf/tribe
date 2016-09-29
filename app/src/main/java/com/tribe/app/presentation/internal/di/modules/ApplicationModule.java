@@ -39,6 +39,7 @@ import com.tribe.app.domain.interactor.text.CloudUpdateStatuses;
 import com.tribe.app.domain.interactor.text.DeleteChat;
 import com.tribe.app.domain.interactor.text.GetDiskChatMessageList;
 import com.tribe.app.domain.interactor.text.SendChat;
+import com.tribe.app.domain.interactor.tribe.CloudMarkTribeAsSave;
 import com.tribe.app.domain.interactor.tribe.CloudMarkTribeListAsRead;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.SendTribe;
@@ -353,6 +354,12 @@ public class ApplicationModule {
     @Named("refreshHowManyFriends")
     UseCase provideRefreshHowManyFriends(RefreshHowManyFriends refreshHowManyFriends) {
         return refreshHowManyFriends;
+    }
+
+    @Provides
+    @Named("cloudMarkTribeAsSave")
+    CloudMarkTribeAsSave provideCloudMarkTribeAsSave(CloudMarkTribeAsSave cloudMarkTribeAsSave) {
+        return cloudMarkTribeAsSave;
     }
 
     @Provides

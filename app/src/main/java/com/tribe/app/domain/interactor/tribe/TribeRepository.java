@@ -65,4 +65,11 @@ public interface TribeRepository {
      * @param tribeList the TribeMessage List to put as seen
      */
     Observable<List<TribeMessage>> markTribeListAsRead(final List<TribeMessage> tribeList);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link TribeMessage } containing info about the tribe saved.
+     *
+     * @param tribe the TribeMessage to put as saved
+     */
+    Observable<Void> markTribeAsSave(final TribeMessage tribe);
 }

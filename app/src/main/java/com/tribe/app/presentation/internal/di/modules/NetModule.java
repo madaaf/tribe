@@ -78,6 +78,7 @@ import dagger.Module;
 import dagger.Provides;
 import io.realm.RealmObject;
 import okhttp3.Cache;
+import okhttp3.CertificatePinner;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -145,44 +146,53 @@ public class NetModule {
     OkHttpClient provideOkHttpClient(Context context) {
         OkHttpClient.Builder okHttpClient = createOkHttpClient(context);
 
-        InputStream cert = context.getResources().openRawResource(R.raw.tribe);
+        if (!BuildConfig.DEBUG) {
+            InputStream cert = context.getResources().openRawResource(R.raw.tribe);
 
-        try {
-            // loading CAs from an InputStream
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            Certificate ca;
-            ca = cf.generateCertificate(cert);
-
-            // creating a KeyStore containing our trusted CAs
-            String keyStoreType = KeyStore.getDefaultType();
-            KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-            keyStore.load(null, null);
-            keyStore.setCertificateEntry("ca", ca);
-
-            // creating a TrustManager that trusts the CAs in our KeyStore
-            String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
-            tmf.init(keyStore);
-
-            // creating an SSLSocketFactory that uses our TrustManager
-            SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(null, tmf.getTrustManagers(), null);
-            okHttpClient.sslSocketFactory(sslContext.getSocketFactory());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (CertificateException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (KeyStoreException e) {
-            e.printStackTrace();
-        } catch (KeyManagementException e) {
-            e.printStackTrace();
-        } finally {
             try {
-                cert.close();
+                // loading CAs from an InputStream
+                CertificateFactory cf = CertificateFactory.getInstance("X.509");
+                Certificate ca;
+                ca = cf.generateCertificate(cert);
+
+                // creating a KeyStore containing our trusted CAs
+                String keyStoreType = KeyStore.getDefaultType();
+                KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+                keyStore.load(null, null);
+                keyStore.setCertificateEntry("ca", ca);
+
+                // creating a TrustManager that trusts the CAs in our KeyStore
+                String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
+                TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
+                tmf.init(keyStore);
+
+                // creating an SSLSocketFactory that uses our TrustManager
+                SSLContext sslContext = SSLContext.getInstance("TLS");
+                sslContext.init(null, tmf.getTrustManagers(), null);
+                okHttpClient.sslSocketFactory(sslContext.getSocketFactory());
+
+                String certPin = CertificatePinner.pin(ca);
+                CertificatePinner certificatePinner = new CertificatePinner.Builder()
+                        .add(BuildConfig.TRIBE_API, certPin)
+                        .add(BuildConfig.TRIBE_AUTH, certPin)
+                        .build();
+                okHttpClient.certificatePinner(certificatePinner);
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (CertificateException e) {
+                e.printStackTrace();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (KeyStoreException e) {
+                e.printStackTrace();
+            } catch (KeyManagementException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    cert.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -289,7 +299,7 @@ public class NetModule {
 
     @Provides
     @PerApplication
-    FileApi provideFileApi(@Named("fileApiOKHttp") OkHttpClient okHttpClient) {
+    FileApi provideFileApi(@Named("tribeApiOKHttp") OkHttpClient okHttpClient) {
         OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
         httpClientBuilder

@@ -131,9 +131,11 @@ public abstract class SendTribePresenter implements Presenter {
     }
 
     protected void showErrorMessage(ErrorBundle errorBundle) {
-        String errorMessage = ErrorMessageFactory.create(this.getView().context(),
-                errorBundle.getException());
-        this.getView().showError(errorMessage);
+        if (this.getView() != null && this.getView().context() != null) {
+            String errorMessage = ErrorMessageFactory.create(this.getView().context(),
+                    errorBundle.getException());
+            this.getView().showError(errorMessage);
+        }
     }
 
     protected abstract SendTribeView getView();

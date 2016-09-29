@@ -4,11 +4,18 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
 
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Location;
 import com.tribe.app.domain.entity.Membership;
+import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
@@ -17,10 +24,12 @@ import com.tribe.app.presentation.mvp.presenter.TribePresenter;
 import com.tribe.app.presentation.mvp.view.TribeView;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -62,6 +71,8 @@ public class TribeActivity extends BaseActivity implements TribeView {
     private int position;
     private User currentUser;
     private TribeMessage currentTribe;
+    private BottomSheetDialog dialogMore;
+    private LabelSheetAdapter moreTypeAdapter;
 
     // BINDERS / SUBSCRIPTIONS
     private Unbinder unbinder;
@@ -204,6 +215,10 @@ public class TribeActivity extends BaseActivity implements TribeView {
                             }));
                 }));
 
+        subscriptions.add(viewTribePager.onClickMore().subscribe(tribeMessage -> {
+            setupBottomSheetMore(tribeMessage);
+        }));
+
         subscriptions.add(viewTribePager.onErrorTribe()
                 .subscribe(tribeMessage -> {
                     FileUtils.delete(context(), tribeMessage.getLocalId(), FileUtils.VIDEO);
@@ -279,5 +294,59 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
     private void updateCurrentView() {
         viewTribePager.updateCurrentView();
+    }
+
+    /**
+     * Bottom sheet set-up
+     */
+    private void prepareBottomSheetCamera(TribeMessage tribe, List<LabelType> items) {
+        View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_more, null);
+        RecyclerView recyclerViewMore = (RecyclerView) view.findViewById(R.id.recyclerViewMore);
+        recyclerViewMore.setHasFixedSize(true);
+        recyclerViewMore.setLayoutManager(new LinearLayoutManager(this));
+        moreTypeAdapter = new LabelSheetAdapter(this, items);
+        moreTypeAdapter.setHasStableIds(true);
+        recyclerViewMore.setAdapter(moreTypeAdapter);
+        subscriptions.add(moreTypeAdapter.clickLabelItem()
+                .map((View labelView) -> moreTypeAdapter.getItemAtPosition((Integer) labelView.getTag(R.id.tag_position)))
+                .subscribe(labelType -> {
+                    MoreType moreType = (MoreType) labelType;
+
+                    if (moreType.getMoreType().equals(MoreType.TRIBE_SAVE)) {
+                        FileUtils.saveToMediaStore(this, FileUtils.getPathForId(this, tribe.getId(), FileUtils.VIDEO));
+                    }
+
+                    tribePresenter.markTribeAsSave(recipient, tribe);
+
+                    dismissDialogSheetMore();
+                }));
+
+        dialogMore = new BottomSheetDialog(this);
+        dialogMore.setContentView(view);
+        dialogMore.show();
+        dialogMore.setOnDismissListener(dialog -> {
+            moreTypeAdapter.releaseSubscriptions();
+            dialogMore = null;
+        });
+    }
+
+    private void setupBottomSheetMore(TribeMessage tribe) {
+        if (dismissDialogSheetMore()) {
+            return;
+        }
+
+        List<LabelType> moreType = new ArrayList<>();
+        moreType.add(new MoreType(getString(R.string.tribe_more_save), MoreType.TRIBE_SAVE));
+
+        prepareBottomSheetCamera(tribe, moreType);
+    }
+
+    private boolean dismissDialogSheetMore() {
+        if (dialogMore != null && dialogMore.isShowing()) {
+            dialogMore.dismiss();
+            return true;
+        }
+
+        return false;
     }
 }

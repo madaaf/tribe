@@ -1,11 +1,21 @@
 package com.tribe.app.presentation.utils;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.StringDef;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.tribe.app.R;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +37,9 @@ public class FileUtils {
     public static final String VIDEO = "video";
     public static final String PHOTO = "photo";
 
-    private static String pathEnd = "/TribeMessage/Sent";
+    private static String pathEnd = "/Tribe/Sent";
+    private static String pathSave = "/Tribe";
+
 
     @Inject
     public FileUtils() {
@@ -122,6 +134,55 @@ public class FileUtils {
         }
 
         return dir.delete();
+    }
+
+    public static void saveToMediaStore(Context context, String path) {
+        String title = "tribe_" + System.currentTimeMillis() + ".mp4";
+        File saveDir = new File(Environment.getExternalStorageDirectory() + pathSave);
+        if (!saveDir.exists()) saveDir.mkdirs();
+
+        File file = new File(saveDir, title);
+        copyFile(path, file.getAbsolutePath());
+
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Video.Media.TITLE, title);
+        values.put(MediaStore.Video.Media.DESCRIPTION, "");
+        values.put(MediaStore.Video.Media.DATE_TAKEN, System.currentTimeMillis());
+        values.put(MediaStore.Video.VideoColumns.BUCKET_ID, file.toString().toLowerCase(context.getResources().getConfiguration().locale).hashCode());
+        values.put(MediaStore.Video.VideoColumns.BUCKET_DISPLAY_NAME, file.getName().toLowerCase(context.getResources().getConfiguration().locale));
+        values.put("_data", file.getAbsolutePath());
+
+        ContentResolver cr = context.getContentResolver();
+        cr.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+
+        Toast.makeText(context, R.string.tribe_more_save_success, Toast.LENGTH_SHORT).show();
+    }
+
+    public static void copyFile(String inputPath, String outputPath) {
+        InputStream in = null;
+        OutputStream out = null;
+
+        try {
+            in = new FileInputStream(inputPath);
+            out = new FileOutputStream(outputPath);
+
+            byte[] buffer = new byte[1024];
+            int read;
+            while ((read = in.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
+            }
+            in.close();
+            in = null;
+
+            out.flush();
+            out.close();
+            out = null;
+
+        } catch (FileNotFoundException fnfe1) {
+            Log.e("tag", fnfe1.getMessage());
+        } catch (Exception e) {
+            Log.e("tag", e.getMessage());
+        }
     }
 
     public static File getCacheDir(Context context) {

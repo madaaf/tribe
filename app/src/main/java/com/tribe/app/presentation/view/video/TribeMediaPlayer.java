@@ -15,9 +15,10 @@ import rx.subjects.PublishSubject;
  */
 public abstract class TribeMediaPlayer {
 
-    public static final String ERROR = "error";
+    public static final String GENERAL_ERROR = "error";
+    public static final String FILE_NOT_FOUND_ERROR = "fileNotFound";
 
-    @StringDef({ERROR})
+    @StringDef({GENERAL_ERROR, FILE_NOT_FOUND_ERROR})
     public @interface TribeMediaPlayerError {}
 
     protected Context context;
@@ -34,6 +35,7 @@ public abstract class TribeMediaPlayer {
     PublishSubject<Boolean> onPreparedPlayer = PublishSubject.create();
     PublishSubject<VideoSize> onVideoSizeChanged = PublishSubject.create();
     PublishSubject<Boolean> onVideoStarted = PublishSubject.create();
+    PublishSubject<Boolean> onCompletion = PublishSubject.create();
 
     public Observable<String> onErrorPlayer() {
         return onErrorPlayer;
@@ -50,6 +52,8 @@ public abstract class TribeMediaPlayer {
     public Observable<Boolean> onVideoStarted() {
         return onVideoStarted;
     }
+
+    public Observable<Boolean> onCompletion() { return onCompletion; }
 
     protected abstract void setup();
     public abstract void setMedia(String media);

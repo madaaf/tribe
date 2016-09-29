@@ -55,11 +55,13 @@ public class ExoMediaPlayer extends TribeMediaPlayer implements MediaCodecVideoT
                 switch(playbackState) {
                     case ExoPlayer.STATE_ENDED:
                         if (looping) exoPlayer.seekTo(0);
+                        onCompletion.onNext(true);
                         break;
                     case ExoPlayer.STATE_READY:
                         onPreparedPlayer.onNext(true);
                         if (mute) exoPlayer.sendMessage(audioRenderer, MediaCodecAudioTrackRenderer.MSG_SET_VOLUME, 0f);
                         if (autoStart) onVideoStarted.onNext(true);
+                        break;
                     default:
                         break;
                 }

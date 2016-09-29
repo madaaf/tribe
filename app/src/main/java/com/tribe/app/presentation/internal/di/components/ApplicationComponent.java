@@ -13,6 +13,7 @@ import com.tribe.app.data.network.job.BaseJob;
 import com.tribe.app.data.network.job.DownloadChatVideoJob;
 import com.tribe.app.data.network.job.DownloadTribeJob;
 import com.tribe.app.data.network.job.MarkMessageListAsReadJob;
+import com.tribe.app.data.network.job.MarkTribeAsSavedJob;
 import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
 import com.tribe.app.data.network.job.RefreshHowManyFriendsJob;
 import com.tribe.app.data.network.job.SendChatJob;
@@ -153,6 +154,7 @@ public interface ApplicationComponent {
     void inject(RefreshHowManyFriendsJob refreshHowManyFriendsJob);
     void inject(UpdateMessagesVideoErrorStatusJob messagesVideoErrorStatusJob);
     void inject(UpdateScoreJob updateScoreJob);
+    void inject(MarkTribeAsSavedJob markTribeAsSavedJob);
 
     //Exposed to sub-graphs.
     Context context();
