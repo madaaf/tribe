@@ -34,6 +34,7 @@ public abstract class TribeMediaPlayer {
     PublishSubject<Boolean> onPreparedPlayer = PublishSubject.create();
     PublishSubject<VideoSize> onVideoSizeChanged = PublishSubject.create();
     PublishSubject<Boolean> onVideoStarted = PublishSubject.create();
+    PublishSubject<Boolean> onCompletion = PublishSubject.create();
 
     public Observable<String> onErrorPlayer() {
         return onErrorPlayer;
@@ -50,6 +51,8 @@ public abstract class TribeMediaPlayer {
     public Observable<Boolean> onVideoStarted() {
         return onVideoStarted;
     }
+
+    public Observable<Boolean> onCompletion() { return onCompletion; }
 
     protected abstract void setup();
     public abstract void setMedia(String media);

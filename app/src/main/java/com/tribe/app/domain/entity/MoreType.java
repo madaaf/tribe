@@ -11,7 +11,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class MoreType extends LabelType implements Serializable {
 
-    @StringDef({CLEAR_MESSAGES, HIDE, BLOCK_HIDE, GROUP_INFO, GROUP_LEAVE, GROUP_DELETE})
+    @StringDef({CLEAR_MESSAGES, HIDE, BLOCK_HIDE, GROUP_INFO, GROUP_LEAVE, GROUP_DELETE, TRIBE_SAVE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface MoreTypeDef {
     }
@@ -22,7 +22,7 @@ public class MoreType extends LabelType implements Serializable {
     public static final String GROUP_INFO = "groupInfo";
     public static final String GROUP_LEAVE = "groupLeave";
     public static final String GROUP_DELETE = "groupDelete";
-
+    public static final String TRIBE_SAVE = "tribeSave";
 
     private @MoreTypeDef String moreTypeDef;
 

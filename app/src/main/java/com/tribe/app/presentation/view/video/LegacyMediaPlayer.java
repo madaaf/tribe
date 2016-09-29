@@ -13,14 +13,19 @@ import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by tiago on 28/08/2016.
  */
 public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.OnVideoSizeChangedListener,
-        MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener {
+        MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener {
 
     @Inject
     @SpeedPlayback
@@ -28,6 +33,7 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
 
     // VARIABLES
     private MediaPlayer mediaPlayer = null;
+    private Subscription timerSubscription;
 
     public LegacyMediaPlayer(TribeMediaPlayerBuilder builder) {
         this.context = builder.getContext();
@@ -54,9 +60,10 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
         onPreparedPlayer.onNext(true);
         mediaPlayer.seekTo(0);
 
+        scheduleTimer();
+
         if (autoStart) {
             play();
-            onVideoStarted.onNext(true);
         }
     }
 
@@ -80,6 +87,7 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
             mediaPlayer.setOnVideoSizeChangedListener(this);
             mediaPlayer.setOnPreparedListener(this);
             mediaPlayer.setOnErrorListener(this);
+
             if (mute) mediaPlayer.setVolume(0, 0);
             mediaPlayer.setLooping(looping);
         } catch (Exception e) {
@@ -130,6 +138,7 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
     @Override
     public void play() {
         mediaPlayer.start();
+        onVideoStarted.onNext(true);
         setPlaybackRate();
     }
 
@@ -177,5 +186,22 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
     @Override
     public long getDuration() {
         return mediaPlayer.getDuration();
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+        onCompletion.onNext(true);
+    }
+
+    private void scheduleTimer() {
+        if (timerSubscription != null)
+            timerSubscription.unsubscribe();
+
+        timerSubscription = Observable
+                .interval(mediaPlayer.getCurrentPosition(), mediaPlayer.getDuration(), TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aLong -> {
+                    onCompletion.onNext(true);
+                });
     }
 }

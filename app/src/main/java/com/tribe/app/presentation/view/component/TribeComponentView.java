@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -114,6 +113,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private final PublishSubject<View> clickEnableLocation = PublishSubject.create();
     private final PublishSubject<TribeMessage> onPlayerError = PublishSubject.create();
+    private final PublishSubject<TribeMessage> clickMore = PublishSubject.create();
 
     // PLAYER
     private TribeMediaPlayer mediaPlayer;
@@ -235,21 +235,12 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
             }));
 
             subscriptions.add(mediaPlayer.onVideoStarted().subscribe(started -> {
-                if (animatorProgress != null)
-                    animatorProgress.cancel();
+                animateProgress();
+            }));
 
-                animatorProgress = ValueAnimator.ofInt(0, screenUtils.getWidthPx());
-                animatorProgress.addUpdateListener(valueAnimator -> {
-                    int val = (Integer) valueAnimator.getAnimatedValue();
-                    ViewGroup.LayoutParams layoutParams = viewBGProgress.getLayoutParams();
-                    layoutParams.width = val;
-                    viewBGProgress.setLayoutParams(layoutParams);
-                });
-
-                animatorProgress.setRepeatMode(Animation.INFINITE);
-                animatorProgress.setRepeatCount(Animation.INFINITE);
-                animatorProgress.setDuration(mediaPlayer.getDuration());
-                animatorProgress.start();
+            subscriptions.add(mediaPlayer.onCompletion().subscribe(started -> {
+                lastPosition = 0;
+                animateProgress();
             }));
 
             if (lastPosition != -1) mediaPlayer.seekTo(lastPosition);
@@ -303,10 +294,28 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     }
 
     public void pausePlayer() {
-        if (mediaPlayer != null)
+        if (mediaPlayer != null) {
             lastPosition = mediaPlayer.getPosition();
+            animatorProgress.cancel();
+        }
 
         releasePlayer();
+    }
+
+    private void animateProgress() {
+        if (animatorProgress != null)
+            animatorProgress.cancel();
+
+        animatorProgress = ValueAnimator.ofInt(lastPosition != -1 ? (int) lastPosition : 0, screenUtils.getWidthPx());
+        animatorProgress.addUpdateListener(valueAnimator -> {
+            int val = (Integer) valueAnimator.getAnimatedValue();
+            ViewGroup.LayoutParams layoutParams = viewBGProgress.getLayoutParams();
+            layoutParams.width = val;
+            viewBGProgress.setLayoutParams(layoutParams);
+        });
+
+        animatorProgress.setDuration((int) (mediaPlayer.getDuration() / speedPlayack.get()));
+        animatorProgress.start();
     }
 
     public void setIconsAlpha(float alpha) {
@@ -330,6 +339,8 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
     public void changeSpeed() {
         mediaPlayer.setPlaybackRate();
+        lastPosition = mediaPlayer.getPosition();
+        animateProgress();
     }
 
     public Observable<View> onClickEnableLocation() {
@@ -338,6 +349,10 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
     public Observable<TribeMessage> onErrorTribe() {
         return onPlayerError;
+    }
+
+    public Observable<TribeMessage> onClickMore() {
+        return clickMore;
     }
 
     @OnClick(R.id.labelLocation)
@@ -352,6 +367,11 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             getContext().getApplicationContext().startActivity(intent);
         }
+    }
+
+    @OnClick(R.id.btnMore)
+    void clickMore(View v) {
+        clickMore.onNext(tribe);
     }
 
     public static String fmt(double d) {

@@ -213,6 +213,7 @@ public class TribePagerView extends FrameLayout {
     private final PublishSubject<View> recordEnded = PublishSubject.create();
     private final PublishSubject<View> clickEnableLocation = PublishSubject.create();
     private final PublishSubject<TribeMessage> onErrorTribe = PublishSubject.create();
+    private final PublishSubject<TribeMessage> clickOnMore = PublishSubject.create();
 
     public TribePagerView(Context context) {
         super(context);
@@ -327,6 +328,7 @@ public class TribePagerView extends FrameLayout {
         });
 
         subscriptions.add(tribePagerAdapter.onClickEnableLocation().subscribe(clickEnableLocation));
+        subscriptions.add(tribePagerAdapter.onClickMore().subscribe(clickOnMore));
         subscriptions.add(tribePagerAdapter.onErrorTribe().subscribe(onErrorTribe));
     }
 
@@ -1207,4 +1209,6 @@ public class TribePagerView extends FrameLayout {
     public Observable<TribeMessage> onErrorTribe() {
         return onErrorTribe;
     }
+
+    public Observable<TribeMessage> onClickMore() { return clickOnMore; }
 }

@@ -34,6 +34,7 @@ public class TribePagerAdapter extends PagerAdapter {
     // OBSERVABLES
     private CompositeSubscription subscriptions;
     private final PublishSubject<View> clickEnableLocation = PublishSubject.create();
+    private final PublishSubject<TribeMessage> clickMore = PublishSubject.create();
     private final PublishSubject<TribeMessage> onErrorTribe = PublishSubject.create();
 
     @Inject
@@ -56,6 +57,7 @@ public class TribePagerAdapter extends PagerAdapter {
         tribeComponentView.setColor(color);
         tribeComponentView.setTribe(tribe);
         tribeComponentView.onClickEnableLocation().subscribe(clickEnableLocation);
+        tribeComponentView.onClickMore().subscribe(clickMore);
         tribeComponentView.onErrorTribe().subscribe(onErrorTribe);
 
         if (tribe.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADED))
@@ -118,6 +120,10 @@ public class TribePagerAdapter extends PagerAdapter {
 
     public Observable<View> onClickEnableLocation() {
         return clickEnableLocation;
+    }
+
+    public Observable<TribeMessage> onClickMore() {
+        return clickMore;
     }
 
     public Observable<TribeMessage> onErrorTribe() {
