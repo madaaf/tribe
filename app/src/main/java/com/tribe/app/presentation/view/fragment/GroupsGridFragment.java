@@ -518,10 +518,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     }
 
-    public void setPictureUri(String pictureUri) {
-        this.groupPictureUri = pictureUri;
-    }
-
     /**
      * Search for friend View
      */
@@ -614,11 +610,13 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                         subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA)
                                 .subscribe(uri -> {
                                     groupInfoView.setGroupPictureFromUrl(uri.toString());
+                                    this.groupPictureUri = uri.toString();
                                 }));
                     } else if (cameraType.getCameraTypeDef().equals(CameraType.OPEN_PHOTOS)) {
                         subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY)
                                 .subscribe(uri -> {
                                     groupInfoView.setGroupPictureFromUrl(uri.toString());
+                                    this.groupPictureUri = uri.toString();
                                 }));
                     }
                     dismissDialogSheetCamera();
