@@ -235,6 +235,58 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
      * Includes subscription setup
      */
 
+    private void initUi() {
+        currentEditTranslation = 25;
+        groupInfoView.setUpInitialUi();
+        imageDone.setTranslationY(screenUtils.dpToPx(startTranslationDoneIcon));
+
+        createInviteView.disable();
+        enableScrolling(false);
+        layoutInvite.setTranslationY(screenUtils.dpToPx(moveUpY));
+        layoutInvite.setVisibility(View.INVISIBLE);
+        recyclerViewInvite.setTranslationY(screenUtils.dpToPx(moveUpY));
+        recyclerViewInvite.setVisibility(View.INVISIBLE);
+
+        subscriptions.add(groupInfoView.isPrivate().subscribe(isPrivate -> {
+            privateGroup = isPrivate;
+            if (groupInfoValid) {
+                createInviteView.switchColors(privateGroup);
+            }
+        }));
+
+        subscriptions.add(groupInfoView.isGroupNameValid().subscribe(isValid -> {
+            groupInfoValid = isValid;
+            groupInfoView.enableDoneEdit(isValid);
+            if (isValid) {
+                createInviteView.enableCreate(privateGroup);
+            } else {
+                createInviteView.disable();
+                createInviteView.setCreateGrey();
+            }
+        }));
+
+        subscriptions.add(createInviteView.createPressed().subscribe(aVoid -> {
+            groupSuggestionsView.setVisibility(View.INVISIBLE);
+            groupInfoView.bringGroupNameDown(animDuration);
+            createInviteView.disable();
+            groupInfoView.disableButtons();
+            groupName = groupInfoView.getGroupName();
+            groupPresenter.createGroup(groupName, memberIds, privateGroup, groupPictureUri);
+            createInviteView.loadingAnimation(AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
+        }));
+
+        subscriptions.add(groupInfoView.imageDoneEditClicked().subscribe(aVoid -> {
+            groupName = groupInfoView.getGroupName();
+            groupPresenter.updateGroup(groupId, groupName, groupPictureUri);
+            backFromEdit(currentEditTranslation);
+        }));
+
+        subscriptions.add((createInviteView.invitePressed()).subscribe(aVoid -> {
+            showShareDialogFragment();
+        }));
+        setupSearchView();
+    }
+
     private void initGroupInfoUi(String groupId) {
         this.groupId = groupId;
         currentEditTranslation = 20;
@@ -357,57 +409,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
      * Modify layout methods
      */
 
-    private void initUi() {
-        currentEditTranslation = 25;
-        groupInfoView.setUpInitialUi();
-        imageDone.setTranslationY(screenUtils.dpToPx(startTranslationDoneIcon));
 
-        createInviteView.disable();
-        enableScrolling(false);
-        layoutInvite.setTranslationY(screenUtils.dpToPx(moveUpY));
-        layoutInvite.setVisibility(View.INVISIBLE);
-        recyclerViewInvite.setTranslationY(screenUtils.dpToPx(moveUpY));
-        recyclerViewInvite.setVisibility(View.INVISIBLE);
-
-        subscriptions.add(groupInfoView.isPrivate().subscribe(isPrivate -> {
-            privateGroup = isPrivate;
-            if (groupInfoValid) {
-                createInviteView.switchColors(privateGroup);
-            }
-        }));
-
-        subscriptions.add(groupInfoView.isGroupNameValid().subscribe(isValid -> {
-            groupInfoValid = isValid;
-            groupInfoView.enableDoneEdit(isValid);
-            if (isValid) {
-                createInviteView.enableCreate(privateGroup);
-            } else {
-                createInviteView.disable();
-                createInviteView.setCreateGrey();
-            }
-        }));
-
-        subscriptions.add(createInviteView.createPressed().subscribe(aVoid -> {
-            groupSuggestionsView.setVisibility(View.INVISIBLE);
-            groupInfoView.bringGroupNameDown(animDuration);
-            createInviteView.disable();
-            groupInfoView.disableButtons();
-            groupName = groupInfoView.getGroupName();
-            groupPresenter.createGroup(groupName, memberIds, privateGroup, groupPictureUri);
-            createInviteView.loadingAnimation(AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
-        }));
-
-        subscriptions.add(groupInfoView.imageDoneEditClicked().subscribe(aVoid -> {
-            groupName = groupInfoView.getGroupName();
-            groupPresenter.updateGroup(groupId, groupName, groupPictureUri);
-            backFromEdit(currentEditTranslation);
-        }));
-
-        subscriptions.add((createInviteView.invitePressed()).subscribe(aVoid -> {
-            showShareDialogFragment();
-        }));
-        setupSearchView();
-    }
 
     private void setGroupPrivacy(boolean isPrivate) {
         groupInfoView.setPrivacy(isPrivate);
@@ -511,6 +513,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
         createInviteView.enableInvitePress();
         enableScrolling(true);
+        groupPresenter.updateScore();
     }
 
     private void showShareDialogFragment() {

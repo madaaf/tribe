@@ -58,6 +58,10 @@ public class GroupPresenter implements Presenter {
         createGroup.execute(new CreateGroupSubscriber());
     }
 
+    public void updateScore() {
+        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.CREATE_GROUP));
+    }
+
     public void updateGroup(String groupId, String groupName, String pictureUri) {
         updateGroup.prepare(groupId, groupName, pictureUri);
         updateGroup.execute(new UpdateGroupSubscriber());
@@ -100,7 +104,6 @@ public class GroupPresenter implements Presenter {
         public void onNext(Group group) {
             groupView.groupCreatedSuccessfully();
             groupView.setGroupId(group.getId());
-            jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.CREATE_GROUP));
         }
     }
 
