@@ -110,12 +110,9 @@ public abstract class Recipient implements Serializable {
 
     public List<PendingType> createPendingTribeItems(Context context, boolean withName) {
         List<PendingType> pendingList = new ArrayList<>();
-        pendingList.add(new PendingType(errorTribes,
-                withName ? context.getString(R.string.grid_unsent_tribes_action_resend_name, getDisplayName(), errorTribes.size()) : context.getString(R.string.grid_unsent_tribes_action_resend, errorTribes.size()),
-                PendingType.RESEND));
-        pendingList.add(new PendingType(errorTribes,
-                withName ? context.getString(R.string.grid_unsent_tribes_action_delete_name, getDisplayName(), errorTribes.size()) : context.getString(R.string.grid_unsent_tribes_action_delete, errorTribes.size())
-                , PendingType.DELETE));
+        String label = (withName ? getDisplayName() + " " : "") + " (" + errorTribes.size() + ")" ;
+        pendingList.add(new PendingType(errorTribes, context.getString(R.string.grid_unsent_tribes_action_resend, label), PendingType.RESEND));
+        pendingList.add(new PendingType(errorTribes, context.getString(R.string.grid_unsent_tribes_action_delete, label), PendingType.DELETE));
         return pendingList;
     }
 

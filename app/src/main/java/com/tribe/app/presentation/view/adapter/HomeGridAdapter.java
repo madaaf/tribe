@@ -5,15 +5,18 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.GroupGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.filter.RecipientFilter;
 import com.tribe.app.presentation.view.adapter.interfaces.RecyclerViewItemEnabler;
+import com.tribe.app.presentation.view.component.PullToSearchView;
+import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 import java.util.ArrayList;
@@ -38,7 +41,10 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
 
     // VARIABLES
     private List<Recipient> items;
+    private List<Recipient> itemsFiltered;
     private boolean allEnabled = true;
+    private boolean hasFilter = false;
+    private RecipientFilter filter;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -59,6 +65,8 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
         delegatesManager.addDelegate(groupGridAdapterDelegate);
 
         items = new ArrayList<>();
+        itemsFiltered = new ArrayList<>();
+        filter = new RecipientFilter(screenUtils, items, this);
 
         setHasStableIds(true);
     }
@@ -71,7 +79,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
 
     @Override
     public int getItemViewType(int position) {
-        return delegatesManager.getItemViewType(items, position);
+        return delegatesManager.getItemViewType(itemsFiltered, position);
     }
 
     @Override
@@ -82,7 +90,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         holder.itemView.setEnabled(isAllItemsEnabled());
-        delegatesManager.onBindViewHolder(items, position, holder);
+        delegatesManager.onBindViewHolder(itemsFiltered, position, holder);
     }
 
     public void releaseSubscriptions() {
@@ -92,7 +100,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return itemsFiltered.size();
     }
 
     public Observable<View> onClickChat() {
@@ -139,44 +147,51 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
         this.items.clear();
         this.items.addAll(items);
 
-        double minItems = Math.ceil(((float) screenUtils.getHeightPx() / (screenUtils.getWidthPx() >> 1)) * 2);
-        if (minItems % 2 != 0) minItems++;
+        ListUtils.addEmptyItems(screenUtils, this.items);
 
-        if (this.items.size() < minItems) {
-            for (int i = this.items.size(); i < minItems; i++) {
-                this.items.add(new Friendship(Recipient.ID_EMPTY));
-            }
-        } else {
-            this.items.add(new Friendship(Recipient.ID_EMPTY));
-            this.items.add(new Friendship(Recipient.ID_EMPTY));
-
-            if (this.items.size() % 2 == 1) {
-                this.items.add(new Friendship(Recipient.ID_EMPTY));
-            }
+        if (!hasFilter) {
+            this.itemsFiltered.clear();
+            this.itemsFiltered.addAll(this.items);
         }
 
         this.notifyDataSetChanged();
     }
 
+    public void setFilteredItems(List<Recipient> items) {
+        hasFilter = true;
+        this.itemsFiltered.clear();
+        this.itemsFiltered.addAll(items);
+    }
+
     public Recipient getItemAtPosition(int position) {
-        if (items.size() > 0 && position < items.size()) {
-            return items.get(position);
+        if (itemsFiltered.size() > 0 && position < itemsFiltered.size()) {
+            return itemsFiltered.get(position);
         } else {
             return null;
         }
     }
 
     public List<Recipient> getItems() {
-        return items;
+        return itemsFiltered;
     }
 
     public void updateItemWithTribe(int position, TribeMessage tribe) {
-        items.get(position).setTribe(tribe);
+        itemsFiltered.get(position).setTribe(tribe);
     }
 
     public void setAllItemsEnabled(boolean enable) {
         allEnabled = enable;
         notifyItemRangeChanged(0, getItemCount());
+    }
+
+    public void filterList(String text) {
+        if (!StringUtils.isEmpty(text) && !text.equals(PullToSearchView.HOME)) {
+            filter.filter(text);
+        } else {
+            this.itemsFiltered.clear();
+            this.itemsFiltered.addAll(this.items);
+            notifyDataSetChanged();
+        }
     }
 
     @Override

@@ -57,7 +57,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class PullToSearchView extends FrameLayout {
 
-    private static final SpringConfig PULL_TO_SEARCH_BOUNCE_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(5, 15);
+    private static final SpringConfig PULL_TO_SEARCH_BOUNCE_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(3, 15);
     private static final int DURATION = 300;
     public static final String DIEZ = "#";
     public static final String EMOJI = "\uD83D\uDE03";
@@ -425,6 +425,8 @@ public class PullToSearchView extends FrameLayout {
             if (!firstCharacter.isEmpty() && firstCharacter.equalsIgnoreCase(filter)) {
                 return true;
             }
+        } else if (filter.equals(PullToSearchView.HOME)) {
+            return true;
         }
 
         return false;
