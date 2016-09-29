@@ -13,7 +13,7 @@
 	<string name="group_members">membres</string>
 	
 	<!-- Errors -->
-	<string name="error_unknown">Uh oh.. Un léger problème est apparu. Réessayez dans 30s.</string>
+	<string name="error_unknown">Un léger problème est apparu. Réessayez dans 30s.</string>
 	<string name="error_technical">Oups :scream:\nErreur technique !</string>
 	<string name="error_no_network">Oups :scream:\nPas de connexion !</string>
 	

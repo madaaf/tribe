@@ -13,7 +13,7 @@
 	<string name="group_members">members</string>
 	
 	<!-- Errors -->
-	<string name="error_unknown">Uh oh... Something went wrong. Try again in 30s.</string>
+	<string name="error_unknown">Something went wrong. Try again in 30s.</string>
 	<string name="error_technical">Oops :scream:\nTechnical error!</string>
 	<string name="error_no_network">Oops :scream:\nNo network!</string>
 	
@@ -275,8 +275,8 @@
 	<string name="onboarding_user_displayname_placeholder">Full name</string>
 	<string name="onboarding_user_username_placeholder">username</string>
 	<string name="onboarding_user_facebook_button_title">Or autofill profile</string>
-	<string name="onboarding_queue_title">Gain access now</string>
-	<string name="onboarding_queue_description">Hold up, you need at least\n1 friend already on Tribe.</string>
+	<string name="onboarding_queue_title">Gain access now!</string>
+	<string name="onboarding_queue_description">Hold up, you need at least\n1 friend on Tribe to get in</string>
 	<string name="onboarding_queue_button_title">Search for my friends</string>
 	<string name="onboarding_queue_loading_title">Hang tight…</string>
 	<string name="onboarding_queue_loading_description">Looking if one of your\nfriends is already on Tribe.</string>

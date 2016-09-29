@@ -187,6 +187,7 @@ public class SearchFriendsView extends FrameLayout {
             // move text right
             currColumn = 1;
             moveSearch(moveRightPixels);
+            searchMoved = false;
             currentRow++;
         }
         size++;

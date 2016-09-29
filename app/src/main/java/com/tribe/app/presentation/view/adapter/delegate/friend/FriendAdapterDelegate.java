@@ -58,44 +58,15 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
         RecyclerView.ViewHolder vh = new BlockFriendViewHolder(layoutInflater.inflate(R.layout.item_block_friend, parent, false));
-
-        subscriptions.add(RxView.clicks(vh.itemView)
-                .doOnNext(aVoid -> {
-                    vh.itemView.setEnabled(false);
-                    Observable.timer(AnimationUtils.ANIMATION_DURATION_SHORT, TimeUnit.MILLISECONDS)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(time -> {
-                                vh.itemView.setEnabled(true);
-                            });
-                    BlockFriendViewHolder blockFriendViewHolder = (BlockFriendViewHolder) vh;
-                    if (blockFriendViewHolder.selected) {
-                        blockFriendViewHolder.imageSelected.animate()
-                                .scaleX(AnimationUtils.SCALE_INVISIBLE)
-                                .scaleY(AnimationUtils.SCALE_INVISIBLE)
-                                .setDuration(AnimationUtils.ANIMATION_DURATION_SHORT)
-                                .setStartDelay(AnimationUtils.NO_START_DELAY)
-                                .start();
-                        blockFriendViewHolder.itemView.setTag(R.id.tag_selected, false);
-                        blockFriendViewHolder.selected = false;
-                    } else {
-                        blockFriendViewHolder.imageSelected.animate()
-                                .scaleX(AnimationUtils.SCALE_RESET)
-                                .scaleY(AnimationUtils.SCALE_RESET)
-                                .setDuration(AnimationUtils.ANIMATION_DURATION_SHORT)
-                                .setStartDelay(AnimationUtils.NO_START_DELAY)
-                                .start();
-                        blockFriendViewHolder.itemView.setTag(R.id.tag_selected, true);
-                        blockFriendViewHolder.selected = true;
-                    }
-                })
-                .takeUntil(RxView.detaches(parent))
-                .map(friend -> vh.itemView)
-                .subscribe(clickFriendItem));
-
-
+        RxView.detaches(parent).subscribe(aVoid -> {
+            if (subscriptions.hasSubscriptions()) {
+                subscriptions.unsubscribe();
+                subscriptions.clear();
+            }
+        });
         return vh;
     }
+
 
     @Override
     public void onBindViewHolder(@NonNull List<Friendship> items, int position, @NonNull RecyclerView.ViewHolder holder) {
@@ -107,8 +78,13 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
         vh.layoutSelected.setBackground(ContextCompat.getDrawable(context, R.drawable.picto_oval));
         if (privateGroup) vh.imageSelected.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.picto_oval_green_fill));
         else vh.imageSelected.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.shape_oval_purple_fill));
-        vh.imageSelected.setScaleY(AnimationUtils.SCALE_INVISIBLE);
-        vh.imageSelected.setScaleX(AnimationUtils.SCALE_INVISIBLE);
+        if (!friendship.isSelected()) {
+            vh.imageSelected.setScaleY(AnimationUtils.SCALE_INVISIBLE);
+            vh.imageSelected.setScaleX(AnimationUtils.SCALE_INVISIBLE);
+        } else {
+            vh.imageSelected.setScaleY(AnimationUtils.SCALE_RESET);
+            vh.imageSelected.setScaleX(AnimationUtils.SCALE_RESET);
+        }
         vh.itemView.setTag(R.id.tag_position, position);
 
 
@@ -120,6 +96,38 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
                     .bitmapTransform(new CropCircleTransformation(context))
                     .into(vh.imageFriendPic);
         }
+
+        subscriptions.add(RxView.clicks(vh.itemView)
+                .doOnNext(aVoid -> {
+                    vh.itemView.setEnabled(false);
+                    Observable.timer(AnimationUtils.ANIMATION_DURATION_SHORT, TimeUnit.MILLISECONDS)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(time -> {
+                                vh.itemView.setEnabled(true);
+                            });
+                    BlockFriendViewHolder blockFriendViewHolder = (BlockFriendViewHolder) vh;
+                    if (friendship.isSelected()) {
+                        blockFriendViewHolder.imageSelected.animate()
+                                .scaleX(AnimationUtils.SCALE_INVISIBLE)
+                                .scaleY(AnimationUtils.SCALE_INVISIBLE)
+                                .setDuration(AnimationUtils.ANIMATION_DURATION_SHORT)
+                                .setStartDelay(AnimationUtils.NO_START_DELAY)
+                                .start();
+                        friendship.setSelected(false);
+                    } else {
+                        blockFriendViewHolder.imageSelected.animate()
+                                .scaleX(AnimationUtils.SCALE_RESET)
+                                .scaleY(AnimationUtils.SCALE_RESET)
+                                .setDuration(AnimationUtils.ANIMATION_DURATION_SHORT)
+                                .setStartDelay(AnimationUtils.NO_START_DELAY)
+                                .start();
+                        friendship.setSelected(true);
+                    }
+                })
+                .map(friend -> vh.itemView)
+                .subscribe(clickFriendItem));
+
     }
 
     public Observable<View> clickFriendItem() {
@@ -134,13 +142,11 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
         @BindView(R.id.txtUsername) public TextViewFont txtUsername;
         @BindView(R.id.layoutSelected) public FrameLayout layoutSelected;
         @BindView(R.id.imageSelected) public ImageView imageSelected;
-        public boolean selected;
 
 
         public BlockFriendViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            selected = false;
         }
     }
 
