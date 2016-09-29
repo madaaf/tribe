@@ -63,13 +63,15 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class TileView extends SquareFrameLayout {
 
+    private static final float BOUNCINESS_INSIDE = 15f;
+    private static final float SPEED_INSIDE = 12.5f;
+    private static final float BOUNCINESS_OUTSIDE = 1f;
+    private static final float SPEED_OUTSIDE = 20f;
+    private static final SpringConfig SPRING_NO_BOUNCE = SpringConfig.fromBouncinessAndSpeed(BOUNCINESS_OUTSIDE, SPEED_OUTSIDE);
+    private static final SpringConfig SPRING_BOUNCE = SpringConfig.fromBouncinessAndSpeed(BOUNCINESS_INSIDE, SPEED_INSIDE);
+
     private final static int TYPE_GRID = 0;
     private final static int TYPE_TILE = 1;
-
-    private final float BOUNCINESS_INSIDE = 15f;
-    private final float SPEED_INSIDE = 12.5f;
-    private final float BOUNCINESS_OUTSIDE = 1f;
-    private final float SPEED_OUTSIDE = 20f;
     private final float DIFF_DOWN = 20f;
     private final int LONG_PRESS = 200;
     private final int FADE_DURATION = 200;
@@ -247,9 +249,11 @@ public class TileView extends SquareFrameLayout {
                                     isTapToCancel = false;
 
                                     Spring springInside = (Spring) v.getTag(R.id.spring_inside);
+                                    springInside.setSpringConfig(SPRING_BOUNCE);
                                     springInside.setEndValue(1f);
 
                                     Spring springAvatar = (Spring) v.getTag(R.id.spring_avatar);
+                                    springAvatar.setSpringConfig(SPRING_BOUNCE);
                                     springAvatar.setEndValue(type == TYPE_GRID ? 1f : REPLY_RECORD);
 
                                     if (type == TYPE_GRID) {
@@ -307,8 +311,7 @@ public class TileView extends SquareFrameLayout {
 
         // SPRING INSIDE CONFIGURATION
         Spring springInside = springSystem.createSpring();
-        SpringConfig configInside = SpringConfig.fromBouncinessAndSpeed(BOUNCINESS_INSIDE, SPEED_INSIDE);
-        springInside.setSpringConfig(configInside);
+        springInside.setSpringConfig(SPRING_BOUNCE);
         springInside.addListener(new SimpleSpringListener() {
             @Override
             public void onSpringUpdate(Spring spring) {
@@ -333,8 +336,7 @@ public class TileView extends SquareFrameLayout {
 
         // SPRING INSIDE CONFIGURATION
         Spring springAvatar = springSystem.createSpring();
-        SpringConfig configAvatar = type == TYPE_GRID ? SpringConfig.fromBouncinessAndSpeed(BOUNCINESS_INSIDE, SPEED_INSIDE) : SpringConfig.fromBouncinessAndSpeed(BOUNCINESS_OUTSIDE, SPEED_OUTSIDE);
-        springAvatar.setSpringConfig(configAvatar);
+        springAvatar.setSpringConfig(type == TYPE_GRID ? SPRING_BOUNCE : SPRING_NO_BOUNCE);
         springAvatar.addListener(new SimpleSpringListener() {
             @Override
             public void onSpringUpdate(Spring spring) {
@@ -405,8 +407,7 @@ public class TileView extends SquareFrameLayout {
 
             // SPRING OUTSIDE CONFIGURATION
             Spring springOutside = springSystem.createSpring();
-            SpringConfig configOutside = SpringConfig.fromBouncinessAndSpeed(BOUNCINESS_OUTSIDE, SPEED_OUTSIDE);
-            springOutside.setSpringConfig(configOutside);
+            springOutside.setSpringConfig(SPRING_NO_BOUNCE);
             springOutside.addListener(new SimpleSpringListener() {
                 @Override
                 public void onSpringUpdate(Spring spring) {
@@ -422,8 +423,7 @@ public class TileView extends SquareFrameLayout {
         } else {
             // SPRING REPLY BACKGROUND CONFIGURATION
             Spring springReplyBG = springSystem.createSpring();
-            SpringConfig configReplyBG = SpringConfig.fromBouncinessAndSpeed(BOUNCINESS_OUTSIDE, SPEED_OUTSIDE);
-            springReplyBG.setSpringConfig(configReplyBG);
+            springReplyBG.setSpringConfig(SPRING_NO_BOUNCE);
             springReplyBG.addListener(new SimpleSpringListener() {
                 @Override
                 public void onSpringUpdate(Spring spring) {
@@ -476,9 +476,11 @@ public class TileView extends SquareFrameLayout {
             playerView.hideVideo();
 
         Spring springInside = (Spring) getTag(R.id.spring_inside);
+        springInside.setSpringConfig(SPRING_BOUNCE);
         springInside.setEndValue(0f);
 
         Spring springAvatar = (Spring) getTag(R.id.spring_avatar);
+        springAvatar.setSpringConfig(SPRING_BOUNCE);
         springAvatar.setEndValue(0f);
 
         if (type == TYPE_TILE) {
@@ -643,6 +645,7 @@ public class TileView extends SquareFrameLayout {
         }
 
         Spring springAvatar = (Spring) getTag(R.id.spring_avatar);
+        springAvatar.setSpringConfig(SPRING_NO_BOUNCE);
         springAvatar.setEndValue(type == TYPE_GRID ? TAP_TO_CANCEL_SPRING_VALUE : REPLY_TAP_TO_CANCEL);
 
         setTag(R.id.is_tap_to_cancel, true);
