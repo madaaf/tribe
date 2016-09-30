@@ -2,11 +2,10 @@ package com.tribe.app.presentation.view.camera.view;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -21,7 +20,7 @@ import com.tribe.app.presentation.view.camera.interfaces.Preview;
 
 import java.io.IOException;
 
-public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
+public class CameraView extends ViewGroup implements TextureView.SurfaceTextureListener {
 
     private static final String TAG = "CameraView";
 
@@ -30,7 +29,6 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
     private PreviewSurfaceHelper previewSurfaceHelper;
     private Preview preview;
     private boolean usePreviewCallback;
-    private SurfaceView pushBufferSurface;
     private boolean autoStart = true;
     private boolean previewAlignCenter;
     private CameraStateListener cameraStateListener;
@@ -114,12 +112,6 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
                 }
             }
         }
-
-        if (previewSel != null) {
-            if (pushBufferSurface != null) {
-                pushBufferSurface.layout(previewSel.getLeft(), previewSel.getTop(), previewSel.getRight(), previewSel.getBottom());
-            }
-        }
     }
 
     @Override
@@ -138,7 +130,7 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
     }
 
     @Override
-    public void surfaceCreated(final SurfaceHolder holder) {
+    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         try {
             openCamera(CameraHelper.DEFAULT_CAMERA_ID);
         } catch (final RuntimeException e) {
@@ -151,17 +143,20 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
     }
 
     @Override
-    public void surfaceChanged(final SurfaceHolder holder, final int format, final int width, final int height) {
+    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+    }
+
+    @Override
+    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
         if (!cameraHelper.isOpened()) {
             return;
         }
 
         if (usePreviewCallback) {
             try {
-                previewSurfaceHelper.setPreviewDisplay(holder);
+                previewSurfaceHelper.setPreviewTexture(surface);
             } catch (IOException e) {
-                Log.e(TAG, "IOException caused by setPreviewDisplay()", e);
-                throw new IllegalStateException(e.getMessage(), e);
+                e.printStackTrace();
             }
         }
 
@@ -171,8 +166,9 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
     }
 
     @Override
-    public void surfaceDestroyed(final SurfaceHolder holder) {
+    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
         releaseCamera();
+        return true;
     }
 
     public CameraHelper getCameraHelper() {
@@ -193,25 +189,10 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
         this.usePreviewCallback = usePreviewCallback;
 
         if (preview != null) {
-            if (preview instanceof SurfaceView) {
-                final SurfaceView surface = (SurfaceView) preview;
-
-                if (usePreviewCallback) {
-                    this.pushBufferSurface = previewSurfaceHelper.createPushBufferSurfaceViewIfNeed(getContext());
-                }
-
-                if (pushBufferSurface != null) {
-                    pushBufferSurface.getHolder().addCallback(this);
-                    previewSurfaceHelper.setZOrderMediaOverlay(surface);
-                } else {
-                    surface.getHolder().addCallback(this);
-                }
-
+            if (preview instanceof TextureView) {
+                final TextureView surface = (TextureView) preview;
+                surface.setSurfaceTextureListener(this);
                 addView(surface, 0);
-
-                if (pushBufferSurface != null) {
-                    addView(pushBufferSurface, 0);
-                }
             } else {
                 //throw new IllegalArgumentException();
             }
@@ -223,9 +204,9 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 
     public void removePreview() {
         if (preview != null) {
-            if (preview instanceof SurfaceView) {
-                final SurfaceView surface = (SurfaceView) preview;
-                surface.getHolder().removeCallback(this);
+            if (preview instanceof TextureView) {
+                final TextureView surface = (TextureView) preview;
+                surface.setSurfaceTextureListener(null);
             }
 
             if (preview instanceof View) {
@@ -235,12 +216,6 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 
             preview.setCameraHelper(null);
             preview = null;
-        }
-        
-        if (pushBufferSurface != null) {
-            pushBufferSurface.getHolder().removeCallback(this);
-            removeView(pushBufferSurface);
-            pushBufferSurface = null;
         }
 
         usePreviewCallback = false;

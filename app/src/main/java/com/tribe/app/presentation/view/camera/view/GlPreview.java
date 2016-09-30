@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
-import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -15,6 +14,7 @@ import com.tribe.app.presentation.view.camera.gles.GLES20ConfigChooser;
 import com.tribe.app.presentation.view.camera.gles.GLES20ContextFactory;
 import com.tribe.app.presentation.view.camera.gles.GlImageBitmapTexture;
 import com.tribe.app.presentation.view.camera.gles.GlPreviewTextureFactory;
+import com.tribe.app.presentation.view.camera.gles.GlTextureView;
 import com.tribe.app.presentation.view.camera.gles.PixelBuffer;
 import com.tribe.app.presentation.view.camera.gles.Texture;
 import com.tribe.app.presentation.view.camera.helper.CameraHelper;
@@ -50,7 +50,7 @@ import static android.opengl.GLES20.glGenTextures;
 import static android.opengl.GLES20.glGetIntegerv;
 import static android.opengl.GLES20.glViewport;
 
-public class GlPreview extends GLSurfaceView implements Preview, Camera.PictureCallback {
+public class GlPreview extends GlTextureView implements Preview, Camera.PictureCallback {
 
     private CameraHelper cameraHelper;
     private Renderer renderer;

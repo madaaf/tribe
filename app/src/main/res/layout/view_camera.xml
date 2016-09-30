@@ -20,14 +20,6 @@
         android:layout_gravity="bottom"
         />
 
-    <View
-        android:id="@+id/viewGradientTop"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/bg_gradient_camera_top"
-        android:layout_gravity="top"
-        />
-
     <com.tribe.app.presentation.view.camera.view.PictoVisualizerView
         android:id="@+id/visualizerView"
         android:layout_width="match_parent"

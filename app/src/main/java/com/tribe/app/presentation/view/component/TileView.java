@@ -480,7 +480,7 @@ public class TileView extends SquareFrameLayout {
         springInside.setEndValue(0f);
 
         Spring springAvatar = (Spring) getTag(R.id.spring_avatar);
-        springAvatar.setSpringConfig(SPRING_BOUNCE);
+        springAvatar.setSpringConfig(type == TYPE_TILE ? SPRING_NO_BOUNCE : SPRING_BOUNCE);
         springAvatar.setEndValue(0f);
 
         if (type == TYPE_TILE) {

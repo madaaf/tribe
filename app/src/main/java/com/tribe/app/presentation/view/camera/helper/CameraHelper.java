@@ -13,8 +13,6 @@ public interface CameraHelper {
 
     int getNumberOfCameras();
 
-    int getCameraId();
-
     public static class CameraInfoCompat {
         public static final int CAMERA_FACING_BACK = 0;
         public static final int CAMERA_FACING_FRONT = 1;

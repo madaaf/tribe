@@ -470,11 +470,9 @@ public class CameraWrapper extends FrameLayout {
         if (cameraView != null) {
             preview = new GlPreview(getContext());
             preview.setShader(new GlLutShader(getContext().getResources(), R.drawable.video_filter_blue));
-            preview.setZOrderOnTop(false);
-            preview.setZOrderMediaOverlay(false);
             cameraView.setPreview(preview);
 
-            Observable.timer(750, TimeUnit.MILLISECONDS)
+            Observable.timer(500, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(time -> {

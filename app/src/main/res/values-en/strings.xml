@@ -13,7 +13,7 @@
 	<string name="group_members">members</string>
 	
 	<!-- Errors -->
-	<string name="error_unknown">Uh oh... Something went wrong. Try again in 30s.</string>
+	<string name="error_unknown">Something went wrong. Try again in 30s.</string>
 	<string name="error_technical">Oops :scream:\nTechnical error!</string>
 	<string name="error_no_network">Oops :scream:\nNo network!</string>
 	
@@ -80,7 +80,7 @@
 	<string name="tribe_snooze_this_weekend_title">This weekend</string>
 	<string name="tribe_more_add_friend">Add as friend</string>
 	<string name="tribe_more_add_friend_success">Added as a friend</string>
-	<string name="tribe_more_save">Save in Camera roll</string>
+	<string name="tribe_more_save">Save in camera roll</string>
 	<string name="tribe_more_save_success">Saved!</string>
 	<string name="tribe_more_report">Report</string>
 	<string name="tribe_more_set_speed_1x">Decrease speed (1x)</string>
@@ -275,8 +275,8 @@
 	<string name="onboarding_user_displayname_placeholder">Full name</string>
 	<string name="onboarding_user_username_placeholder">username</string>
 	<string name="onboarding_user_facebook_button_title">Or autofill profile</string>
-	<string name="onboarding_queue_title">Gain access now</string>
-	<string name="onboarding_queue_description">Hold up, you need at least\n1 friend already on Tribe.</string>
+	<string name="onboarding_queue_title">Gain access now!</string>
+	<string name="onboarding_queue_description">Hold up, you need at least\n1 friend on Tribe to get in</string>
 	<string name="onboarding_queue_button_title">Search for my friends</string>
 	<string name="onboarding_queue_loading_title">Hang tight…</string>
 	<string name="onboarding_queue_loading_description">Looking if one of your\nfriends is already on Tribe.</string>
@@ -452,4 +452,18 @@
 	<string name="language_most_spoken_values">en_US,es_ES,pt_BR,hi_IN,ar_DZ,ja_JP,ru_RU</string>
 	<string name="language_supported_title">Supported languages</string>
 	<string name="language_supported_values">af_ZA,id_ID,ms_MY,ca_ES,cs_CZ,da_DK,de_DE,en_AU,en_CA,en_GB,en_IN,en_IE,en_NZ,en_PH,en_ZA,en_US,es_AR,es_BO,es_CL,es_CO,es_CR,es_EC,es_SV,es_ES,es_US,es_GT,es_HN,es_MX,es_NI,es_PA,es_PY,es_PE,es_PR,es_DO,es_UY,es_VE,eu_ES,fil_PH,fr_FR,gl_ES,hr_HR,zu_ZA,is_IS,it_IT,lt_LT,hu_HU,nl_NL,nb_NO,pl_PL,pt_BR,pt_PT,ro_RO,sk_SK,sl_SI,fi_FI,sv_SE,vi_VN,tr_TR,el_GR,bg_BG,ru_RU,sr_RS,uk_UA,he_IL,ar_IL,ar_JO,ar_AE,ar_BH,ar_DZ,ar_SA,ar_IQ,ar_KW,ar_MA,ar_TN,ar_OM,ar_PS,ar_QA,ar_LB,ar_EG,fa_IR,hi_IN,th_TH,ko_KR,cmn_Hant_TW,yue_Hant_HK,ja_JP,cmn_Hans_HK,cmn_Hans_CN</string>
+	
+	<!-- Support -->
+	<string name="support_metadata">Support</string>
+	<string name="support_popup_displayname">Full name</string>
+	<string name="support_popup_username">Username</string>
+	<string name="support_popup_score">Score</string>
+	<string name="support_popup_friends">Friends</string>
+	<string name="support_popup_groups">Groups</string>
+	<string name="support_popup_device">Device</string>
+	<string name="support_popup_devices">Devices</string>
+	<string name="support_popup_model">Model</string>
+	<string name="support_popup_app">App version</string>
+	<string name="support_popup_lang">Lang</string>
+	<string name="support_popup_created_at">Member since</string>
 </resources>
