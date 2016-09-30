@@ -289,7 +289,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         createInviteView.enableInvitePress();
         groupInfoView.setupGroupInfoUi(privateGroup, 1);
         imageDone.setVisibility(View.VISIBLE);
-        if (!privateGroup)circularProgressView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_public));
         appBarLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -297,11 +296,11 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                 appBarLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
-//        layoutInvite.setTranslationY(screenUtils.dpToPx(smallMargin));
-//        recyclerViewInvite.setTranslationY(screenUtils.dpToPx(smallMargin));
 
         subscriptions.add(groupInfoView.imageBackClicked().subscribe(aVoid -> {
-            navigator.navigateToHome(getActivity(), false);
+            Intent resultIntent = new Intent();
+            getActivity().setResult(BaseActivity.RESULT_OK, resultIntent);
+            getActivity().finish();
         }));
 
         subscriptions.add(groupInfoView.imageGoToMembersClicked().subscribe(aVoid -> {
@@ -380,6 +379,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         initFriendshipListExcluding(groupMemberList);
         friendAdapter.setItems(friendshipsList);
         friendAdapter.notifyDataSetChanged();
+        if (!privateGroup)circularProgressView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_public));
         setGroupPrivacy(privateGroup, groupMemberList.size());
     }
 
