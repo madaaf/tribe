@@ -461,8 +461,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         groupInfoView.bringOutIcons(0);
         groupInfoView.enableButtons();
         groupPictureUri = null;
-        createInviteView.disable();
         createInviteView.setDefault();
+        createInviteView.disable();
         AnimationUtils.animateHeightCoordinatorLayout(appBarLayout, appBarLayout.getHeight(), appBarLayout.getHeight() + screenUtils.dpToPx(116), 0);
         groupInfoView.resetPrivatePublic();
         imageDone.setEnabled(true);

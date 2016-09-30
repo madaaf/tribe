@@ -9,7 +9,6 @@
         android:id="@+id/layoutUserPicContainer"
         android:layout_width="match_parent"
         android:layout_height="@dimen/setting_pic_size"
-        android:layout_marginTop="@dimen/vertical_margin_xsmall"
         android:layout_marginBottom="@dimen/vertical_margin_xsmall"
         />
 

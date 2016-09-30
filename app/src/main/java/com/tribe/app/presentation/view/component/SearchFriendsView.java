@@ -177,7 +177,7 @@ public class SearchFriendsView extends FrameLayout {
             currColumn++;
         } else {
             if (!columnCountSet) {
-                columnCount = size - 1;
+                columnCount = size;
                 columnCountSet = true;
             }
             // column count needs to be set before below is called
@@ -207,10 +207,11 @@ public class SearchFriendsView extends FrameLayout {
             moveSearch(moveLeftPixels);
             currentRow--;
             currColumn = columnCount;
+            searchMoved = true;
         } else if (searchMoved) {
             moveImagesLeft(removeLoc);
             // TODO: this will not work
-            if (roomToMoveRight(layoutUserPicContainer.getChildAt(layoutUserPicContainer.getChildCount()-1))) {
+            if (roomToMoveRight(editTextSearch, layoutUserPicContainer.getChildAt(size-1))) {
                 searchMoved = false;
                 collapseViewAndMoveSearch();
             }
@@ -254,7 +255,7 @@ public class SearchFriendsView extends FrameLayout {
 
     private void moveImagesRight() {
         if (columnCountSet) {
-            moveViewsRight(layoutUserPicContainer, (currentRow-1) * (columnCount + 1), (currentRow-1) * (columnCount +1) + currColumn);
+            moveViewsRight(layoutUserPicContainer, (currentRow-1) * (columnCount), (currentRow-1) * (columnCount) + currColumn);
         } else {
             moveViewsRight(layoutUserPicContainer, 0, currColumn*currentRow - 1);
         }
@@ -265,9 +266,16 @@ public class SearchFriendsView extends FrameLayout {
 //            moveViewsLeft(layoutUserPicContainer, removeLoc, (currentRow-1) * (columnCount +1) + currColumn);
 //        } else {
             if (layoutUserPicContainer.getChildAt(removeLoc) != null) {
-                int moveLeftEnd = currColumn * currentRow - 1;
-                moveViewsLeft(layoutUserPicContainer, removeLoc, moveLeftEnd);
-                Log.d(TAG, "remove loc -> " + removeLoc + " moveLeftEnd ->" + moveLeftEnd);
+                if (columnCountSet) {
+                    int moveLeftEnd = currColumn * currentRow;
+                    moveViewsLeft(layoutUserPicContainer, removeLoc, moveLeftEnd);
+                    Log.d(TAG, "remove loc -> " + removeLoc + " moveLeftEnd ->" + moveLeftEnd);
+                } else {
+                    int moveLeftEnd = currColumn * currentRow - 1;
+                    moveViewsLeft(layoutUserPicContainer, removeLoc, moveLeftEnd);
+                    Log.d(TAG, "remove loc -> " + removeLoc + " moveLeftEnd ->" + moveLeftEnd);
+                }
+
             }
 //        }
     }
@@ -278,9 +286,9 @@ public class SearchFriendsView extends FrameLayout {
 
     private void forwardFullRow(int rows) {
         for (int i = 1; i <= rows; i++) {
-            int idxMoveRightStart  =  (i - 1) * columnCount + i - 1;
-            int idxMoveRightEnd = i * columnCount + i - 1;
-            int idxMoveDown = i * columnCount + i - 1;
+            int idxMoveRightStart  =  (i - 1) * (columnCount - 1) + i - 1;
+            int idxMoveRightEnd = i * (columnCount - 1)  + i - 1;
+            int idxMoveDown = i * (columnCount - 1)  + i - 1;
             moveViewsRight(layoutUserPicContainer, idxMoveRightStart, idxMoveRightEnd);
             moveView(layoutUserPicContainer.getChildAt(idxMoveDown), imageMargin, i * moveRightPixels);
         }
@@ -289,9 +297,10 @@ public class SearchFriendsView extends FrameLayout {
 
     private void backFullRow(int rows, int removeLoc) {
         for (int i = rows; i >= 1; i--) {
-            int idxMoveUp = (i - 1) * columnCount;
+            int idxMoveUp = (i - 1) * columnCount - 1;
             int idxStart = idxMoveUp + 1;
-            int idxEnd = i * columnCount;
+            if (i == 1) idxStart = idxMoveUp;
+            int idxEnd = i * columnCount - 1;
             if (idxStart > size - 1) idxStart = size - 1;
             if (idxEnd > size - 1) idxEnd = size - 1;
             if (idxStart < removeLoc) {
@@ -354,13 +363,23 @@ public class SearchFriendsView extends FrameLayout {
     private void collapseViewAndMoveSearch() {
         AnimationUtils.animateHeightFrameLayout(layoutParent, layoutParent.getHeight(), layoutParent.getHeight() - moveRightPixels, animationDuration);
         AnimationUtils.animateHeightFrameLayout(layoutUserPicContainer, layoutUserPicContainer.getHeight(), layoutUserPicContainer.getHeight() - moveRightPixels, animationDuration);
-        moveView(editTextSearch, (currColumn - 1) * moveRightPixels + imageMargin, (currentRow - 1) * moveRightPixels);
+        moveView(editTextSearch, (currColumn) * moveRightPixels + imageMargin, (currentRow - 1) * moveRightPixels);
     }
 
     private boolean roomToMoveRight(View lastView) {
         int endX = (int) lastView.getX() +lastView.getWidth();
         int remainingSpace = screenUtils.getWidthPx() - endX;
         if (remainingSpace > moveRightPixels) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean roomToMoveRight(View view, View lastView) {
+        int endX = (int) lastView.getX() +lastView.getWidth();
+        int remainingSpace = screenUtils.getWidthPx() - endX;
+        if (remainingSpace > view.getWidth()) {
             return true;
         } else {
             return false;

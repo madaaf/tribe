@@ -30,7 +30,7 @@
     <dimen name="horizontal_left_margin_chat">71dp</dimen>
     <dimen name="horizontal_left_margin_onboarding_choose_picture_button">95dp</dimen>
     <dimen name="setting_section_title_horizontal_margin">45dp</dimen>
-    <dimen name="setting_block_item_left_margin">45dp</dimen>
+    <dimen name="setting_block_item_left_margin">55dp</dimen>
     <dimen name="setting_block_search_bar_height">64dp</dimen>
     <dimen name="group_member_image_overlap_margin">-15dp</dimen>
     <dimen name="group_suggestion_margin">5dp</dimen>

@@ -452,4 +452,18 @@
 	<string name="language_most_spoken_values">en_US,es_ES,pt_BR,hi_IN,ar_DZ,ja_JP,ru_RU</string>
 	<string name="language_supported_title">Langues supportées</string>
 	<string name="language_supported_values">af_ZA,id_ID,ms_MY,ca_ES,cs_CZ,da_DK,de_DE,en_AU,en_CA,en_GB,en_IN,en_IE,en_NZ,en_PH,en_ZA,en_US,es_AR,es_BO,es_CL,es_CO,es_CR,es_EC,es_SV,es_ES,es_US,es_GT,es_HN,es_MX,es_NI,es_PA,es_PY,es_PE,es_PR,es_DO,es_UY,es_VE,eu_ES,fil_PH,fr_FR,gl_ES,hr_HR,zu_ZA,is_IS,it_IT,lt_LT,hu_HU,nl_NL,nb_NO,pl_PL,pt_BR,pt_PT,ro_RO,sk_SK,sl_SI,fi_FI,sv_SE,vi_VN,tr_TR,el_GR,bg_BG,ru_RU,sr_RS,uk_UA,he_IL,ar_IL,ar_JO,ar_AE,ar_BH,ar_DZ,ar_SA,ar_IQ,ar_KW,ar_MA,ar_TN,ar_OM,ar_PS,ar_QA,ar_LB,ar_EG,fa_IR,hi_IN,th_TH,ko_KR,cmn_Hant_TW,yue_Hant_HK,ja_JP,cmn_Hans_HK,cmn_Hans_CN</string>
+	
+	<!-- Support -->
+	<string name="support_metadata">Support</string>
+	<string name="support_popup_displayname">Nom complet</string>
+	<string name="support_popup_username">Nom d\'utilisateur</string>
+	<string name="support_popup_score">Score</string>
+	<string name="support_popup_friends">Amis</string>
+	<string name="support_popup_groups">Groupes</string>
+	<string name="support_popup_device">Terminal</string>
+	<string name="support_popup_devices">Terminaux</string>
+	<string name="support_popup_model">Modèle</string>
+	<string name="support_popup_app">Version app</string>
+	<string name="support_popup_lang">Langue</string>
+	<string name="support_popup_created_at">Inscription</string>
 </resources>
