@@ -531,7 +531,9 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         User user = getCurrentUser();
         friendshipsList.addAll(user.getFriendships());
         for (Iterator<Friendship> iterFriendship = friendshipsList.iterator(); iterFriendship.hasNext();) {
-            final User frienshipUser = iterFriendship.next().getFriend();
+            Friendship friendship = iterFriendship.next();
+            friendship.setSelected(false);
+            final User frienshipUser = friendship.getFriend();
             for (Iterator<GroupMember> iterMember = usersToExclude.iterator(); iterMember.hasNext();) {
                 if (frienshipUser.getId().equals(iterMember.next().getUserId())) iterFriendship.remove();
             }
@@ -553,10 +555,9 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                     Friendship friendship = friendAdapter.getItemAtPosition((Integer) friendView.getTag(R.id.tag_position));
                     String friendId = friendship.getFriend().getId();
                     if (friendAdapterClickable) {
-                        if ((Boolean) friendView.getTag(R.id.tag_selected)) {
+                        if (friendship.isSelected()) {
                             memberIds.add(friendId);
                             searchFriendsView.insertFriend(friendship.getId(), friendship.getProfilePicture());
-
                         } else {
                             memberIds.remove(friendId);
                             searchFriendsView.deleteFriend(friendship.getId());

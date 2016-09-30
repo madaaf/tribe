@@ -13,6 +13,7 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
     private boolean blocked;
     private String category;
     private User friend;
+    private boolean isSelected;
 
     public Friendship(String id) {
         this.id = id;
@@ -48,6 +49,14 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
 
     public void setFriend(User friend) {
         this.friend = friend;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 
     @Override
