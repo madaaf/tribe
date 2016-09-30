@@ -523,4 +523,10 @@
         %2$s
     </string>
 
+    <string name="boostrap.support" translatable="false">
+        mutation {
+            bootstrapSupport
+        }
+    </string>
+
 </resources>

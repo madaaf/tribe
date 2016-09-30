@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.camera.gles;
 import android.content.Context;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
 import com.tribe.app.presentation.view.camera.helper.CameraHelper;
 
 import java.io.IOException;

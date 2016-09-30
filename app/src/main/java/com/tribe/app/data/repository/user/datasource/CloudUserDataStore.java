@@ -394,7 +394,7 @@ public class CloudUserDataStore implements UserDataStore {
             if (value.first.equals(UserRealm.TRIBE_SAVE) || value.first.equals(UserRealm.INVISIBLE_MODE)) {
                 userInputBuilder.append(value.first + ": " + Boolean.valueOf(value.second));
                 userInputBuilder.append(",");
-            } else {
+            } else if (!value.first.equals(UserRealm.FBID) || (!StringUtils.isEmpty(value.second) && !value.second.equals("null"))) {
                 userInputBuilder.append(value.first + ": \"" + value.second + "\"");
                 userInputBuilder.append(",");
             }
@@ -407,9 +407,13 @@ public class CloudUserDataStore implements UserDataStore {
         String userInput = userInputBuilder.length() > 0 ? userInputBuilder.substring(0, userInputBuilder.length() - 1) : "";
 
         if (StringUtils.isEmpty(pictureUri)) {
-            String request = context.getString(R.string.user_mutate, userInput, context.getString(R.string.userfragment_infos));
-            return this.tribeApi.updateUser(request)
-                    .doOnNext(saveToCacheUpdateUser);
+            if (!StringUtils.isEmpty(userInput)) {
+                String request = context.getString(R.string.user_mutate, userInput, context.getString(R.string.userfragment_infos));
+                return this.tribeApi.updateUser(request)
+                        .doOnNext(saveToCacheUpdateUser);
+            } else {
+                return Observable.empty();
+            }
         } else {
             String request = context.getString(R.string.user_mutate, userInput, context.getString(R.string.userfragment_infos));
             RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
@@ -1003,6 +1007,12 @@ public class CloudUserDataStore implements UserDataStore {
             else json += list.get(i) + ", ";
         }
         return json;
+    }
+
+    @Override
+    public Observable<Void> bootstrapSupport() {
+        String request = context.getString(R.string.boostrap_support);
+        return this.tribeApi.bootstrapSupport(request);
     }
 }
 

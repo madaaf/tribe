@@ -480,7 +480,7 @@ public class TileView extends SquareFrameLayout {
         springInside.setEndValue(0f);
 
         Spring springAvatar = (Spring) getTag(R.id.spring_avatar);
-        springAvatar.setSpringConfig(SPRING_BOUNCE);
+        springAvatar.setSpringConfig(type == TYPE_TILE ? SPRING_NO_BOUNCE : SPRING_BOUNCE);
         springAvatar.setEndValue(0f);
 
         if (type == TYPE_TILE) {
@@ -508,7 +508,7 @@ public class TileView extends SquareFrameLayout {
     public void setInfo(Recipient recipient) {
         // WE DON'T LOAD THE AVATAR AGAIN IF THE URL IS THE SAME
         String previousAvatar = (String) avatar.getTag(R.id.profile_picture);
-        if (StringUtils.isEmpty(previousAvatar) || !previousAvatar.equals(recipient.getProfilePicture())) {
+        if ((StringUtils.isEmpty(previousAvatar) && !StringUtils.isEmpty(recipient.getProfilePicture())) || !previousAvatar.equals(recipient.getProfilePicture())) {
             avatar.setTag(R.id.profile_picture, recipient.getProfilePicture());
             avatar.load(recipient.getProfilePicture());
         }

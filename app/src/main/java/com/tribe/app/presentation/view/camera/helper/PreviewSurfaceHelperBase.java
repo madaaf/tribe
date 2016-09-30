@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.camera.helper;
 
 import android.content.Context;
+import android.graphics.SurfaceTexture;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -30,5 +31,10 @@ public class PreviewSurfaceHelperBase implements PreviewSurfaceHelper {
     @Override
     public void setPreviewDisplay(final SurfaceHolder holder) throws IOException {
         cameraHelper.setPreviewDisplay(holder);
+    }
+
+    @Override
+    public void setPreviewTexture(SurfaceTexture surfaceTexture) throws IOException {
+        cameraHelper.setPreviewTexture(surfaceTexture);
     }
 }

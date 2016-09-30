@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -357,7 +358,7 @@ public class PullToSearchView extends FrameLayout {
     private class SpringListener extends SimpleSpringListener {
         @Override
         public void onSpringUpdate(Spring spring) {
-            if (isAttachedToWindow()) {
+            if (ViewCompat.isAttachedToWindow(PullToSearchView.this)) {
                 int value = (int) spring.getCurrentValue();
                 translateTop(value);
             }

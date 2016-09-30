@@ -245,4 +245,10 @@ public class CloudUserDataRepository implements UserRepository {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
         return cloudDataStore.leaveGroup(membershipId);
     }
+
+    @Override
+    public Observable<Void> bootstrapSupport() {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.bootstrapSupport();
+    }
 }

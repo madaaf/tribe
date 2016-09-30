@@ -287,7 +287,7 @@ public class PullToSearchContainer extends FrameLayout {
     private class TopSpringListener extends SimpleSpringListener {
         @Override
         public void onSpringUpdate(Spring spring) {
-            if (isAttachedToWindow()) {
+            if (ViewCompat.isAttachedToWindow(PullToSearchContainer.this)) {
                 float value = (float) spring.getCurrentValue();
                 translateTop(value);
             }
@@ -336,7 +336,7 @@ public class PullToSearchContainer extends FrameLayout {
     private class MarginSpringListener extends SimpleSpringListener {
         @Override
         public void onSpringUpdate(Spring spring) {
-            if (isAttachedToWindow()) {
+            if (ViewCompat.isAttachedToWindow(PullToSearchContainer.this)) {
                 int value = (int) spring.getCurrentValue();
                 margin(value);
             }

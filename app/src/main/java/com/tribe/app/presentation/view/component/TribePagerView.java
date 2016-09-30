@@ -1,10 +1,12 @@
 package com.tribe.app.presentation.view.component;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Build;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -66,6 +68,8 @@ public class TribePagerView extends FrameLayout {
     @FloatDef({SPEED_NORMAL, SPEED_LIGHTLY_FASTER, SPEED_FAST})
     public @interface SpeedPlaybackValues{}
 
+    private static final String[] PERMISSIONS_CAMERA = new String[]{ Manifest.permission.CAMERA,
+            Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE };
     private static final SpringConfig ORIGAMI_SPRING_BOUNCE_LIGHT_CONFIG = SpringConfig.fromOrigamiTensionAndFriction(132, 11f);
     private static final SpringConfig ORIGAMI_SPRING_BOUNCE_CONFIG = SpringConfig.fromOrigamiTensionAndFriction(132, 7f);
     private static final SpringConfig ORIGAMI_SPRING_CONFIG = SpringConfig.fromOrigamiTensionAndFriction(200, 17);
@@ -280,7 +284,7 @@ public class TribePagerView extends FrameLayout {
     }
 
     public void onResume() {
-        cameraWrapper.onResume(false);
+
     }
 
     public void onPause() {
@@ -449,6 +453,11 @@ public class TribePagerView extends FrameLayout {
 
                 viewCircleGradient.setAlpha(1 - value);
             }
+
+            @Override
+            public void onSpringAtRest(Spring spring) {
+                super.onSpringAtRest(spring);
+            }
         });
 
         springReplyMode.setEndValue(1f);
@@ -521,6 +530,10 @@ public class TribePagerView extends FrameLayout {
             this.imgCancelReply.setTranslationX(0);
             this.layoutNbTribes.setVisibility(View.GONE);
         }
+    }
+
+    private int getNbTribes() {
+        return (tribeList.size() - tribeListSeens.size());
     }
 
     public @CameraWrapper.TribeMode String getTribeMode() {
@@ -772,7 +785,7 @@ public class TribePagerView extends FrameLayout {
     private class LeftSpringListener extends SimpleSpringListener {
         @Override
         public void onSpringUpdate(Spring spring) {
-            if (isAttachedToWindow()) {
+            if (ViewCompat.isAttachedToWindow(TribePagerView.this)) {
                 float value = (float) spring.getCurrentValue();
                 scrollLeft(value);
             }
@@ -782,7 +795,7 @@ public class TribePagerView extends FrameLayout {
     private class RightSpringListener extends SimpleSpringListener {
         @Override
         public void onSpringUpdate(Spring spring) {
-            if (isAttachedToWindow()) {
+            if (ViewCompat.isAttachedToWindow(TribePagerView.this)) {
                 float value = (float) spring.getCurrentValue();
                 scrollRight(value);
             }
@@ -792,7 +805,7 @@ public class TribePagerView extends FrameLayout {
     private class TopSpringListener extends SimpleSpringListener {
         @Override
         public void onSpringUpdate(Spring spring) {
-            if (isAttachedToWindow()) {
+            if (ViewCompat.isAttachedToWindow(TribePagerView.this)) {
                 float value = (float) spring.getCurrentValue();
                 scrollTop(value);
             }
@@ -828,7 +841,7 @@ public class TribePagerView extends FrameLayout {
     private class BottomSpringListener extends SimpleSpringListener {
         @Override
         public void onSpringUpdate(Spring spring) {
-            if (isAttachedToWindow()) {
+            if (ViewCompat.isAttachedToWindow(TribePagerView.this)) {
                 float value = (float) spring.getCurrentValue();
                 scrollBottom(value);
             }
@@ -838,7 +851,7 @@ public class TribePagerView extends FrameLayout {
     private class AlphaSpringListener extends SimpleSpringListener {
         @Override
         public void onSpringUpdate(Spring spring) {
-            if (isAttachedToWindow()) {
+            if (ViewCompat.isAttachedToWindow(TribePagerView.this)) {
                 float value = (float) spring.getCurrentValue();
                 computeCurrentView();
                 currentView.setIconsAlpha(value);
@@ -849,7 +862,7 @@ public class TribePagerView extends FrameLayout {
     private class AlphaSwipeDownSpringListener extends SimpleSpringListener {
         @Override
         public void onSpringUpdate(Spring spring) {
-            if (isAttachedToWindow()) {
+            if (ViewCompat.isAttachedToWindow(TribePagerView.this)) {
                 float value = (float) spring.getCurrentValue();
                 computeCurrentView();
                 currentView.setSwipeDownAlpha(value);
@@ -1119,8 +1132,12 @@ public class TribePagerView extends FrameLayout {
     private void closeReplyMode() {
         springReplyMode.setEndValue(1f);
         showSpeed();
-        showNbTribes();
-        hideExitCamera();
+        if (getNbTribes() > 0) {
+            showNbTribes();
+            hideExitCamera();
+        } else {
+            showExitCamera();
+        }
         currentView.play();
     }
 

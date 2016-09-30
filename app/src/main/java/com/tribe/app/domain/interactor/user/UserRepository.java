@@ -146,4 +146,6 @@ public interface UserRepository {
     Observable<Void> removeGroup(String groupId);
 
     Observable<Void> leaveGroup(String membershipId);
+
+    Observable<Void> bootstrapSupport();
 }

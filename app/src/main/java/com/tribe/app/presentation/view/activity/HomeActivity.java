@@ -42,7 +42,6 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -50,16 +49,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class HomeActivity extends BaseActivity implements HasComponent<UserComponent>, HomeView {
 
     public static final String[] PERMISSIONS_CAMERA = new String[]{ Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE };
-    public static final int SETTINGS_RESULT = 101, OPEN_CAMERA_RESULT = 102, OPEN_GALLERY_RESULT = 103, TRIBES_RESULT = 104;
-    private static final String GROUP_AVATAR = "group_avatar";
+    public static final int SETTINGS_RESULT = 101, TRIBES_RESULT = 104;
 
     private static final int THRESHOLD_SCROLL = 12;
     private static final int DURATION = 500;
@@ -160,18 +156,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     protected void onResume() {
         super.onResume();
-
-        if (!isFirstInit) {
-            subscriptions.add(Observable.just("")
-                    .observeOn(Schedulers.newThread())
-                    .delay(1000, TimeUnit.MILLISECONDS)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(o1 -> {
-                        cameraWrapper.showCamera();
-                    }));
-        } else {
-            isFirstInit = false;
-        }
 
         subscriptions.add(Observable.
                 from(PERMISSIONS_CAMERA)
@@ -300,8 +284,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     public void initOpenTribes(Observable<Recipient> observable) {
         subscriptions.add(observable
-                .doOnNext(recipient -> cameraWrapper.hideCamera())
-                .delay(DURATION_SMALL, TimeUnit.MILLISECONDS)
                 .subscribe(friend -> {
             HomeActivity.this.navigator.navigateToTribe(HomeActivity.this, friend.getPosition(), friend, TRIBES_RESULT);
         }));

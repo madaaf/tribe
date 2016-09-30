@@ -52,11 +52,6 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
     }
 
     @Override
-    public final int getCameraId() {
-        return cameraId;
-    }
-
-    @Override
     public final boolean isOpened() {
         return this.camera != null;
     }
@@ -604,7 +599,7 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
     @Override
     public CameraHelper.CameraInfoCompat getCameraInfo() {
         final Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
-        Camera.getCameraInfo(getCameraId(), cameraInfo);
+        Camera.getCameraInfo(cameraId, cameraInfo);
 
         final CameraHelper.CameraInfoCompat result = new CameraHelper.CameraInfoCompat();
         result.facing = cameraInfo.facing;
