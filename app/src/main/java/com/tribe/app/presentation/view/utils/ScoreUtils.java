@@ -105,7 +105,7 @@ public class ScoreUtils {
 
         for (Level level : Level.values()) {
             if (score < level.points)  return previousLevel;
-            else if (score == level.points) return level;
+            else if (score >= level.points) return level;
 
             previousLevel = level;
         }

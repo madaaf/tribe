@@ -171,5 +171,8 @@ public class DiskUserDataStore implements UserDataStore {
         return null;
     }
 
-
+    @Override
+    public Observable<Void> bootstrapSupport() {
+        return null;
+    }
 }

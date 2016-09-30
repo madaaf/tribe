@@ -1008,5 +1008,11 @@ public class CloudUserDataStore implements UserDataStore {
         }
         return json;
     }
+
+    @Override
+    public Observable<Void> bootstrapSupport() {
+        String request = context.getString(R.string.boostrap_support);
+        return this.tribeApi.bootstrapSupport(request);
+    }
 }
 

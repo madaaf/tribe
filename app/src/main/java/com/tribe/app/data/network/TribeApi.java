@@ -167,4 +167,8 @@ public interface TribeApi {
     @FormUrlEncoded
     @POST("/graphql")
     Observable<Void> markTribeAsSave(@Field("query") String query);
+
+    @FormUrlEncoded
+    @POST("/graphql")
+    Observable<Void> bootstrapSupport(@Field("query") String query);
 }

@@ -16,6 +16,7 @@ import com.tribe.app.domain.interactor.user.AddMembersToGroup;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.DiskFindContactByValue;
 import com.tribe.app.domain.interactor.user.DiskSearchResults;
+import com.tribe.app.domain.interactor.user.DoBootstrapSupport;
 import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
 import com.tribe.app.domain.interactor.user.DoRegister;
 import com.tribe.app.domain.interactor.user.FindByUsername;
@@ -65,6 +66,12 @@ public class UserModule {
     @PerActivity
     DoRegister provideDoRegister(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
         return new DoRegister(userRepository, threadExecutor, postExecutionThread);
+    }
+
+    @Provides
+    @PerActivity
+    DoBootstrapSupport provideBootstrapSupport(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+        return new DoBootstrapSupport(userRepository, threadExecutor, postExecutionThread);
     }
 
     @Provides

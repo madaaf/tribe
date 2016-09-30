@@ -302,4 +302,9 @@ public class DiskUserDataRepository implements UserRepository {
     public Observable<Void> leaveGroup(String groupId) {
         return null;
     }
+
+    @Override
+    public Observable<Void> bootstrapSupport() {
+        return null;
+    }
 }
