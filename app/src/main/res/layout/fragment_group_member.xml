@@ -33,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/setting_block_search_bar_height"
         android:orientation="horizontal"
-        android:background="@drawable/shape_white_rect_grey_border"
+        android:background="@drawable/shape_white_rect_grey_border_no_top_no_background"
         >
 
         <ImageView
@@ -47,6 +47,7 @@
             android:id="@+id/editTextSearchGroupMembers"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:hint="@string/group_members_search_placeholder"
             android:background="@null"
              />
 

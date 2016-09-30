@@ -117,7 +117,7 @@ public class GroupMemberFragment extends BaseFragment implements GroupMemberView
         subscriptions.add(RxView.clicks(imgBack).subscribe(aVoid -> {
             imageBackClicked.onNext(null);
         }));
-        txtTitle.setText(getString(R.string.group_member));
+
     }
 
     public Observable<Void> imageBackClicked() {
@@ -154,6 +154,8 @@ public class GroupMemberFragment extends BaseFragment implements GroupMemberView
         groupMemberListCopy = new ArrayList<>();
         groupMemberPresenter.attachView(this);
         if (groupMemberList != null) {
+            if (groupMemberList.size() == 1)txtTitle.setText("1 " + getString(R.string.group_member));
+            else txtTitle.setText(groupMemberList.size() + " " + getString(R.string.group_members));
             groupMemberListCopy.addAll(groupMemberList);
 //            groupMemberAdapter.setHasStableIds(true);
             groupMemberAdapter.setItems(groupMemberList);

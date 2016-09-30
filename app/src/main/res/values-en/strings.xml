@@ -102,7 +102,14 @@
 	<string name="grid_friendship_status_loading">Loading</string>
 	<string name="grid_friendship_status_reply">Reply</string>
 	<string name="grid_support_title">Any questions?</string>
-	<string name="grid_support_description">Chat with the CEO</string>
+	<string name="grid_support_status_default">Chat with the CEO</string>
+	<string name="grid_support_status_sending">Sending</string>
+	<string name="grid_support_status_confirmed">Confirmed</string>
+	<string name="grid_support_status_sent">Envoyé à l’Équipe</string>
+	<string name="grid_support_status_opened">Opened</string>
+	<string name="grid_support_status_new_messages">Tap to view!</string>
+	<string name="grid_support_status_loading">Loading</string>
+	<string name="grid_support_status_reply">Reply to the CEO</string>
 	<string name="grid_ghost">Has not joined yet</string>
 	<string name="grid_friendship_recording_tap_to_cancel">Wrapping up</string>
 	<string name="grid_friendship_recording_validated">Ready!</string>

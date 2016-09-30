@@ -266,7 +266,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         }));
 
         subscriptions.add(createInviteView.createPressed().subscribe(aVoid -> {
-            groupSuggestionsView.setVisibility(View.INVISIBLE);
+            setGroupSuggestionsViewVisible(false);
             groupInfoView.bringGroupNameDown(animDuration);
             createInviteView.disable();
             groupInfoView.disableButtons();
@@ -290,8 +290,15 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         groupInfoView.setupGroupInfoUi(privateGroup, 1);
         imageDone.setVisibility(View.VISIBLE);
         if (!privateGroup)circularProgressView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_public));
-        layoutInvite.setTranslationY(screenUtils.dpToPx(smallMargin));
-        recyclerViewInvite.setTranslationY(screenUtils.dpToPx(smallMargin));
+        appBarLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                AnimationUtils.animateHeightCoordinatorLayout(appBarLayout, appBarLayout.getHeight(), appBarLayout.getHeight() + screenUtils.dpToPx(smallMargin), 0);
+                appBarLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
+//        layoutInvite.setTranslationY(screenUtils.dpToPx(smallMargin));
+//        recyclerViewInvite.setTranslationY(screenUtils.dpToPx(smallMargin));
 
         subscriptions.add(groupInfoView.imageBackClicked().subscribe(aVoid -> {
             navigator.navigateToHome(getActivity(), false);
@@ -325,14 +332,11 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             groupInfoView.setLoading(true);
         }));
 
-        subscriptions.add(groupInfoView.isEditingGroupName().subscribe(isEditing -> {
-            if (isEditing) groupSuggestionsView.setVisibility(View.VISIBLE);
-            else  groupSuggestionsView.setVisibility(View.INVISIBLE);
-        }));
+        subscriptions.add(groupInfoView.isEditingGroupName().subscribe(this::setGroupSuggestionsViewVisible));
         subscriptions.add(groupSuggestionsView.groupSuggestionClicked().subscribe(suggestionName -> {
             groupInfoView.setGroupName(suggestionName);
             groupInfoView.bringGroupNameDown(animDuration);
-            groupSuggestionsView.setVisibility(View.INVISIBLE);
+            setGroupSuggestionsViewVisible(false);
         }));
 
         subscriptions.add(searchFriendsView.editTextSearchTextChanged().subscribe(this::filter));
@@ -570,6 +574,21 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         subscriptions.add(searchFriendsView.editTextSearchClicked().subscribe(aVoid -> {
             appBarLayout.setExpanded(false);
         }));
+    }
+
+    private void setGroupSuggestionsViewVisible(boolean visible) {
+        if (visible) {
+            groupSuggestionsView.setVisibility(View.VISIBLE);
+            AnimationUtils.fadeIn(groupSuggestionsView, AnimationUtils.ANIMATION_DURATION_SHORT);
+        } else {
+            AnimationUtils.fadeOut(groupSuggestionsView, AnimationUtils.ANIMATION_DURATION_SHORT);
+            Observable.timer(animDuration, TimeUnit.MILLISECONDS)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(time -> {
+                        groupSuggestionsView.setVisibility(View.INVISIBLE);
+                    });
+        }
     }
 
     private void filter(String text) {

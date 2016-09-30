@@ -453,6 +453,8 @@ public class GroupInfoView extends FrameLayout {
                 .setDuration(animDuration)
                 .setStartDelay(AnimationUtils.NO_START_DELAY)
                 .start();
+        layoutDividerBackground.bringToFront();
+        editTextGroupName.bringToFront();
     }
 
     public void bringGroupNameDown(int animDuration) {

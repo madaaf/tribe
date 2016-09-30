@@ -124,11 +124,11 @@ public class AnimationUtils {
     }
 
     public static void fadeOut(View v, long duration) {
-        v.animate().alpha(0).setInterpolator(new DecelerateInterpolator()).setDuration(duration).start();
+        v.animate().alpha(0).setStartDelay(NO_START_DELAY).setInterpolator(new DecelerateInterpolator()).setDuration(duration).start();
     }
 
     public static void fadeIn(View v, long duration) {
-        v.animate().alpha(1).setInterpolator(new DecelerateInterpolator()).setDuration(duration).start();
+        v.animate().alpha(1).setStartDelay(NO_START_DELAY).setInterpolator(new DecelerateInterpolator()).setDuration(duration).start();
     }
 
     public static void fadeViewDownOut(View view, Animator.AnimatorListener listener) {
