@@ -312,8 +312,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     }
 
     public void initForBoth() {
-
-//        recyclerViewInvite.setVisibility(View.INVISIBLE);
         subscriptions.add(RxView.clicks(imageDone).subscribe(aVoid -> {
             groupPresenter.addMembersToGroup(groupId, memberIds);
             imageDone.setEnabled(false);
@@ -330,14 +328,12 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             groupPresenter.updateGroup(groupId, groupName, groupPictureUri);
             groupInfoView.setLoading(true);
         }));
-
         subscriptions.add(groupInfoView.isEditingGroupName().subscribe(this::setGroupSuggestionsViewVisible));
         subscriptions.add(groupSuggestionsView.groupSuggestionClicked().subscribe(suggestionName -> {
             groupInfoView.setGroupName(suggestionName);
             groupInfoView.bringGroupNameDown(animDuration);
             setGroupSuggestionsViewVisible(false);
         }));
-
         subscriptions.add(searchFriendsView.editTextSearchTextChanged().subscribe(this::filter));
     }
 
@@ -554,15 +550,21 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                 .subscribe(friendView -> {
                     Friendship friendship = friendAdapter.getItemAtPosition((Integer) friendView.getTag(R.id.tag_position));
                     String friendId = friendship.getFriend().getId();
-                    if (friendAdapterClickable) {
-                        if (friendship.isSelected()) {
-                            memberIds.add(friendId);
-                            searchFriendsView.insertFriend(friendship.getId(), friendship.getProfilePicture());
-                        } else {
-                            memberIds.remove(friendId);
-                            searchFriendsView.deleteFriend(friendship.getId());
-                        }
+                    recyclerViewInvite.setEnabled(false);
+                    Observable.timer(animDuration, TimeUnit.MILLISECONDS)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(time -> {
+                                recyclerViewInvite.setEnabled(true);
+                            });
+                    if (friendship.isSelected()) {
+                        memberIds.add(friendId);
+                        searchFriendsView.insertFriend(friendship.getId(), friendship.getProfilePicture());
+                    } else {
+                        memberIds.remove(friendId);
+                        searchFriendsView.deleteFriend(friendship.getId());
                     }
+
                 }));
         friendAdapter.notifyDataSetChanged();
     }

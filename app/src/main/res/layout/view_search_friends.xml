@@ -8,8 +8,7 @@
     <FrameLayout
         android:id="@+id/layoutUserPicContainer"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/setting_pic_size"
-        android:layout_marginBottom="@dimen/vertical_margin_xsmall"
+        android:layout_height="@dimen/group_search_height"
         />
 
     <com.tribe.app.presentation.view.widget.EditTextFont
