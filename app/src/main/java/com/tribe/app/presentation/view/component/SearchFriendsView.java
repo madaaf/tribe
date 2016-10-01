@@ -186,13 +186,15 @@ public class SearchFriendsView extends FrameLayout {
 //            searchMoved = false;
             // move text right
             currColumn = 1;
-            moveSearch(moveRightPixels);
+            moveSearch(moveRightPixels*(currColumn));
             searchMoved = false;
+            currColumn++;
             currentRow++;
         }
         size++;
         addImageToFrontOfLayoutWithAnimation(pictureUrl);
         Log.d(TAG, "currColumn: " + currColumn);
+        Log.d(TAG, "currRow: " + currentRow);
     }
 
     public void deleteFriend(String friendId) {
@@ -204,10 +206,12 @@ public class SearchFriendsView extends FrameLayout {
         fadeImageAndRemoveFromLayout(removeLoc);
         if (currentRow > 1) {
             backFullRow(currentRow, removeLoc);
-            moveSearch(moveLeftPixels);
-            currentRow--;
-            currColumn = columnCount;
-            searchMoved = true;
+            moveSearch(moveRightPixels * (currColumn-1));
+            if (currColumn < 2) {
+                currentRow--;
+                currColumn = columnCount;
+                searchMoved = true;
+            }
         } else if (searchMoved) {
             moveImagesLeft(removeLoc);
             // TODO: this will not work
@@ -219,9 +223,11 @@ public class SearchFriendsView extends FrameLayout {
             if (currColumn > 1) {
                 moveImagesAndSearchLeft(removeLoc);
             } else {
-                moveSearch(moveLeftPixels);
+                moveSearch(moveRightPixels * (currColumn-1));
             }
         }
+        Log.d(TAG, "currColumn: " + currColumn);
+        Log.d(TAG, "currRow: " + currentRow);
     }
 
     private int updateRemoveLocationMap(String friendId) {
@@ -244,20 +250,20 @@ public class SearchFriendsView extends FrameLayout {
 
     private void moveImagesAndSearchRight() {
         moveImagesRight();
-        moveSearch(moveRightPixels);
+        moveSearch(moveRightPixels * currColumn);
     }
 
     private void moveImagesAndSearchLeft(int removeLoc) {
         moveImagesLeft(removeLoc);
-        moveSearch(moveLeftPixels);
+        moveSearch(moveRightPixels * (currColumn));
     }
 
 
     private void moveImagesRight() {
         if (columnCountSet) {
-            moveViewsRight(layoutUserPicContainer, (currentRow-1) * (columnCount), (currentRow-1) * (columnCount) + currColumn);
+            moveViewsRight(layoutUserPicContainer, (currentRow-1) * (columnCount), (currentRow-1) * (columnCount) + currColumn-1);
         } else {
-            moveViewsRight(layoutUserPicContainer, 0, currColumn*currentRow - 1);
+            moveViewsRight(layoutUserPicContainer, 0, currColumn*currentRow-1);
         }
     }
 
@@ -281,7 +287,7 @@ public class SearchFriendsView extends FrameLayout {
     }
 
     private void moveSearch(int pixels) {
-        moveView(editTextSearch,(int) editTextSearch.getX() + pixels, (int) editTextSearch.getY());
+        moveView(editTextSearch,(int) pixels, (int) editTextSearch.getY());
     }
 
     private void forwardFullRow(int rows) {
@@ -311,13 +317,13 @@ public class SearchFriendsView extends FrameLayout {
             if (i == 1) {
                 moveViewsLeft(layoutUserPicContainer, idxStart, idxEnd);
             } else {
-                moveViewsLeft(layoutUserPicContainer, idxStart, idxEnd);
+                moveViewsLeft(layoutUserPicContainer, idxStart, idxEnd+1);
                 if (idxMoveUp < removeLoc) {
                     idxMoveUp = removeLoc;
                     moveView(layoutUserPicContainer.getChildAt(idxMoveUp), imageMargin, (i - 2) * imageSize);
                     break;
                 }
-                moveView(layoutUserPicContainer.getChildAt(idxMoveUp), screenUtils.getWidthPx() - imageMargin - moveRightPixels, (i - 2) * imageSize);
+                moveView(layoutUserPicContainer.getChildAt(idxMoveUp), screenUtils.getWidthPx() - imageMargin - moveRightPixels, (i - 2) * imageSize + imageMargin);
             }
         }
     }
@@ -330,6 +336,7 @@ public class SearchFriendsView extends FrameLayout {
         layoutUserPicContainer.addView(imageView, 0);
         FrameLayout.LayoutParams imageViewFlp = (FrameLayout.LayoutParams) imageView.getLayoutParams();
         imageViewFlp.leftMargin = imageMargin;
+        imageViewFlp.topMargin = imageMargin;
         imageView.setLayoutParams(imageViewFlp);
         if (imageUrl.equals(getContext().getString(R.string.no_profile_picture_url))) {
             imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_avatar_placeholder));
