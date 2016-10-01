@@ -2,26 +2,26 @@ package com.tribe.app.presentation.view.camera.helper;
 
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
-import android.hardware.Camera.Size;
 import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
-import android.view.SurfaceHolder;
 import android.view.WindowManager;
 
+import com.tribe.app.presentation.view.camera.utils.AspectRatio;
+import com.tribe.app.presentation.view.camera.utils.Constants;
+import com.tribe.app.presentation.view.camera.utils.Size;
+import com.tribe.app.presentation.view.camera.utils.SizeMap;
+import com.tribe.app.presentation.view.camera.utils.SurfaceInfo;
 import com.tribe.app.presentation.view.utils.CameraUtils;
 import com.tribe.app.presentation.view.utils.Degrees;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.SortedSet;
 
 public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, Camera.AutoFocusCallback {
 
@@ -30,6 +30,13 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
     private Camera camera;
     private Camera.PictureCallback pictureCallback;
     private byte[] buffer;
+    private SurfaceInfo surfaceInfo = new SurfaceInfo();
+    private Camera.Parameters cameraParameters;
+    private SizeMap previewSizes = new SizeMap();
+    private SizeMap pictureSizes = new SizeMap();
+    private AspectRatio aspectRatio;
+    private Size previewSize;
+    private Size pictureSize;
 
     public CameraHelperBase(final Context context) {
         this.context = context;
@@ -82,89 +89,87 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
 
     @Override
     public void setupOptimalSizes(int measureWidth, int measureHeight, int maxSize) {
-        final List<Size> supportedPreviewSizes = getSupportedPreviewSizes();
-        final List<Size> supportedPictureSizes = getSupportedPictureSizes();
 
-        if (supportedPreviewSizes != null && supportedPictureSizes != null) {
-            int width;
-            int height;
-            if (getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                width = measureHeight;
-                height = measureWidth;
-            } else {
-                width = measureWidth;
-                height = measureHeight;
-            }
+    }
 
-            final Size pictureSize = supportedPictureSizes.get(0); //getOptimalSize(supportedPictureSizes, width, height, maxSize);
-            if (pictureSize != null) {
-                width = pictureSize.width;
-                height = pictureSize.height;
-            }
-            final Size previewSize = supportedPreviewSizes.get(0); //getOptimalSize(supportedPreviewSizes, measureWidth, measureHeight, maxSize);
+    @Override
+    public void setPreviewTexture(final SurfaceTexture surfaceTexture, int width, int height) throws IOException {
+        surfaceInfo.configure(surfaceTexture, width, height);
 
-            if (previewSize != null && pictureSize != null) {
-                final Camera.Parameters parameters = getCamera().getParameters();
-                parameters.setPreviewSize(previewSize.width, previewSize.height);
-                parameters.setPictureSize(pictureSize.width, pictureSize.height);
-                try {
-                    getCamera().setParameters(parameters);
-                } catch (final RuntimeException e) {
-                    Log.d("Camera", " errror!", e);
-                }
-            }
+        if (camera != null) {
+            setUpPreview();
+            adjustCameraParameters();
         }
     }
 
-    private static final double ASPECT_TOLERANCE = 0.1D;
+    public void setPreviewTexture(final SurfaceTexture surfaceTexture) {
+        surfaceInfo.setSurface(surfaceTexture);
 
-    private static Size getOptimalSize(final List<Size> sizes, final int width, final int height, final int maxSize) {
-        if (sizes == null) {
-            return null;
+        if (camera != null) {
+            setUpPreview();
+            adjustCameraParameters();
+        }
+    }
+
+    private void setUpPreview() {
+        try {
+            camera.setPreviewTexture(surfaceInfo.getSurface());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void adjustCameraParameters() {
+        final SortedSet<Size> sizes = previewSizes.sizes(aspectRatio);
+        if (sizes == null) { // Not supported
+            aspectRatio = chooseAspectRatio();
+        }
+        previewSize = chooseOptimalSize(sizes);
+        final Camera.Size currentSize = cameraParameters.getPictureSize();
+        if (currentSize.width != previewSize.getWidth() || currentSize.height != previewSize.getHeight()) {
+            // Largest picture size in this ratio
+            pictureSize = pictureSizes.sizes(aspectRatio).last();
+            cameraParameters.setPreviewSize(previewSize.getWidth(), previewSize.getHeight());
+            cameraParameters.setPictureSize(pictureSize.getWidth(), pictureSize.getHeight());
+            camera.setParameters(cameraParameters);
+        }
+    }
+
+    private AspectRatio chooseAspectRatio() {
+        AspectRatio r = null;
+        for (AspectRatio ratio : previewSizes.ratios()) {
+            r = ratio;
+            if (ratio.equals(Constants.ASPECT_RATIO_16_9)) {
+                return ratio;
+            }
+        }
+        return r;
+    }
+
+    private Size chooseOptimalSize(SortedSet<Size> sizes) {
+        if (surfaceInfo.getWidth() == 0 || surfaceInfo.getHeight() == 0) { // Not yet laid out
+            return sizes.first(); // Return the smallest size
         }
 
+        int desiredWidth;
+        int desiredHeight;
+
+        if (getOptimalOrientation() == 90 || getOptimalOrientation() == 270) {
+            desiredWidth = surfaceInfo.getHeight();
+            desiredHeight = surfaceInfo.getWidth();
+        } else {
+            desiredWidth = surfaceInfo.getWidth();
+            desiredHeight = surfaceInfo.getHeight();
+        }
         Size result = null;
-        double minDiff = Double.MAX_VALUE;
+        for (Size size : sizes) { // Iterate from small to large
+            if (desiredWidth <= size.getWidth() && desiredHeight <= size.getHeight()) {
+                return size;
 
-        final double targetRatio = (double) width / (double) height;
-        for (final Size size : sizes) {
-            if (maxSize > 0 && (size.width > maxSize || size.height > maxSize)) {
-                continue;
             }
-            final double ratio = (double) size.width / (double) size.height;
-            if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) {
-                continue;
-            }
-            if (Math.abs(size.height - height) < minDiff) {
-                result = size;
-                minDiff = Math.abs(size.height - height);
-            }
+            result = size;
         }
-
-        if (result == null) {
-            minDiff = Double.MAX_VALUE;
-            for (final Size size : sizes) {
-                if (maxSize > 0 && (size.width > maxSize || size.height > maxSize)) {
-                    continue;
-                }
-                if (Math.abs(size.height - height) < minDiff) {
-                    result = size;
-                    minDiff = Math.abs(size.height - height);
-                }
-            }
-        }
-
         return result;
-    }
-
-    @Override
-    public void setPreviewDisplay(final SurfaceHolder holder) throws IOException {
-        camera.setPreviewDisplay(holder);
-    }
-
-    @Override
-    public void setPreviewTexture(final Object surfaceTexture) throws IOException {
-        getCamera().setPreviewTexture((SurfaceTexture) surfaceTexture);
     }
 
     @Override
@@ -202,93 +207,6 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
 
     //////////////////////////////////////////////////////////////////////////
 
-    protected final Camera.Parameters getParameters() {
-        return camera.getParameters();
-    }
-
-    @Override
-    public void onAutoFocus(boolean success, Camera camera) {
-
-    }
-
-    public static final class CameraSizeComparator implements Comparator<Size> {
-
-        private static final int LOW = 1;
-        private static final int HIGH = -1;
-        private static final int EQUAL = 0;
-
-        @Override
-        public int compare(final Size lhs, final Size rhs) {
-            if (lhs == null && rhs == null) {
-                return EQUAL;
-            }
-            if (lhs == null) {
-                return LOW;
-            }
-            if (rhs == null) {
-                return HIGH;
-            }
-
-            final int lhsSize = lhs.width * lhs.height;
-            final int rhsSize = rhs.width * rhs.height;
-            if (lhsSize < rhsSize) {
-                return LOW;
-            } else if (lhsSize > rhsSize) {
-                return HIGH;
-            }
-            return EQUAL;
-        }
-
-    }
-
-    @Override
-    public LinkedHashMap<Size, Size> getSupportedPreviewSizeAndSupportedPictureSizeMap() {
-        final List<Size> previewSizes = getSupportedPreviewSizes();
-        final List<Size> pictureSizes = getSupportedPictureSizes();
-        if (previewSizes == null || pictureSizes == null) {
-            return null;
-        }
-
-        final LinkedHashMap<Size, Size> results = new LinkedHashMap<Size, Size>();
-
-        for (final Size previewSize : previewSizes) {
-            final double previewRatio = (double) previewSize.width / (double) previewSize.height;
-            for (final Size pictureSize : pictureSizes) {
-                final double pictureRatio = (double) pictureSize.width / (double) pictureSize.height;
-                if (Math.abs(previewRatio - pictureRatio) == 0D) {
-                    results.put(previewSize, pictureSize);
-                    break;
-                }
-
-            }
-        }
-
-        if (results.isEmpty()) {
-            return null;
-        }
-        return results;
-    }
-
-    @Override
-    public List<Size> getSupportedVideoSizes() {
-        return null;
-    }
-
-    @Override
-    public final Size getPreviewSize() {
-        return camera.getParameters().getPreviewSize();
-    }
-
-    @Override
-    public final Size getPictureSize() {
-        return camera.getParameters().getPictureSize();
-    }
-
-    @Override
-    public Size getVideoSize() {
-        return camera.getParameters().getSupportedVideoSizes().get(0);
-    }
-
     @Override
     public final void setPictureFormat(final int format) {
         final Camera.Parameters params = camera.getParameters();
@@ -298,6 +216,11 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
         } catch (final RuntimeException e) {
 
         }
+    }
+
+    @Override
+    public Size getPreviewSize() {
+        return previewSize;
     }
 
     @Override
@@ -321,21 +244,6 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
         System.gc();
 
         camera.takePicture(null, null, null, this);
-    }
-
-
-    @Override
-    public List<Camera.Size> getSupportedPreviewSizes() {
-        final List<Camera.Size> results = getCamera().getParameters().getSupportedPreviewSizes();
-        Collections.sort(results, new CameraSizeComparator());
-        return results;
-    }
-
-    @Override
-    public List<Camera.Size> getSupportedPictureSizes() {
-        final List<Camera.Size> results = getCamera().getParameters().getSupportedPictureSizes();
-        Collections.sort(results, new CameraSizeComparator());
-        return results;
     }
 
     @Override
@@ -561,12 +469,12 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
         final Camera camera = getCamera();
         if (cb != null) {
             try {
-                final Camera.Size previewSize = getPreviewSize();
-                final Camera.Size pictureSize = getPictureSize();
+                final Size previewSize = this.previewSize;
+                final Size pictureSize = this.pictureSize;
                 final Camera.Parameters parameters = camera.getParameters();
                 buffer = new byte[Math.max(
-                        previewSize.width * previewSize.height * ImageFormat.getBitsPerPixel(parameters.getPreviewFormat()) / 8,
-                        pictureSize.width * pictureSize.height * ImageFormat.getBitsPerPixel(ImageFormat.RGB_565) / 8
+                        previewSize.getWidth() * previewSize.getHeight() * ImageFormat.getBitsPerPixel(parameters.getPreviewFormat()) / 8,
+                        pictureSize.getWidth() * pictureSize.getHeight() * ImageFormat.getBitsPerPixel(ImageFormat.RGB_565) / 8
                 )];
                 camera.setPreviewCallbackWithBuffer(cb);
                 camera.addCallbackBuffer(buffer);
@@ -626,6 +534,28 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
 
         setCameraId(cameraId);
         initializeFocusMode();
+
+        cameraParameters = camera.getParameters();
+
+        // Supported preview sizes
+        previewSizes.clear();
+        for (Camera.Size size : cameraParameters.getSupportedPreviewSizes()) {
+            previewSizes.add(new Size(size.width, size.height));
+        }
+
+        // Supported picture sizes;
+        pictureSizes.clear();
+        for (Camera.Size size : cameraParameters.getSupportedPictureSizes()) {
+            pictureSizes.add(new Size(size.width, size.height));
+        }
+
+        // AspectRatio
+        if (aspectRatio == null) {
+            aspectRatio = Constants.ASPECT_RATIO_16_9;
+        }
+
+        adjustCameraParameters();
+        //camera.setDisplayOrientation(getOptimalOrientation());
     }
 
     @Override
@@ -656,5 +586,10 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
                 }
             }
         }
+    }
+
+    @Override
+    public void onAutoFocus(boolean success, Camera camera) {
+
     }
 }

@@ -38,6 +38,10 @@ public class SurfaceInfo {
         return surface;
     }
 
+    public void setSurface(SurfaceTexture surfaceTexture) {
+        surface = surfaceTexture;
+    }
+
     public int getWidth() {
         return width;
     }

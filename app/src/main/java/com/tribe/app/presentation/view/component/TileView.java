@@ -508,7 +508,7 @@ public class TileView extends SquareFrameLayout {
     public void setInfo(Recipient recipient) {
         // WE DON'T LOAD THE AVATAR AGAIN IF THE URL IS THE SAME
         String previousAvatar = (String) avatar.getTag(R.id.profile_picture);
-        if ((StringUtils.isEmpty(previousAvatar) && !StringUtils.isEmpty(recipient.getProfilePicture())) || !previousAvatar.equals(recipient.getProfilePicture())) {
+        if (StringUtils.isEmpty(previousAvatar) || !previousAvatar.equals(recipient.getProfilePicture())) {
             avatar.setTag(R.id.profile_picture, recipient.getProfilePicture());
             avatar.load(recipient.getProfilePicture());
         }

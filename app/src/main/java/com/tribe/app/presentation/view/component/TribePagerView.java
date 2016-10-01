@@ -135,9 +135,6 @@ public class TribePagerView extends FrameLayout {
     @BindView(R.id.cameraWrapper)
     CameraWrapper cameraWrapper;
 
-    @BindView(R.id.imgSpeed)
-    ImageView imgSpeed;
-
     @BindView(R.id.layoutBottom)
     ViewGroup layoutBottom;
 
@@ -338,7 +335,7 @@ public class TribePagerView extends FrameLayout {
 
     private void initUI() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            imgSpeed.setVisibility(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? VISIBLE : GONE);
+            //imgSpeed.setVisibility(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? VISIBLE : GONE);
         }
 
         springSystem = SpringSystem.create();
@@ -411,8 +408,6 @@ public class TribePagerView extends FrameLayout {
         cameraWrapper.setLayoutParams(paramsCamera);
 
         imgCancelReply.setTranslationX(screenUtils.getWidthPx());
-
-        computeImgSpeed();
     }
 
     private void initDimen() {
@@ -764,7 +759,6 @@ public class TribePagerView extends FrameLayout {
         }
 
         layoutNbTribes.onTouchEvent(event);
-        imgSpeed.onTouchEvent(event);
         imgCancelReply.onTouchEvent(event);
         viewTile.onTouchEvent(event);
 
@@ -1098,14 +1092,6 @@ public class TribePagerView extends FrameLayout {
         return tribeListSeens;
     }
 
-    private void hideSpeed() {
-        imgSpeed.animate().translationX(-screenUtils.getWidthPx()).setDuration(DURATION_SLOW).setInterpolator(new DecelerateInterpolator()).start();
-    }
-
-    private void showSpeed() {
-        imgSpeed.animate().translationX(0).setDuration(DURATION_SLOW).setInterpolator(new DecelerateInterpolator()).start();
-    }
-
     private void hideNbTribes() {
         layoutNbTribes.animate().translationX(screenUtils.getWidthPx()).setDuration(DURATION_REPLY).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
     }
@@ -1124,14 +1110,12 @@ public class TribePagerView extends FrameLayout {
 
     private void openReplyMode(boolean showExitCamera) {
         springReplyMode.setEndValue(0f);
-        hideSpeed();
         hideNbTribes();
         if (showExitCamera) showExitCamera();
     }
 
     private void closeReplyMode() {
         springReplyMode.setEndValue(1f);
-        showSpeed();
         if (getNbTribes() > 0) {
             showNbTribes();
             hideExitCamera();
@@ -1162,28 +1146,14 @@ public class TribePagerView extends FrameLayout {
     //////////////////////
     //     PLAYER       //
     //////////////////////
-    @OnClick(R.id.imgSpeed)
     public void changeSpeed() {
         Float newSpeed;
-        if (speedPlayback.get().equals(SPEED_NORMAL)) newSpeed = SPEED_LIGHTLY_FASTER;
-        else if (speedPlayback.get().equals(SPEED_LIGHTLY_FASTER)) newSpeed = SPEED_FAST;
+        if (speedPlayback.get().equals(SPEED_NORMAL)) newSpeed = SPEED_FAST;
         else newSpeed = SPEED_NORMAL;
         speedPlayback.set(newSpeed);
 
         computeCurrentView();
         currentView.changeSpeed();
-
-        computeImgSpeed();
-    }
-
-    private void computeImgSpeed() {
-        if (speedPlayback.get().equals(SPEED_NORMAL)) {
-            imgSpeed.setImageResource(R.drawable.picto_speed_regular);
-        } else if (speedPlayback.get().equals(SPEED_LIGHTLY_FASTER)) {
-            imgSpeed.setImageResource(R.drawable.picto_speed_medium);
-        } else if (speedPlayback.get().equals(SPEED_FAST)) {
-            imgSpeed.setImageResource(R.drawable.picto_speed_fast);
-        }
     }
 
     public void updateCurrentView() {

@@ -168,6 +168,7 @@
                     to_group
                     type url
                     recorded_at
+                    can_save
                     coord {
                         latitude
                         longitude

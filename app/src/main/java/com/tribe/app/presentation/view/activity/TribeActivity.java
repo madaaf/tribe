@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.LabelType;
@@ -20,6 +21,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerTribeComponent;
+import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.mvp.presenter.TribePresenter;
 import com.tribe.app.presentation.mvp.view.TribeView;
 import com.tribe.app.presentation.utils.FileUtils;
@@ -62,6 +64,10 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
     @Inject
     ReactiveLocationProvider reactiveLocationProvider;
+
+    @Inject
+    @SpeedPlayback
+    Preference<Float> speedPlayback;
 
     @BindView(R.id.viewTribePager)
     TribePagerView viewTribePager;
@@ -314,9 +320,12 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
                     if (moreType.getMoreType().equals(MoreType.TRIBE_SAVE)) {
                         FileUtils.saveToMediaStore(this, FileUtils.getPathForId(this, tribe.getId(), FileUtils.VIDEO));
+                        tribePresenter.markTribeAsSave(recipient, tribe);
+                    } else if (moreType.getMoreType().equals(MoreType.TRIBE_INCREASE_SPEED)
+                            || moreType.getMoreType().equals(MoreType.TRIBE_DECREASE_SPEED)) {
+                        viewTribePager.changeSpeed();
                     }
 
-                    tribePresenter.markTribeAsSave(recipient, tribe);
 
                     dismissDialogSheetMore();
                 }));
@@ -337,6 +346,9 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
         List<LabelType> moreType = new ArrayList<>();
         moreType.add(new MoreType(getString(R.string.tribe_more_save), MoreType.TRIBE_SAVE));
+        moreType.add(new MoreType(
+                speedPlayback.get().equals(TribePagerView.SPEED_NORMAL) ? getString(R.string.tribe_more_set_speed_2x) : getString(R.string.tribe_more_set_speed_1x),
+                speedPlayback.get().equals(TribePagerView.SPEED_NORMAL) ? MoreType.TRIBE_INCREASE_SPEED : MoreType.TRIBE_DECREASE_SPEED));
 
         prepareBottomSheetCamera(tribe, moreType);
     }

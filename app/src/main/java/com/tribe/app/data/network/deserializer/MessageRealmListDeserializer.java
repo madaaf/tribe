@@ -196,6 +196,8 @@ public class MessageRealmListDeserializer {
             tribeRealm.setTranscript(json.get("transcript").getAsString());
         }
 
+        tribeRealm.setCanSave(json.get("can_save").getAsBoolean());
+
         try {
             tribeRealm.setRecordedAt(utcSimpleDate.parse(json.get("recorded_at").getAsString()));
         } catch (ParseException e) {

@@ -52,6 +52,7 @@ public class TribeRealm extends RealmObject implements MessageRealmInterface {
     private String transcript;
     private long progress = 0L;
     private long totalSize = 0L;
+    private boolean can_save;
 
     public void setId(String id) {
         this.id = id;
@@ -222,4 +223,11 @@ public class TribeRealm extends RealmObject implements MessageRealmInterface {
         this.totalSize = totalSize;
     }
 
+    public void setCanSave(boolean canSave) {
+        this.can_save = canSave;
+    }
+
+    public boolean isCanSave() {
+        return can_save;
+    }
 }

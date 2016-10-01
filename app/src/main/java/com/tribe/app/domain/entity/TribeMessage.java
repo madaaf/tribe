@@ -25,26 +25,7 @@ public class TribeMessage extends Message {
     private Location location;
     private Weather weather;
     private String transcript;
-
-    public String getId() {
-        return id;
-    }
-
-    public String getLocalId() {
-        return localId;
-    }
-
-    public void setLocalId(String localId) {
-        this.localId = localId;
-    }
-
-    public User getFrom() {
-        return from;
-    }
-
-    public void setFrom(User from) {
-        this.from = from;
-    }
+    private boolean can_save;
 
     public String getType() {
         return type;
@@ -54,48 +35,12 @@ public class TribeMessage extends Message {
         this.type = type;
     }
 
-    public Recipient getTo() {
-        return to;
-    }
-
-    public void setTo(Recipient to) {
-        this.to = to;
-    }
-
-    public boolean isToGroup() {
-        return toGroup;
-    }
-
-    public void setToGroup(boolean toGroup) {
-        this.toGroup = toGroup;
-    }
-
-    public Date getRecordedAt() {
-        return recordedAt;
-    }
-
-    public void setRecordedAt(Date recordedAt) {
-        this.recordedAt = recordedAt;
-    }
-
     public Location getLocation() {
         return location;
     }
 
     public void setLocation(Location location) {
         this.location = location;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public Weather getWeather() {
@@ -112,6 +57,14 @@ public class TribeMessage extends Message {
 
     public String getTranscript() {
         return transcript;
+    }
+
+    public boolean isCanSave() {
+        return can_save;
+    }
+
+    public void setCanSave(boolean canSave) {
+        this.can_save = canSave;
     }
 
     public boolean isDownloadPending() {

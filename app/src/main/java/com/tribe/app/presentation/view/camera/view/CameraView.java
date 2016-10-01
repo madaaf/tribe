@@ -3,7 +3,6 @@ package com.tribe.app.presentation.view.camera.view;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.SurfaceTexture;
-import android.hardware.Camera;
 import android.util.AttributeSet;
 import android.view.TextureView;
 import android.view.View;
@@ -17,6 +16,7 @@ import com.tribe.app.presentation.view.camera.interfaces.CameraStateListener;
 import com.tribe.app.presentation.view.camera.interfaces.CaptureCallback;
 import com.tribe.app.presentation.view.camera.interfaces.OnErrorListener;
 import com.tribe.app.presentation.view.camera.interfaces.Preview;
+import com.tribe.app.presentation.view.camera.utils.Size;
 
 import java.io.IOException;
 
@@ -71,18 +71,18 @@ public class CameraView extends ViewGroup implements TextureView.SurfaceTextureL
                     int childHeight = height - getPaddingTop() - getPaddingBottom();
 
                     if (cameraHelper.isOpened()) {
-                        final Camera.Size previewSize = cameraHelper.getPreviewSize();
+                        final Size previewSize = cameraHelper.getPreviewSize();
                         if (previewSize != null) {
                             final int previewWidth;
                             final int previewHeight;
                             switch (getResources().getConfiguration().orientation) {
                                 case Configuration.ORIENTATION_PORTRAIT:
-                                    previewWidth = previewSize.height;
-                                    previewHeight = previewSize.width;
+                                    previewWidth = previewSize.getHeight();
+                                    previewHeight = previewSize.getWidth();
                                     break;
                                 default:
-                                    previewWidth = previewSize.width;
-                                    previewHeight = previewSize.height;
+                                    previewWidth = previewSize.getWidth();
+                                    previewHeight = previewSize.getHeight();
                                     break;
                             }
                             final double scale = Math.min((double) childWidth / (double) previewWidth, (double) childHeight / (double) previewHeight);
@@ -154,7 +154,7 @@ public class CameraView extends ViewGroup implements TextureView.SurfaceTextureL
 
         if (usePreviewCallback) {
             try {
-                previewSurfaceHelper.setPreviewTexture(surface);
+                previewSurfaceHelper.setPreviewTexture(surface, width, height);
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -225,19 +225,6 @@
         android:background="@null"
         >
 
-        <ImageView
-            android:id="@+id/imgSpeed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|left"
-            android:layout_marginLeft="7dp"
-            android:src="@drawable/picto_speed_regular"
-            android:scaleType="centerInside"
-            android:background="@drawable/bg_speed"
-            android:foreground="@drawable/selectable_button_oval"
-            android:clickable="true"
-            />
-
         <LinearLayout
             android:id="@+id/layoutNbTribes"
             android:layout_width="60dp"

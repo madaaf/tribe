@@ -1,10 +1,11 @@
 package com.tribe.app.presentation.view.camera.helper;
 
+import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
-import android.view.SurfaceHolder;
+
+import com.tribe.app.presentation.view.camera.utils.Size;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 public interface CameraHelper {
@@ -53,9 +54,9 @@ public interface CameraHelper {
 
     void setPreviewCallback(Camera.PreviewCallback cb);
 
-    void setPreviewDisplay(SurfaceHolder holder) throws IOException;
+    void setPreviewTexture(SurfaceTexture surfaceTexture, int width, int height) throws IOException;
 
-    void setPreviewTexture(Object surfaceTexture) throws IOException;
+    void setPreviewTexture(SurfaceTexture surfaceTexture) throws IOException;
 
     void startPreview();
 
@@ -69,21 +70,9 @@ public interface CameraHelper {
 
     void cancelAutoFocus();
 
-    LinkedHashMap<Camera.Size, Camera.Size> getSupportedPreviewSizeAndSupportedPictureSizeMap();
-
-    List<Camera.Size> getSupportedPreviewSizes();
-
-    List<Camera.Size> getSupportedPictureSizes();
-
-    List<Camera.Size> getSupportedVideoSizes();
-
-    Camera.Size getPreviewSize();
-
-    Camera.Size getPictureSize();
-
-    Camera.Size getVideoSize();
-
     void setPictureFormat(int format);
+
+    Size getPreviewSize();
 
     String getFlashMode();
 

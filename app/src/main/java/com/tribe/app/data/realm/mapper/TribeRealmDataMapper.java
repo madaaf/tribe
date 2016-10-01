@@ -68,6 +68,7 @@ public class TribeRealmDataMapper {
             tribe.setTranscript(tribeRealm.getTranscript());
             tribe.setProgress(tribeRealm.getProgress());
             tribe.setTotalSize(tribeRealm.getTotalSize());
+            tribe.setCanSave(tribeRealm.isCanSave());
         }
 
         return tribe;
@@ -108,6 +109,7 @@ public class TribeRealmDataMapper {
             tribeRealm.setTranscript(tribe.getTranscript());
             tribeRealm.setProgress(tribe.getProgress());
             tribeRealm.setTotalSize(tribe.getTotalSize());
+            tribeRealm.setCanSave(tribe.isCanSave());
         }
 
         return tribeRealm;

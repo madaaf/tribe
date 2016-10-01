@@ -33,6 +33,7 @@ import com.tribe.app.presentation.view.camera.shader.GlShader;
 import com.tribe.app.presentation.view.camera.shader.fx.GlRecordLutShader;
 import com.tribe.app.presentation.view.camera.utils.Fps;
 import com.tribe.app.presentation.view.camera.utils.OpenGlUtils;
+import com.tribe.app.presentation.view.camera.utils.Size;
 
 import java.io.IOException;
 
@@ -302,8 +303,8 @@ public class GlPreview extends GlTextureView implements Preview, Camera.PictureC
             }
             //Matrix.orthoM(mMMatrix, 0, -1.3f, 1.3f, -1, 1, -1, 1);
 
-            final Camera.Size previewSize = cameraHelper.getPreviewSize();
-            mCameraRatio = (float) previewSize.width / previewSize.height;
+            final Size previewSize = cameraHelper.getPreviewSize();
+            mCameraRatio = (float) previewSize.getWidth() / previewSize.getHeight();
 
             try {
                 mPreviewTexture.setup(cameraHelper);
