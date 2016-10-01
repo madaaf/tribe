@@ -138,13 +138,13 @@ public class ScoreActivity extends BaseActivity implements ScoreView {
         ScoreUtils.Level nextLevel = ScoreUtils.getNextLevelForScore(currentUser.getScore());
 
         txtLevel.setText(level.getStringId());
-        txtPoints.setText(getString(R.string.points_suffix, currentUser.getScore()));
+        txtPoints.setText(getString(R.string.points_suffix, ScoreUtils.formatFloatingPoint(this, currentUser.getScore())));
 
         imgLevel.setImageResource(level.getDrawableId());
         imgLevelSmall.setImageResource(level.getDrawableId());
 
         int pointsLeftForNext = ScoreUtils.getRestForNextLevel(currentUser.getScore());
-        txtPointsLeft.setText(getString(R.string.points_suffix, pointsLeftForNext));
+        txtPointsLeft.setText(getString(R.string.points_suffix, ScoreUtils.formatFloatingPoint(this, pointsLeftForNext)));
 
         int progressHeight = (int) (((float) screenUtils.getWidthPx() / nextLevel.getPoints()) * currentUser.getScore());
 

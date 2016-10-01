@@ -1138,7 +1138,6 @@ public class TribePagerView extends FrameLayout {
 
     @OnClick(R.id.layoutNbTribes)
     public void goToNext() {
-        System.out.println("HEY CLICK");
         if (tribeList.size() - tribeListSeens.size() > 0)
             viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
     }

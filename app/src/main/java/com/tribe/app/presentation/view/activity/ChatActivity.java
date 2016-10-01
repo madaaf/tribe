@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.OvershootInterpolator;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -132,6 +131,8 @@ public class ChatActivity extends BaseActivity implements MessageView {
     private Map<String, Section> avatarsMap;
     private TribeVideoView tribeVideoView;
     private VideoSize videoSize;
+    private boolean justSentMessage = false;
+    private int previousDy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -205,14 +206,21 @@ public class ChatActivity extends BaseActivity implements MessageView {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 updateAvatars();
+
+                if (dy < 0) chatInputView.hideKeyboard();
+                else if (dy > 0 && isLastItemDisplayed()) chatInputView.showKeyboard();
             }
+        });
+
+        recyclerViewText.setOnTouchListener((v, event) -> {
+            chatInputView.hideKeyboard();
+            return false;
         });
 
         subscriptions.add(messageAdapter
                 .clickPhoto()
                 .subscribe(imageViewFrom -> {
-                    ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
-                            .hideSoftInputFromWindow(recyclerViewText.getWindowToken(), 0);
+                    chatInputView.hideKeyboard();
 
                     imageViewClicked = null;
 
@@ -239,8 +247,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
         subscriptions.add(messageAdapter
                 .clickVideo()
                 .subscribe(imageViewFrom -> {
-                    ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
-                            .hideSoftInputFromWindow(recyclerViewText.getWindowToken(), 0);
+                    chatInputView.hideKeyboard();
 
                     tribeVideoView = null;
 
@@ -298,6 +305,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
         subscriptions.add(chatInputView.sendClick().subscribe(s -> {
             ChatMessage chatMessage = ChatMessage.createMessage(ChatMessage.TEXT, s, getCurrentUser(), recipient, getApplicationComponent().dateUtils());
             chatPresenter.sendMessage(chatMessage);
+            justSentMessage = true;
         }));
 
         subscriptions.add(chatInputView.textChanges().subscribe(s -> chatPresenter.sendTypingEvent()));
@@ -463,7 +471,9 @@ public class ChatActivity extends BaseActivity implements MessageView {
     }
 
     public boolean isLastItemDisplayed() {
-        return messageAdapter.getItemCount() == 0 || messageLayoutManager.findLastVisibleItemPosition() == messageAdapter.getItemCount() - 1;
+        boolean result = justSentMessage || messageAdapter.getItemCount() == 0 || messageLayoutManager.findLastVisibleItemPosition() == messageAdapter.getItemCount() - 1;
+        justSentMessage = false;
+        return result;
     }
 
     private void showImage(ImageView imageViewFrom) {
@@ -788,7 +798,10 @@ public class ChatActivity extends BaseActivity implements MessageView {
                 chatMessage = ChatMessage.createMessage(ChatMessage.VIDEO, data.getData().toString(), getCurrentUser(), recipient,  getApplicationComponent().dateUtils());
             }
 
-            if (chatMessage != null) chatPresenter.sendMessage(chatMessage);
+            if (chatMessage != null) {
+                chatPresenter.sendMessage(chatMessage);
+                justSentMessage = true;
+            }
         }
     }
 

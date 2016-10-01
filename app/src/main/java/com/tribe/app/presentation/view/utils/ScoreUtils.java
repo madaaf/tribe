@@ -149,10 +149,7 @@ public class ScoreUtils {
         ValueAnimator animator = new ValueAnimator();
         animator.setObjectValues(from, to);
         animator.addUpdateListener(animation -> {
-            NumberFormat nf = NumberFormat.getNumberInstance(context.getResources().getConfiguration().locale);
-            DecimalFormat df = (DecimalFormat) nf;
-            df.applyPattern("###,###");
-            String output = df.format(animation.getAnimatedValue());
+            String output = formatFloatingPoint(context, animation.getAnimatedValue());
 
             if (stringRes != -1)
                 txtView.setText("" + context.getString(stringRes, output));
@@ -171,5 +168,12 @@ public class ScoreUtils {
         animator.start();
 
         txtView.setTag(R.id.old_score, to);
+    }
+
+    public static String formatFloatingPoint(Context context, Object object) {
+        NumberFormat nf = NumberFormat.getNumberInstance(context.getResources().getConfiguration().locale);
+        DecimalFormat df = (DecimalFormat) nf;
+        df.applyPattern("###,###");
+        return df.format(object);
     }
 }
