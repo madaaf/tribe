@@ -6,7 +6,6 @@ import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 
 import java.util.List;
@@ -41,6 +40,7 @@ public interface UserCache {
     void removeGroupFromMembership(String membershipId);
     void insertMembership(String userId, MembershipRealm membershipRealm);
     void updateScore(String userId, ScoreUtils.Point point);
-    Observable<FriendshipRealm> updateFriendship(String friendshipId, MoreType moreType);
-    FriendshipRealm updateFriendshipNoObs(String friendshipId, MoreType moreType);
+    void updateScore(String userId, int score);
+    Observable<FriendshipRealm> updateFriendship(String friendshipId, @FriendshipRealm.FriendshipStatus String status);
+    FriendshipRealm updateFriendshipNoObs(String friendshipId, @FriendshipRealm.FriendshipStatus String moreType);
 }

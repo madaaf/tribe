@@ -9,7 +9,6 @@ import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.LocationRealm;
 import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 
 import java.util.Date;
@@ -410,21 +409,32 @@ public class UserCacheImpl implements UserCache {
     }
 
     @Override
-    public Observable<FriendshipRealm> updateFriendship(String friendshipId, MoreType moreType) {
+    public void updateScore(String userId, int score) {
+        Realm obsRealm = Realm.getDefaultInstance();
+
+        try {
+            obsRealm.beginTransaction();
+            UserRealm userDB = obsRealm.where(UserRealm.class).equalTo("id", userId).findFirst();
+            if (userDB != null) {
+                userDB.setScore(score);
+            }
+        } catch (IllegalStateException ex) {
+            ex.printStackTrace();
+            if (obsRealm.isInTransaction()) obsRealm.cancelTransaction();
+        } finally {
+            obsRealm.close();
+        }
+    }
+
+    @Override
+    public Observable<FriendshipRealm> updateFriendship(String friendshipId, @FriendshipRealm.FriendshipStatus String status) {
         return Observable.create((Observable.OnSubscribe<FriendshipRealm>) subscriber -> {
             Realm otherRealm = Realm.getDefaultInstance();
             try {
                 otherRealm.beginTransaction();
                 FriendshipRealm friendshipRealm = otherRealm.where(FriendshipRealm.class).equalTo("id", friendshipId).findFirst();
                 if (friendshipRealm != null) {
-                    if (moreType.getMoreType().equals(MoreType.BLOCK_HIDE)) {
-                        friendshipRealm.setBlocked(true);
-                        friendshipRealm.setStatus(FriendshipRealm.BLOCKED);
-                    } else if (moreType.getMoreType().equals(MoreType.HIDE)) {
-                        friendshipRealm.setStatus(FriendshipRealm.HIDDEN);
-                    } else if (moreType.getMoreType().equals(MoreType.UNHIDE)) {
-                        friendshipRealm.setStatus(FriendshipRealm.DEFAULT);
-                    }
+                    friendshipRealm.setStatus(status);
                 }
 
                 otherRealm.commitTransaction();
@@ -443,21 +453,14 @@ public class UserCacheImpl implements UserCache {
     }
 
     @Override
-    public FriendshipRealm updateFriendshipNoObs(String friendshipId, MoreType moreType) {
+    public FriendshipRealm updateFriendshipNoObs(String friendshipId, @FriendshipRealm.FriendshipStatus String status) {
         Realm otherRealm = Realm.getDefaultInstance();
 
         try {
             otherRealm.beginTransaction();
             FriendshipRealm friendshipRealm = otherRealm.where(FriendshipRealm.class).equalTo("id", friendshipId).findFirst();
             if (friendshipRealm != null) {
-                if (moreType.getMoreType().equals(MoreType.BLOCK_HIDE)) {
-                    friendshipRealm.setBlocked(true);
-                    friendshipRealm.setStatus(FriendshipRealm.BLOCKED);
-                } else if (moreType.getMoreType().equals(MoreType.HIDE)) {
-                    friendshipRealm.setStatus(FriendshipRealm.HIDDEN);
-                } else if (moreType.getMoreType().equals(MoreType.UNHIDE)) {
-                    friendshipRealm.setStatus(FriendshipRealm.DEFAULT);
-                }
+                friendshipRealm.setStatus(status);
             }
 
             otherRealm.commitTransaction();

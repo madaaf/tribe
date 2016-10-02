@@ -178,22 +178,17 @@ public class TribeCacheImpl implements TribeCache {
     public void update(Map<String, List<Pair<String, Object>>> valuesToUpdate) {
         Realm obsRealm = Realm.getDefaultInstance();
         try {
-            obsRealm.beginTransaction();
-
-            for (String key : valuesToUpdate.keySet()) {
-                TribeRealm obj = obsRealm.where(TribeRealm.class).equalTo("localId", key).findFirst();
-                if (obj != null) {
-                    List<Pair<String, Object>> values = valuesToUpdate.get(key);
-                    updateSingleObject(obj, values.toArray(new Pair[values.size()]));
+            obsRealm.executeTransaction(realm -> {
+                for (String key : valuesToUpdate.keySet()) {
+                    TribeRealm obj = realm.where(TribeRealm.class).equalTo("localId", key).findFirst();
+                    if (obj != null) {
+                        List<Pair<String, Object>> values = valuesToUpdate.get(key);
+                        updateSingleObject(obj, values.toArray(new Pair[values.size()]));
+                    }
                 }
-            }
-
-            obsRealm.commitTransaction();
-        } catch (Exception ex) {
-            if (obsRealm.isInTransaction()) obsRealm.cancelTransaction();
-            ex.printStackTrace();
+            });
         } finally {
-            obsRealm.close();
+            if (obsRealm != null) obsRealm.close();
         }
     }
 
@@ -224,18 +219,19 @@ public class TribeCacheImpl implements TribeCache {
         Realm realmObs = Realm.getDefaultInstance();
         RealmList<MessageRecipientRealm> results = new RealmList<>();
         try {
-            realmObs.beginTransaction();
 
-            for (MessageRecipientRealm tribeRecipientRealm : tribeRecipientRealmList) {
-                MessageRecipientRealm realmRecipient = realmObs.where(MessageRecipientRealm.class).equalTo("id", tribeRecipientRealm.getId()).findFirst();
-                if (realmRecipient != null)
-                    realmObs.where(MessageRecipientRealm.class).equalTo("id", tribeRecipientRealm.getId()).findFirst().deleteFromRealm();
-            }
+            Realm.Transaction transaction = realm1 -> {
+                for (MessageRecipientRealm tribeRecipientRealm : tribeRecipientRealmList) {
+                    MessageRecipientRealm realmRecipient = realm1.where(MessageRecipientRealm.class).equalTo("id", tribeRecipientRealm.getId()).findFirst();
+                    if (realmRecipient != null)
+                        realm1.where(MessageRecipientRealm.class).equalTo("id", tribeRecipientRealm.getId()).findFirst().deleteFromRealm();
+                }
 
-            List<MessageRecipientRealm> tribeRecipientRealmManaged = realmObs.copyFromRealm(realmObs.copyToRealmOrUpdate(tribeRecipientRealmList));
-            results.addAll(tribeRecipientRealmManaged);
+                List<MessageRecipientRealm> tribeRecipientRealmManaged = realm1.copyFromRealm(realm1.copyToRealmOrUpdate(tribeRecipientRealmList));
+                results.addAll(tribeRecipientRealmManaged);
+            };
 
-            realmObs.commitTransaction();
+            realmObs.executeTransaction(transaction);
         } catch (IllegalStateException ex) {
             if (realmObs.isInTransaction()) realmObs.cancelTransaction();
             ex.printStackTrace();

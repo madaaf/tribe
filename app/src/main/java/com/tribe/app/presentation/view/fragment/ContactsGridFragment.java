@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.view.fragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -9,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
@@ -189,22 +187,20 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
     @OnClick(R.id.btnCloseSearch)
     public void closeSearch() {
         editTextSearchContact.setText("");
-        InputMethodManager inputMethodManager = (InputMethodManager) context().getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
-        layoutDummy.requestFocus();
     }
 
     private void init() {
         this.getComponent(UserComponent.class).inject(this);
         this.currentUser = getCurrentUser();
 
+        contactList = new ArrayList<>();
+
         RxTextView.textChanges(editTextSearchContact).map(CharSequence::toString)
                 .doOnNext(s -> {
                     if (StringUtils.isEmpty(s)) {
                         isSearchMode = false;
                         hideClearSearch();
-                        if (contactList != null && contactList.size() > 0)
-                            renderContactList(contactList);
+                        renderContactList(contactList);
                     }
                 })
                 .filter(s -> !StringUtils.isEmpty(s))

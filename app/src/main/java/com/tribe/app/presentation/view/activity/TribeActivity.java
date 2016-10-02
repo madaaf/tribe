@@ -32,7 +32,9 @@ import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -245,6 +247,12 @@ public class TribeActivity extends BaseActivity implements TribeView {
         tribePresenter.onStart();
         tribePresenter.attachView(this);
         tribePresenter.loadTribes(recipient.getSubId());
+
+        Set<String> userIds = new HashSet<>();
+        for (TribeMessage message : recipient.getReceivedTribes()) {
+            if (message.getFrom() != null) userIds.add(message.getFrom().getId());
+        }
+        tribePresenter.updateUserListScore(userIds);
     }
 
     @Override

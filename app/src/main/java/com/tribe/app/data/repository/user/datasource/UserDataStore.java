@@ -13,10 +13,10 @@ import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.entity.User;
 
 import java.util.List;
+import java.util.Set;
 
 import rx.Observable;
 
@@ -149,5 +149,7 @@ public interface UserDataStore {
 
     Observable<Void> bootstrapSupport();
 
-    Observable<FriendshipRealm> updateFriendship(String friendshipId, MoreType moreType);
+    Observable<FriendshipRealm> updateFriendship(String friendshipId, @FriendshipRealm.FriendshipStatus String status);
+
+    Observable<List<UserRealm>> updateUserListScore(Set<String> userIds);
 }

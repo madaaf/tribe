@@ -253,8 +253,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                if (state == ViewPager.SCROLL_STATE_IDLE) {
-                    if (viewPager.getCurrentItem() == GRID_FRAGMENT_PAGE) {
+                if (state == ViewPager.SCROLL_STATE_DRAGGING) {
+                    if (viewPager.getCurrentItem() == CONTACTS_FRAGMENT_PAGE) {
                         ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
                                 .hideSoftInputFromWindow(viewPager.getWindowToken(), 0);
                         homeViewPagerAdapter.getContactsGridFragment().closeSearch();

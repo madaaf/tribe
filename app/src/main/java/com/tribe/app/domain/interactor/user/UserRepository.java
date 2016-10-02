@@ -8,17 +8,18 @@ import android.util.Pair;
 
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Message;
-import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 
 import java.util.List;
+import java.util.Set;
 
 import rx.Observable;
 
@@ -150,7 +151,9 @@ public interface UserRepository {
 
     Observable<Void> bootstrapSupport();
 
-    Observable<Friendship> updateFriendship(final String friendshipId, MoreType moreType);
+    Observable<Friendship> updateFriendship(final String friendshipId, @FriendshipRealm.FriendshipStatus String status);
 
     Observable<List<Friendship>> getBlockedFriendshipList();
+
+    Observable<List<User>> updateUserListScore(Set<String> userIds);
 }

@@ -44,6 +44,8 @@ import com.tribe.app.domain.interactor.tribe.CloudMarkTribeListAsRead;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.domain.interactor.tribe.TribeRepository;
+import com.tribe.app.domain.interactor.user.CloudUpdateFriendship;
+import com.tribe.app.domain.interactor.user.CloudUpdateUserListScore;
 import com.tribe.app.domain.interactor.user.GetCloudMessageList;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.RefreshHowManyFriends;
@@ -360,6 +362,18 @@ public class ApplicationModule {
     @Named("cloudMarkTribeAsSave")
     CloudMarkTribeAsSave provideCloudMarkTribeAsSave(CloudMarkTribeAsSave cloudMarkTribeAsSave) {
         return cloudMarkTribeAsSave;
+    }
+
+    @Provides
+    @Named("cloudUpdateFriendship")
+    CloudUpdateFriendship provideCloudUpdateFriendship(CloudUpdateFriendship cloudUpdateFriendship) {
+        return cloudUpdateFriendship;
+    }
+
+    @Provides
+    @Named("cloudUpdateUserListScore")
+    CloudUpdateUserListScore provideCloudUpdateUserListScore(CloudUpdateUserListScore cloudUpdateUserListScore) {
+        return cloudUpdateUserListScore;
     }
 
     @Provides

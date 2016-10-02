@@ -40,7 +40,6 @@ import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.GroupRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.user.contact.RxContacts;
-import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -308,7 +307,7 @@ public class CloudUserDataStore implements UserDataStore {
                             } else {
                                 if (!message.isToGroup()) {
                                     FriendshipRealm fr = userCache.friendshipForUserId(userRealm.getId());
-                                    if (fr != null && fr.isHidden()) userCache.updateFriendshipNoObs(fr.getId(), new MoreType("", MoreType.UNHIDE));
+                                    if (fr != null && fr.isHidden()) userCache.updateFriendshipNoObs(fr.getId(), FriendshipRealm.DEFAULT);
                                 }
                                 message.setFrom(userRealm);
                             }
@@ -1027,8 +1026,37 @@ public class CloudUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<FriendshipRealm> updateFriendship(String friendshipId, MoreType moreType) {
-        return null;
+    public Observable<FriendshipRealm> updateFriendship(String friendshipId, @FriendshipRealm.FriendshipStatus String status) {
+        return tribeApi.updateFriendship(context.getString(R.string.user_update_friendship, friendshipId, status));
+    }
+
+    @Override
+    public Observable<List<UserRealm>> updateUserListScore(Set<String> userIds) {
+        if (userIds.size() > 0) {
+            StringBuilder result = new StringBuilder();
+
+            for (String string : userIds) {
+                result.append("\"" + string + "\"");
+                result.append(",");
+            }
+
+            String idsStr = result.length() > 0 ? result.substring(0, result.length() - 1) : "";
+
+            String req = context.getString(R.string.user_infos_list,
+                    idsStr,
+                    context.getString(R.string.userfragment_score));
+
+            return tribeApi.updateUserListScore(req)
+                .map(userRealmList -> {
+                    for (UserRealm userRealm : userRealmList) {
+                        userCache.updateScore(userRealm.getId(), userRealm.getScore());
+                    }
+
+                    return userRealmList;
+                });
+        }
+
+        return Observable.empty();
     }
 }
 

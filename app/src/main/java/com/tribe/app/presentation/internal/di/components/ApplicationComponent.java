@@ -21,6 +21,7 @@ import com.tribe.app.data.network.job.SendTribeJob;
 import com.tribe.app.data.network.job.SynchroContactsJob;
 import com.tribe.app.data.network.job.UpdateChatHistoryJob;
 import com.tribe.app.data.network.job.UpdateChatMessagesJob;
+import com.tribe.app.data.network.job.UpdateFriendshipJob;
 import com.tribe.app.data.network.job.UpdateMessagesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateMessagesJob;
 import com.tribe.app.data.network.job.UpdateMessagesVideoErrorStatusJob;
@@ -29,6 +30,7 @@ import com.tribe.app.data.network.job.UpdateTribeDownloadedJob;
 import com.tribe.app.data.network.job.UpdateTribeListNotSeenStatusJob;
 import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
+import com.tribe.app.data.network.job.UpdateUserListScoreJob;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.repository.chat.CloudChatDataRepository;
 import com.tribe.app.data.repository.chat.DiskChatDataRepository;
@@ -155,6 +157,8 @@ public interface ApplicationComponent {
     void inject(UpdateMessagesVideoErrorStatusJob messagesVideoErrorStatusJob);
     void inject(UpdateScoreJob updateScoreJob);
     void inject(MarkTribeAsSavedJob markTribeAsSavedJob);
+    void inject(UpdateFriendshipJob updateFriendshipJob);
+    void inject(UpdateUserListScoreJob updateUserListScoreJob);
 
     //Exposed to sub-graphs.
     Context context();
