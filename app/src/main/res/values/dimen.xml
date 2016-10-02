@@ -19,6 +19,7 @@
     <dimen name="horizontal_margin_mid">17.5dp</dimen>
     <dimen name="vertical_margin_mid">17.5dp</dimen>
     <dimen name="vertical_margin_smaller">10dp</dimen>
+    <dimen name="horizontal_margin_smaller">10dp</dimen>
     <dimen name="horizontal_margin_small">15dp</dimen>
     <dimen name="horizontal_margin_xsmall">5dp</dimen>
     <dimen name="vertical_margin_small">15dp</dimen>
@@ -44,6 +45,7 @@
     <dimen name="section_button_vertical_padding">12dp</dimen>
     <dimen name="setting_block_item_horizontal_padding">15dp</dimen>
     <dimen name="cpv_padding">10dp</dimen>
+    <dimen name="cpv_padding_edit">5dp</dimen>
     <dimen name="padding_small">10dp</dimen>
     <dimen name="padding_mid">15dp</dimen>
 
@@ -103,7 +105,8 @@
     <dimen name="setting_pic_size">40dp</dimen>
     <dimen name="setting_theme_size">40dp</dimen>
     <dimen name="setting_theme_vertical_padding">15dp</dimen>
-    <dimen name="group_image_size">82dp</dimen>
+    <dimen name="group_image_bg_size">82dp</dimen>
+    <dimen name="group_image_size">74dp</dimen>
     <dimen name="dialog_fragment_width">262dp</dimen>
     <dimen name="dialog_fragment_icon_size">66dp</dimen>
     <dimen name="friend_adapter_fill_size">30dp</dimen>
