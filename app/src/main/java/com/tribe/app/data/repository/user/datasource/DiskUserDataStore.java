@@ -15,6 +15,7 @@ import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.MoreType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -174,5 +175,10 @@ public class DiskUserDataStore implements UserDataStore {
     @Override
     public Observable<Void> bootstrapSupport() {
         return null;
+    }
+
+    @Override
+    public Observable<FriendshipRealm> updateFriendship(String friendshipId, MoreType moreType) {
+        return userCache.updateFriendship(friendshipId, moreType);
     }
 }

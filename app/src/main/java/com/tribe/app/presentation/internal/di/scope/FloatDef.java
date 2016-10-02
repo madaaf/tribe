@@ -20,9 +20,9 @@ import java.lang.annotation.Target;
  *  public static final int NAVIGATION_MODE_LIST = 1;
  *  public static final int NAVIGATION_MODE_TABS = 2;
  *  ...
- *  public abstract void setNavigationMode(&#64;NavigationMode int mode);
+ *  public base void setNavigationMode(&#64;NavigationMode int mode);
  *  &#64;NavigationMode
- *  public abstract int getNavigationMode();
+ *  public base int getNavigationMode();
  * }</pre>
  * For a flag, set the flag attribute:
  * <pre>{@code

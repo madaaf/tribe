@@ -4,18 +4,44 @@
     android:layout_height="match_parent"
     android:background="@drawable/shape_rect_white_rounded_bottom">
 
-    <com.tribe.app.presentation.view.widget.EditTextFont
-        android:id="@+id/editTextSearchBlockFriends"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/setting_block_search_bar_height"
+        android:layout_height="@dimen/top_bar_height"
         android:background="@drawable/shape_white_rect_grey_border"
-        />
+        >
+
+        <ImageView
+            android:id="@+id/searchIconImageView"
+            android:layout_width="@dimen/icons_end"
+            android:layout_height="@dimen/icons_end"
+            android:layout_gravity="center_vertical"
+            android:scaleType="centerInside"
+            android:src="@drawable/picto_search_icon"
+            />
+
+        <com.tribe.app.presentation.view.widget.EditTextFont
+            android:id="@+id/editTextSearch"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/icons_end"
+            android:layout_marginStart="@dimen/icons_end"
+            android:layout_marginEnd="@dimen/icons_end"
+            android:layout_gravity="center_vertical"
+            android:hint="@string/contacts_search_placeholder"
+            android:backgroundTint="@android:color/black"
+            android:background="@null"
+            android:singleLine="true"
+            android:gravity="center_vertical"
+            android:imeOptions="actionDone"
+            style="@style/Text.Input.Search"
+            />
+
+    </FrameLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/blockFriendsRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/setting_block_search_bar_height"
+        android:layout_marginTop="@dimen/top_bar_height"
         />
 
 </FrameLayout>

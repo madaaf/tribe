@@ -13,6 +13,7 @@ import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.entity.User;
 
 import java.util.List;
@@ -147,4 +148,6 @@ public interface UserDataStore {
     Observable<Void> leaveGroup(String membershipId);
 
     Observable<Void> bootstrapSupport();
+
+    Observable<FriendshipRealm> updateFriendship(String friendshipId, MoreType moreType);
 }

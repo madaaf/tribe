@@ -40,6 +40,7 @@ import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.GroupRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.user.contact.RxContacts;
+import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -305,6 +306,10 @@ public class CloudUserDataStore implements UserDataStore {
                             if (userRealm == null) {
                                 idsFrom.add(message.getFrom().getId());
                             } else {
+                                if (!message.isToGroup()) {
+                                    FriendshipRealm fr = userCache.friendshipForUserId(userRealm.getId());
+                                    if (fr != null && fr.isHidden()) userCache.updateFriendshipNoObs(fr.getId(), new MoreType("", MoreType.UNHIDE));
+                                }
                                 message.setFrom(userRealm);
                             }
                         }
@@ -713,9 +718,15 @@ public class CloudUserDataStore implements UserDataStore {
                     if (createFriendshipEntity != null && createFriendshipEntity.getNewFriendshipList() != null
                             && createFriendshipEntity.getNewFriendshipList().size() > 0) {
                         UserRealm currentUser = userCache.userInfosNoObs(accessToken.getUserId());
-                        currentUser.getFriendships().addAll(createFriendshipEntity.getNewFriendshipList());
+                        FriendshipRealm newFriendship = createFriendshipEntity.getNewFriendshipList().get(0);
+                        FriendshipRealm frDB = userCache.friendshipForUserId(newFriendship.getSubId());
+                        if (frDB != null) {
+                            frDB.setStatus(newFriendship.getStatus());
+                            frDB.setBlocked(newFriendship.isBlocked());
+                        }
+                        currentUser.getFriendships().add(newFriendship);
                         userCache.put(currentUser);
-                        friendshipRealm = createFriendshipEntity.getNewFriendshipList().get(0);
+                        friendshipRealm = newFriendship;
                     }
 
                     return friendshipRealm;
@@ -1013,6 +1024,11 @@ public class CloudUserDataStore implements UserDataStore {
     public Observable<Void> bootstrapSupport() {
         String request = context.getString(R.string.boostrap_support);
         return this.tribeApi.bootstrapSupport(request);
+    }
+
+    @Override
+    public Observable<FriendshipRealm> updateFriendship(String friendshipId, MoreType moreType) {
+        return null;
     }
 }
 

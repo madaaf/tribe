@@ -9,6 +9,7 @@ import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.LocationRealm;
 import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 
 import java.util.Date;
@@ -95,7 +96,6 @@ public class UserCacheImpl implements UserCache {
                     FriendshipRealm friendshipDB = obsRealm.where(FriendshipRealm.class).equalTo("id", friendshipRealm.getId()).findFirst();
 
                     if (friendshipDB != null) {
-                        friendshipDB.setBlocked(friendshipRealm.isBlocked());
                         friendshipDB.getFriend().setProfilePicture(friendshipRealm.getFriend().getProfilePicture());
                         friendshipDB.getFriend().setDisplayName(friendshipRealm.getFriend().getDisplayName());
                         friendshipDB.getFriend().setScore(friendshipRealm.getFriend().getScore());
@@ -186,6 +186,8 @@ public class UserCacheImpl implements UserCache {
 
                 if (results != null)
                     subscriber.onNext(realm.copyFromRealm(results));
+
+                subscriber.onCompleted();
             }
         });
     }
@@ -405,5 +407,71 @@ public class UserCacheImpl implements UserCache {
         } finally {
             obsRealm.close();
         }
+    }
+
+    @Override
+    public Observable<FriendshipRealm> updateFriendship(String friendshipId, MoreType moreType) {
+        return Observable.create((Observable.OnSubscribe<FriendshipRealm>) subscriber -> {
+            Realm otherRealm = Realm.getDefaultInstance();
+            try {
+                otherRealm.beginTransaction();
+                FriendshipRealm friendshipRealm = otherRealm.where(FriendshipRealm.class).equalTo("id", friendshipId).findFirst();
+                if (friendshipRealm != null) {
+                    if (moreType.getMoreType().equals(MoreType.BLOCK_HIDE)) {
+                        friendshipRealm.setBlocked(true);
+                        friendshipRealm.setStatus(FriendshipRealm.BLOCKED);
+                    } else if (moreType.getMoreType().equals(MoreType.HIDE)) {
+                        friendshipRealm.setStatus(FriendshipRealm.HIDDEN);
+                    } else if (moreType.getMoreType().equals(MoreType.UNHIDE)) {
+                        friendshipRealm.setStatus(FriendshipRealm.DEFAULT);
+                    }
+                }
+
+                otherRealm.commitTransaction();
+
+                if (subscriber != null && friendshipRealm != null) {
+                    subscriber.onNext(otherRealm.copyFromRealm(friendshipRealm));
+                    subscriber.onCompleted();
+                }
+            } catch (IllegalStateException ex) {
+                if (otherRealm.isInTransaction()) otherRealm.cancelTransaction();
+                ex.printStackTrace();
+            } finally {
+                otherRealm.close();
+            }
+        });
+    }
+
+    @Override
+    public FriendshipRealm updateFriendshipNoObs(String friendshipId, MoreType moreType) {
+        Realm otherRealm = Realm.getDefaultInstance();
+
+        try {
+            otherRealm.beginTransaction();
+            FriendshipRealm friendshipRealm = otherRealm.where(FriendshipRealm.class).equalTo("id", friendshipId).findFirst();
+            if (friendshipRealm != null) {
+                if (moreType.getMoreType().equals(MoreType.BLOCK_HIDE)) {
+                    friendshipRealm.setBlocked(true);
+                    friendshipRealm.setStatus(FriendshipRealm.BLOCKED);
+                } else if (moreType.getMoreType().equals(MoreType.HIDE)) {
+                    friendshipRealm.setStatus(FriendshipRealm.HIDDEN);
+                } else if (moreType.getMoreType().equals(MoreType.UNHIDE)) {
+                    friendshipRealm.setStatus(FriendshipRealm.DEFAULT);
+                }
+            }
+
+            otherRealm.commitTransaction();
+
+            if (friendshipRealm != null) {
+                return otherRealm.copyFromRealm(friendshipRealm);
+            }
+        } catch (IllegalStateException ex) {
+            if (otherRealm.isInTransaction()) otherRealm.cancelTransaction();
+            ex.printStackTrace();
+        } finally {
+            otherRealm.close();
+        }
+
+        return null;
     }
 }

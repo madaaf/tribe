@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,7 +56,7 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
-        RecyclerView.ViewHolder vh = new BlockFriendViewHolder(layoutInflater.inflate(R.layout.item_block_friend, parent, false));
+        RecyclerView.ViewHolder vh = new FriendViewHolder(layoutInflater.inflate(R.layout.item_friend, parent, false));
         RxView.detaches(parent).subscribe(aVoid -> {
             if (subscriptions.hasSubscriptions()) {
                 subscriptions.unsubscribe();
@@ -70,8 +69,7 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
 
     @Override
     public void onBindViewHolder(@NonNull List<Friendship> items, int position, @NonNull RecyclerView.ViewHolder holder) {
-
-        BlockFriendViewHolder vh = (BlockFriendViewHolder) holder;
+        FriendViewHolder vh = (FriendViewHolder) holder;
         Friendship friendship = items.get(position);
         vh.txtDisplayName.setText(friendship.getDisplayName());
         vh.txtUsername.setText("@" + friendship.getUsername());
@@ -106,7 +104,7 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
                             .subscribe(time -> {
                                 vh.itemView.setEnabled(true);
                             });
-                    BlockFriendViewHolder blockFriendViewHolder = (BlockFriendViewHolder) vh;
+                    FriendViewHolder blockFriendViewHolder = (FriendViewHolder) vh;
                     if (friendship.isSelected()) {
                         blockFriendViewHolder.imageSelected.animate()
                                 .scaleX(AnimationUtils.SCALE_INVISIBLE)
@@ -134,7 +132,7 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
         return clickFriendItem;
     }
 
-    static class BlockFriendViewHolder extends RecyclerView.ViewHolder {
+    static class FriendViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.imageFriendPic) public ImageView imageFriendPic;
         @BindView(R.id.imageFriendPicBadge) public ImageView imageFriendPicBadge;
@@ -144,7 +142,7 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
         @BindView(R.id.imageSelected) public ImageView imageSelected;
 
 
-        public BlockFriendViewHolder(View itemView) {
+        public FriendViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }

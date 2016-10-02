@@ -7,19 +7,18 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.base.AddAnimationAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.viewholder.AddAnimationViewHolder;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -38,7 +37,7 @@ import rx.subjects.PublishSubject;
 /**
  * Created by tiago on 18/05/2016.
  */
-public class SearchResultGridAdapterDelegate extends RxAdapterDelegate<List<Object>> {
+public class SearchResultGridAdapterDelegate extends AddAnimationAdapterDelegate<List<Object>> {
 
     private static final int DURATION = 300;
     private static final float OVERSHOOT = 0.75f;
@@ -49,8 +48,6 @@ public class SearchResultGridAdapterDelegate extends RxAdapterDelegate<List<Obje
     ScreenUtils screenUtils;
 
     // VARIABLES
-    protected LayoutInflater layoutInflater;
-    private Context context;
     private int avatarSize;
     private Map<SearchResultViewHolder, AnimatorSet> animations = new HashMap<>();
 
@@ -59,8 +56,7 @@ public class SearchResultGridAdapterDelegate extends RxAdapterDelegate<List<Obje
     private PublishSubject<View> clickRemove = PublishSubject.create();
 
     public SearchResultGridAdapterDelegate(Context context) {
-        this.context = context;
-        this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        super(context);
         this.avatarSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
         this.screenUtils = ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().screenUtils();
     }
@@ -89,7 +85,7 @@ public class SearchResultGridAdapterDelegate extends RxAdapterDelegate<List<Obje
         if (searchResult.isShouldAnimateAdd()) {
             animateAddSuccessful(vh);
         } else {
-            if (searchResult.getFriendship() != null) {
+            if (searchResult.getFriendship() != null && !searchResult.getFriendship().isBlockedOrHidden()) {
                 vh.imgPicto.setVisibility(View.VISIBLE);
                 vh.imgPicto.setImageResource(R.drawable.picto_done_white);
                 vh.btnAddBG.setVisibility(View.VISIBLE);
@@ -140,48 +136,9 @@ public class SearchResultGridAdapterDelegate extends RxAdapterDelegate<List<Obje
         setClicks(vh, searchResult);
     }
 
-    private void setClicks(SearchResultViewHolder vh, SearchResult searchResult) {
+    protected void setClicks(SearchResultViewHolder vh, SearchResult searchResult) {
         if (!searchResult.isMyself()) {
-            vh.btnAdd.setOnClickListener(v -> {
-                if (searchResult.getFriendship() == null) {
-                    AnimatorSet animatorSet = new AnimatorSet();
-
-                    ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(vh.imgPicto, "rotation", 0f, 45f);
-                    rotationAnim.setDuration(300);
-                    rotationAnim.setInterpolator(new DecelerateInterpolator());
-
-                    ObjectAnimator alphaAnimAdd = ObjectAnimator.ofFloat(vh.imgPicto, "alpha", 1f, 0f);
-                    alphaAnimAdd.setDuration(300);
-                    alphaAnimAdd.setInterpolator(new DecelerateInterpolator());
-                    alphaAnimAdd.addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            vh.imgPicto.setRotation(0);
-                            vh.imgPicto.setAlpha(1f);
-                            vh.imgPicto.setVisibility(View.GONE);
-                        }
-                    });
-
-                    ObjectAnimator alphaAnimProgress = ObjectAnimator.ofFloat(vh.progressBarAdd, "alpha", 0f, 1f);
-                    alphaAnimProgress.setDuration(300);
-                    alphaAnimProgress.setStartDelay(150);
-                    alphaAnimProgress.setInterpolator(new DecelerateInterpolator());
-                    alphaAnimProgress.addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationStart(Animator animation) {
-                            vh.progressBarAdd.setAlpha(0f);
-                            vh.progressBarAdd.setVisibility(View.VISIBLE);
-                        }
-                    });
-
-                    animatorSet.play(rotationAnim).with(alphaAnimAdd).with(alphaAnimProgress);
-                    animatorSet.start();
-                    animations.put(vh, animatorSet);
-                    clickAdd.onNext(vh.itemView);
-                } else {
-                    clickRemove.onNext(vh.itemView);
-                }
-            });
+            setClicks(vh, searchResult.getFriendship());
         } else {
             vh.btnAdd.setOnClickListener(null);
         }
@@ -234,7 +191,7 @@ public class SearchResultGridAdapterDelegate extends RxAdapterDelegate<List<Obje
         return clickRemove;
     }
 
-    public class SearchResultViewHolder extends RecyclerView.ViewHolder {
+    public class SearchResultViewHolder extends AddAnimationViewHolder {
 
         @BindView(R.id.imgAvatar)
         public ImageView imgAvatar;
@@ -244,18 +201,6 @@ public class SearchResultGridAdapterDelegate extends RxAdapterDelegate<List<Obje
 
         @BindView(R.id.txtUsername)
         public TextViewFont txtUsername;
-
-        @BindView(R.id.btnAddBG)
-        public View btnAddBG;
-
-        @BindView(R.id.imgPicto)
-        public ImageView imgPicto;
-
-        @BindView(R.id.progressBarAdd)
-        public CircularProgressView progressBarAdd;
-
-        @BindView(R.id.btnAdd)
-        public ViewGroup btnAdd;
 
         @BindView(R.id.imgGhost)
         public ImageView imgGhost;

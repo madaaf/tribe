@@ -39,6 +39,7 @@ public abstract class UpdateUserPresenter implements Presenter {
     @Override
     public void onDestroy() {
         updateUser.unsubscribe();
+        lookupUsername.unsubscribe();
     }
 
     public void updateUser(String username, String displayName, String pictureUri, String fbid) {

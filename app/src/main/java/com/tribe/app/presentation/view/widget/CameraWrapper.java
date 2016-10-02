@@ -472,7 +472,7 @@ public class CameraWrapper extends FrameLayout {
             preview.setShader(new GlLutShader(getContext().getResources(), R.drawable.video_filter_blue));
             cameraView.setPreview(preview);
 
-            Observable.timer(500, TimeUnit.MILLISECONDS)
+            Observable.timer(1000, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(time -> {

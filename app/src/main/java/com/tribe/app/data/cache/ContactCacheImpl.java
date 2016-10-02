@@ -112,6 +112,8 @@ public class ContactCacheImpl implements ContactCache {
         try {
             if (resultRealm != null) {
                 obsRealm.beginTransaction();
+                friendshipManaged.setBlocked(friendshipRealm.isBlocked());
+                friendshipManaged.setStatus(friendshipRealm.getStatus());
                 resultRealm.setFriendshipRealm(friendshipManaged);
                 obsRealm.commitTransaction();
             }

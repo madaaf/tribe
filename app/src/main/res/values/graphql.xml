@@ -7,6 +7,7 @@
 
                 friendships %1$s {
                     id
+                    status
                     tag
                     category
                     friend {
@@ -39,6 +40,7 @@
         id
         tag
         category
+        status
         friend {
             ...UserInfos
         }

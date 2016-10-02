@@ -1,5 +1,7 @@
 package com.tribe.app.data.realm;
 
+import android.support.annotation.StringDef;
+
 import java.util.Date;
 
 import io.realm.RealmObject;
@@ -10,9 +12,17 @@ import io.realm.annotations.PrimaryKey;
  */
 public class FriendshipRealm extends RealmObject implements RecipientRealmInterface {
 
+    @StringDef({DEFAULT, HIDDEN, BLOCKED})
+    public @interface FriendshipStatus {}
+
+    public static final String DEFAULT = "DEFAULT";
+    public static final String HIDDEN = "HIDDEN";
+    public static final String BLOCKED = "BLOCKED";
+
     @PrimaryKey
     private String id;
 
+    private @FriendshipStatus String status;
     private String tag;
     private boolean blocked;
     private String category;
@@ -78,6 +88,22 @@ public class FriendshipRealm extends RealmObject implements RecipientRealmInterf
 
     @Override
     public String getSubId() {
-        return null;
+        return friend.getId();
+    }
+
+    public @FriendshipStatus String getStatus() {
+        return status;
+    }
+
+    public void setStatus(@FriendshipStatus String status) {
+        this.status = status;
+    }
+
+    public boolean isBlockedOrHidden() {
+        return status != null && !status.equals(FriendshipRealm.DEFAULT);
+    }
+
+    public boolean isHidden() {
+        return status != null && status.equals(FriendshipRealm.HIDDEN);
     }
 }

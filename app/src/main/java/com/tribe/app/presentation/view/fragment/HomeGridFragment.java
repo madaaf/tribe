@@ -250,6 +250,11 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
     }
 
     @Override
+    public void onFriendshipUpdated(Friendship friendship) {
+        reloadGrid();
+    }
+
+    @Override
     public void showError(String message) {
         this.showToastMessage(message);
     }
@@ -295,7 +300,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
         this.layoutManager = new HomeLayoutManager(context());
         this.recyclerViewFriends.setLayoutManager(layoutManager);
         this.recyclerViewFriends.setItemAnimator(null);
-        List<Recipient> recipientList = new ArrayList<>(currentUser.getFriendshipList());
+        List<Recipient> recipientList = new ArrayList<>();
         Friendship friendship = new Friendship(currentUser.getId());
         friendship.setFriend(currentUser);
         recipientList.add(0, friendship);
@@ -447,6 +452,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
 
         List<LabelType> moreTypes = new ArrayList<>();
         moreTypes.add(new MoreType(getString(R.string.grid_more_clear_all_messages), MoreType.CLEAR_MESSAGES));
+
         if (recipient instanceof Friendship) {
             moreTypes.add(new MoreType(getString(R.string.grid_more_hide), MoreType.HIDE));
             moreTypes.add(new MoreType(getString(R.string.grid_more_block_hide), MoreType.BLOCK_HIDE));
@@ -484,14 +490,13 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
                     MoreType moreType = (MoreType) labelType;
                     if (moreType.getMoreType().equals(MoreType.CLEAR_MESSAGES)) {
                         homeGridPresenter.markTribeListAsRead(recipient);
-                    }
-                    if (moreType.getMoreType().equals(MoreType.GROUP_INFO)) {
+                    } else if (moreType.getMoreType().equals(MoreType.HIDE) || moreType.getMoreType().equals(MoreType.BLOCK_HIDE)) {
+                        homeGridPresenter.updateFriendship((Friendship) recipient, moreType);
+                    } else if (moreType.getMoreType().equals(MoreType.GROUP_INFO)) {
                         navigator.navigateToGroupInfo(getActivity(), recipient.getSubId());
-                    }
-                    if (moreType.getMoreType().equals(MoreType.GROUP_LEAVE)) {
+                    } else if (moreType.getMoreType().equals(MoreType.GROUP_LEAVE)) {
                         homeGridPresenter.leaveGroup(recipient.getId());
-                    }
-                    if (moreType.getMoreType().equals(MoreType.GROUP_DELETE)) {
+                    } else if (moreType.getMoreType().equals(MoreType.GROUP_DELETE)) {
                         homeGridPresenter.removeGroup(recipient.getSubId());
                     }
 

@@ -17,6 +17,7 @@ import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Message;
+import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
@@ -250,5 +251,15 @@ public class CloudUserDataRepository implements UserRepository {
     public Observable<Void> bootstrapSupport() {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
         return cloudDataStore.bootstrapSupport();
+    }
+
+    @Override
+    public Observable<Friendship> updateFriendship(String friendshipId, MoreType moreType) {
+        return null;
+    }
+
+    @Override
+    public Observable<List<Friendship>> getBlockedFriendshipList() {
+        return null;
     }
 }

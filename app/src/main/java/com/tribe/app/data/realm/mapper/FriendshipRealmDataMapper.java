@@ -38,6 +38,7 @@ public class FriendshipRealmDataMapper {
             friendship.setBlocked(friendshipRealm.isBlocked());
             friendship.setCategory(friendshipRealm.getCategory());
             friendship.setTag(friendshipRealm.getTag());
+            friendship.setStatus(friendshipRealm.getStatus());
             friendship.setCreatedAt(friendshipRealm.getCreatedAt());
             friendship.setUpdatedAt(friendshipRealm.getUpdatedAt());
         }
@@ -80,6 +81,7 @@ public class FriendshipRealmDataMapper {
             friendshipRealm.setBlocked(friendship.isBlocked());
             friendshipRealm.setCategory(friendship.getCategory());
             friendshipRealm.setTag(friendship.getTag());
+            friendshipRealm.setStatus(friendship.getStatus());
             friendshipRealm.setCreatedAt(friendship.getCreatedAt());
             friendshipRealm.setUpdatedAt(friendship.getUpdatedAt());
         }

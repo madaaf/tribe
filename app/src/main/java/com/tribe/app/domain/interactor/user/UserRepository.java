@@ -13,6 +13,7 @@ import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Message;
+import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
@@ -148,4 +149,8 @@ public interface UserRepository {
     Observable<Void> leaveGroup(String membershipId);
 
     Observable<Void> bootstrapSupport();
+
+    Observable<Friendship> updateFriendship(final String friendshipId, MoreType moreType);
+
+    Observable<List<Friendship>> getBlockedFriendshipList();
 }

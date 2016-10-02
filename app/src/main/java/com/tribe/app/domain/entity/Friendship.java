@@ -1,5 +1,7 @@
 package com.tribe.app.domain.entity;
 
+import com.tribe.app.data.realm.FriendshipRealm;
+
 import java.text.Normalizer;
 import java.util.Date;
 
@@ -14,6 +16,8 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
     private String category;
     private User friend;
     private boolean isSelected;
+    private boolean shouldAnimateAdd;
+    private String status;
 
     public Friendship(String id) {
         this.id = id;
@@ -99,6 +103,26 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
     @Override
     public void setScore(int score) {
         friend.setScore(score);
+    }
+
+    public boolean isShouldAnimateAdd() {
+        return shouldAnimateAdd;
+    }
+
+    public void setShouldAnimateAdd(boolean shouldAnimateAdd) {
+        this.shouldAnimateAdd = shouldAnimateAdd;
+    }
+
+    public @FriendshipRealm.FriendshipStatus String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public boolean isBlockedOrHidden() {
+        return status != null && !status.equals(FriendshipRealm.DEFAULT);
     }
 
     @Override

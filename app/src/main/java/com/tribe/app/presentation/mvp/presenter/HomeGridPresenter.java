@@ -8,6 +8,7 @@ import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Message;
+import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
@@ -17,6 +18,7 @@ import com.tribe.app.domain.interactor.common.UseCaseDisk;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.DiskMarkTribeListAsRead;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
+import com.tribe.app.domain.interactor.user.DiskUpdateFriendship;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.LeaveGroup;
 import com.tribe.app.domain.interactor.user.RemoveGroup;
@@ -41,6 +43,7 @@ public class HomeGridPresenter extends SendTribePresenter {
     private UseCaseDisk diskGetMessageReceivedListUsecase;
     private UseCaseDisk diskGetPendingTribeListUsecase;
     private DiskMarkTribeListAsRead diskMarkTribeListAsRead;
+    private DiskUpdateFriendship diskUpdateFriendship;
     private final LeaveGroup leaveGroup;
     private final RemoveGroup removeGroup;
 
@@ -57,7 +60,8 @@ public class HomeGridPresenter extends SendTribePresenter {
                              @Named("diskGetPendingTribes") UseCaseDisk diskGetPendingTribeList,
                              @Named("diskMarkTribeListAsRead") DiskMarkTribeListAsRead diskMarkTribeListAsRead,
                              LeaveGroup leaveGroup,
-                             RemoveGroup removeGroup) {
+                             RemoveGroup removeGroup,
+                             DiskUpdateFriendship diskUpdateFriendship) {
         super(jobManager, diskSaveTribe, diskDeleteTribe);
         this.diskUserInfosUsecase = diskUserInfos;
         this.diskGetMessageReceivedListUsecase = diskGetReceivedMessageList;
@@ -65,6 +69,7 @@ public class HomeGridPresenter extends SendTribePresenter {
         this.diskMarkTribeListAsRead = diskMarkTribeListAsRead;
         this.leaveGroup = leaveGroup;
         this.removeGroup = removeGroup;
+        this.diskUpdateFriendship = diskUpdateFriendship;
     }
 
     @Override
@@ -158,6 +163,11 @@ public class HomeGridPresenter extends SendTribePresenter {
         jobManager.addJobInBackground(new MarkTribeListAsReadJob(recipient, recipient.getReceivedTribes()));
     }
 
+    public void updateFriendship(Friendship friendship, MoreType moreType) {
+        diskUpdateFriendship.prepare(friendship.getId(), moreType);
+        diskUpdateFriendship.execute(new UpdateFriendshipSubscriber());
+        //jobManager.addJobInBackground(new MarkTribeListAsReadJob(recipient, recipient.getReceivedTribes()));
+    }
 
     public void leaveGroup(String membershipId) {
         leaveGroup.prepare(membershipId);
@@ -259,6 +269,23 @@ public class HomeGridPresenter extends SendTribePresenter {
         @Override
         public void onNext(Void aVoid) {
             homeGridView.refreshGrid();
+        }
+    }
+
+    private final class UpdateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
+
+        @Override
+        public void onCompleted() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+
+        }
+
+        @Override
+        public void onNext(Friendship friendship) {
+            homeGridView.onFriendshipUpdated(friendship);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.mvp.view;
 
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
@@ -16,4 +17,5 @@ public interface HomeGridView extends SendTribeView {
     void setCurrentTribe(TribeMessage tribe);
     int getNbItems();
     void refreshGrid();
+    void onFriendshipUpdated(Friendship friendship);
 }

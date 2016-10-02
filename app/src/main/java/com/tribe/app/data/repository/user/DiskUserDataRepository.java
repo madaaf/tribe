@@ -5,6 +5,7 @@ import android.util.Pair;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
+import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.mapper.ChatRealmDataMapper;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
@@ -23,6 +24,7 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
+import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
@@ -39,6 +41,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import io.realm.RealmList;
 import rx.Observable;
 
 /**
@@ -99,7 +102,19 @@ public class DiskUserDataRepository implements UserRepository {
                 tribeDataStore.tribesNotSeen(null).map(collection -> tribeRealmDataMapper.transform(collection)),
                 userDataStore
                         .userInfos(null, filterRecipient)
-                        .map(userRealm -> userRealmDataMapper.transform(userRealm)),
+                        .map(userRealm -> {
+                            if (userRealm != null && userRealm.getFriendships() != null) {
+                                RealmList<FriendshipRealm> result = new RealmList<>();
+                                for (FriendshipRealm fr : userRealm.getFriendships()) {
+                                    if (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus().equals(FriendshipRealm.DEFAULT)) {
+                                        result.add(fr);
+                                    }
+                                }
+                                userRealm.setFriendships(result);
+                            }
+
+                            return userRealmDataMapper.transform(userRealm);
+                        }),
                 chatDataStore
                         .messages(null)
                         .map(collection -> chatRealmDataMapper.transform(collection)),
@@ -306,5 +321,34 @@ public class DiskUserDataRepository implements UserRepository {
     @Override
     public Observable<Void> bootstrapSupport() {
         return null;
+    }
+
+    @Override
+    public Observable<Friendship> updateFriendship(String friendshipId, MoreType moreType) {
+        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+        return userDataStore.updateFriendship(friendshipId, moreType)
+                .map(friendshipRealm -> userRealmDataMapper.getFriendshipRealmDataMapper().transform(friendshipRealm));
+    }
+
+    @Override
+    public Observable<List<Friendship>> getBlockedFriendshipList() {
+        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+
+        return userDataStore
+                .userInfos(null, null)
+                .map(userRealm -> {
+                    if (userRealm != null && userRealm.getFriendships() != null) {
+                        RealmList<FriendshipRealm> result = new RealmList<>();
+                        for (FriendshipRealm fr : userRealm.getFriendships()) {
+                            if (!StringUtils.isEmpty(fr.getStatus()) && !fr.getStatus().equals(FriendshipRealm.DEFAULT)) {
+                                result.add(fr);
+                            }
+                        }
+
+                        userRealm.setFriendships(result);
+                    }
+
+                    return userRealmDataMapper.transform(userRealm).getFriendships();
+                });
     }
 }

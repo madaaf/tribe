@@ -22,16 +22,19 @@ import javax.inject.Named;
  */
 public class SettingPresenter extends UpdateUserPresenter {
 
+    private SettingView settingView;
+
     private final RemoveInstall removeInstall;
     private final UseCase synchroContactList;
-
-    private SettingView settingView;
 
     private LookupContactsSubscriber lookupContactsSubscriber;
 
     @Inject
-    SettingPresenter(UpdateUser updateUser, @Named("lookupByUsername") LookupUsername lookupUsername,
-                     RxFacebook rxFacebook, RemoveInstall removeInstall, @Named("synchroContactList") UseCase synchroContactList) {
+    SettingPresenter(UpdateUser updateUser,
+                     @Named("lookupByUsername") LookupUsername lookupUsername,
+                     RxFacebook rxFacebook,
+                     RemoveInstall removeInstall,
+                     @Named("synchroContactList") UseCase synchroContactList) {
         super(updateUser, lookupUsername, rxFacebook);
         this.removeInstall = removeInstall;
         this.synchroContactList = synchroContactList;
@@ -59,7 +62,8 @@ public class SettingPresenter extends UpdateUserPresenter {
 
     @Override
     public void onDestroy() {
-
+        removeInstall.unsubscribe();
+        synchroContactList.unsubscribe();
     }
 
     @Override

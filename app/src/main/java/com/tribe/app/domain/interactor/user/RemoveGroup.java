@@ -29,6 +29,6 @@ public class RemoveGroup extends UseCase {
 
     @Override
     protected Observable buildUseCaseObservable() {
-        return this .userRepository.removeGroup(groupId);
+        return this.userRepository.removeGroup(groupId);
     }
 }

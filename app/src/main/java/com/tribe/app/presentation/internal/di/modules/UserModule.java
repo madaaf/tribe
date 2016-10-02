@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.internal.di.modules;
 
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
+import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
@@ -14,12 +15,14 @@ import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.domain.interactor.user.AddMembersToGroup;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
+import com.tribe.app.domain.interactor.user.DiskUpdateFriendship;
 import com.tribe.app.domain.interactor.user.DiskFindContactByValue;
 import com.tribe.app.domain.interactor.user.DiskSearchResults;
 import com.tribe.app.domain.interactor.user.DoBootstrapSupport;
 import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
 import com.tribe.app.domain.interactor.user.DoRegister;
 import com.tribe.app.domain.interactor.user.FindByUsername;
+import com.tribe.app.domain.interactor.user.GetBlockedFriendshipList;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetDiskContactList;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
@@ -241,5 +244,17 @@ public class UserModule {
     @Named("lookupByUsername")
     LookupUsername provideLookupUsername(LookupUsername lookupUsername) {
         return lookupUsername;
+    }
+
+    @Provides
+    @PerActivity
+    DiskUpdateFriendship provideDiskBlockHide(DiskUserDataRepository diskUserDataRepository, PostExecutionThread postExecutionThread) {
+        return new DiskUpdateFriendship(diskUserDataRepository, postExecutionThread);
+    }
+
+    @Provides
+    @PerActivity
+    GetBlockedFriendshipList provideGetBlockedFriendshipList(DiskUserDataRepository diskUserDataRepository, PostExecutionThread postExecutionThread) {
+        return new GetBlockedFriendshipList(diskUserDataRepository, postExecutionThread);
     }
 }

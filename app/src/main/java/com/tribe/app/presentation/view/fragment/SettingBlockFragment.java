@@ -1,7 +1,7 @@
 package com.tribe.app.presentation.view.fragment;
 
 import android.os.Bundle;
-import android.support.design.widget.BottomSheetDialog;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -12,15 +12,16 @@ import android.view.ViewGroup;
 
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.view.adapter.FriendAdapter;
+import com.tribe.app.presentation.mvp.presenter.BlockPresenter;
+import com.tribe.app.presentation.mvp.view.BlockView;
+import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.adapter.BlockedFriendAdapter;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -33,7 +34,7 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by horatiothomas on 9/6/16.
  */
-public class SettingBlockFragment extends BaseFragment {
+public class SettingBlockFragment extends BaseFragment implements BlockView {
 
     public static SettingBlockFragment newInstance() {
 
@@ -44,19 +45,22 @@ public class SettingBlockFragment extends BaseFragment {
         return fragment;
     }
 
-    private CompositeSubscription subscriptions = new CompositeSubscription();
-    private Unbinder unbinder;
-    private FriendAdapter friendAdapter;
+    @Inject
+    BlockPresenter blockPresenter;
 
-    @BindView(R.id.editTextSearchBlockFriends)
-    EditTextFont editTextSearchBlockFriends;
+    @BindView(R.id.editTextSearch)
+    EditTextFont editTextSearch;
+
     @BindView(R.id.blockFriendsRecyclerView)
     RecyclerView blockFriendsRecyclerView;
 
-    private List<Friendship> friendshipsList;
-    private List<Friendship> friendshipsListCopy;
+    // VARIABLES
     private LinearLayoutManager linearLayoutManager;
+    private BlockedFriendAdapter friendAdapter;
 
+    // OBSERVABLES
+    private CompositeSubscription subscriptions = new CompositeSubscription();
+    private Unbinder unbinder;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -71,33 +75,36 @@ public class SettingBlockFragment extends BaseFragment {
         return fragmentView;
     }
 
-    private void initFriendshipList() {
-        User user = getCurrentUser();
-        friendAdapter = new FriendAdapter(getContext(), true);
-        List<Friendship> allFriendships = user.getFriendships();
-        friendshipsList = new ArrayList<>();
-        for(Friendship friendship : allFriendships) {
-            if (friendship.isBlocked()) friendshipsList.add(friendship);
-        }
-        // TODO: remove after ui testing
-        //friendshipsList.add(allFriendships.get(1));
+    @Override
+    public void onDestroyView() {
+        if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+        this.blockPresenter.onDestroy();
+        this.friendAdapter.releaseSubscriptions();
+        super.onDestroyView();
+    }
 
-        friendshipsListCopy = new ArrayList<>();
-        friendshipsListCopy.addAll(friendshipsList);
-        friendAdapter.setItems(friendshipsList);
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        this.blockPresenter.attachView(this);
+        this.blockPresenter.onCreate();
+    }
+
+    private void initFriendshipList() {
+        friendAdapter = new BlockedFriendAdapter(getContext());
+
         linearLayoutManager = new LinearLayoutManager(getActivity());
         blockFriendsRecyclerView.setLayoutManager(linearLayoutManager);
         blockFriendsRecyclerView.setAdapter(friendAdapter);
 
-        subscriptions.add(friendAdapter.clickFriendItem().subscribe(view -> {
-           // TODO: add networking and update database
-            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
-            View bottomSheetView = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_block_friend, null);
-            bottomSheetDialog.setContentView(bottomSheetView);
-            bottomSheetDialog.show();
-
-        }));
-
+        subscriptions.add(
+                friendAdapter
+                .clickAdd()
+                .map(view -> {
+                    return friendAdapter.getItemAtPosition(blockFriendsRecyclerView.getChildLayoutPosition(view));
+                }).subscribe(fr -> {
+                    blockPresenter.updateFriendship(fr.getId());
+                }));
     }
 
     @Override
@@ -113,7 +120,7 @@ public class SettingBlockFragment extends BaseFragment {
     }
 
     private void initSearchView() {
-        editTextSearchBlockFriends.addTextChangedListener(new TextWatcher() {
+        editTextSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -126,27 +133,13 @@ public class SettingBlockFragment extends BaseFragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                filter(s.toString());
+                if (!StringUtils.isEmpty(s.toString())) filter(s.toString());
             }
         });
     }
 
     private void filter(String text) {
-        if(text.isEmpty()){
-            friendshipsList.clear();
-            friendshipsList.addAll(friendshipsListCopy);
-        } else{
-            ArrayList<Friendship> result = new ArrayList<>();
-            text = text.toLowerCase();
-            for(Friendship item: friendshipsListCopy){
-                if(item.getDisplayName().toLowerCase().contains(text) || item.getDisplayName().toLowerCase().contains(text)){
-                    result.add(item);
-                }
-            }
-            friendshipsList.clear();
-            friendshipsList.addAll(result);
-        }
-        friendAdapter.setItems(friendshipsList);
+        friendAdapter.filterList(text);
     }
 
     protected ApplicationComponent getApplicationComponent() {
@@ -165,4 +158,13 @@ public class SettingBlockFragment extends BaseFragment {
     }
 
 
+    @Override
+    public void friendshipUpdated(Friendship friendship) {
+        friendAdapter.updateFriendship(friendship);
+    }
+
+    @Override
+    public void renderBlockedFriendshipList(List<Friendship> friendshipList) {
+        friendAdapter.setItems(friendshipList);
+    }
 }

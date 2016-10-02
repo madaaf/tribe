@@ -6,16 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.presentation.view.adapter.delegate.friend.FriendAdapterDelegate;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import rx.Observable;
-import rx.subjects.PublishSubject;
 
 /**
  * Created by horatiothomas on 9/7/16.
@@ -28,8 +24,10 @@ public class FriendAdapter extends RecyclerView.Adapter {
 
     public FriendAdapter(Context context, boolean privateGroup) {
         delegatesManager = new RxAdapterDelegatesManager<>();
+
         friendAdapterDelegate = new FriendAdapterDelegate(context, privateGroup);
         delegatesManager.addDelegate(friendAdapterDelegate);
+
         items = new ArrayList<>();
     }
 

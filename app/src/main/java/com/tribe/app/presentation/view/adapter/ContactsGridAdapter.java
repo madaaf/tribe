@@ -169,10 +169,10 @@ public class ContactsGridAdapter extends RecyclerView.Adapter {
     }
 
     public Observable<View> onClickAdd() {
-        return searchResultGridAdapterDelegate.onClickAdd();
+        return searchResultGridAdapterDelegate.clickAdd();
     }
 
     public Observable<View> onClickRemove() {
-        return searchResultGridAdapterDelegate.onClickRemove();
+        return searchResultGridAdapterDelegate.clickRemove();
     }
 }
