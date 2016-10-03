@@ -32,6 +32,15 @@
         <attr name="label" format="string" />
     </declare-styleable>
 
+    <declare-styleable name="CameraWrapper">
+        <attr name="cameraType" format="enum">
+            <enum name="recording" value="0" />
+            <enum name="setting" value="1" />
+        </attr>
+        <attr name="cameraHeight" format="dimension" />
+        <attr name="cameraWidth" format="dimension" />
+    </declare-styleable>
+
     <declare-styleable name="TribeVideoView">
         <attr name="scaleVideoType" format="enum">
             <enum name="top" value="0" />

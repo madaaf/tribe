@@ -4,8 +4,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.media.AudioManager;
 import android.os.Build;
+import android.support.annotation.IntDef;
 import android.support.annotation.StringDef;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -47,6 +49,12 @@ import rx.subjects.PublishSubject;
  */
 public class CameraWrapper extends FrameLayout {
 
+    @IntDef({RECORDING, SETTING})
+    public @interface CameraType {}
+
+    public static final int RECORDING = 0;
+    public static final int SETTING = 1;
+
     @StringDef({VIDEO, AUDIO, PHOTO})
     public @interface TribeMode {}
 
@@ -79,6 +87,9 @@ public class CameraWrapper extends FrameLayout {
     @BindView(R.id.imgVideo)
     View imgVideo;
 
+    @BindView(R.id.viewCameraForeground)
+    View viewCameraForeground;
+
     @BindView(R.id.layoutCameraPermissions)
     ViewGroup layoutCameraPermissions;
 
@@ -92,6 +103,9 @@ public class CameraWrapper extends FrameLayout {
     private PathView pathView;
     private boolean canMove = true;
     private AudioManager audioManager;
+    private int cameraType;
+    private int cameraHeight = 0;
+    private int cameraWidth = 0;
 
     // RESOURCES
     private int marginTopInit, marginLeftInit, marginBottomInit, marginVerticalIcons, marginHorizontalIcons, diffTouch,
@@ -106,6 +120,14 @@ public class CameraWrapper extends FrameLayout {
 
     public CameraWrapper(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CameraWrapper);
+        cameraType = a.getInteger(R.styleable.CameraWrapper_cameraType, RECORDING);
+        cameraHeight = a.getDimensionPixelSize(R.styleable.CameraWrapper_cameraHeight, ViewGroup.LayoutParams.MATCH_PARENT);
+        cameraWidth = a.getDimensionPixelSize(R.styleable.CameraWrapper_cameraWidth, ViewGroup.LayoutParams.MATCH_PARENT);
+
+        a.recycle();
+
         ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
 
         initUI();
@@ -141,9 +163,15 @@ public class CameraWrapper extends FrameLayout {
             }
         });
 
-        imgVideo.setTranslationX(screenUtils.getWidthPx() / RATIO);
-
-        setBackgroundResource(R.color.black_opacity_20);
+        if (cameraType == SETTING) {
+            imgVideo.setVisibility(View.GONE);
+            imgSound.setVisibility(View.GONE);
+            imgFlash.setVisibility(View.GONE);
+            viewCameraForeground.setVisibility(View.GONE);
+        } else {
+            imgVideo.setTranslationX(screenUtils.getWidthPx() / RATIO);
+            setBackgroundResource(R.color.black_opacity_20);
+        }
     }
 
     public void onPause(boolean shouldDelay) {
@@ -238,68 +266,82 @@ public class CameraWrapper extends FrameLayout {
     }
 
     public int getHeightFromRatio() {
-        return (int) (screenUtils.getWidthPx() / RATIO * aspectRatio);
+        if (cameraType == SETTING) return cameraHeight;
+        else return (int) (screenUtils.getWidthPx() / RATIO * aspectRatio);
     }
 
     public int getWidthFromRatio() {
-        return (int) (screenUtils.getWidthPx() / RATIO);
+        if (cameraType == SETTING) return cameraWidth;
+        else return (int) (screenUtils.getWidthPx() / RATIO);
     }
 
     @Override
     protected void onMeasure(int widthSpec, int heightSpec) {
         // Scale the preview while keeping the aspect ratio
-        int fullWidth = screenUtils.getWidthPx() / RATIO;
-        int fullHeight = (int) (screenUtils.getWidthPx() / RATIO * aspectRatio);
+        int fullWidth = 0;
+        int fullHeight = 0;
+
+        if (cameraType == SETTING) {
+            fullHeight = cameraHeight;
+            fullWidth = cameraWidth;
+        } else {
+            fullHeight = ((int) (screenUtils.getWidthPx() / RATIO * aspectRatio));
+            fullWidth = (screenUtils.getWidthPx() / RATIO);
+        }
 
         setMeasuredDimension(fullWidth, fullHeight);
 
-        super.onMeasure(MeasureSpec.makeMeasureSpec((int) fullWidth, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec((int) fullHeight, MeasureSpec.EXACTLY));
+        super.onMeasure(MeasureSpec.makeMeasureSpec(fullWidth, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(fullHeight, MeasureSpec.EXACTLY));
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        final int touchX = (int) event.getRawX();
-        final int touchY = (int) event.getRawY();
+        if (cameraType != SETTING) {
+            final int touchX = (int) event.getRawX();
+            final int touchY = (int) event.getRawY();
 
-        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) getLayoutParams();
+            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) getLayoutParams();
 
-        switch (event.getAction() & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_DOWN:
-                xDelta = touchX - layoutParams.leftMargin;
-                yDelta = touchY - layoutParams.topMargin;
-                downX = touchX;
-                downY = touchY;
-                break;
+            switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                case MotionEvent.ACTION_DOWN:
+                    xDelta = touchX - layoutParams.leftMargin;
+                    yDelta = touchY - layoutParams.topMargin;
+                    downX = touchX;
+                    downY = touchY;
+                    break;
 
-            case MotionEvent.ACTION_UP:
-                if (Math.abs(touchY - downY) < diffTouch && Math.abs(touchX - downX) < diffTouch) {
-                    cameraView.switchCamera();
-                }
+                case MotionEvent.ACTION_UP:
+                    if (Math.abs(touchY - downY) < diffTouch && Math.abs(touchX - downX) < diffTouch) {
+                        cameraView.switchCamera();
+                    }
 
-                if (canMove)
-                    snapCamera();
-                break;
+                    if (canMove)
+                        snapCamera();
+                    break;
 
-            case MotionEvent.ACTION_POINTER_DOWN:
-                break;
+                case MotionEvent.ACTION_POINTER_DOWN:
+                    break;
 
-            case MotionEvent.ACTION_POINTER_UP:
-                break;
+                case MotionEvent.ACTION_POINTER_UP:
+                    break;
 
-            case MotionEvent.ACTION_MOVE:
-                if (canMove) {
-                    layoutParams.leftMargin = touchX - xDelta;
-                    layoutParams.topMargin = touchY - yDelta;
-                    setLayoutParams(layoutParams);
-                    invalidate();
-                }
+                case MotionEvent.ACTION_MOVE:
+                    if (canMove) {
+                        layoutParams.leftMargin = touchX - xDelta;
+                        layoutParams.topMargin = touchY - yDelta;
+                        setLayoutParams(layoutParams);
+                        invalidate();
+                    }
 
-                break;
+                    break;
+            }
+
+            invalidate();
+            return true;
+        } else {
+            return false;
         }
-
-        invalidate();
-        return true;
     }
 
     private void snapCamera() {

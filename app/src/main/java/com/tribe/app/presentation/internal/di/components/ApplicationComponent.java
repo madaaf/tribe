@@ -45,6 +45,7 @@ import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
 import com.tribe.app.presentation.internal.di.modules.NetModule;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;
 import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
+import com.tribe.app.presentation.internal.di.scope.Filter;
 import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
 import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
@@ -230,6 +231,9 @@ public interface ApplicationComponent {
 
     @Theme
     Preference<Integer> theme();
+
+    @Filter
+    Preference<Integer> filter();
 
     @InvisibleMode
     Preference<Boolean> invisibleMode();

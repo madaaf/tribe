@@ -2,16 +2,11 @@ package com.tribe.app.presentation.view.utils;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.support.v4.content.ContextCompat;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.scope.Theme;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -26,6 +21,8 @@ public class PaletteGrid {
     private static Integer[] paletteTwo;
     private static Integer[] paletteThree;
     private static Integer[] paletteFour;
+    private static Integer[] paletteFive;
+    private static Integer[] paletteSix;
 
     private static Preference<Integer> theme;
 
@@ -50,18 +47,89 @@ public class PaletteGrid {
         };
 
         paletteTwo = new Integer[] {
-                ContextCompat.getColor(context, R.color.heighties_1),
-                ContextCompat.getColor(context, R.color.heighties_2),
-                ContextCompat.getColor(context, R.color.heighties_3),
-                ContextCompat.getColor(context, R.color.heighties_4)
+                ContextCompat.getColor(context, R.color.blue_1),
+                ContextCompat.getColor(context, R.color.blue_2),
+                ContextCompat.getColor(context, R.color.blue_3),
+                ContextCompat.getColor(context, R.color.blue_4),
+                ContextCompat.getColor(context, R.color.blue_5),
+                ContextCompat.getColor(context, R.color.blue_6),
+                ContextCompat.getColor(context, R.color.blue_7),
+                ContextCompat.getColor(context, R.color.blue_6),
+                ContextCompat.getColor(context, R.color.blue_5),
+                ContextCompat.getColor(context, R.color.blue_3),
+                ContextCompat.getColor(context, R.color.blue_2)
+        };
+
+        paletteThree = new Integer[] {
+                ContextCompat.getColor(context, R.color.red_1),
+                ContextCompat.getColor(context, R.color.red_2),
+                ContextCompat.getColor(context, R.color.red_3),
+                ContextCompat.getColor(context, R.color.red_4),
+                ContextCompat.getColor(context, R.color.red_5),
+                ContextCompat.getColor(context, R.color.red_6),
+                ContextCompat.getColor(context, R.color.red_7),
+                ContextCompat.getColor(context, R.color.red_6),
+                ContextCompat.getColor(context, R.color.red_5),
+                ContextCompat.getColor(context, R.color.red_3),
+                ContextCompat.getColor(context, R.color.red_2)
+        };
+
+        paletteFour = new Integer[] {
+                ContextCompat.getColor(context, R.color.violet_1),
+                ContextCompat.getColor(context, R.color.violet_2),
+                ContextCompat.getColor(context, R.color.violet_3),
+                ContextCompat.getColor(context, R.color.violet_4),
+                ContextCompat.getColor(context, R.color.violet_5),
+                ContextCompat.getColor(context, R.color.violet_6),
+                ContextCompat.getColor(context, R.color.violet_7),
+                ContextCompat.getColor(context, R.color.violet_6),
+                ContextCompat.getColor(context, R.color.violet_5),
+                ContextCompat.getColor(context, R.color.violet_3),
+                ContextCompat.getColor(context, R.color.violet_2)
+        };
+
+        paletteFive = new Integer[] {
+                ContextCompat.getColor(context, R.color.orange_1),
+                ContextCompat.getColor(context, R.color.orange_2),
+                ContextCompat.getColor(context, R.color.orange_3),
+                ContextCompat.getColor(context, R.color.orange_4),
+                ContextCompat.getColor(context, R.color.orange_5),
+                ContextCompat.getColor(context, R.color.orange_6),
+                ContextCompat.getColor(context, R.color.orange_7),
+                ContextCompat.getColor(context, R.color.orange_6),
+                ContextCompat.getColor(context, R.color.orange_5),
+                ContextCompat.getColor(context, R.color.orange_3),
+                ContextCompat.getColor(context, R.color.orange_2)
+        };
+
+        paletteSix = new Integer[] {
+                ContextCompat.getColor(context, R.color.black_1),
+                ContextCompat.getColor(context, R.color.black_2),
+                ContextCompat.getColor(context, R.color.black_3),
+                ContextCompat.getColor(context, R.color.black_4),
+                ContextCompat.getColor(context, R.color.black_5),
+                ContextCompat.getColor(context, R.color.black_6),
+                ContextCompat.getColor(context, R.color.black_7),
+                ContextCompat.getColor(context, R.color.black_6),
+                ContextCompat.getColor(context, R.color.black_5),
+                ContextCompat.getColor(context, R.color.black_3),
+                ContextCompat.getColor(context, R.color.black_2)
         };
     }
 
     public static int get(int position) {
         if (theme.get() == 0)
             return paletteOne[position % paletteOne.length];
-        if (theme.get() == 1)
+        else if (theme.get() == 1)
             return paletteTwo[position % paletteTwo.length];
+        else if (theme.get() == 2)
+            return paletteThree[position % paletteThree.length];
+        else if (theme.get() == 3)
+            return paletteFour[position % paletteFour.length];
+        else if (theme.get() == 4)
+            return paletteFive[position % paletteFive.length];
+        else if (theme.get() == 5)
+            return paletteSix[position % paletteSix.length];
 
         return Color.BLACK;
     }

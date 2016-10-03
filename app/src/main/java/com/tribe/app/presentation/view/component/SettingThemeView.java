@@ -44,6 +44,15 @@ public class SettingThemeView extends FrameLayout {
     @BindView(R.id.imageTheme3)
     ImageView imageTheme3;
 
+    @BindView(R.id.imageTheme4)
+    ImageView imageTheme4;
+
+    @BindView(R.id.imageTheme5)
+    ImageView imageTheme5;
+
+    @BindView(R.id.imageTheme6)
+    ImageView imageTheme6;
+
     @BindView(R.id.layoutTheme)
     LinearLayout layoutTheme;
 
@@ -92,15 +101,30 @@ public class SettingThemeView extends FrameLayout {
                     case 0:
                         setUpUnderline(imageTheme1);
                         break;
+
                     case 1:
                         setUpUnderline(imageTheme2);
                         break;
+
                     case 2:
                         setUpUnderline(imageTheme3);
+                        break;
+
+                    case 3:
+                        setUpUnderline(imageTheme4);
+                        break;
+
+                    case 4:
+                        setUpUnderline(imageTheme5);
+                        break;
+
+                    case 5:
+                        setUpUnderline(imageTheme6);
                         break;
                     default:
                         break;
                 }
+
                 imageTheme1.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
@@ -110,15 +134,30 @@ public class SettingThemeView extends FrameLayout {
             theme.set(0);
         }));
 
-//        subscriptions.add(RxView.clicks(imageTheme2).subscribe(aVoid -> {
-//            setUpUnderline(imageTheme2);
-//            theme.set(1);
-//        }));
-//
-//        subscriptions.add(RxView.clicks(imageTheme3).subscribe(aVoid -> {
-//            setUpUnderline(imageTheme3);
-//            theme.set(2);
-//        }));
+        subscriptions.add(RxView.clicks(imageTheme2).subscribe(aVoid -> {
+            setUpUnderline(imageTheme2);
+            theme.set(1);
+        }));
+
+        subscriptions.add(RxView.clicks(imageTheme3).subscribe(aVoid -> {
+            setUpUnderline(imageTheme3);
+            theme.set(2);
+        }));
+
+        subscriptions.add(RxView.clicks(imageTheme4).subscribe(aVoid -> {
+            setUpUnderline(imageTheme4);
+            theme.set(3);
+        }));
+
+        subscriptions.add(RxView.clicks(imageTheme5).subscribe(aVoid -> {
+            setUpUnderline(imageTheme5);
+            theme.set(4);
+        }));
+
+        subscriptions.add(RxView.clicks(imageTheme6).subscribe(aVoid -> {
+            setUpUnderline(imageTheme6);
+            theme.set(5);
+        }));
     }
 
     private void setUpUnderline(ImageView imageView) {

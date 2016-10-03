@@ -5,11 +5,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.SwitchCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.Switch;
 
 import com.bumptech.glide.Glide;
 import com.tribe.app.R;
@@ -42,7 +42,7 @@ public class SettingItemView extends FrameLayout {
     TextViewFont txtSectionBody;
 
     @BindView(R.id.switchSetting)
-    Switch switchMessage;
+    SwitchCompat switchMessage;
 
     @BindView(R.id.imageProf)
     ImageView imageProf;

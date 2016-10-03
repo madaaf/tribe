@@ -22,6 +22,7 @@ import com.tribe.app.presentation.mvp.view.SettingView;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.SettingActivity;
+import com.tribe.app.presentation.view.component.SettingFilterView;
 import com.tribe.app.presentation.view.component.SettingItemView;
 import com.tribe.app.presentation.view.component.SettingThemeView;
 import com.tribe.app.presentation.view.utils.DialogFactory;
@@ -41,6 +42,9 @@ public class SettingFragment extends BaseFragment implements SettingView {
 
     @BindView(R.id.settingsProfile)
     SettingItemView settingsProfile;
+
+    @BindView(R.id.settingsFilter)
+    SettingFilterView settingFilterView;
 
     @BindView(R.id.settingsTheme)
     SettingThemeView settingThemeView;
@@ -146,6 +150,13 @@ public class SettingFragment extends BaseFragment implements SettingView {
     @Override
     public void onResume() {
         super.onResume();
+        settingFilterView.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        settingFilterView.onPause();
+        super.onPause();
     }
 
     @Override
