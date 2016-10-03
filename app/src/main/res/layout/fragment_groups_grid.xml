@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/shape_rect_grey_background_rounded_corners">
 
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:elevation="0dp"
         >
 
         <android.support.design.widget.CollapsingToolbarLayout
@@ -32,15 +37,6 @@
                     android:layout_marginTop="328dp"
                     app:layout_collapseMode="parallax"
                     />
-
-            <com.tribe.app.presentation.view.component.GroupSuggestionsView
-                android:id="@+id/groupSuggestionsView"
-                android:layout_marginTop="206dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="invisible"
-                />
-
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -112,13 +108,14 @@
         app:cpv_thickness="2dp"
         />
 
-    <View
-        android:id="@+id/shadowMask"
-        android:layout_width="match_parent"
-        android:layout_marginTop="443dp"
-        android:layout_height="20dp"
-        android:visibility="invisible"
-        android:background="@color/grey.background.profile_info"
-        />
+    </android.support.design.widget.CoordinatorLayout>
 
-</android.support.design.widget.CoordinatorLayout>
+    <com.tribe.app.presentation.view.component.GroupSuggestionsView
+    android:id="@+id/groupSuggestionsView"
+    android:layout_marginTop="206dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:visibility="invisible"
+    />
+
+</FrameLayout>

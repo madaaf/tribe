@@ -62,7 +62,8 @@ public class ViewPrivacyStatus extends FrameLayout {
             else textPrivacyStatus.setText(getContext().getString(R.string.group_private_title) + " - " + memberCount  + " " + getContext().getString(R.string.group_member));
             imagePrivacyStatus.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_lock_grey));
         } else {
-            textPrivacyStatus.setText(getContext().getString(R.string.group_public_title));
+            if (memberCount > 1) textPrivacyStatus.setText(getContext().getString(R.string.group_public_title) + " - " + memberCount  + " " + getContext().getString(R.string.group_members));
+            else textPrivacyStatus.setText(getContext().getString(R.string.group_public_title) + " - " + memberCount  + " " + getContext().getString(R.string.group_member));
             imagePrivacyStatus.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_megaphone_grey));
         }
     }

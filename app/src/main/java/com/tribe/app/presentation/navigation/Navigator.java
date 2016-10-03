@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Bundle;
 import android.widget.Toast;
 
 import com.tribe.app.R;
@@ -156,10 +157,14 @@ public class Navigator {
         }
     }
 
-    public void navigateToGroupInfo(Activity activity, String groupId) {
+    public void navigateToGroupInfo(Activity activity, String groupId, String groupName, String groupPicture) {
         if (activity != null) {
             Intent intent = GroupInfoActivity.getCallingIntent(activity);
-            intent.putExtra("groupId", groupId);
+            Bundle bundle = new Bundle();
+            bundle.putString("groupId", groupId);
+            bundle.putString("groupName", groupName);
+            bundle.putString("groupPicture", groupPicture);
+            intent.putExtras(bundle);
             activity.startActivity(intent);
             activity.overridePendingTransition(R.anim.activity_in_from_right, R.anim.activity_out_scale_down);
         }

@@ -82,10 +82,12 @@ public class GroupInfoActivity extends BaseActivity {
         unbinder = ButterKnife.bind(this);
 
         Intent intent = getIntent();
-        String groupId = intent.getStringExtra("groupId");
+        Bundle extras = intent.getExtras();
 
         Bundle bundle = new Bundle();
-        bundle.putString("groupId", groupId);
+        bundle.putString("groupId", extras.getString("groupId"));
+        bundle.putString("groupName", extras.getString("groupName"));
+        bundle.putString("groupPicture", extras.getString("groupPicture"));
         groupsGridFragment = GroupsGridFragment.newInstance(bundle);
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

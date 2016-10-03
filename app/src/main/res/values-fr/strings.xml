@@ -102,12 +102,12 @@
 	<string name="grid_friendship_status_reply">À votre tour</string>
 	<string name="grid_support_title">Des questions?</string>
 	<string name="grid_support_status_default">Chat avec le CEO</string>
-	<string name="grid_support_status_sending">Envoyé à l’Équipe</string>
-	<string name="grid_support_status_confirmed">Envoyé à l’Équipe</string>
+	<string name="grid_support_status_sending">Envoie à l’Équipe</string>
+	<string name="grid_support_status_confirmed">Confirmé</string>
 	<string name="grid_support_status_sent">Envoyé à l’Équipe</string>
 	<string name="grid_support_status_opened">Ouvert par l’Équipe</string>
-	<string name="grid_support_status_new_messages">Chat avec le CEO</string>
-	<string name="grid_support_status_loading">Ouvert par l’Équipe</string>
+	<string name="grid_support_status_new_messages">Messages de l’Équipe</string>
+	<string name="grid_support_status_loading">Chargement</string>
 	<string name="grid_support_status_reply">Répondez à l’Équipe</string>
 	<string name="grid_ghost">Pas encore inscrit</string>
 	<string name="grid_friendship_recording_tap_to_cancel">Préparation</string>
@@ -147,6 +147,7 @@
 	<string name="chat_is_typing">est en train d\'écrire</string>
 	<string name="chat_are_typing">sont en train d\'écrire</string>
 	<string name="chat_and">et</string>
+	<string name="chat_copied_to_clipboard">Copié dans le presse-papier</string>
 	
 	<!-- Private Group -->
 	<string name="group_family_title">:house_with_garden: Famille</string>
