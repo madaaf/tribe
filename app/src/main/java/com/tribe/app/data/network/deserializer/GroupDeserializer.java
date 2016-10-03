@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
@@ -45,7 +46,7 @@ public class GroupDeserializer implements JsonDeserializer<GroupRealm> {
             if (group == null) group = data.getAsJsonObject("createGroup");
         }
         JsonElement groupLink = group.get("link");
-        if (groupLink != null) groupRealm.setGroupLink(groupLink.toString());
+        if (!groupLink.isJsonNull()) groupRealm.setGroupLink(groupLink.toString());
         groupRealm.setId(group.get("id").getAsString());
         groupRealm.setName(group.get("name").getAsString());
         groupRealm.setPicture(group.get("picture") != null && !group.get("picture").isJsonNull() ? group.get("picture").getAsString() : null);

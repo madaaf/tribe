@@ -3,10 +3,12 @@ package com.tribe.app.presentation.mvp.presenter;
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.UpdateScoreJob;
 import com.tribe.app.domain.entity.Group;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.AddMembersToGroup;
 import com.tribe.app.domain.interactor.user.CreateGroup;
 import com.tribe.app.domain.interactor.user.GetGroupMembers;
+import com.tribe.app.domain.interactor.user.ModifyPrivateGroupLink;
 import com.tribe.app.domain.interactor.user.UpdateGroup;
 import com.tribe.app.presentation.mvp.view.GroupView;
 import com.tribe.app.presentation.mvp.view.View;
@@ -25,6 +27,7 @@ public class GroupPresenter implements Presenter {
     private final CreateGroup createGroup;
     private final UpdateGroup updateGroup;
     private final AddMembersToGroup addMembersToGroup;
+    private final ModifyPrivateGroupLink modifyPrivateGroupLink;
     private final JobManager jobManager;
 
     private GroupView groupView;
@@ -34,14 +37,14 @@ public class GroupPresenter implements Presenter {
                    GetGroupMembers getGroupMembers,
                    CreateGroup createGroup,
                    UpdateGroup updateGroup,
-                   AddMembersToGroup addMembersToGroup) {
+                   AddMembersToGroup addMembersToGroup,
+                   ModifyPrivateGroupLink modifyPrivateGroupLink) {
         this.jobManager = jobManager;
         this.getGroupMembers = getGroupMembers;
         this.createGroup = createGroup;
         this.updateGroup = updateGroup;
         this.addMembersToGroup = addMembersToGroup;
-
-
+        this.modifyPrivateGroupLink = modifyPrivateGroupLink;
     }
 
     public void setupMembers(Group group) {
@@ -72,6 +75,11 @@ public class GroupPresenter implements Presenter {
         addMembersToGroup.execute(new AddMembersToGroupSubscriber());
     }
 
+    public void modifyPrivateGroupLink(String membershipId, boolean create) {
+        modifyPrivateGroupLink.prepare(membershipId, create);
+        modifyPrivateGroupLink.execute(new ModifyPrivateGroupSubscriber());
+    }
+
     private final class GetGroupMemberSubscriber extends DefaultSubscriber<Group> {
         @Override
         public void onCompleted() {
@@ -89,7 +97,7 @@ public class GroupPresenter implements Presenter {
         }
     }
 
-    private final class CreateGroupSubscriber extends DefaultSubscriber<Group> {
+    private final class CreateGroupSubscriber extends DefaultSubscriber<Membership> {
         @Override
         public void onCompleted() {
         }
@@ -101,7 +109,7 @@ public class GroupPresenter implements Presenter {
         }
 
         @Override
-        public void onNext(Group group) {
+        public void onNext(Membership membership) {
             groupView.groupCreatedSuccessfully();
             groupView.setGroupId(group.getId());
             groupView.setGroupLink(group.getGroupLink());
@@ -141,6 +149,23 @@ public class GroupPresenter implements Presenter {
         public void onNext(Void aVoid)
         {
             groupView.memberAddedSuccessfully();
+        }
+    }
+
+    private final class ModifyPrivateGroupSubscriber extends DefaultSubscriber<Membership> {
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+
+        }
+
+        @Override
+        public void onNext(Membership membership) {
+            groupView.setGroupLink(membership.getLink());
         }
     }
 

@@ -38,8 +38,10 @@ import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.GroupRealmDataMapper;
+import com.tribe.app.data.realm.mapper.MembershipRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.user.contact.RxContacts;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -91,6 +93,7 @@ public class CloudUserDataStore implements UserDataStore {
     private Preference<String> lastUserRequest;
     private SimpleDateFormat utcSimpleDate = null;
     private GroupRealmDataMapper groupRealmDataMapper;
+    private MembershipRealmDataMapper membershipRealmDataMapper;
     private UserRealmDataMapper userRealmDataMapper;
 
     /**
@@ -108,7 +111,8 @@ public class CloudUserDataStore implements UserDataStore {
                               AccessToken accessToken, Installation installation,
                               ReactiveLocationProvider reactiveLocationProvider, Context context,
                               Preference<String> lastMessageRequest, Preference<String> lastUserRequest, SimpleDateFormat utcSimpleDate,
-                            GroupRealmDataMapper groupRealmDataMapper,
+                              GroupRealmDataMapper groupRealmDataMapper,
+                              MembershipRealmDataMapper membershipRealmDataMapper,
                               UserRealmDataMapper userRealmDataMapper) {
         this.userCache = userCache;
         this.tribeCache = tribeCache;
@@ -127,6 +131,7 @@ public class CloudUserDataStore implements UserDataStore {
         this.lastUserRequest = lastUserRequest;
         this.utcSimpleDate = utcSimpleDate;
         this.groupRealmDataMapper = groupRealmDataMapper;
+        this.membershipRealmDataMapper = membershipRealmDataMapper;
         this.userRealmDataMapper = userRealmDataMapper;
     }
 
@@ -1008,6 +1013,14 @@ public class CloudUserDataStore implements UserDataStore {
         String request = context.getString(R.string.leave_group, membershipId);
         return this.tribeApi.leaveGroup(request)
                 .doOnNext(aVoid -> userCache.removeGroupFromMembership(membershipId));
+    }
+
+    @Override
+    public Observable<MembershipRealm> modifyPrivateGroupLink(String membershipId, boolean create) {
+        String request;
+        if (create) request = context.getString(R.string.generate_private_link, membershipId, R.string.membershipfragment_info);
+        else request = context.getString(R.string.remove_private_link, membershipId, R.string.membershipfragment_info);
+        return this.tribeApi.modifyPrivateGroupLink(request);
     }
 
     public String listToJson(List<String> list) {

@@ -9,10 +9,12 @@ import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.User;
 
 import java.util.List;
@@ -146,6 +148,8 @@ public interface UserDataStore {
     Observable<Void> removeGroup(String groupId);
 
     Observable<Void> leaveGroup(String membershipId);
+
+    Observable<MembershipRealm> modifyPrivateGroupLink(String membershipId, boolean create);
 
     Observable<Void> bootstrapSupport();
 

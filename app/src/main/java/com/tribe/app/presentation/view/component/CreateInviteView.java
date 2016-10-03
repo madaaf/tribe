@@ -100,7 +100,7 @@ public class CreateInviteView extends FrameLayout {
     public void setInvite(Boolean privateGroup) {
         if (privateGroup) viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_enabled));
         else viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_public));
-        if (privateGroup)textCreateInvite.setText(getContext().getString(R.string.group_button_share));
+        if (privateGroup) textCreateInvite.setText(getContext().getString(R.string.group_button_share));
         textCreateInviteDesc.setText(getContext().getString(R.string.group_share_description));
     }
 
@@ -181,7 +181,8 @@ public class CreateInviteView extends FrameLayout {
     }
 
     public void setInviteLink(String inviteLink) {
-        textCreateInvite.setText(inviteLink);
+        if (inviteLink == null) textCreateInvite.setText(getContext().getString(R.string.group_button_share_generate));
+        else textCreateInvite.setText(inviteLink);
     }
 
     public Observable<Void> createPressed() {

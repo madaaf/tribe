@@ -320,6 +320,11 @@ public class DiskUserDataRepository implements UserRepository {
     }
 
     @Override
+    public Observable<Membership> modifyPrivateGroupLink(String membershipId, boolean create) {
+        return null;
+    }
+
+    @Override
     public Observable<Void> bootstrapSupport() {
         return null;
     }

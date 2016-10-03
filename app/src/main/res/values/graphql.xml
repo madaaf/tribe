@@ -521,6 +521,26 @@
         %2$s
         %3$s
     </string>
+    
+    <string name="generate.private.link" translatable="false">
+        mutation {
+            generatePrivateLink(membershipId: \"%1$s\") {
+                ...MembershipInfo
+            }
+        }
+
+        %2$s
+    </string>
+
+    <string name="remove.private.link" translatable="false">
+        mutation {
+            removePrivateLink(membershipId: \"%1$s\") {
+                ...MembershipInfo
+            }
+        }
+
+        %2$s
+    </string>
 
     <string name="user.mutate.score" translatable="false">
         mutation {

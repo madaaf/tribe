@@ -139,6 +139,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     // Group Info
     private String groupId = null;
+    private String membershipId = null;
     private String groupName = null;
     private String groupLink = null;
     private List<String> memberIds = new ArrayList<>();
@@ -342,7 +343,10 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             setGroupSuggestionsViewVisible(false);
         }));
         subscriptions.add((createInviteView.invitePressed()).subscribe(aVoid -> {
-            if (privateGroup) showShareDialogFragment();
+            if (privateGroup && groupLink != null) showShareDialogFragment();
+            else if (privateGroup) {
+                groupPresenter.modifyPrivateGroupLink(membershipId, true);
+            }
             else navigator.shareGenericText(getString(R.string.share_group_public_link, groupName, groupLink), getContext());
         }));
         subscriptions.add(searchFriendsView.editTextSearchTextChanged().subscribe(this::filter));
