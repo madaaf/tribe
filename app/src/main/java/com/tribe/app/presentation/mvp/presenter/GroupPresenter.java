@@ -104,6 +104,7 @@ public class GroupPresenter implements Presenter {
         public void onNext(Group group) {
             groupView.groupCreatedSuccessfully();
             groupView.setGroupId(group.getId());
+            groupView.setGroupLink(group.getGroupLink());
         }
     }
 

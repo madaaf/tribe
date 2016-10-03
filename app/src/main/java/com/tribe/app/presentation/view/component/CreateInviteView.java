@@ -76,7 +76,6 @@ public class CreateInviteView extends FrameLayout {
         unbinder = ButterKnife.bind(this);
 
         subscriptions.add(RxView.clicks(viewCreateGroupBg1).subscribe(aVoid -> {
-//            showShareDialogFragment();
             invitePressed.onNext(null);
         }));
 
@@ -101,7 +100,7 @@ public class CreateInviteView extends FrameLayout {
     public void setInvite(Boolean privateGroup) {
         if (privateGroup) viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_enabled));
         else viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_public));
-        textCreateInvite.setText(getContext().getString(R.string.group_button_share));
+        if (privateGroup)textCreateInvite.setText(getContext().getString(R.string.group_button_share));
         textCreateInviteDesc.setText(getContext().getString(R.string.group_share_description));
     }
 
@@ -179,6 +178,10 @@ public class CreateInviteView extends FrameLayout {
 
     public void scaleInInviteImage(int animDuration) {
         AnimationUtils.scaleIn(imageInvite, animDuration);
+    }
+
+    public void setInviteLink(String inviteLink) {
+        textCreateInvite.setText(inviteLink);
     }
 
     public Observable<Void> createPressed() {

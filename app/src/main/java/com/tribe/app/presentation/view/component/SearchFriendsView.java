@@ -255,7 +255,7 @@ public class SearchFriendsView extends FrameLayout {
 
     private void moveImagesAndSearchLeft(int removeLoc) {
         moveImagesLeft(removeLoc);
-        moveSearch(moveRightPixels * (currColumn));
+        moveSearch(moveRightPixels * (currColumn-1));
     }
 
 

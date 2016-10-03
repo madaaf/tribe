@@ -140,6 +140,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     // Group Info
     private String groupId = null;
     private String groupName = null;
+    private String groupLink = null;
     private List<String> memberIds = new ArrayList<>();
     private String groupPictureUri = null;
     private boolean privateGroup = true;
@@ -229,6 +230,13 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         this.groupId = groupId;
     }
 
+    @Override
+    public void setGroupLink(String groupLink) {
+        this.groupLink = groupLink;
+        createInviteView.setInviteLink(groupLink);
+    }
+
+
     /**
      * Setup UI
      * Includes subscription setup
@@ -274,9 +282,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             createInviteView.loadingAnimation(AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
         }));
 
-        subscriptions.add((createInviteView.invitePressed()).subscribe(aVoid -> {
-            showShareDialogFragment();
-        }));
         setupSearchView();
     }
 
@@ -336,15 +341,21 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             groupInfoView.bringGroupNameDown(animDuration);
             setGroupSuggestionsViewVisible(false);
         }));
+        subscriptions.add((createInviteView.invitePressed()).subscribe(aVoid -> {
+            if (privateGroup) showShareDialogFragment();
+            else navigator.shareGenericText(getString(R.string.share_group_public_link, groupName, groupLink), getContext());
+        }));
         subscriptions.add(searchFriendsView.editTextSearchTextChanged().subscribe(this::filter));
     }
 
     @Override
     public void setupGroup(Group group) {
         groupName = group.getName();
-        groupInfoView.setGroupName(groupName);
-        if (group.getPicture() != null && !group.getPicture().isEmpty()) groupInfoView.setGroupPictureFromUrl(group.getPicture());
         privateGroup = group.isPrivateGroup();
+        groupLink = group.getGroupLink();
+        groupInfoView.setGroupName(groupName);
+        if (!privateGroup) createInviteView.setInviteLink(groupLink);
+        if (group.getPicture() != null && !group.getPicture().isEmpty()) groupInfoView.setGroupPictureFromUrl(group.getPicture());
         members = group.getMembers();
         // Setup Group Member View info
         List<User> admins = group.getAdmins();

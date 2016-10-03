@@ -26,6 +26,7 @@
     <dimen name="vertical_margin_xsmall">5dp</dimen>
     <dimen name="horizontal_margin_large">25dp</dimen>
     <dimen name="horizontal_margin_xlarge">30dp</dimen>
+    <dimen name="horizontal_margin_xxlarge">50dp</dimen>
     <dimen name="vertical_margin_large">25dp</dimen>
     <dimen name="vertical_margin_xlarge">30dp</dimen>
     <dimen name="vertical_margin_proximity">5dp</dimen>
