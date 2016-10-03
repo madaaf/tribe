@@ -21,6 +21,7 @@ import com.tribe.app.data.network.job.SendTribeJob;
 import com.tribe.app.data.network.job.SynchroContactsJob;
 import com.tribe.app.data.network.job.UpdateChatHistoryJob;
 import com.tribe.app.data.network.job.UpdateChatMessagesJob;
+import com.tribe.app.data.network.job.UpdateFriendshipJob;
 import com.tribe.app.data.network.job.UpdateMessagesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateMessagesJob;
 import com.tribe.app.data.network.job.UpdateMessagesVideoErrorStatusJob;
@@ -29,6 +30,7 @@ import com.tribe.app.data.network.job.UpdateTribeDownloadedJob;
 import com.tribe.app.data.network.job.UpdateTribeListNotSeenStatusJob;
 import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
+import com.tribe.app.data.network.job.UpdateUserListScoreJob;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.repository.chat.CloudChatDataRepository;
 import com.tribe.app.data.repository.chat.DiskChatDataRepository;
@@ -43,6 +45,7 @@ import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
 import com.tribe.app.presentation.internal.di.modules.NetModule;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;
 import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
+import com.tribe.app.presentation.internal.di.scope.Filter;
 import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
 import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
@@ -67,6 +70,7 @@ import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapte
 import com.tribe.app.presentation.view.adapter.delegate.text.PhotoMessageAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.text.TutorialMessageAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.text.VideoMessageAdapterDelegate;
+import com.tribe.app.presentation.view.camera.view.GlPreview;
 import com.tribe.app.presentation.view.camera.view.HistogramVisualizerView;
 import com.tribe.app.presentation.view.component.PullToSearchContainer;
 import com.tribe.app.presentation.view.component.PullToSearchView;
@@ -133,6 +137,7 @@ public interface ApplicationComponent {
     void inject(PullToSearchView pullToSearchView);
     void inject(SettingItemView settingItemView);
     void inject(ButtonCardView buttonCardView);
+    void inject(GlPreview glPreview);
 
     // JOBS
     void inject(BaseJob baseJob);
@@ -155,6 +160,8 @@ public interface ApplicationComponent {
     void inject(UpdateMessagesVideoErrorStatusJob messagesVideoErrorStatusJob);
     void inject(UpdateScoreJob updateScoreJob);
     void inject(MarkTribeAsSavedJob markTribeAsSavedJob);
+    void inject(UpdateFriendshipJob updateFriendshipJob);
+    void inject(UpdateUserListScoreJob updateUserListScoreJob);
 
     //Exposed to sub-graphs.
     Context context();
@@ -226,6 +233,9 @@ public interface ApplicationComponent {
 
     @Theme
     Preference<Integer> theme();
+
+    @Filter
+    Preference<Integer> filter();
 
     @InvisibleMode
     Preference<Boolean> invisibleMode();

@@ -2,13 +2,14 @@ package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
+import com.tribe.app.data.network.job.UpdateFriendshipJob;
 import com.tribe.app.data.network.job.UpdateMessagesJob;
 import com.tribe.app.data.network.job.UpdateTribeDownloadedJob;
 import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
+import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Message;
-import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
@@ -157,16 +158,14 @@ public class HomeGridPresenter extends SendTribePresenter {
         this.homeGridView.updatePendingTribes(pendingTribes);
     }
 
-    public void markTribeListAsRead(Recipient recipient) {
-        diskMarkTribeListAsRead.setTribeList(recipient.getReceivedTribes());
-        diskMarkTribeListAsRead.execute(new DefaultSubscriber<>());
-        jobManager.addJobInBackground(new MarkTribeListAsReadJob(recipient, recipient.getReceivedTribes()));
+    public void markTribeListAsRead(Recipient recipient, List<TribeMessage> tribeMessageList) {
+        jobManager.addJobInBackground(new MarkTribeListAsReadJob(recipient, tribeMessageList));
     }
 
-    public void updateFriendship(Friendship friendship, MoreType moreType) {
-        diskUpdateFriendship.prepare(friendship.getId(), moreType);
+    public void updateFriendship(Friendship friendship, @FriendshipRealm.FriendshipStatus String status) {
+        diskUpdateFriendship.prepare(friendship.getId(), status);
         diskUpdateFriendship.execute(new UpdateFriendshipSubscriber());
-        //jobManager.addJobInBackground(new MarkTribeListAsReadJob(recipient, recipient.getReceivedTribes()));
+        jobManager.addJobInBackground(new UpdateFriendshipJob(friendship.getId(), status));
     }
 
     public void leaveGroup(String membershipId) {

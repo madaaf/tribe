@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.view.adapter.delegate.text;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -23,9 +25,11 @@ import butterknife.ButterKnife;
 public class MeMessageAdapterDelegate extends RxAdapterDelegate<List<ChatMessage>> {
 
     protected LayoutInflater layoutInflater;
+    protected Context context;
 
     public MeMessageAdapterDelegate(LayoutInflater inflater, Context context) {
         this.layoutInflater = inflater;
+        this.context = context;
     }
 
     @Override
@@ -45,6 +49,12 @@ public class MeMessageAdapterDelegate extends RxAdapterDelegate<List<ChatMessage
         ChatMessage chatMessage = items.get(position);
 
         vh.txtMessage.setText(chatMessage.getContent());
+        vh.itemView.setOnLongClickListener(v -> {
+            ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("simple text", chatMessage.getContent());
+            clipboard.setPrimaryClip(clip);
+            return false;
+        });
     }
 
     static class MeTextViewHolder extends RecyclerView.ViewHolder {

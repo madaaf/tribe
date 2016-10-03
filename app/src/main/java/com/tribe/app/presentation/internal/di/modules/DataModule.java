@@ -7,6 +7,7 @@ import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;
 import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
+import com.tribe.app.presentation.internal.di.scope.Filter;
 import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
 import com.tribe.app.presentation.internal.di.scope.LastNotifyRequest;
@@ -128,5 +129,12 @@ public class DataModule {
     @LastNotifyRequest
     Preference<String> provideLastFBNotify(RxSharedPreferences prefs) {
         return prefs.getString(PreferencesConstants.LAST_NOTIFY_REQUEST, "");
+    }
+
+    @Provides
+    @Singleton
+    @Filter
+    Preference<Integer> provideFilter(RxSharedPreferences prefs) {
+        return prefs.getInteger(PreferencesConstants.FILTER, 0);
     }
 }

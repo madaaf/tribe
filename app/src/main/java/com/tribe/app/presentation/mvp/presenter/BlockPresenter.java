@@ -1,7 +1,9 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import com.birbit.android.jobqueue.JobManager;
+import com.tribe.app.data.network.job.UpdateFriendshipJob;
+import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.DiskUpdateFriendship;
 import com.tribe.app.domain.interactor.user.GetBlockedFriendshipList;
@@ -21,12 +23,15 @@ public class BlockPresenter implements Presenter {
 
     private final DiskUpdateFriendship diskUpdateFriendship;
     private final GetBlockedFriendshipList getBlockedFriendshipList;
+    private JobManager jobManager;
 
     private GetBlockedFriendshipListSubscriber getBlockedFriendshipListSubscriber;
 
     @Inject
-    BlockPresenter(DiskUpdateFriendship diskUpdateFriendship,
+    BlockPresenter(JobManager jobManager,
+                   DiskUpdateFriendship diskUpdateFriendship,
                    GetBlockedFriendshipList getBlockedFriendshipList) {
+        this.jobManager = jobManager;
         this.diskUpdateFriendship = diskUpdateFriendship;
         this.getBlockedFriendshipList = getBlockedFriendshipList;
     }
@@ -75,8 +80,9 @@ public class BlockPresenter implements Presenter {
     }
 
     public void updateFriendship(String friendshipId) {
-        diskUpdateFriendship.prepare(friendshipId, new MoreType("", MoreType.UNHIDE));
+        diskUpdateFriendship.prepare(friendshipId, FriendshipRealm.DEFAULT);
         diskUpdateFriendship.execute(new UpdateFriendshipSubscriber());
+        jobManager.addJobInBackground(new UpdateFriendshipJob(friendshipId, FriendshipRealm.DEFAULT));
     }
 
     private class GetBlockedFriendshipListSubscriber extends DefaultSubscriber<List<Friendship>> {

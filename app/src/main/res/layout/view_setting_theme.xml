@@ -39,7 +39,7 @@
             android:id="@+id/imageTheme2"
             android:layout_width="@dimen/setting_theme_size"
             android:layout_height="@dimen/setting_theme_size"
-            android:src="@drawable/picto_theme_placeholder"
+            android:src="@drawable/picto_theme_blue"
             android:clickable="true"
             />
 
@@ -52,7 +52,7 @@
             android:id="@+id/imageTheme3"
             android:layout_width="@dimen/setting_theme_size"
             android:layout_height="@dimen/setting_theme_size"
-            android:src="@drawable/picto_theme_placeholder"
+            android:src="@drawable/picto_theme_red"
             android:clickable="true"
             />
 
@@ -62,9 +62,11 @@
             android:layout_weight="1" />
 
         <ImageView
+            android:id="@+id/imageTheme4"
             android:layout_width="@dimen/setting_theme_size"
             android:layout_height="@dimen/setting_theme_size"
-            android:src="@drawable/picto_theme_placeholder"
+            android:src="@drawable/picto_theme_violet"
+            android:clickable="true"
             />
 
         <Space
@@ -73,10 +75,11 @@
             android:layout_weight="1" />
 
         <ImageView
+            android:id="@+id/imageTheme5"
             android:layout_width="@dimen/setting_theme_size"
             android:layout_height="@dimen/setting_theme_size"
-            android:scaleType="centerCrop"
-            android:src="@drawable/picto_theme_placeholder"
+            android:src="@drawable/picto_theme_orange"
+            android:clickable="true"
             />
 
         <Space
@@ -85,9 +88,11 @@
             android:layout_weight="1" />
 
         <ImageView
+            android:id="@+id/imageTheme6"
             android:layout_width="@dimen/setting_theme_size"
             android:layout_height="@dimen/setting_theme_size"
-            android:src="@drawable/picto_theme_placeholder"
+            android:src="@drawable/picto_theme_black"
+            android:clickable="true"
             />
     </LinearLayout>
     

@@ -104,13 +104,49 @@
     <color name="classic.11">#866DEA</color>
     <color name="classic.12">#FFBBE2</color>
 
-    <!-- Heighties -->
-    <color name="heighties.1">#1BA9D5</color>
-    <color name="heighties.2">#5515A9</color>
-    <color name="heighties.3">#EA1D4E</color>
-    <color name="heighties.4">#FD9526</color>
+    <!-- Blue -->
+    <color name="blue.1">#22BFFD</color>
+    <color name="blue.2">#3DC7FF</color>
+    <color name="blue.3">#4FCDFF</color>
+    <color name="blue.4">#67D4FF</color>
+    <color name="blue.5">#73D7FE</color>
+    <color name="blue.6">#83DCFF</color>
+    <color name="blue.7">#8DDFFF</color>
 
+    <!-- Red -->
+    <color name="red.1">#FF9097</color>
+    <color name="red.2">#FFA3A9</color>
+    <color name="red.3">#FEAEB3</color>
+    <color name="red.4">#FFBABE</color>
+    <color name="red.5">#FFC5C8</color>
+    <color name="red.6">#FFD0D3</color>
+    <color name="red.7">#FFD7DA</color>
 
+    <!-- Violet -->
+    <color name="violet.1">#AD77FF</color>
+    <color name="violet.2">#B483FF</color>
+    <color name="violet.3">#B98BFF</color>
+    <color name="violet.4">#BC90FF</color>
+    <color name="violet.5">#C198FF</color>
+    <color name="violet.6">#C9A5FF</color>
+    <color name="violet.7">#CFAFFF</color>
 
+    <!-- Orange -->
+    <color name="orange.1">#FCB969</color>
+    <color name="orange.2">#FEBD70</color>
+    <color name="orange.3">#FFC178</color>
+    <color name="orange.4">#FFC785</color>
+    <color name="orange.5">#FFCC91</color>
+    <color name="orange.6">#FFD09A</color>
+    <color name="orange.7">#FFD4A3</color>
+
+    <!-- Blacks -->
+    <color name="black.1">#525252</color>
+    <color name="black.2">#5C5C5C</color>
+    <color name="black.3">#616161</color>
+    <color name="black.4">#727272</color>
+    <color name="black.5">#7B7B7B</color>
+    <color name="black.6">#8B8B8B</color>
+    <color name="black.7">#989898</color>
     
 </resources>

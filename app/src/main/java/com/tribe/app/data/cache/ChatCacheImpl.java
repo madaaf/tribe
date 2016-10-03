@@ -681,21 +681,28 @@ public class ChatCacheImpl implements ChatCache {
     @Override
     public RealmList<MessageRecipientRealm> createMessageRecipientRealm(List<MessageRecipientRealm> messageRecipientRealmList) {
         Realm realmObs = Realm.getDefaultInstance();
-        realmObs.beginTransaction();
-
-        for (MessageRecipientRealm messageRecipientRealm : messageRecipientRealmList) {
-            MessageRecipientRealm realmRecipient = realmObs.where(MessageRecipientRealm.class).equalTo("id", messageRecipientRealm.getId()).findFirst();
-
-            if (realmRecipient != null)
-                realmObs.where(MessageRecipientRealm.class).equalTo("id", messageRecipientRealm.getId()).findFirst().deleteFromRealm();
-        }
-
-        List<MessageRecipientRealm> messageRecipientRealmManaged = realmObs.copyFromRealm(realmObs.copyToRealmOrUpdate(messageRecipientRealmList));
-        realmObs.commitTransaction();
-        realmObs.close();
-
         RealmList<MessageRecipientRealm> results = new RealmList<>();
-        results.addAll(messageRecipientRealmManaged);
+
+        try {
+            realmObs.beginTransaction();
+
+            for (MessageRecipientRealm messageRecipientRealm : messageRecipientRealmList) {
+                MessageRecipientRealm realmRecipient = realmObs.where(MessageRecipientRealm.class).equalTo("id", messageRecipientRealm.getId()).findFirst();
+
+                if (realmRecipient != null)
+                    realmObs.where(MessageRecipientRealm.class).equalTo("id", messageRecipientRealm.getId()).findFirst().deleteFromRealm();
+            }
+
+            List<MessageRecipientRealm> messageRecipientRealmManaged = realmObs.copyFromRealm(realmObs.copyToRealmOrUpdate(messageRecipientRealmList));
+            realmObs.commitTransaction();
+
+            results.addAll(messageRecipientRealmManaged);
+        } catch(IllegalStateException ex) {
+            ex.printStackTrace();
+            if (realmObs.isInTransaction()) realmObs.cancelTransaction();
+        } finally {
+            realmObs.close();
+        }
 
         return results;
     }

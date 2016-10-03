@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="112dp"
+   >
+    
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_filter_title"
+        style="@style/Title.1.Black"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="15dp"
+        />
+
+    <LinearLayout
+        android:id="@+id/layoutFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="116dp"
+        android:paddingBottom="@dimen/setting_theme_vertical_padding"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageFilter1"
+            android:layout_width="@dimen/setting_theme_size"
+            android:layout_height="@dimen/setting_theme_size"
+            android:src="@drawable/picto_no_filter"
+            android:clickable="true"
+            />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/imageFilter2"
+            android:layout_width="@dimen/setting_theme_size"
+            android:layout_height="@dimen/setting_theme_size"
+            android:src="@drawable/picto_filter_tanned"
+            android:clickable="true"
+            />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/imageFilter3"
+            android:layout_width="@dimen/setting_theme_size"
+            android:layout_height="@dimen/setting_theme_size"
+            android:src="@drawable/picto_filter_bw"
+            android:clickable="true"
+            />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/imageFilter4"
+            android:layout_width="@dimen/setting_theme_size"
+            android:layout_height="@dimen/setting_theme_size"
+            android:src="@drawable/picto_filter_pixelated"
+            android:clickable="true"
+            />
+    </LinearLayout>
+
+    <com.tribe.app.presentation.view.widget.CameraWrapper
+        android:id="@+id/cameraWrapper"
+        android:layout_width="@dimen/camera_width_settings"
+        android:layout_height="@dimen/camera_height_settings"
+        android:layout_gravity="top|right"
+        android:background="@android:color/black"
+        app:cameraType="setting"
+        app:cameraWidth="@dimen/camera_width_settings"
+        app:cameraHeight="@dimen/camera_height_settings"
+        />
+    
+    <ImageView
+        android:id="@+id/imgFilterUnderline"
+        android:layout_width="@dimen/setting_theme_size"
+        android:layout_height="2.5dp"
+        android:layout_marginStart="15dp"
+        android:layout_gravity="bottom"
+        android:src="@drawable/picto_black_underline"
+        android:scaleType="centerCrop"/>
+
+</FrameLayout>

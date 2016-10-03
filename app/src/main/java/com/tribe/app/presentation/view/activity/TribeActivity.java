@@ -32,7 +32,9 @@ import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -48,6 +50,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
     public static final String[] PERMISSIONS_LOCATION = new String[]{ Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION };
     public static final String RECIPIENT = "RECIPIENT";
     public static final String POSITION = "POSITION";
+    public static final String TRIBES_SEEN = "TRIBES_SEEN";
 
     public static Intent getCallingIntent(Context context, int position, Recipient recipient) {
         Intent intent = new Intent(context, TribeActivity.class);
@@ -163,13 +166,21 @@ public class TribeActivity extends BaseActivity implements TribeView {
         subscriptions.add(
                 viewTribePager
                 .onDismissHorizontal()
-                .doOnNext(aVoid -> tribePresenter.markTribeListAsRead(recipient, viewTribePager.getTribeListSeens()))
+                .doOnNext(aVoid -> {
+                    tribePresenter.markTribeListAsRead(recipient, viewTribePager.getTribeListSeens());
+//                    Intent intentResult = new Intent();
+//                    intentResult.putExtra(TRIBES_SEEN, (Serializable) viewTribePager.getTribeListSeens());
+//                    intentResult.putExtra(RECIPIENT, recipient);
+//                    setResult(Activity.RESULT_OK, intentResult);
+                })
                 .delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
 
         subscriptions.add(
                 viewTribePager
                 .onDismissVertical()
-                .doOnNext(aVoid -> tribePresenter.markTribeListAsRead(recipient, viewTribePager.getTribeListSeens()))
+                .doOnNext(aVoid -> {
+                    tribePresenter.markTribeListAsRead(recipient, viewTribePager.getTribeListSeens());
+                })
                 .delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
 
         subscriptions.add(viewTribePager.onRecordStart()
@@ -245,6 +256,13 @@ public class TribeActivity extends BaseActivity implements TribeView {
         tribePresenter.onStart();
         tribePresenter.attachView(this);
         tribePresenter.loadTribes(recipient.getSubId());
+
+        Set<String> userIds = new HashSet<>();
+        for (TribeMessage message : recipient.getReceivedTribes()) {
+            if (message.getFrom() != null) userIds.add(message.getFrom().getId());
+        }
+
+        tribePresenter.updateUserListScore(userIds);
     }
 
     @Override
@@ -286,7 +304,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
     @Override
     public void finish() {
         super.finish();
-        overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
+        overridePendingTransition(R.anim.slide_in_down, 0);
     }
 
     @Override

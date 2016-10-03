@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.R;
+import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Membership;
@@ -287,6 +288,10 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
         shouldReloadGrid = true;
     }
 
+    public void markTribeListAsSeen(Recipient recipient, List<TribeMessage> tribeMessageList) {
+        this.homeGridPresenter.markTribeListAsRead(recipient, tribeMessageList);
+    }
+
     private void init() {
         this.getComponent(UserComponent.class).inject(this);
         this.currentUser = getCurrentUser();
@@ -489,9 +494,9 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
                 .subscribe(labelType -> {
                     MoreType moreType = (MoreType) labelType;
                     if (moreType.getMoreType().equals(MoreType.CLEAR_MESSAGES)) {
-                        homeGridPresenter.markTribeListAsRead(recipient);
+                        homeGridPresenter.markTribeListAsRead(recipient, recipient.getReceivedTribes());
                     } else if (moreType.getMoreType().equals(MoreType.HIDE) || moreType.getMoreType().equals(MoreType.BLOCK_HIDE)) {
-                        homeGridPresenter.updateFriendship((Friendship) recipient, moreType);
+                        homeGridPresenter.updateFriendship((Friendship) recipient, moreType.getMoreType().equals(MoreType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED : FriendshipRealm.HIDDEN);
                     } else if (moreType.getMoreType().equals(MoreType.GROUP_INFO)) {
                         navigator.navigateToGroupInfo(getActivity(), recipient.getSubId(), recipient.getDisplayName(), recipient.getProfilePicture());
                     } else if (moreType.getMoreType().equals(MoreType.GROUP_LEAVE)) {

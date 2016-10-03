@@ -4,6 +4,7 @@ import android.util.Pair;
 
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
 import com.tribe.app.data.realm.mapper.GroupRealmDataMapper;
@@ -17,7 +18,6 @@ import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Message;
-import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
@@ -25,6 +25,7 @@ import com.tribe.app.domain.interactor.user.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -254,12 +255,19 @@ public class CloudUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<Friendship> updateFriendship(String friendshipId, MoreType moreType) {
-        return null;
+    public Observable<Friendship> updateFriendship(String friendshipId, @FriendshipRealm.FriendshipStatus String status) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.updateFriendship(friendshipId, status).map(friendshipRealm -> this.userRealmDataMapper.getFriendshipRealmDataMapper().transform(friendshipRealm));
     }
 
     @Override
     public Observable<List<Friendship>> getBlockedFriendshipList() {
         return null;
+    }
+
+    @Override
+    public Observable<List<User>> updateUserListScore(Set<String> userIds) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.updateUserListScore(userIds).map(userRealmList -> this.userRealmDataMapper.transform(userRealmList));
     }
 }

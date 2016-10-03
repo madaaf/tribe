@@ -1,7 +1,7 @@
 package com.tribe.app.domain.interactor.user;
 
+import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.repository.user.DiskUserDataRepository;
-import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
 
@@ -15,7 +15,7 @@ import rx.Observable;
 public class DiskUpdateFriendship extends UseCaseDisk {
 
     private String friendshipId;
-    private MoreType moreType;
+    private @FriendshipRealm.FriendshipStatus String status;
     private UserRepository userRepository;
 
     @Inject
@@ -24,13 +24,13 @@ public class DiskUpdateFriendship extends UseCaseDisk {
         this.userRepository = userRepository;
     }
 
-    public void prepare(String friendshipId, MoreType moreType) {
+    public void prepare(String friendshipId, @FriendshipRealm.FriendshipStatus String status) {
         this.friendshipId = friendshipId;
-        this.moreType = moreType;
+        this.status = status;
     }
 
     @Override
     protected Observable buildUseCaseObservable() {
-        return this.userRepository.updateFriendship(friendshipId, moreType);
+        return this.userRepository.updateFriendship(friendshipId, status);
     }
 }

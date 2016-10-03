@@ -61,6 +61,12 @@
         }
     </string>
 
+    <string name="userfragment.score" translatable="false">
+        fragment UserInfos on User {
+            score
+        }
+    </string>
+
     <!-- installs {
         gcm_id
         user {
@@ -532,4 +538,13 @@
         }
     </string>
 
+    <string name="user.update.friendship" translatable="false">
+        mutation {
+            updateFriendship(friendshipId : \"%1$s\", friendship : {
+                status : %2$s
+            }) {
+                id
+            }
+        }
+    </string>
 </resources>

@@ -7,6 +7,7 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.ChatRealmDataMapper;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
 import com.tribe.app.data.realm.mapper.SearchResultRealmDataMapper;
@@ -24,7 +25,6 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
-import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
@@ -37,6 +37,7 @@ import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -324,9 +325,9 @@ public class DiskUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<Friendship> updateFriendship(String friendshipId, MoreType moreType) {
+    public Observable<Friendship> updateFriendship(String friendshipId, @FriendshipRealm.FriendshipStatus String status) {
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-        return userDataStore.updateFriendship(friendshipId, moreType)
+        return userDataStore.updateFriendship(friendshipId, status)
                 .map(friendshipRealm -> userRealmDataMapper.getFriendshipRealmDataMapper().transform(friendshipRealm));
     }
 
@@ -350,5 +351,10 @@ public class DiskUserDataRepository implements UserRepository {
 
                     return userRealmDataMapper.transform(userRealm).getFriendships();
                 });
+    }
+
+    @Override
+    public Observable<List<User>> updateUserListScore(Set<String> userIds) {
+        return null;
     }
 }

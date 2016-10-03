@@ -39,6 +39,8 @@ public class LinkMessageAdapterDelegate extends BaseMessageAdapterDelegate {
 
         RegularViewHolder vh = (RegularViewHolder) holder;
         vh.txtMessage.setText(chatMessage.getContent());
+
+        setupClipboard(vh.itemView, chatMessage.getContent());
     }
 
     @Override
