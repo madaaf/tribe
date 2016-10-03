@@ -99,8 +99,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     // Bind view
     @BindView(R.id.imageDone)
     ImageView imageDone;
-//    @BindView(R.id.editTextInviteSearch)
-//    EditTextFont editTextInviteSearch;
+    @BindView(R.id.shadowMask)
+    View shadowMask;
     @BindView(R.id.circularProgressViewDone)
     CircularProgressView circularProgressView;
     @BindView(R.id.layoutInvite)
@@ -155,6 +155,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     private int startTranslationDoneIcon = 200;
     private int animDuration = AnimationUtils.ANIMATION_DURATION_SHORT;
     private int smallMargin = 5;
+    private int orignalGroupSuggestionsMargin;
     private boolean friendAdapterClickable = true;
 
     // Observables
@@ -236,6 +237,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
      */
 
     private void initUi() {
+        shadowMask.setVisibility(View.VISIBLE);
         currentEditTranslation = 25;
         groupInfoView.setUpInitialUi();
         imageDone.setTranslationY(screenUtils.dpToPx(startTranslationDoneIcon));
@@ -331,6 +333,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         subscriptions.add(groupInfoView.isEditingGroupName().subscribe(this::setGroupSuggestionsViewVisible));
         subscriptions.add(groupSuggestionsView.groupSuggestionClicked().subscribe(suggestionName -> {
             groupInfoView.setGroupName(suggestionName);
+            groupInfoView.setCursorEndGroupName();
             groupInfoView.bringGroupNameDown(animDuration);
             setGroupSuggestionsViewVisible(false);
         }));
@@ -448,6 +451,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
      * Animations performed after step 1
      */
     private void animSet1() {
+        shadowMask.setVisibility(View.INVISIBLE);
         groupInfoView.collapsePrivatePublic(privateGroup, animDuration, 1);
         groupInfoView.collapse(animDuration, getActivity());
         createInviteView.disable();
@@ -581,9 +585,18 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     private void setGroupSuggestionsViewVisible(boolean visible) {
         if (visible) {
             groupSuggestionsView.setVisibility(View.VISIBLE);
-            AnimationUtils.fadeIn(groupSuggestionsView, AnimationUtils.ANIMATION_DURATION_SHORT);
+            orignalGroupSuggestionsMargin = (int) groupSuggestionsView.getY();
+            groupSuggestionsView.animate()
+                    .y(getResources().getDimension(R.dimen.group_info_bar_height))
+                    .setDuration(animDuration)
+                    .setStartDelay(AnimationUtils.NO_START_DELAY)
+                    .start();
         } else {
-            AnimationUtils.fadeOut(groupSuggestionsView, AnimationUtils.ANIMATION_DURATION_SHORT);
+            groupSuggestionsView.animate()
+                    .y(orignalGroupSuggestionsMargin)
+                    .setDuration(animDuration)
+                    .setStartDelay(AnimationUtils.NO_START_DELAY)
+                    .start();
             Observable.timer(animDuration, TimeUnit.MILLISECONDS)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())

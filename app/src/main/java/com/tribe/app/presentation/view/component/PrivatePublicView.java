@@ -7,6 +7,8 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -43,10 +45,6 @@ public class PrivatePublicView extends FrameLayout {
 
     public PrivatePublicView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-    }
-
-    public PrivatePublicView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
     }
 
     /**
@@ -178,8 +176,15 @@ public class PrivatePublicView extends FrameLayout {
     }
 
     private void moveTxt(TextViewFont txt, int dp, int alpha) {
-        txt.animate()
-                .setDuration(animationDuration/2)
+        if (alpha == AnimationUtils.ALPHA_FULL) txt.animate()
+                .setDuration(animationDuration)
+                .setInterpolator(new AccelerateInterpolator(2))
+                .setStartDelay(0)
+                .alpha(alpha)
+                .start();
+        else txt.animate()
+                .setDuration(animationDuration)
+                .setInterpolator(new DecelerateInterpolator(2))
                 .setStartDelay(0)
                 .alpha(alpha)
                 .start();

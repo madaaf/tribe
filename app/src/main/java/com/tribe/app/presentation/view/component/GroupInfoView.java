@@ -131,12 +131,7 @@ public class GroupInfoView extends FrameLayout {
         }));
         subscriptions.add(RxView.clicks(editTextGroupName).subscribe(aVoid -> {
             bringGroupNameToTop(animDuration);
-            Observable.timer(animDuration, TimeUnit.MILLISECONDS)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(time -> {
-                        isEditingGroupName.onNext(true);
-                    });
+            isEditingGroupName.onNext(true);
         }));
         subscriptions.add(RxView.clicks(imageGroup).subscribe(aVoid -> {
             imageGroupClicked.onNext(null);
@@ -478,6 +473,10 @@ public class GroupInfoView extends FrameLayout {
 
     public void setGroupName(String groupName) {
         editTextGroupName.setText(groupName);
+    }
+
+    public void setCursorEndGroupName() {
+        editTextGroupName.setSelection(editTextGroupName.getText().length());
     }
 
     public void setPrivacy(boolean isPrivate, int memberCount) {
