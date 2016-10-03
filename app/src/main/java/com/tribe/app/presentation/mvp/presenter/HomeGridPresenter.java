@@ -158,10 +158,8 @@ public class HomeGridPresenter extends SendTribePresenter {
         this.homeGridView.updatePendingTribes(pendingTribes);
     }
 
-    public void markTribeListAsRead(Recipient recipient) {
-        diskMarkTribeListAsRead.setTribeList(recipient.getReceivedTribes());
-        diskMarkTribeListAsRead.execute(new DefaultSubscriber<>());
-        jobManager.addJobInBackground(new MarkTribeListAsReadJob(recipient, recipient.getReceivedTribes()));
+    public void markTribeListAsRead(Recipient recipient, List<TribeMessage> tribeMessageList) {
+        jobManager.addJobInBackground(new MarkTribeListAsReadJob(recipient, tribeMessageList));
     }
 
     public void updateFriendship(Friendship friendship, @FriendshipRealm.FriendshipStatus String status) {

@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.media.AudioManager;
 import android.os.Build;
-import android.support.annotation.IntDef;
 import android.support.annotation.StringDef;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -25,6 +24,8 @@ import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;
+import com.tribe.app.presentation.internal.di.scope.Filter;
+import com.tribe.app.presentation.view.camera.shader.GlPixellateShader;
 import com.tribe.app.presentation.view.camera.shader.fx.GlLutShader;
 import com.tribe.app.presentation.view.camera.view.CameraView;
 import com.tribe.app.presentation.view.camera.view.GlPreview;
@@ -49,9 +50,6 @@ import rx.subjects.PublishSubject;
  */
 public class CameraWrapper extends FrameLayout {
 
-    @IntDef({RECORDING, SETTING})
-    public @interface CameraType {}
-
     public static final int RECORDING = 0;
     public static final int SETTING = 1;
 
@@ -69,6 +67,10 @@ public class CameraWrapper extends FrameLayout {
     private static final int DELAY = 500;
     private static final int DIFF_TOUCH = 20;
     private static final int RATIO = 3;
+
+    @Inject
+    @Filter
+    Preference<Integer> filter;
 
     @Inject ScreenUtils screenUtils;
 
@@ -511,7 +513,7 @@ public class CameraWrapper extends FrameLayout {
     private void resumeCamera() {
         if (cameraView != null) {
             preview = new GlPreview(getContext());
-            preview.setShader(new GlLutShader(getContext().getResources(), R.drawable.video_filter_blue));
+            updateFilter();
             cameraView.setPreview(preview);
 
             Observable.timer(1000, TimeUnit.MILLISECONDS)
@@ -560,5 +562,20 @@ public class CameraWrapper extends FrameLayout {
 
     public void showCamera() {
         AnimationUtils.animateTopMargin(this, marginTopInit, DURATION >> 1, new OvershootInterpolator(OVERSHOOT));
+    }
+
+    public void updateFilter() {
+        if (preview != null) {
+            if (filter.get() == 3) {
+                preview.setShader(new GlPixellateShader());
+            } else {
+                int resourceFilter = -1;
+                if (filter.get().equals(0)) resourceFilter = R.drawable.video_filter_punch;
+                else if (filter.get().equals(1)) resourceFilter = R.drawable.video_filter_blue;
+                else if (filter.get().equals(2)) resourceFilter = R.drawable.video_filter_bw;
+                else resourceFilter = R.drawable.video_filter_punch;
+                preview.setShader(new GlLutShader(getContext().getResources(), resourceFilter));
+            }
+        }
     }
 }

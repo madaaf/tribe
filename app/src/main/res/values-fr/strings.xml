@@ -147,6 +147,7 @@
 	<string name="chat_is_typing">est en train d\'écrire</string>
 	<string name="chat_are_typing">sont en train d\'écrire</string>
 	<string name="chat_and">et</string>
+	<string name="chat_copied_to_clipboard">Copié dans le presse-papier</string>
 	
 	<!-- Private Group -->
 	<string name="group_family_title">:house_with_garden: Famille</string>

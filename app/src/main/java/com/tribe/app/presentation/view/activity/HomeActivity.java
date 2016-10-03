@@ -187,6 +187,16 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         super.onDestroy();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+//        if (requestCode == TRIBES_RESULT && resultCode == Activity.RESULT_OK) {
+//            List<TribeMessage> seen = (ArrayList<TribeMessage>) data.getSerializableExtra(TribeActivity.TRIBES_SEEN);
+//            Recipient recipient = (Recipient) data.getSerializableExtra(TribeActivity.RECIPIENT);
+//            homeViewPagerAdapter.getHomeGridFragment().markTribeListAsSeen(recipient, seen);
+//        }
+    }
 
     private void initUi() {
         setContentView(R.layout.activity_home);

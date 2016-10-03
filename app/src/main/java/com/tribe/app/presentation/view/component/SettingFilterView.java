@@ -28,6 +28,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import rx.Observable;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -63,6 +64,7 @@ public class SettingFilterView extends FrameLayout {
     // OBSERVABLES
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
+    private PublishSubject<Void> onChangeFilter = PublishSubject.create();
 
     public SettingFilterView(Context context) {
         super(context);
@@ -99,19 +101,19 @@ public class SettingFilterView extends FrameLayout {
             public void onGlobalLayout() {
                 switch (filter.get()) {
                     case 0:
-                        setUpUnderline(imageFilter1);
+                        setUpUnderline(imageFilter1, false);
                         break;
 
                     case 1:
-                        setUpUnderline(imageFilter2);
+                        setUpUnderline(imageFilter2, false);
                         break;
 
                     case 2:
-                        setUpUnderline(imageFilter3);
+                        setUpUnderline(imageFilter3, false);
                         break;
 
                     case 3:
-                        setUpUnderline(imageFilter4);
+                        setUpUnderline(imageFilter4, false);
                         break;
 
                     default:
@@ -123,33 +125,41 @@ public class SettingFilterView extends FrameLayout {
         });
 
         subscriptions.add(RxView.clicks(imageFilter1).subscribe(aVoid -> {
-            setUpUnderline(imageFilter1);
+            setUpUnderline(imageFilter1, true);
             filter.set(0);
+            updateFilter();
         }));
 
         subscriptions.add(RxView.clicks(imageFilter2).subscribe(aVoid -> {
-            setUpUnderline(imageFilter2);
+            setUpUnderline(imageFilter2, true);
             filter.set(1);
+            updateFilter();
         }));
 
         subscriptions.add(RxView.clicks(imageFilter3).subscribe(aVoid -> {
-            setUpUnderline(imageFilter3);
+            setUpUnderline(imageFilter3, true);
             filter.set(2);
+            updateFilter();
         }));
 
         subscriptions.add(RxView.clicks(imageFilter4).subscribe(aVoid -> {
-            setUpUnderline(imageFilter4);
+            setUpUnderline(imageFilter4, true);
             filter.set(3);
+            updateFilter();
         }));
     }
 
-    private void setUpUnderline(ImageView imageView) {
+    private void setUpUnderline(ImageView imageView, boolean animate) {
         int location[] = new int[2];
         imageView.getLocationOnScreen(location);
 
-        imgFilterUnderline.animate()
-                .x(location[0])
-                .start();
+        if (animate) {
+            imgFilterUnderline.animate()
+                    .x(location[0])
+                    .start();
+        } else {
+            imgFilterUnderline.setX(location[0]);
+        }
     }
 
     public void onResume() {
@@ -188,6 +198,10 @@ public class SettingFilterView extends FrameLayout {
         }
 
         super.onDetachedFromWindow();
+    }
+
+    public void updateFilter() {
+        cameraWrapper.updateFilter();
     }
 
     protected ApplicationComponent getApplicationComponent() {

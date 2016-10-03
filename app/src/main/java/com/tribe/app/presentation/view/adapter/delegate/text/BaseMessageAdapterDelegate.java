@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.view.adapter.delegate.text;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -7,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.tribe.app.R;
@@ -122,6 +125,16 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
         } else {
             vh.itemView.setPadding(vh.itemView.getPaddingLeft(), marginVerticalXSmall, vh.itemView.getPaddingRight(), 0);
         }
+    }
+
+    protected void setupClipboard(View view, String content) {
+        view.setOnLongClickListener(v -> {
+            ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("text", content);
+            clipboard.setPrimaryClip(clip);
+            Toast.makeText(context, R.string.chat_copied_to_clipboard, Toast.LENGTH_LONG).show();
+            return false;
+        });
     }
 
     protected abstract BaseTextViewHolder getViewHolder(ViewGroup parent);

@@ -86,9 +86,7 @@ public class DiskTribeDataRepository implements TribeRepository {
 
     @Override
     public Observable<List<TribeMessage>> markTribeListAsRead(final List<TribeMessage> tribeList) {
-        final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
-        return tribeDataStore.markTribeListAsRead(tribeRealmDataMapper.transform(tribeList))
-                .map(collection -> tribeRealmDataMapper.transform(collection));
+        return null;
     }
 
     @Override

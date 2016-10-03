@@ -3,18 +3,12 @@ package com.tribe.app.presentation.view.camera.shader.fx;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.opengl.EGL14;
-import android.opengl.EGLContext;
-import android.opengl.EGLDisplay;
-import android.opengl.EGLSurface;
 import android.opengl.GLES20;
 
-import com.tribe.app.presentation.view.camera.recorder.MediaVideoEncoder;
-import com.tribe.app.presentation.view.camera.renderer.GLES20FramebufferObject;
-import com.tribe.app.presentation.view.camera.shader.GlShader;
+import com.tribe.app.presentation.view.camera.shader.GlRecordShader;
 import com.tribe.app.presentation.view.camera.utils.OpenGlUtils;
 
-public class GlRecordLutShader extends GlShader {
+public class GlRecordLutShader extends GlRecordShader {
     private final static String FRAGMENT_SHADER =
             "precision mediump float;" +
                     "uniform mediump sampler2D lutTexture; \n" +
@@ -53,26 +47,6 @@ public class GlRecordLutShader extends GlShader {
 
     private Bitmap lutTexture;
 
-    private MediaVideoEncoder mediaVideoEncoder;
-    private EGLDisplay savedEglDisplay     = null;
-    private EGLSurface savedEglDrawSurface = null;
-    private EGLSurface savedEglReadSurface = null;
-    private EGLContext savedEglContext     = null;
-
-    @Override
-    public void draw(int texName, GLES20FramebufferObject fbo) {
-        saveRenderState();
-
-        mediaVideoEncoder.firstTimeSetup();
-        mediaVideoEncoder.makeCurrent();
-
-        super.draw(texName, fbo);
-
-        mediaVideoEncoder.swapBuffers();
-
-        restoreRenderState();
-    }
-
     @Override
     public void onDraw() {
         int offsetDepthMapTextureUniform = getHandle("lutTexture");
@@ -92,26 +66,5 @@ public class GlRecordLutShader extends GlShader {
     public void reset() {
         hTex = -1;
         hTex = OpenGlUtils.loadTexture(lutTexture, OpenGlUtils.NO_TEXTURE, false);
-    }
-
-    public void setMediaVideoEncoder(MediaVideoEncoder mediaVideoEncoder) {
-        this.mediaVideoEncoder = mediaVideoEncoder;
-    }
-
-    private void saveRenderState() {
-        savedEglDisplay     = EGL14.eglGetCurrentDisplay();
-        savedEglDrawSurface = EGL14.eglGetCurrentSurface(EGL14.EGL_DRAW);
-        savedEglReadSurface = EGL14.eglGetCurrentSurface(EGL14.EGL_READ);
-        savedEglContext     = EGL14.eglGetCurrentContext();
-    }
-
-    private void restoreRenderState() {
-        if (!EGL14.eglMakeCurrent(
-                savedEglDisplay,
-                savedEglDrawSurface,
-                savedEglReadSurface,
-                savedEglContext)) {
-            throw new RuntimeException("eglMakeCurrent failed");
-        }
     }
 }

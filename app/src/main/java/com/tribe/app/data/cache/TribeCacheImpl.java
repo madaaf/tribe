@@ -139,19 +139,25 @@ public class TribeCacheImpl implements TribeCache {
     public void update(TribeRealm tribeRealm) {
         tribeRealm.setUpdatedAt(new Date());
         Realm obsRealm = Realm.getDefaultInstance();
-        obsRealm.beginTransaction();
+        try {
+            obsRealm.beginTransaction();
 
-        TribeRealm obj = obsRealm.where(TribeRealm.class).equalTo("localId", tribeRealm.getLocalId()).findFirst();
-        if (obj != null) {
-            obj.setMessageSendingStatus(tribeRealm.getMessageSendingStatus());
-            obj.setMessageDownloadingStatus(tribeRealm.getMessageDownloadingStatus());
-            obj.setMessageReceivingStatus(tribeRealm.getMessageReceivingStatus());
-        } else {
-            obsRealm.copyToRealmOrUpdate(tribeRealm);
+            TribeRealm obj = obsRealm.where(TribeRealm.class).equalTo("localId", tribeRealm.getLocalId()).findFirst();
+            if (obj != null) {
+                obj.setMessageSendingStatus(tribeRealm.getMessageSendingStatus());
+                obj.setMessageDownloadingStatus(tribeRealm.getMessageDownloadingStatus());
+                obj.setMessageReceivingStatus(tribeRealm.getMessageReceivingStatus());
+            } else {
+                obsRealm.copyToRealmOrUpdate(tribeRealm);
+            }
+
+            obsRealm.commitTransaction();
+        } catch(IllegalStateException ex) {
+            ex.printStackTrace();
+            if (obsRealm.isInTransaction()) obsRealm.cancelTransaction();
+        } finally {
+            obsRealm.close();
         }
-
-        obsRealm.commitTransaction();
-        obsRealm.close();
     }
 
     @Override

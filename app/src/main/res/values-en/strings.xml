@@ -147,6 +147,7 @@
 	<string name="chat_is_typing">is typing</string>
 	<string name="chat_are_typing">are typing</string>
 	<string name="chat_and">and</string>
+	<string name="chat_copied_to_clipboard">Copied to clipboard!</string>
 	
 	<!-- Private Group -->
 	<string name="group_family_title">:house_with_garden: Family</string>

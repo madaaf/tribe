@@ -10,7 +10,6 @@ import com.tribe.app.domain.exception.DefaultErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
-import com.tribe.app.domain.interactor.tribe.DiskMarkTribeListAsRead;
 import com.tribe.app.domain.interactor.tribe.GetReceivedDiskTribeList;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.presentation.mvp.view.SendTribeView;
@@ -29,17 +28,14 @@ public class TribePresenter extends SendTribePresenter implements Presenter {
 
     // OBSERVABLES
     private GetReceivedDiskTribeList diskGetReceivedTribeList;
-    private DiskMarkTribeListAsRead diskMarkTribeListAsRead;
 
     @Inject
     public TribePresenter(JobManager jobManager,
                           @Named("diskGetReceivedTribeList") UseCaseDisk diskGetReceivedTribeList,
                           @Named("diskSaveTribe") SaveTribe diskSaveTribe,
-                          @Named("diskDeleteTribe") DeleteTribe diskDeleteTribe,
-                          @Named("diskMarkTribeListAsRead") DiskMarkTribeListAsRead diskMarkTribeListAsRead) {
+                          @Named("diskDeleteTribe") DeleteTribe diskDeleteTribe) {
         super(jobManager, diskSaveTribe, diskDeleteTribe);
         this.diskGetReceivedTribeList = (GetReceivedDiskTribeList) diskGetReceivedTribeList;
-        this.diskMarkTribeListAsRead = diskMarkTribeListAsRead;
     }
 
     @Override
@@ -70,7 +66,6 @@ public class TribePresenter extends SendTribePresenter implements Presenter {
     @Override
     public void onDestroy() {
         diskGetReceivedTribeList.unsubscribe();
-        diskMarkTribeListAsRead.unsubscribe();
         super.onDestroy();
     }
 
@@ -90,23 +85,6 @@ public class TribePresenter extends SendTribePresenter implements Presenter {
     }
 
     public void markTribeListAsRead(Recipient recipient, List<TribeMessage> tribeList) {
-        diskMarkTribeListAsRead.setTribeList(tribeList);
-        diskMarkTribeListAsRead.execute(new DefaultSubscriber<List<TribeMessage>>() {
-            @Override
-            public void onCompleted() {
-                System.out.println("ON COMPLETED");
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onNext(List<TribeMessage> messageList) {
-                System.out.println("ON NEXT");
-            }
-        });
         jobManager.addJobInBackground(new MarkTribeListAsReadJob(recipient, tribeList));
     }
 

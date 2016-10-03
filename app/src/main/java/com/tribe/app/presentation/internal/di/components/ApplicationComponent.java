@@ -70,6 +70,7 @@ import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapte
 import com.tribe.app.presentation.view.adapter.delegate.text.PhotoMessageAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.text.TutorialMessageAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.text.VideoMessageAdapterDelegate;
+import com.tribe.app.presentation.view.camera.view.GlPreview;
 import com.tribe.app.presentation.view.camera.view.HistogramVisualizerView;
 import com.tribe.app.presentation.view.component.PullToSearchContainer;
 import com.tribe.app.presentation.view.component.PullToSearchView;
@@ -136,6 +137,7 @@ public interface ApplicationComponent {
     void inject(PullToSearchView pullToSearchView);
     void inject(SettingItemView settingItemView);
     void inject(ButtonCardView buttonCardView);
+    void inject(GlPreview glPreview);
 
     // JOBS
     void inject(BaseJob baseJob);

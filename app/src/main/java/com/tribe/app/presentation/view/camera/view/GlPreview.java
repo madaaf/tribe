@@ -9,7 +9,10 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
+import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.internal.di.scope.Filter;
 import com.tribe.app.presentation.view.camera.gles.GLES20ConfigChooser;
 import com.tribe.app.presentation.view.camera.gles.GLES20ContextFactory;
 import com.tribe.app.presentation.view.camera.gles.GlImageBitmapTexture;
@@ -29,6 +32,8 @@ import com.tribe.app.presentation.view.camera.recorder.TribeMuxerWrapper;
 import com.tribe.app.presentation.view.camera.renderer.GLES20FramebufferObject;
 import com.tribe.app.presentation.view.camera.renderer.GlFrameBufferObjectRenderer;
 import com.tribe.app.presentation.view.camera.shader.GlPreviewShader;
+import com.tribe.app.presentation.view.camera.shader.GlRecordPixellateShader;
+import com.tribe.app.presentation.view.camera.shader.GlRecordShader;
 import com.tribe.app.presentation.view.camera.shader.GlShader;
 import com.tribe.app.presentation.view.camera.shader.fx.GlRecordLutShader;
 import com.tribe.app.presentation.view.camera.utils.Fps;
@@ -37,6 +42,7 @@ import com.tribe.app.presentation.view.camera.utils.Size;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
 import javax.microedition.khronos.egl.EGLConfig;
 
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
@@ -53,6 +59,10 @@ import static android.opengl.GLES20.glViewport;
 
 public class GlPreview extends GlTextureView implements Preview, Camera.PictureCallback {
 
+    @Inject
+    @Filter
+    Preference<Integer> filter;
+
     private CameraHelper cameraHelper;
     private Renderer renderer;
     private TribeMuxerWrapper muxerWrapper;
@@ -62,11 +72,13 @@ public class GlPreview extends GlTextureView implements Preview, Camera.PictureC
 
     public GlPreview(final Context context) {
         super(context);
+        initDependencyInjector();
         initialize(context);
     }
 
     public GlPreview(final Context context, final AttributeSet attrs) {
         super(context, attrs);
+        initDependencyInjector();
         initialize(context);
     }
 
@@ -79,6 +91,10 @@ public class GlPreview extends GlTextureView implements Preview, Camera.PictureC
 
         setRenderMode(RENDERMODE_WHEN_DIRTY);
         setPreserveEGLContextOnPause(true);
+    }
+
+    private void initDependencyInjector() {
+        ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
     }
 
     public final boolean isFaceMirror() {
@@ -268,7 +284,7 @@ public class GlPreview extends GlTextureView implements Preview, Camera.PictureC
         private GLES20FramebufferObject mFramebufferObject;
         private GlPreviewShader mPreviewShader;
         private GlPreviewShader mImageShader;
-        private GlRecordLutShader recordShader;
+        private GlRecordShader recordShader;
 
         private GlShader mShader;
         private boolean mIsNewShader;
@@ -464,7 +480,17 @@ public class GlPreview extends GlTextureView implements Preview, Camera.PictureC
         public void setMediaVideoEncoder(MediaVideoEncoder mediaVideoEncoder) {
             synchronized(this) {
                 if (mediaVideoEncoder != null) {
-                    recordShader = new GlRecordLutShader(getContext().getResources(), R.drawable.video_filter_blue);
+                    if (filter.get() == 3) {
+                        recordShader = new GlRecordPixellateShader();
+                    } else {
+                        int resourceFilter = -1;
+                        if (filter.get().equals(0)) resourceFilter = R.drawable.video_filter_punch;
+                        else if (filter.get().equals(1)) resourceFilter = R.drawable.video_filter_blue;
+                        else if (filter.get().equals(2)) resourceFilter = R.drawable.video_filter_bw;
+                        else resourceFilter = R.drawable.video_filter_punch;
+                        recordShader = new GlRecordLutShader(getContext().getResources(), resourceFilter);
+                    }
+
                     recordShader.setMediaVideoEncoder(mediaVideoEncoder);
                 } else {
                     recordShader = null;
