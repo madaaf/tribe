@@ -83,4 +83,9 @@ public class StringUtils {
                 TimeUnit.MILLISECONDS.toSeconds(millis) -
                         TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
     }
+
+    public static String getLastBitFromUrl(final String url) {
+        return url.replaceFirst(".*/([^/?]+).*", "$1");
+    }
+    
 }
