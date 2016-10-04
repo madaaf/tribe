@@ -13,6 +13,7 @@ import com.tribe.app.data.realm.Installation;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.SearchResult;
@@ -158,4 +159,6 @@ public interface UserRepository {
     Observable<List<User>> updateUserListScore(Set<String> userIds);
 
     Observable<String> getHeadDeepLink(String url);
+
+    Observable<Membership> createMembership(String groupId);
 }

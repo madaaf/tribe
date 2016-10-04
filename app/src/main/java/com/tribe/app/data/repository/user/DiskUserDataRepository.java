@@ -133,7 +133,7 @@ public class DiskUserDataRepository implements UserRepository {
                                         || (!tribe.isToGroup() && tribe.getFrom().getId().equals(recipient.getSubId()))) {
                                     receivedTribes.add(tribe);
                                 } else if (tribe.getFrom().getId().equals(user.getId())
-                                        && tribe.getTo().getSubId().equals(recipient.getSubId())) {
+                                        && tribe.getTo() != null && tribe.getTo().getSubId() != null && tribe.getTo().getSubId().equals(recipient.getSubId())) {
                                     if (tribe.getMessageSendingStatus().equals(MessageSendingStatus.STATUS_ERROR))
                                         errorTribes.add(tribe);
                                     else sentTribes.add(tribe);
@@ -359,6 +359,11 @@ public class DiskUserDataRepository implements UserRepository {
 
     @Override
     public Observable<String> getHeadDeepLink(String url) {
+        return null;
+    }
+
+    @Override
+    public Observable<Membership> createMembership(String groupId) {
         return null;
     }
 }

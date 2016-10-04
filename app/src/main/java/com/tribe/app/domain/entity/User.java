@@ -200,8 +200,8 @@ public class User implements Serializable {
             setInvisibleMode(user.isInvisibleMode());
             setTribeSave(user.isTribeSave());
             if (user.getLocation() != null) setLocation(user.getLocation());
-            if (user.getMembershipList() != null) setMembershipList(user.getMembershipList());
-            if (user.getFriendships() != null) setFriendships(user.getFriendships());
+            if (user.getMembershipList() != null && user.getMembershipList().size() > 0) setMembershipList(user.getMembershipList());
+            if (user.getFriendships() != null && user.getFriendshipList().size() > 0) setFriendships(user.getFriendships());
         }
     }
 

@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.mvp.view;
 
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
@@ -22,4 +23,5 @@ public interface HomeView extends LoadDataView {
     void initClickOnSettings(Observable<android.view.View> observable);
     void initPullToSearchActive(Observable<Boolean> observable);
     void onDeepLink(String url);
+    void onMembershipCreated(Membership membership);
 }

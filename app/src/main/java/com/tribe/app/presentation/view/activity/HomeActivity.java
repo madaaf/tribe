@@ -29,6 +29,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
@@ -398,10 +399,21 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         if (!StringUtils.isEmpty(url)) {
             Uri uri = Uri.parse(url);
 
-            if (uri.getPath().startsWith("/u/") && homeViewPagerAdapter.getContactsGridFragment() != null) {
-                viewPager.setCurrentItem(CONTACTS_FRAGMENT_PAGE, true);
-                homeViewPagerAdapter.getContactsGridFragment().search(StringUtils.getLastBitFromUrl(url));
+            if (uri != null && !StringUtils.isEmpty(uri.getPath())) {
+                if (uri.getPath().startsWith("/u/") && homeViewPagerAdapter.getContactsGridFragment() != null) {
+                    viewPager.setCurrentItem(CONTACTS_FRAGMENT_PAGE, true);
+                    homeViewPagerAdapter.getContactsGridFragment().search(StringUtils.getLastBitFromUrl(url));
+                } else if (uri.getPath().startsWith("/g/")) {
+                    homePresenter.createMembership(StringUtils.getLastBitFromUrl(url));
+                }
             }
+        }
+    }
+
+    @Override
+    public void onMembershipCreated(Membership membership) {
+        if (homeViewPagerAdapter.getHomeGridFragment() != null) {
+            homeViewPagerAdapter.getHomeGridFragment().reloadGrid();
         }
     }
 

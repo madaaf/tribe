@@ -9,6 +9,7 @@ import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
@@ -154,4 +155,6 @@ public interface UserDataStore {
     Observable<List<UserRealm>> updateUserListScore(Set<String> userIds);
 
     Observable<String> getHeadDeepLink(String url);
+
+    Observable<MembershipRealm> createMembership(String groupId);
 }

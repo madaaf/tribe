@@ -900,7 +900,7 @@ public class CloudUserDataStore implements UserDataStore {
             return this.tribeApi.createGroupMedia(query, body)
                     .doOnNext(groupRealm -> userCache.insertGroup(groupRealm))
                     .flatMap(groupRealm -> {
-                        final String requestCreateMembership = context.getString(R.string.create_membership, groupRealm.getId(), context.getString(R.string.membershipfragment_info));
+                        final String requestCreateMembership = context.getString(R.string.create_membership, groupRealm.getId(), context.getString(R.string.membershipfragment_info), context.getString(R.string.groupfragment_info));
                         return this.tribeApi.createMembership(requestCreateMembership);
                     }, (groupRealm, newMembership) -> {
                         userCache.insertMembership(user.getId(), newMembership);
@@ -957,7 +957,7 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<Void> addMembersToGroup(String groupId, List<String> memberIds) {
-        String memberIdsJson = listToJson(memberIds);
+        String memberIdsJson = listToArrayReq(memberIds);
         String request = context.getString(R.string.add_members_group, groupId, memberIdsJson);
         return this.tribeApi.addMembersToGroup(request)
                 .doOnNext(aVoid -> {
@@ -967,7 +967,7 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds) {
-        String memberIdsJson = listToJson(memberIds);
+        String memberIdsJson = listToArrayReq(memberIds);
         String request = context.getString(R.string.remove_members_group, groupId, memberIdsJson);
         return this.tribeApi.removeMembersFromGroup(request)
                 .doOnNext(aVoid -> {
@@ -977,7 +977,7 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<Void> addAdminsToGroup(String groupId, List<String> memberIds) {
-        String memberIdsJson = listToJson(memberIds);
+        String memberIdsJson = listToArrayReq(memberIds);
         String request = context.getString(R.string.add_admins_group, groupId, memberIdsJson);
         return this.tribeApi.addAdminsToGroup(request)
                 .doOnNext(aVoid -> {
@@ -987,7 +987,7 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<Void> removeAdminsFromGroup(String groupId, List<String> memberIds) {
-        String memberIdsJson = listToJson(memberIds);
+        String memberIdsJson = listToArrayReq(memberIds);
         String request = context.getString(R.string.remove_admins_group, groupId, memberIdsJson);
         return this.tribeApi.removeAdminsFromGroup(request)
                 .doOnNext(aVoid -> {
@@ -1017,6 +1017,17 @@ public class CloudUserDataStore implements UserDataStore {
             else json += list.get(i) + ", ";
         }
         return json;
+    }
+
+    private String listToArrayReq(List<String> ids) {
+        StringBuilder result = new StringBuilder();
+
+        for (String string : ids) {
+            result.append("\"" + string + "\"");
+            result.append(",");
+        }
+
+        return result.length() > 0 ? result.substring(0, result.length() - 1) : "";
     }
 
     @Override
@@ -1070,6 +1081,18 @@ public class CloudUserDataStore implements UserDataStore {
             }
 
             return Observable.just("");
+        });
+    }
+
+    @Override
+    public Observable<MembershipRealm> createMembership(String groupId) {
+        final String requestCreateMembership =
+                context.getString(
+                        R.string.create_membership, groupId,
+                    context.getString(R.string.membershipfragment_info),
+                    context.getString(R.string.groupfragment_info));
+        return this.tribeApi.createMembership(requestCreateMembership).doOnNext(membershipRealm -> {
+            userCache.insertMembership(user.getId(), membershipRealm);
         });
     }
 }

@@ -15,6 +15,7 @@ import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.domain.interactor.user.AddMembersToGroup;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
+import com.tribe.app.domain.interactor.user.CreateMembership;
 import com.tribe.app.domain.interactor.user.DiskUpdateFriendship;
 import com.tribe.app.domain.interactor.user.DiskFindContactByValue;
 import com.tribe.app.domain.interactor.user.DiskSearchResults;
@@ -263,5 +264,11 @@ public class UserModule {
     @PerActivity
     GetHeadDeepLink provideGetHeadDeepLink(CloudUserDataRepository cloudUserDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
         return new GetHeadDeepLink(cloudUserDataRepository, threadExecutor, postExecutionThread);
+    }
+
+    @Provides
+    @PerActivity
+    CreateMembership provideCreateMembership(CloudUserDataRepository cloudUserDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+        return new CreateMembership(cloudUserDataRepository, threadExecutor, postExecutionThread);
     }
 }

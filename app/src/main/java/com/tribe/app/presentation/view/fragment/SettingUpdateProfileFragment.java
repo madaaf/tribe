@@ -69,12 +69,7 @@ public class SettingUpdateProfileFragment extends BaseFragment {
     private void initUi() {
         user = getCurrentUser();
 
-        try {
-            profileInfoView.loadAvatar(user.getProfilePicture());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-
+        profileInfoView.loadAvatar(user.getProfilePicture());
         profileInfoView.setEditDisplayName(user.getDisplayName());
         profileInfoView.setEditUsername(user.getUsername());
 

@@ -271,7 +271,7 @@ public class Navigator {
         context.startActivity(sendIntent);
     }
 
-    public void share(String handle, Activity activity) {
+    public void shareHandle(String handle, Activity activity) {
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, activity.getString(R.string.share_add_friends_handle, "@" + handle, BuildConfig.TRIBE_URL + "/@" + handle));

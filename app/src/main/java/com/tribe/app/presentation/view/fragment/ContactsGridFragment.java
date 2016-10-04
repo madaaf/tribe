@@ -240,7 +240,7 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
                         } else if (buttonPoints.getType() == ButtonPointsView.FB_NOTIFY) {
                             contactsGridPresenter.notifyFBFriends();
                         } else if (buttonPoints.getType() == ButtonPointsView.PROFILE) {
-                            navigator.share(currentUser.getUsername(), getActivity());
+                            navigator.shareHandle(currentUser.getUsername(), getActivity());
                         }
                     }
                 }));
@@ -267,7 +267,7 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
                 .subscribe(o -> {
                     if (o instanceof SearchResult) {
                         SearchResult searchResult = (SearchResult) o;
-                        if (!searchResult.getUsername().equals(currentUser.getUsername()))
+                        if (searchResult.getUsername() != null && !searchResult.getUsername().equals(currentUser.getUsername()))
                             contactsGridPresenter.createFriendship(searchResult.getId());
                     }
                 }));
@@ -362,7 +362,7 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
                 searchResult.setShouldAnimateAdd(true);
 
             this.searchResult = searchResult;
-            this.searchResult.setMyself(searchResult.getUsername().equals(currentUser.getUsername()));
+            this.searchResult.setMyself(searchResult.getUsername() != null && searchResult.getUsername().equals(currentUser.getUsername()));
             updateSearch();
         }
     }

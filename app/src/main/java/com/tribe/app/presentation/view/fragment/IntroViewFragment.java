@@ -282,16 +282,6 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
     }
 
     @Override
-    public void goToProfileInfo() {
-        Observable.timer(300, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(time -> {
-                    ((IntroActivity) getActivity()).goToProfileInfo(loginEntity);
-                });
-    }
-
-    @Override
     public void goToConnected(User user) {
         currentUser.copy(user);
         txtIntroMessage.setText("");
@@ -317,7 +307,7 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(time2 -> {
                                 if (user == null || StringUtils.isEmpty(user.getProfilePicture()) || StringUtils.isEmpty(user.getUsername())) {
-                                    ((IntroActivity) getActivity()).goToProfileInfo(loginEntity);
+                                    ((IntroActivity) getActivity()).goToProfileInfo(user, loginEntity);
                                 } else {
                                     tagManager.trackEvent(TagManagerConstants.ONBOARDING_CONNECTION);
                                     ((IntroActivity) getActivity()).goToAccess(user);

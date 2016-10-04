@@ -27,7 +27,7 @@ public class AmplitudeTagManager implements TagManager {
 
     @Inject
     public AmplitudeTagManager(Context context, User user) {
-        if (user != null && StringUtils.isEmpty(user.getUsername())) {
+        if (user != null && StringUtils.isEmpty(user.getId())) {
             amplitude = Amplitude.getInstance().initialize(context, BuildConfig.AMPLITUDE_KEY)
                     .enableForegroundTracking((Application) context.getApplicationContext());
         } else {

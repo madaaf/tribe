@@ -216,7 +216,7 @@ public class ApplicationModule {
     @Provides
     @Singleton
     User provideCurrentUser(Realm realm, AccessToken accessToken, UserRealmDataMapper userRealmDataMapper) {
-        final User user = new User("-1");
+        final User user = new User("");
 
         userRealm = realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
         if (userRealm != null) {
