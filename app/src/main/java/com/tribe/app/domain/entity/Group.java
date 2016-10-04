@@ -15,6 +15,7 @@ public class Group implements Serializable {
     private String id;
     private String picture;
     private String name;
+    private String groupLink;
     private boolean privateGroup;
     private List<User> members;
     private List<User> admins;
@@ -41,6 +42,14 @@ public class Group implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getGroupLink() {
+        return groupLink;
+    }
+
+    public void setGroupLink(String groupLink) {
+        this.groupLink = groupLink;
     }
 
     public boolean isPrivateGroup() {

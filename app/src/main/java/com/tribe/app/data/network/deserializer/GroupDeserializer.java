@@ -44,7 +44,8 @@ public class GroupDeserializer implements JsonDeserializer<GroupRealm> {
             group = data.getAsJsonObject("updateGroup");
             if (group == null) group = data.getAsJsonObject("createGroup");
         }
-
+        JsonElement groupLink = group.get("link");
+        if (groupLink != null) groupRealm.setGroupLink(groupLink.toString());
         groupRealm.setId(group.get("id").getAsString());
         groupRealm.setName(group.get("name").getAsString());
         groupRealm.setPicture(group.get("picture") != null && !group.get("picture").isJsonNull() ? group.get("picture").getAsString() : null);

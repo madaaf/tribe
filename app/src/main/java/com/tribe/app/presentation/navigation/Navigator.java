@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Bundle;
 import android.widget.Toast;
 
 import com.tribe.app.BuildConfig;
@@ -157,10 +158,14 @@ public class Navigator {
         }
     }
 
-    public void navigateToGroupInfo(Activity activity, String groupId) {
+    public void navigateToGroupInfo(Activity activity, String groupId, String groupName, String groupPicture) {
         if (activity != null) {
             Intent intent = GroupInfoActivity.getCallingIntent(activity);
-            intent.putExtra("groupId", groupId);
+            Bundle bundle = new Bundle();
+            bundle.putString("groupId", groupId);
+            bundle.putString("groupName", groupName);
+            bundle.putString("groupPicture", groupPicture);
+            intent.putExtras(bundle);
             activity.startActivity(intent);
             activity.overridePendingTransition(R.anim.activity_in_from_right, R.anim.activity_out_scale_down);
         }
@@ -250,6 +255,13 @@ public class Navigator {
         if (intent.resolveActivity(context.getPackageManager()) != null) {
             context.startActivity(intent);
         }
+    }
+
+    public void shareGenericText(String body, Context context) {
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, body);
+        context.startActivity(Intent.createChooser(sharingIntent, "Share via..."));
     }
 
     public void sendText(String body, Context context) {

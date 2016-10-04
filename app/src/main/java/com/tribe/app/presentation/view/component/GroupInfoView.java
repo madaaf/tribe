@@ -65,6 +65,8 @@ public class GroupInfoView extends FrameLayout {
 
     @BindView(R.id.imageGroup)
     ImageView imageGroup;
+    @BindView(R.id.imageGroupBg)
+    ImageView imageGroupBg;
     @BindView(R.id.imageEditGroup)
     ImageView imageEditGroup;
     @BindView(R.id.imageDoneEdit)
@@ -278,11 +280,9 @@ public class GroupInfoView extends FrameLayout {
 
         // Setup group image
         imageGroup.setEnabled(true);
-        imageGroup.animate()
-                .scaleY(AnimationUtils.SCALE_RESET)
-                .scaleX(AnimationUtils.SCALE_RESET)
-                .setDuration(animDuration)
-                .start();
+        imageGroupExpanded(true, imageGroupBg);
+        imageGroupExpanded(true, imageGroup);
+
 
         // Setup edit group name
         layoutDividerBackground.setVisibility(View.VISIBLE);
@@ -328,11 +328,8 @@ public class GroupInfoView extends FrameLayout {
                 });
         // Setup group image
         imageGroup.setEnabled(false);
-        imageGroup.animate()
-                .scaleY(groupPicScaleDownF)
-                .scaleX(groupPicScaleDownF)
-                .setDuration(animDuration)
-                .start();
+        imageGroupExpanded(false, imageGroupBg);
+        imageGroupExpanded(false, imageGroup);
 
         layoutDividerBackground.setVisibility(View.INVISIBLE);
         editTextGroupName.bringToFront();
@@ -355,13 +352,28 @@ public class GroupInfoView extends FrameLayout {
         presentEditIcons(animDuration);
     }
 
-
     public void collapseInfo(int animDuration, Activity activity) {
         collapse(animDuration, activity);
         layoutGroupMembers.animate()
                 .setDuration(animDuration)
                 .translationY(AnimationUtils.TRANSLATION_RESET)
                 .start();
+    }
+
+    private void imageGroupExpanded(boolean expand, ImageView image) {
+        if (expand) {
+            image.animate()
+                    .scaleY(AnimationUtils.SCALE_RESET)
+                    .scaleX(AnimationUtils.SCALE_RESET)
+                    .setDuration(animDuration)
+                    .start();
+        } else {
+            image.animate()
+                    .scaleY(groupPicScaleDownF)
+                    .scaleX(groupPicScaleDownF)
+                    .setDuration(animDuration)
+                    .start();
+        }
     }
 
     public void presentFinishEditIcons(int animDuration) {
@@ -414,6 +426,8 @@ public class GroupInfoView extends FrameLayout {
         imageGroup.setEnabled(false);
         imageGroup.setScaleX(groupPicScaleDownF);
         imageGroup.setScaleY(groupPicScaleDownF);
+        imageGroupBg.setScaleX(groupPicScaleDownF);
+        imageGroupBg.setScaleY(groupPicScaleDownF);
         layoutDividerBackground.setVisibility(INVISIBLE);
         layoutGroupMembers.setVisibility(VISIBLE);
         editTextGroupName.bringToFront();

@@ -9,6 +9,7 @@ import java.util.List;
  */
 public interface GroupView extends LoadDataView {
     void setGroupId(String groupId);
+    void setGroupLink(String groupLink);
     void setupGroup(Group group);
     void groupCreatedSuccessfully();
     void groupCreationFailed();
