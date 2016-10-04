@@ -280,7 +280,7 @@ public class DiskUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<Group> createGroup(String groupName, List<String> memberIds, boolean isPrivate, String pictureUri) {
+    public Observable<Membership> createGroup(String groupName, List<String> memberIds, boolean isPrivate, String pictureUri) {
         return null;
     }
 

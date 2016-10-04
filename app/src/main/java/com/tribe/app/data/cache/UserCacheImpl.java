@@ -423,6 +423,30 @@ public class UserCacheImpl implements UserCache {
     }
 
     @Override
+    public void updateMembershipLink(String userId, String membershipId, MembershipRealm membershipRealm) {
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            realm.beginTransaction();
+            MembershipRealm membershipRealmDb = realm.where(UserRealm.class).equalTo("id", userId).findFirst()
+                    .getMemberships().where().equalTo("id", membershipId).findFirst();
+            String privateLink = membershipRealm.getLink();
+            String publicLink = membershipRealm.getGroup().getGroupLink();
+            Date privateLinkExpiration = membershipRealm.getLink_expires_at();
+            if (privateLink != null) membershipRealmDb.setLink(privateLink);
+            if (publicLink != null) membershipRealmDb.getGroup().setGroupLink(publicLink);
+            if (privateLinkExpiration != null)
+                membershipRealmDb.setLink_expires_at(privateLinkExpiration);
+            realm.commitTransaction();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+            if (realm != null) realm.cancelTransaction();
+        } finally {
+            if (realm != null) realm.close();
+        }
+    }
+
+
+    @Override
     public void updateScore(String userId, ScoreUtils.Point point) {
         Realm obsRealm = Realm.getDefaultInstance();
 

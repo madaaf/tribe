@@ -15,13 +15,21 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+
+import org.w3c.dom.Text;
+
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -29,8 +37,9 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class ShareDialogFragment extends BaseDialogFragment {
 
-    public static ShareDialogFragment newInstance() {
+    public static ShareDialogFragment newInstance(long timeRemaining) {
         Bundle args = new Bundle();
+        args.putLong("timeRemaining", timeRemaining);
         ShareDialogFragment fragment = new ShareDialogFragment();
         fragment.setArguments(args);
         return fragment;
@@ -53,13 +62,16 @@ public class ShareDialogFragment extends BaseDialogFragment {
     @BindView(R.id.imageMore)
     ImageView imageMore;
 
+    @BindView(R.id.textPopupTitle)
+    TextViewFont textPopupTitle;
     @BindView(R.id.textDone)
     TextViewFont textDone;
+
 
     @Inject
     Navigator navigator;
 
-
+    long timeRemaining;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -78,6 +90,8 @@ public class ShareDialogFragment extends BaseDialogFragment {
         String shareMessage = "test";
 
         subscriptions = new CompositeSubscription();
+
+        setExpirationTime(getArguments().getLong("timeRemaining"));
 
         subscriptions.add(RxView.clicks(imageMessenger).subscribe(aVoid -> {
             navigator.openFacebookMessenger(shareMessage, getActivity());
@@ -110,6 +124,24 @@ public class ShareDialogFragment extends BaseDialogFragment {
             dismiss();
         }));
 
+    }
+
+    private void setExpirationTime(long timeRemainingInput) {
+        timeRemaining = timeRemainingInput;
+        subscriptions.add(
+        Observable.interval(1, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .map(i -> timeRemainingInput - i)
+                .take((int) timeRemainingInput + 1)
+                .subscribe(i -> timeRemaining = i));
+        subscriptions.add(
+        Observable.interval(1, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aLong -> {
+                    textPopupTitle.setText(getContext().getString(R.string.group_private_link_popup_title, StringUtils.millisecondsToHhMmSs(timeRemaining)));
+                })
+        );
     }
 
     /**

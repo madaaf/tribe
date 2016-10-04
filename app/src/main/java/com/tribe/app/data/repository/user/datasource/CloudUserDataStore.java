@@ -862,7 +862,7 @@ public class CloudUserDataStore implements UserDataStore {
 
 
     @Override
-    public Observable<GroupRealm> createGroup(String groupName, List<String> memberIds, Boolean isPrivate, String pictureUri) {
+    public Observable<MembershipRealm> createGroup(String groupName, List<String> memberIds, Boolean isPrivate, String pictureUri) {
         String idList = listToJson(memberIds);
         String privateGroup = isPrivate ? "PRIVATE" : "PUBLIC";
         final String request = context.getString(R.string.create_group, groupName, privateGroup, idList, context.getString(R.string.groupfragment_info));
@@ -876,7 +876,7 @@ public class CloudUserDataStore implements UserDataStore {
                         return this.tribeApi.createMembership(requestCreateMembership);
                     }, (groupRealm, newMembership) -> {
                         userCache.insertMembership(user.getId(), newMembership);
-                        return groupRealm;
+                        return newMembership;
                     });
         } else {
             RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
@@ -909,7 +909,7 @@ public class CloudUserDataStore implements UserDataStore {
                         return this.tribeApi.createMembership(requestCreateMembership);
                     }, (groupRealm, newMembership) -> {
                         userCache.insertMembership(user.getId(), newMembership);
-                        return groupRealm;
+                        return newMembership;
                     });
         }
     }
@@ -1018,17 +1018,26 @@ public class CloudUserDataStore implements UserDataStore {
     @Override
     public Observable<MembershipRealm> modifyPrivateGroupLink(String membershipId, boolean create) {
         String request;
-        if (create) request = context.getString(R.string.generate_private_link, membershipId, R.string.membershipfragment_info);
-        else request = context.getString(R.string.remove_private_link, membershipId, R.string.membershipfragment_info);
-        return this.tribeApi.modifyPrivateGroupLink(request);
+        if (create) request = context.getString(R.string.generate_private_link,
+                membershipId,
+                context.getString(R.string.membershipfragment_info),
+                context.getString(R.string.groupfragment_info));
+        else request = context.getString(R.string.remove_private_link,
+                membershipId,
+                context.getString(R.string.membershipfragment_info),
+                context.getString(R.string.groupfragment_info));
+        return this.tribeApi.modifyPrivateGroupLink(request).doOnNext(membershipRealm -> {
+            userCache.updateMembershipLink(user.getId(), membershipId, membershipRealm);
+        });
     }
 
     public String listToJson(List<String> list) {
-        String json = "";
+        String json = "\"";
         for (int i = 0; i < list.size(); i++) {
-            if (i == list.size() - 1) json += list.get(i);
-            else json += list.get(i) + ", ";
+            if (i == list.size() - 1) json += list.get(i) + "\"";
+            else json += list.get(i) + "\", \"";
         }
+        if  (list.size() == 0) json += "\"";
         return json;
     }
 

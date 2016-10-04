@@ -23,6 +23,7 @@ import com.tribe.app.presentation.view.activity.ScoreActivity;
 import com.tribe.app.presentation.view.activity.SettingActivity;
 import com.tribe.app.presentation.view.activity.TribeActivity;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -157,13 +158,16 @@ public class Navigator {
         }
     }
 
-    public void navigateToGroupInfo(Activity activity, String groupId, String groupName, String groupPicture) {
+    public void navigateToGroupInfo(Activity activity, String membershipId, String groupId, String groupName, String groupPicture, String privateGroupLink, Date privateGroupLinkExpiresAt) {
         if (activity != null) {
             Intent intent = GroupInfoActivity.getCallingIntent(activity);
             Bundle bundle = new Bundle();
+            bundle.putString("membershipId", membershipId);
             bundle.putString("groupId", groupId);
             bundle.putString("groupName", groupName);
             bundle.putString("groupPicture", groupPicture);
+            bundle.putString("privateGroupLink", privateGroupLink);
+            bundle.putLong("privateGroupLinkExpiresAt", privateGroupLinkExpiresAt.getTime());
             intent.putExtras(bundle);
             activity.startActivity(intent);
             activity.overridePendingTransition(R.anim.activity_in_from_right, R.anim.activity_out_scale_down);

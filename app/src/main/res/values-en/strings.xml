@@ -13,13 +13,13 @@
 	<string name="group_members">members</string>
 	
 	<!-- Errors -->
-	<string name="error_unknown">Something went wrong. Try again in 30s.</string>
-	<string name="error_technical">Oops :scream:\nTechnical error!</string>
-	<string name="error_no_network">Oops :scream:\nNo network!</string>
+	<string name="error_unknown">:bird: Something went wrong. Try again in 30s.</string>
+	<string name="error_technical">:warning: Technical turbulence. Try again!</string>
+	<string name="error_no_network">:satellite: No Internet here. Move!</string>
 	
 	<!-- Image Picker -->
-	<string name="image_picker_title">Pick an avatar</string>
-	<string name="image_picker_camera">Selfie camera</string>
+	<string name="image_picker_title">Add an avatar</string>
+	<string name="image_picker_camera">Take a selfie</string>
 	<string name="image_picker_library">Camera roll</string>
 	
 	<!-- Contacts -->
@@ -65,7 +65,7 @@
 	
 	<!-- Invitations -->
 	<string name="invitation_sms_error_parse_number_title">The phone number of this contact doesn\'t look right</string>
-	<string name="invitation_sms_error_parse_number_message">%1$s\n\nThis contact didn\'t have a country prefix. We tried to add %2$s but it didn\'t work. Please manually edit</string>
+	<string name="invitation_sms_error_parse_number_message">%1$s\n\nThis contact didn\'t have a country prefix. We tried to add %2$s but it didn\'t work.</string>
 	<string name="invitation_sms_error_parse_number_action_edit">Fix the number</string>
 	<string name="invitation_sms_error_parse_number_action_use">Use it anyway</string>
 	
@@ -281,6 +281,7 @@
 	<string name="onboarding_user_avatar_selfie">Selfie camera</string>
 	<string name="onboarding_user_displayname_placeholder">Full name</string>
 	<string name="onboarding_user_username_placeholder">username</string>
+	<string name="onboarding_user_username_restrictions">Usernames must contain only alphanumeric, underscores and dash characters</string>
 	<string name="onboarding_user_facebook_button_title">Or autofill profile</string>
 	<string name="onboarding_queue_title">Gain access now!</string>
 	<string name="onboarding_queue_description">Hold up, you need at least\n1 friend on Tribe to get in</string>

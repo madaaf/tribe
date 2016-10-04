@@ -85,9 +85,12 @@ public class GroupInfoActivity extends BaseActivity {
         Bundle extras = intent.getExtras();
 
         Bundle bundle = new Bundle();
+        bundle.putString("membershipId", extras.getString("membershipId"));
         bundle.putString("groupId", extras.getString("groupId"));
         bundle.putString("groupName", extras.getString("groupName"));
         bundle.putString("groupPicture", extras.getString("groupPicture"));
+        bundle.putString("privateGroupLink", extras.getString("privateGroupLink"));
+        bundle.putLong("privateGroupLinkExpiresAt", extras.getLong("privateGroupLinkExpiresAt"));
         groupsGridFragment = GroupsGridFragment.newInstance(bundle);
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

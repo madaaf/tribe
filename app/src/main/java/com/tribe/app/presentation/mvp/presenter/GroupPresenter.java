@@ -111,8 +111,13 @@ public class GroupPresenter implements Presenter {
         @Override
         public void onNext(Membership membership) {
             groupView.groupCreatedSuccessfully();
-            groupView.setGroupId(group.getId());
-            groupView.setGroupLink(group.getGroupLink());
+            groupView.setGroupId(membership.getGroup().getId());
+            groupView.setMembershipId(membership.getId());
+            boolean isPrivate = membership.getGroup().isPrivateGroup();
+            String groupLink;
+            if (isPrivate) groupLink = membership.getLink();
+            else  groupLink = membership.getGroup().getGroupLink();
+            groupView.setGroupLink(groupLink);
         }
     }
 
@@ -160,12 +165,13 @@ public class GroupPresenter implements Presenter {
 
         @Override
         public void onError(Throwable e) {
-
+            e.printStackTrace();
         }
 
         @Override
         public void onNext(Membership membership) {
             groupView.setGroupLink(membership.getLink());
+            groupView.setGroupLinkExpirationDate(membership.getLink_expires_at());
         }
     }
 

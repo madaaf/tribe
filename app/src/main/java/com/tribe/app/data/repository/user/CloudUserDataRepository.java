@@ -204,10 +204,10 @@ public class CloudUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<Group> createGroup(String groupName, List<String> memberIds, boolean isPrivate, String pictureUri) {
+    public Observable<Membership> createGroup(String groupName, List<String> memberIds, boolean isPrivate, String pictureUri) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
         return cloudDataStore.createGroup(groupName, memberIds, isPrivate, pictureUri)
-                .map(this.groupRealmDataMapper::transform);
+                .map((membershipRealm) -> this.membershipRealmDataMapper.transform(membershipRealm));
     }
 
     @Override
@@ -256,7 +256,7 @@ public class CloudUserDataRepository implements UserRepository {
     @Override
     public Observable<Membership> modifyPrivateGroupLink(String membershipId, boolean create) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-        return cloudDataStore.modifyPrivateGroupLink(membershipId, create).map(membershipRealm -> this.membershipRealmDataMapper.transform(membershipRealm));
+        return cloudDataStore.modifyPrivateGroupLink(membershipId, create).map(this.membershipRealmDataMapper::transform);
     }
 
     @Override

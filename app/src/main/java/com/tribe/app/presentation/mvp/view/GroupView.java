@@ -2,6 +2,7 @@ package com.tribe.app.presentation.mvp.view;
 
 import com.tribe.app.domain.entity.Group;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -9,7 +10,9 @@ import java.util.List;
  */
 public interface GroupView extends LoadDataView {
     void setGroupId(String groupId);
+    void setMembershipId(String membershipId);
     void setGroupLink(String groupLink);
+    void setGroupLinkExpirationDate(Date groupLinkExpirationDate);
     void setupGroup(Group group);
     void groupCreatedSuccessfully();
     void groupCreationFailed();

@@ -8,16 +8,16 @@
     android:background="@drawable/shape_rect_white_rounded_corners"
     >
 
-    <TextView
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/textPopupTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/vertical_margin_large"
         android:gravity="center"
-        android:text="@string/group_private_link_popup_title"
         style="@style/Headline.Black.1"
         />
 
-    <TextView
+    <com.tribe.app.presentation.view.widget.TextViewFont
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12.5dp"
