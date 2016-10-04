@@ -186,4 +186,9 @@ public class DiskUserDataStore implements UserDataStore {
     public Observable<List<UserRealm>> updateUserListScore(Set<String> userIds) {
         return null;
     }
+
+    @Override
+    public Observable<String> getHeadDeepLink(String url) {
+        return null;
+    }
 }

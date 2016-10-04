@@ -9,6 +9,7 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.widget.Toast;
 
+import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.view.activity.ChatActivity;
@@ -251,21 +252,25 @@ public class Navigator {
         }
     }
 
-    public void getImageFromCameraRoll(Activity activity, int result) {
-        Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        activity.startActivityForResult(i, result);
-    }
-
-    public void getImageFromCamera(Activity activity, int result) {
-        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        activity.startActivityForResult(cameraIntent, result);
-    }
-
     public void sendText(String body, Context context) {
         Intent sendIntent = new Intent(Intent.ACTION_VIEW);
         sendIntent.setData(Uri.parse("sms:"));
         sendIntent.putExtra("sms_body", body);
         context.startActivity(sendIntent);
+    }
+
+    public void share(String handle, Activity activity) {
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, activity.getString(R.string.share_add_friends_handle, "@" + handle, BuildConfig.TRIBE_URL + "/@" + handle));
+        activity.startActivity(Intent.createChooser(sharingIntent, activity.getResources().getString(R.string.contacts_share_profile_button)));
+    }
+
+    public void invite(String phone, int nbFriends, Activity activity) {
+        Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+        sendIntent.setData(Uri.parse("sms:" + phone));
+        sendIntent.putExtra("sms_body", activity.getResources().getString(R.string.share_add_friends_addressbook_suggestions, nbFriends, BuildConfig.TRIBE_URL));
+        activity.startActivity(sendIntent);
     }
 
     public void openFacebookMessenger(String body, Context context) {
@@ -312,5 +317,4 @@ public class Navigator {
         sendIntent.setPackage("org.telegram.messenger");
         activity.startActivity(sendIntent);
     }
-
 }

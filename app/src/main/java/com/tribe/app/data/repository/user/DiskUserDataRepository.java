@@ -7,7 +7,6 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
-import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.ChatRealmDataMapper;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
 import com.tribe.app.data.realm.mapper.SearchResultRealmDataMapper;
@@ -355,6 +354,11 @@ public class DiskUserDataRepository implements UserRepository {
 
     @Override
     public Observable<List<User>> updateUserListScore(Set<String> userIds) {
+        return null;
+    }
+
+    @Override
+    public Observable<String> getHeadDeepLink(String url) {
         return null;
     }
 }

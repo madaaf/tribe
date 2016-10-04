@@ -51,6 +51,7 @@ ext {
     confettiVersion = '1.0.0'
     amplitudeVersion = '2.9.2'
     imageCropperVersion = '2.3.1'
+    firebaseInvitesVersion = '9.4.0'
 
     //Testing
     robolectricVersion = '3.0'
@@ -106,7 +107,8 @@ ext {
             multiDex                : "com.android.support:multidex:${multiDexVersion}",
             confetti                : "com.github.jinatonic.confetti:confetti:${confettiVersion}",
             amplitude               : "com.amplitude:android-sdk:${amplitudeVersion}",
-            imageCropper            : "com.theartofdev.edmodo:android-image-cropper:${imageCropperVersion}"
+            imageCropper            : "com.theartofdev.edmodo:android-image-cropper:${imageCropperVersion}",
+            firebaseInvites         : "com.google.firebase:firebase-invites:${firebaseInvitesVersion}"
     ]
 
     presentationTestDependencies = [

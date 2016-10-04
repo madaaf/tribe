@@ -166,7 +166,8 @@ public class IntroActivity extends BaseActivity {
         if (currentUser == null || StringUtils.isEmpty(currentUser.getUsername())) {
             viewPager.setCurrentItem(PAGE_INTRO);
         } else if (currentUser.getFriendshipList().size() == 0) {
-            viewPager.setCurrentItem(PAGE_ACCESS);
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+            viewPager.setCurrentItem(PAGE_PROFILE_INFO);
         }
 
         viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_NONE);
@@ -179,6 +180,7 @@ public class IntroActivity extends BaseActivity {
      */
 
     public void goToProfileInfo(LoginEntity loginEntity) {
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         profileInfoFragment.setLoginEntity(loginEntity);
         viewPager.setCurrentItem(PAGE_PROFILE_INFO);
     }

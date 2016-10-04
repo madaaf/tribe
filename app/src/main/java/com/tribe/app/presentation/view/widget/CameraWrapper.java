@@ -203,10 +203,6 @@ public class CameraWrapper extends FrameLayout {
 
         if (preview == null)
             resumeCamera();
-
-        if (audioDefault.get()) {
-            activateSound();
-        }
     }
 
     public void showPermissions() {
@@ -490,7 +486,7 @@ public class CameraWrapper extends FrameLayout {
         }
 
         if (shouldDelay) {
-            Observable.timer(1000, TimeUnit.MILLISECONDS)
+            Observable.timer(0, TimeUnit.MILLISECONDS)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(aLong -> {
@@ -520,8 +516,12 @@ public class CameraWrapper extends FrameLayout {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(time -> {
-                    tribeModePublishSubject.onNext(VIDEO);
-                    cameraView.startPreview();
+                    if (audioDefault.get()) {
+                        activateSound();
+                    } else {
+                        tribeModePublishSubject.onNext(VIDEO);
+                        cameraView.startPreview();
+                    }
                 });
         }
 

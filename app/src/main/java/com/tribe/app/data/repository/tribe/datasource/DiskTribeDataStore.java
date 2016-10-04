@@ -28,13 +28,14 @@ public class DiskTribeDataStore implements TribeDataStore {
 
     @Override
     public Observable<Void> deleteTribe(TribeRealm tribeRealm) {
-        return tribeCache.delete(tribeRealm);
+        tribeCache.delete(tribeRealm);
+        return Observable.just(null);
     }
 
     @Override
     public Observable<TribeRealm> sendTribe(TribeRealm tribeRealm) {
         tribeRealm.setFrom(userCache.userInfosNoObs(tribeRealm.getFrom().getId()));
-        return tribeCache.insert(tribeRealm);
+        return Observable.just(tribeCache.insert(tribeRealm));
     }
 
     @Override

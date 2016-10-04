@@ -45,6 +45,7 @@ import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -82,6 +83,9 @@ public class ProfileInfoView extends LinearLayout {
 
     @BindView(R.id.imgUsernameInd)
     ImageView imgUsernameInd;
+
+    @BindView(R.id.txtArobase)
+    TextViewFont txtArobase;
 
     @BindView(R.id.circularProgressUsername)
     CircularProgressView circularProgressUsername;
@@ -205,10 +209,19 @@ public class ProfileInfoView extends LinearLayout {
 
         subscriptions.add(
                 RxTextView.textChanges(editUsername)
+                        .map(CharSequence::toString)
+                        .doOnNext(s -> {
+                            if (!StringUtils.isEmpty(s)) {
+                                editUsername.setHint("");
+                                showArobase();
+                            } else {
+                                editUsername.setHint(R.string.onboarding_user_username_placeholder);
+                                hideArobase();
+                            }
+                        })
                         .debounce(200, TimeUnit.MILLISECONDS)
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .map(CharSequence::toString)
                         .doOnNext(s -> {
                             if (!StringUtils.isEmpty(s)) {
                                 if (s.equals(usernameInit)) {
@@ -279,7 +292,12 @@ public class ProfileInfoView extends LinearLayout {
             imgUsernameInd.setImageResource(R.drawable.picto_wrong);
         }
 
-        showUsernameInd();
+        if (editUsername.getText().length() > 0) {
+            showUsernameInd();
+        } else {
+            hideUsernameInd();
+        }
+
         refactorInfosValid();
     }
 
@@ -293,6 +311,14 @@ public class ProfileInfoView extends LinearLayout {
         if (imgUsernameInd.getScaleX() == 1) {
             AnimationUtils.scaleDown(imgUsernameInd, DURATION, new DecelerateInterpolator());
         }
+    }
+
+    public void hideArobase() {
+        txtArobase.setVisibility(View.GONE);
+    }
+
+    public void showArobase() {
+        txtArobase.setVisibility(View.VISIBLE);
     }
 
     public void showUsernameProgress() {
@@ -321,12 +347,19 @@ public class ProfileInfoView extends LinearLayout {
             imgDisplayNameInd.setImageResource(R.drawable.picto_wrong);
         }
 
-        showDisplayNameInd();
+        if (editDisplayName.getText().length() > 0)
+            showDisplayNameInd();
+        else hideDisplayNameInd();
+
         refactorInfosValid();
     }
 
     public void showDisplayNameInd() {
         if (imgDisplayNameInd.getScaleX() == 0) AnimationUtils.scaleUp(imgDisplayNameInd, DURATION, new DecelerateInterpolator());
+    }
+
+    public void hideDisplayNameInd() {
+        if (imgDisplayNameInd.getScaleX() == 1) AnimationUtils.scaleDown(imgDisplayNameInd, DURATION, new DecelerateInterpolator());
     }
 
     public String getImgUri() {

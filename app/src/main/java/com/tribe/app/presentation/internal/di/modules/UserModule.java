@@ -27,6 +27,7 @@ import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetDiskContactList;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.GetGroupMembers;
+import com.tribe.app.domain.interactor.user.GetHeadDeepLink;
 import com.tribe.app.domain.interactor.user.GetReceivedDiskMessageList;
 import com.tribe.app.domain.interactor.user.GetRequestCode;
 import com.tribe.app.domain.interactor.user.LookupUsername;
@@ -256,5 +257,11 @@ public class UserModule {
     @PerActivity
     GetBlockedFriendshipList provideGetBlockedFriendshipList(DiskUserDataRepository diskUserDataRepository, PostExecutionThread postExecutionThread) {
         return new GetBlockedFriendshipList(diskUserDataRepository, postExecutionThread);
+    }
+
+    @Provides
+    @PerActivity
+    GetHeadDeepLink provideGetHeadDeepLink(CloudUserDataRepository cloudUserDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+        return new GetHeadDeepLink(cloudUserDataRepository, threadExecutor, postExecutionThread);
     }
 }

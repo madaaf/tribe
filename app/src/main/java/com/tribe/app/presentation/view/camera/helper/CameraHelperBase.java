@@ -120,9 +120,10 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
     }
 
     private void adjustCameraParameters() {
-        final SortedSet<Size> sizes = previewSizes.sizes(aspectRatio);
+        SortedSet<Size> sizes = previewSizes.sizes(aspectRatio);
         if (sizes == null) { // Not supported
             aspectRatio = chooseAspectRatio();
+            sizes = previewSizes.sizes(aspectRatio);
         }
         previewSize = chooseOptimalSize(sizes);
         final Camera.Size currentSize = cameraParameters.getPictureSize();
@@ -139,7 +140,7 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
         AspectRatio r = null;
         for (AspectRatio ratio : previewSizes.ratios()) {
             r = ratio;
-            if (ratio.equals(Constants.ASPECT_RATIO_16_9)) {
+            if (ratio.equals(Constants.DEFAULT_ASPECT_RATIO)) {
                 return ratio;
             }
         }

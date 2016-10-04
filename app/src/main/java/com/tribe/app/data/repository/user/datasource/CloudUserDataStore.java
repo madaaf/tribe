@@ -1058,5 +1058,19 @@ public class CloudUserDataStore implements UserDataStore {
 
         return Observable.empty();
     }
+
+    @Override
+    public Observable<String> getHeadDeepLink(String url) {
+        return tribeApi.getHeadDeepLink(url).flatMap(response -> {
+            if (response != null && response.raw() != null && response.raw().priorResponse() != null
+                    && response.raw().priorResponse().networkResponse() != null
+                    && response.raw().priorResponse().networkResponse().request() != null) {
+                String result = response.raw().priorResponse().networkResponse().request().url().toString();
+                return Observable.just(result);
+            }
+
+            return Observable.just("");
+        });
+    }
 }
 

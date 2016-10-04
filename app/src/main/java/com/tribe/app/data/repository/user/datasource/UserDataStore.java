@@ -152,4 +152,6 @@ public interface UserDataStore {
     Observable<FriendshipRealm> updateFriendship(String friendshipId, @FriendshipRealm.FriendshipStatus String status);
 
     Observable<List<UserRealm>> updateUserListScore(Set<String> userIds);
+
+    Observable<String> getHeadDeepLink(String url);
 }

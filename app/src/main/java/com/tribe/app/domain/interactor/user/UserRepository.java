@@ -156,4 +156,6 @@ public interface UserRepository {
     Observable<List<Friendship>> getBlockedFriendshipList();
 
     Observable<List<User>> updateUserListScore(Set<String> userIds);
+
+    Observable<String> getHeadDeepLink(String url);
 }

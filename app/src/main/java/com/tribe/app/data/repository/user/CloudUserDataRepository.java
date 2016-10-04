@@ -270,4 +270,10 @@ public class CloudUserDataRepository implements UserRepository {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
         return cloudDataStore.updateUserListScore(userIds).map(userRealmList -> this.userRealmDataMapper.transform(userRealmList));
     }
+
+    @Override
+    public Observable<String> getHeadDeepLink(String url) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.getHeadDeepLink(url);
+    }
 }

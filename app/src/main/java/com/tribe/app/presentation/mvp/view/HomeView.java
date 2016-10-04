@@ -21,4 +21,5 @@ public interface HomeView extends LoadDataView {
     void initClickOnPoints(Observable<android.view.View> observable);
     void initClickOnSettings(Observable<android.view.View> observable);
     void initPullToSearchActive(Observable<Boolean> observable);
+    void onDeepLink(String url);
 }

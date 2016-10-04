@@ -8,11 +8,11 @@ import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
-import com.tribe.app.domain.interactor.user.LeaveGroup;
-import com.tribe.app.domain.interactor.user.RemoveGroup;
+import com.tribe.app.domain.interactor.user.GetHeadDeepLink;
 import com.tribe.app.domain.interactor.user.SendToken;
 import com.tribe.app.presentation.mvp.view.HomeView;
 import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.utils.StringUtils;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class HomePresenter implements Presenter {
     private SendToken sendTokenUseCase;
     private UseCase cloudUserInfos;
     private JobManager jobManager;
-
+    private GetHeadDeepLink getHeadDeepLink;
 
     private FriendListSubscriber friendListSubscriber;
 
@@ -34,11 +34,11 @@ public class HomePresenter implements Presenter {
     public HomePresenter(JobManager jobManager,
                          @Named("sendToken") SendToken sendToken,
                          @Named("cloudUserInfos") UseCase cloudUserInfos,
-                         LeaveGroup leaveGroup, RemoveGroup removeGroup) {
+                         GetHeadDeepLink getHeadDeepLink) {
         this.sendTokenUseCase = sendToken;
         this.cloudUserInfos = cloudUserInfos;
         this.jobManager = jobManager;
-
+        this.getHeadDeepLink = getHeadDeepLink;
     }
 
     @Override
@@ -69,6 +69,7 @@ public class HomePresenter implements Presenter {
     public void onDestroy() {
         sendTokenUseCase.unsubscribe();
         cloudUserInfos.unsubscribe();
+        getHeadDeepLink.unsubscribe();
     }
 
     public void sendToken(String token) {
@@ -84,6 +85,11 @@ public class HomePresenter implements Presenter {
 
     public void updateMessagesToNotSeen(List<Message> messageList) {
         jobManager.addJobInBackground(new UpdateTribeListNotSeenStatusJob(messageList));
+    }
+
+    public void getHeadDeepLink(String url) {
+        getHeadDeepLink.prepare(url);
+        getHeadDeepLink.execute(new GetHeadDeepLinkSubscriber());
     }
 
     @Override
@@ -124,5 +130,19 @@ public class HomePresenter implements Presenter {
         }
     }
 
+    private final class GetHeadDeepLinkSubscriber extends DefaultSubscriber<String> {
 
+        @Override
+        public void onCompleted() {}
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(String url) {
+            if (!StringUtils.isEmpty(url)) homeView.onDeepLink(url);
+        }
+    }
 }
