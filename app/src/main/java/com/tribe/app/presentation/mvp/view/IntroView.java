@@ -8,7 +8,6 @@ public interface IntroView extends LoadDataView {
 
     void goToCode(Pin pin);
     void goToHome();
-    void goToProfileInfo();
     void goToConnected(User user);
     void loginError(ErrorLogin errorLogin);
 }

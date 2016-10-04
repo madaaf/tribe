@@ -7,7 +7,6 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
-import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.ChatRealmDataMapper;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
 import com.tribe.app.data.realm.mapper.SearchResultRealmDataMapper;
@@ -134,7 +133,7 @@ public class DiskUserDataRepository implements UserRepository {
                                         || (!tribe.isToGroup() && tribe.getFrom().getId().equals(recipient.getSubId()))) {
                                     receivedTribes.add(tribe);
                                 } else if (tribe.getFrom().getId().equals(user.getId())
-                                        && tribe.getTo().getSubId().equals(recipient.getSubId())) {
+                                        && tribe.getTo() != null && tribe.getTo().getSubId() != null && tribe.getTo().getSubId().equals(recipient.getSubId())) {
                                     if (tribe.getMessageSendingStatus().equals(MessageSendingStatus.STATUS_ERROR))
                                         errorTribes.add(tribe);
                                     else sentTribes.add(tribe);
@@ -360,6 +359,16 @@ public class DiskUserDataRepository implements UserRepository {
 
     @Override
     public Observable<List<User>> updateUserListScore(Set<String> userIds) {
+        return null;
+    }
+
+    @Override
+    public Observable<String> getHeadDeepLink(String url) {
+        return null;
+    }
+
+    @Override
+    public Observable<Membership> createMembership(String groupId) {
         return null;
     }
 }

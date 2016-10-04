@@ -16,11 +16,14 @@ import java.util.List;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import retrofit2.Response;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.HEAD;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.Url;
 import rx.Observable;
 
 public interface TribeApi {
@@ -184,4 +187,7 @@ public interface TribeApi {
     @FormUrlEncoded
     @POST("/graphql")
     Observable<List<UserRealm>> updateUserListScore(@Field("query") String query);
+
+    @HEAD
+    Observable<Response<Void>> getHeadDeepLink(@Url String url);
 }

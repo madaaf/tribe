@@ -39,11 +39,6 @@
         <item name="android:backgroundDimEnabled">false</item>
     </style>
 
-    <style name="SCBSwitch" parent="@style/Theme.AppCompat.Light">
-        <item name="android:colorControlActivated">@color/blue.text</item>
-        <item name="android:colorControlNormal">@android:color/white</item>
-    </style>
-
     <style name="CropTheme" parent="@style/Theme.AppCompat.Light">
         <item name="colorPrimary">@android:color/white</item>
         <item name="titleTextColor">@android:color/black</item>

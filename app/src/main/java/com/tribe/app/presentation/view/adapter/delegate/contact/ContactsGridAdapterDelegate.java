@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Contact;
@@ -17,6 +18,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 18/05/2016.
@@ -27,6 +30,7 @@ public class ContactsGridAdapterDelegate extends RxAdapterDelegate<List<Object>>
     private Context context;
 
     // OBSERVABLES
+    private PublishSubject<View> onClickInvite = PublishSubject.create();
 
     public ContactsGridAdapterDelegate(Context context) {
         this.context = context;
@@ -42,6 +46,9 @@ public class ContactsGridAdapterDelegate extends RxAdapterDelegate<List<Object>>
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
         ContactViewHolder vh = new ContactViewHolder(layoutInflater.inflate(R.layout.item_contact, parent, false));
+
+        vh.imgPicto.setOnClickListener(v -> onClickInvite.onNext(vh.itemView));
+
         return vh;
     }
 
@@ -55,6 +62,10 @@ public class ContactsGridAdapterDelegate extends RxAdapterDelegate<List<Object>>
         vh.txtDescription.setText(context.getString(R.string.contacts_section_addressbook_friends_in_app, contact.getHowManyFriends()));
     }
 
+    public Observable<View> onClickInvite() {
+        return onClickInvite;
+    }
+
     static class ContactViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.txtName)
@@ -65,6 +76,9 @@ public class ContactsGridAdapterDelegate extends RxAdapterDelegate<List<Object>>
 
         @BindView(R.id.txtDescription)
         TextViewFont txtDescription;
+
+        @BindView(R.id.imgPicto)
+        ImageView imgPicto;
 
         public ContactViewHolder(View itemView) {
             super(itemView);

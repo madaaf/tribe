@@ -5,12 +5,15 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
@@ -18,11 +21,15 @@ import android.view.animation.OvershootInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
@@ -31,6 +38,7 @@ import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.mvp.presenter.HomePresenter;
 import com.tribe.app.presentation.mvp.view.HomeView;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.fragment.ContactsGridFragment;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
@@ -51,7 +59,7 @@ import butterknife.OnClick;
 import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
 
-public class HomeActivity extends BaseActivity implements HasComponent<UserComponent>, HomeView {
+public class HomeActivity extends BaseActivity implements HasComponent<UserComponent>, HomeView, GoogleApiClient.OnConnectionFailedListener {
 
     public static final String[] PERMISSIONS_CAMERA = new String[]{ Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE };
@@ -126,6 +134,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @BindView(R.id.cameraWrapper)
     CameraWrapper cameraWrapper;
 
+    // OBSERVABLES
     private UserComponent userComponent;
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
@@ -133,10 +142,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private HomeViewPagerAdapter homeViewPagerAdapter;
     private List<Message> newMessages;
     private int pendingTribeCount;
-    private String pictureUri;
     private boolean isRecording;
     private boolean navVisible = true;
     private boolean isFirstInit = true;
+    private GoogleApiClient googleApiClient;
 
     // DIMEN
     private int sizeNavMax, sizeNavSmall, marginHorizontalSmall, translationBackToTop;
@@ -144,6 +153,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         initDependencyInjector();
         initUi();
         initDimensions();
@@ -151,6 +161,13 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         initCamera();
         initPresenter();
         initRegistrationToken();
+        manageDeepLink(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        manageDeepLink(intent);
     }
 
     @Override
@@ -185,17 +202,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
         homePresenter.onDestroy();
         super.onDestroy();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-//        if (requestCode == TRIBES_RESULT && resultCode == Activity.RESULT_OK) {
-//            List<TribeMessage> seen = (ArrayList<TribeMessage>) data.getSerializableExtra(TribeActivity.TRIBES_SEEN);
-//            Recipient recipient = (Recipient) data.getSerializableExtra(TribeActivity.RECIPIENT);
-//            homeViewPagerAdapter.getHomeGridFragment().markTribeListAsSeen(recipient, seen);
-//        }
     }
 
     private void initUi() {
@@ -388,10 +394,39 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         }));
     }
 
+    @Override
+    public void onDeepLink(String url) {
+        if (!StringUtils.isEmpty(url)) {
+            Uri uri = Uri.parse(url);
+
+            if (uri != null && !StringUtils.isEmpty(uri.getPath())) {
+                if (uri.getPath().startsWith("/u/") && homeViewPagerAdapter.getContactsGridFragment() != null) {
+                    viewPager.setCurrentItem(CONTACTS_FRAGMENT_PAGE, true);
+                    homeViewPagerAdapter.getContactsGridFragment().search(StringUtils.getLastBitFromUrl(url));
+                } else if (uri.getPath().startsWith("/g/")) {
+                    homePresenter.createMembership(StringUtils.getLastBitFromUrl(url));
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onMembershipCreated(Membership membership) {
+        if (homeViewPagerAdapter.getHomeGridFragment() != null) {
+            homeViewPagerAdapter.getHomeGridFragment().reloadGrid();
+        }
+    }
+
     private void initRegistrationToken() {
         String token = FirebaseInstanceId.getInstance().getToken();
 
         if (token != null) homePresenter.sendToken(token);
+    }
+
+    private void manageDeepLink(Intent intent) {
+        if (intent != null && intent.getData() != null) {
+            homePresenter.getHeadDeepLink(intent.getDataString());
+        }
     }
 
     private void updatePendingTribeCount() {
@@ -498,6 +533,13 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     public Context context() {
         return null;
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.w("TRIBE", "onConnectionFailed:" + connectionResult);
+        Toast.makeText(this, "Google Play Services Error: " + connectionResult.getErrorCode(),
+                Toast.LENGTH_SHORT).show();
     }
 
     public class HomeViewPagerAdapter extends FragmentStatePagerAdapter {

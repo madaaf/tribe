@@ -8,12 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.ButtonPoints;
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.ContactAB;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
@@ -237,6 +239,8 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
                             contactsGridPresenter.loginFacebook();
                         } else if (buttonPoints.getType() == ButtonPointsView.FB_NOTIFY) {
                             contactsGridPresenter.notifyFBFriends();
+                        } else if (buttonPoints.getType() == ButtonPointsView.PROFILE) {
+                            navigator.shareHandle(currentUser.getUsername(), getActivity());
                         }
                     }
                 }));
@@ -263,7 +267,7 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
                 .subscribe(o -> {
                     if (o instanceof SearchResult) {
                         SearchResult searchResult = (SearchResult) o;
-                        if (!searchResult.getUsername().equals(currentUser.getUsername()))
+                        if (searchResult.getUsername() != null && !searchResult.getUsername().equals(currentUser.getUsername()))
                             contactsGridPresenter.createFriendship(searchResult.getId());
                     }
                 }));
@@ -275,6 +279,16 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
                     if (o instanceof SearchResult) {
                         SearchResult searchResult = (SearchResult) o;
                         contactsGridPresenter.removeFriendship(searchResult.getFriendship().getId());
+                    }
+                }));
+
+        subscriptions.add(contactsGridAdapter.onClickInvite()
+                .map(view -> contactsGridAdapter.getItemAtPosition(recyclerViewContacts.getChildLayoutPosition(view)))
+                .doOnError(throwable -> throwable.printStackTrace())
+                .subscribe(o -> {
+                    if (o instanceof ContactAB) {
+                        ContactAB contact = (ContactAB) o;
+                        navigator.invite(contact.getPhone(), contact.getHowManyFriends(), getActivity());
                     }
                 }));
 
@@ -348,7 +362,7 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
                 searchResult.setShouldAnimateAdd(true);
 
             this.searchResult = searchResult;
-            this.searchResult.setMyself(searchResult.getUsername().equals(currentUser.getUsername()));
+            this.searchResult.setMyself(searchResult.getUsername() != null && searchResult.getUsername().equals(currentUser.getUsername()));
             updateSearch();
         }
     }
@@ -367,5 +381,14 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
     @Override
     public void errorFacebookLogin() {
         // TODO SHOW ERROR ?
+    }
+
+    public void search(String username) {
+        editTextSearchContact.postDelayed(() -> {
+            editTextSearchContact.requestFocus();
+            InputMethodManager imm = (InputMethodManager) context().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(editTextSearchContact, InputMethodManager.SHOW_IMPLICIT);
+            editTextSearchContact.setText(username);
+        }, 750);
     }
 }

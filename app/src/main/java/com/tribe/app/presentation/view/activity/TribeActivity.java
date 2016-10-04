@@ -363,7 +363,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
         }
 
         List<LabelType> moreType = new ArrayList<>();
-        moreType.add(new MoreType(getString(R.string.tribe_more_save), MoreType.TRIBE_SAVE));
+        if (tribe.isCanSave()) moreType.add(new MoreType(getString(R.string.tribe_more_save), MoreType.TRIBE_SAVE));
         moreType.add(new MoreType(
                 speedPlayback.get().equals(TribePagerView.SPEED_NORMAL) ? getString(R.string.tribe_more_set_speed_2x) : getString(R.string.tribe_more_set_speed_1x),
                 speedPlayback.get().equals(TribePagerView.SPEED_NORMAL) ? MoreType.TRIBE_INCREASE_SPEED : MoreType.TRIBE_DECREASE_SPEED));

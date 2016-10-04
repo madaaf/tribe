@@ -86,12 +86,15 @@ android {
             testCoverageEnabled = "true"
             applicationIdSuffix = ".debug"
             resValue "string", "app_name", "Tribe DEBUG"
+            resValue "string", "tribe_url_filter", "\"${tribe_url_filter_debug}\""
 
             buildConfigField "String", "TRIBE_PUBLIC_KEY", "\"${tribe_public_key_debug}\""
             buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key_debug}\""
             buildConfigField "String", "TRIBE_API", "\"http://api.dev.tribe.pm\""
             buildConfigField "String", "TRIBE_AUTH", "\"http://auth.dev.tribe.pm\""
             buildConfigField "String", "AMPLITUDE_KEY", "\"${amplitude_debug}\""
+            buildConfigField "String", "TRIBE_URL", "\"${tribe_url_debug}\""
+            buildConfigField "String", "TRIBE_DYNAMIC_LINK", "\"${tribe_dynamic_link_debug}\""
         }
 
         tribe2 {
@@ -99,12 +102,30 @@ android {
             signingConfig signingConfigs.release
             applicationIdSuffix = ".Tribe2"
             resValue "string", "app_name", "Tribe2"
+            resValue "string", "tribe_url_filter", "\"${tribe_url_filter_tribe2}\""
 
             buildConfigField "String", "TRIBE_PUBLIC_KEY", "\"${tribe_public_key_tribe2}\""
             buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key_tribe2}\""
             buildConfigField "String", "TRIBE_API", "\"https://api.tribe.pm\""
             buildConfigField "String", "TRIBE_AUTH", "\"https://auth.tribe.pm\""
             buildConfigField "String", "AMPLITUDE_KEY", "\"${amplitude_prod}\""
+            buildConfigField "String", "TRIBE_URL", "\"${tribe_url_tribe2}\""
+            buildConfigField "String", "TRIBE_DYNAMIC_LINK", "\"${tribe_dynamic_link_tribe2}\""
+        }
+
+        release {
+            debuggable false
+            signingConfig signingConfigs.release
+            resValue "string", "app_name", "Tribe"
+            resValue "string", "tribe_url_filter", "\"${tribe_url_filter}\""
+
+            buildConfigField "String", "TRIBE_PUBLIC_KEY", "\"${tribe_public_key}\""
+            buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key}\""
+            buildConfigField "String", "TRIBE_API", "\"https://api.tribe.pm\""
+            buildConfigField "String", "TRIBE_AUTH", "\"https://auth.tribe.pm\""
+            buildConfigField "String", "AMPLITUDE_KEY", "\"${amplitude_prod}\""
+            buildConfigField "String", "TRIBE_URL", "\"${tribe_url}\""
+            buildConfigField "String", "TRIBE_DYNAMIC_LINK", "\"${tribe_dynamic_link}\""
         }
     }
 }
@@ -160,6 +181,7 @@ dependencies {
     compile presentationDependencies.confetti
     compile presentationDependencies.amplitude
     compile presentationDependencies.imageCropper
+    compile presentationDependencies.firebaseInvites
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker

@@ -281,4 +281,16 @@ public class CloudUserDataRepository implements UserRepository {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
         return cloudDataStore.updateUserListScore(userIds).map(userRealmList -> this.userRealmDataMapper.transform(userRealmList));
     }
+
+    @Override
+    public Observable<String> getHeadDeepLink(String url) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.getHeadDeepLink(url);
+    }
+
+    @Override
+    public Observable<Membership> createMembership(String groupId) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.createMembership(groupId).map(membershipRealm -> userRealmDataMapper.getMembershipRealmDataMapper().transform(membershipRealm));
+    }
 }

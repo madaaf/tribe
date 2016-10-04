@@ -23,7 +23,7 @@ public interface TribeCache {
     boolean isExpired();
     boolean isCached(int messageId);
     void insert(List<TribeRealm> tribeRealmList);
-    Observable<TribeRealm> insert(TribeRealm tribeRealm);
+    TribeRealm insert(TribeRealm tribeRealm);
     void update(TribeRealm tribeRealm);
     /**
      *
@@ -39,7 +39,7 @@ public interface TribeCache {
     void update(Map<String, List<Pair<String, Object>>> valuesToUpdate);
 
     RealmList<MessageRecipientRealm> createTribeRecipientRealm(List<MessageRecipientRealm> tribeRecipientRealm);
-    Observable<Void> delete(TribeRealm tribeRealm);
+    void delete(TribeRealm tribeRealm);
     Observable<List<TribeRealm>> tribesNotSeen(String recipientId);
     List<TribeRealm> tribesNotSeenNoObs(String recipientId);
     Observable<List<TribeRealm>> tribesReceived(String recipientId);

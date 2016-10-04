@@ -54,6 +54,7 @@
         android:background="@drawable/shape_oval_green"
         android:src="@drawable/picto_message_icon"
         android:scaleType="centerInside"
+        android:clickable="true"
         />
 
 </FrameLayout>

@@ -163,9 +163,10 @@ public class IntroActivity extends BaseActivity {
         viewPager.setOffscreenPageLimit(4);
         viewPager.setScrollDurationFactor(2f);
 
-        if (currentUser == null || StringUtils.isEmpty(currentUser.getUsername())) {
+        if (currentUser == null || StringUtils.isEmpty(currentUser.getId())) {
             viewPager.setCurrentItem(PAGE_INTRO);
         } else if (currentUser.getFriendshipList().size() == 0) {
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
             viewPager.setCurrentItem(PAGE_ACCESS);
         }
 
@@ -178,8 +179,10 @@ public class IntroActivity extends BaseActivity {
      * Navigation methods
      */
 
-    public void goToProfileInfo(LoginEntity loginEntity) {
+    public void goToProfileInfo(User user, LoginEntity loginEntity) {
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         profileInfoFragment.setLoginEntity(loginEntity);
+        profileInfoFragment.setUser(user);
         viewPager.setCurrentItem(PAGE_PROFILE_INFO);
     }
 

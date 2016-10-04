@@ -30,8 +30,9 @@
         android:layout_width="45dp"
         android:layout_height="30dp"
         android:layout_gravity="end"
+        android:layout_marginTop="-5dp"
         android:visibility="invisible"
-        android:theme="@style/SCBSwitch"
+        android:theme="@style/ColorSwitchStyle"
         />
 
     <ImageView

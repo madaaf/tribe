@@ -181,7 +181,7 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
     @Override
     public void successUpdateUser(User user) {
         this.user.copy(user);
-        ((IntroActivity) getActivity()).goToAccess(user);
+        ((IntroActivity) getActivity()).goToAccess(this.user);
     }
 
     public void getInfoFromFacebook() {
@@ -204,7 +204,12 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
     @OnClick(R.id.imgNextIcon)
     public void clickNext() {
         screenUtils.hideKeyboard(getActivity());
-        profileInfoPresenter.register(profileInfoView.getDisplayName(), profileInfoView.getUsername(), loginEntity);
+
+        if (StringUtils.isEmpty(user.getId()))
+            profileInfoPresenter.register(profileInfoView.getDisplayName(), profileInfoView.getUsername(), loginEntity);
+        else
+            profileInfoPresenter.updateUser(profileInfoView.getUsername(), profileInfoView.getDisplayName(), profileInfoView.getImgUri(),
+                    facebookEntity != null && !StringUtils.isEmpty(facebookEntity.getId()) ? facebookEntity.getId() : null);
     }
 
     /**
@@ -259,5 +264,14 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
 
     public void setLoginEntity(LoginEntity loginEntity) {
         this.loginEntity = phoneUtils.prepareLoginForRegister(loginEntity);
+    }
+
+    public void setUser(User user) {
+        if (user != null) {
+            this.user = user;
+            profileInfoView.loadAvatar(user.getProfilePicture());
+            profileInfoView.setEditDisplayName(user.getDisplayName());
+            profileInfoView.setEditUsername(user.getUsername());
+        }
     }
 }

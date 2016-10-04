@@ -4,15 +4,17 @@ import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.UpdateMessagesJob;
 import com.tribe.app.data.network.job.UpdateTribeListNotSeenStatusJob;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
-import com.tribe.app.domain.interactor.user.LeaveGroup;
-import com.tribe.app.domain.interactor.user.RemoveGroup;
+import com.tribe.app.domain.interactor.user.CreateMembership;
+import com.tribe.app.domain.interactor.user.GetHeadDeepLink;
 import com.tribe.app.domain.interactor.user.SendToken;
 import com.tribe.app.presentation.mvp.view.HomeView;
 import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.utils.StringUtils;
 
 import java.util.List;
 
@@ -24,7 +26,8 @@ public class HomePresenter implements Presenter {
     private SendToken sendTokenUseCase;
     private UseCase cloudUserInfos;
     private JobManager jobManager;
-
+    private GetHeadDeepLink getHeadDeepLink;
+    private CreateMembership createMembership;
 
     private FriendListSubscriber friendListSubscriber;
 
@@ -34,11 +37,13 @@ public class HomePresenter implements Presenter {
     public HomePresenter(JobManager jobManager,
                          @Named("sendToken") SendToken sendToken,
                          @Named("cloudUserInfos") UseCase cloudUserInfos,
-                         LeaveGroup leaveGroup, RemoveGroup removeGroup) {
+                         GetHeadDeepLink getHeadDeepLink,
+                         CreateMembership createMembership) {
         this.sendTokenUseCase = sendToken;
         this.cloudUserInfos = cloudUserInfos;
         this.jobManager = jobManager;
-
+        this.getHeadDeepLink = getHeadDeepLink;
+        this.createMembership = createMembership;
     }
 
     @Override
@@ -69,6 +74,8 @@ public class HomePresenter implements Presenter {
     public void onDestroy() {
         sendTokenUseCase.unsubscribe();
         cloudUserInfos.unsubscribe();
+        getHeadDeepLink.unsubscribe();
+        createMembership.unsubscribe();
     }
 
     public void sendToken(String token) {
@@ -84,6 +91,16 @@ public class HomePresenter implements Presenter {
 
     public void updateMessagesToNotSeen(List<Message> messageList) {
         jobManager.addJobInBackground(new UpdateTribeListNotSeenStatusJob(messageList));
+    }
+
+    public void getHeadDeepLink(String url) {
+        getHeadDeepLink.prepare(url);
+        getHeadDeepLink.execute(new GetHeadDeepLinkSubscriber());
+    }
+
+    public void createMembership(String groupId) {
+        createMembership.setGroupId(groupId);
+        createMembership.execute(new CreateMembershipSubscriber());
     }
 
     @Override
@@ -124,5 +141,35 @@ public class HomePresenter implements Presenter {
         }
     }
 
+    private final class GetHeadDeepLinkSubscriber extends DefaultSubscriber<String> {
 
+        @Override
+        public void onCompleted() {}
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(String url) {
+            if (!StringUtils.isEmpty(url)) homeView.onDeepLink(url);
+        }
+    }
+
+    private final class CreateMembershipSubscriber extends DefaultSubscriber<Membership> {
+
+        @Override
+        public void onCompleted() {}
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(Membership membership) {
+            homeView.onMembershipCreated(membership);
+        }
+    }
 }

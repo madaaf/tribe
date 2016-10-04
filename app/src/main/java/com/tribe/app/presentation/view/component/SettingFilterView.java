@@ -8,6 +8,7 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.ViewTreeObserver;
+import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -156,6 +157,8 @@ public class SettingFilterView extends FrameLayout {
         if (animate) {
             imgFilterUnderline.animate()
                     .x(location[0])
+                    .setDuration(300)
+                    .setInterpolator(new OvershootInterpolator(0.75f))
                     .start();
         } else {
             imgFilterUnderline.setX(location[0]);

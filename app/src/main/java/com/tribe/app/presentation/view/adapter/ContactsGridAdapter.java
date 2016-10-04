@@ -36,6 +36,7 @@ public class ContactsGridAdapter extends RecyclerView.Adapter {
     protected RxAdapterDelegatesManager delegatesManager;
     private ButtonPointsAdapterDelegate buttonPointsAdapterDelegate;
     private SearchResultGridAdapterDelegate searchResultGridAdapterDelegate;
+    private ContactsGridAdapterDelegate contactsGridAdapterDelegate;
 
     // VARIABLES
     private List<Object> items;
@@ -58,7 +59,8 @@ public class ContactsGridAdapter extends RecyclerView.Adapter {
         searchResultGridAdapterDelegate = new SearchResultGridAdapterDelegate(context);
         delegatesManager.addDelegate(searchResultGridAdapterDelegate);
 
-        delegatesManager.addDelegate(new ContactsGridAdapterDelegate(context));
+        contactsGridAdapterDelegate = new ContactsGridAdapterDelegate(context);
+        delegatesManager.addDelegate(contactsGridAdapterDelegate);
         delegatesManager.addDelegate(new SeparatorAdapterDelegate(context));
         delegatesManager.addDelegate(new ContactsHeaderAdapterDelegate(context));
 
@@ -174,5 +176,9 @@ public class ContactsGridAdapter extends RecyclerView.Adapter {
 
     public Observable<View> onClickRemove() {
         return searchResultGridAdapterDelegate.clickRemove();
+    }
+
+    public Observable<View> onClickInvite() {
+        return contactsGridAdapterDelegate.onClickInvite();
     }
 }
