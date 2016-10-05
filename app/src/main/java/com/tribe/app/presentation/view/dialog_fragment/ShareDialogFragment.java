@@ -124,7 +124,7 @@ public class ShareDialogFragment extends BaseDialogFragment {
             navigator.sendText(shareMessage, getActivity());
         }));
         subscriptions.add(RxView.clicks(imageSlack).subscribe(aVoid -> {
-
+            navigator.openSlack(shareMessage, getActivity());
         }));
         subscriptions.add(RxView.clicks(imageTelegram).subscribe(aVoid -> {
             navigator.openTelegram(shareMessage, getActivity());

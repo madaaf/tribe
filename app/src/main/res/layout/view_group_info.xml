@@ -63,8 +63,8 @@
 
     <ImageView
         android:id="@+id/imageGroup"
-        android:layout_width="@dimen/group_image_size"
-        android:layout_height="@dimen/group_image_size"
+        android:layout_width="@dimen/avatar_size"
+        android:layout_height="@dimen/avatar_size"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="34dp"
     />

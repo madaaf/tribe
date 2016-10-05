@@ -96,7 +96,7 @@ public class GroupInfoView extends FrameLayout {
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
     // view vars
-    private int moveGroupName = 60;
+    private int moveGroupName = 55;
     private int startTranslationEditIcons = -200;
     private int privacyFinalPosition = -48;
     private float groupPicScaleDownF = .7f;

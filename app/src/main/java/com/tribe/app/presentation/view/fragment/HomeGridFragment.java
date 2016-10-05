@@ -499,7 +499,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
                         homeGridPresenter.updateFriendship((Friendship) recipient, moreType.getMoreType().equals(MoreType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED : FriendshipRealm.HIDDEN);
                     } else if (moreType.getMoreType().equals(MoreType.GROUP_INFO)) {
                         Membership membership = (Membership) recipient;
-                        navigator.navigateToGroupInfo(getActivity(), membership.getId(), membership.getGroup().getId(), membership.getGroup().getName(), membership.getGroup().getPicture(), membership.getLink(), membership.getLink_expires_at());
+                        navigator.navigateToGroupInfo(getActivity(), membership.getId(), membership.isAdmin(), membership.getGroup().getId(), membership.getGroup().getName(), membership.getGroup().getPicture(), membership.getLink(), membership.getLink_expires_at());
                     } else if (moreType.getMoreType().equals(MoreType.GROUP_LEAVE)) {
                         homeGridPresenter.leaveGroup(recipient.getId());
                     } else if (moreType.getMoreType().equals(MoreType.GROUP_DELETE)) {
