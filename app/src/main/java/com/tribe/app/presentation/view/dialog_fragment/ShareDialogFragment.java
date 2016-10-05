@@ -140,10 +140,12 @@ public class ShareDialogFragment extends BaseDialogFragment {
 
         subscriptions.add(RxView.clicks(textDelete).subscribe(aVoid -> {
             deletePressed.onNext(null);
+            getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
             dismiss();
         }));
 
         subscriptions.add(RxView.clicks(textDone).subscribe(aVoid -> {
+            getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
             dismiss();
         }));
 
@@ -164,7 +166,7 @@ public class ShareDialogFragment extends BaseDialogFragment {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {
-                    textPopupTitle.setText(getContext().getString(R.string.group_private_link_popup_title, StringUtils.millisecondsToHhMmSs(timeRemaining)));
+                    if (textPopupTitle!= null) textPopupTitle.setText(getContext().getString(R.string.group_private_link_popup_title, StringUtils.millisecondsToHhMmSs(timeRemaining)));
                 }));
     }
 

@@ -110,9 +110,6 @@ public class CreateInviteView extends FrameLayout {
         textCreateInviteDesc.setText(getContext().getString(R.string.group_share_description));
     }
 
-    public void enableInvitePress() {
-        viewCreateGroupBg1.setEnabled(true);
-    }
 
     public void switchColors(Boolean privateGroup) {
         if (privateGroup) viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_enabled));
@@ -129,6 +126,14 @@ public class CreateInviteView extends FrameLayout {
     public void disableCreate() {
         viewCreateGroupBg2.setEnabled(false);
         viewCreateGroupBg2.setVisibility(INVISIBLE);
+    }
+
+    public void disableInvite() {
+        viewCreateGroupBg1.setEnabled(false);
+    }
+
+    public void enableInvite() {
+        viewCreateGroupBg1.setEnabled(true);
     }
 
     public void setDefault() {
@@ -198,7 +203,6 @@ public class CreateInviteView extends FrameLayout {
 //            subscriptions.remove(countDownSubscription);
             textCreateInvite.setText(getContext().getString(R.string.group_button_share_generate));
             textCreateInviteDesc.setText(getContext().getString(R.string.group_share_description));
-
         }
         else textCreateInvite.setText(inviteLink);
     }
