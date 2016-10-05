@@ -50,6 +50,7 @@ import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
 import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
+import com.tribe.app.presentation.internal.di.scope.LocationPopup;
 import com.tribe.app.presentation.internal.di.scope.Memories;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
 import com.tribe.app.presentation.internal.di.scope.Preload;
@@ -259,4 +260,7 @@ public interface ApplicationComponent {
     TagManager tagManager();
 
     ReactiveLocationProvider reactiveLocationProvider();
+
+    @LocationPopup
+    Preference<Boolean> locationPopup();
 }

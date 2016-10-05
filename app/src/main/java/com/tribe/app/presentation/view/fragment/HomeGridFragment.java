@@ -22,6 +22,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
+import com.tribe.app.presentation.internal.di.scope.LocationPopup;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.HomeView;
@@ -71,6 +72,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
     ScreenUtils screenUtils;
 
     @Inject
+    @LocationPopup
     Preference<Boolean> locationPopup;
 
     @BindView(R.id.recyclerViewFriends)
