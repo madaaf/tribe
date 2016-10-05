@@ -61,13 +61,14 @@ public class TutorialMessageAdapterDelegate implements AdapterDelegate<List<Chat
         vh.txtName.setText(chatMessage.getTo().getDisplayName());
         vh.txtUsername.setText(chatMessage.getTo().getUsernameDisplay());
 
-        Glide.with(context)
-                .load(chatMessage.getContent())
-                .override(avatarSize, avatarSize)
-                .bitmapTransform(new CropCircleTransformation(context))
-                .centerCrop()
-                .crossFade()
-                .into(vh.imgAvatar);
+        if (chatMessage.getTo() != null) {
+            Glide.with(context).load(chatMessage.getTo().getProfilePicture())
+                    .override(avatarSize, avatarSize)
+                    .centerCrop()
+                    .bitmapTransform(new CropCircleTransformation(context))
+                    .crossFade()
+                    .into(vh.imgAvatar);
+        }
     }
 
     static class TutorialMessageViewHolder extends RecyclerView.ViewHolder {

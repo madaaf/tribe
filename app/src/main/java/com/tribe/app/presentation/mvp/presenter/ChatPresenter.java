@@ -28,6 +28,7 @@ import com.tribe.app.domain.interactor.text.GetDiskChatMessageList;
 import com.tribe.app.domain.interactor.text.GetPendingMessageList;
 import com.tribe.app.domain.interactor.text.SubscribingMQTT;
 import com.tribe.app.domain.interactor.text.UnsubscribeMQTT;
+import com.tribe.app.domain.interactor.user.GetRecipientInfos;
 import com.tribe.app.presentation.mvp.view.MessageView;
 import com.tribe.app.presentation.mvp.view.View;
 import com.tribe.app.presentation.utils.FileUtils;
@@ -61,6 +62,7 @@ public class ChatPresenter implements Presenter {
     private final DeleteDiskConversation deleteDiskConversation;
     private final DiskMarkMessageListAsRead diskMarkMessageListAsRead;
     private final GetPendingMessageList getPendingMessageList;
+    private final GetRecipientInfos getRecipientInfos;
 
     private MessageView messageView;
 
@@ -76,7 +78,8 @@ public class ChatPresenter implements Presenter {
                          @Named("connectAndSubscribe") ConnectAndSubscribeMQTT connectAndSubscribeMQTT,
                          @Named("subscribing") SubscribingMQTT subscribingMQTT,
                          @Named("disconnect") DisconnectMQTT disconnectMQTT,
-                         @Named("unsubscribe") UnsubscribeMQTT unsubscribeMQTT) {
+                         @Named("unsubscribe") UnsubscribeMQTT unsubscribeMQTT,
+                         GetRecipientInfos getRecipientInfos) {
         this.currentUser = currentUser;
         this.jobManager = jobManager;
         this.connectAndSubscribeMQTT = connectAndSubscribeMQTT;
@@ -87,6 +90,7 @@ public class ChatPresenter implements Presenter {
         this.deleteDiskConversation = deleteDiskConversation;
         this.diskMarkMessageListAsRead = diskMarkMessageListAsRead;
         this.getPendingMessageList = getPendingMessageList;
+        this.getRecipientInfos = getRecipientInfos;
     }
 
     @Override
@@ -121,6 +125,7 @@ public class ChatPresenter implements Presenter {
         deleteDiskConversation.unsubscribe();
         diskMarkMessageListAsRead.unsubscribe();
         getPendingMessageList.unsubscribe();
+        getRecipientInfos.unsubscribe();
     }
 
     @Override
@@ -131,6 +136,11 @@ public class ChatPresenter implements Presenter {
     public void updateErrorMessages(String recipientId) {
         jobManager.addJobInBackground(new UpdateMessagesErrorStatusJob(recipientId));
         jobManager.addJobInBackground(new UpdateMessagesVideoErrorStatusJob(recipientId));
+    }
+
+    public void getRecipient(String recipientId, boolean isToGroup) {
+        getRecipientInfos.prepare(recipientId, isToGroup);
+        getRecipientInfos.execute(new GetRecipientInfosSubscriber());
     }
 
     public void loadChatMessages(Recipient recipient) {
@@ -347,6 +357,23 @@ public class ChatPresenter implements Presenter {
         @Override
         public void onError(Throwable e) {
             e.printStackTrace();
+        }
+    }
+
+    private final class GetRecipientInfosSubscriber extends DefaultSubscriber<Recipient> {
+        @Override
+        public void onCompleted() {
+            super.onCompleted();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(Recipient recipient) {
+            messageView.onRecipientLoaded(recipient);
         }
     }
 }

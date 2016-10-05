@@ -108,9 +108,9 @@ public class Navigator {
      *
      * @param activity An activity needed to open the destiny activity.
      */
-    public void navigateToChat(Activity activity, Recipient recipient) {
+    public void navigateToChat(Activity activity, String recipientId, boolean isToGroup) {
         if (activity != null) {
-            Intent intent = ChatActivity.getCallingIntent(activity, recipient);
+            Intent intent = ChatActivity.getCallingIntent(activity, recipientId, isToGroup);
             activity.startActivity(intent);
             activity.overridePendingTransition(R.anim.activity_in_from_right, R.anim.activity_out_scale_down);
         }

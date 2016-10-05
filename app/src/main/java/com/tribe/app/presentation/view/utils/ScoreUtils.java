@@ -8,6 +8,7 @@ import android.view.animation.LinearInterpolator;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
@@ -16,7 +17,7 @@ import java.text.NumberFormat;
  */
 public class ScoreUtils {
 
-    public enum Level {
+    public enum Level implements Serializable {
         ROOKIE          (R.string.level_rookie_title, 0, R.drawable.picto_cool_kid),
         HEATING_UP      (R.string.level_heating_up_title, 2000, R.drawable.picto_heating_up),
         RISING_STAR     (R.string.level_rising_star_title, 10000, R.drawable.picto_rising),
@@ -101,16 +102,17 @@ public class ScoreUtils {
     }
 
     public static Level getLevelForScore(int score) {
-        Level previousLevel = null;
+        Level previousLevel = Level.values()[0];
 
-        for (Level level : Level.values()) {
+        for (int i = 1; i < Level.values().length - 1; i++) {
+            Level level = Level.values()[i];
+
             if (score < level.points)  return previousLevel;
-            else if (score >= level.points) return level;
 
             previousLevel = level;
         }
 
-        return null;
+        return Level.values()[Level.values().length - 1];
     }
 
     public static Level getNextLevelForScore(int score) {

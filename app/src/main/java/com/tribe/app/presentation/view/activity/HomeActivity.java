@@ -38,6 +38,7 @@ import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.mvp.presenter.HomePresenter;
 import com.tribe.app.presentation.mvp.view.HomeView;
+import com.tribe.app.presentation.utils.DeepLinkUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.fragment.ContactsGridFragment;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
@@ -308,7 +309,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     public void initClicksOnChat(Observable<Recipient> observable) {
         subscriptions.add(observable.subscribe(friend -> {
-            HomeActivity.this.navigator.navigateToChat(HomeActivity.this, friend);
+            HomeActivity.this.navigator.navigateToChat(HomeActivity.this, friend.getSubId(), friend instanceof Membership);
         }));
     }
 
@@ -424,8 +425,14 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     }
 
     private void manageDeepLink(Intent intent) {
-        if (intent != null && intent.getData() != null) {
-            homePresenter.getHeadDeepLink(intent.getDataString());
+        if (intent != null) {
+            if (intent.getData() != null) {
+                homePresenter.getHeadDeepLink(intent.getDataString());
+            } else if (!StringUtils.isEmpty(intent.getAction()) && intent.getAction().equals(DeepLinkUtils.MESSAGE_ACTION)) {
+                String recipientId = intent.getStringExtra("t_from");
+                boolean isToGroup = Boolean.valueOf(intent.getStringExtra("to_group"));
+                navigator.navigateToChat(this, recipientId, isToGroup);
+            }
         }
     }
 

@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
@@ -32,6 +33,8 @@ import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 import com.tribe.app.presentation.view.component.PullToSearchContainer;
 import com.tribe.app.presentation.view.component.TileView;
+import com.tribe.app.presentation.view.dialog_fragment.PointsDialogFragment;
+import com.tribe.app.presentation.view.utils.ScoreUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 
@@ -66,6 +69,9 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
 
     @Inject
     ScreenUtils screenUtils;
+
+    @Inject
+    Preference<Boolean> locationPopup;
 
     @BindView(R.id.recyclerViewFriends)
     RecyclerView recyclerViewFriends;
@@ -598,10 +604,18 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
     }
 
     @Override
-    public void updateScore() {
+    public void updateScore(int previousScore, int newScore) {
         if (homeGridAdapter != null && homeGridAdapter.getItems().size() > 0) {
             homeGridAdapter.getItemAtPosition(0).setScore(currentUser.getScore());
             homeGridAdapter.notifyItemChanged(0);
+
+            ScoreUtils.Level previousLevel = ScoreUtils.getLevelForScore(previousScore);
+            ScoreUtils.Level level = ScoreUtils.getLevelForScore(newScore);
+
+            if (level.getPoints() != previousLevel.getPoints()) {
+                PointsDialogFragment pointsDialogFragment = PointsDialogFragment.newInstance(level);
+                pointsDialogFragment.show(getFragmentManager(), PointsDialogFragment.class.getName());
+            }
         }
     }
 }

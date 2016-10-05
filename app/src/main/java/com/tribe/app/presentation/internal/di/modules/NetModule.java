@@ -52,6 +52,7 @@ import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
+import com.tribe.app.presentation.utils.DateUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -336,7 +337,7 @@ public class NetModule {
             Request.Builder requestBuilder = original.newBuilder()
                     .header("Content-type", "application/json");
 
-            byte[] data = (tribeAuthorizer.getApiClient() + ":" + tribeAuthorizer.getApiSecret()).getBytes("UTF-8");
+            byte[] data = (tribeAuthorizer.getApiClient() + ":" + DateUtils.unifyDate(tribeAuthorizer.getApiSecret())).getBytes("UTF-8");
             String base64 = Base64.encodeToString(data, Base64.DEFAULT).replace("\n", "");
 
             requestBuilder.header("Authorization", "Basic " + base64);

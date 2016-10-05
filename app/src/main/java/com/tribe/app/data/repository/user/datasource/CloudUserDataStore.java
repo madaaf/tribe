@@ -34,6 +34,7 @@ import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PhoneRealm;
 import com.tribe.app.data.realm.PinRealm;
+import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
@@ -41,7 +42,6 @@ import com.tribe.app.data.realm.mapper.GroupRealmDataMapper;
 import com.tribe.app.data.realm.mapper.MembershipRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.user.contact.RxContacts;
-import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -1122,6 +1122,11 @@ public class CloudUserDataStore implements UserDataStore {
         return this.tribeApi.createMembership(requestCreateMembership).doOnNext(membershipRealm -> {
             userCache.insertMembership(user.getId(), membershipRealm);
         });
+    }
+
+    @Override
+    public Observable<RecipientRealmInterface> getRecipientInfos(String recipientId, boolean isToGroup) {
+        return null;
     }
 }
 

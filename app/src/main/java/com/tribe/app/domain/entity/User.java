@@ -194,7 +194,7 @@ public class User implements Serializable {
             setProfilePicture(user.getProfilePicture());
             int previousScore = score;
             setScore(user.getScore());
-            if (previousScore != score) notifyAllScoreListeners();
+            if (previousScore != score) notifyAllScoreListeners(previousScore, score);
             setPhone(user.getPhone());
             setFbid(user.getFbid());
             setInvisibleMode(user.isInvisibleMode());
@@ -230,7 +230,7 @@ public class User implements Serializable {
         scoreListenerList.remove(listener);
     }
 
-    private void notifyAllScoreListeners() {
-        for (UpdateScore updateScore : scoreListenerList) updateScore.updateScore();
+    private void notifyAllScoreListeners(int previousScore, int newScore) {
+        for (UpdateScore updateScore : scoreListenerList) updateScore.updateScore(previousScore, newScore);
     }
 }

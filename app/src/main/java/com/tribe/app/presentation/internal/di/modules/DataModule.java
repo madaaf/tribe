@@ -13,6 +13,7 @@ import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
 import com.tribe.app.presentation.internal.di.scope.LastNotifyRequest;
 import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
+import com.tribe.app.presentation.internal.di.scope.LocationPopup;
 import com.tribe.app.presentation.internal.di.scope.Memories;
 import com.tribe.app.presentation.internal.di.scope.Preload;
 import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
@@ -136,5 +137,12 @@ public class DataModule {
     @Filter
     Preference<Integer> provideFilter(RxSharedPreferences prefs) {
         return prefs.getInteger(PreferencesConstants.FILTER, 0);
+    }
+
+    @Provides
+    @Singleton
+    @LocationPopup
+    Preference<Boolean> provideLocationPopup(RxSharedPreferences prefs) {
+        return prefs.getBoolean(PreferencesConstants.LOCATION_CONTEXT, false);
     }
 }

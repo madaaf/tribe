@@ -12,9 +12,9 @@ import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
+import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.User;
 
 import java.util.List;
@@ -162,4 +162,6 @@ public interface UserDataStore {
     Observable<String> getHeadDeepLink(String url);
 
     Observable<MembershipRealm> createMembership(String groupId);
+
+    Observable<RecipientRealmInterface> getRecipientInfos(String recipientId, boolean isToGroup);
 }

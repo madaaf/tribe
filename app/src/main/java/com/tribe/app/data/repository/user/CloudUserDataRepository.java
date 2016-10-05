@@ -21,6 +21,7 @@ import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Pin;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
@@ -299,5 +300,10 @@ public class CloudUserDataRepository implements UserRepository {
     public Observable<Membership> createMembership(String groupId) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
         return cloudDataStore.createMembership(groupId).map(membershipRealm -> userRealmDataMapper.getMembershipRealmDataMapper().transform(membershipRealm));
+    }
+
+    @Override
+    public Observable<Recipient> getRecipientInfos(String recipientId, boolean isToGroup) {
+        return null;
     }
 }

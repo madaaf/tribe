@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.internal.di.modules;
 
+import com.tribe.app.data.repository.user.DiskUserDataRepository;
+import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.interactor.text.ConnectAndSubscribeMQTT;
 import com.tribe.app.domain.interactor.text.DeleteDiskConversation;
 import com.tribe.app.domain.interactor.text.DisconnectMQTT;
@@ -9,6 +11,7 @@ import com.tribe.app.domain.interactor.text.GetPendingMessageList;
 import com.tribe.app.domain.interactor.text.SaveChat;
 import com.tribe.app.domain.interactor.text.SubscribingMQTT;
 import com.tribe.app.domain.interactor.text.UnsubscribeMQTT;
+import com.tribe.app.domain.interactor.user.GetRecipientInfos;
 import com.tribe.app.presentation.internal.di.scope.PerActivity;
 
 import javax.inject.Named;
@@ -84,5 +87,10 @@ public class ChatModule {
     @Named("getPendingMessageList")
     GetPendingMessageList provideGetPendingMessageList(GetPendingMessageList getPendingMessageList) {
         return getPendingMessageList;
+    }
+
+    @Provides
+    GetRecipientInfos provideRecipientInfos(DiskUserDataRepository diskUserDataRepository, PostExecutionThread postExecutionThread) {
+        return new GetRecipientInfos(diskUserDataRepository, postExecutionThread);
     }
 }

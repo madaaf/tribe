@@ -67,11 +67,13 @@ public class ChatActivity extends BaseActivity implements MessageView {
     public static final float OVERSHOOT = 1.2f;
     public static final int ERROR_MARGIN = 5;
 
-    public static final String RECIPIENT = "RECIPIENT";
+    public static final String RECIPIENT_ID = "RECIPIENT_ID";
+    public static final String IS_TO_GROUP = "IS_TO_GROUP";
 
-    public static Intent getCallingIntent(Context context, Recipient recipient) {
+    public static Intent getCallingIntent(Context context, String recipientId, boolean isToGroup) {
         Intent intent = new Intent(context, ChatActivity.class);
-        intent.putExtra(RECIPIENT, recipient);
+        intent.putExtra(RECIPIENT_ID, recipientId);
+        intent.putExtra(IS_TO_GROUP, isToGroup);
         return intent;
     }
 
@@ -103,7 +105,8 @@ public class ChatActivity extends BaseActivity implements MessageView {
     ImageView imgTrash;
 
     // PARAMS
-    private Recipient recipient;
+    private String recipientId;
+    private boolean isToGroup;
 
     // RESOURCES
     private int marginHorizontalLeftSmall;
@@ -119,6 +122,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
     private CompositeSubscription subscriptions;
 
     // LAYOUT VARIABLES
+    private Recipient recipient;
     private MessageLayoutManager messageLayoutManager;
     private MessageAdapter messageAdapter;
     private List<ChatMessage> chatMessageList;
@@ -143,7 +147,6 @@ public class ChatActivity extends BaseActivity implements MessageView {
         initResources();
         initSubscriptions();
         initRecyclerView();
-        initInfos();
         initPresenter();
     }
 
@@ -295,8 +298,12 @@ public class ChatActivity extends BaseActivity implements MessageView {
     }
 
     private void initParams() {
-        if (getIntent() != null && getIntent().hasExtra(RECIPIENT))
-            recipient = (Recipient) getIntent().getSerializableExtra(RECIPIENT);
+        if (getIntent() != null && getIntent().hasExtra(RECIPIENT_ID)) {
+            recipientId = getIntent().getStringExtra(RECIPIENT_ID);
+            isToGroup = getIntent().getBooleanExtra(IS_TO_GROUP, false);
+        }
+        else
+            finish();
     }
 
     private void initSubscriptions() {
@@ -344,9 +351,9 @@ public class ChatActivity extends BaseActivity implements MessageView {
     private void initPresenter() {
         chatPresenter.onStart();
         chatPresenter.attachView(this);
-        chatPresenter.loadChatMessages(recipient);
+        chatPresenter.getRecipient(recipientId, isToGroup);
         chatPresenter.loadThumbnail(radiusGalleryImg);
-        chatPresenter.updateErrorMessages(recipient.getSubId());
+
     }
 
     private void initInfos() {
@@ -474,6 +481,15 @@ public class ChatActivity extends BaseActivity implements MessageView {
         boolean result = justSentMessage || messageAdapter.getItemCount() == 0 || messageLayoutManager.findLastVisibleItemPosition() == messageAdapter.getItemCount() - 1;
         justSentMessage = false;
         return result;
+    }
+
+    @Override
+    public void onRecipientLoaded(Recipient recipient) {
+        if (recipient == null) finish();
+        this.recipient = recipient;
+        initInfos();
+        chatPresenter.loadChatMessages(this.recipient);
+        chatPresenter.updateErrorMessages(recipient.getSubId());
     }
 
     private void showImage(ImageView imageViewFrom) {

@@ -7,6 +7,7 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.mapper.ChatRealmDataMapper;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
 import com.tribe.app.data.realm.mapper.SearchResultRealmDataMapper;
@@ -374,5 +375,20 @@ public class DiskUserDataRepository implements UserRepository {
     @Override
     public Observable<Membership> createMembership(String groupId) {
         return null;
+    }
+
+    @Override
+    public Observable<Recipient> getRecipientInfos(String recipientId, boolean isToGroup) {
+        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+
+        return userDataStore
+                .getRecipientInfos(recipientId, isToGroup)
+                .map(recipientRealmInterface -> {
+                    if (recipientRealmInterface instanceof MembershipRealm) {
+                       return userRealmDataMapper.getMembershipRealmDataMapper().transform((MembershipRealm) recipientRealmInterface);
+                    } else {
+                        return userRealmDataMapper.getFriendshipRealmDataMapper().transform((FriendshipRealm) recipientRealmInterface);
+                    }
+                });
     }
 }

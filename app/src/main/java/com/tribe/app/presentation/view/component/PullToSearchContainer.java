@@ -35,8 +35,8 @@ import rx.subscriptions.CompositeSubscription;
 
 public class PullToSearchContainer extends FrameLayout {
 
-    private static final SpringConfig PULL_TO_SEARCH_BOUNCE_SPRING_CONFIG = SpringConfig.fromOrigamiTensionAndFriction(132, 7f);
-    private static final SpringConfig PULL_TO_SEARCH_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(0, 25);
+    private static final SpringConfig PULL_TO_SEARCH_BOUNCE_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(9f, 20f);
+    private static final SpringConfig PULL_TO_SEARCH_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(0f, 25f);
     private static final float DRAG_RATE = 0.5f;
     private static final int DRAG_THRESHOLD = 20;
     private static final int INVALID_POINTER = -1;
