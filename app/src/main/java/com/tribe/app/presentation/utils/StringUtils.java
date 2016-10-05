@@ -87,5 +87,5 @@ public class StringUtils {
     public static String getLastBitFromUrl(final String url) {
         return url.replaceFirst(".*/([^/?]+).*", "$1");
     }
-    
+
 }

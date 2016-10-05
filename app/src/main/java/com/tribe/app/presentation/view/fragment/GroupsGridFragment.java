@@ -159,6 +159,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     private int orignalGroupSuggestionsMargin;
     private boolean friendAdapterClickable = true;
 
+
     // Observables
     private PublishSubject<Void> imageGoToMembersClicked = PublishSubject.create();
     public Observable<Void> imageGoToMembersClicked() {
@@ -373,12 +374,13 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             setGroupSuggestionsViewVisible(false);
         }));
         subscriptions.add((createInviteView.invitePressed()).subscribe(aVoid -> {
-            if (privateGroup && groupLink != null) showShareDialogFragment();
+            if (privateGroup && groupLink != null && !isLinkExpired(groupLinkExpirationDate)) showShareDialogFragment();
             else if (privateGroup) {
                 groupPresenter.modifyPrivateGroupLink(membershipId, true);
             }
             else navigator.shareGenericText(getString(R.string.share_group_public_link, groupName, groupLink), getContext());
         }));
+
         subscriptions.add(searchFriendsView.editTextSearchTextChanged().subscribe(this::filter));
     }
 
@@ -504,6 +506,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         groupInfoView.setGroupName("");
         groupInfoView.bringOutIcons(0);
         groupInfoView.enableButtons();
+        groupInfoView.addMemberPhotoDrawable(null);
         groupPictureUri = null;
         createInviteView.setDefault();
         createInviteView.disable();
@@ -557,8 +560,12 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     }
 
     private void showShareDialogFragment() {
-        ShareDialogFragment shareDialogFragment = ShareDialogFragment.newInstance(timeRemaining(groupLinkExpirationDate));
+        ShareDialogFragment shareDialogFragment = ShareDialogFragment.newInstance();
+        shareDialogFragment.setExpirationTime(groupLink, timeRemaining(groupLinkExpirationDate));
         shareDialogFragment.show(getFragmentManager(), ShareDialogFragment.class.getName());
+        subscriptions.add(shareDialogFragment.deletePressed().subscribe(aVoid -> {
+            groupPresenter.modifyPrivateGroupLink(membershipId, false);
+        }));
 
     }
 
