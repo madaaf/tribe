@@ -142,6 +142,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     private String membershipId = null;
     private String groupName = null;
     private String groupLink = null;
+    private boolean isCurrentUserAdmin = false;
     private long groupLinkExpirationDate;
     private List<String> memberIds = new ArrayList<>();
     private String groupPictureUri = null;
@@ -183,7 +184,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             initFriendshipListExcluding(new ArrayList<>());
         }
         else {
-            initGroupInfoUi(bundle.getString("membershipId"), bundle.getString("groupId"), bundle.getString("groupName"), bundle.getString("groupPicture"), bundle.getString("privateGroupLink"), bundle.getLong("privateGroupLinkExpiresAt"));
+            initGroupInfoUi(bundle.getString("membershipId"), bundle.getBoolean("isCurrentUserAdmin"), bundle.getString("groupId"), bundle.getString("groupName"), bundle.getString("groupPicture"), bundle.getString("privateGroupLink"), bundle.getLong("privateGroupLinkExpiresAt"));
             recyclerViewInvite.setLayoutManager(new LinearLayoutManager(getContext()));
             recyclerViewInvite.setAdapter(new RecyclerView.Adapter() {
                 @Override
@@ -242,12 +243,15 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     public void setGroupLink(String groupLink) {
         this.groupLink = groupLink;
         createInviteView.setInviteLink(groupLink);
+        createInviteView.loaded();
+
     }
 
     @Override
     public void setGroupLinkExpirationDate(Date groupLinkExpirationDate) {
         this.groupLinkExpirationDate = groupLinkExpirationDate.getTime();
-        createInviteView.setExpirationDesc(timeRemaining(this.groupLinkExpirationDate));
+        if (groupLink != null) createInviteView.setExpirationDesc(timeRemaining(this.groupLinkExpirationDate));
+        if (privateGroup) showShareDialogFragment();
     }
 
     private boolean isLinkExpired(long groupLinkExpirationDate) {
@@ -258,7 +262,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         Date now = new Date();
         return groupLinkExpirationDate - now.getTime();
     }
-
 
     /**
      * Setup UI
@@ -308,10 +311,12 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         setupSearchView();
     }
 
-    private void initGroupInfoUi(String membershipId, String groupId, String groupName, String groupPicture, String groupLink, long groupLinkExpirationDate) {
+    private void initGroupInfoUi(String membershipId, boolean isCurrentUserAdmin, String groupId, String groupName, String groupPicture, String groupLink, long groupLinkExpirationDate) {
         this.membershipId = membershipId;
         this.groupId = groupId;
         this.groupLink = groupLink;
+        this.isCurrentUserAdmin = isCurrentUserAdmin;
+        if  (!isCurrentUserAdmin) groupInfoView.bringOutIcons(0);
         this.groupLinkExpirationDate = groupLinkExpirationDate;
         createInviteView.disableCreate();
         createInviteView.setInvite(privateGroup);
@@ -377,6 +382,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             if (privateGroup && groupLink != null && !isLinkExpired(groupLinkExpirationDate)) showShareDialogFragment();
             else if (privateGroup) {
                 groupPresenter.modifyPrivateGroupLink(membershipId, true);
+                createInviteView.loadingAnimation(AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
             }
             else navigator.shareGenericText(getString(R.string.share_group_public_link, groupName, groupLink), getContext());
         }));
@@ -561,8 +567,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     private void showShareDialogFragment() {
         ShareDialogFragment shareDialogFragment = ShareDialogFragment.newInstance();
-        shareDialogFragment.setExpirationTime(groupLink, timeRemaining(groupLinkExpirationDate));
-        shareDialogFragment.show(getFragmentManager(), ShareDialogFragment.class.getName());
+        shareDialogFragment.setExpirationTime(groupName, groupLink, timeRemaining(groupLinkExpirationDate));
+        if (groupLink != null) shareDialogFragment.show(getFragmentManager(), ShareDialogFragment.class.getName());
         subscriptions.add(shareDialogFragment.deletePressed().subscribe(aVoid -> {
             groupPresenter.modifyPrivateGroupLink(membershipId, false);
         }));

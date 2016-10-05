@@ -83,6 +83,7 @@ public class ShareDialogFragment extends BaseDialogFragment {
 
     private long timeRemaining;
     private String groupLink;
+    private String groupName;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -108,9 +109,7 @@ public class ShareDialogFragment extends BaseDialogFragment {
     public void initUi(View view) {
         super.initUi(view);
 
-        String shareMessage = groupLink;
-
-
+        String shareMessage = getString(R.string.share_group_private_link, groupName, StringUtils.millisecondsToHhMmSs(timeRemaining), groupLink);
 
         subscriptions.add(RxView.clicks(imageMessenger).subscribe(aVoid -> {
             navigator.openFacebookMessenger(shareMessage, getActivity());
@@ -125,7 +124,7 @@ public class ShareDialogFragment extends BaseDialogFragment {
             navigator.sendText(shareMessage, getActivity());
         }));
         subscriptions.add(RxView.clicks(imageSlack).subscribe(aVoid -> {
-
+            navigator.openSlack(shareMessage, getActivity());
         }));
         subscriptions.add(RxView.clicks(imageTelegram).subscribe(aVoid -> {
             navigator.openTelegram(shareMessage, getActivity());
@@ -148,11 +147,10 @@ public class ShareDialogFragment extends BaseDialogFragment {
             dismiss();
         }));
 
-
-
     }
 
-    public void setExpirationTime(String groupLink, long timeRemainingInput) {
+    public void setExpirationTime(String groupName, String groupLink, long timeRemainingInput) {
+        this.groupName = groupName;
         this.groupLink = groupLink;
         timeRemaining = timeRemainingInput;
         subscriptions.add(
@@ -167,8 +165,7 @@ public class ShareDialogFragment extends BaseDialogFragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {
                     textPopupTitle.setText(getContext().getString(R.string.group_private_link_popup_title, StringUtils.millisecondsToHhMmSs(timeRemaining)));
-                })
-        );
+                }));
     }
 
     /**

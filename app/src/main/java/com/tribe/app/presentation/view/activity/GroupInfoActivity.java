@@ -86,6 +86,7 @@ public class GroupInfoActivity extends BaseActivity {
 
         Bundle bundle = new Bundle();
         bundle.putString("membershipId", extras.getString("membershipId"));
+        bundle.putBoolean("isCurrentUserAdmin", extras.getBoolean("isCurrentUserAdmin"));
         bundle.putString("groupId", extras.getString("groupId"));
         bundle.putString("groupName", extras.getString("groupName"));
         bundle.putString("groupPicture", extras.getString("groupPicture"));

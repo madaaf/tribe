@@ -153,6 +153,7 @@ public class CreateInviteView extends FrameLayout {
     }
 
     public void loadingAnimation(int animDuration, ScreenUtils screenUtils, Activity activity) {
+        viewCreateGroupBg2.setVisibility(VISIBLE);
         screenUtils.hideKeyboard(activity);
         textCreateInvite.setText(activity.getString(R.string.group_button_creating));
         Rect rect = new Rect();
@@ -193,7 +194,7 @@ public class CreateInviteView extends FrameLayout {
 
     public void setInviteLink(String inviteLink) {
         if (inviteLink == null) {
-            countDownSubscription.unsubscribe();
+            if (countDownSubscription != null) countDownSubscription.unsubscribe();
 //            subscriptions.remove(countDownSubscription);
             textCreateInvite.setText(getContext().getString(R.string.group_button_share_generate));
             textCreateInviteDesc.setText(getContext().getString(R.string.group_share_description));

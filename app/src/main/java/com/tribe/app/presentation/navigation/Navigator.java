@@ -170,11 +170,12 @@ public class Navigator {
         }
     }
 
-    public void navigateToGroupInfo(Activity activity, String membershipId, String groupId, String groupName, String groupPicture, String privateGroupLink, Date privateGroupLinkExpiresAt) {
+    public void navigateToGroupInfo(Activity activity, String membershipId, boolean isCurrentUserAdmin, String groupId, String groupName, String groupPicture, String privateGroupLink, Date privateGroupLinkExpiresAt) {
         if (activity != null) {
             Intent intent = GroupInfoActivity.getCallingIntent(activity);
             Bundle bundle = new Bundle();
             bundle.putString("membershipId", membershipId);
+            bundle.putBoolean("isCurrentUserAdmin", isCurrentUserAdmin);
             bundle.putString("groupId", groupId);
             bundle.putString("groupName", groupName);
             bundle.putString("groupPicture", groupPicture);
@@ -330,10 +331,18 @@ public class Navigator {
 
     public void openSnapchat(String body, Activity activity) {
         Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("*/*");
+        intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_TEXT, body);
         intent.setPackage("com.snapchat.android");
         activity.startActivity(Intent.createChooser(intent, "Open Snapchat"));
+    }
+
+    public void openSlack(String body, Activity activity) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, body);
+        intent.setPackage("com.Slack");
+        activity.startActivity(Intent.createChooser(intent, "Open Slack"));
     }
 
     public void openTelegram(String body, Activity activity) {

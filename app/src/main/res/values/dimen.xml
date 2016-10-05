@@ -108,8 +108,7 @@
     <dimen name="setting_pic_size">40dp</dimen>
     <dimen name="setting_theme_size">40dp</dimen>
     <dimen name="setting_theme_vertical_padding">15dp</dimen>
-    <dimen name="group_image_bg_size">82dp</dimen>
-    <dimen name="group_image_size">74dp</dimen>
+    <dimen name="group_image_bg_size">83dp</dimen>
     <dimen name="dialog_fragment_width">262dp</dimen>
     <dimen name="dialog_fragment_icon_size">66dp</dimen>
     <dimen name="friend_adapter_fill_size">30dp</dimen>
