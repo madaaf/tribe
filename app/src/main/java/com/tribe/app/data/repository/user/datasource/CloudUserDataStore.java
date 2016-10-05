@@ -38,8 +38,10 @@ import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.GroupRealmDataMapper;
+import com.tribe.app.data.realm.mapper.MembershipRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.user.contact.RxContacts;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -91,6 +93,7 @@ public class CloudUserDataStore implements UserDataStore {
     private Preference<String> lastUserRequest;
     private SimpleDateFormat utcSimpleDate = null;
     private GroupRealmDataMapper groupRealmDataMapper;
+    private MembershipRealmDataMapper membershipRealmDataMapper;
     private UserRealmDataMapper userRealmDataMapper;
 
     /**
@@ -108,7 +111,8 @@ public class CloudUserDataStore implements UserDataStore {
                               AccessToken accessToken, Installation installation,
                               ReactiveLocationProvider reactiveLocationProvider, Context context,
                               Preference<String> lastMessageRequest, Preference<String> lastUserRequest, SimpleDateFormat utcSimpleDate,
-                            GroupRealmDataMapper groupRealmDataMapper,
+                              GroupRealmDataMapper groupRealmDataMapper,
+                              MembershipRealmDataMapper membershipRealmDataMapper,
                               UserRealmDataMapper userRealmDataMapper) {
         this.userCache = userCache;
         this.tribeCache = tribeCache;
@@ -127,6 +131,7 @@ public class CloudUserDataStore implements UserDataStore {
         this.lastUserRequest = lastUserRequest;
         this.utcSimpleDate = utcSimpleDate;
         this.groupRealmDataMapper = groupRealmDataMapper;
+        this.membershipRealmDataMapper = membershipRealmDataMapper;
         this.userRealmDataMapper = userRealmDataMapper;
     }
 
@@ -863,7 +868,7 @@ public class CloudUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<GroupRealm> createGroup(String groupName, List<String> memberIds, Boolean isPrivate, String pictureUri) {
+    public Observable<MembershipRealm> createGroup(String groupName, List<String> memberIds, Boolean isPrivate, String pictureUri) {
         String idList = listToJson(memberIds);
         String privateGroup = isPrivate ? "PRIVATE" : "PUBLIC";
         final String request = context.getString(R.string.create_group, groupName, privateGroup, idList, context.getString(R.string.groupfragment_info));
@@ -877,7 +882,7 @@ public class CloudUserDataStore implements UserDataStore {
                         return this.tribeApi.createMembership(requestCreateMembership);
                     }, (groupRealm, newMembership) -> {
                         userCache.insertMembership(user.getId(), newMembership);
-                        return groupRealm;
+                        return newMembership;
                     });
         } else {
             RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
@@ -910,7 +915,7 @@ public class CloudUserDataStore implements UserDataStore {
                         return this.tribeApi.createMembership(requestCreateMembership);
                     }, (groupRealm, newMembership) -> {
                         userCache.insertMembership(user.getId(), newMembership);
-                        return groupRealm;
+                        return newMembership;
                     });
         }
     }
@@ -1016,12 +1021,29 @@ public class CloudUserDataStore implements UserDataStore {
                 .doOnNext(aVoid -> userCache.removeGroupFromMembership(membershipId));
     }
 
+    @Override
+    public Observable<MembershipRealm> modifyPrivateGroupLink(String membershipId, boolean create) {
+        String request;
+        if (create) request = context.getString(R.string.generate_private_link,
+                membershipId,
+                context.getString(R.string.membershipfragment_info),
+                context.getString(R.string.groupfragment_info));
+        else request = context.getString(R.string.remove_private_link,
+                membershipId,
+                context.getString(R.string.membershipfragment_info),
+                context.getString(R.string.groupfragment_info));
+        return this.tribeApi.modifyPrivateGroupLink(request).doOnNext(membershipRealm -> {
+            userCache.updateMembershipLink(user.getId(), membershipId, membershipRealm);
+        });
+    }
+
     public String listToJson(List<String> list) {
-        String json = "";
+        String json = "\"";
         for (int i = 0; i < list.size(); i++) {
-            if (i == list.size() - 1) json += list.get(i);
-            else json += list.get(i) + ", ";
+            if (i == list.size() - 1) json += list.get(i) + "\"";
+            else json += list.get(i) + "\", \"";
         }
+        if  (list.size() == 0) json += "\"";
         return json;
     }
 

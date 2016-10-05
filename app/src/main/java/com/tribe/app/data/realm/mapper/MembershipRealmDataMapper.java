@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.realm.RealmList;
@@ -20,6 +21,7 @@ public class MembershipRealmDataMapper {
 
     private GroupRealmDataMapper groupRealmDataMapper;
 
+    @Inject
     public MembershipRealmDataMapper(GroupRealmDataMapper groupRealmDataMapper) {
         this.groupRealmDataMapper = groupRealmDataMapper;
     }

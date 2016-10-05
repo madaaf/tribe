@@ -15,13 +15,22 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+
+import org.w3c.dom.Text;
+
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -53,13 +62,27 @@ public class ShareDialogFragment extends BaseDialogFragment {
     @BindView(R.id.imageMore)
     ImageView imageMore;
 
+    @BindView(R.id.textPopupTitle)
+    TextViewFont textPopupTitle;
+    @BindView(R.id.textDelete)
+    TextViewFont textDelete;
     @BindView(R.id.textDone)
     TextViewFont textDone;
+
 
     @Inject
     Navigator navigator;
 
+    private PublishSubject<Void> deletePressed = PublishSubject.create();
+    private CompositeSubscription subscriptions = new CompositeSubscription();
 
+    public Observable<Void> deletePressed() {
+        return deletePressed;
+    }
+
+
+    private long timeRemaining;
+    private String groupLink;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -72,12 +95,22 @@ public class ShareDialogFragment extends BaseDialogFragment {
     }
 
     @Override
+    public void removeSubscriptions() {
+        super.removeSubscriptions();
+
+        if (subscriptions.hasSubscriptions() && subscriptions != null) {
+            subscriptions.unsubscribe();
+            subscriptions.clear();
+        }
+    }
+
+    @Override
     public void initUi(View view) {
         super.initUi(view);
 
-        String shareMessage = "test";
+        String shareMessage = groupLink;
 
-        subscriptions = new CompositeSubscription();
+
 
         subscriptions.add(RxView.clicks(imageMessenger).subscribe(aVoid -> {
             navigator.openFacebookMessenger(shareMessage, getActivity());
@@ -103,13 +136,39 @@ public class ShareDialogFragment extends BaseDialogFragment {
         }));
 
         subscriptions.add(RxView.clicks(imageMore).subscribe(aVoid -> {
+            navigator.shareGenericText(shareMessage, getContext());
+        }));
 
+        subscriptions.add(RxView.clicks(textDelete).subscribe(aVoid -> {
+            deletePressed.onNext(null);
+            dismiss();
         }));
 
         subscriptions.add(RxView.clicks(textDone).subscribe(aVoid -> {
             dismiss();
         }));
 
+
+
+    }
+
+    public void setExpirationTime(String groupLink, long timeRemainingInput) {
+        this.groupLink = groupLink;
+        timeRemaining = timeRemainingInput;
+        subscriptions.add(
+        Observable.interval(1, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .map(i -> timeRemainingInput - i)
+                .take((int) timeRemainingInput + 1)
+                .subscribe(i -> timeRemaining = i));
+        subscriptions.add(
+        Observable.interval(1, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aLong -> {
+                    textPopupTitle.setText(getContext().getString(R.string.group_private_link_popup_title, StringUtils.millisecondsToHhMmSs(timeRemaining)));
+                })
+        );
     }
 
     /**

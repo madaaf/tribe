@@ -10,6 +10,7 @@ import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
@@ -136,7 +137,7 @@ public interface UserRepository {
 
     Observable<Group> getGroupInfos(String groupId);
 
-    Observable<Group> createGroup(String groupName, List<String> memberIds, boolean isPrivate, String pictureUri);
+    Observable<Membership> createGroup(String groupName, List<String> memberIds, boolean isPrivate, String pictureUri);
 
     Observable<Group> updateGroup(String groupId, String groupName, String pictureUri);
 
@@ -151,6 +152,8 @@ public interface UserRepository {
     Observable<Void> removeGroup(String groupId);
 
     Observable<Void> leaveGroup(String membershipId);
+
+    Observable<Membership> modifyPrivateGroupLink(String membershipId, boolean create);
 
     Observable<Void> bootstrapSupport();
 

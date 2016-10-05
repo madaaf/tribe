@@ -14,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,8 +50,6 @@ import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.component.CreateInviteView;
 import com.tribe.app.presentation.view.component.GroupInfoView;
 import com.tribe.app.presentation.view.component.GroupSuggestionsView;
-import com.tribe.app.presentation.view.component.MemberPhotoViewList;
-import com.tribe.app.presentation.view.component.PrivatePublicView;
 import com.tribe.app.presentation.view.component.SearchFriendsView;
 import com.tribe.app.presentation.view.component.ViewPrivacyStatus;
 import com.tribe.app.presentation.view.dialog_fragment.ShareDialogFragment;
@@ -62,6 +61,7 @@ import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -139,8 +139,10 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     // Group Info
     private String groupId = null;
+    private String membershipId = null;
     private String groupName = null;
     private String groupLink = null;
+    private long groupLinkExpirationDate;
     private List<String> memberIds = new ArrayList<>();
     private String groupPictureUri = null;
     private boolean privateGroup = true;
@@ -156,6 +158,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     private int smallMargin = 5;
     private int orignalGroupSuggestionsMargin;
     private boolean friendAdapterClickable = true;
+
 
     // Observables
     private PublishSubject<Void> imageGoToMembersClicked = PublishSubject.create();
@@ -180,7 +183,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             initFriendshipListExcluding(new ArrayList<>());
         }
         else {
-            initGroupInfoUi(bundle.getString("groupId"), bundle.getString("groupName"), bundle.getString("groupPicture"));
+            initGroupInfoUi(bundle.getString("membershipId"), bundle.getString("groupId"), bundle.getString("groupName"), bundle.getString("groupPicture"), bundle.getString("privateGroupLink"), bundle.getLong("privateGroupLinkExpiresAt"));
             recyclerViewInvite.setLayoutManager(new LinearLayoutManager(getContext()));
             recyclerViewInvite.setAdapter(new RecyclerView.Adapter() {
                 @Override
@@ -231,9 +234,29 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     }
 
     @Override
+    public void setMembershipId(String membershipId) {
+        this.membershipId = membershipId;
+    }
+
+    @Override
     public void setGroupLink(String groupLink) {
         this.groupLink = groupLink;
         createInviteView.setInviteLink(groupLink);
+    }
+
+    @Override
+    public void setGroupLinkExpirationDate(Date groupLinkExpirationDate) {
+        this.groupLinkExpirationDate = groupLinkExpirationDate.getTime();
+        createInviteView.setExpirationDesc(timeRemaining(this.groupLinkExpirationDate));
+    }
+
+    private boolean isLinkExpired(long groupLinkExpirationDate) {
+        return timeRemaining(groupLinkExpirationDate) <= 0;
+    }
+
+    private long timeRemaining(long groupLinkExpirationDate) {
+        Date now = new Date();
+        return groupLinkExpirationDate - now.getTime();
     }
 
 
@@ -285,13 +308,22 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         setupSearchView();
     }
 
-    private void initGroupInfoUi(String groupId, String groupName, String groupPicture) {
+    private void initGroupInfoUi(String membershipId, String groupId, String groupName, String groupPicture, String groupLink, long groupLinkExpirationDate) {
+        this.membershipId = membershipId;
         this.groupId = groupId;
+        this.groupLink = groupLink;
+        this.groupLinkExpirationDate = groupLinkExpirationDate;
+        createInviteView.disableCreate();
+        createInviteView.setInvite(privateGroup);
+        if (groupLink != null && !isLinkExpired(groupLinkExpirationDate)) {
+            createInviteView.setInviteLink(groupLink);
+            createInviteView.setExpirationDesc(timeRemaining(groupLinkExpirationDate));
+        }
         groupInfoView.setGroupName(groupName);
         if (groupPicture != null) groupInfoView.setGroupPictureFromUrl(groupPicture);
         currentEditTranslation = 20;
         screenUtils.setTopMargin(createInviteView, screenUtils.dpToPx(layoutCreateInviteInfoPositionY));
-        createInviteView.setInvite(privateGroup);
+
         createInviteView.enableInvitePress();
         groupInfoView.setupGroupInfoUi(privateGroup, 1);
         imageDone.setVisibility(View.VISIBLE);
@@ -342,9 +374,13 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             setGroupSuggestionsViewVisible(false);
         }));
         subscriptions.add((createInviteView.invitePressed()).subscribe(aVoid -> {
-            if (privateGroup) showShareDialogFragment();
+            if (privateGroup && groupLink != null && !isLinkExpired(groupLinkExpirationDate)) showShareDialogFragment();
+            else if (privateGroup) {
+                groupPresenter.modifyPrivateGroupLink(membershipId, true);
+            }
             else navigator.shareGenericText(getString(R.string.share_group_public_link, groupName, groupLink), getContext());
         }));
+
         subscriptions.add(searchFriendsView.editTextSearchTextChanged().subscribe(this::filter));
     }
 
@@ -352,9 +388,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     public void setupGroup(Group group) {
         groupName = group.getName();
         privateGroup = group.isPrivateGroup();
-        groupLink = group.getGroupLink();
+        if (group.getGroupLink() != null) groupLink = group.getGroupLink();
         groupInfoView.setGroupName(groupName);
-        if (!privateGroup) createInviteView.setInviteLink(groupLink);
         if (group.getPicture() != null && !group.getPicture().isEmpty()) groupInfoView.setGroupPictureFromUrl(group.getPicture());
         members = group.getMembers();
         // Setup Group Member View info
@@ -471,6 +506,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         groupInfoView.setGroupName("");
         groupInfoView.bringOutIcons(0);
         groupInfoView.enableButtons();
+        groupInfoView.addMemberPhotoDrawable(null);
         groupPictureUri = null;
         createInviteView.setDefault();
         createInviteView.disable();
@@ -525,7 +561,11 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     private void showShareDialogFragment() {
         ShareDialogFragment shareDialogFragment = ShareDialogFragment.newInstance();
+        shareDialogFragment.setExpirationTime(groupLink, timeRemaining(groupLinkExpirationDate));
         shareDialogFragment.show(getFragmentManager(), ShareDialogFragment.class.getName());
+        subscriptions.add(shareDialogFragment.deletePressed().subscribe(aVoid -> {
+            groupPresenter.modifyPrivateGroupLink(membershipId, false);
+        }));
 
     }
 

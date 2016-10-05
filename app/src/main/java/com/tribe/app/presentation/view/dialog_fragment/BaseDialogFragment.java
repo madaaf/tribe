@@ -27,17 +27,13 @@ import rx.subscriptions.CompositeSubscription;
 public class BaseDialogFragment extends DialogFragment {
 
     private Unbinder unbinder;
-    public CompositeSubscription subscriptions;
 
 
     @Override
     public void onDestroy() {
         unbinder.unbind();
 
-        if (subscriptions.hasSubscriptions() && subscriptions != null) {
-            subscriptions.unsubscribe();
-            subscriptions.clear();
-        }
+        removeSubscriptions();
 
         super.onDestroy();
     }
@@ -80,6 +76,10 @@ public class BaseDialogFragment extends DialogFragment {
 
     public void initUi(View view) {
         unbinder = ButterKnife.bind(this, view);
+    }
+
+    public void removeSubscriptions() {
+
     }
 
     protected ApplicationComponent getApplicationComponent() {

@@ -21,6 +21,14 @@ public class NewMembershipDeserializer implements JsonDeserializer<MembershipRea
             toParse = results.getAsJsonObject("createMembership");
         }
 
+        if (results.getAsJsonObject("generatePrivateLink") != null) {
+            toParse = results.getAsJsonObject("generatePrivateLink");
+        }
+
+        if (results.getAsJsonObject("removePrivateLink") != null) {
+            toParse = results.getAsJsonObject("removePrivateLink");
+        }
+
         return new Gson().fromJson(toParse, typeOfT);
     }
 }

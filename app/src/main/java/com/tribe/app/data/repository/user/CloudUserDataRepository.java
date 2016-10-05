@@ -8,6 +8,7 @@ import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
 import com.tribe.app.data.realm.mapper.GroupRealmDataMapper;
+import com.tribe.app.data.realm.mapper.MembershipRealmDataMapper;
 import com.tribe.app.data.realm.mapper.PinRealmDataMapper;
 import com.tribe.app.data.realm.mapper.SearchResultRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
@@ -45,6 +46,7 @@ public class CloudUserDataRepository implements UserRepository {
     private final ContactRealmDataMapper contactRealmDataMapper;
     private final SearchResultRealmDataMapper searchResultRealmDataMapper;
     private final GroupRealmDataMapper groupRealmDataMapper;
+    private final MembershipRealmDataMapper membershipRealmDataMapper;
 
     /**
      * Constructs a {@link UserRepository}.
@@ -58,13 +60,15 @@ public class CloudUserDataRepository implements UserRepository {
                                    UserRealmDataMapper realmDataMapper,
                                    PinRealmDataMapper pinRealmDataMapper,
                                    ContactRealmDataMapper contactRealmDataMapper,
-                                   GroupRealmDataMapper groupRealmDataMapper) {
+                                   GroupRealmDataMapper groupRealmDataMapper,
+                                   MembershipRealmDataMapper membershipRealmDataMapper) {
         this.userDataStoreFactory = dataStoreFactory;
         this.userRealmDataMapper = realmDataMapper;
         this.pinRealmDataMapper = pinRealmDataMapper;
         this.contactRealmDataMapper = contactRealmDataMapper;
         this.searchResultRealmDataMapper = new SearchResultRealmDataMapper(userRealmDataMapper.getFriendshipRealmDataMapper());
         this.groupRealmDataMapper = groupRealmDataMapper;
+        this.membershipRealmDataMapper = membershipRealmDataMapper;
     }
 
     @Override
@@ -207,10 +211,10 @@ public class CloudUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<Group> createGroup(String groupName, List<String> memberIds, boolean isPrivate, String pictureUri) {
+    public Observable<Membership> createGroup(String groupName, List<String> memberIds, boolean isPrivate, String pictureUri) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
         return cloudDataStore.createGroup(groupName, memberIds, isPrivate, pictureUri)
-                .map(this.groupRealmDataMapper::transform);
+                .map((membershipRealm) -> this.membershipRealmDataMapper.transform(membershipRealm));
     }
 
     @Override
@@ -254,6 +258,12 @@ public class CloudUserDataRepository implements UserRepository {
     public Observable<Void> leaveGroup(String membershipId) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
         return cloudDataStore.leaveGroup(membershipId);
+    }
+
+    @Override
+    public Observable<Membership> modifyPrivateGroupLink(String membershipId, boolean create) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.modifyPrivateGroupLink(membershipId, create).map(this.membershipRealmDataMapper::transform);
     }
 
     @Override

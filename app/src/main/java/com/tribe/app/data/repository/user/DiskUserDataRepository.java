@@ -283,8 +283,7 @@ public class DiskUserDataRepository implements UserRepository {
         return null;
     }
 
-    @Override
-    public Observable<Group> createGroup(String groupName, List<String> memberIds, boolean isPrivate, String pictureUri) {
+    public Observable<Membership> createGroup(String groupName, List<String> memberIds, boolean isPrivate, String pictureUri) {
         return null;
     }
 
@@ -320,6 +319,11 @@ public class DiskUserDataRepository implements UserRepository {
 
     @Override
     public Observable<Void> leaveGroup(String groupId) {
+        return null;
+    }
+
+    @Override
+    public Observable<Membership> modifyPrivateGroupLink(String membershipId, boolean create) {
         return null;
     }
 

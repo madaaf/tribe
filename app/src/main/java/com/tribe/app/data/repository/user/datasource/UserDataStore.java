@@ -14,6 +14,7 @@ import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.User;
 
 import java.util.List;
@@ -134,7 +135,7 @@ public interface UserDataStore {
 
     Observable<GroupRealm> getGroupInfos(String groupId);
 
-    Observable<GroupRealm> createGroup(String groupName, List<String> memberIds, Boolean isPrivate, String pictureUri);
+    Observable<MembershipRealm> createGroup(String groupName, List<String> memberIds, Boolean isPrivate, String pictureUri);
 
     Observable<GroupRealm> updateGroup(String groupId, String groupName, String pictureUri);
 
@@ -149,6 +150,8 @@ public interface UserDataStore {
     Observable<Void> removeGroup(String groupId);
 
     Observable<Void> leaveGroup(String membershipId);
+
+    Observable<MembershipRealm> modifyPrivateGroupLink(String membershipId, boolean create);
 
     Observable<Void> bootstrapSupport();
 

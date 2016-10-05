@@ -139,7 +139,7 @@ public class DiskUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<GroupRealm> createGroup(String groupName, List<String> memberIds, Boolean isPrivate, String pictureUri) {
+    public Observable<MembershipRealm> createGroup(String groupName, List<String> memberIds, Boolean isPrivate, String pictureUri) {
         return null;
     }
 
@@ -175,6 +175,11 @@ public class DiskUserDataStore implements UserDataStore {
 
     @Override
     public Observable<Void> leaveGroup(String groupId) {
+        return null;
+    }
+
+    @Override
+    public Observable<MembershipRealm> modifyPrivateGroupLink(String membershipId, boolean create) {
         return null;
     }
 

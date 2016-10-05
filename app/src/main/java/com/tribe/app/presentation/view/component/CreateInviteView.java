@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -25,6 +27,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -46,12 +49,9 @@ public class CreateInviteView extends FrameLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    public CreateInviteView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
+    private Subscription countDownSubscription;
     private PublishSubject<Void> createPressed = PublishSubject.create();
     private PublishSubject<Void> invitePressed = PublishSubject.create();
 
@@ -66,7 +66,9 @@ public class CreateInviteView extends FrameLayout {
     @BindView(R.id.imageInvite)
     ImageView imageInvite;
 
-    ObjectAnimator createGroupAnim;
+    private ObjectAnimator createGroupAnim;
+    private long currTimeRemaining;
+
 
     @Override
     protected void onFinishInflate() {
@@ -93,14 +95,18 @@ public class CreateInviteView extends FrameLayout {
             subscriptions.unsubscribe();
             subscriptions.clear();
         }
+        if (countDownSubscription != null) {
+            countDownSubscription.unsubscribe();
+        }
 
         super.onDetachedFromWindow();
     }
 
+
     public void setInvite(Boolean privateGroup) {
         if (privateGroup) viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_enabled));
         else viewCreateGroupBg1.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_public));
-        if (privateGroup)textCreateInvite.setText(getContext().getString(R.string.group_button_share));
+        if (privateGroup) textCreateInvite.setText(getContext().getString(R.string.group_button_share_generate));
         textCreateInviteDesc.setText(getContext().getString(R.string.group_share_description));
     }
 
@@ -118,6 +124,11 @@ public class CreateInviteView extends FrameLayout {
         imageInvite.setScaleY(AnimationUtils.SCALE_INVISIBLE);
         viewCreateGroupBg2.setEnabled(false);
         viewCreateGroupBg1.setEnabled(false);
+    }
+
+    public void disableCreate() {
+        viewCreateGroupBg2.setEnabled(false);
+        viewCreateGroupBg2.setVisibility(INVISIBLE);
     }
 
     public void setDefault() {
@@ -181,7 +192,29 @@ public class CreateInviteView extends FrameLayout {
     }
 
     public void setInviteLink(String inviteLink) {
-        textCreateInvite.setText(inviteLink);
+        if (inviteLink == null) {
+            countDownSubscription.unsubscribe();
+//            subscriptions.remove(countDownSubscription);
+            textCreateInvite.setText(getContext().getString(R.string.group_button_share_generate));
+            textCreateInviteDesc.setText(getContext().getString(R.string.group_share_description));
+
+        }
+        else textCreateInvite.setText(inviteLink);
+    }
+
+    public void setExpirationDesc(long timeRemaining) {
+        currTimeRemaining = timeRemaining;
+
+        countDownSubscription = Observable.interval(1, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aLong -> {
+                    currTimeRemaining -= 1000;
+                    textCreateInviteDesc.setText(getContext().getString(R.string.group_share_description_expiration, StringUtils.millisecondsToHhMmSs(currTimeRemaining)));
+                    Log.d("currtimeremaining", currTimeRemaining + "");
+                });
+
+//        subscriptions.add(countDownSubscription);
     }
 
     public Observable<Void> createPressed() {
