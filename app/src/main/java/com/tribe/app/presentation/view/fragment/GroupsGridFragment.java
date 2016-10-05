@@ -247,7 +247,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     @Override
     public void setGroupLinkExpirationDate(Date groupLinkExpirationDate) {
         this.groupLinkExpirationDate = groupLinkExpirationDate.getTime();
-        createInviteView.setExpirationDesc(timeRemaining(this.groupLinkExpirationDate));
+        if (groupLink != null) createInviteView.setExpirationDesc(timeRemaining(this.groupLinkExpirationDate));
     }
 
     private boolean isLinkExpired(long groupLinkExpirationDate) {
@@ -561,7 +561,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     private void showShareDialogFragment() {
         ShareDialogFragment shareDialogFragment = ShareDialogFragment.newInstance();
-        shareDialogFragment.setExpirationTime(groupLink, timeRemaining(groupLinkExpirationDate));
+        shareDialogFragment.setExpirationTime(groupName, groupLink, timeRemaining(groupLinkExpirationDate));
         shareDialogFragment.show(getFragmentManager(), ShareDialogFragment.class.getName());
         subscriptions.add(shareDialogFragment.deletePressed().subscribe(aVoid -> {
             groupPresenter.modifyPrivateGroupLink(membershipId, false);
