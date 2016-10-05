@@ -1,8 +1,9 @@
 package com.tribe.app.data.realm;
 
+import android.support.annotation.StringDef;
+
 import java.util.Date;
 
-import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -11,6 +12,12 @@ import io.realm.annotations.PrimaryKey;
  * Created by tiago on 30/05/2016.
  */
 public class GroupRealm extends RealmObject {
+
+    @StringDef({PRIVATE, PUBLIC})
+    public @interface GroupType {}
+
+    public static final String PRIVATE = "PRIVATE";
+    public static final String PUBLIC = "PUBLIC";
 
     @PrimaryKey
     private String id;

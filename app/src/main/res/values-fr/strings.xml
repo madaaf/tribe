@@ -13,26 +13,26 @@
 	<string name="group_members">membres</string>
 	
 	<!-- Errors -->
-	<string name="error_unknown">Un léger problème est apparu. Réessayez dans 30s.</string>
-	<string name="error_technical">Oups :scream:\nErreur technique !</string>
-	<string name="error_no_network">Oups :scream:\nPas de connexion !</string>
+	<string name="error_unknown">:bird: Un léger problème est apparu. Réessayez dans 30s.</string>
+	<string name="error_technical">:warning: Problème technique. Réessayez !</string>
+	<string name="error_no_network">:satellite: Aucune connection. Dépacez-vous !</string>
 	
 	<!-- Image Picker -->
-	<string name="image_picker_title">Choisis une photo</string>
-	<string name="image_picker_camera">Appareil photo</string>
-	<string name="image_picker_library">Bibliothèque</string>
+	<string name="image_picker_title">Ajouter un avatar</string>
+	<string name="image_picker_camera">Utiliser l\'appareil photo</string>
+	<string name="image_picker_library">Ouvrir ma bibliothèque</string>
 	
 	<!-- Contacts -->
 	<string name="contacts_search_placeholder">Rechercher un(e) ami(e)</string>
-	<string name="contacts_share_profile_button">Partage ton profile</string>
+	<string name="contacts_share_profile_button">Partager votre profil</string>
 	<string name="contacts_share_profile_description">Passer le message</string>
 	<string name="contacts_section_facebook_sync_title">Synchroniser vos ami(e)s</string>
 	<string name="contacts_section_facebook_sync_description">Inviter vos amis Facebook</string>
 	<string name="contacts_section_facebook_invite_title">Notifier vos amis manquants</string>
 	<string name="contacts_section_facebook_syncing">Synchronisation en cours</string>
-	<string name="contacts_section_facebook_notifying">Notifications en cours</string>
-	<string name="contacts_section_facebook_next_sync">Notifiez-les encore dans %1$s</string>
-	<string name="contacts_section_addressbook_sync_description">Synchronise automatiquement\ntes contacts</string>
+	<string name="contacts_section_facebook_notifying">Notification en cours</string>
+	<string name="contacts_section_facebook_next_sync">Notifiez-les à nouveau dans %1$s</string>
+	<string name="contacts_section_addressbook_sync_description">Synchroniser automatiquement\nvos contacts</string>
 	<string name="contacts_section_addressbook_syncing">Synchronisation</string>
 	<string name="contacts_section_addressbook_empty">Plus aucun contact à inviter</string>
 	<string name="contacts_section_addressbook_friends_in_app">Aurait %1$d amis sur Tribe</string>
@@ -46,9 +46,9 @@
 	<string name="permission_contacts_disabled_alert_description">Rendez-vous dès maintenant dans les Paramètres de l\'iPhone pour l\'activer !</string>
 	<string name="permission_contacts_disabled_alert_redirect">Activer</string>
 	<string name="permission_contacts_disabled_alert_cancel">Ne pas activer</string>
-	<string name="permission_camera_enable_button_title">Activer\ncamera</string>
+	<string name="permission_camera_enable_button_title">Activer\nla caméra</string>
 	<string name="permission_popup_push_onboarding_title">Soyez notifié !</string>
-	<string name="permission_popup_push_onboarding_description">Recevez une notification lorsque vos\namis rejoigneront l\'app.</string>
+	<string name="permission_popup_push_onboarding_description">Recevez une notification lorsque vos\namis rejoignent l\'app.</string>
 	<string name="permission_popup_push_onboarding_points">Autoriser les notifications</string>
 	<string name="permission_popup_push_onboarding_no">Rester seul</string>
 	<string name="permission_popup_push_onboarding_yes">Notifiez moi !</string>
@@ -65,7 +65,7 @@
 	
 	<!-- Invitations -->
 	<string name="invitation_sms_error_parse_number_title">Le format de ce numéro de téléphone ne semble pas parfait</string>
-	<string name="invitation_sms_error_parse_number_message">%1$s\n\nCe numéro de téléphone n\'inclue pas de code pays. Nous avons essayé d\'ajouter %2$s mais ça n\'a pas fonctionner. Souhaitez-vous jeter un oeil ?</string>
+	<string name="invitation_sms_error_parse_number_message">%1$s\n\nCe numéro de téléphone n\'inclue pas de Code pays. Nous avons essayé d\'ajouter %2$s mais ça n\'a pas fonctionné.</string>
 	<string name="invitation_sms_error_parse_number_action_edit">Corriger le numéro</string>
 	<string name="invitation_sms_error_parse_number_action_use">Utiliser sans corriger</string>
 	
@@ -80,7 +80,7 @@
 	<string name="tribe_snooze_this_weekend_title">Ce week-end</string>
 	<string name="tribe_more_add_friend">Ajouter en ami</string>
 	<string name="tribe_more_add_friend_success">Ajouté aux amis</string>
-	<string name="tribe_more_save">Sauvegarder dans Bibliothèque</string>
+	<string name="tribe_more_save">Sauvegarder dans votre bibliothèque</string>
 	<string name="tribe_more_save_success">Sauvegardé !</string>
 	<string name="tribe_more_report">Reporter</string>
 	<string name="tribe_more_set_speed_1x">Diminuer la vitesse (1x)</string>
@@ -102,7 +102,7 @@
 	<string name="grid_friendship_status_reply">À votre tour</string>
 	<string name="grid_support_title">Des questions?</string>
 	<string name="grid_support_status_default">Chat avec le CEO</string>
-	<string name="grid_support_status_sending">Envoie à l’Équipe</string>
+	<string name="grid_support_status_sending">Envoi à l’Équipe</string>
 	<string name="grid_support_status_confirmed">Confirmé</string>
 	<string name="grid_support_status_sent">Envoyé à l’Équipe</string>
 	<string name="grid_support_status_opened">Ouvert par l’Équipe</string>
@@ -218,7 +218,7 @@
 	<string name="settings_title">Paramètres</string>
 	<string name="settings_section_profile">Profil</string>
 	<string name="settings_profile_title">Profil</string>
-	<string name="settings_profile_subtitle">Modifier votre photo de profil, nom d\'affichage et nom d\'utilisateur</string>
+	<string name="settings_profile_subtitle">Modifier votre photo de profil, nom d\'affichage et nom d\'utilisateur.</string>
 	<string name="settings_picture_title">Photo de profil</string>
 	<string name="settings_picture_subtitle">Prendre un selfie ou importer une photo</string>
 	<string name="settings_displayname_title">Nom d\'affichage</string>
@@ -227,7 +227,7 @@
 	<string name="settings_username_subtitle">Le moyen le plus simple de vous ajouter après la sync.</string>
 	<string name="settings_section_messages">Messages</string>
 	<string name="settings_filter_title">Sélectionner un filtre</string>
-	<string name="settings_theme_title">Selecitionner un theme</string>
+	<string name="settings_theme_title">Sélectionner un thème</string>
 	<string name="settings_tribesave_title">Souvenirs</string>
 	<string name="settings_tribesave_subtitle">Permettre à vos amis de sauvegarder\nvos meilleures vidéos.</string>
 	<string name="settings_geolocation_title">Localisation</string>
@@ -237,28 +237,28 @@
 	<string name="settings_preload_title">Pré-télécharger</string>
 	<string name="settings_preload_subtitle">Télécharger automatiquement les message en arrière-plan.</string>
 	<string name="settings_facebook_sync_title">Facebook</string>
-	<string name="settings_facebook_not_synced_description">Syncronisation desactivée</string>
-	<string name="settings_facebook_synced_description">%1$d ami(e)s syncronisés</string>
+	<string name="settings_facebook_not_synced_description">Synchronisation désactivée</string>
+	<string name="settings_facebook_synced_description">%1$d ami(e)s synchronisés</string>
 	<string name="settings_addressbook_sync_title">Carnet d\'adresses</string>
-	<string name="settings_addressbook_not_synced_description">Syncronisation desactivée</string>
-	<string name="settings_addressbook_synced_description">%1$d ami(e)s syncronisés</string>
+	<string name="settings_addressbook_not_synced_description">Synchronisation désactivée</string>
+	<string name="settings_addressbook_synced_description">%1$d ami(e)s synchronisés</string>
 	<string name="settings_weatherunits_title">Fahrenheit</string>
 	<string name="settings_weatherunits_subtitle">Afficher la température en Fahrenheit sur les messages.</string>
 	<string name="settings_invisible_title">Mode Invisible</string>
-	<string name="settings_invisible_subtitle">Vous seul pouvez ajouter des members.\nVous ne pouvez pas être ajouté.</string>
+	<string name="settings_invisible_subtitle">Vous seul pouvez ajouter des membres.\nVous ne pouvez pas être ajouté.</string>
 	<string name="settings_section_support">Support</string>
 	<string name="settings_support_title">Nous contacter sur Tribe</string>
-	<string name="settings_support_subtitle">Nous répondons en moins de 12h a chaque message.</string>
+	<string name="settings_support_subtitle">Nous répondons en moins de 12h à chaque message.</string>
 	<string name="settings_tweet_title">Tweeter @heytribe</string>
-	<string name="settings_tweet_subtitle">Nous répondons en moins de 24h a chaque tweet.</string>
+	<string name="settings_tweet_subtitle">Nous répondons en moins de 24h à chaque tweet.</string>
 	<string name="settings_email_title">Envoyer un email à l\'équipe</string>
-	<string name="settings_email_subtitle">Nous répondons en moins de 48h a chaque email.</string>
+	<string name="settings_email_subtitle">Nous répondons en moins de 48h à chaque email.</string>
 	<string name="settings_email_address">cyril@tribe.pm</string>
 	<string name="settings_email_subject">Something about Tribe</string>
 	<string name="settings_rate_title">Noter l\'app</string>
 	<string name="settings_rate_subtitle">Le moyen le plus simple de nous envoyer du love.</string>
 	<string name="settings_blocked_title">Contacts bloqués</string>
-	<string name="settings_blocked_subtitle">Retrouvez la liste des contacts que vous avez bloqué</string>
+	<string name="settings_blocked_subtitle">Retrouvez la liste des contacts que vous avez bloqué.</string>
 	<string name="settings_logout_title">Déconnexion</string>
 	<string name="settings_logout_subtitle">Déconnecter ce compte de ce terminal.</string>
 	<string name="settings_logout_confirm_message">Êtes-vous sûr de vouloir déconnecter ce compte de ce terminal ?</string>
@@ -281,6 +281,7 @@
 	<string name="onboarding_user_avatar_selfie">Appareil photo</string>
 	<string name="onboarding_user_displayname_placeholder">Nom complet</string>
 	<string name="onboarding_user_username_placeholder">Nom d\'utilisateur</string>
+	<string name="onboarding_user_username_restrictions">Le nom d\'utilisateur ne doit contenir que des caractères alphanumériques ou tirets</string>
 	<string name="onboarding_user_facebook_button_title">Remplir avec Facebook</string>
 	<string name="onboarding_queue_title">Entrer maintenant.</string>
 	<string name="onboarding_queue_description">Au moins un ami est\nexigé pour pouvoir rentrer</string>

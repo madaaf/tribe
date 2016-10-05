@@ -208,6 +208,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
             } else {
                 for (Recipient recipient : recipientList) {
                     if (recipient.getReceivedTribes() != null && recipient.getReceivedTribes().size() > 0) {
+                        System.out.println("HomeGridPresenter : " + homeGridPresenter);
+                        System.out.println("recipient.getreceivedtribes : " + recipient.getReceivedTribes().size());
                         homeGridPresenter.downloadMessages(recipient.getReceivedTribes().toArray(new TribeMessage[recipient.getReceivedTribes().size()]));
                     }
                 }
@@ -262,7 +264,9 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
 
     @Override
     public Context context() {
-        return this.getActivity().getApplicationContext();
+        if (isAdded() && getActivity() != null) return this.getActivity().getApplicationContext();
+
+        return null;
     }
 
     @Override
@@ -281,6 +285,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
 
     public void reloadGrid() {
         filter = null;
+        homeGridAdapter.filterList(null);
         this.homeGridPresenter.loadFriendList(filter);
     }
 

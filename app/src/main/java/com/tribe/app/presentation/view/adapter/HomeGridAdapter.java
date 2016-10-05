@@ -152,13 +152,13 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
         if (!hasFilter) {
             this.itemsFiltered.clear();
             this.itemsFiltered.addAll(this.items);
+            this.notifyDataSetChanged();
+        } else {
+            filterList(filter.getFilter());
         }
-
-        this.notifyDataSetChanged();
     }
 
     public void setFilteredItems(List<Recipient> items) {
-        hasFilter = true;
         this.itemsFiltered.clear();
         this.itemsFiltered.addAll(items);
     }
@@ -186,11 +186,14 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
 
     public void filterList(String text) {
         if (!StringUtils.isEmpty(text) && !text.equals(PullToSearchView.HOME)) {
+            hasFilter = true;
             filter.filter(text);
         } else {
+            hasFilter = false;
             this.itemsFiltered.clear();
             this.itemsFiltered.addAll(this.items);
             notifyDataSetChanged();
+            filter.setFilter(null);
         }
     }
 

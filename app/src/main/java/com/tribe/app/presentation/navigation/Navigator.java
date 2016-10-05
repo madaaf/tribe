@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.view.activity.ChatActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.GroupInfoActivity;
@@ -52,9 +53,10 @@ public class Navigator {
      *
      * @param context A Context needed to open the destiny activity.
      */
-    public void navigateToLogin(Context context) {
+    public void navigateToLogin(Context context, Uri deepLink) {
         if (context != null) {
             Intent intent = IntroActivity.getCallingIntent(context);
+            intent.setData(deepLink);
             context.startActivity(intent);
         }
     }
@@ -77,12 +79,21 @@ public class Navigator {
      *
      * @param activity An activity needed to open the destiny activity.
      */
-    public void navigateToHome(Activity activity, boolean start) {
+    public void navigateToHome(Activity activity, boolean start, Uri uriDeepLink) {
         if (activity != null) {
             Intent intent = HomeActivity.getCallingIntent(activity);
             if (start) {
+                if (uriDeepLink != null) {
+                    intent.setData(uriDeepLink);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                }
+
                 activity.startActivity(intent);
             } else {
+                if (uriDeepLink != null) {
+                    intent.setData(uriDeepLink);
+                    intent.putExtra(Extras.IS_FROM_LOGIN, true);
+                }
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 activity.startActivity(intent);
 //                activity.finish();

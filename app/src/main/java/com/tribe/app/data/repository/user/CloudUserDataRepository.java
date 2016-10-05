@@ -195,7 +195,14 @@ public class CloudUserDataRepository implements UserRepository {
     @Override
     public Observable<Group> getGroupMembers(String groupId) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-        return  cloudDataStore.getGroupMembers(groupId)
+        return cloudDataStore.getGroupMembers(groupId)
+                .map(this.groupRealmDataMapper::transform);
+    }
+
+    @Override
+    public Observable<Group> getGroupInfos(String groupId) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.getGroupInfos(groupId)
                 .map(this.groupRealmDataMapper::transform);
     }
 

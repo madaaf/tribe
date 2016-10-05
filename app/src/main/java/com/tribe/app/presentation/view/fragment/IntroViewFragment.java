@@ -278,7 +278,7 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
 
     @Override
     public void goToHome() {
-        navigator.navigateToHome(getActivity(), false);
+        navigator.navigateToHome(getActivity(), false, null);
     }
 
     @Override

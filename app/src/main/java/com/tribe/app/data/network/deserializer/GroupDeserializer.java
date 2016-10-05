@@ -24,26 +24,33 @@ public class GroupDeserializer implements JsonDeserializer<GroupRealm> {
 
         GroupRealm groupRealm = new GroupRealm();
 
-
         JsonObject data = json.getAsJsonObject().getAsJsonObject("data");
         JsonObject group;
+
         try {
             group = data.getAsJsonArray("groups").get(0).getAsJsonObject();
             JsonArray members = group.getAsJsonArray("members");
-            for (int i = 0; i < members.size(); i++) {
-                if (members.get(i).isJsonNull()) {
-                    members.remove(i);
+            if (members != null) {
+                for (int i = 0; i < members.size(); i++) {
+                    if (members.get(i).isJsonNull()) {
+                        members.remove(i);
+                    }
                 }
             }
+
             JsonArray admins = group.getAsJsonArray("admins");
-            RealmList<UserRealm> users = new GsonBuilder().create().fromJson(members, new TypeToken<RealmList<UserRealm>>(){}.getType());
-            RealmList<UserRealm> adminsList = new GsonBuilder().create().fromJson(admins, new TypeToken<RealmList<UserRealm>>(){}.getType());
-            groupRealm.setMembers(users);
-            groupRealm.setAdmins(adminsList);
+
+            if (admins != null && members != null && members.size() > 0) {
+                RealmList<UserRealm> users = new GsonBuilder().create().fromJson(members, new TypeToken<RealmList<UserRealm>>() {}.getType());
+                RealmList<UserRealm> adminsList = new GsonBuilder().create().fromJson(admins, new TypeToken<RealmList<UserRealm>>() {}.getType());
+                groupRealm.setMembers(users);
+                groupRealm.setAdmins(adminsList);
+            }
         } catch (NullPointerException e) {
             group = data.getAsJsonObject("updateGroup");
             if (group == null) group = data.getAsJsonObject("createGroup");
         }
+
         JsonElement groupLink = group.get("link");
         if (groupLink != null) groupRealm.setGroupLink(groupLink.toString());
         groupRealm.setId(group.get("id").getAsString());

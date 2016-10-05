@@ -57,6 +57,7 @@ import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.internal.di.scope.Theme;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.service.TribeFirebaseInstanceIDService;
+import com.tribe.app.presentation.service.TribeFirebaseMessagingService;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
@@ -112,6 +113,7 @@ public interface ApplicationComponent {
 
     void inject(BaseFragment baseFragment);
     void inject(BaseActivity baseActivity);
+    void inject(TribeFirebaseMessagingService tribeFirebaseMessagingService);
 
     void inject(LauncherActivity launcherActivity);
     void inject(MeGridAdapterDelegate meGridAdapterDelegate);

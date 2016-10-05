@@ -122,6 +122,10 @@ public interface TribeApi {
 
     @FormUrlEncoded
     @POST("/graphql")
+    Observable<GroupRealm> getGroupInfos(@Field("query") String query);
+
+    @FormUrlEncoded
+    @POST("/graphql")
     Observable<GroupRealm> createGroup(@Field("query") String query);
 
     @Multipart

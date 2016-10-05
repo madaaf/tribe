@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.fragment;
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -24,6 +26,7 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.AccessPresenter;
 import com.tribe.app.presentation.mvp.view.AccessView;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.component.AccessBottomBarView;
 import com.tribe.app.presentation.view.component.AccessLockView;
@@ -116,6 +119,9 @@ public class AccessFragment extends BaseFragment implements AccessView {
             STATE_HANG_TIGHT = 1,
             STATE_SORRY = 2,
             STATE_CONGRATS = 3;
+    private Uri deepLink;
+    private boolean wasInvitedToPrivateGroup;
+    private Group group;
 
     // RESOURCES
     private int totalTimeSynchro;
@@ -232,6 +238,10 @@ public class AccessFragment extends BaseFragment implements AccessView {
         this.currentUser = user;
     }
 
+    public void setDeepLink(Uri deepLink) {
+        this.deepLink = deepLink;
+    }
+
     /**
      * Navigation methods
      */
@@ -274,10 +284,12 @@ public class AccessFragment extends BaseFragment implements AccessView {
     }
 
     private void goToHangTight() {
-        if (RxPermissions.getInstance(getContext()).isGranted(Manifest.permission.READ_CONTACTS)) {
-            accessPresenter.lookupContacts();
+        if (deepLink != null && !StringUtils.isEmpty(deepLink.getPath())) {
+            if (deepLink.getPath().startsWith("/g/")) {
+                accessPresenter.lookupGroupInfos(StringUtils.getLastBitFromUrl(deepLink.toString()));
+            }
         } else {
-            renderFriendList(new ArrayList<>());
+            lookupContacts();
         }
 
         viewState = STATE_HANG_TIGHT;
@@ -402,7 +414,7 @@ public class AccessFragment extends BaseFragment implements AccessView {
     }
 
     private void goToHome() {
-        navigator.navigateToHome(getActivity(), false);
+        navigator.navigateToHome(getActivity(), false, deepLink);
     }
 
     /**
@@ -449,6 +461,14 @@ public class AccessFragment extends BaseFragment implements AccessView {
         accessLockView.fadeBigLockIn();
     }
 
+    private void lookupContacts() {
+        if (RxPermissions.getInstance(getContext()).isGranted(Manifest.permission.READ_CONTACTS)) {
+            accessPresenter.lookupContacts();
+        } else {
+            renderFriendList(new ArrayList<>());
+        }
+    }
+
     /**
      * AccessView methods
      */
@@ -479,6 +499,10 @@ public class AccessFragment extends BaseFragment implements AccessView {
             }
         }
 
+        if (group != null) {
+            if (!relationsInApp.containsKey(group.getId())) relationsInApp.put(group.getId(), group);
+        }
+
         if (relationsInApp.values() != null && relationsInApp.values().size() > 0) {
             accessLockView.animateProgress();
 
@@ -504,6 +528,22 @@ public class AccessFragment extends BaseFragment implements AccessView {
         } else {
             goToSorry();
         }
+    }
+
+    @Override
+    public void groupInfosFailed() {
+        wasInvitedToPrivateGroup = false;
+        if (viewState == STATE_HANG_TIGHT) lookupContacts();
+    }
+
+    @Override
+    public void groupInfosSuccess(Group group) {
+        if (group != null) {
+            this.group = group;
+            wasInvitedToPrivateGroup = group.isPrivateGroup();
+        }
+
+        if (viewState == STATE_HANG_TIGHT) lookupContacts();
     }
 
     /**

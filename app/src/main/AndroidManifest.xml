@@ -38,10 +38,20 @@
             android:name=".presentation.view.activity.LauncherActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:host="dev.tribe.pm" android:scheme="http" />
+                <data android:host="dev.tribe.pm" android:scheme="https" />
+                <data android:pathPrefix="/g" />
+                <data android:pathPrefix="/" />
             </intent-filter>
         </activity>
 
@@ -57,22 +67,11 @@
         <activity
             android:name=".presentation.view.activity.HomeActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTop"
-            android:allowTaskReparenting="true"
+            android:launchMode="singleTask"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.FullScreen"
-            >
-
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:host="dev.tribe.pm" android:scheme="http" />
-                <data android:host="dev.tribe.pm" android:scheme="https" />
-                <data android:pathPrefix="/g" />
-            </intent-filter>
-        </activity>
+            />
 
         <activity
             android:name=".presentation.view.activity.CountryActivity"

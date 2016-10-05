@@ -6,6 +6,7 @@ import java.util.Date;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -40,6 +41,9 @@ public class UserRealm extends RealmObject {
     private RealmList<FriendshipRealm> friendships;
     private RealmList<MembershipRealm> memberships;
     private boolean invisible_mode;
+
+    @Ignore
+    private RealmList<GroupRealm> groups;
 
     public String getId() {
         return id;
@@ -151,5 +155,13 @@ public class UserRealm extends RealmObject {
 
     public void setMemberships(RealmList<MembershipRealm> memberships) {
         this.memberships = memberships;
+    }
+
+    public RealmList<GroupRealm> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(RealmList<GroupRealm> groups) {
+        this.groups = groups;
     }
 }

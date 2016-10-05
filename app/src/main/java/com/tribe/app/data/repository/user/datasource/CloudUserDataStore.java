@@ -165,6 +165,7 @@ public class CloudUserDataStore implements UserDataStore {
         return Observable.zip(this.tribeApi.getUserInfos(context.getString(R.string.user_infos,
                 !StringUtils.isEmpty(lastUserRequest.get()) ? context.getString(R.string.input_start, lastUserRequest.get()) : "",
                 !StringUtils.isEmpty(lastUserRequest.get()) ? context.getString(R.string.input_start, lastUserRequest.get()) : "",
+                !StringUtils.isEmpty(lastUserRequest.get()) ? context.getString(R.string.input_start, lastUserRequest.get()) : "",
                 context.getString(R.string.userfragment_infos),
                 context.getString(R.string.groupfragment_info),
                 context.getString(R.string.membershipfragment_info))),
@@ -855,6 +856,11 @@ public class CloudUserDataStore implements UserDataStore {
                 });
     }
 
+    @Override
+    public Observable<GroupRealm> getGroupInfos(String groupId) {
+        String request = context.getString(R.string.get_group_infos, groupId, context.getString(R.string.groupfragment_info));
+        return this.tribeApi.getGroupInfos(request);
+    }
 
     @Override
     public Observable<GroupRealm> createGroup(String groupName, List<String> memberIds, Boolean isPrivate, String pictureUri) {

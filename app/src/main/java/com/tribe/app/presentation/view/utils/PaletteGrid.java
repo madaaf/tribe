@@ -54,10 +54,11 @@ public class PaletteGrid {
                 ContextCompat.getColor(context, R.color.blue_5),
                 ContextCompat.getColor(context, R.color.blue_6),
                 ContextCompat.getColor(context, R.color.blue_7),
-                ContextCompat.getColor(context, R.color.blue_6),
-                ContextCompat.getColor(context, R.color.blue_5),
-                ContextCompat.getColor(context, R.color.blue_3),
-                ContextCompat.getColor(context, R.color.blue_2)
+                ContextCompat.getColor(context, R.color.blue_8),
+                ContextCompat.getColor(context, R.color.blue_9),
+                ContextCompat.getColor(context, R.color.blue_10),
+                ContextCompat.getColor(context, R.color.blue_11),
+                ContextCompat.getColor(context, R.color.blue_12)
         };
 
         paletteThree = new Integer[] {
@@ -68,10 +69,11 @@ public class PaletteGrid {
                 ContextCompat.getColor(context, R.color.red_5),
                 ContextCompat.getColor(context, R.color.red_6),
                 ContextCompat.getColor(context, R.color.red_7),
-                ContextCompat.getColor(context, R.color.red_6),
-                ContextCompat.getColor(context, R.color.red_5),
-                ContextCompat.getColor(context, R.color.red_3),
-                ContextCompat.getColor(context, R.color.red_2)
+                ContextCompat.getColor(context, R.color.red_8),
+                ContextCompat.getColor(context, R.color.red_9),
+                ContextCompat.getColor(context, R.color.red_10),
+                ContextCompat.getColor(context, R.color.red_11),
+                ContextCompat.getColor(context, R.color.red_12)
         };
 
         paletteFour = new Integer[] {
@@ -82,10 +84,11 @@ public class PaletteGrid {
                 ContextCompat.getColor(context, R.color.violet_5),
                 ContextCompat.getColor(context, R.color.violet_6),
                 ContextCompat.getColor(context, R.color.violet_7),
-                ContextCompat.getColor(context, R.color.violet_6),
-                ContextCompat.getColor(context, R.color.violet_5),
-                ContextCompat.getColor(context, R.color.violet_3),
-                ContextCompat.getColor(context, R.color.violet_2)
+                ContextCompat.getColor(context, R.color.violet_8),
+                ContextCompat.getColor(context, R.color.violet_9),
+                ContextCompat.getColor(context, R.color.violet_10),
+                ContextCompat.getColor(context, R.color.violet_11),
+                ContextCompat.getColor(context, R.color.violet_12)
         };
 
         paletteFive = new Integer[] {
@@ -96,10 +99,11 @@ public class PaletteGrid {
                 ContextCompat.getColor(context, R.color.orange_5),
                 ContextCompat.getColor(context, R.color.orange_6),
                 ContextCompat.getColor(context, R.color.orange_7),
-                ContextCompat.getColor(context, R.color.orange_6),
-                ContextCompat.getColor(context, R.color.orange_5),
-                ContextCompat.getColor(context, R.color.orange_3),
-                ContextCompat.getColor(context, R.color.orange_2)
+                ContextCompat.getColor(context, R.color.orange_8),
+                ContextCompat.getColor(context, R.color.orange_9),
+                ContextCompat.getColor(context, R.color.orange_10),
+                ContextCompat.getColor(context, R.color.orange_11),
+                ContextCompat.getColor(context, R.color.orange_12)
         };
 
         paletteSix = new Integer[] {
@@ -110,10 +114,11 @@ public class PaletteGrid {
                 ContextCompat.getColor(context, R.color.black_5),
                 ContextCompat.getColor(context, R.color.black_6),
                 ContextCompat.getColor(context, R.color.black_7),
-                ContextCompat.getColor(context, R.color.black_6),
-                ContextCompat.getColor(context, R.color.black_5),
-                ContextCompat.getColor(context, R.color.black_3),
-                ContextCompat.getColor(context, R.color.black_2)
+                ContextCompat.getColor(context, R.color.black_8),
+                ContextCompat.getColor(context, R.color.black_9),
+                ContextCompat.getColor(context, R.color.black_10),
+                ContextCompat.getColor(context, R.color.black_11),
+                ContextCompat.getColor(context, R.color.black_12)
         };
     }
 

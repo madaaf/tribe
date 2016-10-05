@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -64,6 +65,7 @@ public class IntroActivity extends BaseActivity {
     private IntroViewFragment introViewFragment;
     private ProfileInfoFragment profileInfoFragment;
     private AccessFragment accessFragment;
+    private Uri deepLink;
 
     // OBSERVABLES
     private Unbinder unbinder;
@@ -106,6 +108,7 @@ public class IntroActivity extends BaseActivity {
 
         lastMessageRequest.set("");
         lastUserRequest.set("");
+        manageDeepLink(getIntent());
     }
 
     @Override
@@ -180,22 +183,23 @@ public class IntroActivity extends BaseActivity {
      */
 
     public void goToProfileInfo(User user, LoginEntity loginEntity) {
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         profileInfoFragment.setLoginEntity(loginEntity);
         profileInfoFragment.setUser(user);
         viewPager.setCurrentItem(PAGE_PROFILE_INFO);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
     }
 
     public void goToAccess(User user) {
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         accessFragment.fadeBigLockIn();
         accessFragment.setUser(user);
+        accessFragment.setDeepLink(deepLink);
         Observable.timer(250, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(time -> {
+                    getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+                    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                            WindowManager.LayoutParams.FLAG_FULLSCREEN);
                     viewPager.setCurrentItem(PAGE_ACCESS);
                 });
     }
@@ -261,6 +265,15 @@ public class IntroActivity extends BaseActivity {
         @Override
         public void transformPage(View page, float position) {
 
+        }
+    }
+
+    /**
+     * Deep links
+     */
+    private void manageDeepLink(Intent intent) {
+        if (intent != null && intent.getData() != null) {
+            deepLink = intent.getData();
         }
     }
 

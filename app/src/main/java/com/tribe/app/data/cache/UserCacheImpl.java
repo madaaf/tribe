@@ -59,6 +59,7 @@ public class UserCacheImpl implements UserCache {
                     if (membershipDB != null) {
                         membershipDB.getGroup().setName(membershipRealm.getGroup().getName());
                         membershipDB.getGroup().setPicture(membershipRealm.getGroup().getPicture());
+                        membershipDB.setMute(membershipRealm.isMute());
 
                         RealmList<UserRealm> membersEnd = new RealmList<>();
 
@@ -88,6 +89,15 @@ public class UserCacheImpl implements UserCache {
 
                     if (!found) {
                         userDB.getMemberships().add(membershipRealm);
+                    }
+                }
+
+                for (GroupRealm groupRealm : userRealm.getGroups()) {
+                    GroupRealm groupRealmDB = obsRealm.where(GroupRealm.class).equalTo("id", groupRealm.getId()).findFirst();
+
+                    if (groupRealmDB != null) {
+                        groupRealmDB.setName(groupRealm.getName());
+                        groupRealmDB.setPicture(groupRealm.getPicture());
                     }
                 }
 
@@ -412,7 +422,20 @@ public class UserCacheImpl implements UserCache {
             realm.beginTransaction();
             MembershipRealm membershipRealmDB = realm.copyToRealmOrUpdate(membershipRealm);
             UserRealm user = realm.where(UserRealm.class).equalTo("id", userId).findFirst();
-            user.getMemberships().add(membershipRealmDB);
+
+            boolean found = false;
+
+            if (user.getMemberships() != null) {
+
+                for (MembershipRealm dbMembership : user.getMemberships()) {
+                    if (dbMembership.getGroup().getId().equals(membershipRealm.getGroup().getId())) {
+                        found = true;
+                    }
+                }
+            }
+
+            if (!found) user.getMemberships().add(membershipRealmDB);
+
             realm.commitTransaction();
         } catch (IllegalStateException ex) {
             ex.printStackTrace();

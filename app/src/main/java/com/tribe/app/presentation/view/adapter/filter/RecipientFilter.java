@@ -17,6 +17,7 @@ public class RecipientFilter extends Filter {
     private List<Recipient> filteredRecipientList;
     private HomeGridAdapter adapter;
     private ScreenUtils screenUtils;
+    private String filter;
 
     public RecipientFilter(ScreenUtils screenUtils, List<Recipient> recipientList, HomeGridAdapter adapter) {
         this.screenUtils = screenUtils;
@@ -27,6 +28,7 @@ public class RecipientFilter extends Filter {
 
     @Override
     protected FilterResults performFiltering(CharSequence constraint) {
+        filter = constraint.toString();
         filteredRecipientList.clear();
         final FilterResults results = new FilterResults();
 
@@ -51,5 +53,13 @@ public class RecipientFilter extends Filter {
     protected void publishResults(CharSequence constraint, FilterResults results) {
         adapter.setFilteredItems(filteredRecipientList);
         adapter.notifyDataSetChanged();
+    }
+
+    public String getFilter() {
+        return filter;
+    }
+
+    public void setFilter(String filter) {
+        this.filter = filter;
     }
 }

@@ -3,9 +3,11 @@ package com.tribe.app.presentation.mvp.presenter;
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.RefreshHowManyFriendsJob;
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
+import com.tribe.app.domain.interactor.user.GetGroupInfos;
 import com.tribe.app.presentation.mvp.view.AccessView;
 import com.tribe.app.presentation.mvp.view.View;
 
@@ -27,17 +29,19 @@ public class AccessPresenter implements Presenter {
     // USECASES
     private JobManager jobManager;
     private UseCase synchroContactList;
+    private GetGroupInfos getGroupInfos;
 
     // SUBSCRIBERS
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private LookupContactsSubscriber lookupContactsSubscriber;
 
     @Inject
-    public AccessPresenter(JobManager jobManager,
-            @Named("synchroContactList") UseCase synchroContactList) {
+    public AccessPresenter(JobManager jobManager, @Named("synchroContactList") UseCase synchroContactList,
+                           GetGroupInfos getGroupInfos) {
         super();
         this.jobManager = jobManager;
         this.synchroContactList = synchroContactList;
+        this.getGroupInfos = getGroupInfos;
     }
 
     @Override
@@ -86,6 +90,11 @@ public class AccessPresenter implements Presenter {
         lookupContactsSubscriber.unsubscribe();
     }
 
+    public void lookupGroupInfos(String groupId) {
+        getGroupInfos.prepare(groupId);
+        getGroupInfos.execute(new GetGroupInfosSubscriber());
+    }
+
     private class LookupContactsSubscriber extends DefaultSubscriber<List<Contact>> {
 
         @Override
@@ -114,4 +123,22 @@ public class AccessPresenter implements Presenter {
             jobManager.addJobInBackground(new RefreshHowManyFriendsJob());
         }
     }
+
+    private final class GetGroupInfosSubscriber extends DefaultSubscriber<Group> {
+
+        @Override
+        public void onCompleted() {}
+
+        @Override
+        public void onError(Throwable e) {
+            accessView.groupInfosFailed();
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(Group group) {
+            if (group != null) accessView.groupInfosSuccess(group);
+        }
+    }
+
 }

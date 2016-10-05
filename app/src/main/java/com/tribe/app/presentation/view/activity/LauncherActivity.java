@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.tribe.app.data.realm.AccessToken;
@@ -33,15 +34,12 @@ public class LauncherActivity extends BaseActivity {
 
         this.getApplicationComponent().inject(this);
 
-        if (IntroActivity.uiOnlyMode) {
-            navigator.navigateToLogin(this);
+        Uri deepLink = getIntent().getData();
+        if (currentUser == null || StringUtils.isEmpty(currentUser.getUsername())
+                || currentUser.getFriendshipList().size() == 0) {
+            navigator.navigateToLogin(this, deepLink);
         } else {
-            if (currentUser == null || StringUtils.isEmpty(currentUser.getUsername())
-                    || currentUser.getFriendshipList().size() == 0) {
-                navigator.navigateToLogin(this);
-            } else {
-                navigator.navigateToHome(this, true);
-            }
+            navigator.navigateToHome(this, true, deepLink);
         }
 
         finish();

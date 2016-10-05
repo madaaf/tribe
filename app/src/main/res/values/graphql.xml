@@ -18,12 +18,16 @@
                 memberships %2$s {
                     ...MembershipInfo
                 }
+
+                groups %3$s {
+                    ...GroupInfo
+                }
             }
         }
 
-        %3$s
         %4$s
         %5$s
+        %6$s
     </string>
 
     <string name="user.infos.list" translatable="false">
@@ -422,6 +426,16 @@
             created_at
             updated_at
         }
+    </string>
+
+    <string name="get.group.infos" translatable="false">
+        {
+            groups (ids : [\"%1$s\"]) {
+                ...GroupInfo
+            }
+        }
+
+        %2$s
     </string>
 
     <string name="get.group.members" translatable="false">
