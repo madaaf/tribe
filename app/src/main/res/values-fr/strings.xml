@@ -13,9 +13,9 @@
 	<string name="group_members">membres</string>
 	
 	<!-- Errors -->
-	<string name="error_unknown">:bird: Un léger problème est apparu. Réessayez dans 30s.</string>
+	<string name="error_unknown">:bird: Léger problème. Réessayez dans 30s.</string>
 	<string name="error_technical">:warning: Problème technique. Réessayez !</string>
-	<string name="error_no_network">:satellite: Aucune connection. Dépacez-vous !</string>
+	<string name="error_no_network">:satellite: Aucune connection.</string>
 	
 	<!-- Image Picker -->
 	<string name="image_picker_title">Ajouter un avatar</string>
@@ -101,7 +101,7 @@
 	<string name="grid_friendship_status_loading">Chargement</string>
 	<string name="grid_friendship_status_reply">À votre tour</string>
 	<string name="grid_support_title">Des questions?</string>
-	<string name="grid_support_status_default">Chat avec le CEO</string>
+	<string name="grid_support_status_default">Discute avec l\'Équipe</string>
 	<string name="grid_support_status_sending">Envoi à l’Équipe</string>
 	<string name="grid_support_status_confirmed">Confirmé</string>
 	<string name="grid_support_status_sent">Envoyé à l’Équipe</string>
@@ -126,10 +126,10 @@
 	<string name="grid_menu_friendship_unblock">Ajouter</string>
 	<string name="grid_menu_friendship_report">Signaler</string>
 	<string name="grid_menu_friendship_report_success">Signalé !</string>
-	<string name="grid_menu_friendship_clear_tribes">Effacer vos messages</string>
-	<string name="grid_menu_select_language">Langues de sous-titres</string>
-	<string name="grid_menu_group_mute">Désactiver notifications</string>
-	<string name="grid_menu_group_unmute">Activer notifications</string>
+	<string name="grid_menu_friendship_clear_tribes">Effacer vos messages non-lus</string>
+	<string name="grid_menu_select_language">Langues des sous-titres</string>
+	<string name="grid_menu_group_mute">Désactiver les notifications</string>
+	<string name="grid_menu_group_unmute">Activer les notifications</string>
 	<string name="grid_menu_group_mute_confirm">Confirmez-vous ?</string>
 	
 	<!-- Chat -->
@@ -161,54 +161,54 @@
 	<string name="group_not_allowed_title">:nail_care: Les Girls</string>
 	
 	<!-- Public Group -->
-	<string name="group_public_family_title">:house_with_garden: Famille</string>
-	<string name="group_public_roomies_title">:pizza: Collocataires</string>
-	<string name="group_public_bffs_title">:fire: BFFs</string>
-	<string name="group_public_abroad_title">:airplane: Étranger</string>
-	<string name="group_public_work_title">:briefcase: Travail</string>
-	<string name="group_public_classmates_title">:mortar_board: Classe</string>
-	<string name="group_public_teammates_title">:trophy: Équipe</string>
-	<string name="group_public_baddest_title">:punch: Les boys</string>
-	<string name="group_public_not_allowed_title">:nail_care: Les Girls</string>
+	<string name="group_public_family_title">:loudspeaker: Election 2016</string>
+	<string name="group_public_roomies_title">:kimono: Yoga lovers</string>
+	<string name="group_public_bffs_title">:baseball: Major League Baseball Playoffs</string>
+	<string name="group_public_abroad_title">:football: NFL Fantasy Football</string>
+	<string name="group_public_work_title">:neckbeard: Halloween costumes</string>
+	<string name="group_public_classmates_title">:nail_care: Celeb Gossip</string>
+	<string name="group_public_teammates_title">:muscle: Dab All Day</string>
+	<string name="group_public_baddest_title">:skull: Skate Or Die</string>
+	<string name="group_public_not_allowed_title">:key: Life hacks</string>
 	
 	<!-- Create group -->
 	<string name="group_create_title">Créer un groupe</string>
 	<string name="group_private_name_placeholder">Nom du groupe privé</string>
 	<string name="group_public_name_placeholder">Nom du groupe public</string>
-	<string name="group_pick_avatar_title">Choisis une photo pour le groupe</string>
+	<string name="group_pick_avatar_title">Selectionner une photo pour le groupe</string>
 	<string name="group_suggestions_title">Suggestions de noms</string>
 	<string name="group_private_title">Privé</string>
 	<string name="group_private_description">Groupe fermés pour vos conversations privées</string>
 	<string name="group_private_create">Créer un groupe privé</string>
 	<string name="group_public_title">Public</string>
-	<string name="group_public_description">Groupe public, tout le monde pourra le rejoindre</string>
+	<string name="group_public_description">Groupe ouvert que tout le monde peut rejoindre</string>
 	<string name="group_public_create">Créer un groupe public</string>
 	<string name="group_search_friends_placeholder">Rechercher vos amis</string>
 	<string name="group_private_link_popup_title">Il reste seulement %1$s !</string>
-	<string name="group_private_link_popup_description">Choisis où envoyer ce lien\ntemporaire à tes amis !</string>
+	<string name="group_private_link_popup_description">Choisisissez comment envoyer ce lien\néphémère à vos amis !</string>
 	<string name="group_invalid_infos_error_message">N\'oubliez pas de nommer votre groupe</string>
 	<string name="group_valid_infos_message">Ajoutez des members une fois le groupe créé</string>
-	<string name="group_button_share">Lien magique pour inviter via ...</string>
-	<string name="group_button_share_generate">Générer un lien</string>
+	<string name="group_button_share">Lien d\'invitation à envoyer via ...</string>
+	<string name="group_button_share_generate">Générer un lien d\'invitation</string>
 	<string name="group_button_share_generating">Génération en cours...</string>
 	<string name="group_button_share_deleting">Suppression en cours...</string>
-	<string name="group_share_description">Envoyez un lien en dehors de l\'app</string>
+	<string name="group_share_description">Envoyez le lien du groupe dans d\'autres apps</string>
 	<string name="group_share_description_expiration">Ce lien sera supprimé dans %1$s</string>
 	<string name="group_button_creating">Création en cours...</string>
 	<string name="group_empty_list">Pas d\'autres amis à ajouter à ce groupe</string>
 	
 	<!-- Group Infos -->
-	<string name="group_infos_add_new_members_placeholder">Ajouter de nouveaux membres</string>
+	<string name="group_infos_add_new_members_placeholder">Ajouter des nouveaux membres</string>
 	<string name="group_infos_empty_list">Pas d\'autres amis à ajouter à ce groupe</string>
-	<string name="group_infos_error_edit_not_admin">Uniquement les admins peuvent éditer un groupe</string>
+	<string name="group_infos_error_edit_not_admin">:lock: Seuls les admins peuvent éditer un groupe</string>
 	
 	<!-- Group Members -->
-	<string name="group_members_search_placeholder">Recherche a membre</string>
+	<string name="group_members_search_placeholder">Rechercher un membre</string>
 	<string name="group_members_action_add_admin">Nommer admin</string>
 	<string name="group_members_action_remove_admin">Supprimer des admins</string>
-	<string name="group_members_action_remove_admin_last_admin_error">Ajoute un nouvel admin avant d\'enlever celui-là</string>
+	<string name="group_members_action_remove_admin_last_admin_error">Ajouter un nouvel admin avant de le supprimer</string>
 	<string name="group_members_action_remove_member">Supprimer du groupe</string>
-	<string name="group_members_action_add_friend">Ajouter</string>
+	<string name="group_members_action_add_friend">Ajouter en ami</string>
 	<string name="group_members_action_remove_friend">Supprimer l\'amitié</string>
 	<string name="group_members_remove_member_alert_title">Supprimer ce membre</string>
 	<string name="group_members_remove_member_alert_message">Supprimer ce membre ?</string>
@@ -220,23 +220,23 @@
 	<string name="settings_profile_title">Profil</string>
 	<string name="settings_profile_subtitle">Modifier votre photo de profil, nom d\'affichage et nom d\'utilisateur.</string>
 	<string name="settings_picture_title">Photo de profil</string>
-	<string name="settings_picture_subtitle">Prendre un selfie ou importer une photo</string>
+	<string name="settings_picture_subtitle">Prendre un selfie ou importer une photo.</string>
 	<string name="settings_displayname_title">Nom d\'affichage</string>
-	<string name="settings_displayname_subtitle">Être facilement reconnaissable par vos ami(e)</string>
+	<string name="settings_displayname_subtitle">Être facilement reconnaissable par vos ami(e).</string>
 	<string name="settings_username_title">Nom d\'utilisateur</string>
 	<string name="settings_username_subtitle">Le moyen le plus simple de vous ajouter après la sync.</string>
 	<string name="settings_section_messages">Messages</string>
 	<string name="settings_filter_title">Sélectionner un filtre</string>
 	<string name="settings_theme_title">Sélectionner un thème</string>
 	<string name="settings_tribesave_title">Souvenirs</string>
-	<string name="settings_tribesave_subtitle">Permettre à vos amis de sauvegarder\nvos meilleures vidéos.</string>
+	<string name="settings_tribesave_subtitle">Permettre à vos amis de sauvegarder vos meilleures vidéos dans leur bibliothèque.</string>
 	<string name="settings_geolocation_title">Localisation</string>
-	<string name="settings_geolocation_subtitle">Inclure aux messages des informations\nlocalisés pour enrichir vos messages.</string>
-	<string name="settings_audio_title">Voix par defaut</string>
-	<string name="settings_audio_subtitle">Accéder au mode Audio (à place du mode Video) à l\'ouverture de l\'app.</string>
+	<string name="settings_geolocation_subtitle">Inclure aux messages des informations localisés pour enrichir vos messages.</string>
+	<string name="settings_audio_title">Audio par defaut</string>
+	<string name="settings_audio_subtitle">Accéder au mode Audio par default à l\'ouverture de l\'app.</string>
 	<string name="settings_preload_title">Pré-télécharger</string>
-	<string name="settings_preload_subtitle">Télécharger automatiquement les message en arrière-plan.</string>
-	<string name="settings_facebook_sync_title">Facebook</string>
+	<string name="settings_preload_subtitle">Vos messages seront disponibles plus rapidement.</string>
+	<string name="settings_facebook_sync_title">Amis Facebook</string>
 	<string name="settings_facebook_not_synced_description">Synchronisation désactivée</string>
 	<string name="settings_facebook_synced_description">%1$d ami(e)s synchronisés</string>
 	<string name="settings_addressbook_sync_title">Carnet d\'adresses</string>
@@ -245,16 +245,16 @@
 	<string name="settings_weatherunits_title">Fahrenheit</string>
 	<string name="settings_weatherunits_subtitle">Afficher la température en Fahrenheit sur les messages.</string>
 	<string name="settings_invisible_title">Mode Invisible</string>
-	<string name="settings_invisible_subtitle">Vous seul pouvez ajouter des membres.\nVous ne pouvez pas être ajouté.</string>
+	<string name="settings_invisible_subtitle">Vous seul pouvez ajouter des membres hors de votre carnet d\'adresses. Vous ne pouvez pas être ajouté.</string>
 	<string name="settings_section_support">Support</string>
-	<string name="settings_support_title">Nous contacter sur Tribe</string>
+	<string name="settings_support_title">Envoyer un message sur Tribe</string>
 	<string name="settings_support_subtitle">Nous répondons en moins de 12h à chaque message.</string>
 	<string name="settings_tweet_title">Tweeter @heytribe</string>
 	<string name="settings_tweet_subtitle">Nous répondons en moins de 24h à chaque tweet.</string>
 	<string name="settings_email_title">Envoyer un email à l\'équipe</string>
 	<string name="settings_email_subtitle">Nous répondons en moins de 48h à chaque email.</string>
 	<string name="settings_email_address">cyril@tribe.pm</string>
-	<string name="settings_email_subject">Something about Tribe</string>
+	<string name="settings_email_subject">À propos de Tribe</string>
 	<string name="settings_rate_title">Noter l\'app</string>
 	<string name="settings_rate_subtitle">Le moyen le plus simple de nous envoyer du love.</string>
 	<string name="settings_blocked_title">Contacts bloqués</string>
@@ -264,7 +264,7 @@
 	<string name="settings_logout_confirm_message">Êtes-vous sûr de vouloir déconnecter ce compte de ce terminal ?</string>
 	<string name="settings_logout_wait">Déconnexion en cours...</string>
 	<string name="settings_remove_title">Supprimer ce compte</string>
-	<string name="settings_remove_subtitle">Dites aurevoir à vos amis, vos groupes et votre nombre de points.</string>
+	<string name="settings_remove_subtitle">Dites aurevoir à vos amis, vos groupes et vos points.</string>
 	<string name="settings_version">Version %1$s (%2$s) réalisée à San Francisco, CA.</string>
 	
 	<!-- HiddenBlocked -->
@@ -272,46 +272,48 @@
 	<string name="hiddenblocked_empty_title">0 bloqué(e)(s)</string>
 	
 	<!-- Onboarding -->
-	<string name="onboarding_step_phone">Entre ton numéro de téléphone pour démarrer.</string>
-	<string name="onboarding_step_code">Nous venons de t\'envoyer un code par SMS.</string>
+	<string name="onboarding_step_phone">Entrez votre numéro de téléphone pour démarrer.</string>
+	<string name="onboarding_step_code">Parfait! ! Entrez le code de vérification envoyé par SMS.</string>
 	<string name="onboarding_phone_number">Numéro de téléphone</string>
+	<string name="onboarding_error_wrong_pin">:closed_lock_with_key: Mauvais code de vérification</string>
 	<string name="onboarding_connected">Connecté</string>
 	<string name="onboarding_user_title">Hello ! Préparez-vous.</string>
-	<string name="onboarding_user_avatar_library">Bibliothèque</string>
-	<string name="onboarding_user_avatar_selfie">Appareil photo</string>
+	<string name="onboarding_user_avatar_library">Ouvrir ma bibliothèque</string>
+	<string name="onboarding_user_avatar_selfie">Utiliser l\'appareil photo</string>
 	<string name="onboarding_user_displayname_placeholder">Nom complet</string>
 	<string name="onboarding_user_username_placeholder">Nom d\'utilisateur</string>
 	<string name="onboarding_user_username_restrictions">Le nom d\'utilisateur ne doit contenir que des caractères alphanumériques ou tirets</string>
 	<string name="onboarding_user_facebook_button_title">Remplir avec Facebook</string>
-	<string name="onboarding_queue_title">Entrer maintenant.</string>
+	<string name="onboarding_queue_title">Prêt à entrer !</string>
 	<string name="onboarding_queue_description">Au moins un ami est\nexigé pour pouvoir rentrer</string>
 	<string name="onboarding_queue_button_title">Verifier mes amis</string>
 	<string name="onboarding_queue_loading_title">Patientez...</string>
 	<string name="onboarding_queue_loading_description">Nous vérifions si un de\nvos amis est déjà sur Tribe.</string>
 	<string name="onboarding_queue_loading_friends">ami(e)s</string>
-	<string name="onboarding_queue_declined_title">Uh oh... Vous n\'avez pas encore accès.</string>
+	<string name="onboarding_queue_declined_title">Vous n\'avez pas encore accès. :pensive:</string>
 	<string name="onboarding_queue_declined_description">Vous avez besoin d\'un ami.\nEnvoyez des invitations!</string>
 	<string name="onboarding_queue_declined_message_button">Text friends</string>
 	<string name="onboarding_queue_declined_button_title">Réessayer</string>
 	<string name="onboarding_queue_declined_popup_title">Soyez notifié !</string>
 	<string name="onboarding_queue_declined_popup_description">Recevez une notification lorsque vos amis rejoignent Tribe.</string>
-	<string name="onboarding_queue_declined_popup_cancel_button">Restez seul</string>
+	<string name="onboarding_queue_declined_popup_cancel_button">Rester seul.</string>
 	<string name="onboarding_queue_declined_popup_confirm_button">Notifiez moi !</string>
-	<string name="onboarding_queue_valid_title">Yay! Vous pouvez entrer.</string>
-	<string name="onboarding_queue_valid_description">Certains de vos amis\nsont déjà là!</string>
+	<string name="onboarding_queue_valid_title">Yay ! Vous pouvez entrer.</string>
+	<string name="onboarding_queue_valid_description">Certains de vos amis\nsont déjà là !</string>
 	<string name="onboarding_queue_valid_button_title">Accéder maintenant</string>
 	
 	<!-- Pull to search -->
-	<string name="pull_to_search_swipe_down_action">Continue à tirer pour rechercher</string>
+	<string name="pull_to_search_swipe_down_action">Continuez à tirer pour rechercher</string>
 	<string name="pull_to_search_title">Trier votre grille par lettre</string>
 	
 	<!-- Score -->
 	<string name="score_current_level">Votre niveau</string>
 	<string name="score_next_level">Prochain niveau dans</string>
-	<string name="score_points_system_button">Comment obtenir des points</string>
+	<string name="score_points_system_button">Régles du jeu</string>
+	<string name="score_share_level_button">Partager votre score</string>
 	
 	<!-- Points System -->
-	<string name="points_system_title">Comment obtenir des points</string>
+	<string name="points_system_title">Régles du jeu</string>
 	<string name="points_Subtitles_title">Activer les sous-titres</string>
 	<string name="points_Subtitles_description">Pour chaque ami</string>
 	<string name="points_SendReceiveChat_title">Envoyer ou recevoir des messages</string>
@@ -326,7 +328,7 @@
 	<string name="points_CreateGroup_description">Rendez-vous à droite de la grille</string>
 	<string name="points_RateApp_title">Noter l\'app</string>
 	<string name="points_RateApp_description">Rendez-vous sur l\'App Store</string>
-	<string name="points_ShareProfile_title">Partage ton profil</string>
+	<string name="points_ShareProfile_title">Partager votre profil</string>
 	<string name="points_ShareProfile_description">Rendez-vous à gauche de la grille</string>
 	<string name="points_LocationPermission_title">Géolocalisation</string>
 	<string name="points_LocationPermission_description">Activez-la dans les réglages</string>
@@ -357,7 +359,7 @@
 	<string name="notification_pending_action_resend">Renvoyer</string>
 	<string name="notification_pending_action_later">Plus tard</string>
 	<string name="notification_pending_action_decline">Refuser</string>
-	<string name="notification_snoozed">Snoozed: Message de %1$s</string>
+	<string name="notification_snoozed">Message de %1$s à nouveau disponible</string>
 	<string name="notification_open_message">Ouvrir le message</string>
 	<string name="notification_reply_chat">Répondre en chat</string>
 	
@@ -368,7 +370,7 @@
 	<string name="share_add_friends_handle">I’ve locked up %1$s handle on Tribe. Reserve yours now before its gone on %2$s</string>
 	<string name="share_score">I have %1$s points on Tribe %2$s</string>
 	<string name="share_onboarding">I just discovered Tribe, but I can’t enter alone. Come now so we can get access together. Waiting for you. Go on %1$s</string>
-	<string name="share_copied_redirecting">Copied the link to the clipboard. Redirecting you...</string>
+	<string name="share_copied_redirecting">:paperclip: Ajouté au presse-papier. Préparez vous à coller.</string>
 	<string name="share_grid_invite">Sent from Tribe. http://tribe.pm</string>
 	
 	<!-- TribeDistancePopup -->
@@ -377,7 +379,7 @@
 	<string name="tribe_distance_client_no_data">Pas de données trouvées, tapez pour réessayer</string>
 	<string name="tribe_distance_client_no_delay">Maintenant</string>
 	<string name="tribe_distance_client_delay">Dans %1$s</string>
-	<string name="tribe_distance_no_price">Prix inconnu</string>
+	<string name="tribe_distance_no_price">-</string>
 	<string name="tribe_distance_free_price">Gratuit</string>
 	
 	<!-- TribeMagicWordPopup -->
@@ -395,8 +397,8 @@
 	<string name="tribe_location_popup_population">Habitants</string>
 	
 	<!-- TribeLevelPopup -->
-	<string name="tribe_level_popup_late">Tu es en retard !</string>
-	<string name="tribe_level_popup_ahead">Tu es en avance !</string>
+	<string name="tribe_level_popup_late">Vous êtes en retard !</string>
+	<string name="tribe_level_popup_ahead">Vous êtes en avance !</string>
 	<string name="tribe_level_popup_catch_up">À rattraper !</string>
 	<string name="tribe_level_popup_advance">D\'avance</string>
 	
@@ -429,23 +431,23 @@
 	<string name="tutorial_message_support">%1$d messages de l\'équipe</string>
 	<string name="tutorial_message_next_message">Message suivant</string>
 	<string name="tutorial_message_close_message">Fermer les messages</string>
-	<string name="tutorial_message_contacts">Tape pour ajouter des amis</string>
-	<string name="tutorial_message_groups">Tape pour créer un groupe</string>
-	<string name="tutorial_message_refresh">Tape pour recharger</string>
-	<string name="tutorial_message_reply">Appuie pour enregister\nta réponse</string>
-	<string name="tutorial_message_release">Relâche ton doigt\npour terminer le message</string>
-	<string name="tutorial_message_tap_to_cancel">Pour pour annuler si besoin</string>
+	<string name="tutorial_message_contacts">Ajouter des amis</string>
+	<string name="tutorial_message_groups">Créer un groupe</string>
+	<string name="tutorial_message_refresh">Appuyer pour rafraichir</string>
+	<string name="tutorial_message_reply">Maintenez appuyé pour\nenregister votre réponse</string>
+	<string name="tutorial_message_release">Relâchez votre doigt\npour arrêter l\'enregistrement</string>
+	<string name="tutorial_message_tap_to_cancel">Annuler l\'envoie si besoin</string>
 	
 	<!-- NewLevelPopup -->
 	<string name="newlevel_title">%1$s pts!</string>
-	<string name="newlevel_description">Félicitations. Tout le monde peut\nvoir que tu es un %1$s maintenant.</string>
+	<string name="newlevel_description">Félicitations. Tout le monde peut\nvoir que vous êtes un %1$s maintenant.</string>
 	<string name="newlevel_share">Partager</string>
 	<string name="newlevel_close">Cool!</string>
 	<string name="newlevel_notification_title">%1$s niveau atteint! Brag now? :metal:</string>
 	
 	<!-- SubtitlesPopup -->
-	<string name="subtitles_popup_title">Tu viens de parler %1$s n\'est-ce pas ?</string>
-	<string name="subtitles_popup_description">Ajouter des sous titres en “mute mode”,\net de meilleurs Magic Words.</string>
+	<string name="subtitles_popup_title">Vous venez de parler %1$s, n\'est-ce pas ?</string>
+	<string name="subtitles_popup_description">Accéder aux sous-titres en mode Silencieux</string>
 	<string name="subtitles_popup_language_description_solo">Langue parlée avec %1$s.</string>
 	<string name="subtitles_popup_language_description_group">Langue parlée dans %1$s.</string>
 	<string name="subtitles_popup_points">Autoriser les “sous-titres”</string>
@@ -454,7 +456,7 @@
 	
 	<!-- Language -->
 	<string name="language_title">Langue des sous-titres</string>
-	<string name="language_search_placeholder">Cherche une langue</string>
+	<string name="language_search_placeholder">Chercher une langue</string>
 	<string name="language_suggested_title">Langues suggérées</string>
 	<string name="language_most_spoken_title">Langues les plus parlées</string>
 	<string name="language_most_spoken_values">en_US,es_ES,pt_BR,hi_IN,ar_DZ,ja_JP,ru_RU</string>

@@ -15,12 +15,12 @@
 	<!-- Errors -->
 	<string name="error_unknown">:bird: Something went wrong. Try again in 30s.</string>
 	<string name="error_technical">:warning: Technical turbulence. Try again!</string>
-	<string name="error_no_network">:satellite: No Internet here. Move!</string>
+	<string name="error_no_network">:satellite: No Internet here.</string>
 	
 	<!-- Image Picker -->
 	<string name="image_picker_title">Add an avatar</string>
 	<string name="image_picker_camera">Take a selfie</string>
-	<string name="image_picker_library">Camera roll</string>
+	<string name="image_picker_library">Open camera roll</string>
 	
 	<!-- Contacts -->
 	<string name="contacts_search_placeholder">Search for a friend</string>
@@ -188,11 +188,11 @@
 	<string name="group_private_link_popup_description">Select where to send this\ntemporary link to your friends!</string>
 	<string name="group_invalid_infos_error_message">Be sure to name your group</string>
 	<string name="group_valid_infos_message">Add members after creating the group</string>
-	<string name="group_button_share">Magic link to send via...</string>
+	<string name="group_button_share">Invite link to send via...</string>
 	<string name="group_button_share_generate">Create a sharing link</string>
 	<string name="group_button_share_generating">Creating link...</string>
 	<string name="group_button_share_deleting">Deleting link...</string>
-	<string name="group_share_description">Send a group link outside the app</string>
+	<string name="group_share_description">Send group link in other apps</string>
 	<string name="group_share_description_expiration">This sharing link will be deleted in %1$s</string>
 	<string name="group_button_creating">Creating group...</string>
 	<string name="group_empty_list">No friends to add to the group</string>
@@ -200,7 +200,7 @@
 	<!-- Group Infos -->
 	<string name="group_infos_add_new_members_placeholder">Add new members</string>
 	<string name="group_infos_empty_list">No other friends to add to the group</string>
-	<string name="group_infos_error_edit_not_admin">Only admins can edit the group</string>
+	<string name="group_infos_error_edit_not_admin">:lock: Only admins can edit the group</string>
 	
 	<!-- Group Members -->
 	<string name="group_members_search_placeholder">Search a member</string>
@@ -220,7 +220,7 @@
 	<string name="settings_profile_title">Profile</string>
 	<string name="settings_profile_subtitle">Change your profile pic, display name and @handle</string>
 	<string name="settings_picture_title">Profile picture</string>
-	<string name="settings_picture_subtitle">Take a selfie or import from\ncamera roll and Facebook.</string>
+	<string name="settings_picture_subtitle">Take a selfie or import from camera roll and Facebook.</string>
 	<string name="settings_displayname_title">Full name</string>
 	<string name="settings_displayname_subtitle">Use something recognizable by your friends.</string>
 	<string name="settings_username_title">Username</string>
@@ -231,11 +231,11 @@
 	<string name="settings_tribesave_title">Memories</string>
 	<string name="settings_tribesave_subtitle">Allow your friends to save your messages.</string>
 	<string name="settings_geolocation_title">Location</string>
-	<string name="settings_geolocation_subtitle">Allow friends to receive location based\ncontext in your messages.</string>
+	<string name="settings_geolocation_subtitle">Allow friends to receive location based context in your messages.</string>
 	<string name="settings_audio_title">Audio only</string>
-	<string name="settings_audio_subtitle">All messages sent will be audio only.</string>
+	<string name="settings_audio_subtitle">Audio mode by default when you open the app.</string>
 	<string name="settings_preload_title">Preload</string>
-	<string name="settings_preload_subtitle">Incoming messages will automatically\nbe ready to view.</string>
+	<string name="settings_preload_subtitle">Incoming messages will automatically be ready to view.</string>
 	<string name="settings_facebook_sync_title">Facebook friends</string>
 	<string name="settings_facebook_not_synced_description">Not synced yet</string>
 	<string name="settings_facebook_synced_description">%1$d friends perfectly synced</string>
@@ -243,16 +243,16 @@
 	<string name="settings_addressbook_not_synced_description">Not synced yet</string>
 	<string name="settings_addressbook_synced_description">%1$d friends perfectly synced</string>
 	<string name="settings_weatherunits_title">Fahrenheit</string>
-	<string name="settings_weatherunits_subtitle">Display temperature on message\nin Fahrenheit instead of Celsius.</string>
+	<string name="settings_weatherunits_subtitle">Display temperature on message in Fahrenheit.</string>
 	<string name="settings_invisible_title">Invisible mode</string>
-	<string name="settings_invisible_subtitle">Only you can add friends.\nNobody can add you.</string>
+	<string name="settings_invisible_subtitle">Only you can add friends outside your address book. Nobody can add you.</string>
 	<string name="settings_section_support">Support</string>
 	<string name="settings_support_title">Message the CEO on Tribe</string>
 	<string name="settings_support_subtitle">All incoming messages are responded to within 12 hours.</string>
 	<string name="settings_tweet_title">Tweet @heytribe</string>
 	<string name="settings_tweet_subtitle">We love interacting with our users on Twitter</string>
 	<string name="settings_email_title">Email the team</string>
-	<string name="settings_email_subtitle">We reply in less than 48 hours\nto every single email.</string>
+	<string name="settings_email_subtitle">We reply in less than 48 hours to every single email.</string>
 	<string name="settings_email_address">cyril@tribe.pm</string>
 	<string name="settings_email_subject">Something about Tribe</string>
 	<string name="settings_rate_title">Rate the app</string>
@@ -273,15 +273,16 @@
 	
 	<!-- Onboarding -->
 	<string name="onboarding_step_phone">Use your phone number to connect</string>
-	<string name="onboarding_step_code">We just texted you a verification code.</string>
+	<string name="onboarding_step_code">Perfect. Enter the verification code we just texted you.</string>
 	<string name="onboarding_phone_number">Phone number</string>
+	<string name="onboarding_error_wrong_pin">:closed_lock_with_key: Wrong verification code</string>
 	<string name="onboarding_connected">Connected</string>
 	<string name="onboarding_user_title">Hi there! Set yourself up.</string>
 	<string name="onboarding_user_avatar_library">Camera roll</string>
 	<string name="onboarding_user_avatar_selfie">Selfie camera</string>
 	<string name="onboarding_user_displayname_placeholder">Full name</string>
 	<string name="onboarding_user_username_placeholder">username</string>
-	<string name="onboarding_user_username_restrictions">Usernames must contain only alphanumeric, underscores and dash characters</string>
+	<string name="onboarding_user_username_restrictions">Usernames must only contain alphanumeric, underscores and dash characters</string>
 	<string name="onboarding_user_facebook_button_title">Or autofill profile</string>
 	<string name="onboarding_queue_title">Gain access now!</string>
 	<string name="onboarding_queue_description">Hold up, you need at least\n1 friend on Tribe to get in</string>
@@ -289,7 +290,7 @@
 	<string name="onboarding_queue_loading_title">Hang tight…</string>
 	<string name="onboarding_queue_loading_description">Looking if one of your\nfriends is already on Tribe.</string>
 	<string name="onboarding_queue_loading_friends">friends</string>
-	<string name="onboarding_queue_declined_title">Uh oh... You don\'t have access yet :pensive:</string>
+	<string name="onboarding_queue_declined_title">You don\'t have access yet :pensive:</string>
 	<string name="onboarding_queue_declined_description">You need at least one friend\nto enter. Send invites! :dizzy:</string>
 	<string name="onboarding_queue_declined_message_button">Text friends</string>
 	<string name="onboarding_queue_declined_button_title">Try again</string>
@@ -308,10 +309,11 @@
 	<!-- Score -->
 	<string name="score_current_level">Your current level</string>
 	<string name="score_next_level">Next level in</string>
-	<string name="score_points_system_button">Get points easily</string>
+	<string name="score_points_system_button">Rules</string>
+	<string name="score_share_level_button">Share your score</string>
 	
 	<!-- Points System -->
-	<string name="points_system_title">Get points easily</string>
+	<string name="points_system_title">Rules</string>
 	<string name="points_Subtitles_title">Set subtitles</string>
 	<string name="points_Subtitles_description">For each friend</string>
 	<string name="points_SendReceiveChat_title">Send or receive</string>
@@ -357,7 +359,7 @@
 	<string name="notification_pending_action_resend">Resend</string>
 	<string name="notification_pending_action_later">Later</string>
 	<string name="notification_pending_action_decline">Decline</string>
-	<string name="notification_snoozed">Snoozed: Message from %1$s</string>
+	<string name="notification_snoozed">Snoozed message from %1$s available again. Catch up!</string>
 	<string name="notification_open_message">Open message</string>
 	<string name="notification_reply_chat">Reply in sidechat</string>
 	
@@ -368,7 +370,7 @@
 	<string name="share_add_friends_handle">I’ve locked up %1$s handle on Tribe. Reserve yours now before it\'s too late on %2$s</string>
 	<string name="share_score">I have %1$s points on Tribe %2$s</string>
 	<string name="share_onboarding">I just discovered Tribe, but I can’t enter alone. Come now so we can get access together. Waiting for you. Go on %1$s</string>
-	<string name="share_copied_redirecting">Copied the link to the clipboard. Redirecting you...</string>
+	<string name="share_copied_redirecting">:paperclip: Copied to the clipboard. Prepare to paste.</string>
 	<string name="share_grid_invite">Sent from Tribe. http://tribe.pm</string>
 	
 	<!-- TribeDistancePopup -->
@@ -377,7 +379,7 @@
 	<string name="tribe_distance_client_no_data">No data available, tap to retry</string>
 	<string name="tribe_distance_client_no_delay">Now</string>
 	<string name="tribe_distance_client_delay">%1$s away</string>
-	<string name="tribe_distance_no_price">Unknown price</string>
+	<string name="tribe_distance_no_price">-</string>
 	<string name="tribe_distance_free_price">Free</string>
 	
 	<!-- TribeMagicWordPopup -->
@@ -444,8 +446,8 @@
 	<string name="newlevel_notification_title">%1$s level reached! Brag now? :metal:</string>
 	
 	<!-- SubtitlesPopup -->
-	<string name="subtitles_popup_title">You just spoke %1$s right ?</string>
-	<string name="subtitles_popup_description">Enjoy subtitles in “mute mode”,\nand better Magic Words</string>
+	<string name="subtitles_popup_title">You just spoke %1$s, right?</string>
+	<string name="subtitles_popup_description">Enjoy subtitles in “Mute mode,\nand better Magic Words™</string>
 	<string name="subtitles_popup_language_description_solo">Language spoken with %1$s.</string>
 	<string name="subtitles_popup_language_description_group">Language spoken in %1$s.</string>
 	<string name="subtitles_popup_points">Enable “subtitles”</string>
