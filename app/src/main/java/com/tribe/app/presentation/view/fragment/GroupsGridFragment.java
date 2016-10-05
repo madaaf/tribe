@@ -243,6 +243,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     public void setGroupLink(String groupLink) {
         this.groupLink = groupLink;
         createInviteView.setInviteLink(groupLink);
+        createInviteView.enableInvite();
         createInviteView.loaded();
 
     }
@@ -329,7 +330,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         currentEditTranslation = 20;
         screenUtils.setTopMargin(createInviteView, screenUtils.dpToPx(layoutCreateInviteInfoPositionY));
 
-        createInviteView.enableInvitePress();
+        createInviteView.enableInvite();
         groupInfoView.setupGroupInfoUi(privateGroup, 1);
         imageDone.setVisibility(View.VISIBLE);
         appBarLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -382,6 +383,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             if (privateGroup && groupLink != null && !isLinkExpired(groupLinkExpirationDate)) showShareDialogFragment();
             else if (privateGroup) {
                 groupPresenter.modifyPrivateGroupLink(membershipId, true);
+                createInviteView.disableInvite();
                 createInviteView.loadingAnimation(AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
             }
             else navigator.shareGenericText(getString(R.string.share_group_public_link, groupName, groupLink), getContext());
@@ -560,7 +562,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                 .setDuration(animDuration)
                 .start();;
 
-        createInviteView.enableInvitePress();
+        createInviteView.enableInvite();
         enableScrolling(true);
         groupPresenter.updateScore();
     }
