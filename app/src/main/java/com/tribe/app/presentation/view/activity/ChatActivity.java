@@ -9,6 +9,8 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetDialog;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -22,12 +24,15 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.ChatMessage;
+import com.tribe.app.domain.entity.LabelType;
+import com.tribe.app.domain.entity.PendingType;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Section;
 import com.tribe.app.presentation.internal.di.components.DaggerChatComponent;
 import com.tribe.app.presentation.mvp.presenter.ChatPresenter;
 import com.tribe.app.presentation.mvp.view.MessageView;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.adapter.MessageAdapter;
 import com.tribe.app.presentation.view.adapter.manager.MessageLayoutManager;
 import com.tribe.app.presentation.view.component.ChatInputView;
@@ -126,6 +131,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
     private MessageLayoutManager messageLayoutManager;
     private MessageAdapter messageAdapter;
     private List<ChatMessage> chatMessageList;
+    private List<ChatMessage> chatMessagePendingList;
     private ImageView recyclerViewImageView;
     private ImageView imageViewClicked;
     private int widthViewClicked;
@@ -137,6 +143,9 @@ public class ChatActivity extends BaseActivity implements MessageView {
     private VideoSize videoSize;
     private boolean justSentMessage = false;
     private int previousDy;
+    private BottomSheetDialog bottomSheetPendingTribeDialog;
+    private RecyclerView recyclerViewPending;
+    private LabelSheetAdapter labelSheetAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,6 +193,8 @@ public class ChatActivity extends BaseActivity implements MessageView {
     private void initUi() {
         setContentView(R.layout.activity_text);
         unbinder = ButterKnife.bind(this);
+
+        chatMessagePendingList = new ArrayList<>();
     }
 
     private void initRecyclerView() {
@@ -280,6 +291,8 @@ public class ChatActivity extends BaseActivity implements MessageView {
                     }
                 })
         );
+
+        subscriptions.add(chatInputView.onPendingClick().subscribe(aVoid -> setupBottomSheetPendingTribes()));
     }
 
     private void initResources() {
@@ -490,6 +503,71 @@ public class ChatActivity extends BaseActivity implements MessageView {
         initInfos();
         chatPresenter.loadChatMessages(this.recipient);
         chatPresenter.updateErrorMessages(recipient.getSubId());
+    }
+
+    @Override
+    public void renderPendingMessages(List<ChatMessage> chatMessagePendingList) {
+        this.chatMessagePendingList.clear();
+        this.chatMessagePendingList.addAll(chatMessagePendingList);
+        if (this.chatMessagePendingList.size() == 0) chatInputView.hidePendingMessages();
+        else chatInputView.showPendingMessages(this.chatMessagePendingList.size());
+    }
+
+    private void setupBottomSheetPendingTribes() {
+        if (dismissDialogSheetPendingTribes()) {
+            return;
+        }
+
+        List<LabelType> pendingTypes = new ArrayList<>();
+        pendingTypes.add(new PendingType(new ArrayList<>(chatMessagePendingList),
+                getString(R.string.grid_unsent_tribes_action_resend_all),
+                PendingType.RESEND));
+
+        pendingTypes.add(new PendingType(new ArrayList<>(chatMessagePendingList),
+                getString(R.string.grid_unsent_tribes_action_delete_all),
+                PendingType.DELETE));
+
+        prepareBottomSheetPendingWithList(pendingTypes);
+    }
+
+    private void prepareBottomSheetPendingWithList(List<LabelType> items) {
+        View view = getLayoutInflater().inflate(R.layout.bottom_sheet_user_pending, null);
+        recyclerViewPending = (RecyclerView) view.findViewById(R.id.recyclerViewPending);
+        recyclerViewPending.setHasFixedSize(true);
+        recyclerViewPending.setLayoutManager(new LinearLayoutManager(this));
+        labelSheetAdapter = new LabelSheetAdapter(context(), items);
+        labelSheetAdapter.setHasStableIds(true);
+        recyclerViewPending.setAdapter(labelSheetAdapter);
+        subscriptions.add(labelSheetAdapter.clickLabelItem()
+                .map(pendingTribeView -> labelSheetAdapter.getItemAtPosition((Integer) pendingTribeView.getTag(R.id.tag_position)))
+                .subscribe(labelType -> {
+                    PendingType pendingType = (PendingType) labelType;
+
+                    if (pendingType.getPendingType().equals(PendingType.DELETE)) {
+                        chatPresenter.deleteMessage(pendingType.getPending().toArray(new ChatMessage[pendingType.getPending().size()]));
+                    } else {
+                        chatPresenter.sendMessage(pendingType.getPending().toArray(new ChatMessage[pendingType.getPending().size()]));
+                    }
+
+                    dismissDialogSheetPendingTribes();
+                }));
+
+        bottomSheetPendingTribeDialog = new BottomSheetDialog(this);
+        bottomSheetPendingTribeDialog.setContentView(view);
+        bottomSheetPendingTribeDialog.show();
+        bottomSheetPendingTribeDialog.setOnDismissListener(dialog -> {
+            labelSheetAdapter.releaseSubscriptions();
+            bottomSheetPendingTribeDialog = null;
+        });
+    }
+
+    private boolean dismissDialogSheetPendingTribes() {
+        if (bottomSheetPendingTribeDialog != null && bottomSheetPendingTribeDialog.isShowing()) {
+            bottomSheetPendingTribeDialog.dismiss();
+            return true;
+        }
+
+        return false;
     }
 
     private void showImage(ImageView imageViewFrom) {

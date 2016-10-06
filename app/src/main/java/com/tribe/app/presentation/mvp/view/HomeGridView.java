@@ -14,7 +14,6 @@ public interface HomeGridView extends SendTribeView {
     void updatePendingTribes(List<TribeMessage> pendingTribes);
     void showPendingTribesMenu();
     void scrollToTop();
-    void setCurrentTribe(TribeMessage tribe);
     int getNbItems();
     void refreshGrid();
     void onFriendshipUpdated(Friendship friendship);

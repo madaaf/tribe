@@ -21,10 +21,10 @@ public class PendingType extends LabelType implements Serializable {
     public static final String RESEND = "resend";
     public static final String DELETE = "delete";
 
-    private List<TribeMessage> pending;
+    private List<Message> pending;
     private @PendingTypeDef String pendingType;
 
-    public PendingType(List<TribeMessage> pending, String label, @PendingTypeDef String pendingType) {
+    public PendingType(List<Message> pending, String label, @PendingTypeDef String pendingType) {
         super(label);
         this.pending = new ArrayList<>(pending);
         this.pendingType = pendingType;
@@ -34,7 +34,7 @@ public class PendingType extends LabelType implements Serializable {
         return pendingType;
     }
 
-    public List<TribeMessage> getPending() {
+    public List<Message> getPending() {
         return pending;
     }
 }

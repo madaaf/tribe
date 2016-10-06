@@ -10,6 +10,7 @@ import com.tribe.app.R;
  */
 public class MessageSendingStatus {
 
+    public static final String STATUS_NONE = "none";
     public static final String STATUS_PENDING = "pending";
     public static final String STATUS_SENDING = "sending";
     public static final String STATUS_SENT = "sent";
@@ -17,7 +18,7 @@ public class MessageSendingStatus {
     public static final String STATUS_OPENED = "opened";
     public static final String STATUS_ERROR = "error";
 
-    @StringDef({STATUS_PENDING, STATUS_SENDING, STATUS_SENT, STATUS_OPENED_PARTLY, STATUS_OPENED, STATUS_ERROR})
+    @StringDef({STATUS_NONE, STATUS_PENDING, STATUS_SENDING, STATUS_SENT, STATUS_OPENED_PARTLY, STATUS_OPENED, STATUS_ERROR})
     public @interface Status{}
 
     public static String getStrRes(Context ctx, @MessageSendingStatus.Status String status) {

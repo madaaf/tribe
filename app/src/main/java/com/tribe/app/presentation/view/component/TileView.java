@@ -72,6 +72,7 @@ public class TileView extends SquareFrameLayout {
 
     private final static int TYPE_GRID = 0;
     private final static int TYPE_TILE = 1;
+    private final static int TYPE_SUPPORT = 2;
     private final float DIFF_DOWN = 20f;
     private final int LONG_PRESS = 200;
     private final int FADE_DURATION = 200;
@@ -167,11 +168,11 @@ public class TileView extends SquareFrameLayout {
 
         transitionGridPressed = context.getResources().getDimensionPixelSize(R.dimen.transition_grid_pressed);
         sizePressedBorder = context.getResources().getDimensionPixelSize(R.dimen.inside_cell_border);
-        sizeAvatarScaled = type == TYPE_GRID ?
+        sizeAvatarScaled = (type == TYPE_GRID || type == TYPE_SUPPORT) ?
                 context.getResources().getDimensionPixelSize(R.dimen.avatar_size_scaled) :
                 context.getResources().getDimensionPixelSize(R.dimen.avatar_size_reply_full);
-        sizeAvatar = type == TYPE_GRID ? context.getResources().getDimensionPixelSize(R.dimen.avatar_size) : context.getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
-        sizeAvatarIntermediate = type == TYPE_GRID ?
+        sizeAvatar = (type == TYPE_GRID || type == TYPE_SUPPORT) ? context.getResources().getDimensionPixelSize(R.dimen.avatar_size) : context.getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
+        sizeAvatarIntermediate = (type == TYPE_GRID || type == TYPE_SUPPORT) ?
                 context.getResources().getDimensionPixelSize(R.dimen.avatar_size_intermediate) :
                 context.getResources().getDimensionPixelSize(R.dimen.avatar_size_reply_intermediate);
         sizeAvatarInner = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_inner);
@@ -184,7 +185,23 @@ public class TileView extends SquareFrameLayout {
         diffSizeForScale = (int) (context.getResources().getDisplayMetrics().density * 0.5);
         diffDown = (int) (context.getResources().getDisplayMetrics().density * DIFF_DOWN);
 
-        LayoutInflater.from(getContext()).inflate((type == TYPE_GRID ? R.layout.view_tile_grid : R.layout.view_tile_reply), this);
+        int resLayout = 0;
+
+        switch (type) {
+            case TYPE_GRID:
+                resLayout = R.layout.view_tile_grid;
+                break;
+
+            case TYPE_TILE:
+                resLayout = R.layout.view_tile_reply;
+                break;
+
+            case TYPE_SUPPORT:
+                resLayout = R.layout.view_tile_support;
+                break;
+        }
+
+        LayoutInflater.from(getContext()).inflate(resLayout, this);
         unbinder = ButterKnife.bind(this);
     }
 
@@ -194,10 +211,13 @@ public class TileView extends SquareFrameLayout {
     }
 
     public void initClicks() {
-        if (type == TYPE_GRID) {
-            prepareTouchesChat();
-            prepareTouchesMore();
+        if (type == TYPE_GRID || type == TYPE_SUPPORT) {
             prepareTouchesErrorTribe();
+
+            if (type == TYPE_GRID) {
+                prepareTouchesChat();
+                prepareTouchesMore();
+            }
         }
 
         prepareTouchesTile();
@@ -254,9 +274,9 @@ public class TileView extends SquareFrameLayout {
 
                                     Spring springAvatar = (Spring) v.getTag(R.id.spring_avatar);
                                     springAvatar.setSpringConfig(SPRING_BOUNCE);
-                                    springAvatar.setEndValue(type == TYPE_GRID ? 1f : REPLY_RECORD);
+                                    springAvatar.setEndValue((type == TYPE_GRID || type == TYPE_SUPPORT) ? 1f : REPLY_RECORD);
 
-                                    if (type == TYPE_GRID) {
+                                    if ((type == TYPE_GRID || type == TYPE_SUPPORT)) {
                                         recordStarted.onNext(this);
 
                                         Spring springOutside = (Spring) v.getTag(R.id.spring_outside);
@@ -289,7 +309,7 @@ public class TileView extends SquareFrameLayout {
                 } else if (isDown && (System.currentTimeMillis() - longDown) <= LONG_PRESS) {
 
                     System.out.println("Open tribes");
-                    if (type == TYPE_GRID) {
+                    if ((type == TYPE_GRID || type == TYPE_SUPPORT)) {
                         clickOpenTribes.onNext(this);
                     } else {
                         Spring springAvatar = (Spring) v.getTag(R.id.spring_avatar);
@@ -319,14 +339,17 @@ public class TileView extends SquareFrameLayout {
 
                 float alpha = 1 - value;
 
-                if (type == TYPE_GRID) {
+                if (type == TYPE_SUPPORT || type == TYPE_GRID) {
                     txtName.setAlpha(alpha);
                     txtStatus.setAlpha(alpha);
-                    btnText.setAlpha(alpha);
-                    btnMore.setAlpha(alpha);
                     txtStatusError.setAlpha(alpha);
-                    layoutNbTribes.setAlpha(alpha);
-                    viewNewText.setAlpha(alpha);
+
+                    if (type == TYPE_GRID) {
+                        btnText.setAlpha(alpha);
+                        btnMore.setAlpha(alpha);
+                        layoutNbTribes.setAlpha(alpha);
+                        viewNewText.setAlpha(alpha);
+                    }
                 }
             }
         });
@@ -336,13 +359,13 @@ public class TileView extends SquareFrameLayout {
 
         // SPRING INSIDE CONFIGURATION
         Spring springAvatar = springSystem.createSpring();
-        springAvatar.setSpringConfig(type == TYPE_GRID ? SPRING_BOUNCE : SPRING_NO_BOUNCE);
+        springAvatar.setSpringConfig((type == TYPE_GRID || type == TYPE_SUPPORT) ? SPRING_BOUNCE : SPRING_NO_BOUNCE);
         springAvatar.addListener(new SimpleSpringListener() {
             @Override
             public void onSpringUpdate(Spring spring) {
                 float value = (float) spring.getCurrentValue();
 
-                if (type == TYPE_GRID) {
+                if ((type == TYPE_GRID || type == TYPE_SUPPORT)) {
                     int scaleUp = (int) (sizeAvatar + ((sizeAvatarScaled - sizeAvatar) * value));
                     ViewGroup.LayoutParams paramsAvatar = avatar.getLayoutParams();
 
@@ -402,7 +425,7 @@ public class TileView extends SquareFrameLayout {
         springAvatar.setEndValue(0f);
         setTag(R.id.spring_avatar, springAvatar);
 
-        if (type == TYPE_GRID) {
+        if ((type == TYPE_GRID || type == TYPE_SUPPORT)) {
             final GradientDrawable drawable = (GradientDrawable) viewPressedForeground.getBackground();
 
             // SPRING OUTSIDE CONFIGURATION
@@ -513,14 +536,15 @@ public class TileView extends SquareFrameLayout {
             avatar.load(recipient.getProfilePicture());
         }
 
-        if (type == TYPE_GRID) {
+        if ((type == TYPE_GRID || type == TYPE_SUPPORT)) {
             if (recipient instanceof Membership) {
                 txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small, 0, 0, 0);
             } else {
                 txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
             }
 
-            txtName.setText(recipient.getDisplayName());
+            if (type == TYPE_SUPPORT) txtName.setText(R.string.grid_support_title);
+            else txtName.setText(recipient.getDisplayName());
 
             if (recipient.getReceivedTribes() != null && recipient.getReceivedTribes().size() > 0) {
                 txtNbTribes.setText("" + recipient.getReceivedTribes().size());
@@ -541,28 +565,28 @@ public class TileView extends SquareFrameLayout {
         TribeMessage lastTribe = computeMostRecentTribe(receivedTribes, sentTribes, errorTribes);
 
         boolean isFinalStatus = false, isLoading = false;
-        int label = R.string.grid_friendship_status_default;
+        int label = getStatusForType(MessageSendingStatus.STATUS_NONE);
         int drawableRes = R.drawable.picto_tap_to_view;
         int textAppearence = R.style.Caption_Black_40;
 
         if (lastTribe != null && lastTribe.getMessageSendingStatus() != null) {
             switch (lastTribe.getMessageSendingStatus()) {
-                case MessageSendingStatus.STATUS_SENDING:case MessageSendingStatus.STATUS_PENDING:
-                    label = R.string.grid_friendship_status_sending;
+                case MessageSendingStatus.STATUS_SENDING: case MessageSendingStatus.STATUS_PENDING:
+                    label = getStatusForType(lastTribe.getMessageSendingStatus());
                     drawableRes = R.drawable.picto_sending;
                     textAppearence = R.style.Caption_White_1;
                     isFinalStatus = true;
                     break;
 
                 case MessageSendingStatus.STATUS_SENT:
-                    label = R.string.grid_friendship_status_sent;
+                    label = getStatusForType(lastTribe.getMessageSendingStatus());
                     drawableRes = R.drawable.picto_sent;
                     textAppearence = R.style.Caption_White_1;
                     isFinalStatus = true;
                     break;
 
                 case MessageSendingStatus.STATUS_OPENED: case MessageSendingStatus.STATUS_OPENED_PARTLY:
-                    label = R.string.grid_friendship_status_opened;
+                    label = getStatusForType(lastTribe.getMessageSendingStatus());
                     drawableRes = R.drawable.picto_opened;
                     textAppearence = R.style.Caption_Black_40;
                     isFinalStatus = true;
@@ -579,12 +603,12 @@ public class TileView extends SquareFrameLayout {
             }
 
             if (firstLoaded) {
-                label = R.string.grid_friendship_status_new_messages;
+                label = (type == TYPE_SUPPORT ? R.string.grid_support_status_new_messages : R.string.grid_friendship_status_new_messages);
                 drawableRes = R.drawable.picto_tap_to_view;
                 textAppearence = R.style.Caption_Black_40;
             } else if (!firstLoaded && tribeMessage.isDownloadPending()) {
                 isLoading = true;
-                label = R.string.grid_friendship_status_loading;
+                label = (type == TYPE_SUPPORT ? R.string.grid_support_status_loading : R.string.grid_friendship_status_loading);
                 drawableRes = R.drawable.picto_loading;
                 textAppearence = R.style.Caption_Black_40;
             }
@@ -614,7 +638,23 @@ public class TileView extends SquareFrameLayout {
             }
         }
 
-        viewNewText.setVisibility(receivedMessages != null && receivedMessages.size() > 0 ? View.VISIBLE : View.GONE);
+        if (viewNewText != null) viewNewText.setVisibility(receivedMessages != null && receivedMessages.size() > 0 ? View.VISIBLE : View.GONE);
+    }
+
+    private int getStatusForType(@MessageSendingStatus.Status String status) {
+        int res = 0;
+
+        if (status.equals(MessageSendingStatus.STATUS_NONE)) {
+            res = type == TYPE_SUPPORT ? R.string.grid_support_status_default : R.string.grid_friendship_status_default;
+        } else if (status.equals(MessageSendingStatus.STATUS_PENDING) || status.equals(MessageSendingStatus.STATUS_SENDING)) {
+            res = type == TYPE_SUPPORT ? R.string.grid_support_status_sending : R.string.grid_friendship_status_sending;
+        } else if (status.equals(MessageSendingStatus.STATUS_SENT)) {
+            res = type == TYPE_SUPPORT ? R.string.grid_support_status_sent : R.string.grid_friendship_status_sent;
+        } else if (status.equals(MessageSendingStatus.STATUS_OPENED) || status.equals(MessageSendingStatus.STATUS_OPENED_PARTLY)) {
+            res = type == TYPE_SUPPORT ? R.string.grid_support_status_opened : R.string.grid_friendship_status_opened;
+        }
+
+        return res;
     }
 
     public void setBackground(int position) {
@@ -636,7 +676,7 @@ public class TileView extends SquareFrameLayout {
         currentTribe = tribe;
         currentTribeMode = tribeMode;
 
-        if (type == TYPE_GRID) {
+        if ((type == TYPE_GRID || type == TYPE_SUPPORT)) {
             Spring springOutside = (Spring) getTag(R.id.spring_outside);
             springOutside.setEndValue(0f);
         } else {
@@ -646,7 +686,7 @@ public class TileView extends SquareFrameLayout {
 
         Spring springAvatar = (Spring) getTag(R.id.spring_avatar);
         springAvatar.setSpringConfig(SPRING_NO_BOUNCE);
-        springAvatar.setEndValue(type == TYPE_GRID ? TAP_TO_CANCEL_SPRING_VALUE : REPLY_TAP_TO_CANCEL);
+        springAvatar.setEndValue((type == TYPE_GRID || type == TYPE_SUPPORT) ? TAP_TO_CANCEL_SPRING_VALUE : REPLY_TAP_TO_CANCEL);
 
         setTag(R.id.is_tap_to_cancel, true);
         isTapToCancel = true;

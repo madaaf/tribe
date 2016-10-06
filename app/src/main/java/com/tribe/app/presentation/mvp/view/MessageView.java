@@ -14,4 +14,5 @@ public interface MessageView extends LoadDataView {
     void showGalleryImage(Bitmap bitmap);
     boolean isLastItemDisplayed();
     void onRecipientLoaded(Recipient recipient);
+    void renderPendingMessages(List<ChatMessage> chatMessageList);
 }

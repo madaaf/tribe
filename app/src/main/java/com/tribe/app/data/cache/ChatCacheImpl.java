@@ -461,25 +461,20 @@ public class ChatCacheImpl implements ChatCache {
 
     @Override
     public Observable<Void> delete(ChatRealm chatRealm) {
-        return Observable.create(new Observable.OnSubscribe<Void>() {
-            @Override
-            public void call(final Subscriber<? super Void> subscriber) {
-                Realm obsRealm = Realm.getDefaultInstance();
-                try {
-                    obsRealm.beginTransaction();
-                    final ChatRealm result = obsRealm.where(ChatRealm.class).equalTo("localId", chatRealm.getLocalId()).findFirst();
-                    result.deleteFromRealm();
-                    obsRealm.commitTransaction();
-                    subscriber.onNext(null);
-                    subscriber.onCompleted();
-                } catch (IllegalStateException ex) {
-                    if (obsRealm.isInTransaction()) obsRealm.cancelTransaction();
-                    ex.printStackTrace();
-                } finally {
-                    obsRealm.close();
-                }
-            }
-        });
+        Realm obsRealm = Realm.getDefaultInstance();
+        try {
+            obsRealm.beginTransaction();
+            final ChatRealm result = obsRealm.where(ChatRealm.class).equalTo("localId", chatRealm.getLocalId()).findFirst();
+            result.deleteFromRealm();
+            obsRealm.commitTransaction();
+        } catch (IllegalStateException ex) {
+            if (obsRealm.isInTransaction()) obsRealm.cancelTransaction();
+            ex.printStackTrace();
+        } finally {
+            obsRealm.close();
+        }
+
+        return Observable.just(null);
     }
 
     @Override
@@ -674,6 +669,7 @@ public class ChatCacheImpl implements ChatCache {
                     .endGroup()
                     .findAllSorted("created_at", Sort.ASCENDING);
 
+            messagesError.addChangeListener(element -> subscriber.onNext(realm.copyFromRealm(messagesError)));
             subscriber.onNext(realm.copyFromRealm(messagesError));
         });
     }

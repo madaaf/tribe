@@ -32,22 +32,40 @@
         android:background="@color/grey.light"
         />
 
-    <com.tribe.app.presentation.view.widget.ActionEditText
-        android:id="@+id/editTextMessage"
-        android:background="@null"
-        android:layout_marginLeft="@dimen/horizontal_margin_small"
-        android:layout_marginRight="@dimen/horizontal_margin"
-        android:layout_marginTop="@dimen/horizontal_margin_small"
-        android:layout_marginBottom="@dimen/horizontal_margin_small"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical|left"
-        android:lineSpacingExtra="2dp"
-        android:hint="@string/chat_text_placeholder"
-        android:textColorHint="@color/black.opacity.40"
-        style="@style/Title.1.Black"
-        android:inputType="textAutoCorrect|textCapSentences|textMultiLine"
-        android:imeOptions="actionSend"
-        />
+        android:layout_marginLeft="@dimen/horizontal_margin_small">
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtPendingMessages"
+            android:layout_width="@dimen/chat_bar_height"
+            android:layout_height="@dimen/chat_bar_height"
+            android:layout_alignParentRight="true"
+            android:foreground="@drawable/selectable_button_light"
+            android:background="@color/orange.error"
+            android:clickable="true"
+            android:gravity="center"
+            style="@style/Headline.White.1"
+            />
+
+        <com.tribe.app.presentation.view.widget.ActionEditText
+            android:id="@+id/editTextMessage"
+            android:background="@null"
+            android:layout_marginRight="@dimen/horizontal_margin"
+            android:layout_marginTop="@dimen/horizontal_margin_small"
+            android:layout_marginBottom="@dimen/horizontal_margin_small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/txtPendingMessages"
+            android:gravity="center_vertical|left"
+            android:lineSpacingExtra="2dp"
+            android:hint="@string/chat_text_placeholder"
+            android:textColorHint="@color/black.opacity.40"
+            style="@style/Title.1.Black"
+            android:inputType="textAutoCorrect|textCapSentences|textMultiLine"
+            android:imeOptions="actionSend"
+            />
+    </RelativeLayout>
 
 </LinearLayout>

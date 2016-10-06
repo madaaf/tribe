@@ -12,6 +12,7 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.GroupGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.SupportGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.filter.RecipientFilter;
 import com.tribe.app.presentation.view.adapter.interfaces.RecyclerViewItemEnabler;
@@ -38,6 +39,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
     private MeGridAdapterDelegate meGridAdapterDelegate;
     private UserGridAdapterDelegate userGridAdapterDelegate;
     private GroupGridAdapterDelegate groupGridAdapterDelegate;
+    private SupportGridAdapterDelegate supportGridAdapterDelegate;
 
     // VARIABLES
     private List<Recipient> items;
@@ -63,6 +65,9 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
 
         groupGridAdapterDelegate = new GroupGridAdapterDelegate(context);
         delegatesManager.addDelegate(groupGridAdapterDelegate);
+
+        supportGridAdapterDelegate = new SupportGridAdapterDelegate(context);
+        delegatesManager.addDelegate(supportGridAdapterDelegate);
 
         items = new ArrayList<>();
         itemsFiltered = new ArrayList<>();
@@ -104,35 +109,51 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
     }
 
     public Observable<View> onClickChat() {
-        return Observable.merge(userGridAdapterDelegate.onClickChat(), groupGridAdapterDelegate.onClickChat());
+        return Observable.merge(userGridAdapterDelegate.onClickChat(),
+                groupGridAdapterDelegate.onClickChat(),
+                supportGridAdapterDelegate.onClickChat());
     }
 
     public Observable<View> onClickMore() {
-        return Observable.merge(userGridAdapterDelegate.onClickMore(), groupGridAdapterDelegate.onClickMore());
+        return Observable.merge(userGridAdapterDelegate.onClickMore(),
+                groupGridAdapterDelegate.onClickMore(),
+                supportGridAdapterDelegate.onClickMore());
     }
 
     public Observable<View> onRecordStart() {
-        return Observable.merge(userGridAdapterDelegate.onRecordStart(), groupGridAdapterDelegate.onRecordStart());
+        return Observable.merge(userGridAdapterDelegate.onRecordStart(),
+                groupGridAdapterDelegate.onRecordStart(),
+                supportGridAdapterDelegate.onRecordStart());
     }
 
     public Observable<View> onClickTapToCancel() {
-        return Observable.merge(userGridAdapterDelegate.onClickTapToCancel(), groupGridAdapterDelegate.onClickTapToCancel());
+        return Observable.merge(userGridAdapterDelegate.onClickTapToCancel(),
+                groupGridAdapterDelegate.onClickTapToCancel(),
+                supportGridAdapterDelegate.onClickTapToCancel());
     }
 
     public Observable<View> onNotCancel() {
-        return Observable.merge(userGridAdapterDelegate.onNotCancel(), groupGridAdapterDelegate.onNotCancel());
+        return Observable.merge(userGridAdapterDelegate.onNotCancel(),
+                groupGridAdapterDelegate.onNotCancel(),
+                supportGridAdapterDelegate.onNotCancel());
     }
 
     public Observable<View> onRecordEnd() {
-        return Observable.merge(userGridAdapterDelegate.onRecordEnd(), groupGridAdapterDelegate.onRecordEnd());
+        return Observable.merge(userGridAdapterDelegate.onRecordEnd(),
+                groupGridAdapterDelegate.onRecordEnd(),
+                supportGridAdapterDelegate.onRecordEnd());
     }
 
     public Observable<View> onOpenTribes() {
-        return Observable.merge(userGridAdapterDelegate.onOpenTribes(), groupGridAdapterDelegate.onOpenTribes());
+        return Observable.merge(userGridAdapterDelegate.onOpenTribes(),
+                groupGridAdapterDelegate.onOpenTribes(),
+                supportGridAdapterDelegate.onOpenTribes());
     }
 
     public Observable<View> onClickErrorTribes() {
-        return Observable.merge(userGridAdapterDelegate.onClickErrorTribes(), groupGridAdapterDelegate.onClickErrorTribes());
+        return Observable.merge(userGridAdapterDelegate.onClickErrorTribes(),
+                groupGridAdapterDelegate.onClickErrorTribes(),
+                supportGridAdapterDelegate.onClickErrorTribes());
     }
 
     public Observable<View> onClickOpenPoints() {

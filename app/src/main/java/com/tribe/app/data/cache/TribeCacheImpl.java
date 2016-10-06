@@ -191,6 +191,8 @@ public class TribeCacheImpl implements TribeCache {
                 obj.setMessageReceivingStatus((String) pair.second);
             } else if (pair.first.equals(TribeRealm.FRIEND_ID_UPDATED_AT)) {
                 obj.getFrom().setUpdatedAt((Date) pair.second);
+            } else if (pair.first.equals(TribeRealm.FRIEND_TO_ID_UPDATED_AT)) { // IN THE CASE WHERE I'M THE ONE SENDING THE TRIBE
+                obj.getFriendshipRealm().setUpdatedAt((Date) pair.second);
             } else if (pair.first.equals(TribeRealm.GROUP_ID_UPDATED_AT)) {
                 obj.getMembershipRealm().setUpdatedAt((Date) pair.second);
             } else if (pair.first.equals(TribeRealm.PROGRESS)) {

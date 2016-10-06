@@ -16,6 +16,7 @@
         <attr name="tileType" format="enum">
             <enum name="grid" value="0" />
             <enum name="tile" value="1" />
+            <enum name="support" value="2" />
         </attr>
     </declare-styleable>
 

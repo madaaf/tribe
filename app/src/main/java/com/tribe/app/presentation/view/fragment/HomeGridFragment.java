@@ -103,7 +103,6 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
     private LabelSheetAdapter moreSheetAdapter;
     private User currentUser;
     private @CameraWrapper.TribeMode String tribeMode;
-    private TribeMessage currentTribe; // The tribe currently being recorded / sent
     private boolean isRecording;
     private long timeRecording;
     private List<TribeMessage> pendingTribes;
@@ -279,7 +278,6 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
 
     @Override
     public void setCurrentTribe(TribeMessage currentTribe) {
-        this.currentTribe = currentTribe;
     }
 
     @Override
@@ -380,7 +378,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
                 .map(recipient -> {
                     isRecording = true;
                     timeRecording = System.currentTimeMillis();
-                    currentTribe = homeGridPresenter.createTribe(currentUser, recipient, tribeMode);
+                    TribeMessage currentTribe = homeGridPresenter.createTribe(currentUser, recipient, tribeMode);
                     homeGridAdapter.updateItemWithTribe(recipient.getPosition(), currentTribe);
                     recyclerViewFriends.requestDisallowInterceptTouchEvent(true);
                     return currentTribe.getLocalId();
@@ -398,8 +396,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
                     System.out.println("currentTribe : " + recipient.getTribe());
                     if ((System.currentTimeMillis() - timeRecording) > TIME_MIN_RECORDING) {
                         System.out.println("HEY");
-                        tileView.showTapToCancel(currentTribe, tribeMode);
-                        homeGridAdapter.updateItemWithTribe(recipient.getPosition(), currentTribe);
+                        tileView.showTapToCancel(recipient.getTribe(), tribeMode);
                         recyclerViewFriends.requestDisallowInterceptTouchEvent(false);
                     } else {
                         cleanupCurrentTribe(recipient);
@@ -419,7 +416,6 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
                 .subscribe(recipient -> {
                     homeGridPresenter.sendTribe(recipient.getTribe());
                     homeGridAdapter.updateItemWithTribe(recipient.getPosition(), null);
-                    currentTribe = null;
                 }));
 
         subscriptions.add(homeGridAdapter.onClickOpenPoints()
@@ -460,7 +456,6 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
         System.out.println("currentTribe bis : " + recipient.getTribe());
         homeGridPresenter.deleteTribe(recipient.getTribe());
         homeGridAdapter.updateItemWithTribe(recipient.getPosition(), null);
-        currentTribe = null;
     }
 
     private void setupBottomSheetMore(Recipient recipient) {
@@ -543,11 +538,11 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
                 pendingTypes.addAll(recipient.createPendingTribeItems(getContext(), recipientList.length > 1));
         }
 
-        pendingTypes.add(new PendingType(pendingTribes,
+        pendingTypes.add(new PendingType(new ArrayList<>(pendingTribes),
                 getString(R.string.grid_unsent_tribes_action_resend_all),
                 PendingType.RESEND));
 
-        pendingTypes.add(new PendingType(pendingTribes,
+        pendingTypes.add(new PendingType(new ArrayList<>(pendingTribes),
                 getString(R.string.grid_unsent_tribes_action_delete_all),
                 PendingType.DELETE));
 
@@ -556,7 +551,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
 
     private void prepareBottomSheetPendingWithList(List<LabelType> items, boolean isGlobal) {
         View view = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_user_pending, null);
-        recyclerViewPending = (RecyclerView) view.findViewById(R.id.recyclerViewPendingTribes);
+        recyclerViewPending = (RecyclerView) view.findViewById(R.id.recyclerViewPending);
         recyclerViewPending.setHasFixedSize(true);
         recyclerViewPending.setLayoutManager(new LinearLayoutManager(getActivity()));
         labelSheetAdapter = new LabelSheetAdapter(context(), items);
@@ -567,7 +562,12 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
                 .subscribe(labelType -> {
                     PendingType pendingType = (PendingType) labelType;
 
-                    if (isGlobal) onPendingTribesSelected.onNext(pendingType.getPending());
+                    List<TribeMessage> messages = new ArrayList<>();
+                    for (Message message : pendingType.getPending()) {
+                        messages.add((TribeMessage) message);
+                    }
+
+                    if (isGlobal) onPendingTribesSelected.onNext(messages);
 
                     if (pendingType.getPendingType().equals(PendingType.DELETE)) {
                         homeGridPresenter.deleteTribe(pendingType.getPending().toArray(new TribeMessage[pendingType.getPending().size()]));

@@ -19,7 +19,7 @@ import io.realm.annotations.PrimaryKey;
 public class TribeRealm extends RealmObject implements MessageRealmInterface {
 
     @StringDef({MESSAGE_SENDING_STATUS, MESSAGE_RECEIVING_STATUS, MESSAGE_DOWNLOADING_STATUS,
-            PROGRESS, TOTAL_SIZE, FRIEND_ID_UPDATED_AT, GROUP_ID_UPDATED_AT})
+            PROGRESS, TOTAL_SIZE, FRIEND_ID_UPDATED_AT, FRIEND_TO_ID_UPDATED_AT, GROUP_ID_UPDATED_AT})
     public @interface TribeRealmAttributes {}
 
     public static final String MESSAGE_SENDING_STATUS = "messageSendingStatus";
@@ -28,6 +28,7 @@ public class TribeRealm extends RealmObject implements MessageRealmInterface {
     public static final String PROGRESS = "progress";
     public static final String TOTAL_SIZE = "totalSize";
     public static final String FRIEND_ID_UPDATED_AT = "friendshipRealm.updated_at";
+    public static final String FRIEND_TO_ID_UPDATED_AT = "friendshipRealm.updated_at";
     public static final String GROUP_ID_UPDATED_AT = "membershipRealm.updated_at";
 
     @PrimaryKey

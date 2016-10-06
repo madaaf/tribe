@@ -10,6 +10,7 @@ import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.job.BaseJob;
+import com.tribe.app.data.network.job.DeleteMessageJob;
 import com.tribe.app.data.network.job.DownloadChatVideoJob;
 import com.tribe.app.data.network.job.DownloadTribeJob;
 import com.tribe.app.data.network.job.MarkMessageListAsReadJob;
@@ -165,6 +166,7 @@ public interface ApplicationComponent {
     void inject(MarkTribeAsSavedJob markTribeAsSavedJob);
     void inject(UpdateFriendshipJob updateFriendshipJob);
     void inject(UpdateUserListScoreJob updateUserListScoreJob);
+    void inject(DeleteMessageJob deleteMessageJob);
 
     //Exposed to sub-graphs.
     Context context();

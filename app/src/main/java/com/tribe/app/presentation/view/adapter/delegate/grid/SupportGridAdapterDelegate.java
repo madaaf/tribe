@@ -13,22 +13,22 @@ import java.util.List;
 /**
  * Created by tiago on 18/05/2016.
  */
-public class UserGridAdapterDelegate extends RecipientGridAdapterDelegate {
+public class SupportGridAdapterDelegate extends RecipientGridAdapterDelegate {
 
-    public UserGridAdapterDelegate(Context context) {
+    public SupportGridAdapterDelegate(Context context) {
         super(context);
     }
 
     @Override
     public boolean isForViewType(@NonNull List<Recipient> items, int position) {
         return position != 0 && items.get(position) instanceof Friendship
-                && (StringUtils.isEmpty(items.get(position).getSubId())
-                || !items.get(position).getSubId().equals("XSUPPORT"));
+                && (!StringUtils.isEmpty(items.get(position).getSubId())
+                || items.get(position).getSubId().equals("XSUPPORT"));
     }
 
 
     @Override
     protected int getLayoutId() {
-        return R.layout.item_user_grid;
+        return R.layout.item_support_grid;
     }
 }

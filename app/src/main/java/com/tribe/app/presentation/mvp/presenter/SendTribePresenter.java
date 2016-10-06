@@ -123,10 +123,6 @@ public abstract class SendTribePresenter implements Presenter {
         }
     }
 
-    private void setCurrentTribe(TribeMessage tribe) {
-        this.getView().setCurrentTribe(tribe);
-    }
-
     protected void showViewLoading() {
         this.getView().showLoading();
     }
@@ -158,7 +154,6 @@ public abstract class SendTribePresenter implements Presenter {
 
         @Override
         public void onNext(TribeMessage tribe) {
-            setCurrentTribe(tribe);
         }
     }
 

@@ -20,6 +20,11 @@ import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -61,6 +66,19 @@ public class  SendTribeJob extends BaseJob {
     public void onRun() throws Throwable {
         cloudSendTribe.setTribe(tribe);
         cloudSendTribe.execute(new TribeSendSubscriber());
+
+        Map<String, List<Pair<String, Object>>> tribeUpdates = new HashMap<>();
+
+        List<Pair<String, Object>> values = new ArrayList<>();
+
+        if (tribeRealm.isToGroup() && tribeRealm.getMembershipRealm() != null) {
+            values.add(Pair.create(TribeRealm.GROUP_ID_UPDATED_AT, tribeRealm.getRecordedAt()));
+        } else if (!tribeRealm.isToGroup() && tribeRealm.getFriendshipRealm() != null) {
+            values.add(Pair.create(TribeRealm.FRIEND_TO_ID_UPDATED_AT, tribeRealm.getRecordedAt()));
+        }
+
+        tribeUpdates.put(tribeRealm.getLocalId(), values);
+        tribeCache.update(tribeUpdates);
     }
 
     @Override

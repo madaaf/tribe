@@ -9,6 +9,7 @@ import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.JobStatus;
 import com.birbit.android.jobqueue.TagConstraint;
 import com.tbruyelle.rxpermissions.RxPermissions;
+import com.tribe.app.data.network.job.DeleteMessageJob;
 import com.tribe.app.data.network.job.DownloadChatVideoJob;
 import com.tribe.app.data.network.job.MarkMessageListAsReadJob;
 import com.tribe.app.data.network.job.SendChatJob;
@@ -63,6 +64,8 @@ public class ChatPresenter implements Presenter {
     private final DiskMarkMessageListAsRead diskMarkMessageListAsRead;
     private final GetPendingMessageList getPendingMessageList;
     private final GetRecipientInfos getRecipientInfos;
+
+    private DeleteMessageSubscriber deleteMessageSubscriber;
 
     private MessageView messageView;
 
@@ -236,6 +239,10 @@ public class ChatPresenter implements Presenter {
             jobManager.addJobInBackground(new SendChatJob(chatMessage));
     }
 
+    public void deleteMessage(ChatMessage... messageList) {
+        jobManager.addJobInBackground(new DeleteMessageJob(messageList));
+    }
+
     public void sendTypingEvent() {
         // TODO REAL TIME
         System.out.println("Typing !");
@@ -343,8 +350,9 @@ public class ChatPresenter implements Presenter {
         }
 
         @Override
-        public void onNext(List<ChatMessage> chatMessageList) {
-            sendMessage(chatMessageList.toArray(new ChatMessage[chatMessageList.size()]));
+        public void onNext(List<ChatMessage> chatMessagePendingList) {
+            messageView.renderPendingMessages(chatMessagePendingList);
+            //sendMessage(chatMessageList.toArray(new ChatMessage[chatMessageList.size()]));
         }
     }
 
@@ -374,6 +382,22 @@ public class ChatPresenter implements Presenter {
         @Override
         public void onNext(Recipient recipient) {
             messageView.onRecipientLoaded(recipient);
+        }
+    }
+
+    private final class DeleteMessageSubscriber extends DefaultSubscriber<Void> {
+        @Override
+        public void onCompleted() {
+            super.onCompleted();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(Void aVoid) {
         }
     }
 }
