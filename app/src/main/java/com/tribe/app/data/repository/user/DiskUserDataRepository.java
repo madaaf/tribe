@@ -114,7 +114,7 @@ public class DiskUserDataRepository implements UserRepository {
                                 userRealm.setFriendships(result);
                             }
 
-                            return userRealmDataMapper.transform(userRealm);
+                            return userRealmDataMapper.transform(userRealm, true);
                         }),
                 chatDataStore
                         .messages(null)
@@ -358,7 +358,7 @@ public class DiskUserDataRepository implements UserRepository {
                         userRealm.setFriendships(result);
                     }
 
-                    return userRealmDataMapper.transform(userRealm).getFriendships();
+                    return userRealmDataMapper.transform(userRealm, true).getFriendships();
                 });
     }
 

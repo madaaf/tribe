@@ -1,6 +1,5 @@
 package com.tribe.app.domain.entity;
 
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.presentation.mvp.view.UpdateScore;
 
 import java.io.Serializable;
@@ -167,19 +166,19 @@ public class User implements Serializable {
 
     public List<Recipient> getFriendshipList() {
         friendshipList = new ArrayList<>();
-        Friendship friendship = new Friendship("SUPPORT");
-        friendship.setStatus(FriendshipRealm.DEFAULT);
 
-        User user = new User("XSUPPORT");
-        user.setDisplayName("Chat with the CEO ?");
-        user.setScore(999999);
-        user.setUsername("support");
-        user.setUpdatedAt(new Date());
-        user.setCreatedAt(new Date());
-        friendship.setFriend(user);
-        friendshipList.add(friendship);
+        List<Friendship> friendshipWithoutMe = new ArrayList<>();
 
-        if (friendships != null) friendshipList.addAll(friendships);
+        if (friendships != null) {
+            for (Friendship fr : friendships) {
+                if (!id.equals(fr.getSubId())) {
+                    friendshipWithoutMe.add(fr);
+                }
+            }
+
+            friendshipList.addAll(friendshipWithoutMe);
+        }
+
         if (membershipList != null) friendshipList.addAll(membershipList);
 
         Collections.sort(friendshipList, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));

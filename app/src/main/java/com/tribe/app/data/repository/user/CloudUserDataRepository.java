@@ -97,7 +97,7 @@ public class CloudUserDataRepository implements UserRepository {
                 .doOnError(throwable -> {
                     throwable.printStackTrace();
                 })
-                .map(userRealm -> this.userRealmDataMapper.transform(userRealm));
+                .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
     }
 
     @Override
@@ -129,7 +129,7 @@ public class CloudUserDataRepository implements UserRepository {
     public Observable<User> updateUser(List<Pair<String, String>> values) {
         final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
         return userDataStore.updateUser(values)
-                .map(userRealm -> this.userRealmDataMapper.transform(userRealm));
+                .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
     }
 
     /***

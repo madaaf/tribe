@@ -54,10 +54,8 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
 
         JsonArray resultsFriendships = result.getAsJsonArray("friendships");
         JsonArray resultsMemberships = result.getAsJsonArray("memberships");
-        JsonArray resultsGroups = result.getAsJsonArray("groups");
         RealmList<FriendshipRealm> realmListFriendships = new RealmList();
         RealmList<MembershipRealm> realmListMemberships = new RealmList();
-        RealmList<GroupRealm> realmListGroups = new RealmList();
 
         if (resultsFriendships != null) {
             for (JsonElement obj : resultsFriendships) {
@@ -77,18 +75,24 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
             }
         }
 
-        if (resultsGroups != null) {
-            for (JsonElement obj : resultsGroups) {
-                if (!(obj instanceof JsonNull)) {
-                    GroupRealm groupRealm = gson.fromJson(obj, GroupRealm.class);
-                    realmListGroups.add(groupRealm);
+        if (result.get("groups") != null && !(result.get("groups") instanceof JsonNull)) {
+            JsonArray resultsGroups = result.getAsJsonArray("groups");
+            RealmList<GroupRealm> realmListGroups = new RealmList();
+
+            if (resultsGroups != null) {
+                for (JsonElement obj : resultsGroups) {
+                    if (!(obj instanceof JsonNull)) {
+                        GroupRealm groupRealm = gson.fromJson(obj, GroupRealm.class);
+                        realmListGroups.add(groupRealm);
+                    }
                 }
             }
+
+            userRealm.setGroups(realmListGroups);
         }
 
         userRealm.setFriendships(realmListFriendships);
         userRealm.setMemberships(realmListMemberships);
-        userRealm.setGroups(realmListGroups);
 
         return userRealm;
     }

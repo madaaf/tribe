@@ -28,7 +28,7 @@ public class TribeRealm extends RealmObject implements MessageRealmInterface {
     public static final String PROGRESS = "progress";
     public static final String TOTAL_SIZE = "totalSize";
     public static final String FRIEND_ID_UPDATED_AT = "friendshipRealm.updated_at";
-    public static final String FRIEND_TO_ID_UPDATED_AT = "friendshipRealm.updated_at";
+    public static final String FRIEND_TO_ID_UPDATED_AT = "to.friendshipRealm.updated_at";
     public static final String GROUP_ID_UPDATED_AT = "membershipRealm.updated_at";
 
     @PrimaryKey

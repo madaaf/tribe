@@ -16,6 +16,7 @@ public class TagManagerConstants {
     public static final String ONBOARDING_REGISTRATION_FACEBOOK = "Onboarding - Registration Facebook Connect";
     public static final String ONBOARDING_CONTACTS_SYNC = "Onboarding - Contacts Sync";
     public static final String ONBOARDING_GRID_VIEW = "Onboarding - Grid View";
+    public static final String ONBOARDING_COMPLETED = "Onboarding - Completed";
     public static final String TUTORIAL_OPEN_FIRST_SUPPORT = "Tutorial - Open First Support Tribe";
     public static final String TUTORIAL_DONE = "Tutorial - Done";
     public static final String KPI_TRIBES_OPENED = "KPI - Tribes Opened";
@@ -45,6 +46,7 @@ public class TagManagerConstants {
     public static final String TYPE_GROUP_PUBLIC = "Public";
     public static final String TYPE_ERROR_NETWORK = "Network";
     public static final String TYPE_ERROR_TECHNICAL = "Technical";
+    public static final String TYPE_PHONE = "Phone";
 
 
     /**

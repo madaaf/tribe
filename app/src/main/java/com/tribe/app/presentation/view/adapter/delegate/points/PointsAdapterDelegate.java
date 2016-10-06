@@ -51,7 +51,7 @@ public class PointsAdapterDelegate extends RxAdapterDelegate<List<ScoreUtils.Poi
         ScoreUtils.Point point = items.get(position);
 
         vh.imgPicto.setImageResource(point.getDrawableId());
-        vh.txtPoints.setText(point.getPoints() < 1000 ? "" + point.getPoints(): ScoreUtils.format(point.getPoints(), 0));
+        vh.txtPoints.setText(point.getPoints() < 1000 ? "" + point.getPoints(): ScoreUtils.format(point.getPoints(), 0) + " pts");
         vh.txtTitle.setText(point.getStringLabelId());
         vh.txtDescription.setText(point.getStringSubLabelId());
     }

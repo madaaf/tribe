@@ -1,13 +1,21 @@
 buildscript {
     repositories {
         mavenCentral()
+        maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
         classpath 'me.tatarka:gradle-retrolambda:3.2.3'
+        classpath 'io.fabric.tools:gradle:1.+'
     }
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
 apply plugin: 'realm-android'
 apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'com.fernandocejas.frodo'
@@ -171,7 +179,6 @@ dependencies {
     compile presentationDependencies.libPhoneNumber
     compile presentationDependencies.exoPlayer
     compile presentationDependencies.firebaseMessaging
-    compile presentationDependencies.firebaseCrashReporting
     compile presentationDependencies.circularProgressView
     compile presentationDependencies.rxLocation
     compile presentationDependencies.googlePlayLocation
@@ -196,6 +203,9 @@ dependencies {
     compile developmentDependencies.stethoOkHttp
 
     compile project(':AdapterDelegates')
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
+        transitive = true;
+    }
 }
 
 apply plugin: 'com.google.gms.google-services'

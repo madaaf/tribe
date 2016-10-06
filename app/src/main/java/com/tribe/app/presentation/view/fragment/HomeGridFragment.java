@@ -215,8 +215,6 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
             } else {
                 for (Recipient recipient : recipientList) {
                     if (recipient.getReceivedTribes() != null && recipient.getReceivedTribes().size() > 0) {
-                        System.out.println("HomeGridPresenter : " + homeGridPresenter);
-                        System.out.println("recipient.getreceivedtribes : " + recipient.getReceivedTribes().size());
                         homeGridPresenter.downloadMessages(recipient.getReceivedTribes().toArray(new TribeMessage[recipient.getReceivedTribes().size()]));
                     }
                 }
@@ -504,6 +502,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
                     if (moreType.getMoreType().equals(MoreType.CLEAR_MESSAGES)) {
                         homeGridPresenter.markTribeListAsRead(recipient, recipient.getReceivedTribes());
                     } else if (moreType.getMoreType().equals(MoreType.HIDE) || moreType.getMoreType().equals(MoreType.BLOCK_HIDE)) {
+                        tagManager.trackEvent(TagManagerConstants.USER_TILE_HIDDEN);
                         homeGridPresenter.updateFriendship((Friendship) recipient, moreType.getMoreType().equals(MoreType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED : FriendshipRealm.HIDDEN);
                     } else if (moreType.getMoreType().equals(MoreType.GROUP_INFO)) {
                         Membership membership = (Membership) recipient;

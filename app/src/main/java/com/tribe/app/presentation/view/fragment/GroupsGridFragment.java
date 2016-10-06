@@ -2,31 +2,22 @@ package com.tribe.app.presentation.view.fragment;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
-import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.CameraType;
 import com.tribe.app.domain.entity.Friendship;
@@ -40,6 +31,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.GroupPresenter;
 import com.tribe.app.presentation.mvp.view.GroupView;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.view.activity.BaseActivity;
@@ -51,14 +43,9 @@ import com.tribe.app.presentation.view.component.CreateInviteView;
 import com.tribe.app.presentation.view.component.GroupInfoView;
 import com.tribe.app.presentation.view.component.GroupSuggestionsView;
 import com.tribe.app.presentation.view.component.SearchFriendsView;
-import com.tribe.app.presentation.view.component.ViewPrivacyStatus;
 import com.tribe.app.presentation.view.dialog_fragment.ShareDialogFragment;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
-import com.tribe.app.presentation.view.utils.ImageUtils;
-import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.widget.EditTextFont;
-import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -380,6 +367,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             setGroupSuggestionsViewVisible(false);
         }));
         subscriptions.add((createInviteView.invitePressed()).subscribe(aVoid -> {
+            tagManager.trackEvent(TagManagerConstants.KPI_GROUP_LINK_SHARED);
+
             if (privateGroup && groupLink != null && !isLinkExpired(groupLinkExpirationDate)) showShareDialogFragment();
             else if (privateGroup) {
                 groupPresenter.modifyPrivateGroupLink(membershipId, true);
@@ -774,6 +763,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     @Override
     public void groupCreatedSuccessfully() {
+        tagManager.trackEvent(TagManagerConstants.KPI_GROUP_CREATED);
+
         createInviteView.loaded();
         animSet1();
         Observable.timer(animDuration, TimeUnit.MILLISECONDS)
@@ -809,6 +800,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     @Override
     public void memberAddedSuccessfully() {
+        tagManager.trackEvent(TagManagerConstants.KPI_GROUP_MEMBERS_ADDED);
+
         //TODO: navigate to home fragment
         if (getActivity() instanceof GroupInfoActivity) {
             Intent resultIntent = new Intent();

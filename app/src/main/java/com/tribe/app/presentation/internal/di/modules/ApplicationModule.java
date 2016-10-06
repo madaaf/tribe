@@ -220,9 +220,9 @@ public class ApplicationModule {
 
         userRealm = realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
         if (userRealm != null) {
-            userRealm.addChangeListener(element -> user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealm))));
+            userRealm.addChangeListener(element -> user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealm), true)));
 
-            user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealm)));
+            user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealm), true));
         }
 
         return user;

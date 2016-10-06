@@ -414,6 +414,7 @@ public class AccessFragment extends BaseFragment implements AccessView {
     }
 
     private void goToHome() {
+        tagManager.trackEvent(TagManagerConstants.ONBOARDING_COMPLETED);
         navigator.navigateToHome(getActivity(), false, deepLink);
     }
 
@@ -463,6 +464,7 @@ public class AccessFragment extends BaseFragment implements AccessView {
 
     private void lookupContacts() {
         if (RxPermissions.getInstance(getContext()).isGranted(Manifest.permission.READ_CONTACTS)) {
+            tagManager.trackEvent(TagManagerConstants.ONBOARDING_CONTACTS_SYNC);
             accessPresenter.lookupContacts();
         } else {
             renderFriendList(new ArrayList<>());
@@ -476,8 +478,6 @@ public class AccessFragment extends BaseFragment implements AccessView {
     @Override
     public void renderFriendList(List<User> userList) {
         Map<String, Object> relationsInApp = new HashMap<>();
-
-        tagManager.trackEvent(TagManagerConstants.ONBOARDING_CONTACTS_SYNC);
 
         for (User user : userList) {
             if (!user.isInvisibleMode()) relationsInApp.put(user.getId(), user);

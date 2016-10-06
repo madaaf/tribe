@@ -35,7 +35,7 @@ public class UserRealmDataMapper {
      * @param userRealm Object to be transformed.
      * @return {@link com.tribe.app.domain.entity.User} if valid {@link com.tribe.app.data.realm.UserRealm} otherwise null.
      */
-    public User transform(UserRealm userRealm) {
+    public User transform(UserRealm userRealm, boolean shouldTransformFriendships) {
         User user = null;
         if (userRealm != null) {
             user = new User(userRealm.getId());
@@ -50,8 +50,12 @@ public class UserRealmDataMapper {
             user.setFbid(userRealm.getFbid());
             if (userRealm.getLocation() != null) user.setLocation(locationRealmDataMapper.transform(userRealm.getLocation()));
             user.setTribeSave(userRealm.isTribeSave());
-            if (userRealm.getMemberships() != null) user.setMembershipList(membershipRealmDataMapper.transform(userRealm.getMemberships()));
-            if (userRealm.getFriendships() != null) user.setFriendships(friendshipRealmDataMapper.transform(userRealm.getFriendships()));
+            if (shouldTransformFriendships) {
+                if (userRealm.getMemberships() != null)
+                    user.setMembershipList(membershipRealmDataMapper.transform(userRealm.getMemberships()));
+                if (userRealm.getFriendships() != null)
+                    user.setFriendships(friendshipRealmDataMapper.transform(userRealm.getFriendships()));
+            }
         }
 
         return user;
@@ -68,7 +72,7 @@ public class UserRealmDataMapper {
         User user;
         if (userRealmCollection != null) {
             for (UserRealm userRealm : userRealmCollection) {
-                user = transform(userRealm);
+                user = transform(userRealm, true);
                 if (user != null) {
                     userList.add(user);
                 }
@@ -84,7 +88,7 @@ public class UserRealmDataMapper {
      * @param user Object to be transformed.
      * @return {@link UserRealm} if valid {@link User} otherwise null.
      */
-    public UserRealm transform(User user) {
+    public UserRealm transform(User user, boolean shouldTransformFriendships) {
         UserRealm userRealm = null;
 
         if (user != null) {
@@ -101,8 +105,12 @@ public class UserRealmDataMapper {
             userRealm.setPhone(user.getPhone());
             if (user.getLocation() != null) userRealm.setLocation(locationRealmDataMapper.transform(user.getLocation()));
             userRealm.setTribeSave(user.isTribeSave());
-            if (user.getMembershipList() != null) userRealm.setMemberships(membershipRealmDataMapper.transformMemberships(user.getMembershipList()));
-            if (user.getFriendships() != null) userRealm.setFriendships(friendshipRealmDataMapper.transformFriendships(user.getFriendships()));
+            if (shouldTransformFriendships) {
+                if (user.getMembershipList() != null)
+                    userRealm.setMemberships(membershipRealmDataMapper.transformMemberships(user.getMembershipList()));
+                if (user.getFriendships() != null)
+                    userRealm.setFriendships(friendshipRealmDataMapper.transformFriendships(user.getFriendships()));
+            }
         }
 
         return userRealm;
@@ -120,7 +128,7 @@ public class UserRealmDataMapper {
 
         if (userCollection != null) {
             for (User user : userCollection) {
-                userRealm = transform(user);
+                userRealm = transform(user, true);
                 if (userRealm != null) {
                     userRealmList.add(userRealm);
                 }
@@ -142,7 +150,7 @@ public class UserRealmDataMapper {
 
         if (userCollection != null) {
             for (UserRealm userRealm : userCollection) {
-                user = transform(userRealm);
+                user = transform(userRealm, true);
                 if (user != null) {
                     userList.add(user);
                 }

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.multidex.MultiDex;
 
+import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.stetho.Stetho;
@@ -15,6 +16,7 @@ import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 
+import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -28,6 +30,7 @@ public class AndroidApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
         this.initializeInjector();
         this.initializeLeakDetection();
         this.initializeRealm();

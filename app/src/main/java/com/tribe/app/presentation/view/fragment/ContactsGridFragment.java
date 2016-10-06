@@ -240,6 +240,7 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
                         } else if (buttonPoints.getType() == ButtonPointsView.FB_NOTIFY) {
                             contactsGridPresenter.notifyFBFriends();
                         } else if (buttonPoints.getType() == ButtonPointsView.PROFILE) {
+                            tagManager.trackEvent(TagManagerConstants.USER_SHARE_PROFILE);
                             navigator.shareHandle(currentUser.getUsername(), getActivity());
                         }
                     }
@@ -289,6 +290,9 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
                     if (o instanceof ContactAB) {
                         ContactAB contact = (ContactAB) o;
                         navigator.invite(contact.getPhone(), contact.getHowManyFriends(), getActivity());
+                        Bundle bundle = new Bundle();
+                        bundle.putString(TagManagerConstants.TYPE_PHONE, contact.getPhone());
+                        tagManager.trackEvent(TagManagerConstants.KPI_INVITATIONS_SENT, bundle);
                     }
                 }));
 

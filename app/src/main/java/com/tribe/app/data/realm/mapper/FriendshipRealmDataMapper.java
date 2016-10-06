@@ -34,7 +34,7 @@ public class FriendshipRealmDataMapper {
         Friendship friendship = null;
         if (friendshipRealm != null) {
             friendship = new Friendship(friendshipRealm.getId());
-            friendship.setFriend(userRealmDataMapper.transform(friendshipRealm.getFriend()));
+            friendship.setFriend(userRealmDataMapper.transform(friendshipRealm.getFriend(), false));
             friendship.setBlocked(friendshipRealm.isBlocked());
             friendship.setCategory(friendshipRealm.getCategory());
             friendship.setTag(friendshipRealm.getTag());
@@ -77,7 +77,7 @@ public class FriendshipRealmDataMapper {
         if (friendship != null) {
             friendshipRealm = new FriendshipRealm();
             friendshipRealm.setId(friendship.getId());
-            friendshipRealm.setFriend(userRealmDataMapper.transform(friendship.getFriend()));
+            friendshipRealm.setFriend(userRealmDataMapper.transform(friendship.getFriend(), false));
             friendshipRealm.setBlocked(friendship.isBlocked());
             friendshipRealm.setCategory(friendship.getCategory());
             friendshipRealm.setTag(friendship.getTag());

@@ -54,7 +54,7 @@ public class TribeRealmDataMapper {
             tribe.setLocalId(tribeRealm.getLocalId());
             tribe.setTo(tribeRealm.isToGroup() ? membershipRealmDataMapper.transform(tribeRealm.getMembershipRealm()) : friendshipRealmDataMapper.transform(tribeRealm.getFriendshipRealm()));
             tribe.setType(tribeRealm.getType());
-            tribe.setFrom(userRealmDataMapper.transform(tribeRealm.getFrom()));
+            tribe.setFrom(userRealmDataMapper.transform(tribeRealm.getFrom(), true));
             tribe.setRecordedAt(tribeRealm.getRecordedAt());
             tribe.setUpdatedAt(tribeRealm.getUpdatedAt());
             tribe.setToGroup(tribeRealm.isToGroup());
@@ -98,7 +98,7 @@ public class TribeRealmDataMapper {
             tribeRealm.setType(tribe.getType());
             tribeRealm.setRecordedAt(tribe.getRecordedAt());
             tribeRealm.setUpdatedAt(tribe.getUpdatedAt());
-            tribeRealm.setFrom(userRealmDataMapper.transform(tribe.getFrom()));
+            tribeRealm.setFrom(userRealmDataMapper.transform(tribe.getFrom(), true));
             tribeRealm.setLocationRealm(locationRealmDataMapper.transform(tribe.getLocation()));
             tribeRealm.setUrl(tribe.getContent());
             tribeRealm.setMessageSendingStatus(tribe.getMessageSendingStatus());

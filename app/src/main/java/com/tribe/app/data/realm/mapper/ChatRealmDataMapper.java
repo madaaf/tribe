@@ -49,7 +49,7 @@ public class ChatRealmDataMapper {
             chatMessage.setContent(chatRealm.getContent());
             chatMessage.setTo(chatRealm.isToGroup() ? membershipRealmDataMapper.transform(chatRealm.getMembershipRealm()) : friendshipRealmDataMapper.transform(chatRealm.getFriendshipRealm()));
             chatMessage.setType(chatRealm.getType());
-            chatMessage.setFrom(userRealmDataMapper.transform(chatRealm.getFrom()));
+            chatMessage.setFrom(userRealmDataMapper.transform(chatRealm.getFrom(), true));
             chatMessage.setRecordedAt(chatRealm.getRecordedAt());
             chatMessage.setCreatedAt(chatRealm.getCreatedAt());
             chatMessage.setUpdatedAt(chatRealm.getUpdatedAt());
@@ -87,7 +87,7 @@ public class ChatRealmDataMapper {
             }
 
             chatRealm.setType(chatMessage.getType());
-            chatRealm.setFrom(userRealmDataMapper.transform(chatMessage.getFrom()));
+            chatRealm.setFrom(userRealmDataMapper.transform(chatMessage.getFrom(), true));
             chatRealm.setRecordedAt(chatMessage.getRecordedAt());
             chatRealm.setCreatedAt(chatMessage.getCreatedAt());
             chatRealm.setUpdatedAt(chatMessage.getUpdatedAt());

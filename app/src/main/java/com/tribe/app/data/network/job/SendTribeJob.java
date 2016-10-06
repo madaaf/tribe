@@ -111,6 +111,7 @@ public class  SendTribeJob extends BaseJob {
 
         @Override
         public void onError(Throwable e) {
+            tagManager.trackEvent(TagManagerConstants.TRIBE_PENDING_ERROR);
             setStatus(MessageSendingStatus.STATUS_ERROR);
         }
 
