@@ -134,6 +134,10 @@ public class GroupInfoView extends FrameLayout {
         subscriptions.add(RxView.clicks(editTextGroupName).subscribe(aVoid -> {
             bringGroupNameToTop(animDuration);
             isEditingGroupName.onNext(true);
+            editTextGroupName.setCursorVisible(true);
+        }));
+        subscriptions.add(editTextGroupName.keyBackPressed().subscribe(aVoid -> {
+            editTextGroupName.setCursorVisible(false);
         }));
         subscriptions.add(RxView.clicks(imageGroup).subscribe(aVoid -> {
             imageGroupClicked.onNext(null);
@@ -161,6 +165,7 @@ public class GroupInfoView extends FrameLayout {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
                     bringGroupNameDown(animDuration);
+                    editTextGroupName.setCursorVisible(false);
                     isEditingGroupName.onNext(false);
                 }
                 return false;
@@ -231,6 +236,10 @@ public class GroupInfoView extends FrameLayout {
                 .bitmapTransform(new CropCircleTransformation(getContext()))
                 .crossFade()
                 .into(imageGroup);
+    }
+
+    public void setGroupPictureInvisible() {
+        imageGroup.setVisibility(INVISIBLE);
     }
 
     public void enableButtons() {

@@ -515,7 +515,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         groupInfoView.setGroupName("");
         groupInfoView.bringOutIcons(0);
         groupInfoView.enableButtons();
-        groupInfoView.addMemberPhotoDrawable(null);
+        groupInfoView.setGroupPictureInvisible();
         groupPictureUri = null;
         createInviteView.setDefault();
         createInviteView.disable();

@@ -39,6 +39,7 @@
     <dimen name="group_member_image_overlap_margin">-15dp</dimen>
     <dimen name="group_suggestion_margin">5dp</dimen>
     <dimen name="group_suggestion_margin_mid">10dp</dimen>
+    <dimen name="group_info_edit_icon_top_margin">11.5dp</dimen>
 
     <!-- PADDING -->
     <dimen name="icons_padding">3.75dp</dimen>
