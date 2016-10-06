@@ -309,7 +309,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             createInviteView.loadingAnimation(AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
         }));
 
-        setupSearchView();
+
     }
 
     private void initGroupInfoUi(String membershipId, boolean isCurrentUserAdmin, String groupId, String groupName, String groupPicture, String groupLink, long groupLinkExpirationDate) {
@@ -390,6 +390,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         }));
 
         subscriptions.add(searchFriendsView.editTextSearchTextChanged().subscribe(this::filter));
+        setupSearchView();
     }
 
     @Override
@@ -629,9 +630,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     }
 
     private void setupSearchView() {
-        subscriptions.add(RxView.focusChanges(searchFriendsView).subscribe(aBoolean -> {
-            if (aBoolean) appBarLayout.setExpanded(false);
-        }));
         subscriptions.add(searchFriendsView.editTextSearchClicked().subscribe(aVoid -> {
             appBarLayout.setExpanded(false);
         }));

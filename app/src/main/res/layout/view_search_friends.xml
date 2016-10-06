@@ -18,8 +18,11 @@
         android:layout_marginStart="@dimen/vertical_margin_xsmall"
         android:gravity="center_vertical"
         android:singleLine="true"
+        android:clickable="true"
+        android:enabled="true"
         android:background="@null"
         android:hint="@string/group_search_friends_placeholder"
+        style="@style/Text.Input.Search"
         />
 
 </FrameLayout>
