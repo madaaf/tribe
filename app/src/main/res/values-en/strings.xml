@@ -281,7 +281,7 @@
 	<string name="onboarding_user_avatar_library">Camera roll</string>
 	<string name="onboarding_user_avatar_selfie">Selfie camera</string>
 	<string name="onboarding_user_displayname_placeholder">Full name</string>
-	<string name="onboarding_user_username_placeholder">\@username</string>
+	<string name="onboarding_user_username_placeholder">username</string>
 	<string name="onboarding_user_username_restrictions">Usernames must only contain alphanumeric, underscores and dash characters</string>
 	<string name="onboarding_user_facebook_button_title">Or autofill profile</string>
 	<string name="onboarding_queue_title">Gain access now!</string>
@@ -466,7 +466,7 @@
 	<!-- Support -->
 	<string name="support_metadata">Support</string>
 	<string name="support_popup_displayname">Full name</string>
-	<string name="support_popup_username">\@Username</string>
+	<string name="support_popup_username">Username</string>
 	<string name="support_popup_score">Score</string>
 	<string name="support_popup_friends">Friends</string>
 	<string name="support_popup_groups">Groups</string>

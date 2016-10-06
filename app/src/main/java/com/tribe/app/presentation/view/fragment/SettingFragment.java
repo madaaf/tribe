@@ -25,6 +25,7 @@ import com.tribe.app.presentation.view.activity.SettingActivity;
 import com.tribe.app.presentation.view.component.SettingFilterView;
 import com.tribe.app.presentation.view.component.SettingItemView;
 import com.tribe.app.presentation.view.component.SettingThemeView;
+import com.tribe.app.presentation.view.dialog_fragment.LocationDialogFragment;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.Weather;
 
@@ -184,10 +185,12 @@ public class SettingFragment extends BaseFragment implements SettingView {
         }));
 
         subscriptions.add(messageSettingContext.checkedSwitch().subscribe(isChecked -> {
-            Bundle bundle = new Bundle();
-            bundle.putBoolean(TagManagerConstants.LOCATION_ENABLED, isChecked);
-            tagManager.setProperty(bundle);
-            locationContext.set(isChecked);
+            LocationDialogFragment locationDialogFragment = LocationDialogFragment.newInstance();
+            locationDialogFragment.show(getFragmentManager(), LocationDialogFragment.class.getName());
+//            Bundle bundle = new Bundle();
+//            bundle.putBoolean(TagManagerConstants.LOCATION_ENABLED, isChecked);
+//            tagManager.setProperty(bundle);
+//            locationContext.set(isChecked);
         }));
 
         subscriptions.add(messageSettingVoice.checkedSwitch().subscribe(isChecked -> {
