@@ -15,7 +15,7 @@
         android:id="@+id/editTextSearch"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/group_search_height"
-        android:layout_marginStart="@dimen/vertical_margin_xsmall"
+        android:layout_marginStart="@dimen/vertical_margin_smaller"
         android:gravity="center_vertical"
         android:singleLine="true"
         android:clickable="true"

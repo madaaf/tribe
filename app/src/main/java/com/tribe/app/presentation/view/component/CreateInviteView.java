@@ -49,6 +49,10 @@ public class CreateInviteView extends FrameLayout {
         super(context, attrs, defStyleAttr);
     }
 
+    public static final int STATUS_CREATING_GROUP = 0,
+            STATUS_CREATING_LINK = 1,
+            STATUS_DELETING_LINK = 2;
+
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private Subscription countDownSubscription;
@@ -157,10 +161,23 @@ public class CreateInviteView extends FrameLayout {
         viewCreateGroupBg2.setEnabled(true);
     }
 
-    public void loadingAnimation(int animDuration, ScreenUtils screenUtils, Activity activity) {
+    public void loadingAnimation(int loadingStatus, int animDuration, ScreenUtils screenUtils, Activity activity) {
         viewCreateGroupBg2.setVisibility(VISIBLE);
         screenUtils.hideKeyboard(activity);
-        textCreateInvite.setText(activity.getString(R.string.group_button_creating));
+        switch (loadingStatus) {
+            case STATUS_CREATING_GROUP:
+                textCreateInvite.setText(activity.getString(R.string.group_button_creating));
+                break;
+            case STATUS_CREATING_LINK:
+                textCreateInvite.setText(activity.getString(R.string.group_button_share_generating));
+                break;
+            case STATUS_DELETING_LINK:
+                textCreateInvite.setText(activity.getString(R.string.group_button_share_deleting));
+                break;
+            default:
+                textCreateInvite.setText(activity.getString(R.string.group_button_creating));
+                break;
+        }
         Rect rect = new Rect();
         viewCreateGroupBg2.getLocalVisibleRect(rect);
         Rect from = new Rect(rect);
@@ -200,11 +217,14 @@ public class CreateInviteView extends FrameLayout {
     public void setInviteLink(String inviteLink) {
         if (inviteLink == null) {
             if (countDownSubscription != null) countDownSubscription.unsubscribe();
-//            subscriptions.remove(countDownSubscription);
             textCreateInvite.setText(getContext().getString(R.string.group_button_share_generate));
             textCreateInviteDesc.setText(getContext().getString(R.string.group_share_description));
         }
         else textCreateInvite.setText(inviteLink);
+    }
+
+    public void setDeleteLink() {
+        textCreateInvite.setText(getContext().getString(R.string.group_button_share_deleting));
     }
 
     public void setExpirationDesc(long timeRemaining) {
@@ -218,8 +238,6 @@ public class CreateInviteView extends FrameLayout {
                     textCreateInviteDesc.setText(getContext().getString(R.string.group_share_description_expiration, StringUtils.millisecondsToHhMmSs(currTimeRemaining)));
                     Log.d("currtimeremaining", currTimeRemaining + "");
                 });
-
-//        subscriptions.add(countDownSubscription);
     }
 
     public Observable<Void> createPressed() {

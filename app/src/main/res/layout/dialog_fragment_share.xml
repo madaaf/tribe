@@ -44,7 +44,7 @@
             android:id="@+id/imageWhatsapp"
             android:layout_width="@dimen/dialog_fragment_icon_size"
             android:layout_height="match_parent"
-            android:background="@drawable/shape_white_rect_grey_border"
+            android:background="@drawable/shape_white_rect_grey_border_no_left"
             android:scaleType="centerInside"
             android:src="@drawable/picto_whatsapp"
             />
@@ -52,7 +52,7 @@
             android:id="@+id/imageSnapchat"
             android:layout_width="@dimen/dialog_fragment_icon_size"
             android:layout_height="match_parent"
-            android:background="@drawable/shape_white_rect_grey_border"
+            android:background="@drawable/shape_white_rect_grey_border_no_left"
             android:scaleType="centerInside"
             android:src="@drawable/picto_snapchat"
             />
@@ -60,7 +60,7 @@
             android:id="@+id/imageMessage"
             android:layout_width="@dimen/dialog_fragment_icon_size"
             android:layout_height="match_parent"
-            android:background="@drawable/shape_white_rect_grey_border"
+            android:background="@drawable/shape_white_rect_grey_border_no_left"
             android:scaleType="centerInside"
             android:src="@drawable/picto_message"
             />
@@ -75,7 +75,7 @@
             android:id="@+id/imageSlack"
             android:layout_width="@dimen/dialog_fragment_icon_size"
             android:layout_height="match_parent"
-            android:background="@drawable/shape_white_rect_grey_border"
+            android:background="@drawable/shape_white_rect_grey_border_no_top_no_background"
             android:scaleType="centerInside"
             android:src="@drawable/picto_slack"
             />
@@ -83,7 +83,7 @@
             android:id="@+id/imageTelegram"
             android:layout_width="@dimen/dialog_fragment_icon_size"
             android:layout_height="match_parent"
-            android:background="@drawable/shape_white_rect_grey_border"
+            android:background="@drawable/shape_white_rect_grey_border_no_top_no_left"
             android:scaleType="centerInside"
             android:src="@drawable/picto_telegram"
             />
@@ -91,7 +91,7 @@
             android:id="@+id/imageMail"
             android:layout_width="@dimen/dialog_fragment_icon_size"
             android:layout_height="match_parent"
-            android:background="@drawable/shape_white_rect_grey_border"
+            android:background="@drawable/shape_white_rect_grey_border_no_top_no_left"
             android:scaleType="centerInside"
             android:src="@drawable/picto_mail"
             />
@@ -99,7 +99,7 @@
             android:id="@+id/imageMore"
             android:layout_width="@dimen/dialog_fragment_icon_size"
             android:layout_height="match_parent"
-            android:background="@drawable/shape_white_rect_grey_border"
+            android:background="@drawable/shape_white_rect_grey_border_no_top_no_left"
             android:scaleType="centerInside"
             android:src="@drawable/picto_more_black"
             />

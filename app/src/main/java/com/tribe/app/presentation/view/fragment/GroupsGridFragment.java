@@ -306,7 +306,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             groupInfoView.disableButtons();
             groupName = groupInfoView.getGroupName();
             groupPresenter.createGroup(groupName, memberIds, privateGroup, groupPictureUri);
-            createInviteView.loadingAnimation(AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
+            createInviteView.loadingAnimation(CreateInviteView.STATUS_CREATING_GROUP, AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
         }));
 
 
@@ -384,7 +384,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             else if (privateGroup) {
                 groupPresenter.modifyPrivateGroupLink(membershipId, true);
                 createInviteView.disableInvite();
-                createInviteView.loadingAnimation(AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
+                createInviteView.loadingAnimation(CreateInviteView.STATUS_CREATING_LINK, AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
             }
             else navigator.shareGenericText(getString(R.string.share_group_public_link, groupName, groupLink), getContext());
         }));
@@ -574,6 +574,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         if (groupLink != null) shareDialogFragment.show(getFragmentManager(), ShareDialogFragment.class.getName());
         subscriptions.add(shareDialogFragment.deletePressed().subscribe(aVoid -> {
             groupPresenter.modifyPrivateGroupLink(membershipId, false);
+            createInviteView.disableInvite();
+            createInviteView.loadingAnimation(CreateInviteView.STATUS_DELETING_LINK, AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
         }));
 
     }
