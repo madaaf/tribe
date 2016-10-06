@@ -14,7 +14,7 @@
 	
 	<!-- Errors -->
 	<string name="error_unknown">:bird: Léger problème. Réessayez dans 30s.</string>
-	<string name="error_technical">:warning: Problème technique. Réessayez !</string>
+	<string name="error_technical">:warning: Problème technique.</string>
 	<string name="error_no_network">:satellite: Aucune connection.</string>
 	
 	<!-- Image Picker -->

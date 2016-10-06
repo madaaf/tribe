@@ -14,7 +14,7 @@
 	
 	<!-- Errors -->
 	<string name="error_unknown">:bird: Something went wrong. Try again in 30s.</string>
-	<string name="error_technical">:warning: Technical turbulence. Try again!</string>
+	<string name="error_technical">:warning: Technical turbulence.</string>
 	<string name="error_no_network">:satellite: No Internet here.</string>
 	
 	<!-- Image Picker -->
