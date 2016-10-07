@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.component;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -99,7 +100,7 @@ public class PhoneNumberView extends FrameLayout {
         countryCode = codeCountry;
 
         try {
-            Drawable countryFlagImg = context.getResources().getDrawable(R.drawable.class.getField("picto_flag_" + codeCountry.toLowerCase()).getInt(null));
+            Drawable countryFlagImg = ContextCompat.getDrawable(getContext(), R.drawable.class.getField("picto_flag_" + codeCountry.toLowerCase()).getInt(null));
             imgCountryCode.setImageDrawable(countryFlagImg);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -157,11 +158,11 @@ public class PhoneNumberView extends FrameLayout {
 
     public void setNextEnabled(boolean enabled) {
         if (enabled) {
-            imageViewNextIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.picto_next_icon_black));
+            imageViewNextIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_next_icon_black));
             imageViewNextIcon.setClickable(true);
             imageViewNextIcon.setEnabled(true);
         } else {
-            imageViewNextIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.picto_next_icon));
+            imageViewNextIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_next_icon));
             imageViewNextIcon.setClickable(false);
             imageViewNextIcon.setEnabled(false);
         }

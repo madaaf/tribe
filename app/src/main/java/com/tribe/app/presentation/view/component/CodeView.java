@@ -9,6 +9,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
+import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
@@ -20,6 +21,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import rx.Observable;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * CodeView.java
@@ -67,7 +69,9 @@ public class CodeView extends FrameLayout {
 
     // OBSERVABLES
     private Unbinder unbinder;
+    private CompositeSubscription subscriptions = new CompositeSubscription();
     private PublishSubject<Boolean> codeValid = PublishSubject.create();
+    private PublishSubject<Void> backClicked = PublishSubject.create();
 
     public CodeView(Context context) {
         super(context);
@@ -77,9 +81,6 @@ public class CodeView extends FrameLayout {
         super(context, attrs);
     }
 
-    public CodeView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public CodeView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
@@ -94,6 +95,11 @@ public class CodeView extends FrameLayout {
     protected void onDetachedFromWindow() {
         unbinder.unbind();
         super.onDetachedFromWindow();
+
+        if (subscriptions.hasSubscriptions()) {
+            subscriptions.unsubscribe();
+            subscriptions.clear();
+        }
     }
 
     @Override
@@ -106,7 +112,7 @@ public class CodeView extends FrameLayout {
         imgConnectedIcon.setScaleX(0);
         imgConnectedIcon.setScaleY(0);
 
-        RxTextView.textChanges(editTextCode).map(CharSequence::toString)
+        subscriptions.add(RxTextView.textChanges(editTextCode).map(CharSequence::toString)
                 .map(s -> {
                     switch (s.length()) {
                         case 0:
@@ -151,7 +157,13 @@ public class CodeView extends FrameLayout {
 
                     return s.length() == 4;
                 })
-                .subscribe(codeValid);
+                .subscribe(codeValid));
+
+        subscriptions.add(RxView.clicks(imgBackIcon).subscribe(aVoid -> {
+            resetPinCodeView();
+            backClicked.onNext(null);
+        }));
+
     }
 
     /**
@@ -160,6 +172,10 @@ public class CodeView extends FrameLayout {
 
     public Observable<Boolean> codeValid() {
         return codeValid;
+    }
+
+    public Observable<Void> backClicked() {
+        return backClicked;
     }
 
     /**
@@ -178,9 +194,6 @@ public class CodeView extends FrameLayout {
         }
     }
 
-    public ImageView getBackIcon() {
-        return imgBackIcon;
-    }
 
     public void animateConnectedIcon() {
         AnimationUtils.scaleIn(imgConnectedIcon, 300);
@@ -204,6 +217,17 @@ public class CodeView extends FrameLayout {
                 .alpha(0)
                 .setStartDelay(0)
                 .start();
+    }
+
+    private void resetPinCodeView() {
+        pinCircle1.setVisibility(VISIBLE);
+        pinCircle2.setVisibility(VISIBLE);
+        pinCircle3.setVisibility(VISIBLE);
+        pinCircle4.setVisibility(VISIBLE);
+        txtCode1.setText("");
+        txtCode2.setText("");
+        txtCode3.setText("");
+        txtCode4.setText("");
     }
 
 }
