@@ -214,39 +214,35 @@ public class SearchFriendsView extends FrameLayout {
         Log.d(TAG, "removeLoc: " + removeLoc);
         Log.d(TAG, "currColumn: " + currColumn);
         fadeImageAndRemoveFromLayout(removeLoc);
-        Observable.timer(animationDuration+1, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(time -> {
-                    if (currentRow > 1) {
-                        if (searchMoved && roomToMoveRight(editTextSearch, layoutUserPicContainer.getChildAt(size-1))) {
-                            searchMoved = false;
-                            collapseViewAndMoveSearch();
-                        } else if (!searchMoved) {
-                            moveSearch(moveRightPixels * (currColumn-1));
-                        }
-                        backFullRow(currentRow, removeLoc);
-                        if (currColumn < 2) {
-                            currentRow--;
-                            currColumn = columnCount+1;
-                            searchMoved = true;
-                        }
-                    } else if (searchMoved) {
-                        moveImagesLeft(removeLoc);
-                        if (roomToMoveRight(editTextSearch, layoutUserPicContainer.getChildAt(size-1))) {
-                            searchMoved = false;
-                            collapseViewAndMoveSearch();
-                        }
-                    } else {
-                        if (currColumn > 1) {
-                            moveImagesAndSearchLeft(removeLoc);
-                        } else {
-                            moveSearch(moveRightPixels * (currColumn-1));
-                        }
-                    }
-                    Log.d(TAG, "currColumn: " + currColumn);
-                    Log.d(TAG, "currRow: " + currentRow);
-                });
+        if (currentRow > 1) {
+            if (searchMoved && roomToMoveRight(editTextSearch, layoutUserPicContainer.getChildAt(size - 1))) {
+                searchMoved = false;
+                collapseViewAndMoveSearch();
+            } else if (!searchMoved) {
+                moveSearch(moveRightPixels * (currColumn - 1));
+            }
+            backFullRow(currentRow, removeLoc);
+            if (currColumn < 2) {
+                currentRow--;
+                currColumn = columnCount + 1;
+                searchMoved = true;
+            }
+        } else if (searchMoved) {
+            moveImagesLeft(removeLoc);
+            if (roomToMoveRight(editTextSearch, layoutUserPicContainer.getChildAt(size - 1))) {
+                searchMoved = false;
+                collapseViewAndMoveSearch();
+            }
+        } else {
+            if (currColumn > 1) {
+                moveImagesAndSearchLeft(removeLoc);
+            } else {
+                moveSearch(moveRightPixels * (currColumn - 1));
+            }
+        }
+        Log.d(TAG, "currColumn: " + currColumn);
+        Log.d(TAG, "currRow: " + currentRow);
+
     }
 
     private int updateRemoveLocationMap(String friendId) {
@@ -337,7 +333,7 @@ public class SearchFriendsView extends FrameLayout {
                 }
                 int y = (i - 2) * moveRightPixels;
                 if (y == 0) y = imageMargin;
-                moveView(layoutUserPicContainer.getChildAt(idxMoveUp), screenUtils.getWidthPx() - imageMargin - moveRightPixels, y);
+                moveView(layoutUserPicContainer.getChildAt(idxMoveUp), screenUtils.getWidthPx()- moveRightPixels +imageMargin , y);
             }
         }
     }
@@ -367,6 +363,8 @@ public class SearchFriendsView extends FrameLayout {
     }
     private void fadeImageAndRemoveFromLayout(int loc) {
         View view = layoutUserPicContainer.getChildAt(loc);
+        layoutUserPicContainer.removeViewAt(loc);
+        layoutParent.addView(view, 0);
         view.animate()
                 .setDuration(animationDuration)
                 .setStartDelay(startDelay)
@@ -375,7 +373,7 @@ public class SearchFriendsView extends FrameLayout {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         super.onAnimationEnd(animation);
-                        layoutUserPicContainer.removeViewAt(loc);
+//                        layoutParent.removeViewAt(0);
                     }
                 })
                 .start();
