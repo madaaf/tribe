@@ -76,8 +76,6 @@ public abstract class AddAnimationAdapterDelegate<T> extends RxAdapterDelegate<T
                 animatorSet.start();
                 animations.put(vh, animatorSet);
                 clickAdd.onNext(vh.itemView);
-            } else {
-                clickRemove.onNext(vh.itemView);
             }
         });
     }

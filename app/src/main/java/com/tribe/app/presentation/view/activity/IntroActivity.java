@@ -23,6 +23,7 @@ import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.fragment.AccessFragment;
 import com.tribe.app.presentation.view.fragment.IntroViewFragment;
 import com.tribe.app.presentation.view.fragment.ProfileInfoFragment;
@@ -109,6 +110,7 @@ public class IntroActivity extends BaseActivity {
         lastMessageRequest.set("");
         lastUserRequest.set("");
         manageDeepLink(getIntent());
+        tagManager.trackEvent(TagManagerConstants.ONBOARDING_START);
     }
 
     @Override
@@ -185,6 +187,7 @@ public class IntroActivity extends BaseActivity {
     public void goToProfileInfo(User user, LoginEntity loginEntity) {
         profileInfoFragment.setLoginEntity(loginEntity);
         profileInfoFragment.setUser(user);
+        profileInfoFragment.setDeepLink(deepLink);
         viewPager.setCurrentItem(PAGE_PROFILE_INFO);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
     }

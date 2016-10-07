@@ -2,6 +2,7 @@ package com.tribe.app.data.repository.tribe.datasource;
 
 import android.content.Context;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
@@ -34,6 +35,7 @@ public class CloudTribeDataStore implements TribeDataStore {
     private final AccessToken accessToken;
     private final SimpleDateFormat simpleDateFormat;
     private final UserRealmDataMapper userRealmDataMapper;
+    private final Preference<Boolean> locationContext;
 
     /**
      * Construct a {@link TribeDataStore} based on connections to the api (Cloud).
@@ -44,7 +46,8 @@ public class CloudTribeDataStore implements TribeDataStore {
      * @param accessToken the access token
      */
     public CloudTribeDataStore(TribeCache tribeCache, UserCache userCache, TribeApi tribeApi, AccessToken accessToken,
-                               Context context, SimpleDateFormat simpleDateFormat, UserRealmDataMapper userRealmDataMapper) {
+                               Context context, SimpleDateFormat simpleDateFormat, UserRealmDataMapper userRealmDataMapper,
+                               Preference<Boolean> locationContext) {
         this.tribeCache = tribeCache;
         this.userCache = userCache;
         this.tribeApi = tribeApi;
@@ -52,6 +55,7 @@ public class CloudTribeDataStore implements TribeDataStore {
         this.accessToken = accessToken;
         this.simpleDateFormat = simpleDateFormat;
         this.userRealmDataMapper = userRealmDataMapper;
+        this.locationContext = locationContext;
     }
 
     @Override
@@ -63,7 +67,7 @@ public class CloudTribeDataStore implements TribeDataStore {
     public Observable<TribeRealm> sendTribe(TribeRealm tribeRealm) {
         String coordInput = "";
 
-        if (tribeRealm.getLocationRealm() != null && tribeRealm.getLocationRealm().hasLocation()) {
+        if (tribeRealm.getLocationRealm() != null && tribeRealm.getLocationRealm().hasLocation() && locationContext.get()) {
              coordInput = context.getString(R.string.tribe_coord_input,
                     tribeRealm.getLocationRealm().getLatitude(), tribeRealm.getLocationRealm().getLongitude());
         }

@@ -2,6 +2,7 @@ package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.UpdateMessagesJob;
+import com.tribe.app.data.network.job.UpdateScoreJob;
 import com.tribe.app.data.network.job.UpdateTribeListNotSeenStatusJob;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.domain.entity.Membership;
@@ -15,6 +16,7 @@ import com.tribe.app.domain.interactor.user.SendToken;
 import com.tribe.app.presentation.mvp.view.HomeView;
 import com.tribe.app.presentation.mvp.view.View;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.utils.ScoreUtils;
 
 import java.util.List;
 
@@ -101,6 +103,10 @@ public class HomePresenter implements Presenter {
     public void createMembership(String groupId) {
         createMembership.setGroupId(groupId);
         createMembership.execute(new CreateMembershipSubscriber());
+    }
+
+    public void updateScoreLocation() {
+        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.LOCATION));
     }
 
     @Override

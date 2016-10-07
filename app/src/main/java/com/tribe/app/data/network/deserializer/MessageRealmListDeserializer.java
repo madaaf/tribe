@@ -114,9 +114,11 @@ public class MessageRealmListDeserializer {
     protected List<TribeRealm> deserializeTribeRealmArray(JsonArray array) {
         List<TribeRealm> tribeRealmList = new ArrayList<>();
         for (JsonElement obj : array) {
-            TribeRealm tribeRealm = parseTribe(obj);
-            if (((tribeRealm.isToGroup() && tribeRealm.getMembershipRealm() != null) || !tribeRealm.isToGroup()))
-                tribeRealmList.add(tribeRealm);
+            if (obj != null && !(obj instanceof JsonNull)){
+                TribeRealm tribeRealm = parseTribe(obj);
+                if (((tribeRealm.isToGroup() && tribeRealm.getMembershipRealm() != null) || !tribeRealm.isToGroup()))
+                    tribeRealmList.add(tribeRealm);
+            }
         }
 
         for (TribeRealm tribeRealm : tribeRealmList) {

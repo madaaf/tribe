@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
@@ -22,7 +21,6 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
-import com.tribe.app.presentation.internal.di.scope.LocationPopup;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.HomeView;
@@ -70,10 +68,6 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
 
     @Inject
     ScreenUtils screenUtils;
-
-    @Inject
-    @LocationPopup
-    Preference<Boolean> locationPopup;
 
     @BindView(R.id.recyclerViewFriends)
     RecyclerView recyclerViewFriends;

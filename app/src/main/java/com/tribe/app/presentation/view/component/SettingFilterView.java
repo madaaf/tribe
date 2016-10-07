@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.ViewTreeObserver;
@@ -21,6 +22,8 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.internal.di.scope.Filter;
+import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 
 import javax.inject.Inject;
@@ -61,6 +64,9 @@ public class SettingFilterView extends FrameLayout {
     @Inject
     @Filter
     Preference<Integer> filter;
+
+    @Inject
+    TagManager tagManager;
 
     // OBSERVABLES
     private Unbinder unbinder;
@@ -129,24 +135,36 @@ public class SettingFilterView extends FrameLayout {
             setUpUnderline(imageFilter1, true);
             filter.set(0);
             updateFilter();
+            Bundle bundle = new Bundle();
+            bundle.putString(TagManagerConstants.FILTER_ENABLED, TagManagerConstants.FILTER_NONE);
+            tagManager.setProperty(bundle);
         }));
 
         subscriptions.add(RxView.clicks(imageFilter2).subscribe(aVoid -> {
             setUpUnderline(imageFilter2, true);
             filter.set(1);
             updateFilter();
+            Bundle bundle = new Bundle();
+            bundle.putString(TagManagerConstants.FILTER_ENABLED, TagManagerConstants.FILTER_TAN);
+            tagManager.setProperty(bundle);
         }));
 
         subscriptions.add(RxView.clicks(imageFilter3).subscribe(aVoid -> {
             setUpUnderline(imageFilter3, true);
             filter.set(2);
             updateFilter();
+            Bundle bundle = new Bundle();
+            bundle.putString(TagManagerConstants.FILTER_ENABLED, TagManagerConstants.FILTER_BLACK_WHITE);
+            tagManager.setProperty(bundle);
         }));
 
         subscriptions.add(RxView.clicks(imageFilter4).subscribe(aVoid -> {
             setUpUnderline(imageFilter4, true);
             filter.set(3);
             updateFilter();
+            Bundle bundle = new Bundle();
+            bundle.putString(TagManagerConstants.FILTER_ENABLED, TagManagerConstants.FILTER_PIXEL);
+            tagManager.setProperty(bundle);
         }));
     }
 

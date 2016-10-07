@@ -31,7 +31,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.Observable;
 import rx.subjects.PublishSubject;
 
 /**
@@ -180,15 +179,6 @@ public class SearchResultGridAdapterDelegate extends AddAnimationAdapterDelegate
         animatorSet.play(rotationAnim).with(scaleXAnim).with(scaleYAnim).with(alphaBG);
         animatorSet.start();
         animations.put(vh, animatorSet);
-    }
-
-    // OBSERVABLES
-    public Observable<View> onClickAdd() {
-        return clickAdd;
-    }
-
-    public Observable<View> onClickRemove() {
-        return clickRemove;
     }
 
     public class SearchResultViewHolder extends AddAnimationViewHolder {

@@ -10,6 +10,7 @@ public class TagManagerConstants {
      */
     public static final String ONBOARDING_APP_INSTALL = "Onboarding - App Install";
     public static final String ONBOARDING_OPEN_APP = "Onboarding - Open App";
+    public static final String ONBOARDING_START = "Onboarding - Start";
     public static final String ONBOARDING_SEND_PIN = "Onboarding - Send Pin";
     public static final String ONBOARDING_CONNECTION = "Onboarding - Connection";
     public static final String ONBOARDING_REGISTRATION = "Onboarding - Registration";
@@ -47,7 +48,10 @@ public class TagManagerConstants {
     public static final String TYPE_ERROR_NETWORK = "Network";
     public static final String TYPE_ERROR_TECHNICAL = "Technical";
     public static final String TYPE_PHONE = "Phone";
-
+    public static final String TYPE_DEEPLINK = "Deeplink";
+    public static final String TYPE_DEEPLINK_NONE = "None";
+    public static final String TYPE_DEEPLINK_USER = "User";
+    public static final String TYPE_DEEPLINK_GROUP = "Group";
 
     /**
      * USER PROPERTIES
@@ -57,6 +61,7 @@ public class TagManagerConstants {
     public static final String COUNT_GROUPS = "Groups";
     public static final String COUNT_GROUPS_CREATED = "Groups Created";
     public static final String COUNT_PROFILE_SHARES = "Profile Shares";
+    public static final String COUNT_INVITATIONS_SENT = "Invitations Sent";
     public static final String FILTER_ENABLED = "Filter Enabled";
     public static final String FILTER_NONE = "None";
     public static final String FILTER_TAN = "Tan";

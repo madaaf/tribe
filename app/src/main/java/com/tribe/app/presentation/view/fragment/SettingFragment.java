@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.fragment;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -9,16 +10,19 @@ import android.view.ViewGroup;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.jakewharton.rxbinding.view.RxView;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
+import com.tribe.app.presentation.internal.di.scope.LocationPopup;
 import com.tribe.app.presentation.internal.di.scope.Preload;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.mvp.presenter.SettingPresenter;
 import com.tribe.app.presentation.mvp.view.SettingView;
+import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.SettingActivity;
@@ -34,6 +38,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -93,6 +98,9 @@ public class SettingFragment extends BaseFragment implements SettingView {
 //    SettingItemView settingsSendToken;
 
     @Inject
+    ReactiveLocationProvider reactiveLocationProvider;
+
+    @Inject
     AccessToken accessToken;
 
     @Inject
@@ -102,6 +110,10 @@ public class SettingFragment extends BaseFragment implements SettingView {
     @Inject
     @LocationContext
     Preference<Boolean> locationContext;
+
+    @Inject
+    @LocationPopup
+    Preference<Boolean> locationPopup;
 
     @Inject
     @AudioDefault
@@ -185,12 +197,19 @@ public class SettingFragment extends BaseFragment implements SettingView {
         }));
 
         subscriptions.add(messageSettingContext.checkedSwitch().subscribe(isChecked -> {
-            LocationDialogFragment locationDialogFragment = LocationDialogFragment.newInstance();
-            locationDialogFragment.show(getFragmentManager(), LocationDialogFragment.class.getName());
-//            Bundle bundle = new Bundle();
-//            bundle.putBoolean(TagManagerConstants.LOCATION_ENABLED, isChecked);
-//            tagManager.setProperty(bundle);
-//            locationContext.set(isChecked);
+            if (isChecked && !locationPopup.get() && !PermissionUtils.hasPermissionsLocation(getActivity())) {
+                LocationDialogFragment locationDialogFragment = LocationDialogFragment.newInstance();
+                locationDialogFragment.show(getFragmentManager(), LocationDialogFragment.class.getName());
+                subscriptions.add(locationDialogFragment.onClickYes().subscribe(aVoid -> {
+                    locationPopup.set(true);
+                    settingPresenter.updateScoreLocation();
+                }));
+            }
+
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(TagManagerConstants.LOCATION_ENABLED, isChecked);
+            tagManager.setProperty(bundle);
+            locationContext.set(isChecked);
         }));
 
         subscriptions.add(messageSettingVoice.checkedSwitch().subscribe(isChecked -> {
@@ -225,7 +244,13 @@ public class SettingFragment extends BaseFragment implements SettingView {
         }));
 
         subscriptions.add(RxView.clicks(settingsAddress).subscribe(aVoid -> {
-            settingPresenter.lookupContacts();
+            RxPermissions.getInstance(getContext())
+                    .request(Manifest.permission.READ_CONTACTS)
+                    .subscribe(hasPermission -> {
+                        if (hasPermission) {
+                            settingPresenter.lookupContacts();
+                        }
+                    });
         }));
 
         subscriptions.add(settingsInvisible.checkedSwitch().subscribe(isChecked -> {
@@ -241,6 +266,7 @@ public class SettingFragment extends BaseFragment implements SettingView {
 
         subscriptions.add(RxView.clicks(settingsRateApp).subscribe(aVoid -> {
             navigator.rateApp(getActivity());
+            settingPresenter.updateScoreRateApp();
         }));
 
         subscriptions.add(RxView.clicks(settingsEmail).subscribe(aVoid -> {

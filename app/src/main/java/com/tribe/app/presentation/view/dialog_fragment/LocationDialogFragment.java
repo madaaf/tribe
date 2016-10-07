@@ -9,10 +9,13 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.jakewharton.rxbinding.view.RxView;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Location;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
@@ -22,6 +25,9 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -66,6 +72,9 @@ public class LocationDialogFragment extends BaseDialogFragment {
     @Inject
     User user;
 
+    @Inject
+    ReactiveLocationProvider reactiveLocationProvider;
+
     // VARIABLES
 
     // RESOURCES
@@ -73,6 +82,8 @@ public class LocationDialogFragment extends BaseDialogFragment {
 
     // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
+    private PublishSubject<Void> onClickYes = PublishSubject.create();
+    private PublishSubject<Void> onClickNo = PublishSubject.create();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -111,11 +122,34 @@ public class LocationDialogFragment extends BaseDialogFragment {
         pulsatorLayout.start();
 
         subscriptions.add(RxView.clicks(txtYes).subscribe(aVoid -> {
-            //navigator.shareHandle(user.getUsername(), getActivity());
+            subscriptions.add(RxPermissions.getInstance(getActivity())
+                    .request(PermissionUtils.PERMISSIONS_LOCATION)
+                    .subscribe(granted -> {
+                        if (granted) {
+                            subscriptions.add(reactiveLocationProvider
+                                    .getLastKnownLocation().subscribe(locationProvided -> {
+                                        if (locationProvided != null) {
+                                            Location location = new Location(locationProvided.getLongitude(), locationProvided.getLatitude());
+                                            location.setLatitude(location.getLatitude());
+                                            location.setLongitude(location.getLongitude());
+                                            location.setHasLocation(true);
+                                            location.setId(user.getId());
+                                            user.setLocation(location);
+                                        } else {
+                                            user.setLocation(null);
+                                        }
+                                    }));
+                        }
+                    }));
+
+            onClickYes.onNext(null);
+            onClickYes.onCompleted();
             dismiss();
         }));
 
         subscriptions.add(RxView.clicks(txtNo).subscribe(aVoid -> {
+            onClickNo.onNext(null);
+            onClickNo.onCompleted();
             dismiss();
         }));
 
@@ -129,6 +163,14 @@ public class LocationDialogFragment extends BaseDialogFragment {
         }
 
         txtPoints.setText(ScoreUtils.formatFloatingPoint(getContext(), ScoreUtils.Point.LOCATION.getPoints()) + " pts");
+    }
+
+    public Observable<Void> onClickYes() {
+        return onClickYes;
+    }
+
+    public Observable<Void> onClickNo() {
+        return onClickNo;
     }
 
     /**

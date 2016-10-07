@@ -2,11 +2,13 @@ package com.tribe.app.data.repository.tribe.datasource;
 
 import android.content.Context;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
+import com.tribe.app.presentation.internal.di.scope.LocationContext;
 
 import java.text.SimpleDateFormat;
 
@@ -27,10 +29,12 @@ public class TribeDataStoreFactory {
     private final AccessToken accessToken;
     private final SimpleDateFormat simpleDateFormat;
     private final UserRealmDataMapper userRealmDataMapper;
+    private final Preference<Boolean> locationContext;
 
     @Inject
     public TribeDataStoreFactory(Context context, TribeCache tribeCache, UserCache userCache, TribeApi tribeApi, AccessToken accessToken,
-                                 @Named("utcSimpleDate") SimpleDateFormat simpleDateFormat, UserRealmDataMapper userRealmDataMapper) {
+                                 @Named("utcSimpleDate") SimpleDateFormat simpleDateFormat, UserRealmDataMapper userRealmDataMapper,
+                                 @LocationContext Preference<Boolean> locationContext) {
         if (context == null || tribeCache == null) {
             throw new IllegalArgumentException("Constructor parameters cannot be null!");
         }
@@ -42,6 +46,7 @@ public class TribeDataStoreFactory {
         this.accessToken = accessToken;
         this.simpleDateFormat = simpleDateFormat;
         this.userRealmDataMapper = userRealmDataMapper;
+        this.locationContext = locationContext;
     }
 
     /**
@@ -54,6 +59,6 @@ public class TribeDataStoreFactory {
      */
     public TribeDataStore createCloudDataStore() {
         return new CloudTribeDataStore(this.tribeCache, this.userCache, this.tribeApi,
-                this.accessToken, this.context, this.simpleDateFormat, this.userRealmDataMapper);
+                this.accessToken, this.context, this.simpleDateFormat, this.userRealmDataMapper, this.locationContext);
     }
 }

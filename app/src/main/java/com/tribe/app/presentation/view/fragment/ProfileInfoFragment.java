@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.fragment;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -86,6 +87,7 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
     // VARIABLES
     private LoginEntity loginEntity;
     private FacebookEntity facebookEntity;
+    private Uri deepLink;
 
     /**
      * View Lifecycle
@@ -168,11 +170,24 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
     public void userRegistered(User user) {
         this.user.copy(user);
 
-        if (facebookEntity != null && !StringUtils.isEmpty(facebookEntity.getId())) {
-            tagManager.trackEvent(TagManagerConstants.ONBOARDING_REGISTRATION_FACEBOOK);
+        Bundle bundle = new Bundle();
+        if (deepLink != null && !StringUtils.isEmpty(deepLink.getPath())) {
+            if (deepLink.getPath().startsWith("/u/")) {
+                bundle.putString(TagManagerConstants.TYPE_DEEPLINK, TagManagerConstants.TYPE_DEEPLINK_USER);
+            } else if (deepLink.getPath().startsWith("/g/")) {
+                bundle.putString(TagManagerConstants.TYPE_DEEPLINK, TagManagerConstants.TYPE_DEEPLINK_GROUP);
+            }
         } else {
-            tagManager.trackEvent(TagManagerConstants.ONBOARDING_REGISTRATION);
+            bundle.putString(TagManagerConstants.TYPE_DEEPLINK, TagManagerConstants.TYPE_DEEPLINK_NONE);
         }
+
+        if (facebookEntity != null && !StringUtils.isEmpty(facebookEntity.getId())) {
+            tagManager.trackEvent(TagManagerConstants.ONBOARDING_REGISTRATION_FACEBOOK, bundle);
+        } else {
+            tagManager.trackEvent(TagManagerConstants.ONBOARDING_REGISTRATION, bundle);
+        }
+
+        tagManager.setProperty(bundle);
 
         profileInfoPresenter.updateUser(user.getUsername(), user.getDisplayName(), profileInfoView.getImgUri(),
                 facebookEntity != null && !StringUtils.isEmpty(facebookEntity.getId()) ? facebookEntity.getId() : null);
@@ -273,5 +288,9 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
             profileInfoView.setEditDisplayName(user.getDisplayName());
             profileInfoView.setEditUsername(user.getUsername());
         }
+    }
+
+    public void setDeepLink(Uri deepLink) {
+        this.deepLink = deepLink;
     }
 }

@@ -241,7 +241,9 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
                             contactsGridPresenter.notifyFBFriends();
                         } else if (buttonPoints.getType() == ButtonPointsView.PROFILE) {
                             tagManager.trackEvent(TagManagerConstants.USER_SHARE_PROFILE);
+                            tagManager.trackEvent(TagManagerConstants.COUNT_PROFILE_SHARES);
                             navigator.shareHandle(currentUser.getUsername(), getActivity());
+                            contactsGridPresenter.updateScoreShare();
                         }
                     }
                 }));
@@ -293,6 +295,8 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
                         Bundle bundle = new Bundle();
                         bundle.putString(TagManagerConstants.TYPE_PHONE, contact.getPhone());
                         tagManager.trackEvent(TagManagerConstants.KPI_INVITATIONS_SENT, bundle);
+                        tagManager.trackEvent(TagManagerConstants.COUNT_TRIBES_SENT);
+                        contactsGridPresenter.updateScoreInvite();
                     }
                 }));
 
@@ -373,6 +377,7 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
 
     @Override
     public void successFacebookLogin() {
+        contactsGridPresenter.updateScoreFBSync();
         contactsGridAdapter.startAnimateFB();
     }
 

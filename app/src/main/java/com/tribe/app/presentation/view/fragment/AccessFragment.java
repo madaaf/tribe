@@ -14,6 +14,7 @@ import android.widget.FrameLayout;
 import com.github.jinatonic.confetti.CommonConfetti;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tbruyelle.rxpermissions.RxPermissions;
+import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
@@ -197,7 +198,7 @@ public class AccessFragment extends BaseFragment implements AccessView {
         subscriptions.add(
                 textFriendsView
                         .onShareFB()
-                        .subscribe(aVoid -> navigator.openFacebookMessenger(getString(R.string.share_onboarding), getContext())));
+                        .subscribe(aVoid -> navigator.openFacebookMessenger(getString(R.string.share_onboarding, BuildConfig.TRIBE_URL), getContext())));
 
         subscriptions.add(
                 textFriendsView

@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import com.birbit.android.jobqueue.JobManager;
+import com.tribe.app.data.network.job.UpdateScoreJob;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
@@ -11,6 +13,7 @@ import com.tribe.app.presentation.mvp.view.SettingView;
 import com.tribe.app.presentation.mvp.view.UpdateUserView;
 import com.tribe.app.presentation.mvp.view.View;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
+import com.tribe.app.presentation.view.utils.ScoreUtils;
 
 import java.util.List;
 
@@ -26,6 +29,7 @@ public class SettingPresenter extends UpdateUserPresenter {
 
     private final RemoveInstall removeInstall;
     private final UseCase synchroContactList;
+    private JobManager jobManager;
 
     private LookupContactsSubscriber lookupContactsSubscriber;
 
@@ -34,10 +38,12 @@ public class SettingPresenter extends UpdateUserPresenter {
                      @Named("lookupByUsername") LookupUsername lookupUsername,
                      RxFacebook rxFacebook,
                      RemoveInstall removeInstall,
-                     @Named("synchroContactList") UseCase synchroContactList) {
+                     @Named("synchroContactList") UseCase synchroContactList,
+                     JobManager jobManager) {
         super(updateUser, lookupUsername, rxFacebook);
         this.removeInstall = removeInstall;
         this.synchroContactList = synchroContactList;
+        this.jobManager = jobManager;
     }
 
     @Override
@@ -84,6 +90,14 @@ public class SettingPresenter extends UpdateUserPresenter {
         if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
         lookupContactsSubscriber = new LookupContactsSubscriber();
         synchroContactList.execute(lookupContactsSubscriber);
+    }
+
+    public void updateScoreLocation() {
+        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.LOCATION));
+    }
+
+    public void updateScoreRateApp() {
+        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.RATE_APP));
     }
 
     public void goToLauncher() {

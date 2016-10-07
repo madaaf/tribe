@@ -143,6 +143,6 @@ public class DataModule {
     @Singleton
     @LocationPopup
     Preference<Boolean> provideLocationPopup(RxSharedPreferences prefs) {
-        return prefs.getBoolean(PreferencesConstants.LOCATION_CONTEXT, false);
+        return prefs.getBoolean(PreferencesConstants.LOCATION_POPUP, false);
     }
 }

@@ -166,6 +166,18 @@ public class ContactsGridPresenter implements Presenter {
         notifyFBFriends.execute(notifyFBFriendsSubscriber);
     }
 
+    public void updateScoreInvite() {
+        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.INVITE));
+    }
+
+    public void updateScoreShare() {
+        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.SHARE_PROFILE));
+    }
+
+    public void updateScoreFBSync() {
+        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.SYNCHRONIZE_FRIENDS));
+    }
+
     private final class ContactListSubscriber extends DefaultSubscriber<List<Contact>> {
 
         @Override

@@ -763,7 +763,11 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     @Override
     public void groupCreatedSuccessfully() {
+        Bundle bundle = new Bundle();
+        bundle.putString(TagManagerConstants.TYPE_TRIBE_GROUP, privateGroup ? TagManagerConstants.TYPE_GROUP_PRIVATE : TagManagerConstants.TYPE_GROUP_PUBLIC);
         tagManager.trackEvent(TagManagerConstants.KPI_GROUP_CREATED);
+
+        tagManager.increment(TagManagerConstants.COUNT_GROUPS_CREATED);
 
         createInviteView.loaded();
         animSet1();

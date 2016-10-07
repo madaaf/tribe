@@ -23,6 +23,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -36,10 +37,14 @@ import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
+import com.tribe.app.presentation.internal.di.scope.LocationContext;
+import com.tribe.app.presentation.internal.di.scope.LocationPopup;
 import com.tribe.app.presentation.mvp.presenter.HomePresenter;
 import com.tribe.app.presentation.mvp.view.HomeView;
 import com.tribe.app.presentation.utils.DeepLinkUtils;
+import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.dialog_fragment.LocationDialogFragment;
 import com.tribe.app.presentation.view.fragment.ContactsGridFragment;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
@@ -86,6 +91,14 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @Inject
     ScreenUtils screenUtils;
+
+    @Inject
+    @LocationPopup
+    Preference<Boolean> locationPopup;
+
+    @Inject
+    @LocationContext
+    Preference<Boolean> locationContext;
 
     @BindView(android.R.id.content)
     ViewGroup rootView;
@@ -296,6 +309,23 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     private void initPresenter() {
         this.homePresenter.attachView(this);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == TRIBES_RESULT) {
+            if (!locationContext.get() && !locationPopup.get() && !PermissionUtils.hasPermissionsLocation(this)) {
+                LocationDialogFragment locationDialogFragment = LocationDialogFragment.newInstance();
+                locationDialogFragment.show(getSupportFragmentManager(), LocationDialogFragment.class.getName());
+                subscriptions.add(locationDialogFragment.onClickYes().subscribe(aVoid -> {
+                    homePresenter.updateScoreLocation();
+                    locationPopup.set(true);
+                    locationContext.set(true);
+                }));
+            }
+        }
     }
 
     @Override
