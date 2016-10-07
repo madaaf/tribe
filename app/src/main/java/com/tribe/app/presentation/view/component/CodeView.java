@@ -224,6 +224,7 @@ public class CodeView extends FrameLayout {
         pinCircle2.setVisibility(VISIBLE);
         pinCircle3.setVisibility(VISIBLE);
         pinCircle4.setVisibility(VISIBLE);
+        editTextCode.setText("");
         txtCode1.setText("");
         txtCode2.setText("");
         txtCode3.setText("");
