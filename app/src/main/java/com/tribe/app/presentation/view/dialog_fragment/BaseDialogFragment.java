@@ -10,6 +10,7 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.animation.LinearInterpolator;
 
 import com.tribe.app.R;
@@ -48,6 +49,8 @@ public class BaseDialogFragment extends DialogFragment {
                 .getWindow()
                 .getDecorView();
 
+
+
         decorView.animate().translationY(100)
                 .setStartDelay(300)
                 .setDuration(150)
@@ -71,6 +74,7 @@ public class BaseDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.getWindow().getAttributes().windowAnimations = R.style.GetNotifiedAnimation;
+        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         return dialog;
     }
 

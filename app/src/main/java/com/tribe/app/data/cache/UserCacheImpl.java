@@ -461,10 +461,10 @@ public class UserCacheImpl implements UserCache {
             MembershipRealm membershipRealmDb = realm.where(UserRealm.class).equalTo("id", userId).findFirst()
                     .getMemberships().where().equalTo("id", membershipId).findFirst();
             String privateLink = membershipRealm.getLink();
-            String publicLink = membershipRealm.getGroup().getGroupLink();
+            String publicLink = membershipRealm.getGroup().getLink();
             Date privateLinkExpiration = membershipRealm.getLink_expires_at();
             if (privateLink != null) membershipRealmDb.setLink(privateLink);
-            if (publicLink != null) membershipRealmDb.getGroup().setGroupLink(publicLink);
+            if (publicLink != null) membershipRealmDb.getGroup().setLink(publicLink);
             if (privateLinkExpiration != null)
                 membershipRealmDb.setLink_expires_at(privateLinkExpiration);
             realm.commitTransaction();

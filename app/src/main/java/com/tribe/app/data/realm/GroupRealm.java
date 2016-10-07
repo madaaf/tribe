@@ -24,7 +24,7 @@ public class GroupRealm extends RealmObject {
 
     private String name;
     private String picture;
-    private String groupLink;
+    private String link;
     private boolean privateGroup;
     private Date created_at;
     private Date updated_at;
@@ -55,12 +55,12 @@ public class GroupRealm extends RealmObject {
         this.picture = picture;
     }
 
-    public String getGroupLink() {
-        return groupLink;
+    public String getLink() {
+        return link;
     }
 
-    public void setGroupLink(String groupLink) {
-        this.groupLink = groupLink;
+    public void setLink(String groupLink) {
+        this.link = groupLink;
     }
 
     public boolean isPrivateGroup() {
