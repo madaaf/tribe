@@ -153,6 +153,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     // Animation Variables
     private int moveUpY = 138;
     private int currentEditTranslation;
+    private int appBarLayoutTranslation = 130;
     private int layoutCreateInviteInfoPositionY = 255;
     private int startTranslationDoneIcon = 200;
     private int animDuration = AnimationUtils.ANIMATION_DURATION_SHORT;
@@ -519,7 +520,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         groupPictureUri = null;
         createInviteView.setDefault();
         createInviteView.disable();
-        AnimationUtils.animateHeightCoordinatorLayout(appBarLayout, appBarLayout.getHeight(), appBarLayout.getHeight() + screenUtils.dpToPx(116), 0);
+        AnimationUtils.animateHeightCoordinatorLayout(appBarLayout, appBarLayout.getHeight(), appBarLayout.getHeight() + screenUtils.dpToPx(appBarLayoutTranslation), 0);
         groupInfoView.resetPrivatePublic();
         imageDone.setEnabled(true);
         createInviteView.setTranslationY(AnimationUtils.TRANSLATION_RESET);
@@ -532,7 +533,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     private void animSet2() {
         AnimationUtils.animateHeightCoordinatorLayout(appBarLayout,
-                appBarLayout.getHeight(), appBarLayout.getHeight() - screenUtils.dpToPx(116),
+                appBarLayout.getHeight(), appBarLayout.getHeight() - screenUtils.dpToPx(appBarLayoutTranslation),
                 animDuration);
         createInviteView.animate()
                 .translationY(-screenUtils.dpToPx(moveUpY))
