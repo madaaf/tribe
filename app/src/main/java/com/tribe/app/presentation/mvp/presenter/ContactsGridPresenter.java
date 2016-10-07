@@ -216,7 +216,6 @@ public class ContactsGridPresenter implements Presenter {
 
         @Override
         public void onCompleted() {
-            System.out.println("COMPLETED");
         }
 
         @Override
@@ -234,7 +233,6 @@ public class ContactsGridPresenter implements Presenter {
 
         @Override
         public void onCompleted() {
-            System.out.println("COMPLETED");
         }
 
         @Override
@@ -256,7 +254,6 @@ public class ContactsGridPresenter implements Presenter {
 
         @Override
         public void onCompleted() {
-            System.out.println("COMPLETED");
         }
 
         @Override
@@ -266,7 +263,6 @@ public class ContactsGridPresenter implements Presenter {
 
         @Override
         public void onNext(Void aVoid) {
-            System.out.println("Friendship deleted");
         }
     }
 

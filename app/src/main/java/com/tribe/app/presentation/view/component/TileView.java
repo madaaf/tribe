@@ -238,7 +238,6 @@ public class TileView extends SquareFrameLayout {
     private void prepareTouchesTile() {
         setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                System.out.println("DOWN");
                 if (isDown) return false;
 
                 if (timer != null) timer.unsubscribe();
@@ -247,7 +246,6 @@ public class TileView extends SquareFrameLayout {
                     isTapToCancel = (Boolean) getTag(R.id.is_tap_to_cancel);
 
                 if (isTapToCancel) {
-                    System.out.println("Tap To Cancel");
                     clickTapToCancel.onNext(this);
                     resetViewAfterTapToCancel(false);
                     return false;
@@ -263,8 +261,6 @@ public class TileView extends SquareFrameLayout {
                                 if ((System.currentTimeMillis() - longDown) >= LONG_PRESS && isDown
                                         && Math.abs(currentX - downX) < diffDown
                                         && Math.abs(currentY - downY) < diffDown) {
-                                    System.out.println("Launching recording");
-
                                     isRecording = true;
                                     isTapToCancel = false;
 
@@ -299,16 +295,10 @@ public class TileView extends SquareFrameLayout {
             } else if (event.getAction() == MotionEvent.ACTION_UP) {
                 if (timer != null) timer.unsubscribe();
 
-                System.out.println("up");
-
                 if ((System.currentTimeMillis() - longDown) >= LONG_PRESS && isDown && isRecording) {
-
-                    System.out.println("Stop recording");
                     recordEnded.onNext(this);
                     isRecording = false;
                 } else if (isDown && (System.currentTimeMillis() - longDown) <= LONG_PRESS) {
-
-                    System.out.println("Open tribes");
                     if ((type == TYPE_GRID || type == TYPE_SUPPORT)) {
                         clickOpenTribes.onNext(this);
                     } else {
@@ -320,7 +310,6 @@ public class TileView extends SquareFrameLayout {
 
                 isDown = false;
             } else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
-                System.out.println("cancel");
                 isDown = false;
             }
 
@@ -476,7 +465,6 @@ public class TileView extends SquareFrameLayout {
     }
 
     public void resetViewAfterTapToCancel(boolean hasFinished) {
-        System.out.println("ResetView");
         if (isTapToCancel) {
             if (hasFinished) AnimationUtils.scaleDown(imgDone, SCALE_DURATION, new DecelerateInterpolator());
             else AnimationUtils.scaleDown(imgCancel, SCALE_DURATION, new DecelerateInterpolator());
@@ -523,7 +511,7 @@ public class TileView extends SquareFrameLayout {
     }
 
     private void showSending() {
-        txtSending.setText(R.string.Grid_User_Sending);
+        txtSending.setText(R.string.grid_friendship_status_sending);
 
         AnimationUtils.fadeIn(txtSending, 0);
     }
@@ -672,7 +660,6 @@ public class TileView extends SquareFrameLayout {
 //    }
 
     public void showTapToCancel(TribeMessage tribe, @CameraWrapper.TribeMode String tribeMode) {
-        System.out.println("Show tap to cancel");
         currentTribe = tribe;
         currentTribeMode = tribeMode;
 
@@ -693,7 +680,6 @@ public class TileView extends SquareFrameLayout {
     }
 
     private void animateTapToCancel() {
-        System.out.println("Animate tap to cancel");
         AnimationUtils.fadeIn(viewForeground, 0);
         ((TransitionDrawable) ((LayerDrawable) viewForeground.getBackground()).getDrawable(0)).startTransition(FADE_DURATION);
         AnimationUtils.scaleUp(imgCancel, SCALE_DURATION, new OvershootInterpolator(OVERSHOOT));

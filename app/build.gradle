@@ -122,7 +122,7 @@ android {
         }
 
         release {
-            debuggable false
+            debuggable true
             signingConfig signingConfigs.release
             resValue "string", "app_name", "Tribe"
             resValue "string", "tribe_url_filter", "\"${tribe_url_filter}\""

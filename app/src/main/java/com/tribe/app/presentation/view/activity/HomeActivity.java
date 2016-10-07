@@ -255,7 +255,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             RxPermissions.getInstance(this)
                     .request(PERMISSIONS_CAMERA)
                     .subscribe(granted -> {
-                        if (granted) cameraWrapper.onResume(true);
+                        if (granted) {
+                            homePresenter.updateScoreCamera();
+                            cameraWrapper.onResume(true);
+                        }
                         else cameraWrapper.showPermissions();
                     });
         }));

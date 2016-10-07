@@ -118,7 +118,7 @@
         android:layout_gravity="center_horizontal|top"
         android:layout_marginTop="@dimen/vertical_margin_small"
         style="@style/Title.2"
-        android:text="@string/Tribe.Swipe.Down"
+        android:text="@string/tribe_gesture_close_text"
         android:alpha="0"
         />
 

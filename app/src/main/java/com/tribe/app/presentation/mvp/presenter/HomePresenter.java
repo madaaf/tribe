@@ -109,6 +109,10 @@ public class HomePresenter implements Presenter {
         jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.LOCATION));
     }
 
+    public void updateScoreCamera() {
+        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.CAMERA));
+    }
+
     @Override
     public void attachView(View v) {
         homeView = (HomeView) v;

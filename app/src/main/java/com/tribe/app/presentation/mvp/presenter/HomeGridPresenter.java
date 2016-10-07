@@ -20,6 +20,7 @@ import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.DiskMarkTribeListAsRead;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.domain.interactor.user.DiskUpdateFriendship;
+import com.tribe.app.domain.interactor.user.DoBootstrapSupport;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.LeaveGroup;
 import com.tribe.app.domain.interactor.user.RemoveGroup;
@@ -47,10 +48,12 @@ public class HomeGridPresenter extends SendTribePresenter {
     private DiskUpdateFriendship diskUpdateFriendship;
     private final LeaveGroup leaveGroup;
     private final RemoveGroup removeGroup;
+    private final DoBootstrapSupport doBootstrapSupport;
 
     // SUBSCRIBERS
     private TribePendingListSubscriber tribePendingListSubscriber;
     private FriendListSubscriber friendListSubscriber;
+    private BootstrapSupportSubscriber bootstrapSupportSubscriber;
 
     @Inject
     public HomeGridPresenter(JobManager jobManager,
@@ -62,7 +65,8 @@ public class HomeGridPresenter extends SendTribePresenter {
                              @Named("diskMarkTribeListAsRead") DiskMarkTribeListAsRead diskMarkTribeListAsRead,
                              LeaveGroup leaveGroup,
                              RemoveGroup removeGroup,
-                             DiskUpdateFriendship diskUpdateFriendship) {
+                             DiskUpdateFriendship diskUpdateFriendship,
+                             DoBootstrapSupport bootstrapSupport) {
         super(jobManager, diskSaveTribe, diskDeleteTribe);
         this.diskUserInfosUsecase = diskUserInfos;
         this.diskGetMessageReceivedListUsecase = diskGetReceivedMessageList;
@@ -71,6 +75,7 @@ public class HomeGridPresenter extends SendTribePresenter {
         this.leaveGroup = leaveGroup;
         this.removeGroup = removeGroup;
         this.diskUpdateFriendship = diskUpdateFriendship;
+        this.doBootstrapSupport = bootstrapSupport;
     }
 
     @Override
@@ -176,6 +181,14 @@ public class HomeGridPresenter extends SendTribePresenter {
     public void removeGroup(String groupId) {
         removeGroup.prepare(groupId);
         removeGroup.execute(new RemoveGroupSubscriber());
+    }
+
+    public void boostrapSupport() {
+        if (bootstrapSupportSubscriber != null)
+            bootstrapSupportSubscriber.unsubscribe();
+
+        bootstrapSupportSubscriber = new BootstrapSupportSubscriber();
+        doBootstrapSupport.execute(bootstrapSupportSubscriber);
     }
 
     @Override
@@ -285,6 +298,23 @@ public class HomeGridPresenter extends SendTribePresenter {
         @Override
         public void onNext(Friendship friendship) {
             homeGridView.onFriendshipUpdated(friendship);
+        }
+    }
+
+    private class BootstrapSupportSubscriber extends DefaultSubscriber<Void> {
+
+        @Override
+        public void onCompleted() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(Void aVoid) {
+
         }
     }
 }

@@ -207,11 +207,20 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
                 shouldReloadGrid = false;
                 reloadGrid();
             } else {
+                //boolean hasSupport = false;
                 for (Recipient recipient : recipientList) {
+                    //if (recipient instanceof Friendship) {
+                    //    if (recipient.getSubId() != null && recipient.getSubId().equals("XSUPPORT")) {
+                    //        hasSupport = true;
+                    //    }
+                    //}
+
                     if (recipient.getReceivedTribes() != null && recipient.getReceivedTribes().size() > 0) {
                         homeGridPresenter.downloadMessages(recipient.getReceivedTribes().toArray(new TribeMessage[recipient.getReceivedTribes().size()]));
                     }
                 }
+
+                //if (!hasSupport) homeGridPresenter.boostrapSupport();
             }
 
             Bundle bundle = new Bundle();
@@ -384,10 +393,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
                 .doOnNext(recipient -> {
                     isRecording = false;
                     TileView tileView = (TileView) layoutManager.findViewByPosition(recipient.getPosition());
-                    System.out.println("TIME : " + (System.currentTimeMillis() - timeRecording));
-                    System.out.println("currentTribe : " + recipient.getTribe());
                     if ((System.currentTimeMillis() - timeRecording) > TIME_MIN_RECORDING) {
-                        System.out.println("HEY");
                         tileView.showTapToCancel(recipient.getTribe(), tribeMode);
                         recyclerViewFriends.requestDisallowInterceptTouchEvent(false);
                     } else {
@@ -445,7 +451,6 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
     }
 
     private void cleanupCurrentTribe(Recipient recipient) {
-        System.out.println("currentTribe bis : " + recipient.getTribe());
         homeGridPresenter.deleteTribe(recipient.getTribe());
         homeGridAdapter.updateItemWithTribe(recipient.getPosition(), null);
     }
@@ -456,11 +461,11 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
         }
 
         List<LabelType> moreTypes = new ArrayList<>();
-        moreTypes.add(new MoreType(getString(R.string.grid_more_clear_all_messages), MoreType.CLEAR_MESSAGES));
+        moreTypes.add(new MoreType(getString(R.string.grid_menu_friendship_clear_tribes), MoreType.CLEAR_MESSAGES));
 
         if (recipient instanceof Friendship) {
-            moreTypes.add(new MoreType(getString(R.string.grid_more_hide), MoreType.HIDE));
-            moreTypes.add(new MoreType(getString(R.string.grid_more_block_hide), MoreType.BLOCK_HIDE));
+            moreTypes.add(new MoreType(getString(R.string.grid_menu_friendship_hide), MoreType.HIDE));
+            moreTypes.add(new MoreType(getString(R.string.grid_menu_friendship_block), MoreType.BLOCK_HIDE));
         }
 
         if (recipient instanceof Membership) {

@@ -377,7 +377,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
     public void deleteConversation() {
         DialogFactory.createConfirmationDialog(this, getString(R.string.chat_erase_conversation_title),
                     getString(R.string.chat_erase_conversation_message),
-                    getString(R.string.common_delete),
+                    getString(R.string.action_delete),
                     (dialog, which) -> chatPresenter.deleteConversation(recipient.getSubId()))
                 .show();
     }

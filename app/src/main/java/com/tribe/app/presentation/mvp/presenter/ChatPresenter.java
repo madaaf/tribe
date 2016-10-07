@@ -244,8 +244,6 @@ public class ChatPresenter implements Presenter {
     }
 
     public void sendTypingEvent() {
-        // TODO REAL TIME
-        System.out.println("Typing !");
     }
 
     public void markMessageListAsRead(Recipient recipient, List<ChatMessage> messageList) {
@@ -269,7 +267,6 @@ public class ChatPresenter implements Presenter {
 
         @Override
         public void onCompleted() {
-            System.out.println("ON COMPLETED SUBSCRIBE");
             subscribingMQTT.setTopic("^chats/" + friendId + ".*");
             subscribingMQTT.execute(new ListenSubscribingMQTTSubscriber());
         }
@@ -281,7 +278,6 @@ public class ChatPresenter implements Presenter {
 
         @Override
         public void onNext(IMqttToken token) {
-            System.out.println("ON NEXT SUBSCRIBE");
         }
     }
 
@@ -289,7 +285,6 @@ public class ChatPresenter implements Presenter {
 
         @Override
         public void onCompleted() {
-            System.out.println("ON COMPLETED MESSAGE");
         }
 
         @Override
@@ -307,7 +302,6 @@ public class ChatPresenter implements Presenter {
 
         @Override
         public void onCompleted() {
-            System.out.println("ON NEXT DISCONNECT");
         }
 
         @Override
@@ -317,7 +311,6 @@ public class ChatPresenter implements Presenter {
 
         @Override
         public void onNext(IMqttToken token) {
-            System.out.println("ON NEXT DISCONNECT");
         }
     }
 

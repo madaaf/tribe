@@ -24,10 +24,10 @@ public class ErrorMessageFactory {
     public static String create(Context context, Exception exception) {
         exception.printStackTrace();
 
-        String message = context.getString(R.string.exception_message_generic);
+        String message = context.getString(R.string.error_unknown);
 
         if (exception instanceof NetworkConnectionException) {
-            message = context.getString(R.string.exception_message_no_connection);
+            message = context.getString(R.string.error_no_network);
         }
 
         return message;

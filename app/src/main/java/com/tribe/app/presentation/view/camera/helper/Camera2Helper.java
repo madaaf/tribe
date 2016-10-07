@@ -583,8 +583,6 @@ public class Camera2Helper implements CameraHelper {
             result = (info.orientation - degrees + 360) % 360;
         }
 
-        System.out.println("OPTIMAL ORIENTATION : " + result);
-
         return result;
     }
 

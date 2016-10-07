@@ -191,7 +191,7 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
     }
 
     private void initPlayerView() {
-        //videoViewIntro.createPlayer("asset:///video/onboarding_video.mp4");
+        videoViewIntro.createPlayer("asset:///video/onboarding_video.mp4");
     }
 
     private void initPhoneNumberView() {

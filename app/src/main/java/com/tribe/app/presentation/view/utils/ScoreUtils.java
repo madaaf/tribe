@@ -63,8 +63,7 @@ public class ScoreUtils {
         SHARE_PROFILE           ("SHARE_PROFILE", R.string.points_ShareProfile_title, R.string.points_ShareProfile_description, 300, R.drawable.picto_share),
         LOCATION                ("ENABLE_LOCATION", R.string.points_LocationPermission_title, R.string.points_LocationPermission_description, 350, R.drawable.picto_location),
         SYNCHRONIZE_FRIENDS     ("SYNC_FACEBOOK", R.string.points_ConnectFacebook_title, R.string.points_ConnectFacebook_description, 350, R.drawable.picto_points_facebook),
-        INVITE_FACEBOOK         ("FB_INVITE_ALL", R.string.points_InviteFacebookFriends_title, R.string.points_InviteFacebookFriends_description, 1500, R.drawable.picto_points_facebook),
-        GROUP_100_MEMBERS       ("", R.string.points_HundredGroupMembers_title, R.string.points_HundredGroupMembers_description, 2000, R.drawable.picto_points_public_group);
+        INVITE_FACEBOOK         ("FB_INVITE_ALL", R.string.points_InviteFacebookFriends_title, R.string.points_InviteFacebookFriends_description, 1500, R.drawable.picto_points_facebook);
 
         private final String serverKey;
         private final int stringLabelId;

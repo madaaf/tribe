@@ -365,7 +365,6 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
 
     @Override
     public void setDisplayOrientation(final int degrees) {
-        System.out.println("Display Orientation set : " + degrees);
         getCamera().setDisplayOrientation(degrees);
     }
 
@@ -437,8 +436,6 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
         } else {  // back-facing
             result = (info.orientation - degrees + 360) % 360;
         }
-
-        System.out.println("OPTIMAL ORIENTATION : " + result);
 
         return result;
     }

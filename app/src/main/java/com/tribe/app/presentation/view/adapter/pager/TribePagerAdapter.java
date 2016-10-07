@@ -50,8 +50,6 @@ public class TribePagerAdapter extends PagerAdapter {
         View itemView = layoutInflater.inflate(R.layout.item_tribe, container, false);
         TribeMessage tribe = tribeList.get(position);
 
-        System.out.println("Instantiate Item : " + position);
-
         TribeComponentView tribeComponentView = (TribeComponentView) itemView.findViewById(R.id.viewTribe);
         tribeComponentView.setTag(position);
         tribeComponentView.setColor(color);
@@ -74,7 +72,6 @@ public class TribePagerAdapter extends PagerAdapter {
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object obj) {
-        System.out.println("Detroy Item : " + position);
         container.removeView((View) obj);
     }
 

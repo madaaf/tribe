@@ -186,7 +186,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
                 labelCity.setVisibility(View.GONE);
             }
 
-            labelLocation.setText(currentUser.getLocation() != null ? currentUser.getLocation().distanceTo(getContext(), distanceUnits.get(), tribe.getLocation()) : getContext().getString(R.string.tribe_distance_enable));
+            labelLocation.setText(currentUser.getLocation() != null ? currentUser.getLocation().distanceTo(getContext(), distanceUnits.get(), tribe.getLocation()) : getContext().getString(R.string.tribe_metadata_activate_location));
 
             if (tribe.getWeather() != null) {
                 labelWeather.setVisibility(View.VISIBLE);
@@ -248,9 +248,6 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     }
 
     public void showProgress() {
-        System.out.println("PROGRESS : " + tribe.getProgress());
-        System.out.println("TOTAL SIZE : " + tribe.getTotalSize());
-
         if (layoutDownloadProgress.getVisibility() == View.GONE) {
             layoutDownloadProgress.setVisibility(View.VISIBLE);
         }
@@ -283,9 +280,6 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     }
 
     public void play() {
-        System.out.println("Tribe : " + tribe);
-        System.out.println("SurfaceTexture : " + surfaceTexture);
-        System.out.println("MediaPlayer : " + mediaPlayer);
         if (mediaPlayer != null) {
             mediaPlayer.play();
         } else {

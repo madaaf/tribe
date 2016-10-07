@@ -86,8 +86,6 @@ public class CloudTribeDataStore implements TribeDataStore {
         else
             request = context.getString(R.string.tribe_send_solo, tribeInput);
 
-        System.out.println("REQUEST : " + request);
-
         RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
 
         File file = new File(FileUtils.getPathForId(context, tribeRealm.getLocalId(), FileUtils.VIDEO));

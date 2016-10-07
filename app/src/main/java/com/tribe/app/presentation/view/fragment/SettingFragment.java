@@ -204,6 +204,10 @@ public class SettingFragment extends BaseFragment implements SettingView {
                     locationPopup.set(true);
                     settingPresenter.updateScoreLocation();
                 }));
+
+                subscriptions.add(locationDialogFragment.onClickNo().subscribe(aVoid -> {
+                    messageSettingContext.setCheckedSwitch(false);
+                }));
             }
 
             Bundle bundle = new Bundle();

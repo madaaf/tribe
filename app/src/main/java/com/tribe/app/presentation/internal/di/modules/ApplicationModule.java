@@ -196,8 +196,6 @@ public class ApplicationModule {
         if (results != null && results.size() > 0)
             accessToken = realm.copyFromRealm(results.get(0));
 
-        System.out.println("REFRESH TOKEN : " + accessToken.getRefreshToken());
-
         return accessToken;
     }
 

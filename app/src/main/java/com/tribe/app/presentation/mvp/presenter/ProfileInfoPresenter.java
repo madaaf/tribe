@@ -78,6 +78,7 @@ public class ProfileInfoPresenter extends UpdateUserPresenter {
         doRegister.unsubscribe();
         cloudUserInfos.unsubscribe();
         updateUser.unsubscribe();
+        bootstrapSupport.unsubscribe();
     }
 
     @Override

@@ -85,7 +85,7 @@ public class Location implements Serializable {
         String result = "";
 
         if (hasLocation && !locationDestDomain.hasLocation()) {
-            result = context.getString(R.string.tribe_distance_enable);
+            result = context.getString(R.string.tribe_metadata_activate_location);
         } else if (hasLocation && locationDestDomain.hasLocation()) {
             android.location.Location locationFrom = new android.location.Location("");
             locationFrom.setLongitude(this.getLongitude());

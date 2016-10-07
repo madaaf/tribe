@@ -92,10 +92,6 @@ public class PlayerView extends FrameLayout implements TextureView.SurfaceTextur
         }));
 
         subscriptions.add(mediaPlayer.onVideoSizeChanged().subscribe(videoSize -> {
-            System.out.println("Video Width : " + videoSize.getWidth());
-            System.out.println("Video Height : " + videoSize.getHeight());
-            System.out.println("Texture height : " + videoTextureView.getHeight());
-            System.out.println("Texture width : " + videoTextureView.getHeight());
             if (videoTextureView != null && videoTextureView.getContentHeight() != videoSize.getHeight()) {
                 videoTextureView.setContentWidth(videoSize.getWidth() * 2);
                 videoTextureView.setContentHeight(videoSize.getHeight() * 2);
