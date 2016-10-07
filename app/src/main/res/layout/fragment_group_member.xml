@@ -49,7 +49,7 @@
             android:layout_height="match_parent"
             android:hint="@string/group_members_search_placeholder"
             android:background="@null"
-            style="@style/Title.1.Black"
+            style="@style/Text.Input.Search"
              />
 
     </LinearLayout>

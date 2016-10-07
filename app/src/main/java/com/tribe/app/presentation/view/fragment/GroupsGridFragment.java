@@ -293,10 +293,10 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             groupInfoView.disableButtons();
             groupName = groupInfoView.getGroupName();
             groupPresenter.createGroup(groupName, memberIds, privateGroup, groupPictureUri);
-            createInviteView.loadingAnimation(AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
+            createInviteView.loadingAnimation(CreateInviteView.STATUS_CREATING_GROUP, AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
         }));
 
-        setupSearchView();
+
     }
 
     private void initGroupInfoUi(String membershipId, boolean isCurrentUserAdmin, String groupId, String groupName, String groupPicture, String groupLink, long groupLinkExpirationDate) {
@@ -373,12 +373,13 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             else if (privateGroup) {
                 groupPresenter.modifyPrivateGroupLink(membershipId, true);
                 createInviteView.disableInvite();
-                createInviteView.loadingAnimation(AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
+                createInviteView.loadingAnimation(CreateInviteView.STATUS_CREATING_LINK, AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
             }
             else navigator.shareGenericText(getString(R.string.share_group_public_link, groupName, groupLink), getContext());
         }));
 
         subscriptions.add(searchFriendsView.editTextSearchTextChanged().subscribe(this::filter));
+        setupSearchView();
     }
 
     @Override
@@ -503,7 +504,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         groupInfoView.setGroupName("");
         groupInfoView.bringOutIcons(0);
         groupInfoView.enableButtons();
-        groupInfoView.addMemberPhotoDrawable(null);
+        groupInfoView.setGroupPictureInvisible();
         groupPictureUri = null;
         createInviteView.setDefault();
         createInviteView.disable();
@@ -562,6 +563,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         if (groupLink != null) shareDialogFragment.show(getFragmentManager(), ShareDialogFragment.class.getName());
         subscriptions.add(shareDialogFragment.deletePressed().subscribe(aVoid -> {
             groupPresenter.modifyPrivateGroupLink(membershipId, false);
+            createInviteView.disableInvite();
+            createInviteView.loadingAnimation(CreateInviteView.STATUS_DELETING_LINK, AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
         }));
 
     }
@@ -618,9 +621,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     }
 
     private void setupSearchView() {
-        subscriptions.add(RxView.focusChanges(searchFriendsView).subscribe(aBoolean -> {
-            if (aBoolean) appBarLayout.setExpanded(false);
-        }));
         subscriptions.add(searchFriendsView.editTextSearchClicked().subscribe(aVoid -> {
             appBarLayout.setExpanded(false);
         }));

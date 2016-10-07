@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.view.component;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
@@ -27,6 +29,7 @@ import com.tribe.app.presentation.view.widget.EditTextFont;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -34,6 +37,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -118,18 +123,23 @@ public class SearchFriendsView extends FrameLayout {
         initAnimationConstants();
         initViewManagementConstants();
 
+        subscriptions.add(RxView.focusChanges(editTextSearch).subscribe(aBoolean -> {
+            if (aBoolean) editTextSearchClicked.onNext(null);
+        }));
+
         subscriptions.add(RxView.clicks(editTextSearch).subscribe(aVoid -> {
             editTextSearchClicked.onNext(null);
         }));
         subscriptions.add(RxTextView.textChanges(editTextSearch).subscribe(text -> {
             editTextSearchTextChanged.onNext(text.toString());
         }));
+
     }
 
     private void initAnimationConstants() {
         animationDuration = AnimationUtils.ANIMATION_DURATION_SHORT;
         startDelay = AnimationUtils.NO_START_DELAY;
-        imageMargin = getResources().getDimensionPixelOffset(R.dimen.vertical_margin_xsmall);
+        imageMargin = getResources().getDimensionPixelOffset(R.dimen.vertical_margin_smaller);
         imageSize = getResources().getDimensionPixelOffset(R.dimen.setting_pic_size);
         moveRightPixels = imageSize + imageMargin * 2;
         moveLeftPixels = -moveRightPixels;
@@ -204,34 +214,39 @@ public class SearchFriendsView extends FrameLayout {
         Log.d(TAG, "removeLoc: " + removeLoc);
         Log.d(TAG, "currColumn: " + currColumn);
         fadeImageAndRemoveFromLayout(removeLoc);
-        if (currentRow > 1) {
-            if (searchMoved && roomToMoveRight(editTextSearch, layoutUserPicContainer.getChildAt(size-1))) {
-                searchMoved = false;
-                collapseViewAndMoveSearch();
-            } else if (!searchMoved) {
-                moveSearch(moveRightPixels * (currColumn-1));
-            }
-            backFullRow(currentRow, removeLoc);
-            if (currColumn < 2) {
-                currentRow--;
-                currColumn = columnCount+1;
-                searchMoved = true;
-            }
-        } else if (searchMoved) {
-            moveImagesLeft(removeLoc);
-            if (roomToMoveRight(editTextSearch, layoutUserPicContainer.getChildAt(size-1))) {
-                searchMoved = false;
-                collapseViewAndMoveSearch();
-            }
-        } else {
-            if (currColumn > 1) {
-                moveImagesAndSearchLeft(removeLoc);
-            } else {
-                moveSearch(moveRightPixels * (currColumn-1));
-            }
-        }
-        Log.d(TAG, "currColumn: " + currColumn);
-        Log.d(TAG, "currRow: " + currentRow);
+        Observable.timer(animationDuration+1, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(time -> {
+                    if (currentRow > 1) {
+                        if (searchMoved && roomToMoveRight(editTextSearch, layoutUserPicContainer.getChildAt(size-1))) {
+                            searchMoved = false;
+                            collapseViewAndMoveSearch();
+                        } else if (!searchMoved) {
+                            moveSearch(moveRightPixels * (currColumn-1));
+                        }
+                        backFullRow(currentRow, removeLoc);
+                        if (currColumn < 2) {
+                            currentRow--;
+                            currColumn = columnCount+1;
+                            searchMoved = true;
+                        }
+                    } else if (searchMoved) {
+                        moveImagesLeft(removeLoc);
+                        if (roomToMoveRight(editTextSearch, layoutUserPicContainer.getChildAt(size-1))) {
+                            searchMoved = false;
+                            collapseViewAndMoveSearch();
+                        }
+                    } else {
+                        if (currColumn > 1) {
+                            moveImagesAndSearchLeft(removeLoc);
+                        } else {
+                            moveSearch(moveRightPixels * (currColumn-1));
+                        }
+                    }
+                    Log.d(TAG, "currColumn: " + currColumn);
+                    Log.d(TAG, "currRow: " + currentRow);
+                });
     }
 
     private int updateRemoveLocationMap(String friendId) {
@@ -331,7 +346,6 @@ public class SearchFriendsView extends FrameLayout {
         ImageView imageView = new ImageView(getContext());
         LinearLayout.LayoutParams imageViewLp = new LinearLayout.LayoutParams(imageSize, imageSize);
         imageView.setLayoutParams(imageViewLp);
-        imageView.setAlpha(AnimationUtils.ALPHA_NONE);
         layoutUserPicContainer.addView(imageView, 0);
         FrameLayout.LayoutParams imageViewFlp = (FrameLayout.LayoutParams) imageView.getLayoutParams();
         imageViewFlp.leftMargin = imageMargin;
@@ -344,6 +358,7 @@ public class SearchFriendsView extends FrameLayout {
                     .bitmapTransform(new CropCircleTransformation(getContext()))
                     .into(imageView);
         }
+        imageView.setAlpha(AnimationUtils.ALPHA_NONE);
         imageView.animate()
                 .setDuration(animationDuration)
                 .setStartDelay(startDelay)
@@ -356,8 +371,15 @@ public class SearchFriendsView extends FrameLayout {
                 .setDuration(animationDuration)
                 .setStartDelay(startDelay)
                 .alpha(AnimationUtils.ALPHA_NONE)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        layoutUserPicContainer.removeViewAt(loc);
+                    }
+                })
                 .start();
-        layoutUserPicContainer.removeViewAt(loc);
+
     }
 
     private void expandViewAndMoveSearch() {
@@ -414,6 +436,7 @@ public class SearchFriendsView extends FrameLayout {
     }
 
     private void moveView(View view, int xPosition, int yPosition) {
+        if (xPosition == 0) xPosition = imageMargin;
         view.animate()
                 .setDuration(animationDuration)
                 .setStartDelay(startDelay)
