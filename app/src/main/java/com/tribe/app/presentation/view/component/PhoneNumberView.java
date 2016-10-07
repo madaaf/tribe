@@ -89,6 +89,8 @@ public class PhoneNumberView extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.view_phone_number, this);
         unbinder = ButterKnife.bind(this);
 
+        countryCode = context.getResources().getConfiguration().locale.getCountry();
+
         subscriptions.add(RxView.clicks(countryButton)
                 .subscribe(countryClickEventSubject));
     }

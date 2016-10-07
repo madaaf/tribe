@@ -486,7 +486,7 @@ public class AccessFragment extends BaseFragment implements AccessView {
 
         if (currentUser.getFriendships() != null) {
             for (Friendship fr : currentUser.getFriendships()) {
-                if (!relationsInApp.containsKey(fr.getFriend().getId())) {
+                if (!relationsInApp.containsKey(fr.getFriend().getId()) && fr.getSubId() != null && !fr.getSubId().equals("XSUPPORT")) {
                     relationsInApp.put(fr.getFriend().getId(), fr.getFriend());
                 }
             }

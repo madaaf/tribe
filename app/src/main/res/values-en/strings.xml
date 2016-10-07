@@ -157,15 +157,15 @@
 	<string name="group_not_allowed_title">:nail_care: The Girls</string>
 	
 	<!-- Public Group -->
-	<string name="group_public_family_title">:house_with_garden: Family</string>
-	<string name="group_public_roomies_title">:pizza: Roomies</string>
-	<string name="group_public_bffs_title">:fire: Best friends</string>
-	<string name="group_public_abroad_title">:airplane: Friends abroad</string>
-	<string name="group_public_work_title">:briefcase: Work team</string>
-	<string name="group_public_classmates_title">:mortar_board: Classmates</string>
-	<string name="group_public_teammates_title">:trophy: Teammates</string>
-	<string name="group_public_baddest_title">:punch: Squad goals</string>
-	<string name="group_public_not_allowed_title">:nail_care: The Girls</string>
+	<string name="group_public_family_title">:loudspeaker: Election 2016</string>
+	<string name="group_public_roomies_title">:kimono: Yoga lovers</string>
+	<string name="group_public_bffs_title">:baseball: Major League Baseball Playoffs</string>
+	<string name="group_public_abroad_title">:football: NFL Fantasy Football</string>
+	<string name="group_public_work_title">:jack_o_lantern: Halloween costumes</string>
+	<string name="group_public_classmates_title">:nail_care: Celeb Gossip</string>
+	<string name="group_public_teammates_title">:muscle: Dab All Day</string>
+	<string name="group_public_baddest_title">:skull: Skate Or Die</string>
+	<string name="group_public_not_allowed_title">:key: Life hacks</string>
 	
 	<!-- Create group -->
 	<string name="group_create_title">Create group</string>

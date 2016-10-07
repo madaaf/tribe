@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
@@ -72,7 +73,7 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
         FriendViewHolder vh = (FriendViewHolder) holder;
         Friendship friendship = items.get(position);
         vh.txtDisplayName.setText(friendship.getDisplayName());
-        vh.txtUsername.setText("@" + friendship.getUsername());
+        if (!StringUtils.isEmpty(friendship.getUsername())) vh.txtUsername.setText("@" + friendship.getUsername());
         vh.layoutSelected.setBackground(ContextCompat.getDrawable(context, R.drawable.picto_oval));
         if (privateGroup) vh.imageSelected.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.picto_oval_green_fill));
         else vh.imageSelected.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.shape_oval_purple_fill));

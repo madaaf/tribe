@@ -23,6 +23,14 @@ public class EmojiParser {
         IEmojiMap.put(":pensive:", "\uD83D\uDE14");
         IEmojiMap.put(":dizzy:", "\uD83D\uDCAB");
         IEmojiMap.put(":house_with_garden:", "\uD83C\uDFE1");
+        IEmojiMap.put(":loudspeaker:", "\uD83D\uDCE2");
+        IEmojiMap.put(":kimono:", "\uD83D\uDC58");
+        IEmojiMap.put(":baseball:", "\u26BE");
+        IEmojiMap.put(":football:", "\uD83C\uDFC8");
+        IEmojiMap.put(":jack_o_lantern:", "\uD83C\uDF83");
+        IEmojiMap.put(":muscle:", "\uD83D\uDCAA");
+        IEmojiMap.put(":skull:", "\u2620");
+        IEmojiMap.put(":key:", "\uD83D\uDD11");
     }
 
     /**
