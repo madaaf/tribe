@@ -462,12 +462,16 @@
             createGroup(group: {
                 name : \"%1$s\",
    	            type : %2$s
-            }, members: [%3$s]
+            } %3$s
             ) {
                 ...GroupInfo
             }
         }
         %4$s
+    </string>
+
+    <string name="create.group.members" translatable="false">
+        , members: [%1$s]
     </string>
 
     <string name="update.group" translatable="false">

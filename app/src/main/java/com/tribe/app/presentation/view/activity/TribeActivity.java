@@ -379,4 +379,11 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
         return false;
     }
+
+    @Override
+    public void onBackPressed() {
+        tribePresenter.markTribeListAsRead(recipient, viewTribePager.getTribeListSeens());
+
+        super.onBackPressed();
+    }
 }

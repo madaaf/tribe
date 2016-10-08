@@ -20,23 +20,18 @@ import com.bumptech.glide.Glide;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.GroupMember;
-import com.tribe.app.presentation.mvp.view.GroupMemberView;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
 /**
@@ -80,7 +75,7 @@ public class GroupMemberAdapterDelegate extends RxAdapterDelegate<List<GroupMemb
         GroupMember groupMember = items.get(position);
         vh.btnAdd.setVisibility(View.VISIBLE);
         vh.txtDisplayName.setText(groupMember.getDisplayName());
-        vh.txtUsername.setText("@" + groupMember.getUsername());
+        if (!StringUtils.isEmpty(groupMember.getUsername())) vh.txtUsername.setText("@" + groupMember.getUsername());
 //        if (groupMember.isFriend()) vh.layoutSelected.setBackground(ContextCompat.getDrawable(context, R.drawable.picto_connected_icon));
 //        else vh.layoutSelected.setBackground(ContextCompat.getDrawable(context, R.drawable.picto_plus_black));
         if (groupMember.isShouldAnimateAddFriend()) {

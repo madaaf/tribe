@@ -871,7 +871,12 @@ public class CloudUserDataStore implements UserDataStore {
     public Observable<MembershipRealm> createGroup(String groupName, List<String> memberIds, Boolean isPrivate, String pictureUri) {
         String idList = listToJson(memberIds);
         String privateGroup = isPrivate ? "PRIVATE" : "PUBLIC";
-        final String request = context.getString(R.string.create_group, groupName, privateGroup, idList, context.getString(R.string.groupfragment_info));
+
+        String members = "";
+
+        if (memberIds != null && memberIds.size() > 0) members = context.getString(R.string.create_group_members, idList);
+
+        final String request = context.getString(R.string.create_group, groupName, privateGroup, !StringUtils.isEmpty(members) ? members : "", context.getString(R.string.groupfragment_info));
         if (pictureUri == null) {
             return this.tribeApi.createGroup(request)
                     .doOnNext(groupRealm -> userCache.insertGroup(groupRealm))
