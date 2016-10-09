@@ -36,6 +36,8 @@ public class DeviceUtils {
     static {
         NON_COMPATIBLE_DEVICES = new LinkedList<>();
         NON_COMPATIBLE_DEVICES.add(new NonCompatibleDevice("Amazon"));
+        NON_COMPATIBLE_DEVICES.add(new NonCompatibleDevice("Lenovo"));
+        NON_COMPATIBLE_DEVICES.add(new NonCompatibleDevice("Xiaomi"));
     }
 
     public static boolean supportsExoPlayer(@NonNull Context context) {

@@ -299,16 +299,20 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     private void animateProgress() {
         cancelProgress();
 
-        animatorProgress = ValueAnimator.ofInt(lastPosition != -1 ? (int) lastPosition : 0, screenUtils.getWidthPx());
-        animatorProgress.addUpdateListener(valueAnimator -> {
-            int val = (Integer) valueAnimator.getAnimatedValue();
-            ViewGroup.LayoutParams layoutParams = viewBGProgress.getLayoutParams();
-            layoutParams.width = val;
-            viewBGProgress.setLayoutParams(layoutParams);
-        });
+        long duration = mediaPlayer.getDuration();
 
-        animatorProgress.setDuration((int) (mediaPlayer.getDuration() / speedPlayack.get()));
-        animatorProgress.start();
+        if (duration != -1) {
+            animatorProgress = ValueAnimator.ofInt(lastPosition != -1 ? (int) lastPosition : 0, screenUtils.getWidthPx());
+            animatorProgress.addUpdateListener(valueAnimator -> {
+                int val = (Integer) valueAnimator.getAnimatedValue();
+                ViewGroup.LayoutParams layoutParams = viewBGProgress.getLayoutParams();
+                layoutParams.width = val;
+                viewBGProgress.setLayoutParams(layoutParams);
+            });
+
+            animatorProgress.setDuration((int) (duration / speedPlayack.get()));
+            animatorProgress.start();
+        }
     }
 
     private void cancelProgress() {
