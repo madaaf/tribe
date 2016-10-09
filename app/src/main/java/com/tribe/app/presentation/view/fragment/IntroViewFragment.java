@@ -161,7 +161,7 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
             introPresenter.requestCode(phoneNumber);
         }));
 
-        subscriptions.add(RxView.clicks(viewCode.getBackIcon()).subscribe(aVoid -> {
+        subscriptions.add(viewCode.backClicked().subscribe(aVoid -> {
             viewCode.fadeBackOut();
             viewPhoneNumber.nextIconVisisble();
             viewPager.setCurrentItem(PAGE_PHONE_NUMBER, true);

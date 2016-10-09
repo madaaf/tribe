@@ -42,7 +42,7 @@
                     android:layout_gravity="center"
                     android:layout_margin="9dp"
                     android:src="@drawable/picto_grid"
-                    android:scaleType="centerInside"
+                    android:scaleType="fitCenter"
                     />
 
                 <com.github.rahatarmanahmed.cpv.CircularProgressView
