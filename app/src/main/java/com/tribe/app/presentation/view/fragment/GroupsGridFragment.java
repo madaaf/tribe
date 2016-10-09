@@ -433,7 +433,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         for (int i = 0; i < memberPhotos; i++) {
             String profPic = groupMemberList.get(i).getProfilePicture();
             if (profPic != null) groupInfoView.addMemberPhoto(profPic);
-            if (profPic.equals(getString(R.string.no_profile_picture_url))) groupInfoView.addMemberPhotoDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_avatar_placeholder));
+            if (profPic.equals(getString(R.string.no_profile_picture_url))) groupInfoView.addMemberPhotoDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_placeholder_avatar));
         }
     }
 

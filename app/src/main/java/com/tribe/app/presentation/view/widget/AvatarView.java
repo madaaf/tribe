@@ -92,7 +92,7 @@ public class AvatarView extends RoundedCornerLayout {
                     .into(imgAvatar);
         } else {
             Glide.with(getContext())
-                    .load(R.drawable.picto_avatar_placeholder)
+                    .load(R.drawable.picto_placeholder_avatar)
                     .crossFade()
                     .into(imgAvatar);
         }

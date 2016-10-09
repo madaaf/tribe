@@ -88,7 +88,7 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
 
 
         if (friendship.getProfilePicture().equals(context.getString(R.string.no_profile_picture_url))) {
-            vh.imageFriendPic.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.picto_avatar_placeholder));
+            vh.imageFriendPic.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.picto_placeholder_avatar));
         } else {
             Glide.with(context)
                     .load(friendship.getProfilePicture())
