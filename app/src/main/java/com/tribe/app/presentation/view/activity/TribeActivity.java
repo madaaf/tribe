@@ -346,7 +346,6 @@ public class TribeActivity extends BaseActivity implements TribeView {
                         viewTribePager.changeSpeed();
                     }
 
-
                     dismissDialogSheetMore();
                 }));
 

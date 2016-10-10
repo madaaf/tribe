@@ -288,7 +288,7 @@ public class TribePagerView extends FrameLayout {
         cameraWrapper.onPause(false);
 
         computeCurrentView();
-        currentView.pausePlayer();
+        if (currentView != null) currentView.pausePlayer();
     }
 
     private void initViewPager() {

@@ -210,7 +210,10 @@ public class CameraWrapper extends FrameLayout {
     }
 
     public void onStartRecord(String fileId) {
-        if (audioManager.isMusicActive()) {
+        if (audioManager == null)
+            audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+
+        if (audioManager != null && audioManager.isMusicActive()) {
             int result;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                 result = audioManager.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE);
@@ -524,7 +527,7 @@ public class CameraWrapper extends FrameLayout {
                             tribeModePublishSubject.onNext(VIDEO);
                             cameraView.startPreview();
                         }
-                    });
+                });
         }
 
         if (preview != null)
