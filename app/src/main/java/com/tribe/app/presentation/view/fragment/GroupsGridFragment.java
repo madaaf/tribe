@@ -604,6 +604,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                     String friendId = friendship.getFriend().getId();
                     recyclerViewInvite.setEnabled(false);
                     Observable.timer(animDuration, TimeUnit.MILLISECONDS)
+                            .onBackpressureDrop()
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(time -> {
@@ -643,6 +644,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                     .setStartDelay(AnimationUtils.NO_START_DELAY)
                     .start();
             Observable.timer(animDuration, TimeUnit.MILLISECONDS)
+                    .onBackpressureDrop()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(time -> {
@@ -773,12 +775,14 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         createInviteView.loaded();
         animSet1();
         Observable.timer(animDuration, TimeUnit.MILLISECONDS)
+                .onBackpressureDrop()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(time -> {
                     animSet2();
                 });
         Observable.timer(animDuration * 2, TimeUnit.MILLISECONDS)
+                .onBackpressureDrop()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(time -> {

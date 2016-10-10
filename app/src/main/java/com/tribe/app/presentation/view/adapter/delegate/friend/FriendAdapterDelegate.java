@@ -100,6 +100,7 @@ public class FriendAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
                 .doOnNext(aVoid -> {
                     vh.itemView.setEnabled(false);
                     Observable.timer(AnimationUtils.ANIMATION_DURATION_SHORT, TimeUnit.MILLISECONDS)
+                            .onBackpressureDrop()
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(time -> {

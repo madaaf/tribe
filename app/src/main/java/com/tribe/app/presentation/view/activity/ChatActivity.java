@@ -249,6 +249,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
                             || scrollBounds.height() < imageViewFrom.getHeight()) {
                         recyclerViewText.smoothScrollToPosition(position);
                         Observable.timer(500, TimeUnit.MILLISECONDS)
+                                .onBackpressureDrop()
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribeOn(AndroidSchedulers.mainThread())
                                 .subscribe(aLong -> {
@@ -280,6 +281,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
                                 || scrollBounds.height() < imageViewFrom.getHeight()) {
                             recyclerViewText.smoothScrollToPosition(position);
                             Observable.timer(500, TimeUnit.MILLISECONDS)
+                                    .onBackpressureDrop()
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribeOn(AndroidSchedulers.mainThread())
                                     .subscribe(aLong -> {

@@ -487,6 +487,7 @@ public class CameraWrapper extends FrameLayout {
 
         if (shouldDelay) {
             Observable.timer(0, TimeUnit.MILLISECONDS)
+                    .onBackpressureDrop()
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(aLong -> {
@@ -513,16 +514,17 @@ public class CameraWrapper extends FrameLayout {
             cameraView.setPreview(preview);
 
             Observable.timer(1000, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(time -> {
-                    if (audioDefault.get()) {
-                        activateSound();
-                    } else {
-                        tribeModePublishSubject.onNext(VIDEO);
-                        cameraView.startPreview();
-                    }
-                });
+                    .onBackpressureDrop()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(time -> {
+                        if (audioDefault.get()) {
+                            activateSound();
+                        } else {
+                            tribeModePublishSubject.onNext(VIDEO);
+                            cameraView.startPreview();
+                        }
+                    });
         }
 
         if (preview != null)

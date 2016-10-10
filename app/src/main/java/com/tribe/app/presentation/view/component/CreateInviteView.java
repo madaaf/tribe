@@ -195,6 +195,7 @@ public class CreateInviteView extends FrameLayout {
     public void loaded() {
         createGroupAnim.end();
         Observable.timer(AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, TimeUnit.MILLISECONDS)
+                .onBackpressureDrop()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(time -> {
@@ -231,6 +232,7 @@ public class CreateInviteView extends FrameLayout {
         currTimeRemaining = timeRemaining;
 
         countDownSubscription = Observable.interval(1, TimeUnit.SECONDS)
+                .onBackpressureDrop()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {

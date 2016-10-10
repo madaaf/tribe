@@ -197,6 +197,7 @@ public class IntroActivity extends BaseActivity {
         accessFragment.setUser(user);
         accessFragment.setDeepLink(deepLink);
         Observable.timer(250, TimeUnit.MILLISECONDS)
+                .onBackpressureDrop()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(time -> {

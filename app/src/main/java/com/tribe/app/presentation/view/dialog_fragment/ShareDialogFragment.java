@@ -1,8 +1,6 @@
 package com.tribe.app.presentation.view.dialog_fragment;
 
-import android.media.Image;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,23 +8,16 @@ import android.widget.ImageView;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
-import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
-import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-
-import org.w3c.dom.Text;
 
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -157,12 +148,14 @@ public class ShareDialogFragment extends BaseDialogFragment {
         timeRemaining = timeRemainingInput;
         subscriptions.add(
         Observable.interval(1, TimeUnit.MILLISECONDS)
+                .onBackpressureDrop()
                 .subscribeOn(Schedulers.io())
                 .map(i -> timeRemainingInput - i)
                 .take((int) timeRemainingInput + 1)
                 .subscribe(i -> timeRemaining = i));
         subscriptions.add(
         Observable.interval(1, TimeUnit.SECONDS)
+                .onBackpressureDrop()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {

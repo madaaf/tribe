@@ -275,6 +275,7 @@ public class AccessLockView extends FrameLayout {
         expandAndContract(crossfader);
 
         subscriptions.add(Observable.interval(PULSATING_DURATION, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                .onBackpressureDrop()
                 .subscribe(aVoid -> {
                     expandAndContract(crossfader);
                 }));

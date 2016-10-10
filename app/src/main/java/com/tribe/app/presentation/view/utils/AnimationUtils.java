@@ -6,7 +6,6 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
@@ -280,6 +279,7 @@ public class AnimationUtils {
         imageView.setImageDrawable(oldDrawable);
         AnimationUtils.scaleDown(imageView, AnimationUtils.ANIMATION_DURATION_SHORT);
         Observable.timer(AnimationUtils.ANIMATION_DURATION_SHORT, TimeUnit.MILLISECONDS)
+                .onBackpressureDrop()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(time -> {

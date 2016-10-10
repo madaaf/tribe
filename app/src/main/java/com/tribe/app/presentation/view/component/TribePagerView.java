@@ -317,6 +317,7 @@ public class TribePagerView extends FrameLayout {
                 }
 
                 Observable.timer(500, TimeUnit.MILLISECONDS)
+                        .onBackpressureDrop()
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(t -> {

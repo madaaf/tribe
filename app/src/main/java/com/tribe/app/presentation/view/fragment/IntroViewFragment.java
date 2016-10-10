@@ -288,12 +288,14 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
         screenUtils.hideKeyboard(getActivity());
 
         subscriptions.add(Observable.timer(300, TimeUnit.MILLISECONDS)
+                .onBackpressureDrop()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(time -> {
                     viewCode.animateConnectedIcon();
 
                     subscriptions.add(Observable.timer(300, TimeUnit.MILLISECONDS)
+                            .onBackpressureDrop()
                             .subscribeOn(Schedulers.newThread())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(time1 -> {
@@ -303,6 +305,7 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
                             }));
 
                     subscriptions.add(Observable.timer(2000, TimeUnit.MILLISECONDS)
+                            .onBackpressureDrop()
                             .subscribeOn(Schedulers.newThread())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(time2 -> {
