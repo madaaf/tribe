@@ -290,7 +290,7 @@ public class GroupInfoView extends FrameLayout {
 
 
         // Setup edit group name
-        layoutDividerBackground.setVisibility(View.VISIBLE);
+        AnimationUtils.fadeInAccelerate(layoutDividerBackground, animDuration);
         editTextGroupName.bringToFront();
         editTextGroupName.setEnabled(true);
         editTextGroupName.setCursorVisible(true);
@@ -337,7 +337,8 @@ public class GroupInfoView extends FrameLayout {
         imageGroupExpanded(false, imageGroupBg);
         imageGroupExpanded(false, imageGroup);
 
-        layoutDividerBackground.setVisibility(View.INVISIBLE);
+        AnimationUtils.fadeOutAccelerate(layoutDividerBackground, animDuration);
+//        layoutDividerBackground.setVisibility(View.INVISIBLE);
         editTextGroupName.bringToFront();
         editTextGroupName.setEnabled(false);
         editTextGroupName.setTextColor(ContextCompat.getColor(getContext(), android.R.color.black));
@@ -434,7 +435,8 @@ public class GroupInfoView extends FrameLayout {
         imageGroup.setScaleY(groupPicScaleDownF);
         imageGroupBg.setScaleX(groupPicScaleDownF);
         imageGroupBg.setScaleY(groupPicScaleDownF);
-        layoutDividerBackground.setVisibility(INVISIBLE);
+//        layoutDividerBackground.setVisibility(INVISIBLE);
+        layoutDividerBackground.setAlpha(AnimationUtils.ALPHA_NONE);
         layoutGroupMembers.setVisibility(VISIBLE);
         editTextGroupName.bringToFront();
         editTextGroupName.setEnabled(false);
