@@ -444,6 +444,7 @@ public class AccessFragment extends BaseFragment implements AccessView {
 
     private void showGetNotifiedDialog() {
         Observable.timer(4000, TimeUnit.MILLISECONDS)
+                .onBackpressureDrop()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(time -> {
@@ -510,7 +511,7 @@ public class AccessFragment extends BaseFragment implements AccessView {
             lookupSubscription =
                     Observable.zip(
                             Observable.from(relationsInApp.values()),
-                            Observable.interval(0, totalTimeSynchro / relationsInApp.values().size(), TimeUnit.MILLISECONDS),
+                            Observable.interval(0, totalTimeSynchro / relationsInApp.values().size(), TimeUnit.MILLISECONDS).onBackpressureDrop(),
                             (contact, aLong) -> contact
                     ).subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread()).subscribe(relation -> {
@@ -519,6 +520,7 @@ public class AccessFragment extends BaseFragment implements AccessView {
 
                         if (numFriends == relationsInApp.values().size()) {
                             subscriptions.add(Observable.timer(750, TimeUnit.MILLISECONDS)
+                                    .onBackpressureDrop()
                                     .subscribeOn(Schedulers.newThread())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(time -> {

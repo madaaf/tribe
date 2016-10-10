@@ -128,10 +128,19 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
         previewSize = chooseOptimalSize(sizes);
         final Camera.Size currentSize = cameraParameters.getPictureSize();
         if (currentSize.width != previewSize.getWidth() || currentSize.height != previewSize.getHeight()) {
-            // Largest picture size in this ratio
-            pictureSize = pictureSizes.sizes(aspectRatio).last();
             cameraParameters.setPreviewSize(previewSize.getWidth(), previewSize.getHeight());
-            cameraParameters.setPictureSize(pictureSize.getWidth(), pictureSize.getHeight());
+
+            // Largest picture size in this ratio
+            SortedSet<Size> sizesPicture = pictureSizes.sizes(aspectRatio);
+            if (sizes == null) { // Not supported
+                aspectRatio = chooseAspectRatio();
+                sizesPicture = pictureSizes.sizes(aspectRatio);
+            }
+
+            if (sizesPicture != null && sizesPicture.size() > 0) {
+                pictureSize = sizesPicture.last();
+                cameraParameters.setPictureSize(pictureSize.getWidth(), pictureSize.getHeight());
+            }
             camera.setParameters(cameraParameters);
         }
     }

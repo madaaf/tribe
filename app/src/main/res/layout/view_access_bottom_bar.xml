@@ -19,7 +19,7 @@
         android:gravity="center"
         android:clickable="true"
         android:foreground="@drawable/selectable_button_light"
-        style="@style/Title.2.White"
+        style="@style/Headline.White.2"
         />
 
 </FrameLayout>

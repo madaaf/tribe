@@ -281,6 +281,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
     public void play() {
         if (mediaPlayer != null) {
+            animateProgress();
             mediaPlayer.play();
         } else {
             preparePlayer(true);

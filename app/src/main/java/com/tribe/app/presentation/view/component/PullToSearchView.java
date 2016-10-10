@@ -180,6 +180,7 @@ public class PullToSearchView extends FrameLayout {
                     || scrollBounds.height() < viewFrom.getHeight()) {
                 recyclerViewPTS.smoothScrollToPosition(selectedPosition);
                 Observable.timer(500, TimeUnit.MILLISECONDS)
+                        .onBackpressureDrop()
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .subscribe(aLong -> {

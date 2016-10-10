@@ -598,7 +598,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
      * Loads all friends / tribes.
      */
     private void loadData() {
-        subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS).subscribe(t ->  {
+        subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS).onBackpressureDrop().subscribe(t ->  {
             if (isAdded()) this.homeGridPresenter.onCreate();
         }));
     }

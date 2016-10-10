@@ -60,8 +60,6 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
         onPreparedPlayer.onNext(true);
         mediaPlayer.seekTo(0);
 
-        scheduleTimer();
-
         if (autoStart) {
             play();
         }
@@ -141,6 +139,7 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
         mediaPlayer.start();
         onVideoStarted.onNext(true);
         setPlaybackRate();
+        scheduleTimer();
     }
 
     @Override
@@ -170,6 +169,7 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
                 PlaybackParams myPlayBackParams = new PlaybackParams();
                 myPlayBackParams.setSpeed(speedPlayback.get());
                 mediaPlayer.setPlaybackParams(myPlayBackParams);
+                scheduleTimer();
             } catch (IllegalStateException ex) {}
         }
     }

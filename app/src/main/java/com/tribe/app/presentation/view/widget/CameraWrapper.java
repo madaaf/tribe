@@ -210,7 +210,10 @@ public class CameraWrapper extends FrameLayout {
     }
 
     public void onStartRecord(String fileId) {
-        if (audioManager.isMusicActive()) {
+        if (audioManager == null)
+            audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+
+        if (audioManager != null && audioManager.isMusicActive()) {
             int result;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                 result = audioManager.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE);
@@ -487,6 +490,7 @@ public class CameraWrapper extends FrameLayout {
 
         if (shouldDelay) {
             Observable.timer(0, TimeUnit.MILLISECONDS)
+                    .onBackpressureDrop()
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(aLong -> {
@@ -513,15 +517,16 @@ public class CameraWrapper extends FrameLayout {
             cameraView.setPreview(preview);
 
             Observable.timer(1000, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(time -> {
-                    if (audioDefault.get()) {
-                        activateSound();
-                    } else {
-                        tribeModePublishSubject.onNext(VIDEO);
-                        cameraView.startPreview();
-                    }
+                    .onBackpressureDrop()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(time -> {
+                        if (audioDefault.get()) {
+                            activateSound();
+                        } else {
+                            tribeModePublishSubject.onNext(VIDEO);
+                            cameraView.startPreview();
+                        }
                 });
         }
 

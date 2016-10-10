@@ -255,6 +255,7 @@ public class TileView extends SquareFrameLayout {
                     downY = currentY = event.getRawY();
                     isDown = true;
                     timer = Observable.timer(LONG_PRESS, TimeUnit.MILLISECONDS)
+                            .onBackpressureDrop()
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(time -> {
@@ -388,6 +389,7 @@ public class TileView extends SquareFrameLayout {
 
                 if (currentTribe == null && spring.getEndValue() == REPLY_RECORD && type == TYPE_TILE) {
                     Observable.timer(100, TimeUnit.MILLISECONDS)
+                            .onBackpressureDrop()
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeOn(Schedulers.newThread())
                             .subscribe(aLong -> recordStarted.onNext(TileView.this));
@@ -698,6 +700,7 @@ public class TileView extends SquareFrameLayout {
                 //txtSending.setText(R.string.Grid_User_Sent);
 
                 Observable.timer(END_RECORD_DELAY, TimeUnit.MILLISECONDS)
+                        .onBackpressureDrop()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(time -> {

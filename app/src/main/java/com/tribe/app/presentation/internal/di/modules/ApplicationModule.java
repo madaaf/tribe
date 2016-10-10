@@ -189,24 +189,30 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    AccessToken provideAccessToken(Realm realm) {
+    AccessToken provideAccessToken() {
         AccessToken accessToken = new AccessToken();
+        Realm realmInst = Realm.getDefaultInstance();
 
-        final RealmResults<AccessToken> results = realm.where(AccessToken.class).findAll();
+        final RealmResults<AccessToken> results = realmInst.where(AccessToken.class).findAll();
         if (results != null && results.size() > 0)
-            accessToken = realm.copyFromRealm(results.get(0));
+            accessToken = realmInst.copyFromRealm(results.get(0));
+
+        realmInst.close();
 
         return accessToken;
     }
 
     @Provides
     @Singleton
-    Installation provideInstallation(Realm realm) {
+    Installation provideInstallation() {
         Installation installation = new Installation();
+        Realm realmInst = Realm.getDefaultInstance();
 
-        final RealmResults<Installation> results = realm.where(Installation.class).findAll();
+        final RealmResults<Installation> results = realmInst.where(Installation.class).findAll();
         if (results != null && results.size() > 0)
-            installation = realm.copyFromRealm(results.get(0));
+            installation = realmInst.copyFromRealm(results.get(0));
+
+        realmInst.close();
 
         return installation;
     }
@@ -228,11 +234,32 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    UserRealm provideCurrentUserRealm(Realm realm, AccessToken accessToken) {
-        UserRealm user = new UserRealm();
+    @Named("userThreadSafe")
+    User provideCurrentUserThreadSafe(AccessToken accessToken, UserRealmDataMapper userRealmDataMapper) {
+        final User user = new User("");
+        Realm realmInst = Realm.getDefaultInstance();
 
-        final UserRealm userRealm = realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
-        if (userRealm != null) return userRealm;
+        UserRealm userDB = realmInst.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
+        if (userDB != null)
+            user.copy(userRealmDataMapper.transform(realmInst.copyFromRealm(userDB), true));
+
+        realmInst.close();
+
+        return user;
+    }
+
+    @Provides
+    @Singleton
+    UserRealm provideCurrentUserRealm(AccessToken accessToken) {
+        UserRealm user = new UserRealm();
+        Realm realmInst = Realm.getDefaultInstance();
+
+        final UserRealm userRealm = realmInst.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
+        if (userRealm != null) {
+            user = realmInst.copyFromRealm(userRealm);
+        }
+
+        realmInst.close();
 
         return user;
     }

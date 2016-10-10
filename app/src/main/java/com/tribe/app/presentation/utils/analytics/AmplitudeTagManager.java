@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
@@ -26,7 +27,7 @@ public class AmplitudeTagManager implements TagManager {
     private AmplitudeClient amplitude;
 
     @Inject
-    public AmplitudeTagManager(Context context, User user) {
+    public AmplitudeTagManager(Context context, @Named("userThreadSafe") User user) {
         if (user != null && StringUtils.isEmpty(user.getId())) {
             amplitude = Amplitude.getInstance().initialize(context, BuildConfig.AMPLITUDE_KEY)
                     .enableForegroundTracking((Application) context.getApplicationContext());

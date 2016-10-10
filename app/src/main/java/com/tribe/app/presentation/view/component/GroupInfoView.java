@@ -1,14 +1,11 @@
 package com.tribe.app.presentation.view.component;
 
 import android.app.Activity;
-import android.app.VoiceInteractor;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,12 +25,10 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
-import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 
-import java.security.PublicKey;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -281,6 +276,7 @@ public class GroupInfoView extends FrameLayout {
     public void expand(int animDuration) {
         enableIcons(false);
         Observable.timer(animDuration, TimeUnit.MILLISECONDS)
+                .onBackpressureDrop()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(time -> {
@@ -294,7 +290,7 @@ public class GroupInfoView extends FrameLayout {
 
 
         // Setup edit group name
-        layoutDividerBackground.setVisibility(View.VISIBLE);
+        AnimationUtils.fadeInAccelerate(layoutDividerBackground, animDuration);
         editTextGroupName.bringToFront();
         editTextGroupName.setEnabled(true);
         editTextGroupName.setCursorVisible(true);
@@ -330,6 +326,7 @@ public class GroupInfoView extends FrameLayout {
         screenUtils.hideKeyboard(activity);
         enableIcons(false);
         Observable.timer(animDuration, TimeUnit.MILLISECONDS)
+                .onBackpressureDrop()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(time -> {
@@ -340,7 +337,8 @@ public class GroupInfoView extends FrameLayout {
         imageGroupExpanded(false, imageGroupBg);
         imageGroupExpanded(false, imageGroup);
 
-        layoutDividerBackground.setVisibility(View.INVISIBLE);
+        AnimationUtils.fadeOutAccelerate(layoutDividerBackground, animDuration);
+//        layoutDividerBackground.setVisibility(View.INVISIBLE);
         editTextGroupName.bringToFront();
         editTextGroupName.setEnabled(false);
         editTextGroupName.setTextColor(ContextCompat.getColor(getContext(), android.R.color.black));
@@ -437,7 +435,8 @@ public class GroupInfoView extends FrameLayout {
         imageGroup.setScaleY(groupPicScaleDownF);
         imageGroupBg.setScaleX(groupPicScaleDownF);
         imageGroupBg.setScaleY(groupPicScaleDownF);
-        layoutDividerBackground.setVisibility(INVISIBLE);
+//        layoutDividerBackground.setVisibility(INVISIBLE);
+        layoutDividerBackground.setAlpha(AnimationUtils.ALPHA_NONE);
         layoutGroupMembers.setVisibility(VISIBLE);
         editTextGroupName.bringToFront();
         editTextGroupName.setEnabled(false);

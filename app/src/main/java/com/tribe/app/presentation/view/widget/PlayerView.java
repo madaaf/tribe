@@ -105,7 +105,8 @@ public class PlayerView extends FrameLayout implements TextureView.SurfaceTextur
     }
 
     public void releasePlayer() {
-        mediaPlayer.release();
+        if (mediaPlayer != null) mediaPlayer.release();
+
         if (subscriptions != null && subscriptions.hasSubscriptions()) {
             subscriptions.clear();
         }

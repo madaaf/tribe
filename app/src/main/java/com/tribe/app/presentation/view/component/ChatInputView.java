@@ -62,6 +62,9 @@ public class ChatInputView extends FrameLayout {
     @BindView(R.id.imgGallery)
     ImageView imgGallery;
 
+    @BindView(R.id.viewDivider)
+    View viewDivider;
+
     private long lastOnTypingNotification;
 
     // OBSERVABLES
@@ -171,6 +174,11 @@ public class ChatInputView extends FrameLayout {
                     })
                     .start();
         }
+    }
+
+    public void hidePhotoPicker() {
+        btnPhotoPicker.setVisibility(View.GONE);
+        viewDivider.setVisibility(View.GONE);
     }
 
     public void onDestroy() {

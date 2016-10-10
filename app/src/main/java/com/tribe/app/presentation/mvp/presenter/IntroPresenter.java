@@ -3,6 +3,7 @@ package com.tribe.app.presentation.mvp.presenter;
 import android.os.Handler;
 
 import com.google.gson.Gson;
+import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.ErrorLogin;
@@ -17,6 +18,7 @@ import com.tribe.app.domain.interactor.user.GetRequestCode;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.IntroView;
 import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 
 import java.io.IOException;
@@ -165,7 +167,12 @@ public class IntroPresenter implements Presenter {
 
         @Override
         public void onNext(Pin pin) {
-            goToCode(pin);
+            if (pin == null || !StringUtils.isEmpty(pin.getPinId())) {
+                goToCode(pin);
+            } else {
+                hideViewLoading();
+                if (introView.context() != null) introView.showError(introView.context().getString(R.string.error_technical));
+            }
         }
     }
 
