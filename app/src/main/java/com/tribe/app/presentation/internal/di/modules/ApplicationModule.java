@@ -240,7 +240,8 @@ public class ApplicationModule {
         Realm realmInst = Realm.getDefaultInstance();
 
         UserRealm userDB = realmInst.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
-        user.copy(userRealmDataMapper.transform(realmInst.copyFromRealm(userDB), true));
+        if (userDB != null)
+            user.copy(userRealmDataMapper.transform(realmInst.copyFromRealm(userDB), true));
 
         realmInst.close();
 
