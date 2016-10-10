@@ -184,7 +184,11 @@ public class TribeActivity extends BaseActivity implements TribeView {
                 .delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
 
         subscriptions.add(viewTribePager.onRecordStart()
-                .map(view -> tribePresenter.createTribe(currentUser, recipient, viewTribePager.getTribeMode()))
+                .map(view -> {
+                    currentTribe = tribePresenter.createTribe(currentUser, recipient, viewTribePager.getTribeMode());
+                    recipient.setTribe(currentTribe);
+                    return currentTribe;
+                })
                 .subscribe(tribe -> viewTribePager.startRecording(tribe.getLocalId())));
 
         subscriptions.add(
@@ -267,8 +271,6 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
     @Override
     public void setCurrentTribe(TribeMessage tribe) {
-        currentTribe = tribe;
-        recipient.setTribe(tribe);
     }
 
     @Override

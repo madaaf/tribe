@@ -22,6 +22,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.LabelType;
@@ -32,6 +33,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerChatComponent;
 import com.tribe.app.presentation.mvp.presenter.ChatPresenter;
 import com.tribe.app.presentation.mvp.view.MessageView;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.adapter.MessageAdapter;
 import com.tribe.app.presentation.view.adapter.manager.MessageLayoutManager;
@@ -365,8 +367,11 @@ public class ChatActivity extends BaseActivity implements MessageView {
         chatPresenter.onStart();
         chatPresenter.attachView(this);
         chatPresenter.getRecipient(recipientId, isToGroup);
-        chatPresenter.loadThumbnail(radiusGalleryImg);
 
+        if (RxPermissions.getInstance(this).isGranted(PermissionUtils.PERMISSION_READ_WRITE_EXTERNAL))
+            chatPresenter.loadThumbnail(radiusGalleryImg);
+        else
+            chatInputView.hidePhotoPicker();
     }
 
     private void initInfos() {
