@@ -284,6 +284,20 @@ public class AnimationUtils {
         animator.start();
     }
 
+    public static void animateSizeFrameLayout(View view, int endHeight, int duration) {
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) view.getLayoutParams();
+        ValueAnimator animator = ValueAnimator.ofInt(view.getWidth(), endHeight);
+        animator.setDuration(duration);
+        animator.addUpdateListener(animation -> {
+            lp.height = (Integer) animation.getAnimatedValue();
+            lp.width = (Integer) animation.getAnimatedValue();
+            view.getLayoutParams().height = lp.height;
+            view.getLayoutParams().width = lp.width;
+            view.requestLayout();
+        });
+        animator.start();
+    }
+
     public static void scaleOldImageOutNewImageIn(ImageView imageView, Drawable oldDrawable, Drawable newDrawable) {
         imageView.setImageDrawable(oldDrawable);
         AnimationUtils.scaleDown(imageView, AnimationUtils.ANIMATION_DURATION_SHORT);
