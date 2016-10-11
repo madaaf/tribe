@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.activity;
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -159,6 +160,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     // VARIABLES
     private HomeViewPagerAdapter homeViewPagerAdapter;
+    private Context context;
     private int previousViewPagerState;
     private int viewPagerAnimDuration = AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT;
     private List<Message> newMessages;
@@ -227,6 +229,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     }
 
     private void initUi() {
+        context = this;
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
     }
@@ -289,6 +292,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 if (viewPager.getCurrentItem() == GRID_FRAGMENT_PAGE) {
                     //reloadGrid();
                     if (!navVisible) enableNavigation();
+                    screenUtils.hideKeyboard((Activity) context);
                 }
             }
 
