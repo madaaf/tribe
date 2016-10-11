@@ -168,6 +168,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private boolean isScrolling = false;
     private boolean isRecording;
     private boolean navVisible = true;
+    private boolean layoutNavPendingVisible = false;
     private boolean isFirstInit = true;
     private GoogleApiClient googleApiClient;
 
@@ -307,66 +308,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 }
 
                 if (state == ViewPager.SCROLL_STATE_DRAGGING) isScrolling = true;
-
-                if (previousViewPagerState == ViewPager.SCROLL_STATE_SETTLING && state == ViewPager.SCROLL_STATE_IDLE) {
-                    isScrolling = false;
-
-                }
-                if (!isScrolling) {
-                    switch (viewPager.getCurrentItem()) {
-                        case CONTACTS_FRAGMENT_PAGE:
-                            imgNavGroups.animate()
-                                    .setDuration(viewPagerAnimDuration)
-                                    .x(screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - imgNavGroups.getWidth())
-                                    .start();
-                            layoutNavGrid.animate()
-                                    .setDuration(viewPagerAnimDuration)
-                                    .x(screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - imgNavGroups.getWidth() * 2)
-                                    .start();
-                            imgNavFriends.animate()
-                                    .setDuration(viewPagerAnimDuration)
-                                    .x(screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - imgNavGroups.getWidth() * 2 - imgNavFriends.getWidth())
-                                    .start();
-                            AnimationUtils.animateSizeFrameLayout(imgNavGroups, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
-                            AnimationUtils.animateSizeFrameLayout(layoutNavGrid, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
-                            AnimationUtils.animateSizeFrameLayout(imgNavFriends, getResources().getDimensionPixelSize(R.dimen.nav_size_max), viewPagerAnimDuration);
-                            break;
-                        case GRID_FRAGMENT_PAGE:
-                            imgNavFriends.animate()
-                                    .setDuration(viewPagerAnimDuration)
-                                    .x(getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small))
-                                    .start();
-                            layoutNavGrid.animate()
-                                    .setDuration(viewPagerAnimDuration)
-                                    .x(screenUtils.getWidthPx() / 2 - layoutNavGrid.getWidth() / 2)
-                                    .start();
-                            imgNavGroups.animate()
-                                    .setDuration(viewPagerAnimDuration)
-                                    .x(screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - imgNavGroups.getWidth())
-                                    .start();
-                            AnimationUtils.animateSizeFrameLayout(imgNavGroups, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
-                            AnimationUtils.animateSizeFrameLayout(layoutNavGrid, getResources().getDimensionPixelSize(R.dimen.nav_size_max), viewPagerAnimDuration);
-                            AnimationUtils.animateSizeFrameLayout(imgNavFriends, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
-                            break;
-                        case GROUPS_FRAGMENT_PAGE:
-                            imgNavFriends.animate()
-                                    .setDuration(viewPagerAnimDuration)
-                                    .x(getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small))
-                                    .start();
-                            layoutNavGrid.animate()
-                                    .setDuration(viewPagerAnimDuration)
-                                    .x(getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) + getResources().getDimensionPixelSize(R.dimen.nav_size_small))
-                                    .start();
-                            imgNavGroups.animate()
-                                    .setDuration(viewPagerAnimDuration)
-                                    .x(getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) + getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 2)
-                                    .start();
-                            AnimationUtils.animateSizeFrameLayout(imgNavFriends, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
-                            AnimationUtils.animateSizeFrameLayout(layoutNavGrid, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
-                            AnimationUtils.animateSizeFrameLayout(imgNavGroups, getResources().getDimensionPixelSize(R.dimen.nav_size_max), viewPagerAnimDuration);
-                    }
-                }
-
+                if (previousViewPagerState == ViewPager.SCROLL_STATE_SETTLING && state == ViewPager.SCROLL_STATE_IDLE) isScrolling = false;
                 previousViewPagerState = state;
             }
         });
@@ -569,11 +511,13 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @OnClick(R.id.imgNavGroups)
     public void goToGroups() {
+        animateToGroups();
         if (!isRecording) viewPager.setCurrentItem(GROUPS_FRAGMENT_PAGE, true);
     }
 
     @OnClick(R.id.imgNavFriends)
     public void goToFriends() {
+        animateToContacts();
         if (!isRecording) viewPager.setCurrentItem(CONTACTS_FRAGMENT_PAGE, true);
     }
 
@@ -602,6 +546,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @OnClick(R.id.layoutNavGridMain)
     public void reloadGrid() {
+        animateToGrid();
         if (!isRecording) {
             if (viewPager.getCurrentItem() == GRID_FRAGMENT_PAGE) {
                 homePresenter.reloadData();
@@ -611,6 +556,89 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             }
         }
     }
+
+    private void animateToContacts() {
+        imgNavGroups.animate()
+                .setDuration(viewPagerAnimDuration)
+                .x(screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small))
+                .start();
+        int navGridPosition;
+        int navFriendsPosition;
+        if (layoutNavPendingVisible) {
+            layoutNavPending.animate()
+                    .setDuration(viewPagerAnimDuration)
+                    .x(screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 2)
+                    .start();
+            navGridPosition = screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 3;
+            navFriendsPosition = screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 3 - getResources().getDimensionPixelSize(R.dimen.nav_size_max);
+        } else {
+            navGridPosition = screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 2;
+            navFriendsPosition = screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 2 - getResources().getDimensionPixelSize(R.dimen.nav_size_max);
+        }
+        layoutNavGrid.animate()
+                .setDuration(viewPagerAnimDuration)
+                .x(navGridPosition)
+                .start();
+        imgNavFriends.animate()
+                .setDuration(viewPagerAnimDuration)
+                .x(navFriendsPosition)
+                .start();
+        AnimationUtils.animateSizeFrameLayout(imgNavGroups, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
+        AnimationUtils.animateSizeFrameLayout(layoutNavGrid, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
+        AnimationUtils.animateSizeFrameLayout(imgNavFriends, getResources().getDimensionPixelSize(R.dimen.nav_size_max), viewPagerAnimDuration);
+    }
+
+    private void animateToGrid() {
+        imgNavFriends.animate()
+                .setDuration(viewPagerAnimDuration)
+                .x(getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small))
+                .start();
+        layoutNavGrid.animate()
+                .setDuration(viewPagerAnimDuration)
+                .x(screenUtils.getWidthPx() / 2 - layoutNavGrid.getWidth() / 2)
+                .start();
+        imgNavGroups.animate()
+                .setDuration(viewPagerAnimDuration)
+                .x(screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small))
+                .start();
+        if (layoutNavPendingVisible) {
+            layoutNavPending.animate()
+                    .setDuration(viewPagerAnimDuration)
+                    .x(screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 2)
+                    .start();
+        }
+        AnimationUtils.animateSizeFrameLayout(imgNavGroups, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
+        AnimationUtils.animateSizeFrameLayout(layoutNavGrid, getResources().getDimensionPixelSize(R.dimen.nav_size_max), viewPagerAnimDuration);
+        AnimationUtils.animateSizeFrameLayout(imgNavFriends, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
+    }
+    private void animateToGroups() {
+        imgNavFriends.animate()
+                .setDuration(viewPagerAnimDuration)
+                .x(getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small))
+                .start();
+        layoutNavGrid.animate()
+                .setDuration(viewPagerAnimDuration)
+                .x(getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) + getResources().getDimensionPixelSize(R.dimen.nav_size_small))
+                .start();
+        int navGroupsPosition;
+        if (layoutNavPendingVisible) {
+            layoutNavPending.animate()
+                    .setDuration(viewPagerAnimDuration)
+                    .x(getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) + getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 2)
+                    .start();
+            navGroupsPosition = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) + getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 3;
+        } else {
+            navGroupsPosition = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) + getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 2;
+        }
+        imgNavGroups.animate()
+                .setDuration(viewPagerAnimDuration)
+                .x(navGroupsPosition)
+                .start();
+        AnimationUtils.animateSizeFrameLayout(imgNavFriends, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
+        AnimationUtils.animateSizeFrameLayout(layoutNavGrid, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
+        AnimationUtils.animateSizeFrameLayout(imgNavGroups, getResources().getDimensionPixelSize(R.dimen.nav_size_max), viewPagerAnimDuration);
+    }
+
 
     @Override
     public UserComponent getComponent() {
@@ -790,12 +818,14 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     //////////////////
 
     private void hideLayoutPending() {
+        layoutNavPendingVisible = false;
         if (layoutNavPending.getTranslationY() == 0) {
             layoutNavPending.animate().translationY(translationBackToTop).setDuration(DURATION).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
         }
     }
 
     private void showLayoutPending() {
+        layoutNavPendingVisible = true;
         if (layoutNavPending.getTranslationY() > 0) {
             layoutNavPending.animate().translationY(0).setDuration(DURATION).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
         }
