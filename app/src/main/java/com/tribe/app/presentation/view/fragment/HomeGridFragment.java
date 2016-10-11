@@ -469,9 +469,10 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
         }
 
         if (recipient instanceof Membership) {
+            Membership membership = (Membership) recipient;
             moreTypes.add(new MoreType(getString(R.string.grid_menu_group_infos), MoreType.GROUP_INFO));
-            moreTypes.add(new MoreType(getString(R.string.grid_menu_group_leave), MoreType.GROUP_LEAVE));
-            moreTypes.add(new MoreType(getString(R.string.grid_menu_group_delete), MoreType.GROUP_DELETE));
+            if (membership.isAdmin())moreTypes.add(new MoreType(getString(R.string.grid_menu_group_delete), MoreType.GROUP_DELETE));
+            else  moreTypes.add(new MoreType(getString(R.string.grid_menu_group_leave), MoreType.GROUP_LEAVE));
         }
 
         prepareBottomSheetMore(recipient, moreTypes);
