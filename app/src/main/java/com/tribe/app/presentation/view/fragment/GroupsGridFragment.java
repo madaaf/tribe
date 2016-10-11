@@ -143,7 +143,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     private int appBarLayoutTranslation = 130;
     private int layoutCreateInviteInfoPositionY = 255;
     private int startTranslationDoneIcon = 200;
-    private int animDuration = AnimationUtils.ANIMATION_DURATION_SHORT;
+    private int animDuration = AnimationUtils.ANIMATION_DURATION_MID;
     private int smallMargin = 5;
     private int orignalGroupSuggestionsMargin;
     private boolean friendAdapterClickable = true;
@@ -555,7 +555,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
         createInviteView.enableInvite();
         enableScrolling(true);
-        groupPresenter.updateScore();
     }
 
     private void showShareDialogFragment() {
@@ -787,6 +786,13 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(time -> {
                     animSet3();
+                });
+        Observable.timer(animDuration * 3, TimeUnit.MILLISECONDS)
+                .onBackpressureDrop()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(time -> {
+                    groupPresenter.updateScore();
                 });
     }
 

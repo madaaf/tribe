@@ -44,6 +44,7 @@ public class AnimationUtils {
     public static final float ALPHA_NONE = 0;
     public static final int ANIMATION_DURATION_EXTRA_SHORT = 100;
     public static final int ANIMATION_DURATION_SHORT = 300;
+    public static final int ANIMATION_DURATION_MID = 500;
 
     public static Animation fadeInAnimation(final View view, long duration, long delay) {
         Animation animation = new AlphaAnimation(0, 1);

@@ -99,7 +99,7 @@ public class GroupInfoView extends FrameLayout {
     private int groupLayoutOffSet = 20;
     private float originalGroupNameMargin;
     private float originalGroupBackgroundMargin;
-    private int animDuration = AnimationUtils.ANIMATION_DURATION_SHORT;
+    private int animDuration = AnimationUtils.ANIMATION_DURATION_MID;
 
 
     private PublishSubject<Boolean> isPrivate = PublishSubject.create();
