@@ -75,10 +75,10 @@ public class AvatarView extends RoundedCornerLayout {
             paintBorder.setAntiAlias(true);
             paintBorder.setStrokeWidth(borderWidth);
 
-            float viewWidth = getWidth() - ((int) borderWidth * 2);
+            float viewWidth = getWidth();
             float circleCenter = viewWidth / 2;
 
-            canvas.drawCircle(circleCenter + borderWidth, circleCenter + borderWidth,
+            canvas.drawCircle(circleCenter, circleCenter,
                     circleCenter, paintBorder);
         }
     }
