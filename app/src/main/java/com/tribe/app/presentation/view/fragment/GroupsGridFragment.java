@@ -602,13 +602,14 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                     Friendship friendship = friendAdapter.getItemAtPosition((Integer) friendView.getTag(R.id.tag_position));
                     String friendId = friendship.getFriend().getId();
                     recyclerViewInvite.setEnabled(false);
-                    Observable.timer(animDuration, TimeUnit.MILLISECONDS)
-                            .onBackpressureDrop()
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(time -> {
-                                recyclerViewInvite.setEnabled(true);
-                            });
+                    subscriptions.add(
+                            Observable.timer(animDuration, TimeUnit.MILLISECONDS)
+                                    .onBackpressureDrop()
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(time -> {
+                                        recyclerViewInvite.setEnabled(true);
+                                    }));
                     if (friendship.isSelected()) {
                         memberIds.add(friendId);
                         searchFriendsView.insertFriend(friendship.getId(), friendship.getProfilePicture());
@@ -642,13 +643,14 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                     .setDuration(animDuration)
                     .setStartDelay(AnimationUtils.NO_START_DELAY)
                     .start();
-            Observable.timer(animDuration, TimeUnit.MILLISECONDS)
-                    .onBackpressureDrop()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(time -> {
-                        groupSuggestionsView.setVisibility(View.INVISIBLE);
-                    });
+            subscriptions.add(
+                    Observable.timer(animDuration, TimeUnit.MILLISECONDS)
+                            .onBackpressureDrop()
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(time -> {
+                                groupSuggestionsView.setVisibility(View.INVISIBLE);
+                            }));
         }
     }
 
@@ -773,27 +775,30 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
         createInviteView.loaded();
         animSet1();
-        Observable.timer(animDuration, TimeUnit.MILLISECONDS)
-                .onBackpressureDrop()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(time -> {
-                    animSet2();
-                });
-        Observable.timer(animDuration * 2, TimeUnit.MILLISECONDS)
-                .onBackpressureDrop()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(time -> {
-                    animSet3();
-                });
-        Observable.timer(animDuration * 3, TimeUnit.MILLISECONDS)
-                .onBackpressureDrop()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(time -> {
-                    groupPresenter.updateScore();
-                });
+        subscriptions.add(
+                Observable.timer(animDuration, TimeUnit.MILLISECONDS)
+                        .onBackpressureDrop()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(time -> {
+                            animSet2();
+                        }));
+        subscriptions.add(
+                Observable.timer(animDuration * 2, TimeUnit.MILLISECONDS)
+                        .onBackpressureDrop()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(time -> {
+                            animSet3();
+                        }));
+        subscriptions.add(
+                Observable.timer(animDuration * 3, TimeUnit.MILLISECONDS)
+                        .onBackpressureDrop()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(time -> {
+                            groupPresenter.updateScore();
+                        }));
     }
 
     @Override
