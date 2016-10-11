@@ -165,7 +165,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private int viewPagerAnimDuration = AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT;
     private List<Message> newMessages;
     private int pendingTribeCount;
-    private boolean isScrolling = false;
     private boolean isRecording;
     private boolean navVisible = true;
     private boolean layoutNavPendingVisible = false;
@@ -306,10 +305,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                         homeViewPagerAdapter.getContactsGridFragment().closeSearch();
                     }
                 }
-
-                if (state == ViewPager.SCROLL_STATE_DRAGGING) isScrolling = true;
-                if (previousViewPagerState == ViewPager.SCROLL_STATE_SETTLING && state == ViewPager.SCROLL_STATE_IDLE) isScrolling = false;
-                previousViewPagerState = state;
             }
         });
         viewPager.setPageTransformer(false, new HomePageTransformer());
@@ -763,36 +758,34 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             int marginLayoutNavPending = ((FrameLayout.LayoutParams) layoutNavPending.getLayoutParams()).rightMargin;
 
             int widthPending = layoutNavPending.getTranslationY() == 0 ? layoutNavPending.getWidth() : 0;
-            if (isScrolling) {
-                if (pagePosition == 1 && position > 0) {
-                    cameraWrapper.setTranslationX(pageWidth * position);
+            if (pagePosition == 1 && position > 0) {
+                cameraWrapper.setTranslationX(pageWidth * position);
 
-                    float sizeLayoutNavPending = sizeNavSmall;
-                    float translationLayoutNavPending = 0;
-                    layoutNav(layoutNavPending, sizeLayoutNavPending, translationLayoutNavPending);
+                float sizeLayoutNavPending = sizeNavSmall;
+                float translationLayoutNavPending = 0;
+                layoutNav(layoutNavPending, sizeLayoutNavPending, translationLayoutNavPending);
 
-                    float sizeImgNavGrid = sizeNavMax - ((sizeNavMax - sizeNavSmall) * position);
-                    float translationImgNavGrid = ((pageWidth >> 1) - (layoutNavGrid.getWidth() / 2) - marginHorizontalSmall - widthPending - imgNavGroups.getWidth()) * position;
-                    layoutNav(layoutNavGrid, sizeImgNavGrid, translationImgNavGrid);
+                float sizeImgNavGrid = sizeNavMax - ((sizeNavMax - sizeNavSmall) * position);
+                float translationImgNavGrid = ((pageWidth >> 1) - (layoutNavGrid.getWidth() / 2) - marginHorizontalSmall - widthPending - imgNavGroups.getWidth()) * position;
+                layoutNav(layoutNavGrid, sizeImgNavGrid, translationImgNavGrid);
 
-                    float sizeImgNavFriends = sizeNavSmall + ((sizeNavMax - sizeNavSmall) * position);
-                    float translationImgNavFriends = (pageWidth - imgNavFriends.getWidth() - widthPending - layoutNavGrid.getWidth() - imgNavGroups.getWidth() - 2 * marginHorizontalSmall) * position;
-                    layoutNav(imgNavFriends, sizeImgNavFriends, translationImgNavFriends);
-                } else if (pagePosition == 1 && position < 0) {
-                    cameraWrapper.setTranslationX(pageWidth * position);
+                float sizeImgNavFriends = sizeNavSmall + ((sizeNavMax - sizeNavSmall) * position);
+                float translationImgNavFriends = (pageWidth - imgNavFriends.getWidth() - widthPending - layoutNavGrid.getWidth() - imgNavGroups.getWidth() - 2 * marginHorizontalSmall) * position;
+                layoutNav(imgNavFriends, sizeImgNavFriends, translationImgNavFriends);
+            } else if (pagePosition == 1 && position < 0) {
+                cameraWrapper.setTranslationX(pageWidth * position);
 
-                    float sizeImgNavGrid = sizeNavMax - ((sizeNavMax - sizeNavSmall) * -position);
-                    float translationImgNavGrid = ((pageWidth >> 1) - (layoutNavGrid.getWidth() / 2) - marginHorizontalSmall - imgNavFriends.getWidth()) * position;
-                    layoutNav(layoutNavGrid, sizeImgNavGrid, translationImgNavGrid);
+                float sizeImgNavGrid = sizeNavMax - ((sizeNavMax - sizeNavSmall) * -position);
+                float translationImgNavGrid = ((pageWidth >> 1) - (layoutNavGrid.getWidth() / 2) - marginHorizontalSmall - imgNavFriends.getWidth()) * position;
+                layoutNav(layoutNavGrid, sizeImgNavGrid, translationImgNavGrid);
 
-                    float sizeLayoutNavPending = sizeNavSmall;
-                    float translationLayoutNavPending = (pageWidth - widthPending - marginLayoutNavPending - imgNavFriends.getWidth() - layoutNavGrid.getWidth() - marginHorizontalSmall) * position;
-                    layoutNav(layoutNavPending, sizeLayoutNavPending, translationLayoutNavPending);
+                float sizeLayoutNavPending = sizeNavSmall;
+                float translationLayoutNavPending = (pageWidth - widthPending - marginLayoutNavPending - imgNavFriends.getWidth() - layoutNavGrid.getWidth() - marginHorizontalSmall) * position;
+                layoutNav(layoutNavPending, sizeLayoutNavPending, translationLayoutNavPending);
 
-                    float sizeImgNavGroups = sizeNavSmall + ((sizeNavMax - sizeNavSmall) * -position);
-                    float translationImgNavGroups = (pageWidth - imgNavFriends.getWidth() - widthPending - layoutNavGrid.getWidth() - imgNavGroups.getWidth() - 2 * marginHorizontalSmall) * position;
-                    layoutNav(imgNavGroups, sizeImgNavGroups, translationImgNavGroups);
-                }
+                float sizeImgNavGroups = sizeNavSmall + ((sizeNavMax - sizeNavSmall) * -position);
+                float translationImgNavGroups = (pageWidth - imgNavFriends.getWidth() - widthPending - layoutNavGrid.getWidth() - imgNavGroups.getWidth() - 2 * marginHorizontalSmall) * position;
+                layoutNav(imgNavGroups, sizeImgNavGroups, translationImgNavGroups);
             }
         }
 
