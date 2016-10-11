@@ -711,6 +711,10 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             cameraTypeAdapter.releaseSubscriptions();
             dialogCamera = null;
         });
+        dialogCamera.setOnCancelListener(dialog -> {
+            cameraTypeAdapter.releaseSubscriptions();
+            dialogCamera = null;
+        });
 
     }
 
