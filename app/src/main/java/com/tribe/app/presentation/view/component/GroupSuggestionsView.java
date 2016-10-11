@@ -59,15 +59,7 @@ public class GroupSuggestionsView extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.view_group_suggestions, this);
         unbinder = ButterKnife.bind(this);
 
-        textFamily.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_public_family_title)));
-        textRoomies.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_public_roomies_title)));
-        textBffs.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_public_bffs_title)));
-        textAbroad.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_public_abroad_title)));
-        textWork.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_public_work_title)));
-        textClassmates.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_public_classmates_title)));
-        textTeammates.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_public_teammates_title)));
-        textBaddest.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_public_baddest_title)));
-        textNotAllowed.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_public_not_allowed_title)));
+        setPrivate();
 
         // Subscriptions
         subscriptions.add(RxView.clicks(textFamily).subscribe(aVoid -> {
@@ -105,6 +97,30 @@ public class GroupSuggestionsView extends FrameLayout {
         subscriptions.add(RxView.clicks(textNotAllowed).subscribe(aVoid -> {
             groupSuggestionClicked.onNext(textNotAllowed.getText().toString());
         }));
+    }
+
+    public void setPublic() {
+        textFamily.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_public_family_title)));
+        textRoomies.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_public_roomies_title)));
+        textBffs.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_public_bffs_title)));
+        textAbroad.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_public_abroad_title)));
+        textWork.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_public_work_title)));
+        textClassmates.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_public_classmates_title)));
+        textTeammates.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_public_teammates_title)));
+        textBaddest.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_public_baddest_title)));
+        textNotAllowed.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_public_not_allowed_title)));
+    }
+
+    public void setPrivate() {
+        textFamily.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_family_title)));
+        textRoomies.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_roomies_title)));
+        textBffs.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_bffs_title)));
+        textAbroad.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_abroad_title)));
+        textWork.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_work_title)));
+        textClassmates.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_classmates_title)));
+        textTeammates.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_teammates_title)));
+        textBaddest.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_baddest_title)));
+        textNotAllowed.setText(EmojiParser.demojizedText(getContext().getString(R.string.group_not_allowed_title)));
     }
 
     @Override

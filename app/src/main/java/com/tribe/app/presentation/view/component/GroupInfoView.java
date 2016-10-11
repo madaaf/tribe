@@ -110,6 +110,7 @@ public class GroupInfoView extends FrameLayout {
     private PublishSubject<Void> imageDoneEditClicked = PublishSubject.create();
     private PublishSubject<Void> imageBackClicked = PublishSubject.create();
     private PublishSubject<Void> imageGoToMembersClicked = PublishSubject.create();
+    private PublishSubject<Void> hideKeyboard = PublishSubject.create();
 
 
     @Override
@@ -171,6 +172,9 @@ public class GroupInfoView extends FrameLayout {
 
     @Override
     protected void onDetachedFromWindow() {
+        bringGroupNameDown(0);
+        isEditingGroupName.onNext(false);
+        hideKeyboard.onNext(null);
         unbinder.unbind();
 
         if (subscriptions.hasSubscriptions()) {
@@ -195,6 +199,9 @@ public class GroupInfoView extends FrameLayout {
     }
     public Observable<Void> imageGoToMembersClicked() {
         return imageGoToMembersClicked;
+    }
+    public Observable<Void> hideKeyboard() {
+        return hideKeyboard;
     }
     public Observable<Boolean> isPrivate() {
         return isPrivate;

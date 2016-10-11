@@ -564,6 +564,7 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
 
         adjustCameraParameters();
 
+        // https://productforums.google.com/forum/#!topic/nexus/DNsj-yVH3hE
         final WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         final Display display = windowManager.getDefaultDisplay();
         int rotation = display.getRotation();

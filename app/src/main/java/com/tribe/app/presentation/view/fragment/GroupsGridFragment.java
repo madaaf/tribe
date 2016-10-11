@@ -271,6 +271,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
         subscriptions.add(groupInfoView.isPrivate().subscribe(isPrivate -> {
             privateGroup = isPrivate;
+            if (privateGroup) groupSuggestionsView.setPrivate();
+            else groupSuggestionsView.setPublic();
             if (groupInfoValid) {
                 createInviteView.switchColors(privateGroup);
             }
@@ -309,6 +311,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         this.groupLinkExpirationDate = groupLinkExpirationDate;
         createInviteView.disableCreate();
         createInviteView.setInvite(privateGroup);
+        if (!privateGroup) groupSuggestionsView.setPublic();
         if (groupLink != null && !isLinkExpired(groupLinkExpirationDate)) {
             createInviteView.setInviteLink(groupLink);
             createInviteView.setExpirationDesc(timeRemaining(groupLinkExpirationDate));
@@ -377,6 +380,10 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                 createInviteView.loadingAnimation(CreateInviteView.STATUS_CREATING_LINK, AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
             }
             else navigator.shareGenericText(getString(R.string.share_group_public_link, groupName, groupLink), getContext());
+        }));
+
+        subscriptions.add(groupInfoView.hideKeyboard().subscribe(aVoid -> {
+            screenUtils.hideKeyboard(getActivity());
         }));
 
         subscriptions.add(searchFriendsView.editTextSearchTextChanged().subscribe(this::filter));
