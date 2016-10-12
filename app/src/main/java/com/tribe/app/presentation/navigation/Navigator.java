@@ -371,8 +371,13 @@ public class Navigator {
             if (StringUtils.isEmpty(selectedPackage)) {
                 context.startActivity(Intent.createChooser(share, context.getString(R.string.contacts_share_profile_button)));
             } else {
-                share.setPackage(selectedPackage);
-                context.startActivity(share);
+                try {
+                    share.setPackage(selectedPackage);
+                    context.startActivity(share);
+                } catch (Exception ex) {
+                    share.setPackage(null);
+                    context.startActivity(Intent.createChooser(share, context.getString(R.string.contacts_share_profile_button)));
+                }
             }
         }
     }

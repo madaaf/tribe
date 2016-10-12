@@ -19,6 +19,7 @@
         />
 
     <FrameLayout
+        android:id="@+id/layoutPin"
         android:layout_width="116dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center">

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.tribe.app.R;
 import com.tribe.app.data.exception.NetworkConnectionException;
+import com.tribe.app.presentation.utils.EmojiParser;
 
 /**
  * Factory used to create error messages from an Exception as a condition.
@@ -29,6 +30,8 @@ public class ErrorMessageFactory {
         if (exception instanceof NetworkConnectionException) {
             message = context.getString(R.string.error_no_network);
         }
+
+        message = EmojiParser.demojizedText(message);
 
         return message;
     }
