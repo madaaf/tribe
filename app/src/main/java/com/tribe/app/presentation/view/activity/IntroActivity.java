@@ -7,7 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +30,7 @@ import com.tribe.app.presentation.view.fragment.ProfileInfoFragment;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -62,11 +63,8 @@ public class IntroActivity extends BaseActivity {
     /**
      * Globals
      */
-
-    private IntroViewFragment introViewFragment;
-    private ProfileInfoFragment profileInfoFragment;
-    private AccessFragment accessFragment;
     private Uri deepLink;
+    private IntroViewPagerAdapter introViewPagerAdapter;
 
     // OBSERVABLES
     private Unbinder unbinder;
@@ -149,7 +147,9 @@ public class IntroActivity extends BaseActivity {
 
         // 1. Country code selector
         if (requestCode == Navigator.REQUEST_COUNTRY && resultCode == Activity.RESULT_OK) {
-            introViewFragment.initPhoneNumberViewWithCountryCode(data.getStringExtra(Extras.COUNTRY_CODE));
+            if (introViewPagerAdapter.getIntroViewFragment() != null) {
+                introViewPagerAdapter.getIntroViewFragment().initPhoneNumberViewWithCountryCode(data.getStringExtra(Extras.COUNTRY_CODE));
+            }
         }
     }
 
@@ -163,7 +163,7 @@ public class IntroActivity extends BaseActivity {
     }
 
     private void initViewPager() {
-        IntroViewPagerAdapter introViewPagerAdapter = new IntroViewPagerAdapter(getSupportFragmentManager());
+        introViewPagerAdapter = new IntroViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(introViewPagerAdapter);
         viewPager.setOffscreenPageLimit(4);
         viewPager.setScrollDurationFactor(2f);
@@ -185,17 +185,25 @@ public class IntroActivity extends BaseActivity {
      */
 
     public void goToProfileInfo(User user, LoginEntity loginEntity) {
-        profileInfoFragment.setLoginEntity(loginEntity);
-        profileInfoFragment.setUser(user);
-        profileInfoFragment.setDeepLink(deepLink);
+        if (introViewPagerAdapter.getProfileInfoFragment() != null) {
+            ProfileInfoFragment profileInfoFragment = introViewPagerAdapter.getProfileInfoFragment();
+            profileInfoFragment.setLoginEntity(loginEntity);
+            profileInfoFragment.setUser(user);
+            profileInfoFragment.setDeepLink(deepLink);
+        }
+
         viewPager.setCurrentItem(PAGE_PROFILE_INFO);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
     }
 
     public void goToAccess(User user) {
-        accessFragment.fadeBigLockIn();
-        accessFragment.setUser(user);
-        accessFragment.setDeepLink(deepLink);
+        if (introViewPagerAdapter.getAccessFragment() != null) {
+            AccessFragment accessFragment = introViewPagerAdapter.getAccessFragment();
+            accessFragment.fadeBigLockIn();
+            accessFragment.setUser(user);
+            accessFragment.setDeepLink(deepLink);
+        }
+
         subscriptions.add(
                 Observable.timer(250, TimeUnit.MILLISECONDS)
                         .onBackpressureDrop()
@@ -213,9 +221,13 @@ public class IntroActivity extends BaseActivity {
      * Initialize fragment view pager adapter
      */
 
-    private class IntroViewPagerAdapter extends FragmentPagerAdapter {
+    private class IntroViewPagerAdapter extends FragmentStatePagerAdapter {
 
         private static final int NUM_ITEMS = 3;
+
+        private WeakReference<IntroViewFragment> introViewFragment;
+        private WeakReference<ProfileInfoFragment> profileInfoFragment;
+        private WeakReference<AccessFragment> accessFragment;
 
         public IntroViewPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -230,38 +242,45 @@ public class IntroActivity extends BaseActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    introViewFragment = IntroViewFragment.newInstance();
-                    return introViewFragment;
+                    return IntroViewFragment.newInstance();
                 case 1:
-                    profileInfoFragment = ProfileInfoFragment.newInstance();
-                    return profileInfoFragment;
+                    return ProfileInfoFragment.newInstance();
                 case 2:
-                    accessFragment = AccessFragment.newInstance();
-                    accessFragment.setUser(currentUser);
-                    return accessFragment;
+                    return AccessFragment.newInstance();
                 default:
-                    introViewFragment = IntroViewFragment.newInstance();
-                    return introViewFragment;
+                    return IntroViewFragment.newInstance();
             }
         }
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
+            Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
+
             switch (position) {
                 case 0:
-                    introViewFragment = (IntroViewFragment) super.instantiateItem(container, position);
-                    return introViewFragment;
+                    introViewFragment = new WeakReference<>((IntroViewFragment) createdFragment);
+                    break;
                 case 1:
-                    profileInfoFragment = (ProfileInfoFragment) super.instantiateItem(container, position);
-                    return profileInfoFragment;
+                    profileInfoFragment = new WeakReference<>((ProfileInfoFragment) createdFragment);
+                    break;
                 case 2:
-                    accessFragment = (AccessFragment) super.instantiateItem(container, position);
-                    accessFragment.setUser(currentUser);
-                    return accessFragment;
-                default:
-                    introViewFragment = (IntroViewFragment) super.instantiateItem(container, position);
-                    return introViewFragment;
+                    accessFragment = new WeakReference<>((AccessFragment) createdFragment);
+                    break;
             }
+
+            return createdFragment;
+        }
+
+        public IntroViewFragment getIntroViewFragment() {
+            return introViewFragment.get();
+        }
+
+        public ProfileInfoFragment getProfileInfoFragment() {
+            return profileInfoFragment.get();
+        }
+
+        public AccessFragment getAccessFragment() {
+            return accessFragment.get();
         }
     }
 
