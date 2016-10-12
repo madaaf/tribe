@@ -31,7 +31,8 @@ import rx.subscriptions.CompositeSubscription;
  * SettingActivity.java
  * Created by horatiothomas on 8/26/16.
  */
-public class SettingActivity extends BaseActivity implements SettingView {
+public class
+SettingActivity extends BaseActivity implements SettingView {
 
     private static final String SETTING_FRAGMENT = "settingFragment";
     private static final String SETTING_PROFILE_FRAGMENT = "settingUpdateProfileFragment";
@@ -270,7 +271,8 @@ public class SettingActivity extends BaseActivity implements SettingView {
     @Override
     public void usernameResult(Boolean available) {
         boolean usernameValid = available;
-        settingUpdateProfileFragment.setUsernameValid(usernameValid || settingUpdateProfileFragment.getUsername().equals(getCurrentUser().getUsername()));
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.layoutFragmentContainer);
+        if (fragment instanceof SettingUpdateProfileFragment) settingUpdateProfileFragment.setUsernameValid(usernameValid || settingUpdateProfileFragment.getUsername().equals(getCurrentUser().getUsername()));
     }
 
     private void initPresenter() {

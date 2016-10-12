@@ -356,10 +356,12 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
 
     @Override
     public void hideLoading() {
-        viewPhoneNumber.setNextVisible(true);
-        viewPhoneNumber.setNextEnabled(true);
-        viewPhoneNumber.progressViewVisible(false);
-        viewCode.progressViewVisible(false);
+        if (viewPhoneNumber != null) {
+            viewPhoneNumber.setNextVisible(true);
+            viewPhoneNumber.setNextEnabled(true);
+            viewPhoneNumber.progressViewVisible(false);
+        }
+        if (viewCode != null) viewCode.progressViewVisible(false);
     }
 
     @Override

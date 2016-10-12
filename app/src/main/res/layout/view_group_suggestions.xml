@@ -44,7 +44,9 @@
                     android:paddingEnd="@dimen/padding_mid"
                     android:paddingStart="@dimen/padding_mid"
                     android:paddingTop="@dimen/padding_small"
-                    android:textSize="@dimen/group_suggestion_text_size" />
+                    android:textSize="@dimen/group_suggestion_text_size"
+                    style="@style/Body.One.Black"
+                    />
 
             </FrameLayout>
 
@@ -62,7 +64,9 @@
                     android:paddingEnd="@dimen/padding_mid"
                     android:paddingStart="@dimen/padding_mid"
                     android:paddingTop="@dimen/padding_small"
-                    android:textSize="@dimen/group_suggestion_text_size" />
+                    android:textSize="@dimen/group_suggestion_text_size"
+                    style="@style/Body.One.Black"
+                    />
 
             </FrameLayout>
 
@@ -80,7 +84,9 @@
                     android:paddingEnd="@dimen/padding_mid"
                     android:paddingStart="@dimen/padding_mid"
                     android:paddingTop="@dimen/padding_small"
-                    android:textSize="@dimen/group_suggestion_text_size" />
+                    android:textSize="@dimen/group_suggestion_text_size"
+                    style="@style/Body.One.Black"
+                    />
 
             </FrameLayout>
 
@@ -98,7 +104,9 @@
                     android:paddingEnd="@dimen/padding_mid"
                     android:paddingStart="@dimen/padding_mid"
                     android:paddingTop="@dimen/padding_small"
-                    android:textSize="@dimen/group_suggestion_text_size" />
+                    android:textSize="@dimen/group_suggestion_text_size"
+                    style="@style/Body.One.Black"
+                    />
 
             </FrameLayout>
 
@@ -116,7 +124,9 @@
                     android:paddingEnd="@dimen/padding_mid"
                     android:paddingStart="@dimen/padding_mid"
                     android:paddingTop="@dimen/padding_small"
-                    android:textSize="@dimen/group_suggestion_text_size" />
+                    android:textSize="@dimen/group_suggestion_text_size"
+                    style="@style/Body.One.Black"
+                    />
 
             </FrameLayout>
 
@@ -134,7 +144,9 @@
                     android:paddingEnd="@dimen/padding_mid"
                     android:paddingStart="@dimen/padding_mid"
                     android:paddingTop="@dimen/padding_small"
-                    android:textSize="@dimen/group_suggestion_text_size" />
+                    android:textSize="@dimen/group_suggestion_text_size"
+                    style="@style/Body.One.Black"
+                    />
 
             </FrameLayout>
 
@@ -152,7 +164,9 @@
                     android:paddingEnd="@dimen/padding_mid"
                     android:paddingStart="@dimen/padding_mid"
                     android:paddingTop="@dimen/padding_small"
-                    android:textSize="@dimen/group_suggestion_text_size" />
+                    android:textSize="@dimen/group_suggestion_text_size"
+                    style="@style/Body.One.Black"
+                    />
 
             </FrameLayout>
 
@@ -170,7 +184,9 @@
                     android:paddingEnd="@dimen/padding_mid"
                     android:paddingStart="@dimen/padding_mid"
                     android:paddingTop="@dimen/padding_small"
-                    android:textSize="@dimen/group_suggestion_text_size" />
+                    android:textSize="@dimen/group_suggestion_text_size"
+                    style="@style/Body.One.Black"
+                    />
 
             </FrameLayout>
 
@@ -188,7 +204,9 @@
                     android:paddingEnd="@dimen/padding_mid"
                     android:paddingStart="@dimen/padding_mid"
                     android:paddingTop="@dimen/padding_small"
-                    android:textSize="@dimen/group_suggestion_text_size" />
+                    android:textSize="@dimen/group_suggestion_text_size"
+                    style="@style/Body.One.Black"
+                    />
 
             </FrameLayout>
 

@@ -75,10 +75,11 @@ public class AvatarView extends RoundedCornerLayout {
             paintBorder.setAntiAlias(true);
             paintBorder.setStrokeWidth(borderWidth);
 
-            float canvasSize = canvas.getWidth();
-            float center = (canvasSize - (borderWidth * 2)) / 2;
+            float viewWidth = getWidth();
+            float circleCenter = viewWidth / 2;
 
-            canvas.drawCircle(center + borderWidth, center + borderWidth, ((canvasSize - (borderWidth * 2)) / 2) + borderWidth - 4.0f, paintBorder);
+            canvas.drawCircle(circleCenter, circleCenter,
+                    circleCenter, paintBorder);
         }
     }
 
@@ -91,7 +92,7 @@ public class AvatarView extends RoundedCornerLayout {
                     .into(imgAvatar);
         } else {
             Glide.with(getContext())
-                    .load(R.drawable.picto_avatar_placeholder)
+                    .load(R.drawable.picto_placeholder_avatar)
                     .crossFade()
                     .into(imgAvatar);
         }

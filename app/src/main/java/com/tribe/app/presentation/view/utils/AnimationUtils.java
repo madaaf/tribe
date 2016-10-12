@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.support.design.widget.CoordinatorLayout;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
@@ -43,6 +44,7 @@ public class AnimationUtils {
     public static final float ALPHA_NONE = 0;
     public static final int ANIMATION_DURATION_EXTRA_SHORT = 100;
     public static final int ANIMATION_DURATION_SHORT = 300;
+    public static final int ANIMATION_DURATION_MID = 500;
 
     public static Animation fadeInAnimation(final View view, long duration, long delay) {
         Animation animation = new AlphaAnimation(0, 1);
@@ -128,6 +130,14 @@ public class AnimationUtils {
 
     public static void fadeIn(View v, long duration) {
         v.animate().alpha(1).setStartDelay(NO_START_DELAY).setInterpolator(new DecelerateInterpolator()).setDuration(duration).start();
+    }
+
+    public static void fadeOutAccelerate(View v, long duration) {
+        v.animate().alpha(0).setStartDelay(NO_START_DELAY).setInterpolator(new AccelerateInterpolator(2)).setDuration(duration).start();
+    }
+
+    public static void fadeInAccelerate(View v, long duration) {
+        v.animate().alpha(1).setStartDelay(NO_START_DELAY).setInterpolator(new AccelerateInterpolator(2)).setDuration(duration).start();
     }
 
     public static void fadeViewDownOut(View view, Animator.AnimatorListener listener) {
@@ -270,6 +280,20 @@ public class AnimationUtils {
         animator.addUpdateListener(animation -> {
             lp.height = (Integer) animation.getAnimatedValue();
             view.getLayoutParams().height = lp.height;
+            view.requestLayout();
+        });
+        animator.start();
+    }
+
+    public static void animateSizeFrameLayout(View view, int endHeight, int duration) {
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) view.getLayoutParams();
+        ValueAnimator animator = ValueAnimator.ofInt(view.getWidth(), endHeight);
+        animator.setDuration(duration);
+        animator.addUpdateListener(animation -> {
+            lp.height = (Integer) animation.getAnimatedValue();
+            lp.width = (Integer) animation.getAnimatedValue();
+            view.getLayoutParams().height = lp.height;
+            view.getLayoutParams().width = lp.width;
             view.requestLayout();
         });
         animator.start();

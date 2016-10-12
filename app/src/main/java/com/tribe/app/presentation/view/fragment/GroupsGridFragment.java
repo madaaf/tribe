@@ -10,6 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -143,7 +144,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     private int appBarLayoutTranslation = 130;
     private int layoutCreateInviteInfoPositionY = 255;
     private int startTranslationDoneIcon = 200;
-    private int animDuration = AnimationUtils.ANIMATION_DURATION_SHORT;
+    private int animDuration = AnimationUtils.ANIMATION_DURATION_MID;
     private int smallMargin = 5;
     private int orignalGroupSuggestionsMargin;
     private boolean friendAdapterClickable = true;
@@ -271,6 +272,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
         subscriptions.add(groupInfoView.isPrivate().subscribe(isPrivate -> {
             privateGroup = isPrivate;
+            if (privateGroup) groupSuggestionsView.setPrivate();
+            else groupSuggestionsView.setPublic();
             if (groupInfoValid) {
                 createInviteView.switchColors(privateGroup);
             }
@@ -309,6 +312,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         this.groupLinkExpirationDate = groupLinkExpirationDate;
         createInviteView.disableCreate();
         createInviteView.setInvite(privateGroup);
+        if (!privateGroup) groupSuggestionsView.setPublic();
         if (groupLink != null && !isLinkExpired(groupLinkExpirationDate)) {
             createInviteView.setInviteLink(groupLink);
             createInviteView.setExpirationDesc(timeRemaining(groupLinkExpirationDate));
@@ -379,6 +383,10 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             else navigator.shareGenericText(getString(R.string.share_group_public_link, groupName, groupLink), getContext());
         }));
 
+        subscriptions.add(groupInfoView.hideKeyboard().subscribe(aVoid -> {
+            screenUtils.hideKeyboard(getActivity());
+        }));
+
         subscriptions.add(searchFriendsView.editTextSearchTextChanged().subscribe(this::filter));
         setupSearchView();
     }
@@ -433,7 +441,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         for (int i = 0; i < memberPhotos; i++) {
             String profPic = groupMemberList.get(i).getProfilePicture();
             if (profPic != null) groupInfoView.addMemberPhoto(profPic);
-            if (profPic.equals(getString(R.string.no_profile_picture_url))) groupInfoView.addMemberPhotoDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_avatar_placeholder));
+            if (profPic.equals(getString(R.string.no_profile_picture_url))) groupInfoView.addMemberPhotoDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_placeholder_avatar));
         }
     }
 
@@ -555,7 +563,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
         createInviteView.enableInvite();
         enableScrolling(true);
-        groupPresenter.updateScore();
     }
 
     private void showShareDialogFragment() {
@@ -603,13 +610,14 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                     Friendship friendship = friendAdapter.getItemAtPosition((Integer) friendView.getTag(R.id.tag_position));
                     String friendId = friendship.getFriend().getId();
                     recyclerViewInvite.setEnabled(false);
-                    Observable.timer(animDuration, TimeUnit.MILLISECONDS)
-                            .onBackpressureDrop()
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(time -> {
-                                recyclerViewInvite.setEnabled(true);
-                            });
+                    subscriptions.add(
+                            Observable.timer(animDuration, TimeUnit.MILLISECONDS)
+                                    .onBackpressureDrop()
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(time -> {
+                                        recyclerViewInvite.setEnabled(true);
+                                    }));
                     if (friendship.isSelected()) {
                         memberIds.add(friendId);
                         searchFriendsView.insertFriend(friendship.getId(), friendship.getProfilePicture());
@@ -643,13 +651,14 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
                     .setDuration(animDuration)
                     .setStartDelay(AnimationUtils.NO_START_DELAY)
                     .start();
-            Observable.timer(animDuration, TimeUnit.MILLISECONDS)
-                    .onBackpressureDrop()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(time -> {
-                        groupSuggestionsView.setVisibility(View.INVISIBLE);
-                    });
+            subscriptions.add(
+                    Observable.timer(animDuration, TimeUnit.MILLISECONDS)
+                            .onBackpressureDrop()
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(time -> {
+                                groupSuggestionsView.setVisibility(View.INVISIBLE);
+                            }));
         }
     }
 
@@ -707,6 +716,10 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         dialogCamera.setContentView(view);
         dialogCamera.show();
         dialogCamera.setOnDismissListener(dialog -> {
+            cameraTypeAdapter.releaseSubscriptions();
+            dialogCamera = null;
+        });
+        dialogCamera.setOnCancelListener(dialog -> {
             cameraTypeAdapter.releaseSubscriptions();
             dialogCamera = null;
         });
@@ -774,20 +787,30 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
         createInviteView.loaded();
         animSet1();
-        Observable.timer(animDuration, TimeUnit.MILLISECONDS)
-                .onBackpressureDrop()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(time -> {
-                    animSet2();
-                });
-        Observable.timer(animDuration * 2, TimeUnit.MILLISECONDS)
-                .onBackpressureDrop()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(time -> {
-                    animSet3();
-                });
+        subscriptions.add(
+                Observable.timer(animDuration, TimeUnit.MILLISECONDS)
+                        .onBackpressureDrop()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(time -> {
+                            animSet2();
+                        }));
+        subscriptions.add(
+                Observable.timer(animDuration * 2, TimeUnit.MILLISECONDS)
+                        .onBackpressureDrop()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(time -> {
+                            animSet3();
+                        }));
+        subscriptions.add(
+                Observable.timer(animDuration * 3, TimeUnit.MILLISECONDS)
+                        .onBackpressureDrop()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(time -> {
+                            groupPresenter.updateScore();
+                        }));
     }
 
     @Override

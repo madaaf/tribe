@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.os.Build;
 import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
@@ -562,7 +563,19 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
         }
 
         adjustCameraParameters();
-        //camera.setDisplayOrientation(getOptimalOrientation());
+
+        // https://productforums.google.com/forum/#!topic/nexus/DNsj-yVH3hE
+        final WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        final Display display = windowManager.getDefaultDisplay();
+        int rotation = display.getRotation();
+        int degrees = 0;
+        switch (rotation) {
+            case Surface.ROTATION_0: degrees = 0; break;
+            case Surface.ROTATION_90: degrees = 90; break;
+            case Surface.ROTATION_180: degrees = 180; break;
+            case Surface.ROTATION_270: degrees = 270; break;
+        }
+        camera.setDisplayOrientation(degrees);
     }
 
     @Override

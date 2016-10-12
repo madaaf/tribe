@@ -196,16 +196,17 @@ public class IntroActivity extends BaseActivity {
         accessFragment.fadeBigLockIn();
         accessFragment.setUser(user);
         accessFragment.setDeepLink(deepLink);
-        Observable.timer(250, TimeUnit.MILLISECONDS)
-                .onBackpressureDrop()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(time -> {
-                    getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
-                    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                            WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                    viewPager.setCurrentItem(PAGE_ACCESS);
-                });
+        subscriptions.add(
+                Observable.timer(250, TimeUnit.MILLISECONDS)
+                        .onBackpressureDrop()
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(time -> {
+                            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+                            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                            viewPager.setCurrentItem(PAGE_ACCESS);
+                        }));
     }
 
     /**

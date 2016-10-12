@@ -29,7 +29,6 @@ import com.tribe.app.presentation.view.widget.EditTextFont;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -37,8 +36,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -348,7 +345,7 @@ public class SearchFriendsView extends FrameLayout {
         imageViewFlp.topMargin = imageMargin;
         imageView.setLayoutParams(imageViewFlp);
         if (imageUrl.equals(getContext().getString(R.string.no_profile_picture_url))) {
-            imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_avatar_placeholder));
+            imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_placeholder_avatar));
         } else {
             Glide.with(getContext()).load(imageUrl)
                     .bitmapTransform(new CropCircleTransformation(getContext()))

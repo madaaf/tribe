@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.activity;
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -12,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +23,7 @@ import android.view.animation.OvershootInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.f2prateek.rx.preferences.Preference;
@@ -56,6 +59,7 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -63,6 +67,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class HomeActivity extends BaseActivity implements HasComponent<UserComponent>, HomeView, GoogleApiClient.OnConnectionFailedListener {
@@ -154,10 +160,14 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     // VARIABLES
     private HomeViewPagerAdapter homeViewPagerAdapter;
+    private Context context;
+    private int previousViewPagerState;
+    private int viewPagerAnimDuration = AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT;
     private List<Message> newMessages;
     private int pendingTribeCount;
     private boolean isRecording;
     private boolean navVisible = true;
+    private boolean layoutNavPendingVisible = false;
     private boolean isFirstInit = true;
     private GoogleApiClient googleApiClient;
 
@@ -219,6 +229,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     }
 
     private void initUi() {
+        context = this;
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
     }
@@ -281,6 +292,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 if (viewPager.getCurrentItem() == GRID_FRAGMENT_PAGE) {
                     //reloadGrid();
                     if (!navVisible) enableNavigation();
+                    screenUtils.hideKeyboard((Activity) context);
                 }
             }
 
@@ -494,11 +506,13 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @OnClick(R.id.imgNavGroups)
     public void goToGroups() {
+        animateToGroups();
         if (!isRecording) viewPager.setCurrentItem(GROUPS_FRAGMENT_PAGE, true);
     }
 
     @OnClick(R.id.imgNavFriends)
     public void goToFriends() {
+        animateToContacts();
         if (!isRecording) viewPager.setCurrentItem(CONTACTS_FRAGMENT_PAGE, true);
     }
 
@@ -527,6 +541,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @OnClick(R.id.layoutNavGridMain)
     public void reloadGrid() {
+        animateToGrid();
         if (!isRecording) {
             if (viewPager.getCurrentItem() == GRID_FRAGMENT_PAGE) {
                 homePresenter.reloadData();
@@ -536,6 +551,89 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             }
         }
     }
+
+    private void animateToContacts() {
+        imgNavGroups.animate()
+                .setDuration(viewPagerAnimDuration)
+                .x(screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small))
+                .start();
+        int navGridPosition;
+        int navFriendsPosition;
+        if (layoutNavPendingVisible) {
+            layoutNavPending.animate()
+                    .setDuration(viewPagerAnimDuration)
+                    .x(screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 2)
+                    .start();
+            navGridPosition = screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 3;
+            navFriendsPosition = screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 3 - getResources().getDimensionPixelSize(R.dimen.nav_size_max);
+        } else {
+            navGridPosition = screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 2;
+            navFriendsPosition = screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 2 - getResources().getDimensionPixelSize(R.dimen.nav_size_max);
+        }
+        layoutNavGrid.animate()
+                .setDuration(viewPagerAnimDuration)
+                .x(navGridPosition)
+                .start();
+        imgNavFriends.animate()
+                .setDuration(viewPagerAnimDuration)
+                .x(navFriendsPosition)
+                .start();
+        AnimationUtils.animateSizeFrameLayout(imgNavGroups, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
+        AnimationUtils.animateSizeFrameLayout(layoutNavGrid, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
+        AnimationUtils.animateSizeFrameLayout(imgNavFriends, getResources().getDimensionPixelSize(R.dimen.nav_size_max), viewPagerAnimDuration);
+    }
+
+    private void animateToGrid() {
+        imgNavFriends.animate()
+                .setDuration(viewPagerAnimDuration)
+                .x(getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small))
+                .start();
+        layoutNavGrid.animate()
+                .setDuration(viewPagerAnimDuration)
+                .x(screenUtils.getWidthPx() / 2 - layoutNavGrid.getWidth() / 2)
+                .start();
+        imgNavGroups.animate()
+                .setDuration(viewPagerAnimDuration)
+                .x(screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small))
+                .start();
+        if (layoutNavPendingVisible) {
+            layoutNavPending.animate()
+                    .setDuration(viewPagerAnimDuration)
+                    .x(screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 2)
+                    .start();
+        }
+        AnimationUtils.animateSizeFrameLayout(imgNavGroups, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
+        AnimationUtils.animateSizeFrameLayout(layoutNavGrid, getResources().getDimensionPixelSize(R.dimen.nav_size_max), viewPagerAnimDuration);
+        AnimationUtils.animateSizeFrameLayout(imgNavFriends, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
+    }
+    private void animateToGroups() {
+        imgNavFriends.animate()
+                .setDuration(viewPagerAnimDuration)
+                .x(getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small))
+                .start();
+        layoutNavGrid.animate()
+                .setDuration(viewPagerAnimDuration)
+                .x(getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) + getResources().getDimensionPixelSize(R.dimen.nav_size_small))
+                .start();
+        int navGroupsPosition;
+        if (layoutNavPendingVisible) {
+            layoutNavPending.animate()
+                    .setDuration(viewPagerAnimDuration)
+                    .x(getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) + getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 2)
+                    .start();
+            navGroupsPosition = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) + getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 3;
+        } else {
+            navGroupsPosition = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) + getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 2;
+        }
+        imgNavGroups.animate()
+                .setDuration(viewPagerAnimDuration)
+                .x(navGroupsPosition)
+                .start();
+        AnimationUtils.animateSizeFrameLayout(imgNavFriends, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
+        AnimationUtils.animateSizeFrameLayout(layoutNavGrid, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
+        AnimationUtils.animateSizeFrameLayout(imgNavGroups, getResources().getDimensionPixelSize(R.dimen.nav_size_max), viewPagerAnimDuration);
+    }
+
 
     @Override
     public UserComponent getComponent() {
@@ -660,7 +758,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             int marginLayoutNavPending = ((FrameLayout.LayoutParams) layoutNavPending.getLayoutParams()).rightMargin;
 
             int widthPending = layoutNavPending.getTranslationY() == 0 ? layoutNavPending.getWidth() : 0;
-
             if (pagePosition == 1 && position > 0) {
                 cameraWrapper.setTranslationX(pageWidth * position);
 
@@ -714,12 +811,14 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     //////////////////
 
     private void hideLayoutPending() {
+        layoutNavPendingVisible = false;
         if (layoutNavPending.getTranslationY() == 0) {
             layoutNavPending.animate().translationY(translationBackToTop).setDuration(DURATION).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
         }
     }
 
     private void showLayoutPending() {
+        layoutNavPendingVisible = true;
         if (layoutNavPending.getTranslationY() > 0) {
             layoutNavPending.animate().translationY(0).setDuration(DURATION).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
         }
