@@ -271,7 +271,8 @@ SettingActivity extends BaseActivity implements SettingView {
     @Override
     public void usernameResult(Boolean available) {
         boolean usernameValid = available;
-        if (settingUpdateProfileFragment != null) settingUpdateProfileFragment.setUsernameValid(usernameValid || settingUpdateProfileFragment.getUsername().equals(getCurrentUser().getUsername()));
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.layoutFragmentContainer);
+        if (fragment instanceof SettingUpdateProfileFragment) settingUpdateProfileFragment.setUsernameValid(usernameValid || settingUpdateProfileFragment.getUsername().equals(getCurrentUser().getUsername()));
     }
 
     private void initPresenter() {
