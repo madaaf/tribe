@@ -514,13 +514,18 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
 
     @Override
     public CameraHelper.CameraInfoCompat getCameraInfo() {
-        final Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
-        Camera.getCameraInfo(cameraId, cameraInfo);
+        try {
+            final Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+            Camera.getCameraInfo(cameraId, cameraInfo);
 
-        final CameraHelper.CameraInfoCompat result = new CameraHelper.CameraInfoCompat();
-        result.facing = cameraInfo.facing;
-        result.orientation = cameraInfo.orientation;
-        return result;
+            final CameraHelper.CameraInfoCompat result = new CameraHelper.CameraInfoCompat();
+            result.facing = cameraInfo.facing;
+            result.orientation = cameraInfo.orientation;
+            return result;
+        } catch (RuntimeException e) {
+            Log.e("runtime e", e.toString());
+            return new CameraHelper.CameraInfoCompat();
+        }
     }
 
     @Override
