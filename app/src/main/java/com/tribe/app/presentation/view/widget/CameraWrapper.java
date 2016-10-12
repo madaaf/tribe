@@ -230,7 +230,7 @@ public class CameraWrapper extends FrameLayout {
             preview.startRecording(fileId, visualizerView);
             visualizerView.startRecording();
         } else {
-            preview.startRecording(fileId, null);
+            if (fileId != null) preview.startRecording(fileId, null);
         }
 
         addPathView();

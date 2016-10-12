@@ -3,8 +3,11 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AdapterDelegates/AdapterDelegates.iml" filepath="$PROJECT_DIR$/AdapterDelegates/AdapterDelegates.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AdapterDelegates/AdapterDelegates.iml" filepath="$PROJECT_DIR$/AdapterDelegates/AdapterDelegates.iml" />
       <module fileurl="file://$PROJECT_DIR$/Tribe2.iml" filepath="$PROJECT_DIR$/Tribe2.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tribe-android.iml" filepath="$PROJECT_DIR$/tribe-android.iml" />
       <module fileurl="file://$PROJECT_DIR$/tribe-android.iml" filepath="$PROJECT_DIR$/tribe-android.iml" />
     </modules>
   </component>
