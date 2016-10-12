@@ -878,6 +878,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     }
 
     public void enableNavigation() {
+        animateToGrid();
         slideUpNav(layoutNavMaster);
         viewPager.setSwipeable(true);
         navVisible = true;
