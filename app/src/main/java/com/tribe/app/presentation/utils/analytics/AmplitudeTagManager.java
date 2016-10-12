@@ -35,6 +35,8 @@ public class AmplitudeTagManager implements TagManager {
             amplitude = Amplitude.getInstance().initialize(context, BuildConfig.AMPLITUDE_KEY, user.getId())
                     .enableForegroundTracking((Application) context.getApplicationContext());
         }
+
+        amplitude.trackSessionEvents(true);
     }
 
     @Override

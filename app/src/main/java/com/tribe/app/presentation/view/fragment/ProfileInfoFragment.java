@@ -223,6 +223,7 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
         if (StringUtils.isEmpty(user.getId()))
             profileInfoPresenter.register(profileInfoView.getDisplayName(), profileInfoView.getUsername(), loginEntity);
         else {
+            tagManager.trackEvent(TagManagerConstants.ONBOARDING_CONNECTION);
             showLoading();
             profileInfoPresenter.updateUser(profileInfoView.getUsername(), profileInfoView.getDisplayName(), profileInfoView.getImgUri(),
                     facebookEntity != null && !StringUtils.isEmpty(facebookEntity.getId()) ? facebookEntity.getId() : null);

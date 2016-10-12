@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Toast;
 
 import com.jakewharton.rxbinding.view.RxView;
@@ -77,6 +78,9 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
     @BindView(R.id.viewPager)
     CustomViewPager viewPager;
 
+    @BindView(R.id.viewShadow)
+    View viewShadow;
+
     @BindView(R.id.viewPhoneNumber)
     PhoneNumberView viewPhoneNumber;
 
@@ -114,8 +118,8 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
         setRetainInstance(true);
         final View fragmentView = inflater.inflate(R.layout.fragment_intro_view, container, false);
 
-        initUi(fragmentView);
         initDependencyInjector();
+        initUi(fragmentView);
         initViewPager();
         initPhoneNumberView();
         initPresenter();
@@ -154,6 +158,13 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
         unbinder = ButterKnife.bind(this, view);
 
         viewPhoneNumber.setNextEnabled(false);
+
+        viewShadow.setTranslationY(screenUtils.getHeightPx() >> 1);
+        viewShadow.animate().translationY(0).setDuration(300).setStartDelay(1000).setInterpolator(new DecelerateInterpolator()).start();
+        viewPhoneNumber.setTranslationY(screenUtils.getHeightPx() >> 1);
+        viewPhoneNumber.animate().translationY(0).setDuration(300).setStartDelay(1000).setInterpolator(new DecelerateInterpolator()).start();
+        txtIntroMessage.setAlpha(0);
+        txtIntroMessage.animate().alpha(1).setDuration(300).setStartDelay(1000).setInterpolator(new DecelerateInterpolator()).start();
 
         subscriptions.add(RxView.clicks(viewPhoneNumber.getImageViewNextIcon()).subscribe(aVoid -> {
             viewPhoneNumber.fadeOutNext();
@@ -322,6 +333,12 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
     @Override
     public void loginError(ErrorLogin errorLogin) {
         this.errorLogin = errorLogin;
+
+        if (errorLogin != null && !errorLogin.isVerified()) {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(TagManagerConstants.TYPE_ERROR_TECHNICAL, true);
+            tagManager.trackEvent(TagManagerConstants.ONBOARDING_SMS_ERROR, bundle);
+        }
     }
 
     /**
