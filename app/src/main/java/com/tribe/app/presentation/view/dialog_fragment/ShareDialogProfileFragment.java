@@ -148,7 +148,7 @@ public class ShareDialogProfileFragment extends BaseDialogFragment {
                     .into(avatar);
         } else {
             Glide.with(getContext())
-                    .load(R.drawable.picto_avatar_placeholder)
+                    .load(R.drawable.picto_placeholder_avatar)
                     .bitmapTransform(new CropCircleTransformation(getContext()))
                     .crossFade()
                     .into(avatar);
