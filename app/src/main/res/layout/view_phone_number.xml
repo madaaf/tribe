@@ -7,6 +7,16 @@
     android:layout_gravity="bottom"
     android:background="@color/white.opacity.100">
 
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:focusableInTouchMode="true"
+        android:focusable="true"
+        android:clickable="true"
+        >
+        <requestFocus />
+    </LinearLayout>
+
     <ImageView
         android:id="@+id/imgCountryCode"
         android:layout_width="25dp"

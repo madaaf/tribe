@@ -23,6 +23,7 @@ import com.tribe.app.presentation.view.component.SettingThemeView;
 import com.tribe.app.presentation.view.dialog_fragment.LocationDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.PointsDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.ShareDialogFragment;
+import com.tribe.app.presentation.view.dialog_fragment.ShareDialogProfileFragment;
 import com.tribe.app.presentation.view.fragment.AccessFragment;
 import com.tribe.app.presentation.view.fragment.ContactsGridFragment;
 import com.tribe.app.presentation.view.fragment.GroupMemberFragment;
@@ -71,4 +72,5 @@ public interface UserComponent extends ActivityComponent {
     void inject(SettingFilterView settingFilterView);
     void inject(PointsDialogFragment pointsDialogFragment);
     void inject(LocationDialogFragment locationDialogFragment);
+    void inject(ShareDialogProfileFragment shareDialogProfileFragment);
 }

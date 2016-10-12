@@ -19,4 +19,5 @@ public class PreferencesConstants {
     public static String LAST_NOTIFY_REQUEST = "LAST_NOTIFY_REQUEST";
     public static String FILTER = "FILTER";
     public static String LOCATION_POPUP = "LOCATION_POPUP";
+    public static String SHARE_PROFILE = "SHARE_PROFILE";
 }

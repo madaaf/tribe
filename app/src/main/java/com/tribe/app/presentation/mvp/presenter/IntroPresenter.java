@@ -167,7 +167,7 @@ public class IntroPresenter implements Presenter {
 
         @Override
         public void onNext(Pin pin) {
-            if (pin == null || !StringUtils.isEmpty(pin.getPinId())) {
+            if (pin != null && !StringUtils.isEmpty(pin.getPinId())) {
                 goToCode(pin);
             } else {
                 hideViewLoading();

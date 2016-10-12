@@ -81,6 +81,25 @@
     <color name="orange">#FD6E02</color>
     <color name="orange.error">#FF6D00</color>
 
+    <!-- APPS COLORS -->
+    <color name="snapchat">#FFE400</color>
+    <color name="twitter">#00AAEC</color>
+    <color name="instagram">#275A85</color>
+
+    <!-- SHARE HANDLE -->
+    <color name="tribe.profile.1">#007BFF</color>
+    <color name="tribe.profile.2">#22D5F1</color>
+    <color name="tribe.profile.3">#F362AD</color>
+    <color name="tribe.profile.4">#FFA496</color>
+    <color name="tribe.profile.5">#3C7692</color>
+    <color name="tribe.profile.6">#3DE9DA</color>
+    <color name="tribe.profile.7">#FFC352</color>
+    <color name="tribe.profile.8">#FF6F00</color>
+    <color name="tribe.profile.9">#272E38</color>
+    <color name="tribe.profile.10">#6C7F97</color>
+    <color name="tribe.profile.11">#9013FE</color>
+    <color name="tribe.profile.12">#8161DA</color>
+
     <!-- Confetti -->
     <color name="confetti.1">#68CFC5</color>
     <color name="confetti.2">#654AF7</color>

@@ -11,6 +11,7 @@ import android.view.animation.OvershootInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.ButtonPoints;
@@ -20,6 +21,7 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
+import com.tribe.app.presentation.internal.di.scope.ShareProfile;
 import com.tribe.app.presentation.mvp.presenter.ContactsGridPresenter;
 import com.tribe.app.presentation.mvp.view.ContactsView;
 import com.tribe.app.presentation.mvp.view.HomeView;
@@ -28,6 +30,7 @@ import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.ContactsGridAdapter;
 import com.tribe.app.presentation.view.adapter.manager.ContactsLayoutManager;
+import com.tribe.app.presentation.view.dialog_fragment.ShareDialogProfileFragment;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.ButtonPointsView;
@@ -55,6 +58,10 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
 
     private static final int DURATION = 300;
     private static final float OVERSHOOT = 0.75f;
+
+    @Inject
+    @ShareProfile
+    Preference<Boolean> shareProfile;
 
     @Inject
     ContactsGridPresenter contactsGridPresenter;
@@ -241,9 +248,14 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
                             contactsGridPresenter.notifyFBFriends();
                         } else if (buttonPoints.getType() == ButtonPointsView.PROFILE) {
                             tagManager.trackEvent(TagManagerConstants.USER_SHARE_PROFILE);
-                            tagManager.trackEvent(TagManagerConstants.COUNT_PROFILE_SHARES);
-                            navigator.shareHandle(currentUser.getUsername(), getActivity());
-                            contactsGridPresenter.updateScoreShare();
+                            tagManager.increment(TagManagerConstants.COUNT_PROFILE_SHARES);
+                            ShareDialogProfileFragment shareDialogProfileFragment = ShareDialogProfileFragment.newInstance();
+                            shareDialogProfileFragment.show(getFragmentManager(), ShareDialogProfileFragment.class.getName());
+
+                            if (!shareProfile.get()) {
+                                shareProfile.set(true);
+                                contactsGridPresenter.updateScoreShare();
+                            }
                         }
                     }
                 }));
@@ -295,7 +307,7 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
                         Bundle bundle = new Bundle();
                         bundle.putString(TagManagerConstants.TYPE_PHONE, contact.getPhone());
                         tagManager.trackEvent(TagManagerConstants.KPI_INVITATIONS_SENT, bundle);
-                        tagManager.trackEvent(TagManagerConstants.COUNT_TRIBES_SENT);
+                        tagManager.increment(TagManagerConstants.COUNT_INVITATIONS_SENT);
                         contactsGridPresenter.updateScoreInvite();
                     }
                 }));

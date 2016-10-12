@@ -105,6 +105,17 @@ public class FileUtils {
         return bitmapToFile(bitmap, f);
     }
 
+    public static File bitmapToFilePublic(String name, Bitmap bitmap, Context context) {
+        File f = new File(Environment.getExternalStorageDirectory() + "/Tribe", name);
+        try {
+            f.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return bitmapToFile(bitmap, f);
+    }
+
     public static File bitmapToFile(Bitmap bitmap, File file) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
