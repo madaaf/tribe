@@ -302,7 +302,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
         long duration = mediaPlayer.getDuration();
 
-        if (duration != -1) {
+        if (duration > -1) {
             animatorProgress = ValueAnimator.ofInt(lastPosition != -1 ? (int) lastPosition : 0, screenUtils.getWidthPx());
             animatorProgress.addUpdateListener(valueAnimator -> {
                 int val = (Integer) valueAnimator.getAnimatedValue();
