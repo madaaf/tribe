@@ -340,7 +340,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         }));
 
         subscriptions.add(groupInfoView.imageGoToMembersClicked().subscribe(aVoid -> {
-            searchFriendsView.requestFocus();
             imageGoToMembersClicked.onNext(null);
         }));
         groupPresenter.getGroupMembers(groupId);

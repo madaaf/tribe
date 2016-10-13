@@ -125,7 +125,8 @@ public class GroupMemberFragment extends BaseFragment implements GroupMemberView
     }
 
     public ArrayList<GroupMember> getGroupMemberList() {
-        return  groupMemberList;
+        if (groupMemberList.size() > groupMemberListCopy.size()) return  groupMemberList;
+        else return groupMemberListCopy;
     }
 
     /**

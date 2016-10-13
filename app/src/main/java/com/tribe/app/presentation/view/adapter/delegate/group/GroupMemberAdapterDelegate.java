@@ -65,6 +65,10 @@ public class GroupMemberAdapterDelegate extends RxAdapterDelegate<List<GroupMemb
                 .takeUntil(RxView.detaches(parent))
                 .map(friend -> vh.itemView)
                 .subscribe(clickMemberItem));
+        subscriptions.add(RxView.clicks(((GroupMemberViewHolder) vh).btnAdd)
+                .takeUntil(RxView.detaches(parent))
+                .map(friend -> vh.itemView)
+                .subscribe(clickMemberItem));;
 
         return vh;
     }
