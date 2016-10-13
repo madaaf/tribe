@@ -92,7 +92,11 @@ public class GroupMemberPresenter implements Presenter {
 
     @Override
     public void onDestroy() {
-
+        removeMembersFromGroup.unsubscribe();
+        removeFriendship.unsubscribe();
+        createFriendship.unsubscribe();
+        addAdminsToGroup.unsubscribe();
+        removeAdminsFromGroup.unsubscribe();
     }
 
     @Override

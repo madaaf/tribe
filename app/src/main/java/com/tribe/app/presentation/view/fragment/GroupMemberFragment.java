@@ -109,6 +109,8 @@ public class GroupMemberFragment extends BaseFragment implements GroupMemberView
             subscriptions.clear();
         }
 
+        if (groupMemberPresenter != null) groupMemberPresenter.onDestroy();
+
         super.onDestroy();
     }
 

@@ -181,6 +181,10 @@ public class SettingFragment extends BaseFragment implements SettingView {
             subscriptions.clear();
         }
 
+        if (settingPresenter != null) {
+            settingPresenter.onDestroy();
+        }
+
         super.onDestroy();
     }
 

@@ -207,6 +207,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             subscriptions.clear();
         }
 
+        if  (groupPresenter != null) groupPresenter.onDestroy();
+
         super.onDestroy();
     }
 

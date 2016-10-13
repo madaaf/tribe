@@ -197,7 +197,11 @@ public class GroupPresenter implements Presenter {
 
     @Override
     public void onDestroy() {
-
+        getGroupMembers.unsubscribe();
+        createGroup.unsubscribe();
+        updateGroup.unsubscribe();
+        addMembersToGroup.unsubscribe();
+        modifyPrivateGroupLink.unsubscribe();
     }
 
     @Override
