@@ -311,7 +311,8 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
                 viewBGProgress.setLayoutParams(layoutParams);
             });
 
-            animatorProgress.setDuration((int) (duration / speedPlayack.get()));
+            int animatorDuration = (int) (duration / speedPlayack.get());
+            animatorProgress.setDuration(animatorDuration);
             animatorProgress.start();
         }
     }
