@@ -85,6 +85,7 @@ public class PullToSearchView extends FrameLayout {
     private SpringSystem springSystem = null;
     private Spring spring;
     private SpringListener springListener;
+    private boolean pullToSearchClickable = true;
 
     // RESOURCES
     private int marginTopDivider;
@@ -169,25 +170,36 @@ public class PullToSearchView extends FrameLayout {
         recyclerViewPTS.addItemDecoration(new GridDividerTopAllItemDecoration(marginTopDivider, ptsLayoutManager.getSpanCount()));
 
         subscriptions.add(ptsAdapter.onClickLetter().subscribe(viewFrom ->  {
-            textViewClicked = null;
-
-            selectedPosition = (Integer) viewFrom.getTag(R.id.tag_position);
-            viewFrom.getGlobalVisibleRect(new Rect());
-            Rect scrollBounds = new Rect();
-            recyclerViewPTS.getHitRect(scrollBounds);
-
-            if (!viewFrom.getLocalVisibleRect(scrollBounds)
-                    || scrollBounds.height() < viewFrom.getHeight()) {
-                recyclerViewPTS.smoothScrollToPosition(selectedPosition);
-                Observable.timer(500, TimeUnit.MILLISECONDS)
+            if (pullToSearchClickable) {
+                pullToSearchClickable = false;
+                Observable.timer(500 + DURATION, TimeUnit.MILLISECONDS)
                         .onBackpressureDrop()
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .subscribe(aLong -> {
-                            showTextView(viewFrom);
+                            pullToSearchClickable = true;
                         });
-            } else {
-                showTextView(viewFrom);
+
+                textViewClicked = null;
+
+                selectedPosition = (Integer) viewFrom.getTag(R.id.tag_position);
+                viewFrom.getGlobalVisibleRect(new Rect());
+                Rect scrollBounds = new Rect();
+                recyclerViewPTS.getHitRect(scrollBounds);
+
+                if (!viewFrom.getLocalVisibleRect(scrollBounds)
+                        || scrollBounds.height() < viewFrom.getHeight()) {
+                    recyclerViewPTS.smoothScrollToPosition(selectedPosition);
+                    Observable.timer(500, TimeUnit.MILLISECONDS)
+                            .onBackpressureDrop()
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(AndroidSchedulers.mainThread())
+                            .subscribe(aLong -> {
+                                showTextView(viewFrom);
+                            });
+                } else {
+                    showTextView(viewFrom);
+                }
             }
         }));
     }
