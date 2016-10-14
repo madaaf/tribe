@@ -473,13 +473,13 @@ public class GroupInfoView extends FrameLayout {
         originalGroupNameMargin = editTextGroupName.getY();
         layoutDividerBackground.animate()
                 .y(0)
-                .setDuration(animDuration)
+                .setDuration(AnimationUtils.ANIMATION_DURATION_SHORT)
                 .setStartDelay(AnimationUtils.NO_START_DELAY)
                 .start();
         int editTextGroupTopMargin = 22;
         editTextGroupName.animate()
                 .y(screenUtils.dpToPx(editTextGroupTopMargin))
-                .setDuration(animDuration)
+                .setDuration(AnimationUtils.ANIMATION_DURATION_SHORT)
                 .setStartDelay(AnimationUtils.NO_START_DELAY)
                 .start();
         layoutDividerBackground.bringToFront();
@@ -489,12 +489,12 @@ public class GroupInfoView extends FrameLayout {
     public void bringGroupNameDown(int animDuration) {
         layoutDividerBackground.animate()
                 .y(originalGroupBackgroundMargin)
-                .setDuration(animDuration)
+                .setDuration(AnimationUtils.ANIMATION_DURATION_SHORT)
                 .setStartDelay(AnimationUtils.NO_START_DELAY)
                 .start();
         editTextGroupName.animate()
                 .y(originalGroupNameMargin)
-                .setDuration(animDuration)
+                .setDuration(AnimationUtils.ANIMATION_DURATION_SHORT)
                 .setStartDelay(AnimationUtils.NO_START_DELAY)
                 .start();
     }

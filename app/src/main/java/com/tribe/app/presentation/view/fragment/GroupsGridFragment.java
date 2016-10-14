@@ -123,7 +123,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     private List<Friendship> friendshipsListCopy = new ArrayList<>();
     List<User> members;
     private LinearLayoutManager linearLayoutManager;
-    private boolean groupInfoValid = false, bringTextUpEnabled = false;
+    private boolean groupInfoValid = false;
 
     // Group Info
     private String groupId = null;
@@ -647,17 +647,17 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             orignalGroupSuggestionsMargin = (int) groupSuggestionsView.getY();
             groupSuggestionsView.animate()
                     .y(getResources().getDimension(R.dimen.group_info_bar_height))
-                    .setDuration(animDuration)
+                    .setDuration(AnimationUtils.ANIMATION_DURATION_SHORT)
                     .setStartDelay(AnimationUtils.NO_START_DELAY)
                     .start();
         } else {
             groupSuggestionsView.animate()
                     .y(orignalGroupSuggestionsMargin)
-                    .setDuration(animDuration)
+                    .setDuration(AnimationUtils.ANIMATION_DURATION_SHORT)
                     .setStartDelay(AnimationUtils.NO_START_DELAY)
                     .start();
             subscriptions.add(
-                    Observable.timer(animDuration, TimeUnit.MILLISECONDS)
+                    Observable.timer(AnimationUtils.ANIMATION_DURATION_SHORT, TimeUnit.MILLISECONDS)
                             .onBackpressureDrop()
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
