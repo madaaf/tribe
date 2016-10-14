@@ -146,6 +146,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     private int layoutCreateInviteInfoPositionY = 255;
     private int startTranslationDoneIcon = 200;
     private int animDuration = AnimationUtils.ANIMATION_DURATION_MID;
+    private int loadingAnimDuarion = AnimationUtils.ANIMATION_DURATION_MID;
     private int smallMargin = 5;
     private int orignalGroupSuggestionsMargin;
     private boolean friendAdapterClickable = true;
@@ -297,13 +298,14 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         }));
 
         subscriptions.add(createInviteView.createPressed().subscribe(aVoid -> {
+            groupInfoView.setBringGroupNameToTopEnabled(false);
             setGroupSuggestionsViewVisible(false);
             groupInfoView.bringGroupNameDown(animDuration);
             createInviteView.disable();
             groupInfoView.disableButtons();
             groupName = groupInfoView.getGroupName();
             groupPresenter.createGroup(groupName, memberIds, privateGroup, groupPictureUri);
-            createInviteView.loadingAnimation(CreateInviteView.STATUS_CREATING_GROUP, AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
+            createInviteView.loadingAnimation(CreateInviteView.STATUS_CREATING_GROUP, loadingAnimDuarion, screenUtils, getActivity());
         }));
 
     }
@@ -384,7 +386,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             else if (privateGroup) {
                 groupPresenter.modifyPrivateGroupLink(membershipId, true);
                 createInviteView.disableInvite();
-                createInviteView.loadingAnimation(CreateInviteView.STATUS_CREATING_LINK, AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
+                createInviteView.loadingAnimation(CreateInviteView.STATUS_CREATING_LINK, loadingAnimDuarion, screenUtils, getActivity());
             }
             else navigator.shareGenericText(getString(R.string.share_group_public_link, groupName, groupLink), getContext());
         }));
@@ -531,7 +533,9 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         groupInfoView.setGroupName("");
         groupInfoView.bringOutIcons(0);
         groupInfoView.enableButtons();
+        groupInfoView.setLayoutDividerBackgroundAlpha();
         groupInfoView.setGroupPictureInvisible();
+
         groupPictureUri = null;
         createInviteView.setDefault();
         createInviteView.disable();
@@ -581,6 +585,10 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
         createInviteView.enableInvite();
         enableScrolling(true);
+
+        tagManager.trackEvent(TagManagerConstants.KPI_GROUP_CREATED);
+
+        tagManager.increment(TagManagerConstants.COUNT_GROUPS_CREATED);
     }
 
     private void showShareDialogFragment() {
@@ -590,7 +598,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         subscriptions.add(shareDialogFragment.deletePressed().subscribe(aVoid -> {
             groupPresenter.modifyPrivateGroupLink(membershipId, false);
             createInviteView.disableInvite();
-            createInviteView.loadingAnimation(CreateInviteView.STATUS_DELETING_LINK, AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
+            createInviteView.loadingAnimation(CreateInviteView.STATUS_DELETING_LINK, loadingAnimDuarion, screenUtils, getActivity());
         }));
 
     }
@@ -799,9 +807,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     public void groupCreatedSuccessfully() {
         Bundle bundle = new Bundle();
         bundle.putString(TagManagerConstants.TYPE_TRIBE_GROUP, privateGroup ? TagManagerConstants.TYPE_GROUP_PRIVATE : TagManagerConstants.TYPE_GROUP_PUBLIC);
-        tagManager.trackEvent(TagManagerConstants.KPI_GROUP_CREATED);
-
-        tagManager.increment(TagManagerConstants.COUNT_GROUPS_CREATED);
 
         createInviteView.loaded();
         animSet1();
