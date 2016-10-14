@@ -451,6 +451,11 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     }
 
+    @Override
+    public void linkCreationFailed() {
+        Toast.makeText(getContext(), getString(R.string.error_unknown), Toast.LENGTH_SHORT).show();
+    }
+
     public void addMemberPhotos(List<GroupMember> groupMemberList) {
         int memberPhotos;
         if (groupMemberList.size() < 5) memberPhotos = groupMemberList.size();

@@ -166,6 +166,7 @@ public class GroupPresenter implements Presenter {
 
         @Override
         public void onError(Throwable e) {
+            groupView.
             e.printStackTrace();
         }
 
