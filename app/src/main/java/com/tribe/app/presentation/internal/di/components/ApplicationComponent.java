@@ -47,6 +47,7 @@ import com.tribe.app.presentation.internal.di.modules.NetModule;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;
 import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
 import com.tribe.app.presentation.internal.di.scope.Filter;
+import com.tribe.app.presentation.internal.di.scope.HasReceivedPointsForCameraPermission;
 import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
 import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
@@ -269,4 +270,8 @@ public interface ApplicationComponent {
 
     @ShareProfile
     Preference<Boolean> shareProfile();
+
+    @HasReceivedPointsForCameraPermission
+    Preference<Boolean> hasReceivedPointsForCameraPermission();
+
 }

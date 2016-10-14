@@ -39,6 +39,7 @@ import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
+import com.tribe.app.presentation.internal.di.scope.HasReceivedPointsForCameraPermission;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
 import com.tribe.app.presentation.internal.di.scope.LocationPopup;
 import com.tribe.app.presentation.mvp.presenter.HomePresenter;
@@ -101,6 +102,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Inject
     @LocationContext
     Preference<Boolean> locationContext;
+
+    @Inject
+    @HasReceivedPointsForCameraPermission
+    Preference<Boolean> hasReceivedPontsForCameraPermission;
 
     @BindView(android.R.id.content)
     ViewGroup rootView;
@@ -236,7 +241,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                         .request(PERMISSIONS_CAMERA)
                         .subscribe(granted -> {
                             if (granted) {
-                                homePresenter.updateScoreCamera();
+                                if (!hasReceivedPontsForCameraPermission.get()) {
+                                    homePresenter.updateScoreCamera();
+                                    hasReceivedPontsForCameraPermission.set(true);
+                                }
                                 cameraWrapper.onResume(true);
                             }
                             else cameraWrapper.showPermissions();
@@ -279,7 +287,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                     .request(PERMISSIONS_CAMERA)
                     .subscribe(granted -> {
                         if (granted) {
-                            homePresenter.updateScoreCamera();
+                            if (hasReceivedPontsForCameraPermission.get()) {
+                                hasReceivedPontsForCameraPermission.set(true);
+                                homePresenter.updateScoreCamera();
+                            }
                             cameraWrapper.onResume(true);
                         }
                         else cameraWrapper.showPermissions();

@@ -8,6 +8,7 @@ import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;
 import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
 import com.tribe.app.presentation.internal.di.scope.Filter;
+import com.tribe.app.presentation.internal.di.scope.HasReceivedPointsForCameraPermission;
 import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
 import com.tribe.app.presentation.internal.di.scope.LastNotifyRequest;
@@ -153,4 +154,12 @@ public class DataModule {
     Preference<Boolean> provideShareProfile(RxSharedPreferences prefs) {
         return prefs.getBoolean(PreferencesConstants.SHARE_PROFILE, false);
     }
+
+    @Provides
+    @Singleton
+    @HasReceivedPointsForCameraPermission
+    Preference<Boolean> provideHasReceivedPointsForCameraPermission(RxSharedPreferences prefs) {
+        return prefs.getBoolean(PreferencesConstants.HAS_RECEIVED_POINTS_FOR_CAMERA_PERMISSION, false);
+    }
+
 }
