@@ -17,6 +17,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.inputmethod.InputMethodManager;
@@ -227,6 +228,22 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         context = this;
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
+
+        cameraWrapper.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                RxPermissions.getInstance(context)
+                        .request(PERMISSIONS_CAMERA)
+                        .subscribe(granted -> {
+                            if (granted) {
+                                homePresenter.updateScoreCamera();
+                                cameraWrapper.onResume(true);
+                            }
+                            else cameraWrapper.showPermissions();
+                        });
+            }
+        });
+
     }
 
     private void initDimensions() {
