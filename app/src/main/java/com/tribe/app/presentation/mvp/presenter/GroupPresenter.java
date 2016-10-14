@@ -166,7 +166,7 @@ public class GroupPresenter implements Presenter {
 
         @Override
         public void onError(Throwable e) {
-            groupView.
+            groupView.linkCreationFailed();
             e.printStackTrace();
         }
 
