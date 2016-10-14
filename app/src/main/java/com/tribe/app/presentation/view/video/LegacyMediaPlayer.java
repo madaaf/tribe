@@ -108,7 +108,7 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
             if (!isLocal) {
                 RandomAccessFile raf = new RandomAccessFile(media, "r");
                 mediaPlayer.setDataSource(raf.getFD(), 0, raf.length());
-            } else if (!StringUtils.isEmpty(media) && media.contains("assets")) { // TODO BETTER
+            } else if (!StringUtils.isEmpty(media) && media.contains("asset")) { // TODO BETTER
                 AssetFileDescriptor afd = context.getAssets().openFd("video/onboarding_video.mp4");
                 mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
                 afd.close();

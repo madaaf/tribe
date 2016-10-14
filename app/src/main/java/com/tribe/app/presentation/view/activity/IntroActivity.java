@@ -149,6 +149,10 @@ public class IntroActivity extends BaseActivity {
         // 1. Country code selector
         if (requestCode == Navigator.REQUEST_COUNTRY && resultCode == Activity.RESULT_OK && data.getStringExtra(Extras.COUNTRY_CODE) != null) {
             countryCode = data.getStringExtra(Extras.COUNTRY_CODE);
+
+            if (introViewPagerAdapter != null && introViewPagerAdapter.getIntroViewFragment() != null) {
+                introViewPagerAdapter.getIntroViewFragment().initPhoneNumberViewWithCountryCode(countryCode);
+            }
         }
     }
 

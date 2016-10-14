@@ -56,7 +56,6 @@ public class RxFacebook {
 
     void onLogin(LoginResult loginResult) {
         this.loginResult = loginResult;
-        System.out.println("ON LOGIN");
         if (loginSubject != null && loginSubject.hasObservers()) {
             loginSubject.onNext(loginResult);
             loginSubject.onCompleted();
@@ -120,13 +119,11 @@ public class RxFacebook {
     }
 
     public void emitMe(Subscriber subscriber) {
-        System.out.println("EMIT ME");
         new GraphRequest(AccessToken.getCurrentAccessToken(),
                 "/me",
                 null,
                 HttpMethod.GET,
                 response -> {
-                    System.out.println("EMIT ME RESULT");
                     JSONObject jsonResponse = response.getJSONObject();
                     FacebookEntity facebookEntity = new FacebookEntity();
 
