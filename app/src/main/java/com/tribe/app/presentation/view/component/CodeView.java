@@ -168,7 +168,11 @@ public class CodeView extends FrameLayout {
     }
 
     @OnClick(R.id.layoutPin)
-    void openKeyboard() {
+    void clickLayoutPin() {
+        openKeyboard();
+    }
+
+    public void openKeyboard() {
         editTextCode.requestFocus();
         editTextCode.postDelayed(() -> {
             InputMethodManager keyboard = (InputMethodManager)

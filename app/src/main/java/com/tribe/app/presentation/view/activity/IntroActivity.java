@@ -65,6 +65,7 @@ public class IntroActivity extends BaseActivity {
      */
     private Uri deepLink;
     private IntroViewPagerAdapter introViewPagerAdapter;
+    private String countryCode;
 
     // OBSERVABLES
     private Unbinder unbinder;
@@ -147,9 +148,7 @@ public class IntroActivity extends BaseActivity {
 
         // 1. Country code selector
         if (requestCode == Navigator.REQUEST_COUNTRY && resultCode == Activity.RESULT_OK) {
-            if (introViewPagerAdapter.getIntroViewFragment() != null) {
-                introViewPagerAdapter.getIntroViewFragment().initPhoneNumberViewWithCountryCode(data.getStringExtra(Extras.COUNTRY_CODE));
-            }
+            countryCode = data.getStringExtra(Extras.COUNTRY_CODE);
         }
     }
 
@@ -170,7 +169,7 @@ public class IntroActivity extends BaseActivity {
 
         if (currentUser == null || StringUtils.isEmpty(currentUser.getId())) {
             viewPager.setCurrentItem(PAGE_INTRO);
-        } else if (currentUser.getFriendshipList().size() == 0) {
+        } else if (currentUser.getFriendshipList().size() == 0 || currentUser.hasOnlySupport()) {
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
             viewPager.setCurrentItem(PAGE_ACCESS);
         }
@@ -259,6 +258,8 @@ public class IntroActivity extends BaseActivity {
             switch (position) {
                 case 0:
                     introViewFragment = new WeakReference<>((IntroViewFragment) createdFragment);
+                    if (!StringUtils.isEmpty(countryCode))
+                        introViewFragment.get().initPhoneNumberViewWithCountryCode(countryCode);
                     break;
                 case 1:
                     profileInfoFragment = new WeakReference<>((ProfileInfoFragment) createdFragment);
@@ -272,15 +273,24 @@ public class IntroActivity extends BaseActivity {
         }
 
         public IntroViewFragment getIntroViewFragment() {
-            return introViewFragment.get();
+            if (introViewFragment != null)
+                return introViewFragment.get();
+
+            return null;
         }
 
         public ProfileInfoFragment getProfileInfoFragment() {
-            return profileInfoFragment.get();
+            if (profileInfoFragment != null)
+                return profileInfoFragment.get();
+
+            return null;
         }
 
         public AccessFragment getAccessFragment() {
-            return accessFragment.get();
+            if (accessFragment != null)
+                return accessFragment.get();
+
+            return null;
         }
     }
 

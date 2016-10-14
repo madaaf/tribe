@@ -15,6 +15,7 @@ public class RxImagePicker {
 
     private Context context;
     private PublishSubject<Uri> publishSubject;
+    private Uri uri;
 
     @Inject
     public RxImagePicker(Context context) {
@@ -32,6 +33,8 @@ public class RxImagePicker {
     }
 
     void onImagePicked(Uri uri) {
+        this.uri = uri;
+
         if (publishSubject != null) {
             publishSubject.onNext(uri);
             publishSubject.onCompleted();
@@ -43,6 +46,12 @@ public class RxImagePicker {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(MediaHiddenActivity.IMAGE_SOURCE, imageSource);
         context.startActivity(intent);
+    }
+
+    public Uri getUri() {
+        Uri temp = uri;
+        uri = null;
+        return temp;
     }
 }
 

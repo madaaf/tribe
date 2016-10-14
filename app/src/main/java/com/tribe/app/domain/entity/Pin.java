@@ -1,9 +1,11 @@
 package com.tribe.app.domain.entity;
 
+import java.io.Serializable;
+
 /**
  * Created by tiago on 04/05/2016.
  */
-public class Pin {
+public class Pin implements Serializable {
 
     private String pinId;
     private String to;

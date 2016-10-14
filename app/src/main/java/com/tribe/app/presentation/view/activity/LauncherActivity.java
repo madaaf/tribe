@@ -39,7 +39,10 @@ public class LauncherActivity extends BaseActivity {
                 || currentUser.getFriendshipList().size() == 0) {
             navigator.navigateToLogin(this, deepLink);
         } else {
-            navigator.navigateToHome(this, true, deepLink);
+            if (currentUser != null && currentUser.hasOnlySupport())
+                navigator.navigateToLogin(this, deepLink);
+            else
+                navigator.navigateToHome(this, true, deepLink);
         }
 
         finish();

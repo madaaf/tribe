@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.github.jinatonic.confetti.CommonConfetti;
@@ -143,6 +144,12 @@ public class AccessFragment extends BaseFragment implements AccessView {
 
         accessPresenter.attachView(this);
 
+        if (getUserVisibleHint() && getActivity() != null) {
+            getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+            getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
+
         return fragmentView;
     }
 
@@ -203,12 +210,12 @@ public class AccessFragment extends BaseFragment implements AccessView {
         subscriptions.add(
                 textFriendsView
                         .onShareWhatsapp()
-                        .subscribe(aVoid -> navigator.openWhatsApp(getString(R.string.share_onboarding), getContext())));
+                        .subscribe(aVoid -> navigator.openWhatsApp(getString(R.string.share_onboarding, BuildConfig.TRIBE_URL), getContext())));
 
         subscriptions.add(
                 textFriendsView
                         .onShareSMS()
-                        .subscribe(aVoid -> navigator.sendText(getString(R.string.share_onboarding), getContext())));
+                        .subscribe(aVoid -> navigator.sendText(getString(R.string.share_onboarding, BuildConfig.TRIBE_URL), getContext())));
     }
 
     private void initResources() {

@@ -84,24 +84,30 @@ public class MediaHiddenActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            System.out.println("CROP IMAGE ACTIVITY REQUEST CODE");
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
 
             if (resultCode == RESULT_OK) {
+                System.out.println("RX IMAGE PICKER : " + result.getUri());
                 rxImagePicker.onImagePicked(result.getUri());
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 // TODO HANDLE ERROR
+                System.out.println("CROP IMAGE RESULT ERROR : " + result.getUri());
             }
 
             finish();
         } else if (resultCode == RESULT_OK) {
+            System.out.println("CROPPING");
             Uri uri = null;
 
             switch (requestCode) {
                 case SELECT_PHOTO:
                     uri = data.getData();
+                    System.out.println("SELECT PHOTO : " + uri);
                     break;
                 case TAKE_PHOTO:
                     uri = cameraPictureUrl;
+                    System.out.println("TAKE PHOTO : " + uri);
                     break;
             }
 

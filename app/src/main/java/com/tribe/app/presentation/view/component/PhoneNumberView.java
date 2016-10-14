@@ -13,6 +13,7 @@ import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
@@ -112,7 +113,7 @@ public class PhoneNumberView extends FrameLayout {
     }
 
     private void checkValidPhoneNumber() {
-        if (editable) {
+        if (editable && !StringUtils.isEmpty(PhoneNumberView.this.getPhoneNumberInput())) {
             currentPhoneNumber = phoneUtils.formatMobileNumber(PhoneNumberView.this.getPhoneNumberInput(), countryCode);
             String viewPhoneNumber = phoneUtils.formatPhoneNumberForView(PhoneNumberView.this.getPhoneNumberInput(), countryCode);
             if (viewPhoneNumber != null) {

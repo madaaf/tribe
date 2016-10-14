@@ -245,4 +245,19 @@ public class User implements Serializable {
     private void notifyAllScoreListeners(int previousScore, int newScore) {
         for (UpdateScore updateScore : scoreListenerList) updateScore.updateScore(previousScore, newScore);
     }
+
+    public boolean hasOnlySupport() {
+        boolean hasOnlySupport = false;
+
+        List<Recipient> result = getFriendshipList();
+        if (result != null && result.size() == 1) {
+            for (Recipient fr : result) {
+                if (fr.getSubId() != null && fr.getSubId().equals("XSUPPORT")) {
+                    hasOnlySupport = true;
+                }
+            }
+        }
+
+        return hasOnlySupport;
+    }
 }

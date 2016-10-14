@@ -19,6 +19,7 @@ import javax.inject.Inject;
 public class FacebookHiddenActivity extends BaseActivity {
 
     public final static String FACEBOOK_REQUEST = "FACEBOOK_REQUEST";
+    private final static String DESTROYED = "DESTROYED";
 
     @Inject
     RxFacebook rxFacebook;
@@ -30,12 +31,19 @@ public class FacebookHiddenActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        init();
         initDependencyInjector();
+        init();
 
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null || savedInstanceState.getBoolean(DESTROYED)) {
             handleIntent(getIntent());
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean(DESTROYED, true);
     }
 
     @Override
@@ -45,6 +53,7 @@ public class FacebookHiddenActivity extends BaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        System.out.println("ON ACTIVITY RESULT");
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -56,18 +65,21 @@ public class FacebookHiddenActivity extends BaseActivity {
                     new FacebookCallback<LoginResult>() {
                         @Override
                         public void onSuccess(LoginResult loginResult) {
+                            System.out.println("LOGIN RESULT");
                             rxFacebook.onLogin(loginResult);
                             finish();
                         }
 
                         @Override
                         public void onCancel() {
+                            System.out.println("CANCEL");
                             Toast.makeText(FacebookHiddenActivity.this, "Login Canceled", Toast.LENGTH_LONG).show();
                             finish();
                         }
 
                         @Override
                         public void onError(FacebookException exception) {
+                            System.out.println("ERROR");
                             Toast.makeText(FacebookHiddenActivity.this, exception.getMessage(), Toast.LENGTH_LONG).show();
                             finish();
                         }
