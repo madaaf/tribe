@@ -14,6 +14,7 @@ public interface GroupView extends LoadDataView {
     void setGroupLink(String groupLink);
     void setGroupLinkExpirationDate(Date groupLinkExpirationDate);
     void setupGroup(Group group);
+    void failedToGetMembers();
     void groupCreatedSuccessfully();
     void groupCreationFailed();
     void groupUpdatedSuccessfully();

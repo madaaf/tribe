@@ -68,6 +68,12 @@ public class GroupInfoActivity extends BaseActivity {
     }
 
     @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
+    }
+
+    @Override
     public void onBackPressed() {
         Fragment currentFragment = fragmentManager.findFragmentById(R.id.layoutFragmentContainer);
         if (currentFragment instanceof GroupMemberFragment) {

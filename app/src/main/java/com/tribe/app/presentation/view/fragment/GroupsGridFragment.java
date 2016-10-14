@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
@@ -212,6 +213,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         super.onDestroy();
     }
 
+
+
     public ArrayList<GroupMember> getGroupMemberList() {
         return groupMemberList;
     }
@@ -373,6 +376,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             groupInfoView.bringGroupNameDown(animDuration);
             setGroupSuggestionsViewVisible(false);
         }));
+
         subscriptions.add((createInviteView.invitePressed()).subscribe(aVoid -> {
             tagManager.trackEvent(TagManagerConstants.KPI_GROUP_LINK_SHARED);
 
@@ -434,6 +438,15 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         friendAdapter.notifyDataSetChanged();
         if (!privateGroup)circularProgressView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_public));
         setGroupPrivacy(privateGroup, groupMemberList.size());
+    }
+
+    @Override
+    public void failedToGetMembers() {
+        Toast.makeText(getContext(), getString(R.string.error_unknown), Toast.LENGTH_SHORT).show();
+        Intent resultIntent = new Intent();
+        getActivity().setResult(BaseActivity.RESULT_OK, resultIntent);
+        getActivity().finish();
+
     }
 
     public void addMemberPhotos(List<GroupMember> groupMemberList) {
