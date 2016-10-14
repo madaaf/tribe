@@ -90,6 +90,7 @@ public class MediaHiddenActivity extends BaseActivity {
                 rxImagePicker.onImagePicked(result.getUri());
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 // TODO HANDLE ERROR
+                System.out.println("CROP IMAGE RESULT ERROR : " + result.getUri());
             }
 
             finish();

@@ -100,6 +100,8 @@ public class IntroPresenter implements Presenter {
         LoginEntity loginEntity = new LoginEntity(phoneNumber, code, pinId);
         showViewLoading();
 
+        System.out.println("LOGIN LAUNCHED");
+
         if (IntroActivity.uiOnlyMode) {
             isActive2 = true;
             Handler handler = new Handler();
@@ -167,7 +169,7 @@ public class IntroPresenter implements Presenter {
 
         @Override
         public void onNext(Pin pin) {
-            if (pin == null || !StringUtils.isEmpty(pin.getPinId())) {
+            if (pin != null && !StringUtils.isEmpty(pin.getPinId())) {
                 goToCode(pin);
             } else {
                 hideViewLoading();

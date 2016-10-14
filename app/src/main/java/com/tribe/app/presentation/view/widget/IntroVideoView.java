@@ -70,6 +70,7 @@ public class IntroVideoView extends FrameLayout implements TextureView.SurfaceTe
                 .autoStart(true)
                 .looping(true)
                 .mute(true)
+                .isLocal(true)
                 .build();
 
         subscriptions.add(mediaPlayer.onVideoStarted().subscribe(videoStarted));

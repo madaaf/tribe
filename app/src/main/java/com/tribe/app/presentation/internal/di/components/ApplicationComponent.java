@@ -55,6 +55,7 @@ import com.tribe.app.presentation.internal.di.scope.LocationPopup;
 import com.tribe.app.presentation.internal.di.scope.Memories;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
 import com.tribe.app.presentation.internal.di.scope.Preload;
+import com.tribe.app.presentation.internal.di.scope.ShareProfile;
 import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.internal.di.scope.Theme;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
@@ -265,4 +266,7 @@ public interface ApplicationComponent {
 
     @LocationPopup
     Preference<Boolean> locationPopup();
+
+    @ShareProfile
+    Preference<Boolean> shareProfile();
 }

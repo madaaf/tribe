@@ -1,9 +1,11 @@
 package com.tribe.app.domain.entity;
 
+import java.io.Serializable;
+
 /**
  * Created by tiago on 12/09/2016.
  */
-public class ErrorLogin {
+public class ErrorLogin implements Serializable {
 
     private String pinId;
     private String msisdn;

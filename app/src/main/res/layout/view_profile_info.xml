@@ -48,7 +48,7 @@
             android:textColorHint="@color/black.opacity.40"
             android:singleLine="true"
             android:imeOptions="actionDone"
-            android:inputType="textCapWords"
+            android:inputType="textCapWords|textNoSuggestions"
             />
 
         <ImageView
@@ -72,6 +72,7 @@
         />
 
     <FrameLayout
+        android:id="@+id/layoutUsername"
         android:layout_width="match_parent"
         android:layout_height="@dimen/onboarding_choose_name_height"
         android:background="@android:color/white">

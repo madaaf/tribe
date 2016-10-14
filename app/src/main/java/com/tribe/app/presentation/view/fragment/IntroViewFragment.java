@@ -2,11 +2,13 @@ package com.tribe.app.presentation.view.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Toast;
 
 import com.jakewharton.rxbinding.view.RxView;
@@ -54,6 +56,12 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class IntroViewFragment extends BaseFragment implements IntroView {
 
+    private static final String LOGIN_ENTITY = "LOGIN_ENTITY";
+    private static final String PIN = "PIN";
+    private static final String ERROR_LOGIN = "ERROR_LOGIN";
+    private static final String PHONE_NUMBER = "PHONE_NUMBER";
+    private static final String CODE = "CODE";
+
     public static IntroViewFragment newInstance() {
         Bundle args = new Bundle();
 
@@ -76,6 +84,9 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
 
     @BindView(R.id.viewPager)
     CustomViewPager viewPager;
+
+    @BindView(R.id.viewShadow)
+    View viewShadow;
 
     @BindView(R.id.viewPhoneNumber)
     PhoneNumberView viewPhoneNumber;
@@ -110,12 +121,25 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
      */
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            if (savedInstanceState.get(LOGIN_ENTITY) != null) loginEntity = (LoginEntity) savedInstanceState.getSerializable(LOGIN_ENTITY);
+            if (savedInstanceState.get(ERROR_LOGIN) != null) errorLogin = (ErrorLogin) savedInstanceState.getSerializable(ERROR_LOGIN);
+            if (savedInstanceState.get(PIN) != null) pin = (Pin) savedInstanceState.getSerializable(PIN);
+            if (savedInstanceState.get(CODE) != null) code = savedInstanceState.getString(CODE);
+            if (savedInstanceState.get(PHONE_NUMBER) != null) phoneNumber = savedInstanceState.getString(PHONE_NUMBER);
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setRetainInstance(true);
         final View fragmentView = inflater.inflate(R.layout.fragment_intro_view, container, false);
 
-        initUi(fragmentView);
         initDependencyInjector();
+        initUi(fragmentView);
         initViewPager();
         initPhoneNumberView();
         initPresenter();
@@ -146,6 +170,16 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
         super.onDestroy();
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (loginEntity != null) outState.putSerializable(LOGIN_ENTITY, loginEntity);
+        if (errorLogin != null) outState.putSerializable(ERROR_LOGIN, errorLogin);
+        if (pin != null) outState.putSerializable(PIN, pin);
+        if (!StringUtils.isEmpty(phoneNumber)) outState.putString(PHONE_NUMBER, phoneNumber);
+        if (!StringUtils.isEmpty(code)) outState.putString(CODE, code);
+    }
+
     /**
      * View Initialization methods
      */
@@ -154,6 +188,13 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
         unbinder = ButterKnife.bind(this, view);
 
         viewPhoneNumber.setNextEnabled(false);
+
+        viewShadow.setTranslationY(screenUtils.getHeightPx() >> 1);
+        viewShadow.animate().translationY(0).setDuration(300).setStartDelay(1000).setInterpolator(new DecelerateInterpolator()).start();
+        viewPhoneNumber.setTranslationY(screenUtils.getHeightPx() >> 1);
+        viewPhoneNumber.animate().translationY(0).setDuration(300).setStartDelay(1000).setInterpolator(new DecelerateInterpolator()).start();
+        txtIntroMessage.setAlpha(0);
+        txtIntroMessage.animate().alpha(1).setDuration(300).setStartDelay(1000).setInterpolator(new DecelerateInterpolator()).start();
 
         subscriptions.add(RxView.clicks(viewPhoneNumber.getImageViewNextIcon()).subscribe(aVoid -> {
             viewPhoneNumber.fadeOutNext();
@@ -168,7 +209,7 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
         }));
 
         subscriptions.add(viewCode.codeValid().subscribe(isValid -> {
-            if (isValid) {
+            if (isValid && isResumed() && getUserVisibleHint()) {
                 if (IntroActivity.uiOnlyMode) {
                     loginEntity = introPresenter.login("", "", "");
                 } else {
@@ -273,6 +314,7 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
         viewPhoneNumber.fadeOutNext();
         txtIntroMessage.setText(getString(R.string.onboarding_step_code));
         viewPager.setCurrentItem(PAGE_CODE, true);
+        viewCode.openKeyboard();
     }
 
 
@@ -322,6 +364,12 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
     @Override
     public void loginError(ErrorLogin errorLogin) {
         this.errorLogin = errorLogin;
+
+        if (errorLogin != null && !errorLogin.isVerified()) {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(TagManagerConstants.TYPE_ERROR_TECHNICAL, true);
+            tagManager.trackEvent(TagManagerConstants.ONBOARDING_SMS_ERROR, bundle);
+        }
     }
 
     /**

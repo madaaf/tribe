@@ -1,9 +1,11 @@
 package com.tribe.app.data.network.entity;
 
+import java.io.Serializable;
+
 /**
  * Created by tiago on 19/05/2016.
  */
-public class LoginEntity {
+public class LoginEntity implements Serializable {
 
     private String to;
     private String username;

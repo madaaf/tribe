@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -18,6 +19,7 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -163,7 +165,20 @@ public class CodeView extends FrameLayout {
             resetPinCodeView();
             backClicked.onNext(null);
         }));
+    }
 
+    @OnClick(R.id.layoutPin)
+    void clickLayoutPin() {
+        openKeyboard();
+    }
+
+    public void openKeyboard() {
+        editTextCode.requestFocus();
+        editTextCode.postDelayed(() -> {
+            InputMethodManager keyboard = (InputMethodManager)
+                    getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            keyboard.showSoftInput(editTextCode, 0);
+        }, 200);
     }
 
     /**

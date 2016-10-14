@@ -16,6 +16,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -56,6 +57,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -206,6 +208,13 @@ public class ProfileInfoView extends LinearLayout {
         inputFilters.add(2, filterLowercase);
         InputFilter[] newInputFilters = inputFilters.toArray(new InputFilter[inputFilters.size()]);
         editUsername.setFilters(newInputFilters);
+
+        editUsername.setOnFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) editUsername.setSelection(editUsername.getText().length());
+            }
+        });
 
         subscriptions.add(
                 RxTextView.textChanges(editUsername)
@@ -370,6 +379,17 @@ public class ProfileInfoView extends LinearLayout {
         infoValid.onNext(displayNameSelected && avatarSelected && usernameSelected);
     }
 
+    @OnClick(R.id.layoutUsername)
+    void clickLayoutUsername() {
+        editUsername.requestFocus();
+        editUsername.setSelection(editUsername.getText().length());
+        editUsername.postDelayed(() -> {
+            InputMethodManager keyboard = (InputMethodManager)
+                    getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            keyboard.showSoftInput(editUsername, 0);
+        }, 200);
+    }
+
     private static InputFilter filterSpace = (source, start, end, dest, dstart, dend) -> {
         for (int i = start; i < end; i++) {
             if (Character.isSpaceChar(source.charAt(i))) {
@@ -433,17 +453,13 @@ public class ProfileInfoView extends LinearLayout {
 
                     if (cameraType.getCameraTypeDef().equals(CameraType.OPEN_CAMERA)) {
                         subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA)
-                                .doOnNext(selectedUri -> imgUri = selectedUri.toString())
                                 .subscribe(uri -> {
-                                    avatarSelected = true;
-                                    loadAvatar(uri.toString());
+                                    loadUri(uri);
                                 }));
                     } else if (cameraType.getCameraTypeDef().equals(CameraType.OPEN_PHOTOS)) {
                         subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY)
-                                .doOnNext(selectedUri -> imgUri = selectedUri.toString())
                                 .subscribe(uri -> {
-                                    avatarSelected = true;
-                                    loadAvatar(uri.toString());
+                                    loadUri(uri);
                                 }));
                     }
 
@@ -457,7 +473,12 @@ public class ProfileInfoView extends LinearLayout {
             cameraTypeAdapter.releaseSubscriptions();
             dialogCamera = null;
         });
+    }
 
+    public void loadUri(Uri uri) {
+        imgUri = uri.toString();
+        avatarSelected = true;
+        loadAvatar(uri.toString());
     }
 
     private void setupBottomSheetCamera() {

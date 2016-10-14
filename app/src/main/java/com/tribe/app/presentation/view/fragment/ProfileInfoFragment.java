@@ -3,11 +3,14 @@ package com.tribe.app.presentation.view.fragment;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
+import com.facebook.login.LoginResult;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
@@ -22,11 +25,15 @@ import com.tribe.app.presentation.mvp.presenter.ProfileInfoPresenter;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
+import com.tribe.app.presentation.utils.facebook.RxFacebook;
+import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.FacebookView;
+
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -34,6 +41,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -44,6 +53,11 @@ import rx.subscriptions.CompositeSubscription;
  * Has ability to retrieve this information from Facebook.
  */
 public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.presentation.mvp.view.ProfileInfoView {
+
+    private static final String LOGIN_ENTITY = "LOGIN_ENTITY";
+    private static final String FACEBOOK_ENTITY = "FACEBOOK_ENTITY";
+    private static final String DEEPLINK = "DEEPLINK";
+    private static final String URI_PICTURE = "URI_PICTURE";
 
     public static ProfileInfoFragment newInstance() {
         Bundle args = new Bundle();
@@ -56,6 +70,12 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
     /**
      * Globals
      */
+
+    @Inject
+    RxImagePicker rxImagePicker;
+
+    @Inject
+    RxFacebook rxFacebook;
 
     @Inject
     User user;
@@ -88,10 +108,25 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
     private LoginEntity loginEntity;
     private FacebookEntity facebookEntity;
     private Uri deepLink;
+    private Uri uriPicture;
 
     /**
      * View Lifecycle
      */
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            if (savedInstanceState.get(LOGIN_ENTITY) != null) loginEntity = (LoginEntity) savedInstanceState.getSerializable(LOGIN_ENTITY);
+            if (savedInstanceState.get(FACEBOOK_ENTITY) != null) facebookEntity = (FacebookEntity) savedInstanceState.getSerializable(FACEBOOK_ENTITY);
+            if (savedInstanceState.get(DEEPLINK) != null) deepLink = savedInstanceState.getParcelable(DEEPLINK);
+            if (savedInstanceState.get(URI_PICTURE) != null) {
+                uriPicture = savedInstanceState.getParcelable(URI_PICTURE);
+            }
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -103,7 +138,58 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
         this.profileInfoPresenter.attachView(this);
         refactorNext();
 
+        if (getUserVisibleHint() && getActivity() != null) {
+            getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        }
+
         return fragmentView;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        subscriptions.add(Observable
+                .timer(500, TimeUnit.MILLISECONDS)
+                .onBackpressureDrop()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aLong -> {
+                    uriPicture = rxImagePicker.getUri();
+
+                    if (uriPicture != null) {
+                        profileInfoView.loadUri(uriPicture);
+                    }
+                }));
+
+        if (profileInfoView != null && uriPicture != null) profileInfoView.loadUri(uriPicture);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (loginEntity != null) outState.putSerializable(LOGIN_ENTITY, loginEntity);
+        if (facebookEntity != null) outState.putSerializable(FACEBOOK_ENTITY, facebookEntity);
+        if (deepLink != null) outState.putParcelable(DEEPLINK, deepLink);
+        if (uriPicture != null) outState.putParcelable(URI_PICTURE, uriPicture);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        subscriptions.add(Observable
+                .timer(2000, TimeUnit.MILLISECONDS)
+                .onBackpressureDrop()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aLong -> {
+                    LoginResult loginResult = rxFacebook.getLoginResult();
+
+                    System.out.println("LOGIN RESUME : " + loginResult);
+                    if (loginResult != null && FacebookUtils.isLoggedIn()) {
+                        successFacebookLogin();
+                    }
+                }));
     }
 
     @Override
@@ -138,7 +224,8 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
         }));
 
         subscriptions.add(profileInfoView.onUsernameInput().subscribe(s -> {
-            profileInfoPresenter.lookupUsername(s);
+            if (isResumed() && getUserVisibleHint())
+                profileInfoPresenter.lookupUsername(s);
         }));
 
         subscriptions.add(profileInfoView.onInfoValid().subscribe(isValid -> refactorNext()));
@@ -227,6 +314,7 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
         if (StringUtils.isEmpty(user.getId()))
             profileInfoPresenter.register(profileInfoView.getDisplayName(), profileInfoView.getUsername(), loginEntity);
         else {
+            tagManager.trackEvent(TagManagerConstants.ONBOARDING_CONNECTION);
             showLoading();
             profileInfoPresenter.updateUser(profileInfoView.getUsername(), profileInfoView.getDisplayName(), profileInfoView.getImgUri(),
                     facebookEntity != null && !StringUtils.isEmpty(facebookEntity.getId()) ? facebookEntity.getId() : null);

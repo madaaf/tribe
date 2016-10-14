@@ -4,13 +4,22 @@
     android:background="@drawable/shape_rect_white_rounded_corners"
     android:id="@+id/layoutAccess">
 
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:focusableInTouchMode="true"
+        android:focusable="true"
+        android:clickable="true"
+        >
+        <requestFocus />
+    </LinearLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/onboarding_top_bar_height"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/shape_white_rect_grey_border_rounded_top"
         />
-
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtAccessTitle"

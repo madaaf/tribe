@@ -234,12 +234,24 @@
         </LinearLayout>-->
 
         <ImageView
-            android:layout_marginTop="10dp"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/icons_end"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/picto_tribe_logo"
-            android:alpha=".4"/>
+            android:layout_marginTop="@dimen/vertical_margin"
+            android:layout_marginBottom="@dimen/vertical_margin"
+            android:src="@drawable/picto_tribe_logo_black"
+            android:alpha="0.4"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtVersion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/vertical_margin"
+            android:gravity="center"
+            style="@style/Body.One.Black40"
+            />
 
     </LinearLayout>
 

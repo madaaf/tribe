@@ -19,6 +19,7 @@ import javax.inject.Inject;
 public class FacebookHiddenActivity extends BaseActivity {
 
     public final static String FACEBOOK_REQUEST = "FACEBOOK_REQUEST";
+    private final static String DESTROYED = "DESTROYED";
 
     @Inject
     RxFacebook rxFacebook;
@@ -30,12 +31,19 @@ public class FacebookHiddenActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        init();
         initDependencyInjector();
+        init();
 
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null || savedInstanceState.getBoolean(DESTROYED)) {
             handleIntent(getIntent());
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean(DESTROYED, true);
     }
 
     @Override
@@ -62,7 +70,6 @@ public class FacebookHiddenActivity extends BaseActivity {
 
                         @Override
                         public void onCancel() {
-                            Toast.makeText(FacebookHiddenActivity.this, "Login Canceled", Toast.LENGTH_LONG).show();
                             finish();
                         }
 

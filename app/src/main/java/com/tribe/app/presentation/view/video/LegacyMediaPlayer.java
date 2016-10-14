@@ -1,14 +1,15 @@
 package com.tribe.app.presentation.view.video;
 
+import android.content.res.AssetFileDescriptor;
 import android.graphics.SurfaceTexture;
 import android.media.MediaPlayer;
 import android.media.PlaybackParams;
-import android.net.Uri;
 import android.view.Surface;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
+import com.tribe.app.presentation.utils.StringUtils;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -107,12 +108,15 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
             if (!isLocal) {
                 RandomAccessFile raf = new RandomAccessFile(media, "r");
                 mediaPlayer.setDataSource(raf.getFD(), 0, raf.length());
-            } else {
-                mediaPlayer.setDataSource(context, Uri.parse(media));
+            } else if (!StringUtils.isEmpty(media) && media.contains("asset")) { // TODO BETTER
+                AssetFileDescriptor afd = context.getAssets().openFd("video/onboarding_video.mp4");
+                mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+                afd.close();
             }
 
             mediaPlayer.prepareAsync();
         } catch (IllegalStateException ex) {
+            ex.printStackTrace();
             try {
                 mediaPlayer.reset();
                 RandomAccessFile raf = new RandomAccessFile(media, "r");

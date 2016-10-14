@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import com.f2prateek.rx.preferences.Preference;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tbruyelle.rxpermissions.RxPermissions;
+import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.User;
@@ -32,6 +33,7 @@ import com.tribe.app.presentation.view.component.SettingThemeView;
 import com.tribe.app.presentation.view.dialog_fragment.LocationDialogFragment;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.Weather;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import javax.inject.Inject;
 
@@ -96,6 +98,9 @@ public class SettingFragment extends BaseFragment implements SettingView {
 
 //    @BindView(R.id.settingsSendToken)
 //    SettingItemView settingsSendToken;
+
+    @BindView(R.id.txtVersion)
+    TextViewFont txtVersion;
 
     @Inject
     ReactiveLocationProvider reactiveLocationProvider;
@@ -379,6 +384,8 @@ public class SettingFragment extends BaseFragment implements SettingView {
 //        settingsSendToken.setTitleBodyViewType("Send token to mamene Tiago",
 //                "Maître bavon",
 //                SettingItemView.SIMPLE);
+
+        txtVersion.setText(getString(R.string.settings_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE));
     }
 
     public void setPicture(String profilePicUrl) {

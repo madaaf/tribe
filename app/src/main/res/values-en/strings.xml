@@ -273,15 +273,15 @@
 	<string name="onboarding_phone_number">Phone number</string>
 	<string name="onboarding_error_wrong_pin">:closed_lock_with_key: Wrong verification code</string>
 	<string name="onboarding_connected">Connected</string>
-	<string name="onboarding_user_title">Hi there! Set yourself up.</string>
+	<string name="onboarding_user_title">Welcome! Let\'s get started.</string>
 	<string name="onboarding_user_avatar_library">Camera roll</string>
 	<string name="onboarding_user_avatar_selfie">Selfie camera</string>
 	<string name="onboarding_user_displayname_placeholder">Full name</string>
-	<string name="onboarding_user_username_placeholder">username</string>
-	<string name="onboarding_user_username_restrictions">Usernames must only contain alphanumeric, underscores and dash characters</string>
+	<string name="onboarding_user_username_placeholder">\@username</string>
+	<string name="onboarding_user_username_restrictions">Usernames may include letters, numbers, underscores, and dashes.</string>
 	<string name="onboarding_user_facebook_button_title">Or autofill profile</string>
 	<string name="onboarding_queue_title">Gain access now!</string>
-	<string name="onboarding_queue_description">Hold up, you need at least\n1 friend on Tribe to get in</string>
+	<string name="onboarding_queue_description">Hold up, you need at least\n1 friend on Tribe to get in.</string>
 	<string name="onboarding_queue_button_title">Search for my friends</string>
 	<string name="onboarding_queue_loading_title">Hang tight…</string>
 	<string name="onboarding_queue_loading_description">Looking if one of your\nfriends is already on Tribe.</string>
@@ -295,7 +295,7 @@
 	<string name="onboarding_queue_declined_popup_cancel_button">Stay alone.</string>
 	<string name="onboarding_queue_declined_popup_confirm_button">Sure!</string>
 	<string name="onboarding_queue_valid_title">Congrats, you\'re in!</string>
-	<string name="onboarding_queue_valid_description">Some of your friends\nare already here.</string>
+	<string name="onboarding_queue_valid_description">Some of your friends\nare already here!</string>
 	<string name="onboarding_queue_valid_button_title">Enter now</string>
 	
 	<!-- Pull to search -->
@@ -360,14 +360,17 @@
 	<string name="notification_reply_chat">Reply in sidechat</string>
 	
 	<!-- Share -->
-	<string name="share_add_friends_addressbook_suggestions">I was able to get access to Tribe. Just noticed that you already have %1$d friends on this app. I can get you in: %2$s</string>
-	<string name="share_group_public_link">Here is your invite to join the %1$s group on Tribe. %2$s</string>
-	<string name="share_group_private_link">Here is your invite to join the %1$s group on Tribe. Join quickly because this invite will expire in %2$s ! %3$s</string>
-	<string name="share_add_friends_handle">I’ve locked up %1$s handle on Tribe. Reserve yours now before it\'s too late on %2$s</string>
-	<string name="share_score">I have %1$s points on Tribe %2$s</string>
-	<string name="share_onboarding">I just discovered Tribe, but I can’t enter alone. Come now so we can get access together. Waiting for you. Go on %1$s</string>
+	<string name="share_add_friends_addressbook_suggestions">I was able to get access to Tribe. Just noticed that you already have %1$d friends on this app. I can get you in: %2$s #JoinTheTribe</string>
+	<string name="share_group_public_link">Here is your invite to join the %1$s group on Tribe. %2$s #JoinTheTribe</string>
+	<string name="share_group_private_link">Here is your invite to join the %1$s group on Tribe. Join quickly because this invite will expire in %2$s ! %3$s #JoinTheTribe</string>
+	<string name="share_add_friends_handle">I’ve locked up %1$s handle on Tribe. Reserve yours now before it\'s too late on %2$s #JoinTheTribe</string>
+	<string name="share_score">I have %1$s points on Tribe %2$s. Try to beat me on http://tribe.pm #JoinTheTribe</string>
+	<string name="share_onboarding">I just discovered Tribe, but I can’t enter alone. Come now so we can get access together. Waiting for you. Go on %1$s #JoinTheTribe</string>
 	<string name="share_copied_redirecting">:paperclip: Copied to the clipboard. Prepare to paste.</string>
-	<string name="share_grid_invite">Sent from Tribe. http://tribe.pm</string>
+	<string name="share_grid_invite">Sent from Tribe. http://tribe.pm #JoinTheTribe</string>
+	<string name="share_snapchat_story_explanation_title">Snapchat</string>
+	<string name="share_snapchat_story_explanation_msg">Please import the image from the Snapchat memories library.</string>
+	<string name="share_snapchat_story_explanation_ok">OK</string>
 	
 	<!-- TribeDistancePopup -->
 	<string name="tribe_distance_popup_description">Sent %1$s away from you</string>
@@ -462,7 +465,7 @@
 	<!-- Support -->
 	<string name="support_metadata">Support</string>
 	<string name="support_popup_displayname">Full name</string>
-	<string name="support_popup_username">Username</string>
+	<string name="support_popup_username">\@Username</string>
 	<string name="support_popup_score">Score</string>
 	<string name="support_popup_friends">Friends</string>
 	<string name="support_popup_groups">Groups</string>

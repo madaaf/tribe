@@ -13,7 +13,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -23,7 +22,6 @@ import android.view.animation.OvershootInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.f2prateek.rx.preferences.Preference;
@@ -59,7 +57,6 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -67,8 +64,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class HomeActivity extends BaseActivity implements HasComponent<UserComponent>, HomeView, GoogleApiClient.OnConnectionFailedListener {
@@ -735,14 +730,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             return contactsGridFragment.get();
         }
 
-        public GroupsGridFragment getGroupsGridFragment() {
-            return groupsGridFragment.get();
-        }
-
-        public void setGroupsGridFragment(GroupsGridFragment groupsGridFragment) {
-            groupsGridFragment = groupsGridFragment;
-        }
-
         @Override
         public Parcelable saveState() {
             return null;
@@ -797,13 +784,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             v.setLayoutParams(params);
             v.invalidate();
         }
-    }
-
-    public void resetGroupsGridFragment() {
-        homeViewPagerAdapter.setGroupsGridFragment(new GroupsGridFragment());
-        viewPager.setCurrentItem(GRID_FRAGMENT_PAGE);
-        homeViewPagerAdapter.notifyDataSetChanged();
-        viewPager.setSwipeable(true);
     }
 
     //////////////////

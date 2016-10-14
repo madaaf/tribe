@@ -41,6 +41,7 @@ public class RxFacebook {
     private PublishSubject<LoginResult> loginSubject;
     private Observable<List<ContactFBRealm>> friendListObservable;
     private Observable<FacebookEntity> facebookEntityObservable;
+    private LoginResult loginResult;
 
     @Inject
     public RxFacebook(Context context) {
@@ -54,6 +55,7 @@ public class RxFacebook {
     }
 
     void onLogin(LoginResult loginResult) {
+        this.loginResult = loginResult;
         if (loginSubject != null && loginSubject.hasObservers()) {
             loginSubject.onNext(loginResult);
             loginSubject.onCompleted();
@@ -125,18 +127,22 @@ public class RxFacebook {
                     JSONObject jsonResponse = response.getJSONObject();
                     FacebookEntity facebookEntity = new FacebookEntity();
 
-                    try {
-                        facebookEntity.setName(jsonResponse.getString("name"));
-                        facebookEntity.setUsername(facebookEntity.getName().replaceAll("\\s", "").toLowerCase());
-                        facebookEntity.setId(jsonResponse.getString("id"));
-                        facebookEntity.setProfilePicture("https://graph.facebook.com/" + facebookEntity.getId() + "/picture?type=large");
-                    } catch (JSONException e) {
-                        Log.e("JSON exception:", e.toString());
-                    } finally {
-                        if (!subscriber.isUnsubscribed()) {
-                            subscriber.onNext(facebookEntity);
-                            subscriber.onCompleted();
+                    if (jsonResponse != null) {
+                        try {
+                            facebookEntity.setName(jsonResponse.getString("name"));
+                            facebookEntity.setUsername(facebookEntity.getName().replaceAll("\\s", "").toLowerCase());
+                            facebookEntity.setId(jsonResponse.getString("id"));
+                            facebookEntity.setProfilePicture("https://graph.facebook.com/" + facebookEntity.getId() + "/picture?type=large");
+                        } catch (JSONException e) {
+                            Log.e("JSON exception:", e.toString());
+                        } finally {
+                            if (!subscriber.isUnsubscribed()) {
+                                subscriber.onNext(facebookEntity);
+                                subscriber.onCompleted();
+                            }
                         }
+                    } else if (!subscriber.isUnsubscribed()) {
+                        subscriber.onCompleted();
                     }
                 }).executeAsync();
     }
@@ -146,5 +152,11 @@ public class RxFacebook {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(FacebookHiddenActivity.FACEBOOK_REQUEST, FACEBOOK_LOGIN);
         context.startActivity(intent);
+    }
+
+    public LoginResult getLoginResult() {
+        LoginResult loginResultTemp = loginResult;
+        loginResult = null;
+        return loginResultTemp;
     }
 }

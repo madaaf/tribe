@@ -14,6 +14,7 @@ import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.utils.Extras;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.ChatActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.GroupInfoActivity;
@@ -25,6 +26,7 @@ import com.tribe.app.presentation.view.activity.ScoreActivity;
 import com.tribe.app.presentation.view.activity.SettingActivity;
 import com.tribe.app.presentation.view.activity.TribeActivity;
 
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
@@ -36,6 +38,9 @@ import javax.inject.Inject;
 public class Navigator {
 
     public static int REQUEST_COUNTRY = 1000;
+    public static String SNAPCHAT = "com.snapchat.android";
+    public static String INSTAGRAM = "com.instagram.android";
+    public static String TWITTER = "com.twitter.android";
 
     @Inject
     public Navigator() {
@@ -333,7 +338,7 @@ public class Navigator {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_TEXT, body);
-        intent.setPackage("com.snapchat.android");
+        intent.setPackage(SNAPCHAT);
         activity.startActivity(Intent.createChooser(intent, "Open Snapchat"));
     }
 
@@ -352,5 +357,28 @@ public class Navigator {
         sendIntent.setType("text/plain");
         sendIntent.setPackage("org.telegram.messenger");
         activity.startActivity(sendIntent);
+    }
+
+    public void shareHandle(Context context, String handle, File file, String selectedPackage) {
+        if (file != null) {
+            Intent share = new Intent(Intent.ACTION_SEND);
+            share.setType("image/jpeg");
+            share.putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_add_friends_handle, "@" + handle, BuildConfig.TRIBE_URL + "/@" + handle));
+
+            Uri uri = Uri.fromFile(file);
+            share.putExtra(Intent.EXTRA_STREAM, uri);
+
+            if (StringUtils.isEmpty(selectedPackage)) {
+                context.startActivity(Intent.createChooser(share, context.getString(R.string.contacts_share_profile_button)));
+            } else {
+                try {
+                    share.setPackage(selectedPackage);
+                    context.startActivity(share);
+                } catch (Exception ex) {
+                    share.setPackage(null);
+                    context.startActivity(Intent.createChooser(share, context.getString(R.string.contacts_share_profile_button)));
+                }
+            }
+        }
     }
 }

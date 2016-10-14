@@ -647,16 +647,18 @@ public class CloudUserDataStore implements UserDataStore {
                         reqHowManyFriends = context.getString(R.string.mutation, bufferHowManyFriends.toString());
                     }
 
-                    return tribeApi.howManyFriends(reqHowManyFriends);
+                    return StringUtils.isEmpty(reqHowManyFriends) ? Observable.just(new ArrayList<Integer>()) : tribeApi.howManyFriends(reqHowManyFriends);
                 }, (phonesHowManyFriends, howManyFriendsResult) -> {
                     int indexHowMany = 0;
 
-                    for (ContactInterface contactInterface : phonesHowManyFriends.values()) {
-                        contactInterface.setHowManyFriends(howManyFriendsResult.get(indexHowMany));
-                        indexHowMany++;
-                    }
+                    if (howManyFriendsResult != null && howManyFriendsResult.size() > 0) {
+                        for (ContactInterface contactInterface : phonesHowManyFriends.values()) {
+                            contactInterface.setHowManyFriends(howManyFriendsResult.get(indexHowMany));
+                            indexHowMany++;
+                        }
 
-                    contactCache.updateHowManyFriends(phonesHowManyFriends.values());
+                        contactCache.updateHowManyFriends(phonesHowManyFriends.values());
+                    }
 
                     return null;
                 });

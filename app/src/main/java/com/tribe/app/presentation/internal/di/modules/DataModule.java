@@ -16,6 +16,7 @@ import com.tribe.app.presentation.internal.di.scope.LocationContext;
 import com.tribe.app.presentation.internal.di.scope.LocationPopup;
 import com.tribe.app.presentation.internal.di.scope.Memories;
 import com.tribe.app.presentation.internal.di.scope.Preload;
+import com.tribe.app.presentation.internal.di.scope.ShareProfile;
 import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.internal.di.scope.Theme;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
@@ -144,5 +145,12 @@ public class DataModule {
     @LocationPopup
     Preference<Boolean> provideLocationPopup(RxSharedPreferences prefs) {
         return prefs.getBoolean(PreferencesConstants.LOCATION_POPUP, false);
+    }
+
+    @Provides
+    @Singleton
+    @ShareProfile
+    Preference<Boolean> provideShareProfile(RxSharedPreferences prefs) {
+        return prefs.getBoolean(PreferencesConstants.SHARE_PROFILE, false);
     }
 }
