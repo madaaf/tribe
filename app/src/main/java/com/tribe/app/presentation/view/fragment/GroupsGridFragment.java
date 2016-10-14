@@ -514,6 +514,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     private void resetCreateGroupView() {
         groupInfoView.expand(0);
+        groupInfoView.setBringGroupNameToTopEnabled(true);
         groupInfoView.setGroupName("");
         groupInfoView.bringOutIcons(0);
         groupInfoView.enableButtons();
