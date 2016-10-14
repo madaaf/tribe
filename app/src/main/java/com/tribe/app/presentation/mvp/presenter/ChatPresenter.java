@@ -50,6 +50,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 public class ChatPresenter implements Presenter {
 
@@ -65,6 +66,7 @@ public class ChatPresenter implements Presenter {
     private final GetPendingMessageList getPendingMessageList;
     private final GetRecipientInfos getRecipientInfos;
 
+    private CompositeSubscription subscriptions = new CompositeSubscription();
     private DeleteMessageSubscriber deleteMessageSubscriber;
 
     private MessageView messageView;
@@ -124,6 +126,7 @@ public class ChatPresenter implements Presenter {
 //        connectAndSubscribeMQTT.unsubscribe();
 //        subscribingMQTT.unsubscribe();
 //        disconnectMQTT.unsubscribe();
+        if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
         diskGetChatMessages.unsubscribe();
         deleteDiskConversation.unsubscribe();
         diskMarkMessageListAsRead.unsubscribe();
@@ -156,43 +159,44 @@ public class ChatPresenter implements Presenter {
     }
 
     public void loadThumbnail(int radius) {
-        Observable.create(new Observable.OnSubscribe<Bitmap>() {
-            @Override
-            public void call(final Subscriber<? super Bitmap> subscriber) {
-                final String[] columns = { MediaStore.Images.Media.DATA,
-                        MediaStore.Images.Media._ID };
-                final String orderBy = MediaStore.Images.Media.DATE_ADDED + " DESC limit 1";
+        subscriptions.add(
+                Observable.create(new Observable.OnSubscribe<Bitmap>() {
+                    @Override
+                    public void call(final Subscriber<? super Bitmap> subscriber) {
+                        final String[] columns = {MediaStore.Images.Media.DATA,
+                                MediaStore.Images.Media._ID};
+                        final String orderBy = MediaStore.Images.Media.DATE_ADDED + " DESC limit 1";
 
-                Cursor imageCursor = messageView.context().getContentResolver().query(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, null,
-                        null, orderBy);
+                        Cursor imageCursor = messageView.context().getContentResolver().query(
+                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, null,
+                                null, orderBy);
 
-                int image_column_index = imageCursor
-                        .getColumnIndex(MediaStore.Images.Media._ID);
+                        int image_column_index = imageCursor
+                                .getColumnIndex(MediaStore.Images.Media._ID);
 
-                Bitmap thumbnail = null;
+                        Bitmap thumbnail = null;
 
-                if (imageCursor != null && imageCursor.moveToFirst()) {
-                    int id = imageCursor.getInt(image_column_index);
-                    thumbnail = MediaStore.Images.Thumbnails.getThumbnail(
-                            messageView.context().getApplicationContext().getContentResolver(), id,
-                            MediaStore.Images.Thumbnails.MICRO_KIND, null);
-                }
+                        if (imageCursor != null && imageCursor.moveToFirst()) {
+                            int id = imageCursor.getInt(image_column_index);
+                            thumbnail = MediaStore.Images.Thumbnails.getThumbnail(
+                                    messageView.context().getApplicationContext().getContentResolver(), id,
+                                    MediaStore.Images.Thumbnails.MICRO_KIND, null);
+                        }
 
-                imageCursor.close();
+                        imageCursor.close();
 
-                if (thumbnail != null) {
-                    RoundedCornersTransformation roundedCornersTransformation = new RoundedCornersTransformation(radius, 0, RoundedCornersTransformation.CornerType.ALL);
-                    subscriber.onNext(roundedCornersTransformation.transform(thumbnail));
-                }
+                        if (thumbnail != null) {
+                            RoundedCornersTransformation roundedCornersTransformation = new RoundedCornersTransformation(radius, 0, RoundedCornersTransformation.CornerType.ALL);
+                            subscriber.onNext(roundedCornersTransformation.transform(thumbnail));
+                        }
 
-                subscriber.onCompleted();
-            }
-        }).subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(bitmap -> {
-                    messageView.showGalleryImage(bitmap);
-                });
+                        subscriber.onCompleted();
+                    }
+                }).subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(bitmap -> {
+                            messageView.showGalleryImage(bitmap);
+                        }));
     }
 
     public void deleteConversation(String friendshipId) {

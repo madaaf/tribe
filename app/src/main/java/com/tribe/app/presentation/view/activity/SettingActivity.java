@@ -97,6 +97,7 @@ SettingActivity extends BaseActivity implements SettingView {
     @Override
     protected void onDestroy() {
         if (unbinder != null) unbinder.unbind();
+        if (settingPresenter != null) settingPresenter.onDestroy();
         super.onDestroy();
     }
 

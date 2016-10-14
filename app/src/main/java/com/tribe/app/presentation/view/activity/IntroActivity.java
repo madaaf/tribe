@@ -147,7 +147,7 @@ public class IntroActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         // 1. Country code selector
-        if (requestCode == Navigator.REQUEST_COUNTRY && resultCode == Activity.RESULT_OK) {
+        if (requestCode == Navigator.REQUEST_COUNTRY && resultCode == Activity.RESULT_OK && data.getStringExtra(Extras.COUNTRY_CODE) != null) {
             countryCode = data.getStringExtra(Extras.COUNTRY_CODE);
         }
     }

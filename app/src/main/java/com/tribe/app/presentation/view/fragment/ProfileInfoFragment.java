@@ -201,6 +201,10 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
             subscriptions.clear();
         }
 
+        if (profileInfoPresenter != null) {
+            profileInfoPresenter.onDestroy();
+        }
+
         super.onDestroy();
     }
 

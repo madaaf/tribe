@@ -207,6 +207,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             subscriptions.clear();
         }
 
+        if  (groupPresenter != null) groupPresenter.onDestroy();
+
         super.onDestroy();
     }
 
@@ -340,7 +342,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         }));
 
         subscriptions.add(groupInfoView.imageGoToMembersClicked().subscribe(aVoid -> {
-            searchFriendsView.requestFocus();
             imageGoToMembersClicked.onNext(null);
         }));
         groupPresenter.getGroupMembers(groupId);
