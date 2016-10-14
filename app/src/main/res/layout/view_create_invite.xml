@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="80dp"
             android:gravity="center"
-            android:text="Add group details to create a group" />
+            android:text="@string/group_private_description" />
 
 
 </FrameLayout>

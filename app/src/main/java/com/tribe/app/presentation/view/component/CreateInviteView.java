@@ -141,6 +141,7 @@ public class CreateInviteView extends FrameLayout {
     }
 
     public void setDefault() {
+        if (countDownSubscription != null) countDownSubscription.unsubscribe();
         textCreateInvite.setText(getContext().getString(R.string.group_create_title));
         textCreateInviteDesc.setText(getContext().getString(R.string.group_private_description ));
         viewCreateGroupBg2.setVisibility(VISIBLE);
