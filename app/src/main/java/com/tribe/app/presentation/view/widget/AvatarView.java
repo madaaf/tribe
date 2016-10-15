@@ -30,6 +30,9 @@ public class AvatarView extends RoundedCornerLayout {
     // VARIABLES
     private boolean hasBorder = true;
 
+    // RESOURCES
+    private int avatarSize;
+
     public AvatarView(Context context) {
         this(context, null);
         init(context, null);
@@ -48,6 +51,8 @@ public class AvatarView extends RoundedCornerLayout {
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AvatarView);
         hasBorder = a.getBoolean(R.styleable.AvatarView_border, false);
+
+        avatarSize = getResources().getDimensionPixelSize(R.dimen.avatar_size);
 
         setWillNotDraw(false);
         a.recycle();
@@ -87,12 +92,14 @@ public class AvatarView extends RoundedCornerLayout {
         if (!StringUtils.isEmpty(url) && !url.equals(getContext().getString(R.string.no_profile_picture_url))) {
             Glide.with(getContext())
                     .load(url)
+                    .override(avatarSize, avatarSize)
                     .centerCrop()
                     .crossFade()
                     .into(imgAvatar);
         } else {
             Glide.with(getContext())
                     .load(R.drawable.picto_placeholder_avatar)
+                    .override(avatarSize, avatarSize)
                     .crossFade()
                     .into(imgAvatar);
         }

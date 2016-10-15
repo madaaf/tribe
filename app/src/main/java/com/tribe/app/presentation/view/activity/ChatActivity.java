@@ -34,6 +34,7 @@ import com.tribe.app.presentation.mvp.presenter.ChatPresenter;
 import com.tribe.app.presentation.mvp.view.MessageView;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.adapter.MessageAdapter;
 import com.tribe.app.presentation.view.adapter.manager.MessageLayoutManager;
@@ -76,6 +77,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
 
     public static final String RECIPIENT_ID = "RECIPIENT_ID";
     public static final String IS_TO_GROUP = "IS_TO_GROUP";
+    public static final String RECIPIENT = "RECIPIENT";
 
     public static Intent getCallingIntent(Context context, String recipientId, boolean isToGroup) {
         Intent intent = new Intent(context, ChatActivity.class);
@@ -159,6 +161,26 @@ public class ChatActivity extends BaseActivity implements MessageView {
         initSubscriptions();
         initRecyclerView();
         initPresenter();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        System.out.println("ON SAVE INSTANCE");
+        if (recipient != null) outState.putSerializable(RECIPIENT, recipient);
+        if (!StringUtils.isEmpty(recipientId)) outState.putString(RECIPIENT_ID, recipientId);
+        outState.putBoolean(IS_TO_GROUP, isToGroup);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        System.out.println("ON RESTORE INSTANCE");
+        if (savedInstanceState != null) {
+            if (savedInstanceState.getSerializable(RECIPIENT) != null) recipient = (Recipient) savedInstanceState.getSerializable(RECIPIENT);
+            if (savedInstanceState.getString(RECIPIENT_ID) != null) recipientId = savedInstanceState.getString(RECIPIENT_ID);
+            if (savedInstanceState.getBoolean(IS_TO_GROUP)) isToGroup = savedInstanceState.getBoolean(IS_TO_GROUP);
+        }
     }
 
     @Override
@@ -889,14 +911,16 @@ public class ChatActivity extends BaseActivity implements MessageView {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        System.out.println("ACTIVITY RESULT");
+
         if (requestCode == REQUEST_GALLERY && data != null && data.getData() != null) {
             String type = getContentResolver().getType(data.getData());
             ChatMessage chatMessage = null;
 
             if (type.equals("image/jpeg") || type.equals("image/png")) {
-                chatMessage = ChatMessage.createMessage(ChatMessage.PHOTO, data.getData().toString(), getCurrentUser(), recipient,  getApplicationComponent().dateUtils());
+                chatMessage = ChatMessage.createMessage(ChatMessage.PHOTO, data.getData().toString(), getCurrentUser(), recipient, getApplicationComponent().dateUtils());
             } else if (type.equals("video/mp4")) {
-                chatMessage = ChatMessage.createMessage(ChatMessage.VIDEO, data.getData().toString(), getCurrentUser(), recipient,  getApplicationComponent().dateUtils());
+                chatMessage = ChatMessage.createMessage(ChatMessage.VIDEO, data.getData().toString(), getCurrentUser(), recipient, getApplicationComponent().dateUtils());
             }
 
             if (chatMessage != null) {

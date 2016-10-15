@@ -6,32 +6,31 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.text.Editable;
 import android.text.TextWatcher;
 
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Country;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
-import com.tribe.app.presentation.view.adapter.CountryPhoneNumberAdapter;
 import com.tribe.app.presentation.utils.Extras;
+import com.tribe.app.presentation.view.adapter.CountryPhoneNumberAdapter;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-
-
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.Observable;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by tiago on 10/06/2016.
@@ -79,7 +78,6 @@ public class CountryActivity extends BaseActivity {
         initSearchView();
         initDependencyInjector();
         initCountryList();
-
     }
 
     @Override
@@ -99,29 +97,33 @@ public class CountryActivity extends BaseActivity {
      */
 
     public void initCountryList() {
-        List<String> listCodeCountry = new ArrayList<>(phoneUtils.getSupportedRegions());
-        listCountry = new ArrayList<>();
+        Observable.just(new ArrayList<>(phoneUtils.getSupportedRegions()))
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(listCodeCountry -> {
+                    listCountry = new ArrayList<>();
 
-        for (String countryCode : listCodeCountry) {
-            String countryName = (new Locale("", countryCode).getDisplayCountry());
-            listCountry.add(new Country(countryCode, countryName));
-        }
+                    for (String countryCode : listCodeCountry) {
+                        String countryName = (new Locale("", countryCode).getDisplayCountry());
+                        listCountry.add(new Country(countryCode, countryName));
+                    }
 
-        Collections.sort(listCountry);
-        listCountryCopy = new ArrayList<>();
-        listCountryCopy.addAll(listCountry);
-        countryAdapter.setItems(listCountry);
-        linearLayoutManager = new LinearLayoutManager(this);
-        recyclerViewCountry.setLayoutManager(linearLayoutManager);
-        recyclerViewCountry.setAdapter(countryAdapter);
+                    Collections.sort(listCountry);
+                    listCountryCopy = new ArrayList<>();
+                    listCountryCopy.addAll(listCountry);
+                    countryAdapter.setItems(listCountry);
+                    linearLayoutManager = new LinearLayoutManager(this);
+                    recyclerViewCountry.setLayoutManager(linearLayoutManager);
+                    recyclerViewCountry.setAdapter(countryAdapter);
 
-        subscription = countryAdapter.clickCountryItem().subscribe(view -> {
-            Country country = countryAdapter.getItemAtPosition(recyclerViewCountry.getChildLayoutPosition(view));
-            Intent resultIntent = new Intent();
-            resultIntent.putExtra(Extras.COUNTRY_CODE, country.code);
-            setResult(Activity.RESULT_OK, resultIntent);
-            finish();
-        });
+                    subscription = countryAdapter.clickCountryItem().subscribe(view -> {
+                        Country country = countryAdapter.getItemAtPosition(recyclerViewCountry.getChildLayoutPosition(view));
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra(Extras.COUNTRY_CODE, country.code);
+                        setResult(Activity.RESULT_OK, resultIntent);
+                        finish();
+                    });
+                });
     }
 
     private void initSearchView() {

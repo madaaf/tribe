@@ -44,7 +44,6 @@ public class PhoneUtils {
 
     public String formatMobileNumber(String number, String countryCode) {
         try {
-            System.out.println("NUMBER : " + number);
             Phonenumber.PhoneNumber phoneNumber = phoneUtil.parse(number, countryCode);
             PhoneNumberUtil.PhoneNumberType type = phoneUtil.getNumberType(phoneNumber);
             boolean isMobile = type == PhoneNumberUtil.PhoneNumberType.MOBILE || type == PhoneNumberUtil.PhoneNumberType.FIXED_LINE_OR_MOBILE;

@@ -19,7 +19,6 @@ import javax.inject.Inject;
 public class FacebookHiddenActivity extends BaseActivity {
 
     public final static String FACEBOOK_REQUEST = "FACEBOOK_REQUEST";
-    private final static String DESTROYED = "DESTROYED";
 
     @Inject
     RxFacebook rxFacebook;
@@ -34,16 +33,13 @@ public class FacebookHiddenActivity extends BaseActivity {
         initDependencyInjector();
         init();
 
-        if (savedInstanceState == null || savedInstanceState.getBoolean(DESTROYED)) {
+        if (savedInstanceState == null || rxFacebook.getCountHandle() <= 1) {
+            System.out.println("HANDLING INTENT");
+            rxFacebook.incrementCountHandle();
             handleIntent(getIntent());
+        } else {
+            finish();
         }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putBoolean(DESTROYED, true);
     }
 
     @Override

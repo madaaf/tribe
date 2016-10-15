@@ -56,6 +56,9 @@ public class IntroActivity extends BaseActivity {
             PAGE_PROFILE_INFO = 1,
             PAGE_ACCESS = 2;
 
+    private static final String COUNTRY_CODE = "COUNTRY_CODE";
+    private static final String DEEP_LINK = "DEEP_LINK";
+
     public static Intent getCallingIntent(Context context) {
         return new Intent(context, IntroActivity.class);
     }
@@ -102,6 +105,11 @@ public class IntroActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (savedInstanceState != null) {
+            if (savedInstanceState.getParcelable(DEEP_LINK) != null) deepLink = savedInstanceState.getParcelable(DEEP_LINK);
+            if (savedInstanceState.getString(countryCode) != null) countryCode = savedInstanceState.getString(COUNTRY_CODE);
+        }
+
         initUi();
         initDependencyInjector();
         initViewPager();
@@ -122,6 +130,13 @@ public class IntroActivity extends BaseActivity {
         }
 
         super.onDestroy();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (!StringUtils.isEmpty(countryCode)) outState.putString(COUNTRY_CODE, countryCode);
+        if (deepLink != null) outState.putParcelable(DEEP_LINK, deepLink);
     }
 
     /**

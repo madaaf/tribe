@@ -189,6 +189,7 @@ dependencies {
     compile presentationDependencies.amplitude
     compile presentationDependencies.imageCropper
     compile presentationDependencies.firebaseInvites
+    compile presentationDependencies.appBoy
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker

@@ -133,6 +133,10 @@ public class PhoneNumberView extends FrameLayout {
         return phoneNumberValid;
     }
 
+    public void setPhoneNumber(String str) {
+        editTextPhoneNumber.setText(str);
+    }
+
     public String getPhoneNumberInput() {
         return editTextPhoneNumber.getText().toString();
     }

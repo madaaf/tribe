@@ -19,10 +19,18 @@ import com.tribe.app.presentation.view.camera.interfaces.Preview;
 import com.tribe.app.presentation.view.camera.utils.Size;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.subscriptions.CompositeSubscription;
 
 public class CameraView extends ViewGroup implements TextureView.SurfaceTextureListener {
 
     private static final String TAG = "CameraView";
+
+    // OBSERVABLES
+    private CompositeSubscription subscriptions = new CompositeSubscription();
 
     // VARIABLES
     private CameraHelper cameraHelper;
@@ -33,6 +41,7 @@ public class CameraView extends ViewGroup implements TextureView.SurfaceTextureL
     private boolean previewAlignCenter;
     private CameraStateListener cameraStateListener;
     private OnErrorListener onErrorListener;
+    private boolean isSwitching = false;
 
     public CameraView(final Context context) {
         super(context);
@@ -247,8 +256,18 @@ public class CameraView extends ViewGroup implements TextureView.SurfaceTextureL
     }
 
     public void switchCamera() {
-        openCamera(cameraHelper.getNextCamera());
-        startPreview();
+        if (!isSwitching) {
+            isSwitching = true;
+            openCamera(cameraHelper.getNextCamera());
+            startPreview();
+            subscriptions.add(Observable
+                    .timer(1000L, TimeUnit.MILLISECONDS)
+                    .onBackpressureBuffer(100)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(aLong -> {
+                        isSwitching = false;
+                    }));
+        }
     }
 
     private void openCamera(final int cameraId) {
@@ -263,6 +282,7 @@ public class CameraView extends ViewGroup implements TextureView.SurfaceTextureL
     }
 
     private void releaseCamera() {
+        if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
         stopPreview();
 
         synchronized (this) {

@@ -42,6 +42,7 @@ public class RxFacebook {
     private Observable<List<ContactFBRealm>> friendListObservable;
     private Observable<FacebookEntity> facebookEntityObservable;
     private LoginResult loginResult;
+    private int countHandle = 0;
 
     @Inject
     public RxFacebook(Context context) {
@@ -56,10 +57,13 @@ public class RxFacebook {
 
     void onLogin(LoginResult loginResult) {
         this.loginResult = loginResult;
+
         if (loginSubject != null && loginSubject.hasObservers()) {
             loginSubject.onNext(loginResult);
             loginSubject.onCompleted();
         }
+
+        countHandle = 0;
     }
 
     public Observable<List<ContactFBRealm>> requestFriends() {
@@ -158,5 +162,13 @@ public class RxFacebook {
         LoginResult loginResultTemp = loginResult;
         loginResult = null;
         return loginResultTemp;
+    }
+
+    public void incrementCountHandle() {
+        countHandle++;
+    }
+
+    public int getCountHandle() {
+        return countHandle;
     }
 }

@@ -87,7 +87,7 @@ public class AccessPresenter implements Presenter {
 
     public void cancelLookupContacts() {
         synchroContactList.unsubscribe();
-        lookupContactsSubscriber.unsubscribe();
+        if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
     }
 
     public void lookupGroupInfos(String groupId) {

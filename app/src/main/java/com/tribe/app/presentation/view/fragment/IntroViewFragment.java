@@ -2,7 +2,6 @@ package com.tribe.app.presentation.view.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -120,9 +119,11 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
      * Lifecycle methods
      */
 
+
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setRetainInstance(true);
+        final View fragmentView = inflater.inflate(R.layout.fragment_intro_view, container, false);
 
         if (savedInstanceState != null) {
             if (savedInstanceState.get(LOGIN_ENTITY) != null) loginEntity = (LoginEntity) savedInstanceState.getSerializable(LOGIN_ENTITY);
@@ -131,18 +132,13 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
             if (savedInstanceState.get(CODE) != null) code = savedInstanceState.getString(CODE);
             if (savedInstanceState.get(PHONE_NUMBER) != null) phoneNumber = savedInstanceState.getString(PHONE_NUMBER);
         }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        setRetainInstance(true);
-        final View fragmentView = inflater.inflate(R.layout.fragment_intro_view, container, false);
 
         initDependencyInjector();
         initUi(fragmentView);
         initViewPager();
         initPhoneNumberView();
         initPresenter();
+
         return fragmentView;
     }
 
@@ -237,10 +233,13 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
 
     private void initPhoneNumberView() {
         viewPhoneNumber.setPhoneUtils(getApplicationComponent().phoneUtils());
+        if (!StringUtils.isEmpty(phoneNumber)) viewPhoneNumber.setPhoneNumber(phoneNumber);
 
         subscriptions.add(viewPhoneNumber.phoneNumberValid().subscribe(isValid -> {
-            this.phoneNumber = viewPhoneNumber.getPhoneNumberFormatted();
-            viewPhoneNumber.setNextEnabled(isValid);
+            if (viewPager.getCurrentItem() == PAGE_PHONE_NUMBER) {
+                this.phoneNumber = viewPhoneNumber.getPhoneNumberFormatted();
+                viewPhoneNumber.setNextEnabled(isValid);
+            }
         }));
 
         subscriptions.add(viewPhoneNumber.countryClick().subscribe(aVoid -> {
