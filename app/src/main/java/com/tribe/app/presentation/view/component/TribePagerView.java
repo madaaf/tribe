@@ -504,7 +504,9 @@ public class TribePagerView extends FrameLayout {
                     tribeListSeens.add(message);
                     updateNbTribes();
                     boolean isCurrent = tribeList.get(viewPager.getCurrentItem()).getLocalId().equals(message.getLocalId());
-                    viewToUpdate.preparePlayer(isCurrent);
+                    // TODO: call different method for audio
+                    if (message.getType().equals(CameraWrapper.VIDEO) || message.getType().equals(CameraWrapper.AUDIO)) viewToUpdate.preparePlayer(isCurrent);
+                    if (message.getType().equals(CameraWrapper.PHOTO)) viewToUpdate.setupTribePhoto(message.getContent());
                 }
             }
         }

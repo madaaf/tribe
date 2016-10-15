@@ -4,6 +4,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.SurfaceTexture;
+import android.media.Image;
 import android.net.Uri;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
@@ -15,6 +16,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.bumptech.glide.Glide;
 import com.f2prateek.rx.preferences.Preference;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.tribe.app.R;
@@ -28,6 +30,7 @@ import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -71,6 +74,9 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
     @BindView(R.id.imgMore)
     ImageView imgMore;
+
+    @BindView(R.id.imageTribeView)
+    ImageView imageTribeView;
 
     @BindView(R.id.labelLevel)
     ButtonCardView labelLevel;
@@ -245,6 +251,13 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
             if (lastPosition != -1) mediaPlayer.seekTo(lastPosition);
         }
+    }
+
+    public void setupTribePhoto(String imageUrl) {
+        Glide.with(getContext()).load(imageUrl)
+                .fitCenter()
+                .crossFade()
+                .into(imageTribeView);
     }
 
     public void showProgress() {

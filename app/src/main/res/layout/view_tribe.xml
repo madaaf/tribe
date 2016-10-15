@@ -10,6 +10,12 @@
         android:background="@null"
         />
 
+    <ImageView
+        android:id="@+id/imageTribeView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
     <View
         android:id="@+id/viewGradient"
         android:layout_width="match_parent"
