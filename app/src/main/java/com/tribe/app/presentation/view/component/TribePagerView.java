@@ -321,7 +321,7 @@ public class TribePagerView extends FrameLayout {
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(t -> {
-                            if (!toUpdate.containsKey(tribe.getLocalId())) {
+                            if (!toUpdate.containsKey(tribe.getLocalId()) && toUpdate.get(tribe.getLocalId()).getType().equals(CameraWrapper.VIDEO)) {
                                 tribePagerAdapter.startTribe(currentView);
                             }
                         });
@@ -491,7 +491,7 @@ public class TribePagerView extends FrameLayout {
 
             if (message.isDownloadPending()) {
                 TribeComponentView viewToUpdate = (TribeComponentView) viewPager.findViewWithTag(message.getId());
-                if (viewToUpdate != null) {
+                if (viewToUpdate != null && message.getType().equals(CameraWrapper.VIDEO)) {
                     viewToUpdate.setTribe(message);
                     viewToUpdate.showProgress();
                 }

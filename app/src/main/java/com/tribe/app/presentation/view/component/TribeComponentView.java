@@ -258,6 +258,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
                 .fitCenter()
                 .crossFade()
                 .into(imageTribeView);
+        removeProgressBar();
     }
 
     public void showProgress() {
@@ -333,6 +334,11 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     private void cancelProgress() {
         if (animatorProgress != null)
             animatorProgress.cancel();
+    }
+
+    private void removeProgressBar() {
+        viewBGProgress.setVisibility(INVISIBLE);
+        layoutDownloadProgress.setVisibility(INVISIBLE);
     }
 
     public void setIconsAlpha(float alpha) {
