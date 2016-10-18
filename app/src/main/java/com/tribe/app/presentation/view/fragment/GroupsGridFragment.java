@@ -123,7 +123,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     private List<Friendship> friendshipsListCopy = new ArrayList<>();
     List<User> members;
     private LinearLayoutManager linearLayoutManager;
-    private boolean groupInfoValid = false;
+    private boolean groupInfoValid = false, bringTextUpEnabled = false;
 
     // Group Info
     private String groupId = null;
@@ -261,6 +261,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
      */
 
     private void initUi() {
+        groupInfoView.setBringGroupNameToTopEnabled(true);
         currentEditTranslation = 25;
         groupInfoView.setUpInitialUi();
         imageDone.setTranslationY(screenUtils.dpToPx(startTranslationDoneIcon));
@@ -302,7 +303,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             createInviteView.loadingAnimation(CreateInviteView.STATUS_CREATING_GROUP, AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
         }));
 
-
     }
 
     private void initGroupInfoUi(String membershipId, boolean isCurrentUserAdmin, String groupId, String groupName, String groupPicture, String groupLink, long groupLinkExpirationDate) {
@@ -310,6 +310,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         this.groupId = groupId;
         this.groupLink = groupLink;
         this.isCurrentUserAdmin = isCurrentUserAdmin;
+        groupInfoView.setBringGroupNameToTopEnabled(false);
         if  (!isCurrentUserAdmin) groupInfoView.bringOutIcons(0);
         this.groupLinkExpirationDate = groupLinkExpirationDate;
         createInviteView.disableCreate();
@@ -470,6 +471,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
      */
 
     private void backFromEdit(int translation) {
+        groupInfoView.setBringGroupNameToTopEnabled(false);
         if (translation > 20) groupInfoView.collapse(animDuration, getActivity());
         else groupInfoView.collapseInfo(animDuration, getActivity());
 
@@ -484,6 +486,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     }
 
     private void presentEdit(int translation) {
+        groupInfoView.setBringGroupNameToTopEnabled(true);
         if (translation > 20) groupInfoView.expand(animDuration);
         else groupInfoView.expandInfo(animDuration);
 
@@ -511,6 +514,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     private void resetCreateGroupView() {
         groupInfoView.expand(0);
+        groupInfoView.setBringGroupNameToTopEnabled(true);
         groupInfoView.setGroupName("");
         groupInfoView.bringOutIcons(0);
         groupInfoView.enableButtons();

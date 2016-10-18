@@ -100,6 +100,7 @@ public class GroupInfoView extends FrameLayout {
     private float originalGroupNameMargin;
     private float originalGroupBackgroundMargin;
     private int animDuration = AnimationUtils.ANIMATION_DURATION_MID;
+    private boolean bringGroupNameToTopEnabled = false;
 
 
     private PublishSubject<Boolean> isPrivate = PublishSubject.create();
@@ -128,9 +129,11 @@ public class GroupInfoView extends FrameLayout {
             else isGroupNameValid.onNext(false);
         }));
         subscriptions.add(RxView.clicks(editTextGroupName).subscribe(aVoid -> {
-            bringGroupNameToTop(animDuration);
-            isEditingGroupName.onNext(true);
-            editTextGroupName.setCursorVisible(true);
+            if (bringGroupNameToTopEnabled) {
+                bringGroupNameToTop(animDuration);
+                isEditingGroupName.onNext(true);
+                editTextGroupName.setCursorVisible(true);
+            }
         }));
         subscriptions.add(editTextGroupName.keyBackPressed().subscribe(aVoid -> {
             editTextGroupName.setCursorVisible(false);
@@ -153,8 +156,10 @@ public class GroupInfoView extends FrameLayout {
         }));
 
         subscriptions.add(editTextGroupName.keyBackPressed().subscribe(aVoid -> {
-            bringGroupNameDown(animDuration);
-            isEditingGroupName.onNext(false);
+            if (bringGroupNameToTopEnabled) {
+                bringGroupNameDown(animDuration);
+                isEditingGroupName.onNext(false);
+            }
         }));
 
         editTextGroupName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -510,6 +515,10 @@ public class GroupInfoView extends FrameLayout {
 
     public void setPrivacy(boolean isPrivate, int memberCount) {
             viewPrivacyStatus.setup(isPrivate, memberCount);
+    }
+
+    public void setBringGroupNameToTopEnabled(boolean enabled) {
+        bringGroupNameToTopEnabled = enabled;
     }
 
     protected ApplicationComponent getApplicationComponent() {
