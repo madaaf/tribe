@@ -8,6 +8,7 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.PhoneRealm;
@@ -17,9 +18,8 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import io.realm.RealmList;
 
@@ -100,26 +100,31 @@ public class ContactsHelper {
 
         // get data
         if (withPhones && c.getInt(c.getColumnIndex(Contacts.HAS_PHONE_NUMBER)) > 0) {
-            Set<String> phones = new HashSet<>();
+            HashMap<String, Pair<String, Boolean>> phonesPair = new HashMap<>();
             Cursor data = getDataCursor(id, withPhones);
             while (data.moveToNext()) {
                 String value = data.getString(data.getColumnIndex(ContactsContract.Data.DATA1));
                 switch (data.getString(data.getColumnIndex(ContactsContract.Data.MIMETYPE))) {
                     case CommonDataKinds.Phone.CONTENT_ITEM_TYPE:
                         String phoneNumberFormatted = phoneUtils.formatNumber(value, countryCode);
-                        phones.add(!StringUtils.isEmpty(phoneNumberFormatted) ? phoneNumberFormatted : value.trim());
-
+                        boolean isFormatted = !StringUtils.isEmpty(phoneNumberFormatted);
+                        phonesPair.put(isFormatted ? phoneNumberFormatted : value.trim(),
+                                new Pair<>(isFormatted ? phoneNumberFormatted : value.trim(), isFormatted));
                         break;
                 }
             }
 
             RealmList<PhoneRealm> realmList = new RealmList<>();
 
-            for (String phone : phones) {
-                PhoneRealm phoneRealm = new PhoneRealm();
-                phoneRealm.setPhone(phone);
-                phoneRealm.setInternational(phone.startsWith("+"));
-                realmList.add(phoneRealm);
+            if (phonesPair != null && phonesPair.size() > 0) {
+                for (Pair<String, Boolean> phonePair : phonesPair.values()) {
+                    PhoneRealm phoneRealm = new PhoneRealm();
+                    phoneRealm.setPhone(phonePair.first);
+                    phoneRealm.setInternational(phonePair.second);
+
+                    System.out.println(" INTERNATIONAL : " + phoneRealm.isInternational() + " : PHONE : " + phoneRealm.getPhone());
+                    realmList.add(phoneRealm);
+                }
             }
 
             contact.setPhones(realmList);

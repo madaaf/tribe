@@ -38,6 +38,7 @@ public class FileUtils {
     public static final String PHOTO = "photo";
 
     private static String pathEnd = "/Tribe/Sent";
+    private static String pathEndTemp = "/Tribe/Sent/Temp";
     private static String pathSave = "/Tribe";
 
 
@@ -51,6 +52,16 @@ public class FileUtils {
 
     public static File getFile(Context context, String id, @MessageType String type) {
         File endDir = new File(context.getFilesDir() + pathEnd);
+
+        if (!endDir.exists()) {
+            endDir.mkdirs();
+        }
+
+        return generateOutputFile(endDir, id, type);
+    }
+
+    public static File getFileTemp(Context context, String id, @MessageType String type) {
+        File endDir = new File(context.getFilesDir() + pathEndTemp);
 
         if (!endDir.exists()) {
             endDir.mkdirs();
@@ -106,7 +117,13 @@ public class FileUtils {
     }
 
     public static File bitmapToFilePublic(String name, Bitmap bitmap, Context context) {
-        File f = new File(Environment.getExternalStorageDirectory() + "/Tribe", name);
+        File dir = new File(Environment.getExternalStorageDirectory() + "/Tribe");
+
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        File f = new File(dir, name);
         try {
             f.createNewFile();
         } catch (IOException e) {

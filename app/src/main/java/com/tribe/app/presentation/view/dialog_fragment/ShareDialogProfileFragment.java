@@ -46,7 +46,7 @@ public class ShareDialogProfileFragment extends BaseDialogFragment {
     }
 
     @BindView(R.id.layoutContent)
-    ViewGroup layoutContent;
+    View layoutContent;
 
     @BindView(R.id.imgInstagram)
     ImageView imgInstagram;

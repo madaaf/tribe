@@ -206,21 +206,6 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
             if (shouldReloadGrid) {
                 shouldReloadGrid = false;
                 reloadGrid();
-            } else {
-                //boolean hasSupport = false;
-                for (Recipient recipient : recipientList) {
-                    //if (recipient instanceof Friendship) {
-                    //    if (recipient.getSubId() != null && recipient.getSubId().equals("XSUPPORT")) {
-                    //        hasSupport = true;
-                    //    }
-                    //}
-
-                    if (recipient.getReceivedTribes() != null && recipient.getReceivedTribes().size() > 0) {
-                        homeGridPresenter.downloadMessages(recipient.getReceivedTribes().toArray(new TribeMessage[recipient.getReceivedTribes().size()]));
-                    }
-                }
-
-                //if (!hasSupport) homeGridPresenter.boostrapSupport();
             }
 
             Bundle bundle = new Bundle();
@@ -349,9 +334,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
                 .filter(recipient -> {
                     boolean filter = recipient.getReceivedTribes() != null
                             && recipient.getReceivedTribes().size() > 0
-                            && recipient.hasLoadedTribes();
-
-                    if (!filter) homeGridPresenter.downloadMessages(recipient.getReceivedTribes().toArray(new Message[recipient.getReceivedTribes().size()]));
+                            && recipient.hasLoadedOrErrorTribes();
 
                     return filter;
                 })

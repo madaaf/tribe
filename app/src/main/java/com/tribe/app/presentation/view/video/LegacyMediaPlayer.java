@@ -35,6 +35,7 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
     // VARIABLES
     private MediaPlayer mediaPlayer = null;
     private Subscription timerSubscription;
+    private boolean isPrepared = false;
 
     public LegacyMediaPlayer(TribeMediaPlayerBuilder builder) {
         this.context = builder.getContext();
@@ -60,6 +61,7 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
     public void onPrepared(MediaPlayer mp) {
         onPreparedPlayer.onNext(true);
         mediaPlayer.seekTo(0);
+        isPrepared = true;
 
         if (autoStart) {
             play();
@@ -74,6 +76,8 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
 
     @Override
     protected void setup() {
+        isPrepared = false;
+
         try {
             if (mediaPlayer != null) {
                 mediaPlayer.reset();
@@ -150,6 +154,8 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
     public void release() {
         if (mediaPlayer == null) return;
 
+        isPrepared = false;
+
         new Thread(() -> {
             try {
                 if (mediaPlayer != null) {
@@ -162,6 +168,11 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
                 ex.printStackTrace();
             }
         }).start();
+
+        if (timerSubscription != null) {
+            timerSubscription.unsubscribe();
+            timerSubscription = null;
+        }
 
         videoSize = null;
     }
@@ -199,14 +210,22 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
     }
 
     private void scheduleTimer() {
-        if (timerSubscription != null)
-            timerSubscription.unsubscribe();
+        if (isPrepared && mediaPlayer != null) {
+            if (timerSubscription != null)
+                timerSubscription.unsubscribe();
 
-        timerSubscription = Observable
-                .interval(mediaPlayer.getCurrentPosition(), mediaPlayer.getDuration(), TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(aLong -> {
-                    onCompletion.onNext(true);
-                });
+            System.out.println("GET CURRENT POSITION : " + mediaPlayer.getCurrentPosition());
+            System.out.println("GET CURRENT DURATION : " + mediaPlayer.getDuration());
+
+            if (mediaPlayer.getCurrentPosition() > -1 && mediaPlayer.getDuration() > -1) {
+                timerSubscription = Observable
+                        .interval(mediaPlayer.getCurrentPosition(), mediaPlayer.getDuration(), TimeUnit.MILLISECONDS)
+                        .onBackpressureDrop()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(aLong -> {
+                            onCompletion.onNext(true);
+                        });
+            }
+        }
     }
 }

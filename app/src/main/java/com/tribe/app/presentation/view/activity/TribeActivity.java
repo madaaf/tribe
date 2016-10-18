@@ -13,6 +13,7 @@ import android.view.View;
 import com.f2prateek.rx.preferences.Preference;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
+import com.tribe.app.data.network.DownloadService;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Location;
 import com.tribe.app.domain.entity.Membership;
@@ -90,6 +91,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         initUi();
         initParams();
         initDependencyInjector();
@@ -106,12 +108,18 @@ public class TribeActivity extends BaseActivity implements TribeView {
     @Override
     protected void onResume() {
         super.onResume();
+
+        startService(DownloadService.getCallingIntent(this, recipient.getSubId()));
+
         viewTribePager.onResume();
         tribePresenter.onResume();
     }
 
     @Override
     protected void onPause() {
+        Intent i = new Intent(this, DownloadService.class);
+        stopService(i);
+
         viewTribePager.onPause();
         tribePresenter.onPause();
         super.onPause();
@@ -119,6 +127,9 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
     @Override
     protected void onStop() {
+        Intent i = new Intent(this, DownloadService.class);
+        stopService(i);
+
         tribePresenter.onStop();
         super.onStop();
     }
@@ -244,7 +255,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
                 .subscribe(tribeMessage -> {
                     FileUtils.delete(context(), tribeMessage.getLocalId(), FileUtils.VIDEO);
                     tribeMessage.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
-                    tribePresenter.downloadMessages(tribeMessage);
+                    // TODO CONNECT TO DOWNLOADS tribePresenter.downloadMessages(tribeMessage);
                 }));
     }
 
@@ -312,7 +323,8 @@ public class TribeActivity extends BaseActivity implements TribeView {
     @Override
     public void updateNewTribes(List<TribeMessage> tribeList) {
         for (TribeMessage tribe : tribeList) {
-            if (tribe.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD)) tribePresenter.downloadMessages(tribe);
+            //TODO HANDLE DOWNLOAD
+            //if (tribe.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD)) tribePresenter.downloadMessages(tribe);
         }
 
         viewTribePager.updateItems(tribeList);

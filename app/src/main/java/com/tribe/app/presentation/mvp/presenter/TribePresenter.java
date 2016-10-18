@@ -31,10 +31,11 @@ public class TribePresenter extends SendTribePresenter implements Presenter {
 
     @Inject
     public TribePresenter(JobManager jobManager,
+                          @Named("jobManagerDownload") JobManager jobManagerDownload,
                           @Named("diskGetReceivedTribeList") UseCaseDisk diskGetReceivedTribeList,
                           @Named("diskSaveTribe") SaveTribe diskSaveTribe,
                           @Named("diskDeleteTribe") DeleteTribe diskDeleteTribe) {
-        super(jobManager, diskSaveTribe, diskDeleteTribe);
+        super(jobManager, jobManagerDownload, diskSaveTribe, diskDeleteTribe);
         this.diskGetReceivedTribeList = (GetReceivedDiskTribeList) diskGetReceivedTribeList;
     }
 

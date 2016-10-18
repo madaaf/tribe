@@ -55,10 +55,13 @@ public abstract class Recipient implements Serializable {
         return tribe;
     }
 
-    public boolean hasLoadedTribes() {
+    public boolean hasLoadedOrErrorTribes() {
         if (!(receivedTribes != null && receivedTribes.size() > 0)) return false;
 
-        return receivedTribes.get(0).getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADED);
+        TribeMessage tribeMessage = receivedTribes.get(0);
+
+        return tribeMessage.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADED)
+                || tribeMessage.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOAD_ERROR);
     }
 
     public List<TribeMessage> getReceivedTribes() {

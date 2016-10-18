@@ -98,15 +98,10 @@ public class DownloadChatVideoJob extends DownloadVideoJob {
     }
 
     @Override
-    protected void setProgress(long progress) {
-        Pair<String, Object> updatePair = Pair.create(ChatRealm.PROGRESS, progress);
-        update(updatePair);
-    }
-
-    @Override
-    protected void setTotalSize(long totalSize) {
-        Pair<String, Object> updatePair = Pair.create(ChatRealm.TOTAL_SIZE, totalSize);
-        update(updatePair);
+    protected void setProgress(long progress, long totalSize) {
+        Pair<String, Object> updatePairProgress = Pair.create(ChatRealm.PROGRESS, progress);
+        Pair<String, Object> updatePairTotalSize = Pair.create(ChatRealm.TOTAL_SIZE, totalSize);
+        update(updatePairProgress, updatePairTotalSize);
     }
 
     @Override

@@ -6,7 +6,6 @@ import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.network.FileApi;
-import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.mapper.TribeRealmDataMapper;
 import com.tribe.app.domain.entity.TribeMessage;
@@ -82,20 +81,15 @@ public class DownloadTribeJob extends DownloadVideoJob {
 
     @Override
     protected void setStatus(@MessageDownloadingStatus.Status String status) {
-        Pair<String, Object> updatePair = Pair.create(ChatRealm.MESSAGE_DOWNLOADING_STATUS, status);
+        Pair<String, Object> updatePair = Pair.create(TribeRealm.MESSAGE_DOWNLOADING_STATUS, status);
         update(updatePair);
     }
 
     @Override
-    protected void setProgress(long progress) {
+    protected void setProgress(long progress, long totalSize) {
         Pair<String, Object> updatePair = Pair.create(TribeRealm.PROGRESS, progress);
-        update(updatePair);
-    }
-
-    @Override
-    protected void setTotalSize(long totalSize) {
-        Pair<String, Object> updatePair = Pair.create(TribeRealm.TOTAL_SIZE, totalSize);
-        update(updatePair);
+        Pair<String, Object> updatePairTotalSize = Pair.create(TribeRealm.TOTAL_SIZE, totalSize);
+        update(updatePair, updatePairTotalSize);
     }
 
     @Override

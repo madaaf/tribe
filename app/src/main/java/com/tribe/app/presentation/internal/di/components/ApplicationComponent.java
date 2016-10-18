@@ -8,6 +8,7 @@ import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
+import com.tribe.app.data.network.DownloadService;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.job.BaseJob;
 import com.tribe.app.data.network.job.DeleteMessageJob;
@@ -169,6 +170,9 @@ public interface ApplicationComponent {
     void inject(UpdateUserListScoreJob updateUserListScoreJob);
     void inject(DeleteMessageJob deleteMessageJob);
 
+    // SERVICES
+    void inject(DownloadService downloadService);
+
     //Exposed to sub-graphs.
     Context context();
 
@@ -205,6 +209,8 @@ public interface ApplicationComponent {
     ChatCache chatCache();
 
     JobManager jobManager();
+
+    @Named("jobManagerDownload") JobManager jobManagerDownload();
 
     Realm realm();
 

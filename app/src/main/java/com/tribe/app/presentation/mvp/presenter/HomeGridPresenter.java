@@ -57,6 +57,7 @@ public class HomeGridPresenter extends SendTribePresenter {
 
     @Inject
     public HomeGridPresenter(JobManager jobManager,
+                             @Named("jobManagerDownload") JobManager jobManagerDownload,
                              @Named("diskUserInfos") GetDiskUserInfos diskUserInfos,
                              @Named("diskSaveTribe") SaveTribe diskSaveTribe,
                              @Named("diskDeleteTribe") DeleteTribe diskDeleteTribe,
@@ -67,7 +68,7 @@ public class HomeGridPresenter extends SendTribePresenter {
                              RemoveGroup removeGroup,
                              DiskUpdateFriendship diskUpdateFriendship,
                              DoBootstrapSupport bootstrapSupport) {
-        super(jobManager, diskSaveTribe, diskDeleteTribe);
+        super(jobManager, jobManagerDownload, diskSaveTribe, diskDeleteTribe);
         this.diskUserInfosUsecase = diskUserInfos;
         this.diskGetMessageReceivedListUsecase = diskGetReceivedMessageList;
         this.diskGetPendingTribeListUsecase = diskGetPendingTribeList;

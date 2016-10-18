@@ -31,6 +31,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
+import com.tribe.app.data.network.DownloadService;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Recipient;
@@ -57,6 +58,7 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -64,6 +66,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class HomeActivity extends BaseActivity implements HasComponent<UserComponent>, HomeView, GoogleApiClient.OnConnectionFailedListener {
@@ -163,8 +166,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private boolean isRecording;
     private boolean navVisible = true;
     private boolean layoutNavPendingVisible = false;
-    private boolean isFirstInit = true;
-    private GoogleApiClient googleApiClient;
 
     // DIMEN
     private int sizeNavMax, sizeNavSmall, marginHorizontalSmall, translationBackToTop;
@@ -193,6 +194,11 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     protected void onResume() {
         super.onResume();
 
+        subscriptions.add(
+                Observable.timer(1000, TimeUnit.MILLISECONDS)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(aLong -> startService(DownloadService.getCallingIntent(this, null))));
+
         subscriptions.add(Observable.
                 from(PERMISSIONS_CAMERA)
                 .map(permission -> RxPermissions.getInstance(HomeActivity.this).isGranted(permission))
@@ -213,6 +219,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     protected void onPause() {
         cameraWrapper.onPause(true);
 
+        Intent i = new Intent(context, DownloadService.class);
+        context.stopService(i);
+
         super.onPause();
     }
 
@@ -220,6 +229,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     protected void onDestroy() {
         if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
         homePresenter.onDestroy();
+
         super.onDestroy();
     }
 
@@ -251,7 +261,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 true
         );
 
-        subscriptions.add(cameraWrapper.tribeMode().subscribe(mode -> {
+        subscriptions.add(cameraWrapper.tribeMode().delay(750, TimeUnit.MILLISECONDS).subscribe(mode -> {
             if (homeViewPagerAdapter.getHomeGridFragment() != null) {
                 homeViewPagerAdapter.getHomeGridFragment().setTribeMode(mode);
             }
@@ -723,7 +733,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         }
 
         public HomeGridFragment getHomeGridFragment() {
-            return homeGridFragment.get();
+            if (homeGridFragment != null && homeGridFragment.get() != null)
+                return homeGridFragment.get();
+
+            return null;
         }
 
         public ContactsGridFragment getContactsGridFragment() {

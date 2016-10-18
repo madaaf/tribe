@@ -1,11 +1,9 @@
 package com.tribe.app.presentation.internal.di.modules;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.config.Configuration;
-import com.birbit.android.jobqueue.log.CustomLogger;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.ChatCacheImpl;
@@ -194,8 +192,9 @@ public class ApplicationModule {
         Realm realmInst = Realm.getDefaultInstance();
 
         final RealmResults<AccessToken> results = realmInst.where(AccessToken.class).findAll();
-        if (results != null && results.size() > 0)
+        if (results != null && results.size() > 0) {
             accessToken = realmInst.copyFromRealm(results.get(0));
+        }
 
         realmInst.close();
 
@@ -405,42 +404,33 @@ public class ApplicationModule {
     @Singleton
     JobManager provideJobManager() {
         Configuration.Builder builder = new Configuration.Builder(application)
-            .customLogger(new CustomLogger() {
-                private static final String TAG = "JOBS";
-                @Override
-                public boolean isDebugEnabled() {
-                    return true;
-                }
-
-                @Override
-                public void d(String text, Object... args) {
-                    //Log.d(TAG, String.format(text, args));
-                }
-
-                @Override
-                public void e(Throwable t, String text, Object... args) {
-                    Log.e(TAG, String.format(text, args), t);
-                }
-
-                @Override
-                public void e(String text, Object... args) {
-                    Log.e(TAG, String.format(text, args));
-                }
-
-                @Override
-                public void v(String text, Object... args) {
-
-                }
-            })
             .minConsumerCount(1)
             .maxConsumerCount(3)
             .loadFactor(3)
             .consumerKeepAlive(180)
+            .id("JOBS")
             .injector(job -> {
                 if (job instanceof BaseJob) {
                     ((BaseJob) job).inject(application.getApplicationComponent());
                 }
             });
+
+        return new JobManager(builder.build());
+    }
+
+    @Provides
+    @Singleton
+    @Named("jobManagerDownload")
+    JobManager provideJobManagerDownload() {
+        Configuration.Builder builder = new Configuration.Builder(application)
+                .id("JOBS_DOWNLOAD")
+                .maxConsumerCount(1)
+                .consumerKeepAlive(180)
+                .injector(job -> {
+                    if (job instanceof BaseJob) {
+                        ((BaseJob) job).inject(application.getApplicationComponent());
+                    }
+                });
 
         return new JobManager(builder.build());
     }

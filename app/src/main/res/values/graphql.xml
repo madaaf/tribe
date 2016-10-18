@@ -314,10 +314,14 @@
 
     <string name="install.update" translatable="false">
         mutation {
-            updateInstall(id: \"%1$s\", install: %2$s) {
+            updateI : updateInstall(id: \"%1$s\", install: %2$s) {
                 id
                 token
             }
+
+            updateU : updateUser(user: {
+                last_seen_at : \"%3$s\"
+            })
         }
     </string>
 
@@ -590,7 +594,7 @@
 
     <string name="notify.facebook" translatable="false">
         mutation {
-            runFacebookInvites
+            runFacebookInvites(appId : \"%1$s\", accessToken : \"%2$s\")
         }
     </string>
 </resources>

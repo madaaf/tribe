@@ -362,6 +362,7 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
         subscriptions.add(
                 Observable
                         .timer(1000, TimeUnit.MILLISECONDS)
+                        .onBackpressureDrop()
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(aLong -> {

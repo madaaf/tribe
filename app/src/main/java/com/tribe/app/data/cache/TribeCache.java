@@ -49,4 +49,6 @@ public interface TribeCache {
     List<TribeRealm> tribesNotSent();
     List<TribeRealm> tribesSent(Set<String> toIds);
     TribeRealm updateLocalWithServerRealm(TribeRealm local, TribeRealm server);
+    Observable<List<TribeRealm>> tribesToDownload(String recipientId);
+    List<TribeRealm> tribesDownloading();
 }

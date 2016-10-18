@@ -6,6 +6,7 @@ import android.support.v4.util.Pair;
 import com.tribe.app.data.realm.MessageRecipientRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
@@ -36,6 +37,7 @@ public class TribeCacheImpl implements TribeCache {
     private RealmResults<TribeRealm> tribesNotSeen;
     private RealmResults<TribeRealm> tribesReceived;
     private RealmResults<TribeRealm> tribesForARecipient;
+    private RealmResults<TribeRealm> tribesToDownload;
 
     @Inject
     public TribeCacheImpl(Context context, Realm realm, User currentUser) {
@@ -390,11 +392,11 @@ public class TribeCacheImpl implements TribeCache {
     }
 
     @Override
-    public List<TribeRealm> tribesReceivedNoObs(String friendshipId) {
+    public List<TribeRealm> tribesReceivedNoObs(String recipientId) {
         List<TribeRealm> results = new ArrayList<>();
         Realm tmpRealm = Realm.getDefaultInstance();
 
-        if (friendshipId == null) {
+        if (recipientId == null) {
             RealmResults realmResults = tmpRealm.where(TribeRealm.class)
                     .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_RECEIVED)
                     .notEqualTo("from.id", currentUser.getId())
@@ -488,5 +490,59 @@ public class TribeCacheImpl implements TribeCache {
         }
 
         return resultTribe;
+    }
+
+    @Override
+    public Observable<List<TribeRealm>> tribesToDownload(String recipientId) {
+        RealmResults<TribeRealm> realmResults = null;
+
+        if (recipientId == null) {
+            realmResults = realm.where(TribeRealm.class)
+                    .equalTo("messageDownloadingStatus", MessageDownloadingStatus.STATUS_TO_DOWNLOAD)
+                    .notEqualTo("from.id", currentUser.getId())
+                    .findAllSorted("recorded_at", Sort.DESCENDING);
+        } else {
+            realmResults = realm.where(TribeRealm.class)
+                    .equalTo("messageDownloadingStatus", MessageDownloadingStatus.STATUS_TO_DOWNLOAD)
+                    .beginGroup()
+                    .beginGroup()
+                    .beginGroup()
+                    .equalTo("from.id", recipientId)
+                    .isNull("friendshipRealm")
+                    .isNull("membershipRealm")
+                    .endGroup()
+                    .or()
+                    .beginGroup()
+                    .equalTo("friendshipRealm.friend.id", recipientId)
+                    .isNull("membershipRealm")
+                    .endGroup()
+                    .or()
+                    .equalTo("membershipRealm.group.id", recipientId)
+                    .endGroup()
+                    .endGroup()
+                    .findAllSorted("recorded_at", Sort.ASCENDING);
+        }
+
+
+        return realmResults.asObservable()
+                .filter(tribeRealms -> tribeRealms.isLoaded())
+                .map(tribeRealms -> realm.copyFromRealm(tribeRealms));
+    }
+
+    @Override
+    public List<TribeRealm> tribesDownloading() {
+        Realm newRealm = Realm.getDefaultInstance();
+        List<TribeRealm> result = new ArrayList<>();
+
+        RealmResults<TribeRealm> realmResults = newRealm.where(TribeRealm.class)
+                .equalTo("messageDownloadingStatus", MessageDownloadingStatus.STATUS_DOWNLOADING)
+                .notEqualTo("from.id", currentUser.getId())
+                .findAllSorted("recorded_at", Sort.DESCENDING);
+
+        if (realmResults != null && realmResults.size() > 0)
+            result.addAll(newRealm.copyFromRealm(realmResults.subList(0, 1)));
+
+        newRealm.close();
+        return result;
     }
 }

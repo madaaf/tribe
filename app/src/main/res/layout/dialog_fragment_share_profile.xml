@@ -19,17 +19,19 @@
         android:layout_gravity="center"
         android:clickable="true">
 
-        <View
-            android:id="@+id/viewShapeAngle"
-            android:layout_width="300dp"
-            android:layout_height="150dp"
-            android:layout_marginLeft="-25dp"
-            android:layout_marginBottom="-25dp"
-            android:layout_gravity="bottom"
-            android:rotation="-2"
-            android:visibility="visible"
+        <com.tribe.app.presentation.view.widget.DiagonalLayout
+            android:layout_width="match_parent"
+            android:layout_height="132.75dp"
             android:clickable="true"
-            />
+            >
+
+            <View
+                android:id="@+id/viewShapeAngle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+        </com.tribe.app.presentation.view.widget.DiagonalLayout>
 
         <ImageView
             android:layout_width="20dp"

@@ -9,10 +9,8 @@ import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.mapper.ChatRealmDataMapper;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
-import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,17 +40,12 @@ public class UpdateTribeDownloadedJob extends BaseJob {
 
     @Override
     public void onRun() throws Throwable {
-        List<TribeRealm> tribeRealmList = tribeCache.tribesNotSeenNoObs(null);
+        List<TribeRealm> tribeRealmList = tribeCache.tribesDownloading();
         Map<String, List<Pair<String, Object>>> tribeUpdates = new HashMap<>();
 
         for (TribeRealm tribeRealm : tribeRealmList) {
             List<Pair<String, Object>> values = new ArrayList<>();
-
-            File file = FileUtils.getFile(getApplicationContext(), tribeRealm.getId(), FileUtils.VIDEO);
-            if (file.exists() && file.length() > 0) {
-                values.add(Pair.create(TribeRealm.MESSAGE_DOWNLOADING_STATUS, MessageDownloadingStatus.STATUS_DOWNLOADED));
-            }
-
+            values.add(Pair.create(TribeRealm.MESSAGE_DOWNLOADING_STATUS, MessageDownloadingStatus.STATUS_DOWNLOAD_ERROR));
             tribeUpdates.put(tribeRealm.getLocalId(), values);
         }
 

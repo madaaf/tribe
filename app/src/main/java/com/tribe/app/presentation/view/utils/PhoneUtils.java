@@ -65,12 +65,13 @@ public class PhoneUtils {
 
     public String formatNumber(String number, int countryCode) {
         Phonenumber.PhoneNumber numberProto = getPhoneNumber(number, countryCode);
+        String numberBis = null;
 
         if (numberProto != null) {
-            number = phoneUtil.format(numberProto, PhoneNumberUtil.PhoneNumberFormat.E164);
+            numberBis = phoneUtil.format(numberProto, PhoneNumberUtil.PhoneNumberFormat.E164);
         }
 
-        return number;
+        return numberBis;
     }
 
     public Phonenumber.PhoneNumber getPhoneNumber(String number, int codeCountry) {

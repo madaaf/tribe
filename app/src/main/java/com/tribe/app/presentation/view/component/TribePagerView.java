@@ -458,7 +458,7 @@ public class TribePagerView extends FrameLayout {
 
         springReplyMode.setEndValue(1f);
 
-        subscriptions.add(cameraWrapper.tribeMode().subscribe(mode -> tribeMode = mode));
+        subscriptions.add(cameraWrapper.tribeMode().delay(750, TimeUnit.MILLISECONDS).subscribe(mode -> tribeMode = mode));
     }
 
     public void setItems(List<TribeMessage> items, int color) {
@@ -946,6 +946,7 @@ public class TribePagerView extends FrameLayout {
 
         if (hasSelectedSnooze) {
             subscriptions.add(Observable.timer(DURATION, TimeUnit.MILLISECONDS)
+                .onBackpressureDrop()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {
@@ -982,6 +983,7 @@ public class TribePagerView extends FrameLayout {
         trd.startTransition(DURATION);
 
         subscriptions.add(Observable.timer(DURATION + DELAY_BEFORE_CLOSE, TimeUnit.MILLISECONDS)
+                .onBackpressureDrop()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {

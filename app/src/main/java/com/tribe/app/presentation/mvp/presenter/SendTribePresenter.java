@@ -1,14 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
-import android.Manifest;
-
 import com.birbit.android.jobqueue.JobManager;
-import com.birbit.android.jobqueue.JobStatus;
-import com.birbit.android.jobqueue.TagConstraint;
-import com.tbruyelle.rxpermissions.RxPermissions;
-import com.tribe.app.data.network.job.DownloadTribeJob;
 import com.tribe.app.data.network.job.SendTribeJob;
-import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
@@ -19,18 +12,12 @@ import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.SendTribeView;
 import com.tribe.app.presentation.utils.FileUtils;
-import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
-
-import java.io.File;
-
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public abstract class SendTribePresenter implements Presenter {
 
     protected JobManager jobManager;
+    protected JobManager jobManagerDownload;
     protected SaveTribe diskSaveTribeUsecase;
     protected DeleteTribe diskDeleteTribeUsecase;
 
@@ -38,9 +25,11 @@ public abstract class SendTribePresenter implements Presenter {
     private TribeDeleteSubscriber tribeDeleteSubscriber;
 
     public SendTribePresenter(JobManager jobManager,
+                              JobManager jobManagerDownload,
                               SaveTribe diskSaveTribe,
                               DeleteTribe diskDeleteTribe) {
         this.jobManager = jobManager;
+        this.jobManagerDownload = jobManagerDownload;
         this.diskSaveTribeUsecase = diskSaveTribe;
         this.diskDeleteTribeUsecase = diskDeleteTribe;
     }
@@ -89,38 +78,6 @@ public abstract class SendTribePresenter implements Presenter {
     public void sendTribe(TribeMessage... tribeList) {
         for (TribeMessage tribe : tribeList)
             jobManager.addJobInBackground(new SendTribeJob(tribe));
-    }
-
-    public void downloadMessages(Message... messageList) {
-        if (RxPermissions.getInstance(getView().context()).isGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            Observable
-                    .just("")
-                    .doOnNext(o -> {
-                        for (Message message : messageList) {
-                            if (message instanceof TribeMessage) {
-                                boolean shouldDownload = false;
-
-                                JobStatus jobStatus = jobManager.getJobStatus(message.getLocalId());
-                                File file = FileUtils.getFile(getView().context(), message.getLocalId(), FileUtils.VIDEO);
-
-                                if (jobStatus.equals(JobStatus.UNKNOWN) && (!file.exists() || file.length() == 0)
-                                        && !message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADED)) {
-                                    shouldDownload = true;
-                                    message.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
-                                    jobManager.cancelJobsInBackground(null, TagConstraint.ALL, message.getLocalId());
-                                }
-
-                                if (shouldDownload
-                                        && message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD)
-                                        && message.getFrom() != null) {
-                                    jobManager.addJobInBackground(new DownloadTribeJob((TribeMessage) message));
-                                }
-                            }
-                        }
-                    }).subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe();
-        }
     }
 
     protected void showViewLoading() {

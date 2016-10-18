@@ -247,7 +247,8 @@ public class CloudUserDataStore implements UserDataStore {
                 operatorName
         );
 
-        String req = installation == null || StringUtils.isEmpty(installation.getToken()) ? context.getString(R.string.install_create, base) : context.getString(R.string.install_update, installation.getId(), base);
+        String req = installation == null || StringUtils.isEmpty(installation.getToken()) ? context.getString(R.string.install_create, base) :
+                context.getString(R.string.install_update, installation.getId(), base, utcSimpleDate.format(new Date()));
         return this.tribeApi.createOrUpdateInstall(req)
                 .onErrorResumeNext(throwable -> {
                     this.installation.setToken("");
@@ -757,7 +758,8 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<Void> notifyFBFriends() {
-        return this.tribeApi.notifyFBFriends(context.getString(R.string.notify_facebook));
+        return this.tribeApi.notifyFBFriends(context.getString(R.string.notify_facebook, context.getString(R.string.facebook_app_id)
+                , com.facebook.AccessToken.getCurrentAccessToken().getToken()));
     }
 
     private final Action1<AccessToken> saveToCacheAccessToken = accessToken -> {
