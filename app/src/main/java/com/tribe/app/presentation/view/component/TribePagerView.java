@@ -321,7 +321,7 @@ public class TribePagerView extends FrameLayout {
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(t -> {
-                            if (!toUpdate.containsKey(tribe.getLocalId()) && toUpdate.get(tribe.getLocalId()).getType().equals(CameraWrapper.VIDEO)) {
+                            if (!toUpdate.containsKey(tribe.getLocalId()) && (toUpdate.get(tribe.getLocalId()).getType().equals(CameraWrapper.VIDEO) || toUpdate.get(tribe.getLocalId()).getType().equals(CameraWrapper.AUDIO))) {
                                 tribePagerAdapter.startTribe(currentView);
                             }
                         });
@@ -504,7 +504,6 @@ public class TribePagerView extends FrameLayout {
                     tribeListSeens.add(message);
                     updateNbTribes();
                     boolean isCurrent = tribeList.get(viewPager.getCurrentItem()).getLocalId().equals(message.getLocalId());
-                    // TODO: call different method for audio
                     if (message.getType().equals(CameraWrapper.VIDEO) || message.getType().equals(CameraWrapper.AUDIO)) viewToUpdate.preparePlayer(isCurrent);
                     if (message.getType().equals(CameraWrapper.PHOTO)) viewToUpdate.setupTribePhoto(message.getContent());
                 }

@@ -189,6 +189,11 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
     }
 
     @Override
+    public int getAudioSessionId() {
+       return mediaPlayer.getAudioSessionId();
+    }
+
+    @Override
     public long getDuration() {
         return mediaPlayer.getDuration();
     }

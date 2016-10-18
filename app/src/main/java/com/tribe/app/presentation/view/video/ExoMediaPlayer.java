@@ -147,6 +147,11 @@ public class ExoMediaPlayer extends TribeMediaPlayer implements MediaCodecVideoT
     }
 
     @Override
+    public int getAudioSessionId() {
+        return -1;
+    }
+
+    @Override
     public long getDuration() {
         return exoPlayer.getDuration();
     }

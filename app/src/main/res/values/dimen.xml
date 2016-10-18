@@ -121,6 +121,7 @@
     <dimen name="group_cpv_size">28dp</dimen>
     <dimen name="cards_icon_size">15dp</dimen>
     <dimen name="group_suggestion_text_size">13sp</dimen>
+    <dimen name="voice_message_avatar_size">100dp</dimen>
 
     <!-- THRESHOLDS -->
     <dimen name="threshold_dismiss">100dp</dimen>

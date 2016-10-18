@@ -82,6 +82,7 @@ import com.tribe.app.presentation.view.component.PullToSearchView;
 import com.tribe.app.presentation.view.component.SettingItemView;
 import com.tribe.app.presentation.view.component.TribeComponentView;
 import com.tribe.app.presentation.view.component.TribePagerView;
+import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
@@ -144,6 +145,7 @@ public interface ApplicationComponent {
     void inject(SettingItemView settingItemView);
     void inject(ButtonCardView buttonCardView);
     void inject(GlPreview glPreview);
+    void inject(VisualizerView visualizerView);
 
     // JOBS
     void inject(BaseJob baseJob);

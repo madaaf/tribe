@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.SurfaceTexture;
 import android.media.Image;
+import android.media.audiofx.Visualizer;
 import android.net.Uri;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.TextureView;
 import android.view.View;
@@ -37,6 +39,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.video.TribeMediaPlayer;
 import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.ButtonCardView;
+import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.ScalableTextureView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.VideoTextureView;
@@ -77,6 +80,9 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
     @BindView(R.id.imageTribeView)
     ImageView imageTribeView;
+
+    @BindView(R.id.visualizerView)
+    VisualizerView visualizerView;
 
     @BindView(R.id.labelLevel)
     ButtonCardView labelLevel;
@@ -127,6 +133,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     private SurfaceTexture surfaceTexture;
     private long lastPosition = -1L;
     private ValueAnimator animatorProgress;
+    private Visualizer visualizer;
 
     public TribeComponentView(Context context) {
         super(context);
@@ -147,6 +154,10 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
         if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
         cancelProgress();
+        if (visualizer != null) {
+            visualizer.setEnabled(false);
+            visualizer.release();
+        }
 
         super.onDetachedFromWindow();
     }
@@ -214,12 +225,23 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         }
 
         if (!tribe.isDownloadPending()) {
-            mediaPlayer = new TribeMediaPlayer.TribeMediaPlayerBuilder(getContext(), FileUtils.getPathForId(getContext(), tribe.getId(), FileUtils.VIDEO))
+            if (tribe.getType().equals(CameraWrapper.VIDEO)) mediaPlayer = new TribeMediaPlayer.TribeMediaPlayerBuilder(getContext(), FileUtils.getPathForId(getContext(), tribe.getId(), FileUtils.VIDEO))
                     .autoStart(autoStart)
                     .looping(true)
                     .mute(false)
                     .canChangeSpeed(true)
                     .build();
+            if (tribe.getType().equals(CameraWrapper.AUDIO)) {
+                visualizerView.setVisibility(VISIBLE);
+                visualizerView.setAvatarPicture(tribe.getFrom().getProfilePicture());
+                mediaPlayer = new TribeMediaPlayer.TribeMediaPlayerBuilder(getContext(), FileUtils.getPathForId(getContext(), tribe.getId(), FileUtils.VIDEO))
+                        .autoStart(autoStart)
+                        .looping(true)
+                        .mute(false)
+                        .canChangeSpeed(true)
+                        .buildLegacyMediaPlayer();
+                setupVisualizerFxAndUI();
+            }
 
             if (surfaceTexture != null)
                 mediaPlayer.setSurface(surfaceTexture);
@@ -261,6 +283,26 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         removeProgressBar();
     }
 
+    private void setupVisualizerFxAndUI() {
+        visualizer = new Visualizer(mediaPlayer.getAudioSessionId());
+        visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+
+        visualizer.setDataCaptureListener(
+                new Visualizer.OnDataCaptureListener() {
+                    public void onWaveFormDataCapture(Visualizer visualizer,
+                                                      byte[] bytes, int samplingRate) {
+                        visualizerView.updateVisualizer(bytes);
+                        Log.d("visualizer bytes", bytes + "");
+                    }
+
+
+                    public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int i) {
+
+                    }
+                }, Visualizer.getMaxCaptureRate() / 2, true, false);
+        visualizer.setEnabled(true);
+    }
+
     public void showProgress() {
         if (layoutDownloadProgress.getVisibility() == View.GONE) {
             layoutDownloadProgress.setVisibility(View.VISIBLE);
@@ -297,6 +339,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         if (mediaPlayer != null) {
             animateProgress();
             mediaPlayer.play();
+
         } else {
             preparePlayer(true);
         }
