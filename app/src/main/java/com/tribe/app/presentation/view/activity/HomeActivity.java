@@ -17,6 +17,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.inputmethod.InputMethodManager;
@@ -39,6 +40,7 @@ import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
+import com.tribe.app.presentation.internal.di.scope.HasReceivedPointsForCameraPermission;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
 import com.tribe.app.presentation.internal.di.scope.LocationPopup;
 import com.tribe.app.presentation.mvp.presenter.HomePresenter;
@@ -103,6 +105,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Inject
     @LocationContext
     Preference<Boolean> locationContext;
+
+    @Inject
+    @HasReceivedPointsForCameraPermission
+    Preference<Boolean> hasReceivedPontsForCameraPermission;
 
     @BindView(android.R.id.content)
     ViewGroup rootView;
@@ -237,6 +243,25 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         context = this;
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
+
+        cameraWrapper.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                RxPermissions.getInstance(context)
+                        .request(PERMISSIONS_CAMERA)
+                        .subscribe(granted -> {
+                            if (granted) {
+                                if (!hasReceivedPontsForCameraPermission.get()) {
+                                    homePresenter.updateScoreCamera();
+                                    hasReceivedPontsForCameraPermission.set(true);
+                                }
+                                cameraWrapper.onResume(true);
+                            }
+                            else cameraWrapper.showPermissions();
+                        });
+            }
+        });
+
     }
 
     private void initDimensions() {
@@ -272,7 +297,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                     .request(PERMISSIONS_CAMERA)
                     .subscribe(granted -> {
                         if (granted) {
-                            homePresenter.updateScoreCamera();
+                            if (hasReceivedPontsForCameraPermission.get()) {
+                                hasReceivedPontsForCameraPermission.set(true);
+                                homePresenter.updateScoreCamera();
+                            }
                             cameraWrapper.onResume(true);
                         }
                         else cameraWrapper.showPermissions();

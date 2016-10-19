@@ -10,6 +10,23 @@
         android:background="@null"
         />
 
+    <ImageView
+        android:id="@+id/imageTribeView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:visibility="invisible"
+        />
+
+
+    <com.tribe.app.presentation.view.component.VisualizerView
+        android:id="@+id/visualizerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:visibility="invisible"
+        />
+
     <View
         android:id="@+id/viewGradient"
         android:layout_width="match_parent"

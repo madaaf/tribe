@@ -10,6 +10,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.view.component.TribeComponentView;
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
+import com.tribe.app.presentation.view.widget.CameraWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +61,7 @@ public class TribePagerAdapter extends PagerAdapter {
 
         if (!tribe.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADING))
             tribeComponentView.preparePlayer(position == currentPosition);
-        else if (tribe.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADING)) {
+        else if (tribe.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADING) && !tribe.getType().equals(CameraWrapper.PHOTO)) {
             tribeComponentView.showProgress();
         }
 

@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
@@ -123,7 +124,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     private List<Friendship> friendshipsListCopy = new ArrayList<>();
     List<User> members;
     private LinearLayoutManager linearLayoutManager;
-    private boolean groupInfoValid = false, bringTextUpEnabled = false;
+    private boolean groupInfoValid = false;
 
     // Group Info
     private String groupId = null;
@@ -145,6 +146,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     private int layoutCreateInviteInfoPositionY = 255;
     private int startTranslationDoneIcon = 200;
     private int animDuration = AnimationUtils.ANIMATION_DURATION_MID;
+    private int loadingAnimDuarion = AnimationUtils.ANIMATION_DURATION_MID;
     private int smallMargin = 5;
     private int orignalGroupSuggestionsMargin;
     private boolean friendAdapterClickable = true;
@@ -211,6 +213,8 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
         super.onDestroy();
     }
+
+
 
     public ArrayList<GroupMember> getGroupMemberList() {
         return groupMemberList;
@@ -294,13 +298,14 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         }));
 
         subscriptions.add(createInviteView.createPressed().subscribe(aVoid -> {
+            groupInfoView.setBringGroupNameToTopEnabled(false);
             setGroupSuggestionsViewVisible(false);
             groupInfoView.bringGroupNameDown(animDuration);
             createInviteView.disable();
             groupInfoView.disableButtons();
             groupName = groupInfoView.getGroupName();
             groupPresenter.createGroup(groupName, memberIds, privateGroup, groupPictureUri);
-            createInviteView.loadingAnimation(CreateInviteView.STATUS_CREATING_GROUP, AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
+            createInviteView.loadingAnimation(CreateInviteView.STATUS_CREATING_GROUP, loadingAnimDuarion, screenUtils, getActivity());
         }));
 
     }
@@ -373,6 +378,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             groupInfoView.bringGroupNameDown(animDuration);
             setGroupSuggestionsViewVisible(false);
         }));
+
         subscriptions.add((createInviteView.invitePressed()).subscribe(aVoid -> {
             tagManager.trackEvent(TagManagerConstants.KPI_GROUP_LINK_SHARED);
 
@@ -380,7 +386,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             else if (privateGroup) {
                 groupPresenter.modifyPrivateGroupLink(membershipId, true);
                 createInviteView.disableInvite();
-                createInviteView.loadingAnimation(CreateInviteView.STATUS_CREATING_LINK, AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
+                createInviteView.loadingAnimation(CreateInviteView.STATUS_CREATING_LINK, loadingAnimDuarion, screenUtils, getActivity());
             }
             else navigator.shareGenericText(getString(R.string.share_group_public_link, groupName, groupLink), getContext());
         }));
@@ -434,6 +440,20 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         friendAdapter.notifyDataSetChanged();
         if (!privateGroup)circularProgressView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_group_public));
         setGroupPrivacy(privateGroup, groupMemberList.size());
+    }
+
+    @Override
+    public void failedToGetMembers() {
+        Toast.makeText(getContext(), getString(R.string.error_unknown), Toast.LENGTH_SHORT).show();
+        Intent resultIntent = new Intent();
+        getActivity().setResult(BaseActivity.RESULT_OK, resultIntent);
+        getActivity().finish();
+
+    }
+
+    @Override
+    public void linkCreationFailed() {
+        Toast.makeText(getContext(), getString(R.string.error_unknown), Toast.LENGTH_SHORT).show();
     }
 
     public void addMemberPhotos(List<GroupMember> groupMemberList) {
@@ -518,7 +538,9 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         groupInfoView.setGroupName("");
         groupInfoView.bringOutIcons(0);
         groupInfoView.enableButtons();
+        groupInfoView.setLayoutDividerBackgroundAlpha();
         groupInfoView.setGroupPictureInvisible();
+
         groupPictureUri = null;
         createInviteView.setDefault();
         createInviteView.disable();
@@ -568,6 +590,10 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
         createInviteView.enableInvite();
         enableScrolling(true);
+
+        tagManager.trackEvent(TagManagerConstants.KPI_GROUP_CREATED);
+
+        tagManager.increment(TagManagerConstants.COUNT_GROUPS_CREATED);
     }
 
     private void showShareDialogFragment() {
@@ -577,7 +603,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
         subscriptions.add(shareDialogFragment.deletePressed().subscribe(aVoid -> {
             groupPresenter.modifyPrivateGroupLink(membershipId, false);
             createInviteView.disableInvite();
-            createInviteView.loadingAnimation(CreateInviteView.STATUS_DELETING_LINK, AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, screenUtils, getActivity());
+            createInviteView.loadingAnimation(CreateInviteView.STATUS_DELETING_LINK, loadingAnimDuarion, screenUtils, getActivity());
         }));
 
     }
@@ -647,17 +673,17 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
             orignalGroupSuggestionsMargin = (int) groupSuggestionsView.getY();
             groupSuggestionsView.animate()
                     .y(getResources().getDimension(R.dimen.group_info_bar_height))
-                    .setDuration(animDuration)
+                    .setDuration(AnimationUtils.ANIMATION_DURATION_SHORT)
                     .setStartDelay(AnimationUtils.NO_START_DELAY)
                     .start();
         } else {
             groupSuggestionsView.animate()
                     .y(orignalGroupSuggestionsMargin)
-                    .setDuration(animDuration)
+                    .setDuration(AnimationUtils.ANIMATION_DURATION_SHORT)
                     .setStartDelay(AnimationUtils.NO_START_DELAY)
                     .start();
             subscriptions.add(
-                    Observable.timer(animDuration, TimeUnit.MILLISECONDS)
+                    Observable.timer(AnimationUtils.ANIMATION_DURATION_SHORT, TimeUnit.MILLISECONDS)
                             .onBackpressureDrop()
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
@@ -786,9 +812,6 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     public void groupCreatedSuccessfully() {
         Bundle bundle = new Bundle();
         bundle.putString(TagManagerConstants.TYPE_TRIBE_GROUP, privateGroup ? TagManagerConstants.TYPE_GROUP_PRIVATE : TagManagerConstants.TYPE_GROUP_PUBLIC);
-        tagManager.trackEvent(TagManagerConstants.KPI_GROUP_CREATED);
-
-        tagManager.increment(TagManagerConstants.COUNT_GROUPS_CREATED);
 
         createInviteView.loaded();
         animSet1();

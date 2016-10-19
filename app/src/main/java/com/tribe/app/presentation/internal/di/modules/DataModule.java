@@ -9,6 +9,7 @@ import com.tribe.app.presentation.internal.di.scope.AddressBook;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;
 import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
 import com.tribe.app.presentation.internal.di.scope.Filter;
+import com.tribe.app.presentation.internal.di.scope.HasReceivedPointsForCameraPermission;
 import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
 import com.tribe.app.presentation.internal.di.scope.LastNotifyRequest;
@@ -160,5 +161,11 @@ public class DataModule {
     @AddressBook
     Preference<Boolean> provideAddressBook(RxSharedPreferences prefs) {
         return prefs.getBoolean(PreferencesConstants.ADDRESS_BOOK, false);
+    }
+
+    @Provides
+    @HasReceivedPointsForCameraPermission
+    Preference<Boolean> provideHasReceivedPointsForCameraPermission(RxSharedPreferences prefs) {
+        return prefs.getBoolean(PreferencesConstants.HAS_RECEIVED_POINTS_FOR_CAMERA_PERMISSION, false);
     }
 }

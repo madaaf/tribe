@@ -194,7 +194,8 @@ public class CreateInviteView extends FrameLayout {
     }
 
     public void loaded() {
-        createGroupAnim.end();
+        createGroupAnim.setDuration(AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT);
+        createGroupAnim.start();
         Observable.timer(AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT, TimeUnit.MILLISECONDS)
                 .onBackpressureDrop()
                 .subscribeOn(Schedulers.io())

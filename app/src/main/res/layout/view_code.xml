@@ -119,7 +119,7 @@
     <com.github.rahatarmanahmed.cpv.CircularProgressView
         android:id="@+id/circularProgressViewCode"
         android:layout_width="wrap_content"
-        android:layout_height="20dp"
+        android:layout_height="@dimen/code_progress_size"
         android:layout_gravity="end|center_vertical"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:visibility="invisible"
@@ -127,6 +127,19 @@
         app:cpv_indeterminate="true"
         app:cpv_color="@android:color/black"
         app:cpv_thickness="2dp"
+        />
+
+    <ProgressBar
+        android:id="@+id/progressBarCountdown"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="@dimen/code_progress_size"
+        android:layout_height="@dimen/code_progress_size"
+        android:layout_gravity="end|center_vertical"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:visibility="invisible"
+        android:max="@integer/time_code_countdown"
+        android:background="@drawable/shape_oval_black"
+        android:progressDrawable="@drawable/progress_circular_countdown"
         />
 
     <ImageView

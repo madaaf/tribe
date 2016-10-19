@@ -65,6 +65,7 @@ public abstract class TribeMediaPlayer {
     public abstract long getPosition();
     public abstract long getDuration();
     public abstract void seekTo(long position);
+    public abstract int getAudioSessionId();
 
     public static class TribeMediaPlayerBuilder {
         private final Context context;
@@ -116,6 +117,10 @@ public abstract class TribeMediaPlayer {
                     || (changeSpeed && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                     || forceLegacy)
                     ? new LegacyMediaPlayer(this) : new ExoMediaPlayer(this);
+        }
+
+        public LegacyMediaPlayer buildLegacyMediaPlayer() {
+            return new LegacyMediaPlayer(this);
         }
 
         public String getMedia() {
