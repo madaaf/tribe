@@ -140,22 +140,14 @@ public class GroupInfoView extends FrameLayout {
         subscriptions.add(editTextGroupName.keyBackPressed().subscribe(aVoid -> {
             editTextGroupName.setCursorVisible(false);
         }));
-        subscriptions.add(RxView.clicks(imageGroup).subscribe(aVoid -> {
-            imageGroupClicked.onNext(null);
-        }));
-        subscriptions.add(RxView.clicks(imageEditGroup).subscribe(aVoid -> {
-            imageEditGroupClicked.onNext(null);
-        }));
-        subscriptions.add(RxView.clicks(imageDoneEdit).subscribe(aVoid -> {
-            imageDoneEditClicked.onNext(null);
-        }));
-
+        subscriptions.add(RxView.clicks(imageGroup).subscribe(imageGroupClicked));
+        subscriptions.add(RxView.clicks(imageEditGroup).subscribe(imageEditGroupClicked));
+        subscriptions.add(RxView.clicks(imageDoneEdit).subscribe(imageDoneEditClicked));
         subscriptions.add(privatePublicView.isPrivate().subscribe(aBoolean -> {
            isPrivate.onNext(aBoolean);
         }));
-        subscriptions.add(RxView.clicks(imageGoToMembers).subscribe(aVoid -> {
-            imageGoToMembersClicked.onNext(null);
-        }));
+        subscriptions.add(RxView.clicks(imageGoToMembers).subscribe(imageGoToMembersClicked));
+        subscriptions.add(RxView.clicks(memberPhotoViewList).subscribe(imageGoToMembersClicked));
 
         subscriptions.add(editTextGroupName.keyBackPressed().subscribe(aVoid -> {
             if (groupNameUp) {
