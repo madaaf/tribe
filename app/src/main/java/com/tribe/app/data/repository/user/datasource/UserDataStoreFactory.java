@@ -11,9 +11,6 @@ import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
-import com.tribe.app.data.realm.mapper.GroupRealmDataMapper;
-import com.tribe.app.data.realm.mapper.MembershipRealmDataMapper;
-import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
@@ -50,9 +47,6 @@ public class UserDataStoreFactory {
     private final Preference<String> lastMessageRequest;
     private final Preference<String> lastUserRequest;
     private final SimpleDateFormat utcSimpleDate;
-    private final GroupRealmDataMapper groupRealmDataMapper;
-    private final MembershipRealmDataMapper membershipRealmDataMapper;
-    private final UserRealmDataMapper userRealmDataMapper;
 
     @Inject
     public UserDataStoreFactory(Context context, UserCache userCache,
@@ -62,10 +56,7 @@ public class UserDataStoreFactory {
                                 Installation installation, ReactiveLocationProvider reactiveLocationProvider,
                                 @LastMessageRequest Preference<String> lastMessageRequest,
                                 @LastUserRequest Preference<String> lastUserRequest,
-                                @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate,
-                                GroupRealmDataMapper groupRealmDataMapper,
-                                MembershipRealmDataMapper membershipRealmDataMapper,
-                                UserRealmDataMapper userRealmDataMapper) {
+                                @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate) {
 
         if (context == null || userCache == null) {
             throw new IllegalArgumentException("Constructor parameters cannot be null!");
@@ -87,9 +78,6 @@ public class UserDataStoreFactory {
         this.lastMessageRequest = lastMessageRequest;
         this.lastUserRequest = lastUserRequest;
         this.utcSimpleDate = utcSimpleDate;
-        this.groupRealmDataMapper = groupRealmDataMapper;
-        this.membershipRealmDataMapper = membershipRealmDataMapper;
-        this.userRealmDataMapper = userRealmDataMapper;
     }
 
     /**
@@ -104,6 +92,6 @@ public class UserDataStoreFactory {
         return new CloudUserDataStore(this.userCache, this.tribeCache, this.chatCache, this.contactCache,
                 this.rxContacts, this.rxFacebook, this.tribeApi, this.loginApi,
                 this.user, this.accessToken, this.installation, this.reactiveLocationProvider, this.context,
-                this.lastMessageRequest, this.lastUserRequest, this.utcSimpleDate, this.groupRealmDataMapper,  this.membershipRealmDataMapper, this.userRealmDataMapper);
+                this.lastMessageRequest, this.lastUserRequest, this.utcSimpleDate);
     }
 }

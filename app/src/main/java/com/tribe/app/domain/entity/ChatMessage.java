@@ -227,7 +227,7 @@ public class ChatMessage extends Message {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null) return false;
+        if (o == null || !(o instanceof ChatMessage)) return false;
 
         ChatMessage that = (ChatMessage) o;
 

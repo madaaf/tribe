@@ -140,14 +140,16 @@ public class SettingItemView extends FrameLayout {
         setForeground(ContextCompat.getDrawable(getContext(), R.drawable.selectable_button));
     }
 
-    public void setSyncUp(int textColor, int image) {
+    public void setIcon(int icon) {
         imageSyncIcon.setVisibility(VISIBLE);
-        imageSyncIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), image));
+        imageSyncIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), icon));
 
         FrameLayout.LayoutParams titleViewLayoutParams = (FrameLayout.LayoutParams) txtSectionTitle.getLayoutParams();
         titleViewLayoutParams.setMarginStart(dpToPx(25));
         txtSectionTitle.setLayoutParams(titleViewLayoutParams);
+    }
 
+    public void setSyncUp(int textColor) {
         txtSectionBody.setTextColor(ContextCompat.getColor(getContext(), textColor));
     }
 

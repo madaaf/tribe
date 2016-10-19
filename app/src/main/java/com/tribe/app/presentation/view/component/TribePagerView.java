@@ -32,6 +32,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.scope.FloatDef;
 import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.pager.TribePagerAdapter;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -479,8 +480,10 @@ public class TribePagerView extends FrameLayout {
                 newTribeList.add(message);
             }
 
-            if (!toUpdate.containsKey(message)) {
+            if (!toUpdate.containsKey(message) && !message.isDownloaded()) {
                 toUpdate.put(message.getId(), message);
+            } else {
+                if (count == 0) tribeMapSeens.put(message.getId(), message);
             }
 
             if (!message.isDownloaded()) {
@@ -534,6 +537,9 @@ public class TribePagerView extends FrameLayout {
     }
 
     public @CameraWrapper.TribeMode String getTribeMode() {
+        if (StringUtils.isEmpty(tribeMode) && cameraWrapper != null)
+            tribeMode = cameraWrapper.getTribeMode();
+
         return tribeMode;
     }
 

@@ -99,6 +99,7 @@ public class CameraWrapper extends FrameLayout {
     PictoVisualizerView visualizerView;
 
     // VARIABLES
+    private @TribeMode String tribeMode;
     private GlPreview preview;
     private double aspectRatio;
     private boolean isAudioMode;
@@ -384,6 +385,7 @@ public class CameraWrapper extends FrameLayout {
     @OnClick(R.id.imgSound)
     public void activateSound() {
         isAudioMode = true;
+        tribeMode = AUDIO;
         tribeModePublishSubject.onNext(AUDIO);
 
         if (cameraView != null) {
@@ -424,6 +426,7 @@ public class CameraWrapper extends FrameLayout {
     @OnClick(R.id.imgVideo)
     public void activateVideo() {
         isAudioMode = false;
+        tribeMode = VIDEO;
         tribeModePublishSubject.onNext(VIDEO);
         visualizerView.deactivate();
 
@@ -478,6 +481,10 @@ public class CameraWrapper extends FrameLayout {
         return tribeModePublishSubject;
     }
 
+    public @CameraWrapper.TribeMode String getTribeMode() {
+        return tribeMode;
+    }
+
     public Observable<Void> cameraPermissions() {
         return permissionsPublishSubject;
     }
@@ -516,6 +523,14 @@ public class CameraWrapper extends FrameLayout {
             updateFilter();
             cameraView.setPreview(preview);
 
+            if (audioDefault.get()) {
+                tribeMode = AUDIO;
+                tribeModePublishSubject.onNext(AUDIO);
+            } else {
+                tribeMode = VIDEO;
+                tribeModePublishSubject.onNext(VIDEO);
+            }
+
             Observable.timer(1000, TimeUnit.MILLISECONDS)
                     .onBackpressureDrop()
                     .subscribeOn(Schedulers.io())
@@ -524,7 +539,6 @@ public class CameraWrapper extends FrameLayout {
                         if (audioDefault.get()) {
                             activateSound();
                         } else {
-                            tribeModePublishSubject.onNext(VIDEO);
                             cameraView.startPreview();
                         }
                 });

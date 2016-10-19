@@ -45,6 +45,7 @@ import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
 import com.tribe.app.presentation.internal.di.modules.NetModule;
+import com.tribe.app.presentation.internal.di.scope.AddressBook;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;
 import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
 import com.tribe.app.presentation.internal.di.scope.Filter;
@@ -251,6 +252,9 @@ public interface ApplicationComponent {
 
     @InvisibleMode
     Preference<Boolean> invisibleMode();
+
+    @AddressBook
+    Preference<Boolean> addressBook();
 
     @LastMessageRequest
     Preference<String> lastMessageRequest();

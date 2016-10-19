@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.github.jinatonic.confetti.CommonConfetti;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tbruyelle.rxpermissions.RxPermissions;
@@ -25,6 +26,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.internal.di.scope.AddressBook;
 import com.tribe.app.presentation.mvp.presenter.AccessPresenter;
 import com.tribe.app.presentation.mvp.view.AccessView;
 import com.tribe.app.presentation.utils.EmojiParser;
@@ -80,6 +82,10 @@ public class AccessFragment extends BaseFragment implements AccessView {
     /**
      * Globals
      */
+
+    @Inject
+    @AddressBook
+    Preference<Boolean> addressBook;
 
     @Inject
     ScreenUtils screenUtils;
@@ -410,12 +416,9 @@ public class AccessFragment extends BaseFragment implements AccessView {
                 .request(Manifest.permission.READ_CONTACTS)
                 .subscribe(hasPermission -> {
                     if (hasPermission) {
+                        addressBook.set(true);
                         goToHangTight();
-                    }
-//                    else if (currentUser.getFriendshipList().size() > 0) {
-//                        goToHangTight();
-//                    }
-                    else {
+                    } else {
                         goToSorry();
                     }
                 });

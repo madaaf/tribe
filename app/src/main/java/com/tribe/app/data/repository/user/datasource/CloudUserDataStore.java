@@ -38,9 +38,6 @@ import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.data.realm.mapper.GroupRealmDataMapper;
-import com.tribe.app.data.realm.mapper.MembershipRealmDataMapper;
-import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.FileUtils;
@@ -92,9 +89,6 @@ public class CloudUserDataStore implements UserDataStore {
     private Preference<String> lastMessageRequest;
     private Preference<String> lastUserRequest;
     private SimpleDateFormat utcSimpleDate = null;
-    private GroupRealmDataMapper groupRealmDataMapper;
-    private MembershipRealmDataMapper membershipRealmDataMapper;
-    private UserRealmDataMapper userRealmDataMapper;
 
     /**
      * Construct a {@link UserDataStore} based on connections to the api (Cloud).
@@ -110,10 +104,7 @@ public class CloudUserDataStore implements UserDataStore {
                               TribeApi tribeApi, LoginApi loginApi, User user,
                               AccessToken accessToken, Installation installation,
                               ReactiveLocationProvider reactiveLocationProvider, Context context,
-                              Preference<String> lastMessageRequest, Preference<String> lastUserRequest, SimpleDateFormat utcSimpleDate,
-                              GroupRealmDataMapper groupRealmDataMapper,
-                              MembershipRealmDataMapper membershipRealmDataMapper,
-                              UserRealmDataMapper userRealmDataMapper) {
+                              Preference<String> lastMessageRequest, Preference<String> lastUserRequest, SimpleDateFormat utcSimpleDate) {
         this.userCache = userCache;
         this.tribeCache = tribeCache;
         this.chatCache = chatCache;
@@ -130,9 +121,6 @@ public class CloudUserDataStore implements UserDataStore {
         this.lastMessageRequest = lastMessageRequest;
         this.lastUserRequest = lastUserRequest;
         this.utcSimpleDate = utcSimpleDate;
-        this.groupRealmDataMapper = groupRealmDataMapper;
-        this.membershipRealmDataMapper = membershipRealmDataMapper;
-        this.userRealmDataMapper = userRealmDataMapper;
     }
 
     @Override
@@ -600,6 +588,11 @@ public class CloudUserDataStore implements UserDataStore {
                         return interfaces;
                     });
         }).flatMap(listObservable -> listObservable).doOnNext(saveToCacheContacts);
+    }
+
+    @Override
+    public Observable<List<ContactInterface>> contactsFB() {
+        return null;
     }
 
     @Override

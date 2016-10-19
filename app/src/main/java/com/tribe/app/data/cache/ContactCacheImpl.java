@@ -145,6 +145,11 @@ public class ContactCacheImpl implements ContactCache {
     }
 
     @Override
+    public Observable<List<ContactFBRealm>> contactsFB() {
+        return null;
+    }
+
+    @Override
     public Observable<List<ContactABRealm>> contactsThreadSafe() {
         return Observable.create(new Observable.OnSubscribe<List<ContactABRealm>>() {
             @Override

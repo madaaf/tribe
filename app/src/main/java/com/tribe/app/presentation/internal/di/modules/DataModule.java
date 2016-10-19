@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
+import com.tribe.app.presentation.internal.di.scope.AddressBook;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;
 import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
 import com.tribe.app.presentation.internal.di.scope.Filter;
@@ -152,5 +153,12 @@ public class DataModule {
     @ShareProfile
     Preference<Boolean> provideShareProfile(RxSharedPreferences prefs) {
         return prefs.getBoolean(PreferencesConstants.SHARE_PROFILE, false);
+    }
+
+    @Provides
+    @Singleton
+    @AddressBook
+    Preference<Boolean> provideAddressBook(RxSharedPreferences prefs) {
+        return prefs.getBoolean(PreferencesConstants.ADDRESS_BOOK, false);
     }
 }

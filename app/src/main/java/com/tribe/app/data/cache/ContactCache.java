@@ -18,28 +18,35 @@ import rx.Observable;
 @Singleton
 public interface ContactCache {
 
-    public boolean isCached(int userId);
-    public void insertAddressBook(List<ContactABRealm> contactList);
-    public void insertFBContactList(List<ContactFBRealm> contactList);
-    public void insertSearchResult(SearchResultRealm searchResultRealm);
-    public void changeSearchResult(String username, FriendshipRealm friendshipRealm);
-    public void updateHowManyFriends(Collection<ContactABRealm> contactABList);
+    boolean isCached(int userId);
+    void insertAddressBook(List<ContactABRealm> contactList);
+    void insertFBContactList(List<ContactFBRealm> contactList);
+    void insertSearchResult(SearchResultRealm searchResultRealm);
+    void changeSearchResult(String username, FriendshipRealm friendshipRealm);
+    void updateHowManyFriends(Collection<ContactABRealm> contactABList);
 
     /**
-     * This contacts should only be called from a main thread interactor (UseCaseDisk)
+     * Should only be called from a main thread interactor (UseCaseDisk)
      * it is NOT thread safe due to the Realm thread's complexity
      * Updates the UI through subscribers when changes are made to any ContactABRealm object
      * @return
      */
-    public Observable<List<ContactABRealm>> contacts();
+    Observable<List<ContactABRealm>> contacts();
 
+    /**
+     * Should only be called from a main thread interactor (UseCaseDisk)
+     * it is NOT thread safe due to the Realm thread's complexity
+     * Updates the UI through subscribers when changes are made to any ContactFBRealm object
+     * @return
+     */
+    Observable<List<ContactFBRealm>> contactsFB();
 
     /**
      * This contacts can be called anywhere, it is thread safe due to the Realm thread's complexity
      * @return
      */
-    public Observable<List<ContactABRealm>> contactsThreadSafe();
+    Observable<List<ContactABRealm>> contactsThreadSafe();
 
-    public Observable<List<ContactABRealm>> findContactsByValue(String value);
-    public Observable<SearchResultRealm> findContactByUsername(String username);
+    Observable<List<ContactABRealm>> findContactsByValue(String value);
+    Observable<SearchResultRealm> findContactByUsername(String username);
 }

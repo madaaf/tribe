@@ -90,6 +90,12 @@ public interface UserDataStore {
     Observable<List<ContactInterface>> contacts();
 
     /**
+     * Get an {@link Observable} which will emit a {@link List <ContactInterface>} containing infos
+     * about the contacts from Facebook.
+     */
+    Observable<List<ContactInterface>> contactsFB();
+
+    /**
      * Get an {@link Observable} which will get the number of friends from each address book member
      */
     Observable<Void> howManyFriends();

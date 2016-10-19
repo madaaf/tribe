@@ -90,9 +90,16 @@ public interface UserRepository {
 
     /**
      * Get an {@link Observable} which will emit a {@link List <Contact>} containing infos
-     * about the contacts from all sources (AddressBook / Facebook).
+     * about the contacts from the AddressBook.
+     * If called in cloud mode it will make a synchronization of friendships see {@link com.tribe.app.data.repository.user.datasource.CloudUserDataStore}
      */
     Observable<List<Contact>> contacts();
+
+    /**
+     * Get an {@link Observable} which will emit a {@link List <Contact>} containing infos
+     * about the contacts from Facebook.
+     */
+    Observable<List<Contact>> contactsFB();
 
     /**
      * Get an {@link Observable} which will emit

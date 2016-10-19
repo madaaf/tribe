@@ -16,6 +16,7 @@ import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.internal.di.scope.AddressBook;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
 import com.tribe.app.presentation.internal.di.scope.LocationPopup;
@@ -96,9 +97,6 @@ public class SettingFragment extends BaseFragment implements SettingView {
     @BindView(R.id.settingsLogOut)
     SettingItemView settingsLogOut;
 
-//    @BindView(R.id.settingsSendToken)
-//    SettingItemView settingsSendToken;
-
     @BindView(R.id.txtVersion)
     TextViewFont txtVersion;
 
@@ -127,6 +125,10 @@ public class SettingFragment extends BaseFragment implements SettingView {
     @Inject
     @Preload
     Preference<Boolean> preload;
+
+    @Inject
+    @AddressBook
+    Preference<Boolean> addressBook;
 
     @Inject
     SettingPresenter settingPresenter;
@@ -301,11 +303,6 @@ public class SettingFragment extends BaseFragment implements SettingView {
                         settingPresenter.logout();
                     }).show();
         }));
-
-//        subscriptions.add(RxView.clicks(settingsSendToken).subscribe(aVoid -> {
-//            String[] addresses = {"duartetia@gmail.com"};
-//            navigator.composeEmail(getActivity(), addresses, accessToken.getRefreshToken() + " ------- " + accessToken.getAccessToken());
-//        }));
     }
 
     private void initUi() {
@@ -344,22 +341,25 @@ public class SettingFragment extends BaseFragment implements SettingView {
 
         else messageSettingFahrenheit.setCheckedSwitch(false);
 
-        // TODO: setup based on sync status
         settingsFacebook.setTitleBodyViewType(getString(R.string.settings_facebook_sync_title),
                 getString(R.string.settings_facebook_not_synced_description),
                 SettingItemView.SWITCH);
-        settingsFacebook.setSyncUp(R.color.red_circle, R.drawable.picto_black_facebook_icon);
+        settingsFacebook.setIcon(R.drawable.picto_black_facebook_icon);
+        settingsFacebook.setSyncUp(FacebookUtils.isLoggedIn() ? R.color.blue_text : R.color.red_circle);
         settingsFacebook.setCheckedSwitch(FacebookUtils.isLoggedIn());
 
         settingsAddress.setTitleBodyViewType(getString(R.string.settings_addressbook_sync_title),
                 getString(R.string.contacts_section_addressbook_sync_description),
-                SettingItemView.SIMPLE);
-        settingsAddress.setSyncUp(R.color.blue_text, R.drawable.picto_phone_icon);
+                SettingItemView.SWITCH);
+        settingsAddress.setSyncUp(addressBook.get() ? R.color.blue_text : R.color.red_circle);
+        settingsAddress.setIcon(R.drawable.picto_phone_icon);
+        settingsAddress.setCheckedSwitch(addressBook.get());
 
         settingsInvisible.setTitleBodyViewType(getString(R.string.settings_invisible_title),
                 getString(R.string.settings_invisible_subtitle),
                 SettingItemView.SWITCH);
         settingsInvisible.setCheckedSwitch(user.isInvisibleMode());
+        settingsInvisible.setIcon(R.drawable.picto_ghost_black);
 
         settingsTweet.setTitleBodyViewType(getString(R.string.settings_tweet_title),
                 getString(R.string.settings_tweet_subtitle),
@@ -380,10 +380,6 @@ public class SettingFragment extends BaseFragment implements SettingView {
         settingsLogOut.setTitleBodyViewType(getString(R.string.settings_logout_title),
                 getString(R.string.settings_logout_subtitle),
                 SettingItemView.SIMPLE);
-
-//        settingsSendToken.setTitleBodyViewType("Send token to mamene Tiago",
-//                "Maître bavon",
-//                SettingItemView.SIMPLE);
 
         txtVersion.setText(getString(R.string.settings_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE));
     }

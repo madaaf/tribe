@@ -93,6 +93,11 @@ public class DiskUserDataStore implements UserDataStore {
     }
 
     @Override
+    public Observable<List<ContactInterface>> contactsFB() {
+        return contactCache.contactsFB().map(contactABRealms -> new ArrayList<>(contactABRealms));
+    }
+
+    @Override
     public Observable<Void> howManyFriends() {
         return null;
     }
@@ -111,8 +116,6 @@ public class DiskUserDataStore implements UserDataStore {
     public Observable<List<ContactABRealm>> findByValue(String username) {
         return contactCache.findContactsByValue(username);
     }
-
-    // TODO: setup groups in db
 
     @Override
     public Observable<FriendshipRealm> createFriendship(String userId) {
