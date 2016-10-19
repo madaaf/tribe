@@ -316,6 +316,7 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
         viewCode.fadeBackOut();
         viewPhoneNumber.nextIconVisisble();
         viewPager.setCurrentItem(PAGE_PHONE_NUMBER, true);
+        viewPhoneNumber.openKeyboard();
     }
 
     private void requestCode() {
@@ -335,6 +336,10 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
         subscriptions.add(authenticationDialogFragment.confirmClicked().subscribe(aVoid -> {
             authenticationDialogFragment.dismiss();
             requestCode();
+        }));
+
+        subscriptions.add(authenticationDialogFragment.cancelClicked().subscribe(aVoid -> {
+            viewPhoneNumber.openKeyboard();
         }));
     }
 
@@ -384,6 +389,7 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
 
     @Override
     public void goToConnected(User user) {
+        if (countdownSubscription != null) countdownSubscription.unsubscribe();
         currentUser.copy(user);
         txtIntroMessage.setText("");
         screenUtils.hideKeyboard(getActivity());
@@ -492,9 +498,4 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
                 .applicationComponent(getApplicationComponent())
                 .build().inject(this);
     }
-
-    /**
-     * Util methods
-     */
-
 }

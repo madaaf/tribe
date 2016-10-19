@@ -6,6 +6,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -192,6 +193,16 @@ public class PhoneNumberView extends FrameLayout {
             imageViewNextIcon.setVisibility(INVISIBLE);
         }
     }
+
+    public void openKeyboard() {
+        editTextPhoneNumber.requestFocus();
+        editTextPhoneNumber.postDelayed(() -> {
+            InputMethodManager keyboard = (InputMethodManager)
+                    getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            keyboard.showSoftInput(editTextPhoneNumber, 0);
+        }, 200);
+    }
+
 
     public void fadeOutNext() {
         AnimationUtils.fadeOutFast(imageViewNextIcon);

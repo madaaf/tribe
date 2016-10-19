@@ -3,5 +3,5 @@
     <integer name="time_tap_to_cancel">3000</integer>
     <integer name="time_record">15000</integer>
     <integer name="time_synchro">3000</integer>
-    <integer name="time_code_countdown">6000</integer>
+    <integer name="time_code_countdown">60000</integer>
 </resources>

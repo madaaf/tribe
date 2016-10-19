@@ -129,21 +129,17 @@ public class AuthenticationDialogFragment extends BaseDialogFragment {
                                 .alpha(AnimationUtils.ALPHA_FULL)
                                 .start();
                     }));
-
-
-            subscriptions.add(RxView.clicks(textCancel).subscribe(aVoid -> {
-                cancelClicked.onNext(null);
-                dismiss();
-            }));
         } else {
             textTitle.setText(phoneNumber);
             textSummary.setText(getString(R.string.onboarding_popup_confirm_description));
             textCancel.setText(getString(R.string.onboarding_popup_confirm_edit_button_title));
             textConfirm.setText(getString(R.string.onboarding_popup_confirm_send_button_title));
-            subscriptions.add(RxView.clicks(textCancel).subscribe(aVoid -> {
-                dismiss();
-            }));
         }
+
+        subscriptions.add(RxView.clicks(textCancel).subscribe(aVoid -> {
+            cancelClicked.onNext(null);
+            dismiss();
+        }));
 
         subscriptions.add(RxView.clicks(textConfirm).subscribe(aVoid -> {
             confirmClicked.onNext(null);
