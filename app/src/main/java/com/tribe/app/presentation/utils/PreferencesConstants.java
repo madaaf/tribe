@@ -20,4 +20,5 @@ public class PreferencesConstants {
     public static String FILTER = "FILTER";
     public static String LOCATION_POPUP = "LOCATION_POPUP";
     public static String SHARE_PROFILE = "SHARE_PROFILE";
+    public static String HAS_RECEIVED_POINTS_FOR_CAMERA_PERMISSION = "HAS_RECEIVED_POINTS_FOR_CAMERA_PERMISSION";
 }

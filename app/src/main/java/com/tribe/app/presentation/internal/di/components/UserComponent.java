@@ -20,6 +20,7 @@ import com.tribe.app.presentation.view.component.SearchFriendsView;
 import com.tribe.app.presentation.view.component.SettingFilterView;
 import com.tribe.app.presentation.view.component.SettingItemView;
 import com.tribe.app.presentation.view.component.SettingThemeView;
+import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.dialog_fragment.LocationDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.PointsDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.ShareDialogFragment;

@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.view.component;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -100,7 +102,7 @@ public class GroupInfoView extends FrameLayout {
     private float originalGroupNameMargin;
     private float originalGroupBackgroundMargin;
     private int animDuration = AnimationUtils.ANIMATION_DURATION_MID;
-    private boolean bringGroupNameToTopEnabled = false;
+    private boolean bringGroupNameToTopEnabled = false, groupNameUp = false;
 
 
     private PublishSubject<Boolean> isPrivate = PublishSubject.create();
@@ -129,7 +131,7 @@ public class GroupInfoView extends FrameLayout {
             else isGroupNameValid.onNext(false);
         }));
         subscriptions.add(RxView.clicks(editTextGroupName).subscribe(aVoid -> {
-            if (bringGroupNameToTopEnabled) {
+            if (!groupNameUp) {
                 bringGroupNameToTop(animDuration);
                 isEditingGroupName.onNext(true);
                 editTextGroupName.setCursorVisible(true);
@@ -138,25 +140,17 @@ public class GroupInfoView extends FrameLayout {
         subscriptions.add(editTextGroupName.keyBackPressed().subscribe(aVoid -> {
             editTextGroupName.setCursorVisible(false);
         }));
-        subscriptions.add(RxView.clicks(imageGroup).subscribe(aVoid -> {
-            imageGroupClicked.onNext(null);
-        }));
-        subscriptions.add(RxView.clicks(imageEditGroup).subscribe(aVoid -> {
-            imageEditGroupClicked.onNext(null);
-        }));
-        subscriptions.add(RxView.clicks(imageDoneEdit).subscribe(aVoid -> {
-            imageDoneEditClicked.onNext(null);
-        }));
-
+        subscriptions.add(RxView.clicks(imageGroup).subscribe(imageGroupClicked));
+        subscriptions.add(RxView.clicks(imageEditGroup).subscribe(imageEditGroupClicked));
+        subscriptions.add(RxView.clicks(imageDoneEdit).subscribe(imageDoneEditClicked));
         subscriptions.add(privatePublicView.isPrivate().subscribe(aBoolean -> {
            isPrivate.onNext(aBoolean);
         }));
-        subscriptions.add(RxView.clicks(imageGoToMembers).subscribe(aVoid -> {
-            imageGoToMembersClicked.onNext(null);
-        }));
+        subscriptions.add(RxView.clicks(imageGoToMembers).subscribe(imageGoToMembersClicked));
+        subscriptions.add(RxView.clicks(memberPhotoViewList).subscribe(imageGoToMembersClicked));
 
         subscriptions.add(editTextGroupName.keyBackPressed().subscribe(aVoid -> {
-            if (bringGroupNameToTopEnabled) {
+            if (groupNameUp) {
                 bringGroupNameDown(animDuration);
                 isEditingGroupName.onNext(false);
             }
@@ -447,7 +441,6 @@ public class GroupInfoView extends FrameLayout {
         imageGroup.setScaleY(groupPicScaleDownF);
         imageGroupBg.setScaleX(groupPicScaleDownF);
         imageGroupBg.setScaleY(groupPicScaleDownF);
-//        layoutDividerBackground.setVisibility(INVISIBLE);
         layoutDividerBackground.setAlpha(AnimationUtils.ALPHA_NONE);
         layoutGroupMembers.setVisibility(VISIBLE);
         editTextGroupName.bringToFront();
@@ -469,37 +462,57 @@ public class GroupInfoView extends FrameLayout {
     }
 
     private void bringGroupNameToTop(int animDuration) {
-        originalGroupBackgroundMargin =layoutDividerBackground.getY();
-        originalGroupNameMargin = editTextGroupName.getY();
-        layoutDividerBackground.animate()
-                .y(0)
-                .setDuration(animDuration)
-                .setStartDelay(AnimationUtils.NO_START_DELAY)
-                .start();
-        int editTextGroupTopMargin = 22;
-        editTextGroupName.animate()
-                .y(screenUtils.dpToPx(editTextGroupTopMargin))
-                .setDuration(animDuration)
-                .setStartDelay(AnimationUtils.NO_START_DELAY)
-                .start();
-        layoutDividerBackground.bringToFront();
-        editTextGroupName.bringToFront();
+        if (bringGroupNameToTopEnabled) {
+            groupNameUp = true;
+            layoutDividerBackground.bringToFront();
+            editTextGroupName.bringToFront();
+            originalGroupBackgroundMargin = layoutDividerBackground.getY();
+            originalGroupNameMargin = editTextGroupName.getY();
+            imageGroup.setVisibility(INVISIBLE);
+            imageGroupBg.setVisibility(INVISIBLE);
+            layoutDividerBackground.animate()
+                    .y(0)
+                    .setDuration(AnimationUtils.ANIMATION_DURATION_SHORT)
+                    .setStartDelay(AnimationUtils.NO_START_DELAY)
+                    .start();
+            int editTextGroupTopMargin = 22;
+            editTextGroupName.animate()
+                    .y(screenUtils.dpToPx(editTextGroupTopMargin))
+                    .setDuration(AnimationUtils.ANIMATION_DURATION_SHORT)
+                    .setStartDelay(AnimationUtils.NO_START_DELAY)
+                    .start();
+        }
     }
 
     public void bringGroupNameDown(int animDuration) {
-        layoutDividerBackground.animate()
-                .y(originalGroupBackgroundMargin)
-                .setDuration(animDuration)
-                .setStartDelay(AnimationUtils.NO_START_DELAY)
-                .start();
-        editTextGroupName.animate()
-                .y(originalGroupNameMargin)
-                .setDuration(animDuration)
-                .setStartDelay(AnimationUtils.NO_START_DELAY)
-                .start();
+        if (bringGroupNameToTopEnabled) {
+            groupNameUp = false;
+            imageGroup.setVisibility(INVISIBLE);
+            imageGroupBg.setVisibility(INVISIBLE);
+            layoutDividerBackground.animate()
+                    .y(originalGroupBackgroundMargin)
+                    .setDuration(AnimationUtils.ANIMATION_DURATION_SHORT)
+                    .setStartDelay(AnimationUtils.NO_START_DELAY)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            if (imageGroup != null) imageGroup.setVisibility(VISIBLE);
+                            if (imageGroupBg != null) imageGroupBg.setVisibility(VISIBLE);
+                        }
+                    })
+                    .start();
+            editTextGroupName.animate()
+                    .y(originalGroupNameMargin)
+                    .setDuration(AnimationUtils.ANIMATION_DURATION_SHORT)
+                    .setStartDelay(AnimationUtils.NO_START_DELAY)
+                    .start();
+        }
     }
 
-
+    public void setLayoutDividerBackgroundAlpha() {
+        layoutDividerBackground.setAlpha(AnimationUtils.ALPHA_FULL);
+    }
 
     public String getGroupName() {
         return editTextGroupName.getText().toString();

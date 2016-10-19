@@ -324,7 +324,7 @@ public class TribePagerView extends FrameLayout {
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(t -> {
-                            if (!toUpdate.containsKey(tribe.getLocalId())) {
+                            if (!toUpdate.containsKey(tribe.getLocalId()) && (toUpdate.get(tribe.getLocalId()).getType().equals(CameraWrapper.VIDEO) || toUpdate.get(tribe.getLocalId()).getType().equals(CameraWrapper.AUDIO))) {
                                 tribePagerAdapter.startTribe(currentView);
                             }
                         });
@@ -485,7 +485,7 @@ public class TribePagerView extends FrameLayout {
 
             if (!message.isDownloaded()) {
                 TribeComponentView viewToUpdate = (TribeComponentView) viewPager.findViewWithTag(message.getId());
-                if (viewToUpdate != null) {
+                if (viewToUpdate != null && message.getType().equals(CameraWrapper.VIDEO)) {
                     viewToUpdate.setTribe(message);
                     viewToUpdate.showProgress();
                 }
@@ -496,15 +496,17 @@ public class TribePagerView extends FrameLayout {
                 TribeComponentView viewToUpdate = (TribeComponentView) viewPager.findViewWithTag(message.getId());
                 if (viewToUpdate != null) {
                     viewToUpdate.setTribe(message);
+                    
                     boolean isCurrent = tribeList.get(viewPager.getCurrentItem()).getId().equals(message.getLocalId());
 
                     if (isCurrent) {
                         tribeMapSeens.put(message.getId(), message);
                         updateNbTribes();
                     }
-
-                    viewToUpdate.preparePlayer(isCurrent);
-                }
+                    
+                    tribeListSeens.add(message);
+                    if (message.getType().equals(CameraWrapper.VIDEO) || message.getType().equals(CameraWrapper.AUDIO)) viewToUpdate.preparePlayer(isCurrent);
+                    if (message.getType().equals(CameraWrapper.PHOTO)) viewToUpdate.setupTribePhoto(message.getContent());                }
             }
 
             count++;

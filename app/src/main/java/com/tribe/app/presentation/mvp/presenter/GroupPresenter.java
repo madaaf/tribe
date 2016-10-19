@@ -88,6 +88,7 @@ public class GroupPresenter implements Presenter {
 
         @Override
         public void onError(Throwable e) {
+            groupView.failedToGetMembers();
             e.printStackTrace();
         }
 
@@ -165,6 +166,7 @@ public class GroupPresenter implements Presenter {
 
         @Override
         public void onError(Throwable e) {
+            groupView.linkCreationFailed();
             e.printStackTrace();
         }
 

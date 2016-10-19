@@ -4,9 +4,12 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.SurfaceTexture;
+import android.media.Image;
+import android.media.audiofx.Visualizer;
 import android.net.Uri;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.TextureView;
 import android.view.View;
@@ -15,6 +18,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.bumptech.glide.Glide;
 import com.f2prateek.rx.preferences.Preference;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.tribe.app.R;
@@ -28,12 +32,14 @@ import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.video.TribeMediaPlayer;
 import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.ButtonCardView;
+import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.ScalableTextureView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.VideoTextureView;
@@ -71,6 +77,12 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
     @BindView(R.id.imgMore)
     ImageView imgMore;
+
+    @BindView(R.id.imageTribeView)
+    ImageView imageTribeView;
+
+    @BindView(R.id.visualizerView)
+    VisualizerView visualizerView;
 
     @BindView(R.id.labelLevel)
     ButtonCardView labelLevel;
@@ -122,6 +134,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     private SurfaceTexture surfaceTexture;
     private long lastPosition = -1L;
     private ValueAnimator animatorProgress;
+    private Visualizer visualizer;
 
     public TribeComponentView(Context context) {
         super(context);
@@ -142,6 +155,10 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
         if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
         cancelProgress();
+        if (visualizer != null) {
+            visualizer.setEnabled(false);
+            visualizer.release();
+        }
 
         super.onDetachedFromWindow();
     }
@@ -216,6 +233,17 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
                     .canChangeSpeed(true)
                     .forceLegacy(true)
                     .build();
+            if (tribe.getType().equals(CameraWrapper.AUDIO)) {
+                visualizerView.setVisibility(VISIBLE);
+                visualizerView.setAvatarPicture(tribe.getFrom().getProfilePicture());
+                mediaPlayer = new TribeMediaPlayer.TribeMediaPlayerBuilder(getContext(), FileUtils.getPathForId(getContext(), tribe.getId(), FileUtils.VIDEO))
+                        .autoStart(autoStart)
+                        .looping(true)
+                        .mute(false)
+                        .canChangeSpeed(true)
+                        .buildLegacyMediaPlayer();
+                setupVisualizerFxAndUI();
+            }
 
             if (surfaceTexture != null)
                 mediaPlayer.setSurface(surfaceTexture);
@@ -247,6 +275,34 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
             if (lastPosition != -1) mediaPlayer.seekTo(lastPosition);
         }
+    }
+
+    public void setupTribePhoto(String imageUrl) {
+        Glide.with(getContext()).load(imageUrl)
+                .fitCenter()
+                .crossFade()
+                .into(imageTribeView);
+        removeProgressBar();
+    }
+
+    private void setupVisualizerFxAndUI() {
+        visualizer = new Visualizer(mediaPlayer.getAudioSessionId());
+        visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+
+        visualizer.setDataCaptureListener(
+                new Visualizer.OnDataCaptureListener() {
+                    public void onWaveFormDataCapture(Visualizer visualizer,
+                                                      byte[] bytes, int samplingRate) {
+                        visualizerView.updateVisualizer(bytes);
+                        Log.d("visualizer bytes", bytes + "");
+                    }
+
+
+                    public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int i) {
+
+                    }
+                }, Visualizer.getMaxCaptureRate() / 2, true, false);
+        visualizer.setEnabled(true);
     }
 
     public void showProgress() {
@@ -286,6 +342,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         if (mediaPlayer != null) {
             animateProgress();
             mediaPlayer.play();
+
         } else {
             preparePlayer(true);
         }
@@ -323,6 +380,11 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     private void cancelProgress() {
         if (animatorProgress != null)
             animatorProgress.cancel();
+    }
+
+    private void removeProgressBar() {
+        viewBGProgress.setVisibility(INVISIBLE);
+        layoutDownloadProgress.setVisibility(INVISIBLE);
     }
 
     public void setIconsAlpha(float alpha) {
