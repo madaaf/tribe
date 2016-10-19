@@ -32,14 +32,12 @@ import com.tribe.app.domain.interactor.text.UnsubscribeMQTT;
 import com.tribe.app.domain.interactor.user.GetRecipientInfos;
 import com.tribe.app.presentation.mvp.view.MessageView;
 import com.tribe.app.presentation.mvp.view.View;
-import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -212,10 +210,8 @@ public class ChatPresenter implements Presenter {
                         boolean shouldDownload = false;
 
                         JobStatus jobStatus = jobManager.getJobStatus(message.getLocalId());
-                        File file = FileUtils.getFile(messageView.context(), message.getId(), FileUtils.VIDEO);
 
-                        if (jobStatus.equals(JobStatus.UNKNOWN) && (!file.exists() || file.length() == 0)
-                                && (!message.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADED))) {
+                        if (jobStatus.equals(JobStatus.UNKNOWN)) {
                             shouldDownload = true;
                             message.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
                             jobManager.cancelJobsInBackground(null, TagConstraint.ALL, message.getId());
@@ -331,6 +327,7 @@ public class ChatPresenter implements Presenter {
 
         @Override
         public void onNext(List<ChatMessage> chatMessageList) {
+            System.out.println("chatmessages");
             messageView.renderMessageList(chatMessageList);
         }
     }

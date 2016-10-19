@@ -530,6 +530,25 @@ public class TribeCacheImpl implements TribeCache {
     }
 
     @Override
+    public void refactorTribeError(String tribeId) {
+        Realm otherRealm = Realm.getDefaultInstance();
+
+        try {
+            otherRealm.executeTransaction(realm1 -> {
+                TribeRealm result = realm1.where(TribeRealm.class)
+                        .equalTo("id", tribeId)
+                        .findFirst();
+
+                if (result != null) {
+                    result.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
+                }
+            });
+        } finally {
+            otherRealm.close();
+        }
+    }
+
+    @Override
     public List<TribeRealm> tribesDownloading() {
         Realm newRealm = Realm.getDefaultInstance();
         List<TribeRealm> result = new ArrayList<>();
@@ -540,7 +559,7 @@ public class TribeCacheImpl implements TribeCache {
                 .findAllSorted("recorded_at", Sort.DESCENDING);
 
         if (realmResults != null && realmResults.size() > 0)
-            result.addAll(newRealm.copyFromRealm(realmResults.subList(0, 1)));
+            result.addAll(newRealm.copyFromRealm(realmResults));
 
         newRealm.close();
         return result;

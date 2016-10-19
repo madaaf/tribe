@@ -8,12 +8,11 @@ import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
-import com.tribe.app.data.network.DownloadService;
+import com.tribe.app.data.network.DownloadTribeService;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.job.BaseJob;
 import com.tribe.app.data.network.job.DeleteMessageJob;
 import com.tribe.app.data.network.job.DownloadChatVideoJob;
-import com.tribe.app.data.network.job.DownloadTribeJob;
 import com.tribe.app.data.network.job.MarkMessageListAsReadJob;
 import com.tribe.app.data.network.job.MarkTribeAsSavedJob;
 import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
@@ -30,6 +29,7 @@ import com.tribe.app.data.network.job.UpdateMessagesVideoErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateScoreJob;
 import com.tribe.app.data.network.job.UpdateTribeDownloadedJob;
 import com.tribe.app.data.network.job.UpdateTribeListNotSeenStatusJob;
+import com.tribe.app.data.network.job.UpdateTribeToDownloadJob;
 import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.data.network.job.UpdateUserListScoreJob;
@@ -148,7 +148,6 @@ public interface ApplicationComponent {
     // JOBS
     void inject(BaseJob baseJob);
     void inject(SendTribeJob sendTribeJob);
-    void inject(DownloadTribeJob downloadTribeJob);
     void inject(SendChatJob sendChatJob);
     void inject(MarkMessageListAsReadJob markMessageListAsReadJob);
     void inject(UpdateUserJob updateUserJob);
@@ -169,9 +168,10 @@ public interface ApplicationComponent {
     void inject(UpdateFriendshipJob updateFriendshipJob);
     void inject(UpdateUserListScoreJob updateUserListScoreJob);
     void inject(DeleteMessageJob deleteMessageJob);
+    void inject(UpdateTribeToDownloadJob updateTribeToDownloadJob);
 
     // SERVICES
-    void inject(DownloadService downloadService);
+    void inject(DownloadTribeService downloadTribeService);
 
     //Exposed to sub-graphs.
     Context context();

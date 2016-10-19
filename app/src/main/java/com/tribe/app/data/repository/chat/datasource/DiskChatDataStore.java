@@ -46,7 +46,7 @@ public class DiskChatDataStore implements ChatDataStore {
 
     @Override
     public Observable<List<ChatRealm>> messages(String recipientId) {
-        return chatCache.messages(recipientId).debounce(750, TimeUnit.MILLISECONDS);
+        return chatCache.messages(recipientId).debounce(100, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -82,7 +82,7 @@ public class DiskChatDataStore implements ChatDataStore {
 
     @Override
     public Observable<List<ChatRealm>> messagesReceived(String friendshipId) {
-        return chatCache.messagesReceived(friendshipId).debounce(500, TimeUnit.MILLISECONDS);
+        return chatCache.messagesReceived(friendshipId).debounce(100, TimeUnit.MILLISECONDS);
     }
 
     @Override

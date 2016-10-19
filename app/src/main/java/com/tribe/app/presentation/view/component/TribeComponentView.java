@@ -116,6 +116,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     private final PublishSubject<TribeMessage> clickMore = PublishSubject.create();
 
     // PLAYER
+    private boolean isPrepared = false;
     private TribeMediaPlayer mediaPlayer;
     private TribeMessage tribe;
     private SurfaceTexture surfaceTexture;
@@ -207,19 +208,20 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
             AnimationUtils.fadeOut(layoutDownloadProgress, DURATION);
         }
 
-        if (!tribe.isDownloadPending()) {
+        if (tribe.isDownloaded() && !isPrepared) {
             mediaPlayer = new TribeMediaPlayer.TribeMediaPlayerBuilder(getContext(), FileUtils.getPathForId(getContext(), tribe.getId(), FileUtils.VIDEO))
                     .autoStart(autoStart)
                     .looping(true)
                     .mute(false)
                     .canChangeSpeed(true)
+                    .forceLegacy(true)
                     .build();
 
             if (surfaceTexture != null)
                 mediaPlayer.setSurface(surfaceTexture);
 
             subscriptions.add(mediaPlayer.onPreparedPlayer().subscribe(prepared -> {
-
+                isPrepared = true;
             }));
 
             subscriptions.add(mediaPlayer.onVideoSizeChanged().subscribe(videoSize -> {
@@ -272,6 +274,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
             mediaPlayer.release();
 
         mediaPlayer = null;
+        isPrepared = false;
         lastPosition = -1;
 
         if (subscriptions != null && subscriptions.hasSubscriptions()) {
@@ -388,7 +391,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         surfaceTexture = surface;
-        if (mediaPlayer != null) mediaPlayer.setSurface(surface);
+        if (mediaPlayer != null && tribe.isDownloaded()) mediaPlayer.setSurface(surface);
     }
 
     @Override

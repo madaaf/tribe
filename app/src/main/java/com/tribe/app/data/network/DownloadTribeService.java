@@ -48,12 +48,12 @@ import rx.subjects.AsyncSubject;
  * Created by tiago on 16/10/2016.
  */
 @Singleton
-public class DownloadService extends Service {
+public class DownloadTribeService extends Service {
 
     private static final String RECIPIENT_ID = "RECIPIENT_ID";
 
     public static Intent getCallingIntent(Context context, String recipientId) {
-        Intent intent = new Intent(context, DownloadService.class);
+        Intent intent = new Intent(context, DownloadTribeService.class);
         if (!StringUtils.isEmpty(recipientId)) intent.putExtra(RECIPIENT_ID, recipientId);
         return intent;
     }
@@ -69,7 +69,7 @@ public class DownloadService extends Service {
     private String recipientId;
     private Subscription subscription;
     private Scheduler scheduler;
-    private static List<String> alreadyProcessed = new ArrayList<>();
+    private List<String> alreadyProcessed = new ArrayList<>();
 
     @Nullable
     @Override
@@ -95,7 +95,7 @@ public class DownloadService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (subscription != null) subscription.unsubscribe();
-        if (intent.hasExtra(RECIPIENT_ID)) recipientId = intent.getStringExtra(RECIPIENT_ID);
+        if (intent != null && intent.hasExtra(RECIPIENT_ID)) recipientId = intent.getStringExtra(RECIPIENT_ID);
         handleStart();
         return Service.START_STICKY;
     }
@@ -114,13 +114,10 @@ public class DownloadService extends Service {
                         if (!alreadyProcessed.contains(tribeRealm.getId())) {
                             alreadyProcessed.add(tribeRealm.getId());
 
-                            System.out.println("TO DOWNLOADING : " + tribeRealm.getId());
                             List<Pair<String, Object>> values = new ArrayList<>();
                             values.add(Pair.create(TribeRealm.MESSAGE_DOWNLOADING_STATUS, MessageDownloadingStatus.STATUS_DOWNLOADING));
                             tribeUpdates.put(tribeRealm.getLocalId(), values);
                             tribeRealmEnd.add(tribeRealm);
-                        } else {
-                            System.out.println("ALREADY PROCESSED : " + tribeRealm.getId());
                         }
                     }
 
@@ -132,10 +129,13 @@ public class DownloadService extends Service {
                 .flatMap(tribeList -> Observable.from(tribeList))
                 .flatMap(tribeRealm -> {
                     File file = FileUtils.getFileTemp(getApplicationContext(), tribeRealm.getId(), FileUtils.VIDEO);
+                    File fileReal = FileUtils.getFile(getApplicationContext(), tribeRealm.getId(), FileUtils.VIDEO);
 
-                    if (file.exists()) {
+                    if (fileReal.exists()) {
                         return Observable.just(file);
                     }
+
+                    if (file.exists()) file.delete();
 
                     Request request = new Request.Builder().url(tribeRealm.getUrl()).build();
 
@@ -150,7 +150,6 @@ public class DownloadService extends Service {
                             body = new DownloadProgressResponseBody(response.body(), new DownloadProgressListener() {
                                 @Override
                                 public void update(long bytesRead, long contentLength, boolean done) {
-                                    System.out.println("Tribe Id : " + tribeRealm.getId() + " read : " + bytesRead + " lenght : " + contentLength + " done : " + done);
                                     setProgress(tribeRealm.getLocalId(), bytesRead, contentLength);
                                 }
                             });
@@ -171,15 +170,15 @@ public class DownloadService extends Service {
                         return file;
                     });
                 }, (tribeRealm, file) -> {
-                    System.out.println("TRIBE JUST DOWNLOADED : " + tribeRealm.getId());
                     if (file != null && file.exists() && file.length() > 0) {
-                        System.out.println("TRIBE COPY : " + tribeRealm.getId());
                         FileUtils.copyFile(file.getAbsolutePath(), FileUtils.getFile(getApplicationContext(), tribeRealm.getId(), FileUtils.VIDEO).getAbsolutePath());
+                        file.delete();
                     }
 
                     Pair<String, Object> updatePair = Pair.create(TribeRealm.MESSAGE_DOWNLOADING_STATUS, MessageDownloadingStatus.STATUS_DOWNLOADED);
-                    tribeCache.update(tribeRealm.getLocalId(), updatePair);
-                    System.out.println("TRIBE UPDATE DONE : " + tribeRealm.getId());
+                    tribeCache.update(tribeRealm.getId(), updatePair);
+
+                    alreadyProcessed.remove(tribeRealm.getLocalId());
 
                     return tribeRealm;
                 }, 1)

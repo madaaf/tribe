@@ -51,4 +51,5 @@ public interface TribeCache {
     TribeRealm updateLocalWithServerRealm(TribeRealm local, TribeRealm server);
     Observable<List<TribeRealm>> tribesToDownload(String recipientId);
     List<TribeRealm> tribesDownloading();
+    void refactorTribeError(String tribeId);
 }

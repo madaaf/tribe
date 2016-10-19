@@ -4,7 +4,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 
 import com.birbit.android.jobqueue.Params;
-import com.tribe.app.data.network.exception.FileAlreadyExists;
 import com.tribe.app.data.network.util.DownloadProgressListener;
 import com.tribe.app.data.network.util.DownloadProgressResponseBody;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -37,17 +36,26 @@ public abstract class DownloadVideoJob extends BaseJob {
     }
 
     @Override
-    public void onRun() throws Throwable {
-        File file = FileUtils.getFile(getApplicationContext(), getFileId(), FileUtils.VIDEO);
+    public void onAdded() {
+        setStatus(MessageDownloadingStatus.STATUS_DOWNLOADING);
+    }
 
-        if (file.exists() && file.length() > 0) throw new FileAlreadyExists();
-        System.out.println("THREAD : " + Thread.currentThread().getName());
+    @Override
+    public void onRun() throws Throwable {
+        File file = FileUtils.getFileTemp(getApplicationContext(), getFileId(), FileUtils.VIDEO);
+        File fileReal = FileUtils.getFile(getApplicationContext(), getFileId(), FileUtils.VIDEO);
+
+        if (fileReal.exists()) {
+            fileReal.delete();
+        }
+
+        if (file.exists()) file.delete();
 
         Request request = new Request.Builder().url(getUrl()).build();
         Response response = okHttpClient.newCall(request).execute();
 
         BufferedSink sink = null;
-        try  {
+        try {
             sink = Okio.buffer(Okio.sink(file));
             final DownloadProgressResponseBody body = new DownloadProgressResponseBody(response.body(), new DownloadProgressListener() {
                 @Override
@@ -56,7 +64,14 @@ public abstract class DownloadVideoJob extends BaseJob {
                 }
             });
             sink.writeAll(body.source());
+
+            if (file != null && file.exists() && file.length() > 0) {
+                FileUtils.copyFile(file.getAbsolutePath(), fileReal.getAbsolutePath());
+                file.delete();
+            }
+
             saveResult(true);
+
             body.close();
         } catch (IOException io) {
             io.printStackTrace();
@@ -67,9 +82,8 @@ public abstract class DownloadVideoJob extends BaseJob {
 
     @Override
     protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
-        System.out.println("CANCEL");
         File file = FileUtils.getFile(getApplicationContext(), getFileId(), FileUtils.VIDEO);
-        setStatus(file.exists() && file.length() > 0 ? MessageDownloadingStatus.STATUS_DOWNLOADED : MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
+        setStatus(file.exists() && file.length() > 0 ? MessageDownloadingStatus.STATUS_DOWNLOADED : MessageDownloadingStatus.STATUS_DOWNLOAD_ERROR);
     }
 
     @Override

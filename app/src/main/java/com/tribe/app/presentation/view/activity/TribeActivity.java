@@ -13,7 +13,6 @@ import android.view.View;
 import com.f2prateek.rx.preferences.Preference;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
-import com.tribe.app.data.network.DownloadService;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Location;
 import com.tribe.app.domain.entity.Membership;
@@ -29,7 +28,6 @@ import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.component.TribePagerView;
-import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 
 import java.util.ArrayList;
@@ -83,6 +81,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
     private TribeMessage currentTribe;
     private BottomSheetDialog dialogMore;
     private LabelSheetAdapter moreTypeAdapter;
+    private boolean isRecording = false;
 
     // BINDERS / SUBSCRIPTIONS
     private Unbinder unbinder;
@@ -109,7 +108,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
     protected void onResume() {
         super.onResume();
 
-        startService(DownloadService.getCallingIntent(this, recipient.getSubId()));
+        //startService(DownloadTribeService.getCallingIntent(this, recipient.getSubId()));
 
         viewTribePager.onResume();
         tribePresenter.onResume();
@@ -117,9 +116,6 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
     @Override
     protected void onPause() {
-        Intent i = new Intent(this, DownloadService.class);
-        stopService(i);
-
         viewTribePager.onPause();
         tribePresenter.onPause();
         super.onPause();
@@ -127,9 +123,6 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
     @Override
     protected void onStop() {
-        Intent i = new Intent(this, DownloadService.class);
-        stopService(i);
-
         tribePresenter.onStop();
         super.onStop();
     }
@@ -167,7 +160,6 @@ public class TribeActivity extends BaseActivity implements TribeView {
     private void initTribePagerView() {
         int color = PaletteGrid.get(position - 1);
         viewTribePager.setBackgroundColor(color);
-        viewTribePager.setItems(recipient.getReceivedTribes(), color);
         viewTribePager.initWithInfo(recipient);
     }
 
@@ -179,10 +171,6 @@ public class TribeActivity extends BaseActivity implements TribeView {
                 .onDismissHorizontal()
                 .doOnNext(aVoid -> {
                     tribePresenter.markTribeListAsRead(recipient, viewTribePager.getTribeListSeens());
-//                    Intent intentResult = new Intent();
-//                    intentResult.putExtra(TRIBES_SEEN, (Serializable) viewTribePager.getTribeListSeens());
-//                    intentResult.putExtra(RECIPIENT, recipient);
-//                    setResult(Activity.RESULT_OK, intentResult);
                 })
                 .delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
 
@@ -196,6 +184,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
         subscriptions.add(viewTribePager.onRecordStart()
                 .map(view -> {
+                    isRecording = true;
                     currentTribe = tribePresenter.createTribe(currentUser, recipient, viewTribePager.getTribeMode());
                     recipient.setTribe(currentTribe);
                     return currentTribe;
@@ -205,6 +194,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
         subscriptions.add(
                 viewTribePager.onRecordEnd()
                 .subscribe(view -> {
+                    isRecording = false;
                     viewTribePager.stopRecording();
                     viewTribePager.showTapToCancel(currentTribe);
                 }));
@@ -254,8 +244,6 @@ public class TribeActivity extends BaseActivity implements TribeView {
         subscriptions.add(viewTribePager.onErrorTribe()
                 .subscribe(tribeMessage -> {
                     FileUtils.delete(context(), tribeMessage.getLocalId(), FileUtils.VIDEO);
-                    tribeMessage.setMessageDownloadingStatus(MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
-                    // TODO CONNECT TO DOWNLOADS tribePresenter.downloadMessages(tribeMessage);
                 }));
     }
 
@@ -273,8 +261,10 @@ public class TribeActivity extends BaseActivity implements TribeView {
         tribePresenter.loadTribes(recipient.getSubId());
 
         Set<String> userIds = new HashSet<>();
+
         for (TribeMessage message : recipient.getReceivedTribes()) {
             if (message.getFrom() != null) userIds.add(message.getFrom().getId());
+            if (message.isDownloadError()) tribePresenter.updateTribeToDownload(message.getId());
         }
 
         tribePresenter.updateUserListScore(userIds);
@@ -322,12 +312,9 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
     @Override
     public void updateNewTribes(List<TribeMessage> tribeList) {
-        for (TribeMessage tribe : tribeList) {
-            //TODO HANDLE DOWNLOAD
-            //if (tribe.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD)) tribePresenter.downloadMessages(tribe);
+        if (tribeList != null && tribeList.size() > 0 && !isRecording) {
+            viewTribePager.updateItems(tribeList);
         }
-
-        viewTribePager.updateItems(tribeList);
     }
 
     private void updateCurrentView() {

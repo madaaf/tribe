@@ -44,6 +44,7 @@ public class TribeVideoView extends FrameLayout implements TextureView.SurfaceTe
     private Unbinder unbinder;
     private final PublishSubject<Boolean> videoStarted = PublishSubject.create();
     private final PublishSubject<VideoSize> videoSizeSubject = PublishSubject.create();
+    private final PublishSubject<String> onError = PublishSubject.create();
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
     public TribeVideoView(Context context) {
@@ -89,6 +90,7 @@ public class TribeVideoView extends FrameLayout implements TextureView.SurfaceTe
                 .looping(looping)
                 .mute(mute)
                 .canChangeSpeed(speedControl)
+                .forceLegacy(true)
                 .build();
 
         subscriptions.add(mediaPlayer.onVideoStarted().subscribe(videoStarted));
@@ -106,9 +108,7 @@ public class TribeVideoView extends FrameLayout implements TextureView.SurfaceTe
             this.videoSize = videoSize;
         }).subscribe(videoSizeSubject));
 
-        subscriptions.add(mediaPlayer.onErrorPlayer().subscribe(error -> {
-            System.out.println("MEDIA PLAYER ERROR");
-        }));
+        subscriptions.add(mediaPlayer.onErrorPlayer().subscribe(onError));
     }
 
     public void releasePlayer() {
@@ -170,7 +170,11 @@ public class TribeVideoView extends FrameLayout implements TextureView.SurfaceTe
         return videoStarted;
     }
 
-    public PublishSubject<VideoSize> videoSize() {
+    public Observable<VideoSize> videoSize() {
         return videoSizeSubject;
+    }
+
+    public Observable<String> onError() {
+        return onError;
     }
 }

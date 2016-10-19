@@ -624,6 +624,11 @@ public class ChatActivity extends BaseActivity implements MessageView {
             if (!recyclerViewText.isEnabled()) animateFullScreen(tribeVideoView);
         }));
 
+        subscriptions.add(tribeVideoView.onError().subscribe(error -> {
+            snapImageBack(imageViewClicked == null ? tribeVideoView : imageViewClicked);
+            chatPresenter.loadVideo(message);
+        }));
+
         prepareViewOpen(recyclerViewImageView, tribeVideoView);
     }
 

@@ -31,7 +31,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
-import com.tribe.app.data.network.DownloadService;
+import com.tribe.app.data.network.DownloadTribeService;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Recipient;
@@ -182,6 +182,11 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         initPresenter();
         initRegistrationToken();
         manageDeepLink(getIntent());
+
+        subscriptions.add(
+                Observable.timer(1000, TimeUnit.MILLISECONDS)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(aLong -> startService(DownloadTribeService.getCallingIntent(this, null))));
     }
 
     @Override
@@ -193,11 +198,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     protected void onResume() {
         super.onResume();
-
-        subscriptions.add(
-                Observable.timer(1000, TimeUnit.MILLISECONDS)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(aLong -> startService(DownloadService.getCallingIntent(this, null))));
 
         subscriptions.add(Observable.
                 from(PERMISSIONS_CAMERA)
@@ -219,14 +219,14 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     protected void onPause() {
         cameraWrapper.onPause(true);
 
-        Intent i = new Intent(context, DownloadService.class);
-        context.stopService(i);
-
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
+        Intent i = new Intent(context, DownloadTribeService.class);
+        context.stopService(i);
+
         if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
         homePresenter.onDestroy();
 

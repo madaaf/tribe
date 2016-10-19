@@ -214,9 +214,6 @@ public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.O
             if (timerSubscription != null)
                 timerSubscription.unsubscribe();
 
-            System.out.println("GET CURRENT POSITION : " + mediaPlayer.getCurrentPosition());
-            System.out.println("GET CURRENT DURATION : " + mediaPlayer.getDuration());
-
             if (mediaPlayer.getCurrentPosition() > -1 && mediaPlayer.getDuration() > -1) {
                 timerSubscription = Observable
                         .interval(mediaPlayer.getCurrentPosition(), mediaPlayer.getDuration(), TimeUnit.MILLISECONDS)

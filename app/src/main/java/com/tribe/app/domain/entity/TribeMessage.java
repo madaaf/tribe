@@ -67,8 +67,20 @@ public class TribeMessage extends Message {
         this.can_save = canSave;
     }
 
+    public boolean isDownloaded() {
+        return messageDownloadingStatus.equals(MessageDownloadingStatus.STATUS_DOWNLOADED);
+    }
+
     public boolean isDownloadPending() {
         return messageDownloadingStatus.equals(MessageDownloadingStatus.STATUS_DOWNLOADING);
+    }
+
+    public boolean isDownloadError() {
+        return messageDownloadingStatus.equals(MessageDownloadingStatus.STATUS_DOWNLOAD_ERROR);
+    }
+
+    public boolean isToDownload() {
+        return messageDownloadingStatus.equals(MessageDownloadingStatus.STATUS_TO_DOWNLOAD);
     }
 
     public static TribeMessage createTribe(User user, Recipient recipient, @CameraWrapper.TribeMode String mode) {

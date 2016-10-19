@@ -3,6 +3,7 @@ package com.tribe.app.presentation.mvp.presenter;
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.MarkTribeAsSavedJob;
 import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
+import com.tribe.app.data.network.job.UpdateTribeToDownloadJob;
 import com.tribe.app.data.network.job.UpdateUserListScoreJob;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
@@ -95,6 +96,10 @@ public class TribePresenter extends SendTribePresenter implements Presenter {
 
     public void updateUserListScore(Set<String> userIds) {
         jobManager.addJobInBackground(new UpdateUserListScoreJob(userIds));
+    }
+
+    public void updateTribeToDownload(String tribeId) {
+        jobManager.addJobInBackground(new UpdateTribeToDownloadJob(tribeId));
     }
 
     private final class TribeListSubscriber extends DefaultSubscriber<List<TribeMessage>> {

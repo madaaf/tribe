@@ -50,7 +50,7 @@ public class DiskTribeDataStore implements TribeDataStore {
 
     @Override
     public Observable<List<TribeRealm>> tribesForARecipient(String recipientId) {
-        return tribeCache.tribesForARecipient(recipientId).debounce(500, TimeUnit.MILLISECONDS);
+        return tribeCache.tribesForARecipient(recipientId);
     }
 
     @Override

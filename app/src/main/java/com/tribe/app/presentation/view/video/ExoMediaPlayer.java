@@ -72,8 +72,8 @@ public class ExoMediaPlayer extends TribeMediaPlayer implements MediaCodecVideoT
 
             @Override
             public void onPlayerError(ExoPlaybackException error) {
-                onErrorPlayer.onNext(error.toString());
-                error.printStackTrace();
+                if (error != null && error.getMessage() != null && error.getMessage().contains("FileNotFound"))
+                    onErrorPlayer.onNext(error.toString());
             }
         });
 

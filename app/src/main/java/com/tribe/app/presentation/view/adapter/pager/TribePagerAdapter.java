@@ -58,7 +58,7 @@ public class TribePagerAdapter extends PagerAdapter {
         tribeComponentView.onClickMore().subscribe(clickMore);
         tribeComponentView.onErrorTribe().subscribe(onErrorTribe);
 
-        if (tribe.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADED))
+        if (!tribe.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADING))
             tribeComponentView.preparePlayer(position == currentPosition);
         else if (tribe.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADING)) {
             tribeComponentView.showProgress();
