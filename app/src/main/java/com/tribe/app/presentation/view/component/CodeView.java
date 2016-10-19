@@ -208,6 +208,10 @@ public class CodeView extends FrameLayout {
         animator.start();
     }
 
+    public void removeCountdown() {
+        progressBarCountdown.setVisibility(INVISIBLE);
+    }
+
     /**
      * Obeservable
      */

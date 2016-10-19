@@ -389,6 +389,7 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
 
     @Override
     public void goToConnected(User user) {
+        viewCode.removeCountdown();
         if (countdownSubscription != null) countdownSubscription.unsubscribe();
         currentUser.copy(user);
         txtIntroMessage.setText("");
