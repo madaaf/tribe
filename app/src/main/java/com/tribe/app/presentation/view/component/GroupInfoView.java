@@ -497,8 +497,8 @@ public class GroupInfoView extends FrameLayout {
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             super.onAnimationEnd(animation);
-                            imageGroup.setVisibility(VISIBLE);
-                            imageGroupBg.setVisibility(VISIBLE);
+                            if (imageGroup != null) imageGroup.setVisibility(VISIBLE);
+                            if (imageGroupBg != null) imageGroupBg.setVisibility(VISIBLE);
                         }
                     })
                     .start();
