@@ -62,6 +62,7 @@ public class PhoneNumberView extends FrameLayout {
     private Unbinder unbinder;
     private PublishSubject<Boolean> phoneNumberValid = PublishSubject.create();
     private PublishSubject<Void> countryClickEventSubject = PublishSubject.create();
+    private PublishSubject<Void> nextClick = PublishSubject.create();
 
     public PhoneNumberView(Context context) {
         super(context);
@@ -81,6 +82,12 @@ public class PhoneNumberView extends FrameLayout {
     @Override
     protected void onDetachedFromWindow() {
         unbinder.unbind();
+
+        if (subscriptions != null && subscriptions.hasSubscriptions()) {
+            subscriptions.unsubscribe();
+            subscriptions.clear();
+        }
+
         super.onDetachedFromWindow();
     }
 
@@ -95,6 +102,13 @@ public class PhoneNumberView extends FrameLayout {
 
         subscriptions.add(RxView.clicks(countryButton)
                 .subscribe(countryClickEventSubject));
+
+        subscriptions.add(RxView.clicks(imageViewNextIcon)
+                .subscribe(nextClick));
+    }
+
+    public String getCountryCode() {
+        return countryCode;
     }
 
     public void initWithCodeCountry(String codeCountry) {
@@ -125,10 +139,6 @@ public class PhoneNumberView extends FrameLayout {
         }
     }
 
-    public ImageView getImageViewNextIcon() {
-        return  this.imageViewNextIcon;
-    }
-
     public Observable<Boolean> phoneNumberValid() {
         return phoneNumberValid;
     }
@@ -143,6 +153,10 @@ public class PhoneNumberView extends FrameLayout {
 
     public Observable<Void> countryClick() {
         return countryClickEventSubject;
+    }
+
+    public Observable<Void> nextClick() {
+        return nextClick;
     }
 
     public void setPhoneUtils(PhoneUtils phoneUtils) {

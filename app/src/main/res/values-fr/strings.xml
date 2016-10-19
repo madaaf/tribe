@@ -1,4 +1,8 @@
 <resources>
+	
+	<!-- App -->
+	<string name="app_name">Tribe</string>
+	
 	<!-- Actions -->
 	<string name="action_cancel">Annuler</string>
 	<string name="action_delete">Supprimer</string>
@@ -12,6 +16,7 @@
 	<string name="error_unknown">:bird: Léger problème. Réessayez dans 30s.</string>
 	<string name="error_technical">:warning: Problème technique.</string>
 	<string name="error_no_network">:satellite: Aucune connexion.</string>
+	<string name="error_traffic">:rocket: Trop de trafic. Réessayez dans une heure.</string>
 	
 	<!-- Image Picker -->
 	<string name="image_picker_title">Ajouter un avatar</string>
@@ -28,6 +33,10 @@
 	<string name="contacts_section_facebook_syncing">Synchronisation en cours</string>
 	<string name="contacts_section_facebook_notifying">Notification en cours</string>
 	<string name="contacts_section_facebook_next_sync">Notifiez-les à nouveau dans %1$s</string>
+	<string name="contacts_section_facebook_no_os_facebook_title">Amis Facebook</string>
+	<string name="contacts_section_facebook_no_os_facebook_description">Connecter facilement votre compte Facebook dans les paramètres.</string>
+	<string name="contacts_section_facebook_no_os_facebook_cancel">Annuler</string>
+	<string name="contacts_section_facebook_no_os_facebook_settings">Aller dans Paramètres</string>
 	<string name="contacts_section_addressbook_sync_description">Synchroniser automatiquement\nvos contacts</string>
 	<string name="contacts_section_addressbook_syncing">Synchronisation</string>
 	<string name="contacts_section_addressbook_empty">Plus aucun contact à inviter</string>
@@ -42,6 +51,10 @@
 	<string name="permission_contacts_disabled_alert_description">Rendez-vous dès maintenant dans les Paramètres de l\'iPhone pour l\'activer !</string>
 	<string name="permission_contacts_disabled_alert_redirect">Activer</string>
 	<string name="permission_contacts_disabled_alert_cancel">Ne pas activer</string>
+	<string name="permission_location_disabled_alert_title">Accès à la Location désactivée</string>
+	<string name="permission_location_disabled_alert_description">Rendez-vous dès maintenant dans les Paramètres de l\'iPhone pour l\'activer !</string>
+	<string name="permission_location_disabled_alert_redirect">Activer</string>
+	<string name="permission_location_disabled_alert_cancel">Ne pas activer</string>
 	<string name="permission_camera_enable_button_title">Activer\nla caméra</string>
 	<string name="permission_popup_push_onboarding_title">Soyez notifié !</string>
 	<string name="permission_popup_push_onboarding_description">Recevez une notification lorsque vos\namis rejoignent l\'app.</string>
@@ -53,11 +66,31 @@
 	<string name="permission_popup_push_home_points">Autoriser les notifications</string>
 	<string name="permission_popup_push_home_no">Rester seul</string>
 	<string name="permission_popup_push_home_yes">Notifiez moi !</string>
+	<string name="permission_push_disabled_alert_title">Push désactivés</string>
+	<string name="permission_push_disabled_alert_description">Rendez-vous dès maintenant dans les Paramètres de l\'iPhone pour l\'activer !</string>
+	<string name="permission_push_disabled_alert_redirect">Activer</string>
+	<string name="permission_push_disabled_alert_cancel">Ne pas activer</string>
 	<string name="permission_popup_location_home_title">Enrichissez vos messages !</string>
 	<string name="permission_popup_location_home_description">Profitez d\'une expérience plus riche en\naccédant à plus de contexte sur les messages.</string>
 	<string name="permission_popup_location_home_points">Autoriser la location</string>
 	<string name="permission_popup_location_home_no">Ne pas activer</string>
 	<string name="permission_popup_location_home_yes">Activer !</string>
+	<string name="permission_screen_push_title">Notifications push</string>
+	<string name="permission_screen_push_points">Activer les notifications</string>
+	<string name="permission_screen_push_description">Ne manquez pas les messages\nde vos amis!</string>
+	<string name="permission_screen_push_action">Activer!</string>
+	<string name="permission_screen_push_next_popup_title">Les messages arrivent !</string>
+	<string name="permission_screen_push_next_popup_description">Si vous n\'activez pas les notifications, vous manquerez les messages de vos amis.</string>
+	<string name="permission_screen_push_next_popup_cancel">Rester seul.</string>
+	<string name="permission_screen_push_next_popup_authorize">Activer !</string>
+	<string name="permission_screen_camera_mic_title">Camera &amp; Micro</string>
+	<string name="permission_screen_camera_mic_points">Activer la caméra et le micro</string>
+	<string name="permission_screen_camera_mic_description">Offrez-vous la possibilité\nd\'envoyer des messages</string>
+	<string name="permission_screen_camera_mic_action">Activer et entrer!</string>
+	<string name="permission_screen_camera_mic_next_popup_title">Camera &amp; micro désactivés !</string>
+	<string name="permission_screen_camera_mic_next_popup_description">Si vous n\'activez pas la caméra et le micro, vous ne pourrez pas envoyer de messages.</string>
+	<string name="permission_screen_camera_mic_next_popup_cancel">Rester bloqué.</string>
+	<string name="permission_screen_camera_mic_next_popup_authorize">Activer !</string>
 	
 	<!-- Invitations -->
 	<string name="invitation_sms_error_parse_number_title">Le format de ce numéro de téléphone ne semble pas parfait</string>
@@ -85,6 +118,8 @@
 	<string name="tribe_metadata_activate_location">Location</string>
 	<string name="tribe_metadata_get_directions">Itinéraire</string>
 	<string name="tribe_event_saved">Ajouté au calendrier</string>
+	<string name="tribe_more_back">Revoir le tribe précédent</string>
+	<string name="tribe_more_back_impossible">Impossible, il s\'agit du premier Tribe.</string>
 	
 	<!-- Grid -->
 	<string name="grid_user_points">Points</string>
@@ -224,12 +259,16 @@
 	<string name="settings_section_messages">Messages</string>
 	<string name="settings_filter_title">Sélectionner un filtre</string>
 	<string name="settings_theme_title">Sélectionner un thème</string>
+	<string name="settings_notifications_title">Notifications</string>
+	<string name="settings_notifications_subtitle">Soyez notifié des nouveaux messages reçus.</string>
 	<string name="settings_tribesave_title">Souvenirs</string>
 	<string name="settings_tribesave_subtitle">Permettre à vos amis de sauvegarder vos meilleures vidéos dans leur bibliothèque.</string>
 	<string name="settings_geolocation_title">Localisation</string>
 	<string name="settings_geolocation_subtitle">Inclure aux messages des informations localisés pour enrichir vos messages.</string>
 	<string name="settings_audio_title">Audio par defaut</string>
 	<string name="settings_audio_subtitle">Accéder au mode Audio par default à l\'ouverture de l\'app.</string>
+	<string name="settings_mute_sounds_title">Sons</string>
+	<string name="settings_mute_sounds_subtitle">Couper les sons lorque vous appuyez sur des boutons.</string>
 	<string name="settings_preload_title">Pré-télécharger</string>
 	<string name="settings_preload_subtitle">Vos messages seront disponibles plus rapidement.</string>
 	<string name="settings_facebook_sync_title">Amis Facebook</string>
@@ -269,7 +308,7 @@
 	
 	<!-- Onboarding -->
 	<string name="onboarding_step_phone">Entrez votre numéro de téléphone pour démarrer.</string>
-	<string name="onboarding_step_code">Parfait! ! Entrez le code de vérification envoyé par SMS.</string>
+	<string name="onboarding_step_code">Entrez le code de vérification envoyé par SMS.</string>
 	<string name="onboarding_phone_number">Numéro de téléphone</string>
 	<string name="onboarding_error_wrong_pin">:closed_lock_with_key: Mauvais code de vérification</string>
 	<string name="onboarding_connected">Connecté</string>
@@ -296,7 +335,16 @@
 	<string name="onboarding_queue_declined_popup_confirm_button">Notifiez moi !</string>
 	<string name="onboarding_queue_valid_title">Yay ! Vous pouvez entrer.</string>
 	<string name="onboarding_queue_valid_description">Certains de vos amis\nsont déjà là !</string>
-	<string name="onboarding_queue_valid_button_title">Accéder maintenant</string>
+	<string name="onboarding_queue_valid_button_title">Activer les permissions</string>
+	<string name="onboarding_popup_confirm_description">Nous allons envoyer un code\nà ce numéro de téléphone.</string>
+	<string name="onboarding_popup_confirm_edit_button_title">Modifier</string>
+	<string name="onboarding_popup_confirm_send_button_title">Envoyer !</string>
+	<string name="onboarding_popup_error_title">À votre service !</string>
+	<string name="onboarding_popup_error_description">Il semblerait que vous\nn\'ayez pas reçu le code.</string>
+	<string name="onboarding_popup_error_sent_to">Code envoyé à :</string>
+	<string name="onboarding_popup_error_edit_button_title">Modifier</string>
+	<string name="onboarding_popup_error_resend_button_title">Réessayer</string>
+	<string name="onboarding_popup_error_team_notified">Notre équipe a été notifiée et vous viendra en aide rapidement. En attendant, n\'hésitez pas à réessayer.</string>
 	
 	<!-- Pull to search -->
 	<string name="pull_to_search_swipe_down_action">Continuez à tirer pour rechercher</string>
@@ -363,7 +411,7 @@
 	<string name="share_add_friends_addressbook_suggestions">I was able to get access to Tribe. Just noticed that you already have %1$d friends on this app. I can get you in: %2$s #JoinTheTribe</string>
 	<string name="share_group_public_link">Here is your invite to join the %1$s group on Tribe. %2$s #JoinTheTribe</string>
 	<string name="share_group_private_link">Here is your invite to join the %1$s group on Tribe. Join quickly because this invite will expire in %2$s ! %3$s #JoinTheTribe</string>
-	<string name="share_add_friends_handle">I’ve locked up %1$s handle on Tribe. Reserve yours now before it\'s too late on %2$s #JoinTheTribe</string>
+	<string name="share_add_friends_handle">I locked up %1$s handle on Tribe. Reserve yours now before it\'s too late on %2$s #JoinTheTribe</string>
 	<string name="share_score">I have %1$s points on Tribe %2$s. Try to beat me on http://tribe.pm #JoinTheTribe</string>
 	<string name="share_onboarding">I just discovered Tribe, but I can’t enter alone. Come now so we can get access together. Waiting for you. Go on %1$s #JoinTheTribe</string>
 	<string name="share_copied_redirecting">:paperclip: Ajouté au presse-papier. Préparez-vous à coller.</string>

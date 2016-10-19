@@ -1,5 +1,8 @@
 package com.tribe.app.presentation.view.component;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
@@ -8,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
@@ -38,6 +42,9 @@ public class CodeView extends FrameLayout {
 
     @BindView(R.id.circularProgressViewCode)
     CircularProgressView circularProgressViewCode;
+
+    @BindView(R.id.progressBarCountdown)
+    ProgressBar progressBarCountdown;
 
     @BindView(R.id.imgBackIcon)
     ImageView imgBackIcon;
@@ -74,6 +81,9 @@ public class CodeView extends FrameLayout {
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private PublishSubject<Boolean> codeValid = PublishSubject.create();
     private PublishSubject<Void> backClicked = PublishSubject.create();
+    private PublishSubject<Void> countdownExpired = PublishSubject.create();
+
+    private int timeCodeCountdown;
 
     public CodeView(Context context) {
         super(context);
@@ -181,6 +191,23 @@ public class CodeView extends FrameLayout {
         }, 200);
     }
 
+    public void startCountdown() {
+        timeCodeCountdown = getContext().getResources().getInteger(R.integer.time_code_countdown);
+        progressBarCountdown.setVisibility(VISIBLE);
+        progressBarCountdown.setProgress(0);
+
+        ObjectAnimator animator = ObjectAnimator.ofInt(progressBarCountdown, "progress", progressBarCountdown.getMax());
+        animator.setDuration(timeCodeCountdown);
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                countdownExpired.onNext(null);
+            }
+        });
+        animator.start();
+    }
+
     /**
      * Obeservable
      */
@@ -193,6 +220,10 @@ public class CodeView extends FrameLayout {
         return backClicked;
     }
 
+    public Observable<Void> countdownExpired() {
+        return countdownExpired;
+    }
+
     /**
      * Public view methods
      */
@@ -203,9 +234,11 @@ public class CodeView extends FrameLayout {
 
     public void progressViewVisible(boolean visible) {
         if (visible) {
+            progressBarCountdown.setVisibility(INVISIBLE);
             circularProgressViewCode.setVisibility(VISIBLE);
         } else {
             circularProgressViewCode.setVisibility(INVISIBLE);
+            progressBarCountdown.setVisibility(VISIBLE);
         }
     }
 

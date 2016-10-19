@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.fragment;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
@@ -29,6 +30,7 @@ import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.component.CodeView;
 import com.tribe.app.presentation.view.component.ConnectedView;
 import com.tribe.app.presentation.view.component.PhoneNumberView;
+import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
@@ -42,6 +44,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
@@ -103,11 +106,14 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
     @BindView(R.id.txtIntroMessage)
     TextViewFont txtIntroMessage;
 
+    AuthenticationDialogFragment authenticationDialogFragment;
+
     // VARIABLES
     private LoginEntity loginEntity;
     private Pin pin;
     private ErrorLogin errorLogin;
     private String phoneNumber, code;
+    private boolean countdownActive;
 
     public static final int PAGE_PHONE_NUMBER = 0,
             PAGE_CODE = 1,
@@ -115,6 +121,8 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
 
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
+    private Subscription countdownSubscription;
+
 
     /**
      * Lifecycle methods
@@ -196,16 +204,12 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
         txtIntroMessage.setAlpha(0);
         txtIntroMessage.animate().alpha(1).setDuration(300).setStartDelay(1000).setInterpolator(new DecelerateInterpolator()).start();
 
-        subscriptions.add(RxView.clicks(viewPhoneNumber.getImageViewNextIcon()).subscribe(aVoid -> {
-            viewPhoneNumber.fadeOutNext();
-            viewCode.setImgBackIconVisible();
-            introPresenter.requestCode(phoneNumber);
+        subscriptions.add(viewPhoneNumber.nextClick().subscribe(aVoid -> {
+            confirmPhoneNumber();
         }));
 
         subscriptions.add(viewCode.backClicked().subscribe(aVoid -> {
-            viewCode.fadeBackOut();
-            viewPhoneNumber.nextIconVisisble();
-            viewPager.setCurrentItem(PAGE_PHONE_NUMBER, true);
+            backToPhoneNumber();
         }));
 
         subscriptions.add(viewCode.codeValid().subscribe(isValid -> {
@@ -307,6 +311,60 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
     /**
      * Navigation methods
      */
+
+    private void backToPhoneNumber() {
+        viewCode.fadeBackOut();
+        viewPhoneNumber.nextIconVisisble();
+        viewPager.setCurrentItem(PAGE_PHONE_NUMBER, true);
+    }
+
+    private void requestCode() {
+        viewPhoneNumber.fadeOutNext();
+        viewCode.setImgBackIconVisible();
+        introPresenter.requestCode(phoneNumber);
+    }
+
+    private void requestCodeInResend() {
+        introPresenter.requestCode(phoneNumber);
+        initCountdown();
+    }
+
+    private void confirmPhoneNumber() {
+        authenticationDialogFragment = AuthenticationDialogFragment.newInstance(getApplicationComponent().phoneUtils().formatPhoneNumberForView(phoneNumber, viewPhoneNumber.getCountryCode()), false);
+        authenticationDialogFragment.show(getFragmentManager(), AuthenticationDialogFragment.class.getName());
+        subscriptions.add(authenticationDialogFragment.confirmClicked().subscribe(aVoid -> {
+            authenticationDialogFragment.dismiss();
+            requestCode();
+        }));
+    }
+
+    private void resend() {
+        if (countdownSubscription != null) countdownSubscription.unsubscribe();
+
+        authenticationDialogFragment = AuthenticationDialogFragment.newInstance(getApplicationComponent().phoneUtils().formatPhoneNumberForView(phoneNumber, viewPhoneNumber.getCountryCode()), true);
+        authenticationDialogFragment.show(getFragmentManager(), AuthenticationDialogFragment.class.getName());
+        subscriptions.add(authenticationDialogFragment.confirmClicked().subscribe(aVoid -> {
+            authenticationDialogFragment.dismiss();
+            requestCodeInResend();
+        }));
+        subscriptions.add(authenticationDialogFragment.cancelClicked().subscribe(aVoid -> {
+            authenticationDialogFragment.dismiss();
+            backToPhoneNumber();
+        }));
+    }
+
+    private void initCountdown() {
+        if (!countdownActive) {
+            countdownActive = true;
+            viewCode.startCountdown();
+            countdownSubscription = viewCode.countdownExpired().subscribe(aVoid -> {
+                resend();
+                countdownActive = false;
+            });
+            subscriptions.add(countdownSubscription);
+        }
+    }
+
     @Override
     public void goToCode(Pin pin) {
         tagManager.trackEvent(TagManagerConstants.ONBOARDING_SEND_PIN);
@@ -314,6 +372,7 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
         viewPhoneNumber.fadeOutNext();
         txtIntroMessage.setText(getString(R.string.onboarding_step_code));
         viewPager.setCurrentItem(PAGE_CODE, true);
+        initCountdown();
         viewCode.openKeyboard();
     }
 
