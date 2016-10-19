@@ -153,12 +153,13 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     protected void onDetachedFromWindow() {
         unbinder.unbind();
 
-        if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
-        cancelProgress();
         if (visualizer != null) {
             visualizer.setEnabled(false);
             visualizer.release();
         }
+
+        if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+        cancelProgress();
 
         super.onDetachedFromWindow();
     }
@@ -294,7 +295,6 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
                     public void onWaveFormDataCapture(Visualizer visualizer,
                                                       byte[] bytes, int samplingRate) {
                         visualizerView.updateVisualizer(bytes);
-                        Log.d("visualizer bytes", bytes + "");
                     }
 
 
