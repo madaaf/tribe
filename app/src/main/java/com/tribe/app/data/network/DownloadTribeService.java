@@ -121,7 +121,7 @@ public class DownloadTribeService extends Service {
                         }
                     }
 
-                    tribeCache.update(tribeUpdates);
+                    if (tribeUpdates.size() > 0) tribeCache.update(tribeUpdates);
                     return tribeRealmEnd;
                 })
                 .onBackpressureBuffer()
@@ -150,7 +150,7 @@ public class DownloadTribeService extends Service {
                             body = new DownloadProgressResponseBody(response.body(), new DownloadProgressListener() {
                                 @Override
                                 public void update(long bytesRead, long contentLength, boolean done) {
-                                    setProgress(tribeRealm.getLocalId(), bytesRead, contentLength);
+                                    //setProgress(tribeRealm.getLocalId(), bytesRead, contentLength);
                                 }
                             });
                             sink.writeAll(body.source());

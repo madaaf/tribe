@@ -188,7 +188,7 @@ public class DiskUserDataRepository implements UserRepository {
             }
 
             return user;
-        }).debounce(100, TimeUnit.MILLISECONDS);
+        }).debounce(500, TimeUnit.MILLISECONDS);
     }
 
     @Override

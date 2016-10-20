@@ -121,8 +121,6 @@ public class ContactsHelper {
                     PhoneRealm phoneRealm = new PhoneRealm();
                     phoneRealm.setPhone(phonePair.first);
                     phoneRealm.setInternational(phonePair.second);
-
-                    System.out.println(" INTERNATIONAL : " + phoneRealm.isInternational() + " : PHONE : " + phoneRealm.getPhone());
                     realmList.add(phoneRealm);
                 }
             }

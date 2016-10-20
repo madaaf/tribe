@@ -72,11 +72,11 @@
 	<string name="permission_push_disabled_alert_cancel">Don\'t fix this</string>
 	<string name="permission_popup_location_home_title">Receive better messages!</string>
 	<string name="permission_popup_location_home_description">Using location will allow your messages to be more epic than ever!</string>
-	<string name="permission_popup_location_home_points">Enabling “Location”</string>
+	<string name="permission_popup_location_home_points">Enabling “Location services”</string>
 	<string name="permission_popup_location_home_no">I don\'t want more</string>
 	<string name="permission_popup_location_home_yes">Enable!</string>
 	<string name="permission_screen_push_title">Push notifications</string>
-	<string name="permission_screen_push_points">Enabling notifications</string>
+	<string name="permission_screen_push_points">Enabling Push notifications</string>
 	<string name="permission_screen_push_description">Don’t miss out when your\nfriends send you messages!</string>
 	<string name="permission_screen_push_action">Turn on!</string>
 	<string name="permission_screen_push_next_popup_title">Messages are coming!</string>
@@ -84,13 +84,35 @@
 	<string name="permission_screen_push_next_popup_cancel">Don\'t care</string>
 	<string name="permission_screen_push_next_popup_authorize">Sure! Enable</string>
 	<string name="permission_screen_camera_mic_title">Camera &amp; Microphone</string>
-	<string name="permission_screen_camera_mic_points">Enabling camera &amp; mic</string>
+	<string name="permission_screen_camera_mic_points">Enabling Camera &amp; mic</string>
 	<string name="permission_screen_camera_mic_description">Make sure you’ll be\nable to send messages.</string>
 	<string name="permission_screen_camera_mic_action">Turn on and enter!</string>
+	<string name="permission_camera_disabled_alert_title">Camera or Microphone permission denied</string>
+	<string name="permission_camera_disabled_alert_description">Don\'t worry! You can enable it right now in your Settings.</string>
+	<string name="permission_camera_disabled_alert_redirect">Fix this</string>
+	<string name="permission_camera_disabled_alert_cancel">Don\'t fix this</string>
 	<string name="permission_screen_camera_mic_next_popup_title">Camera and mic disabled!</string>
 	<string name="permission_screen_camera_mic_next_popup_description">If you don\'t enable the camera and mic, you won\'t be able to send messages.</string>
 	<string name="permission_screen_camera_mic_next_popup_cancel">Don\'t care</string>
 	<string name="permission_screen_camera_mic_next_popup_authorize">Right! Enable</string>
+	<string name="permission_screen_location_title">Location</string>
+	<string name="permission_screen_location_points">Enabling Location services</string>
+	<string name="permission_screen_location_description">Blablabla location blablabla</string>
+	<string name="permission_screen_location_action">Localize me!</string>
+	<string name="permission_screen_location_next_popup_title">Location disabled!</string>
+	<string name="permission_screen_location_next_popup_description">Blablabla location blablabla</string>
+	<string name="permission_screen_location_next_popup_cancel">Don\'t care</string>
+	<string name="permission_screen_location_next_popup_authorize">Right! Enable</string>
+	
+	<!-- Rating -->
+	<string name="rating_title">Send us 5 stars to\nhelp us to the moon!</string>
+	<string name="rating_reviews">They already rated us</string>
+	<string name="rating_descriptions">“The fastest way\nto send messages”+“The fastest way\nto send messages”+“The fastest way\nto send messages”</string>
+	<string name="rating_rate">Let’s go!</string>
+	<string name="rating_next_popup_title">TODO</string>
+	<string name="rating_next_popup_description">TODO</string>
+	<string name="rating_next_popup_cancel">Don\'t care</string>
+	<string name="rating_next_popup_rate">OK, go</string>
 	
 	<!-- Invitations -->
 	<string name="invitation_sms_error_parse_number_title">The phone number of this contact doesn\'t look right</string>
@@ -335,7 +357,7 @@
 	<string name="onboarding_queue_declined_popup_confirm_button">Sure!</string>
 	<string name="onboarding_queue_valid_title">Congrats, you\'re in!</string>
 	<string name="onboarding_queue_valid_description">Some of your friends\nare already here!</string>
-	<string name="onboarding_queue_valid_button_title">Set permissions</string>
+	<string name="onboarding_queue_valid_button_title">Enter now</string>
 	<string name="onboarding_popup_confirm_description">We are about to send a\ncode to this phone number.</string>
 	<string name="onboarding_popup_confirm_edit_button_title">Edit</string>
 	<string name="onboarding_popup_confirm_send_button_title">Sure!</string>

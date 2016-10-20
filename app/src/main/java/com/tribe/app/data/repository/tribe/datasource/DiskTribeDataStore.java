@@ -40,12 +40,12 @@ public class DiskTribeDataStore implements TribeDataStore {
 
     @Override
     public Observable<List<TribeRealm>> tribesNotSeen(String recipientId) {
-        return tribeCache.tribesNotSeen(recipientId).debounce(500, TimeUnit.MILLISECONDS);
+        return tribeCache.tribesNotSeen(recipientId).debounce(1000, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public Observable<List<TribeRealm>> tribesReceived(String recipientId) {
-        return tribeCache.tribesReceived(recipientId).debounce(500, TimeUnit.MILLISECONDS);
+        return tribeCache.tribesReceived(recipientId).debounce(1000, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class DiskTribeDataStore implements TribeDataStore {
 
     @Override
     public Observable<List<TribeRealm>> tribesPending() {
-        return tribeCache.tribesPending().debounce(500, TimeUnit.MILLISECONDS);
+        return tribeCache.tribesPending().debounce(1000, TimeUnit.MILLISECONDS);
     }
 
     @Override

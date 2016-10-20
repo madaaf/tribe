@@ -3,6 +3,7 @@ package com.tribe.app.presentation.mvp.presenter;
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.DeleteContactsABJob;
 import com.tribe.app.data.network.job.DeleteContactsFBJob;
+import com.tribe.app.data.network.job.RefreshHowManyFriendsJob;
 import com.tribe.app.data.network.job.UpdateScoreJob;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.User;
@@ -79,6 +80,8 @@ public class SettingPresenter extends UpdateUserPresenter {
     public void onDestroy() {
         removeInstall.unsubscribe();
         synchroContactList.unsubscribe();
+        getDiskContactList.unsubscribe();
+        getDiskFBContactList.unsubscribe();
     }
 
     @Override
@@ -160,7 +163,7 @@ public class SettingPresenter extends UpdateUserPresenter {
 
         @Override
         public void onNext(List<Contact> contactList) {
-
+            jobManager.addJobInBackground(new RefreshHowManyFriendsJob());
         }
     }
 
@@ -177,7 +180,17 @@ public class SettingPresenter extends UpdateUserPresenter {
 
         @Override
         public void onNext(List<Contact> contactList) {
-            if (contactList != null) settingView.onAddressBookContactSync(contactList.size());
+            int countInApp = 0;
+
+            if (contactList != null) {
+                for (Contact contact : contactList) {
+                    if (contact.getUserList() != null && contact.getUserList().size() > 0) {
+                        countInApp++;
+                    }
+                }
+            }
+
+            settingView.onAddressBookContactSync(countInApp);
         }
     }
 
@@ -194,7 +207,17 @@ public class SettingPresenter extends UpdateUserPresenter {
 
         @Override
         public void onNext(List<Contact> contactList) {
-            if (contactList != null) settingView.onFBContactsSync(contactList.size());
+            int countInApp = 0;
+
+            if (contactList != null) {
+                for (Contact contact : contactList) {
+                    if (contact.getUserList() != null && contact.getUserList().size() > 0) {
+                        countInApp++;
+                    }
+                }
+            }
+
+            settingView.onFBContactsSync(countInApp);
         }
     }
 }

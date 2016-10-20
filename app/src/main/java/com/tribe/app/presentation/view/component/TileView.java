@@ -63,8 +63,8 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class TileView extends SquareFrameLayout {
 
-    private static final float BOUNCINESS_INSIDE = 15f;
-    private static final float SPEED_INSIDE = 12.5f;
+    private static final float BOUNCINESS_INSIDE = 10f;
+    private static final float SPEED_INSIDE = 5f;
     private static final float BOUNCINESS_OUTSIDE = 1f;
     private static final float SPEED_OUTSIDE = 20f;
     private static final SpringConfig SPRING_NO_BOUNCE = SpringConfig.fromBouncinessAndSpeed(BOUNCINESS_OUTSIDE, SPEED_OUTSIDE);
