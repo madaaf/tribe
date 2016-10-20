@@ -201,7 +201,7 @@ public class SettingFilterView extends FrameLayout {
     }
 
     public void onPause() {
-        if (cameraWrapper != null) cameraWrapper.onPause(false);
+        if (cameraWrapper != null) cameraWrapper.onPause();
     }
 
     @Override

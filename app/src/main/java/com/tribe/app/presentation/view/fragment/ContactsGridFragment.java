@@ -21,6 +21,7 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
+import com.tribe.app.presentation.internal.di.scope.LastSync;
 import com.tribe.app.presentation.internal.di.scope.ShareProfile;
 import com.tribe.app.presentation.mvp.presenter.ContactsGridPresenter;
 import com.tribe.app.presentation.mvp.view.ContactsView;
@@ -58,10 +59,15 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
 
     private static final int DURATION = 300;
     private static final float OVERSHOOT = 0.75f;
+    private static final long TWENTY_FOUR_HOURS = 86400000;
 
     @Inject
     @ShareProfile
     Preference<Boolean> shareProfile;
+
+    @Inject
+    @LastSync
+    Preference<Long> lastSync;
 
     @Inject
     ContactsGridPresenter contactsGridPresenter;
@@ -130,6 +136,11 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         this.contactsGridPresenter.attachView(this);
+
+        if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
+            contactsGridPresenter.lookupContacts();
+            lastSync.set(System.currentTimeMillis());
+        }
     }
 
     @Override

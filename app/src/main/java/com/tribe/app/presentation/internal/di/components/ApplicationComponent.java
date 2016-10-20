@@ -11,6 +11,8 @@ import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.DownloadTribeService;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.job.BaseJob;
+import com.tribe.app.data.network.job.DeleteContactsABJob;
+import com.tribe.app.data.network.job.DeleteContactsFBJob;
 import com.tribe.app.data.network.job.DeleteMessageJob;
 import com.tribe.app.data.network.job.DownloadChatVideoJob;
 import com.tribe.app.data.network.job.MarkMessageListAsReadJob;
@@ -52,6 +54,7 @@ import com.tribe.app.presentation.internal.di.scope.Filter;
 import com.tribe.app.presentation.internal.di.scope.HasReceivedPointsForCameraPermission;
 import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
+import com.tribe.app.presentation.internal.di.scope.LastSync;
 import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
 import com.tribe.app.presentation.internal.di.scope.LocationPopup;
@@ -173,6 +176,8 @@ public interface ApplicationComponent {
     void inject(UpdateUserListScoreJob updateUserListScoreJob);
     void inject(DeleteMessageJob deleteMessageJob);
     void inject(UpdateTribeToDownloadJob updateTribeToDownloadJob);
+    void inject(DeleteContactsABJob deleteContactsABJob);
+    void inject(DeleteContactsFBJob deleteContactsFBJob);
 
     // SERVICES
     void inject(DownloadTribeService downloadTribeService);
@@ -286,4 +291,6 @@ public interface ApplicationComponent {
     @HasReceivedPointsForCameraPermission
     Preference<Boolean> hasReceivedPointsForCameraPermission();
 
+    @LastSync
+    Preference<Long> lastSync();
 }

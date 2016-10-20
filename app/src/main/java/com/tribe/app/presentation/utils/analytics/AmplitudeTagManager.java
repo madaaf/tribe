@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.utils.analytics;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
@@ -15,7 +16,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
@@ -27,7 +27,7 @@ public class AmplitudeTagManager implements TagManager {
     private AmplitudeClient amplitude;
 
     @Inject
-    public AmplitudeTagManager(Context context, @Named("userThreadSafe") User user) {
+    public AmplitudeTagManager(Context context, User user) {
         if (user != null && StringUtils.isEmpty(user.getId())) {
             amplitude = Amplitude.getInstance().initialize(context, BuildConfig.AMPLITUDE_KEY)
                     .enableForegroundTracking((Application) context.getApplicationContext());
@@ -37,6 +37,21 @@ public class AmplitudeTagManager implements TagManager {
         }
 
         amplitude.trackSessionEvents(true);
+    }
+
+    @Override
+    public void setUserId(String userId) {
+
+    }
+
+    @Override
+    public void onStart(Activity activity) {
+
+    }
+
+    @Override
+    public void onStop(Activity activity) {
+
     }
 
     @Override

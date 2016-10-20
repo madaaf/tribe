@@ -523,7 +523,6 @@ public class TribeCacheImpl implements TribeCache {
                     .findAllSorted("recorded_at", Sort.ASCENDING);
         }
 
-
         return realmResults.asObservable()
                 .filter(tribeRealms -> tribeRealms.isLoaded())
                 .map(tribeRealms -> realm.copyFromRealm(tribeRealms));

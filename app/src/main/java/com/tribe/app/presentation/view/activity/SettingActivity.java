@@ -31,8 +31,7 @@ import rx.subscriptions.CompositeSubscription;
  * SettingActivity.java
  * Created by horatiothomas on 8/26/16.
  */
-public class
-SettingActivity extends BaseActivity implements SettingView {
+public class SettingActivity extends BaseActivity implements SettingView {
 
     private static final String SETTING_FRAGMENT = "settingFragment";
     private static final String SETTING_PROFILE_FRAGMENT = "settingUpdateProfileFragment";
@@ -222,6 +221,21 @@ SettingActivity extends BaseActivity implements SettingView {
     @Override
     public void goToLauncher() {
         navigator.navigateToLauncher(this);
+    }
+
+    @Override
+    public void onFBContactsSync(int count) {
+
+    }
+
+    @Override
+    public void onAddressBookContactSync(int count) {
+
+    }
+
+    @Override
+    public void onSuccessSync() {
+
     }
 
     @Override

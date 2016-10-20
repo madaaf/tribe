@@ -177,8 +177,8 @@ public class CameraWrapper extends FrameLayout {
         }
     }
 
-    public void onPause(boolean shouldDelay) {
-        pauseCamera(shouldDelay);
+    public void onPause() {
+        pauseCamera();
     }
 
     public void onResume(boolean animate) {
@@ -489,23 +489,13 @@ public class CameraWrapper extends FrameLayout {
         return permissionsPublishSubject;
     }
 
-    private void pauseCamera(boolean shouldDelay) {
+    private void pauseCamera() {
         if (audioManager != null) {
             audioManager.abandonAudioFocus(null);
             audioManager = null;
         }
 
-        if (shouldDelay) {
-            Observable.timer(0, TimeUnit.MILLISECONDS)
-                    .onBackpressureDrop()
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(aLong -> {
-                        releaseCamera();
-                    });
-        } else {
-            releaseCamera();
-        }
+        releaseCamera();
     }
 
     private void releaseCamera() {

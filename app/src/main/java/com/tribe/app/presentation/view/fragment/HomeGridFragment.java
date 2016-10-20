@@ -285,10 +285,6 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
         shouldReloadGrid = true;
     }
 
-    public void markTribeListAsSeen(Recipient recipient, List<TribeMessage> tribeMessageList) {
-        this.homeGridPresenter.markTribeListAsRead(recipient, tribeMessageList);
-    }
-
     private void init() {
         this.getComponent(UserComponent.class).inject(this);
         this.currentUser = getCurrentUser();

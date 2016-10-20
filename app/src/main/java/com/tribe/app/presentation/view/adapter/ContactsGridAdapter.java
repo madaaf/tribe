@@ -111,7 +111,7 @@ public class ContactsGridAdapter extends RecyclerView.Adapter {
             fb = new ButtonPoints(ButtonPointsView.FB_SYNC, R.string.contacts_section_facebook_sync_title,
                     R.string.contacts_section_facebook_sync_description, ScoreUtils.Point.INVITE_FACEBOOK.getPoints());
         } else {
-            fb = new ButtonPoints(ButtonPointsView.FB_NOTIFY, R.string.contacts_section_facebook_invite_title,
+            fb = new ButtonPoints(ButtonPointsView.FB_DISABLED, R.string.contacts_section_facebook_invite_title,
                     R.string.contacts_section_facebook_sync_description, ScoreUtils.Point.INVITE_FACEBOOK.getPoints());
         }
 

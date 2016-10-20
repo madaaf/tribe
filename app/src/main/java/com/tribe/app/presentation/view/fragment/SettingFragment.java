@@ -18,6 +18,7 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.scope.AddressBook;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;
+import com.tribe.app.presentation.internal.di.scope.LastSync;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
 import com.tribe.app.presentation.internal.di.scope.LocationPopup;
 import com.tribe.app.presentation.internal.di.scope.Preload;
@@ -131,6 +132,10 @@ public class SettingFragment extends BaseFragment implements SettingView {
     Preference<Boolean> addressBook;
 
     @Inject
+    @LastSync
+    Preference<Long> lastSync;
+
+    @Inject
     SettingPresenter settingPresenter;
 
     // VARIABLES
@@ -161,6 +166,7 @@ public class SettingFragment extends BaseFragment implements SettingView {
         initDependencyInjector();
         initUi();
         initSettings();
+        loadContacts();
 
         settingPresenter.attachView(this);
 
@@ -212,8 +218,16 @@ public class SettingFragment extends BaseFragment implements SettingView {
                 LocationDialogFragment locationDialogFragment = LocationDialogFragment.newInstance();
                 locationDialogFragment.show(getFragmentManager(), LocationDialogFragment.class.getName());
                 subscriptions.add(locationDialogFragment.onClickYes().subscribe(aVoid -> {
-                    locationPopup.set(true);
-                    settingPresenter.updateScoreLocation();
+                    RxPermissions.getInstance(getActivity())
+                            .request(PermissionUtils.PERMISSIONS_LOCATION)
+                            .subscribe(granted -> {
+                                if (granted) {
+                                    locationPopup.set(true);
+                                    settingPresenter.updateScoreLocation();
+                                } else {
+                                    messageSettingContext.setCheckedSwitch(false);
+                                }
+                            });
                 }));
 
                 subscriptions.add(locationDialogFragment.onClickNo().subscribe(aVoid -> {
@@ -250,20 +264,27 @@ public class SettingFragment extends BaseFragment implements SettingView {
             if (isChecked)
                 settingPresenter.loginFacebook();
             else {
+                settingPresenter.deleteFBContacts();
                 Bundle bundle = new Bundle();
                 bundle.putBoolean(TagManagerConstants.FACEBOOK_CONNECTED, false);
                 tagManager.setProperty(bundle);
                 settingPresenter.updateUserFacebook(null);
                 FacebookUtils.logout();
+                unsetFacebook();
             }
         }));
 
-        subscriptions.add(RxView.clicks(settingsAddress).subscribe(aVoid -> {
+        subscriptions.add(settingsAddress.checkedSwitch().subscribe(isChecked -> {
             RxPermissions.getInstance(getContext())
                     .request(Manifest.permission.READ_CONTACTS)
                     .subscribe(hasPermission -> {
-                        if (hasPermission) {
-                            settingPresenter.lookupContacts();
+                        if (hasPermission && isChecked) {
+                            addressBook.set(true);
+                            sync();
+                        } else {
+                            settingPresenter.deleteABContacts();
+                            addressBook.set(false);
+                            unsetAddressBook();
                         }
                     });
         }));
@@ -336,10 +357,7 @@ public class SettingFragment extends BaseFragment implements SettingView {
         messageSettingFahrenheit.setTitleBodyViewType(getString(R.string.settings_weatherunits_title),
                 getString(R.string.settings_weatherunits_subtitle),
                 SettingItemView.SWITCH);
-
-        if (weatherUnits.get().equals(Weather.FAHRENHEIT)) messageSettingFahrenheit.setCheckedSwitch(true);
-
-        else messageSettingFahrenheit.setCheckedSwitch(false);
+        messageSettingFahrenheit.setCheckedSwitch(weatherUnits.get().equals(Weather.FAHRENHEIT));
 
         settingsFacebook.setTitleBodyViewType(getString(R.string.settings_facebook_sync_title),
                 getString(R.string.settings_facebook_not_synced_description),
@@ -349,7 +367,7 @@ public class SettingFragment extends BaseFragment implements SettingView {
         settingsFacebook.setCheckedSwitch(FacebookUtils.isLoggedIn());
 
         settingsAddress.setTitleBodyViewType(getString(R.string.settings_addressbook_sync_title),
-                getString(R.string.contacts_section_addressbook_sync_description),
+                getString(R.string.settings_addressbook_not_synced_description),
                 SettingItemView.SWITCH);
         settingsAddress.setSyncUp(addressBook.get() ? R.color.blue_text : R.color.red_circle);
         settingsAddress.setIcon(R.drawable.picto_phone_icon);
@@ -395,11 +413,78 @@ public class SettingFragment extends BaseFragment implements SettingView {
                 .build().inject(this);
     }
 
+    private void sync() {
+        if (addressBook.get()) {
+            settingsAddress.setSyncUp(R.color.grey_light);
+            settingsAddress.setTitleBodyViewType(getString(R.string.settings_addressbook_sync_title),
+                    getString(R.string.contacts_section_addressbook_syncing),
+                    SettingItemView.SWITCH);
+        }
+
+        if (FacebookUtils.isLoggedIn()) {
+            settingsFacebook.setSyncUp(R.color.grey_light);
+            settingsFacebook.setTitleBodyViewType(getString(R.string.settings_facebook_sync_title),
+                    getString(R.string.contacts_section_facebook_syncing),
+                    SettingItemView.SWITCH);
+        }
+
+        lastSync.set(System.currentTimeMillis());
+        settingPresenter.lookupContacts();
+    }
+
+    private void loadContacts() {
+        this.settingPresenter.loadContactsFB();
+        this.settingPresenter.loadContactsAddressBook();
+    }
+
+    private void unsetFacebook() {
+        settingsFacebook.setTitleBodyViewType(getString(R.string.settings_facebook_sync_title),
+                getString(R.string.settings_facebook_not_synced_description),
+                SettingItemView.SWITCH);
+        settingsFacebook.setIcon(R.drawable.picto_black_facebook_icon);
+        settingsFacebook.setSyncUp(FacebookUtils.isLoggedIn() ? R.color.blue_text : R.color.red_circle);
+        settingsFacebook.setCheckedSwitch(FacebookUtils.isLoggedIn());
+    }
+
+    private void unsetAddressBook() {
+        settingsAddress.setTitleBodyViewType(getString(R.string.settings_addressbook_sync_title),
+                getString(R.string.settings_addressbook_not_synced_description),
+                SettingItemView.SWITCH);
+        settingsAddress.setSyncUp(addressBook.get() ? R.color.blue_text : R.color.red_circle);
+        settingsAddress.setIcon(R.drawable.picto_phone_icon);
+        settingsAddress.setCheckedSwitch(addressBook.get());
+    }
+
     @Override
     public void goToLauncher() {
         getApplication().logoutUser();
         navigator.navigateToLogout(getActivity());
         getActivity().finish();
+    }
+
+    @Override
+    public void onFBContactsSync(int count) {
+        if (FacebookUtils.isLoggedIn()) {
+            settingsFacebook.setTitleBodyViewType(getString(R.string.settings_facebook_sync_title),
+                    getString(R.string.settings_facebook_synced_description, count),
+                    SettingItemView.SWITCH);
+            settingsFacebook.setSyncUp(R.color.blue_text);
+        }
+    }
+
+    @Override
+    public void onAddressBookContactSync(int count) {
+        if (addressBook.get()) {
+            settingsAddress.setTitleBodyViewType(getString(R.string.settings_addressbook_sync_title),
+                    getString(R.string.settings_addressbook_synced_description, count),
+                    SettingItemView.SWITCH);
+            settingsAddress.setSyncUp(R.color.blue_text);
+        }
+    }
+
+    @Override
+    public void onSuccessSync() {
+
     }
 
     @Override
@@ -413,6 +498,7 @@ public class SettingFragment extends BaseFragment implements SettingView {
         bundle.putBoolean(TagManagerConstants.FACEBOOK_CONNECTED, true);
         tagManager.setProperty(bundle);
         settingPresenter.updateUserFacebook(com.facebook.AccessToken.getCurrentAccessToken().getUserId());
+        sync();
     }
 
     @Override

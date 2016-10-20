@@ -56,6 +56,8 @@ import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.analytics.AmplitudeTagManager;
+import com.tribe.app.presentation.utils.analytics.AnalyticsManager;
+import com.tribe.app.presentation.utils.analytics.AppboyTagManager;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
@@ -278,8 +280,20 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    TagManager provideTagManager(AmplitudeTagManager amplitudeTagManager) {
-        return amplitudeTagManager;
+    AmplitudeTagManager provideAmplitudeTagManager(Context context, @Named("userThreadSafe") User user) {
+        return new AmplitudeTagManager(context, user);
+    }
+
+    @Provides
+    @Singleton
+    AppboyTagManager provideAppboyTagManager(Context context) {
+        return new AppboyTagManager(context);
+    }
+
+    @Provides
+    @Singleton
+    TagManager provideTagManager(AnalyticsManager analyticsManager) {
+        return analyticsManager;
     }
 
     @Provides

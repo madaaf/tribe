@@ -18,6 +18,9 @@ public class TagManagerConstants {
     public static final String ONBOARDING_CONTACTS_SYNC = "Onboarding - Contacts Sync";
     public static final String ONBOARDING_GRID_VIEW = "Onboarding - Grid View";
     public static final String ONBOARDING_COMPLETED = "Onboarding - Completed";
+    public static final String ONBOARDING_SMS_NOT_RECEIVED = "Onboarding - SMS Not Received";
+    public static final String ONBOARDING_RESEND_PIN = "Onboarding - Resend Pin";
+    public static final String ONBOARDING_PIN_ERROR = "Onboarding - Pin Error";
     public static final String TUTORIAL_OPEN_FIRST_SUPPORT = "Tutorial - Open First Support Tribe";
     public static final String TUTORIAL_DONE = "Tutorial - Done";
     public static final String KPI_TRIBES_OPENED = "KPI - Tribes Opened";
@@ -29,6 +32,7 @@ public class TagManagerConstants {
     public static final String USER_SHARE_PROFILE = "User - Share Profile";
     public static final String USER_FACEBOOK_INVITE = "User - Facebook Invite";
     public static final String USER_TILE_HIDDEN = "User - Tile Hidden";
+    public static final String TOKEN_DISCONNECT = "Token - DisconnectUser";
 
     /**
      * ERRORS
@@ -39,6 +43,7 @@ public class TagManagerConstants {
     /**
      * EVENT PROPERTIES
      */
+    public static final String ERROR = "Error";
     public static final String TYPE = "Type";
     public static final String ERROR_TYPE = "Error Type";
     public static final String TYPE_TRIBE_USER = "User";

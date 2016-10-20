@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.view.fragment;
 
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -11,7 +10,6 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Toast;
 
-import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.domain.entity.ErrorLogin;
@@ -345,9 +343,11 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
     private void resend() {
         if (countdownSubscription != null) countdownSubscription.unsubscribe();
 
+        tagManager.trackEvent(TagManagerConstants.ONBOARDING_SMS_NOT_RECEIVED);
         authenticationDialogFragment = AuthenticationDialogFragment.newInstance(getApplicationComponent().phoneUtils().formatPhoneNumberForView(phoneNumber, viewPhoneNumber.getCountryCode()), true);
         authenticationDialogFragment.show(getFragmentManager(), AuthenticationDialogFragment.class.getName());
         subscriptions.add(authenticationDialogFragment.confirmClicked().subscribe(aVoid -> {
+            tagManager.trackEvent(TagManagerConstants.ONBOARDING_RESEND_PIN);
             authenticationDialogFragment.dismiss();
             requestCodeInResend();
         }));

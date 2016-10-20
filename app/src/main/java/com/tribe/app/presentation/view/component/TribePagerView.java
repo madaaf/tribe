@@ -289,7 +289,7 @@ public class TribePagerView extends FrameLayout {
     }
 
     public void onPause() {
-        cameraWrapper.onPause(false);
+        cameraWrapper.onPause();
 
         computeCurrentView();
         if (currentView != null) currentView.pausePlayer();
@@ -325,8 +325,10 @@ public class TribePagerView extends FrameLayout {
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(t -> {
-                            if (!toUpdate.containsKey(tribe.getLocalId()) && (toUpdate.get(tribe.getLocalId()).getType().equals(CameraWrapper.VIDEO) || toUpdate.get(tribe.getLocalId()).getType().equals(CameraWrapper.AUDIO))) {
-                                tribePagerAdapter.startTribe(currentView);
+                            if (!toUpdate.containsKey(tribe.getLocalId())) {
+                                if (tribe.getType().equals(CameraWrapper.VIDEO) || tribe.getType().equals(CameraWrapper.AUDIO)) {
+                                    tribePagerAdapter.startTribe(currentView);
+                                }
                             }
                         });
 
@@ -508,7 +510,8 @@ public class TribePagerView extends FrameLayout {
                     }
                     
                     if (message.getType().equals(CameraWrapper.VIDEO) || message.getType().equals(CameraWrapper.AUDIO)) viewToUpdate.preparePlayer(isCurrent);
-                    if (message.getType().equals(CameraWrapper.PHOTO)) viewToUpdate.setupTribePhoto(message.getContent());                }
+                    if (message.getType().equals(CameraWrapper.PHOTO)) viewToUpdate.setupTribePhoto(message.getContent());
+                }
             }
 
             count++;

@@ -1,26 +1,18 @@
 package com.tribe.app.presentation.view.dialog_fragment;
 
-import android.content.Context;
-import android.graphics.PixelFormat;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.component.CodeSentToView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-
-import org.w3c.dom.Text;
 
 import java.util.concurrent.TimeUnit;
 
@@ -79,6 +71,7 @@ public class AuthenticationDialogFragment extends BaseDialogFragment {
     public Observable<Void> confirmClicked() {
         return confirmClicked;
     }
+
     public Observable<Void> cancelClicked() {
         return cancelClicked;
     }
@@ -86,9 +79,7 @@ public class AuthenticationDialogFragment extends BaseDialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View fragmentView = inflater.inflate(R.layout.dialog_fragment_authentication, container, false);
-
         initUi(fragmentView);
-
         return fragmentView;
     }
 

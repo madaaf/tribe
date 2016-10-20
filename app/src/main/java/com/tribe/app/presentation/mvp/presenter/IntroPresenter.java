@@ -195,8 +195,7 @@ public class IntroPresenter implements Presenter {
                             loginError(errorLogin);
                             goToConnected(null);
                         } else if (errorLogin != null && !errorLogin.isVerified()) {
-                            // TODO: get error message from laurent
-                            introView.showError("You have entered the wrong pin. Please try again");
+                            introView.showError(introView.context().getString(R.string.onboarding_error_wrong_pin));
                         }
                     } catch (IOException e1) {
                         e1.printStackTrace();

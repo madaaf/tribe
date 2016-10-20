@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
+import com.tribe.app.data.network.job.RefreshHowManyFriendsJob;
 import com.tribe.app.data.network.job.UpdateScoreJob;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
@@ -39,6 +40,7 @@ public class ContactsGridPresenter implements Presenter {
     private RemoveFriendship removeFriendship;
     private CreateFriendship createFriendship;
     private UseCase notifyFBFriends;
+    private UseCase synchroContactList;
 
     // SUBSCRIBERS
     private FindByValueSubscriber findByValueSubscriber;
@@ -46,6 +48,7 @@ public class ContactsGridPresenter implements Presenter {
     private RemoveFriendshipSubscriber removeFriendshipSubscriber;
     private DefaultSubscriber findByUsernameSubscriber;
     private NotifyFBFriendsSubscriber notifyFBFriendsSubscriber;
+    private LookupContactsSubscriber lookupContactsSubscriber;
 
     @Inject
     public ContactsGridPresenter(JobManager jobManager,
@@ -56,7 +59,8 @@ public class ContactsGridPresenter implements Presenter {
                                  @Named("diskFindContactByValue") DiskFindContactByValue diskFindContactByValue,
                                  @Named("createFriendship") CreateFriendship createFriendship,
                                  @Named("removeFriendship") RemoveFriendship removeFriendship,
-                                 @Named("notifyFBFriends") UseCase notifyFBFriends) {
+                                 @Named("notifyFBFriends") UseCase notifyFBFriends,
+                                 @Named("synchroContactList") UseCase synchroContactList) {
         super();
         this.jobManager = jobManager;
         this.rxFacebook = rxFacebook;
@@ -67,6 +71,7 @@ public class ContactsGridPresenter implements Presenter {
         this.createFriendship = createFriendship;
         this.removeFriendship = removeFriendship;
         this.notifyFBFriends = notifyFBFriends;
+        this.synchroContactList = synchroContactList;
     }
 
     @Override
@@ -164,6 +169,12 @@ public class ContactsGridPresenter implements Presenter {
 
         notifyFBFriendsSubscriber = new NotifyFBFriendsSubscriber();
         notifyFBFriends.execute(notifyFBFriendsSubscriber);
+    }
+
+    public void lookupContacts() {
+        if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
+        lookupContactsSubscriber = new LookupContactsSubscriber();
+        synchroContactList.execute(lookupContactsSubscriber);
     }
 
     public void updateScoreInvite() {
@@ -280,6 +291,22 @@ public class ContactsGridPresenter implements Presenter {
         @Override
         public void onNext(Void aVoid) {
             contactsView.notifySuccess();
+        }
+    }
+
+    private class LookupContactsSubscriber extends DefaultSubscriber<List<Contact>> {
+
+        @Override
+        public void onCompleted() { }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(List<Contact> contactList) {
+            jobManager.addJobInBackground(new RefreshHowManyFriendsJob());
         }
     }
 }

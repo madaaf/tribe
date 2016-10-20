@@ -112,8 +112,14 @@ public class ButtonPointsView extends LinearLayout {
         setSubLabel(a.getResourceId(R.styleable.ButtonPointsView_buttonSubLabel, R.string.contacts_share_profile_description));
         setPoints(a.getInteger(R.styleable.ButtonPointsView_buttonPoints, 0));
 
-        if (type != FB_DISABLED)
+        if (type != FB_DISABLED) {
+            viewBG.setClickable(true);
+            viewBG.setEnabled(true);
             viewBG.setOnClickListener(v -> clickButton.onNext(this));
+        } else {
+            viewBG.setEnabled(false);
+            viewBG.setClickable(false);
+        }
 
         a.recycle();
     }

@@ -1,11 +1,14 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
+import com.tribe.app.data.network.job.DeleteContactsABJob;
+import com.tribe.app.data.network.job.DeleteContactsFBJob;
 import com.tribe.app.data.network.job.UpdateScoreJob;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
+import com.tribe.app.domain.interactor.common.UseCaseDisk;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
 import com.tribe.app.domain.interactor.user.UpdateUser;
@@ -29,6 +32,8 @@ public class SettingPresenter extends UpdateUserPresenter {
 
     private final RemoveInstall removeInstall;
     private final UseCase synchroContactList;
+    private UseCaseDisk getDiskContactList;
+    private UseCaseDisk getDiskFBContactList;
     private JobManager jobManager;
 
     private LookupContactsSubscriber lookupContactsSubscriber;
@@ -39,11 +44,15 @@ public class SettingPresenter extends UpdateUserPresenter {
                      RxFacebook rxFacebook,
                      RemoveInstall removeInstall,
                      @Named("synchroContactList") UseCase synchroContactList,
-                     JobManager jobManager) {
+                     JobManager jobManager,
+                     @Named("diskContactList") UseCaseDisk getDiskContactList,
+                     @Named("diskFBContactList") UseCaseDisk getDiskFBContactList) {
         super(updateUser, lookupUsername, rxFacebook);
         this.removeInstall = removeInstall;
         this.synchroContactList = synchroContactList;
         this.jobManager = jobManager;
+        this.getDiskContactList = getDiskContactList;
+        this.getDiskFBContactList = getDiskFBContactList;
     }
 
     @Override
@@ -92,12 +101,28 @@ public class SettingPresenter extends UpdateUserPresenter {
         synchroContactList.execute(lookupContactsSubscriber);
     }
 
+    public void loadContactsFB() {
+        getDiskContactList.execute(new ContactListSubscriber());
+    }
+
+    public void loadContactsAddressBook() {
+        getDiskFBContactList.execute(new ContactFBListSubscriber());
+    }
+
     public void updateScoreLocation() {
         jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.LOCATION));
     }
 
     public void updateScoreRateApp() {
         jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.RATE_APP));
+    }
+
+    public void deleteABContacts() {
+        jobManager.addJobInBackground(new DeleteContactsABJob());
+    }
+
+    public void deleteFBContacts() {
+        jobManager.addJobInBackground(new DeleteContactsFBJob());
     }
 
     public void goToLauncher() {
@@ -136,6 +161,40 @@ public class SettingPresenter extends UpdateUserPresenter {
         @Override
         public void onNext(List<Contact> contactList) {
 
+        }
+    }
+
+    private final class ContactListSubscriber extends DefaultSubscriber<List<Contact>> {
+
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+        }
+
+        @Override
+        public void onNext(List<Contact> contactList) {
+            if (contactList != null) settingView.onAddressBookContactSync(contactList.size());
+        }
+    }
+
+    private final class ContactFBListSubscriber extends DefaultSubscriber<List<Contact>> {
+
+        @Override
+        public void onCompleted() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+        }
+
+        @Override
+        public void onNext(List<Contact> contactList) {
+            if (contactList != null) settingView.onFBContactsSync(contactList.size());
         }
     }
 }

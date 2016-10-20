@@ -13,6 +13,7 @@ import com.tribe.app.presentation.internal.di.scope.HasReceivedPointsForCameraPe
 import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
 import com.tribe.app.presentation.internal.di.scope.LastNotifyRequest;
+import com.tribe.app.presentation.internal.di.scope.LastSync;
 import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
 import com.tribe.app.presentation.internal.di.scope.LocationPopup;
@@ -167,5 +168,11 @@ public class DataModule {
     @HasReceivedPointsForCameraPermission
     Preference<Boolean> provideHasReceivedPointsForCameraPermission(RxSharedPreferences prefs) {
         return prefs.getBoolean(PreferencesConstants.HAS_RECEIVED_POINTS_FOR_CAMERA_PERMISSION, false);
+    }
+
+    @Provides
+    @LastSync
+    Preference<Long> provideLastSync(RxSharedPreferences prefs) {
+        return prefs.getLong(PreferencesConstants.LAST_SYNC, 0L);
     }
 }

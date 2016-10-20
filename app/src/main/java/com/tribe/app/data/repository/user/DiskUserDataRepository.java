@@ -38,6 +38,7 @@ import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -187,7 +188,7 @@ public class DiskUserDataRepository implements UserRepository {
             }
 
             return user;
-        });
+        }).debounce(100, TimeUnit.MILLISECONDS);
     }
 
     @Override

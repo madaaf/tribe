@@ -185,7 +185,6 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
                 .subscribe(aLong -> {
                     LoginResult loginResult = rxFacebook.getLoginResult();
 
-                    System.out.println("LOGIN RESUME : " + loginResult);
                     if (loginResult != null && FacebookUtils.isLoggedIn()) {
                         successFacebookLogin();
                     }

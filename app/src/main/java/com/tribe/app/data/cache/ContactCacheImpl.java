@@ -127,26 +127,20 @@ public class ContactCacheImpl implements ContactCache {
 
     @Override
     public Observable<List<ContactABRealm>> contacts() {
-        return Observable.create(new Observable.OnSubscribe<List<ContactABRealm>>() {
-            @Override
-            public void call(final Subscriber<? super List<ContactABRealm>> subscriber) {
-                contacts = realm.where(ContactABRealm.class).findAllSorted(new String[] {"howManyFriends", "name"}, new Sort[] {Sort.DESCENDING, Sort.ASCENDING});
-                contacts.removeChangeListeners();
-                contacts.addChangeListener(element -> {
-                    if (element != null) {
-                        subscriber.onNext(realm.copyFromRealm(element));
-                    }
-                });
-
-                if (contacts != null)
-                    subscriber.onNext(realm.copyFromRealm(contacts));
-            }
-        });
+        return realm.where(ContactABRealm.class)
+                .findAllSorted(new String[] {"howManyFriends", "name"}, new Sort[] {Sort.DESCENDING, Sort.ASCENDING})
+                .asObservable()
+                .filter(contactABRealms -> contactABRealms.isLoaded())
+                .map(contactABRealms -> realm.copyFromRealm(contactABRealms));
     }
 
     @Override
     public Observable<List<ContactFBRealm>> contactsFB() {
-        return null;
+        return realm.where(ContactFBRealm.class)
+                    .findAllSorted(new String[] {"name"}, new Sort[] {Sort.ASCENDING})
+                    .asObservable()
+                    .filter(contactFBRealms -> contactFBRealms.isLoaded())
+                    .map(contactFBRealms -> realm.copyFromRealm(contactFBRealms));
     }
 
     @Override
@@ -226,6 +220,32 @@ public class ContactCacheImpl implements ContactCache {
                     subscriber.onNext(searchResult.size() > 0 ? realm.copyFromRealm(searchResult.get(0)) : null);
             }
         });
+    }
+
+    @Override
+    public void deleteContactsAB() {
+        Realm obsRealm = Realm.getDefaultInstance();
+
+        try {
+            obsRealm.executeTransaction(realm1 -> {
+                realm1.delete(ContactABRealm.class);
+            });
+        } finally {
+            obsRealm.close();
+        }
+    }
+
+    @Override
+    public void deleteContactsFB() {
+        Realm obsRealm = Realm.getDefaultInstance();
+
+        try {
+            obsRealm.executeTransaction(realm1 -> {
+                realm1.delete(ContactFBRealm.class);
+            });
+        } finally {
+            obsRealm.close();
+        }
     }
 
     @Override

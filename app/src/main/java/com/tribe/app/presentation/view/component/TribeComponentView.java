@@ -4,12 +4,10 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.SurfaceTexture;
-import android.media.Image;
 import android.media.audiofx.Visualizer;
 import android.net.Uri;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.TextureView;
 import android.view.View;
@@ -32,7 +30,6 @@ import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -153,11 +150,6 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     protected void onDetachedFromWindow() {
         unbinder.unbind();
 
-        if (visualizer != null) {
-            visualizer.setEnabled(false);
-            visualizer.release();
-        }
-
         if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
         cancelProgress();
 
@@ -234,15 +226,10 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
                     .canChangeSpeed(true)
                     .forceLegacy(true)
                     .build();
+
             if (tribe.getType().equals(CameraWrapper.AUDIO)) {
                 visualizerView.setVisibility(VISIBLE);
                 visualizerView.setAvatarPicture(tribe.getFrom().getProfilePicture());
-                mediaPlayer = new TribeMediaPlayer.TribeMediaPlayerBuilder(getContext(), FileUtils.getPathForId(getContext(), tribe.getId(), FileUtils.VIDEO))
-                        .autoStart(autoStart)
-                        .looping(true)
-                        .mute(false)
-                        .canChangeSpeed(true)
-                        .buildLegacyMediaPlayer();
                 setupVisualizerFxAndUI();
             }
 
@@ -289,14 +276,12 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     private void setupVisualizerFxAndUI() {
         visualizer = new Visualizer(mediaPlayer.getAudioSessionId());
         visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
-
         visualizer.setDataCaptureListener(
                 new Visualizer.OnDataCaptureListener() {
                     public void onWaveFormDataCapture(Visualizer visualizer,
                                                       byte[] bytes, int samplingRate) {
                         visualizerView.updateVisualizer(bytes);
                     }
-
 
                     public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int i) {
 
@@ -328,6 +313,10 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     public void releasePlayer() {
         if (mediaPlayer != null)
             mediaPlayer.release();
+
+        if (visualizer != null) {
+            visualizer.release();
+        }
 
         mediaPlayer = null;
         isPrepared = false;

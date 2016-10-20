@@ -94,7 +94,7 @@ public class DiskUserDataStore implements UserDataStore {
 
     @Override
     public Observable<List<ContactInterface>> contactsFB() {
-        return contactCache.contactsFB().map(contactABRealms -> new ArrayList<>(contactABRealms));
+        return contactCache.contactsFB().map(contactFBRealms -> new ArrayList<>(contactFBRealms));
     }
 
     @Override

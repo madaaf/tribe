@@ -1,10 +1,10 @@
 package com.tribe.app.presentation.internal.di.modules;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.ConditionVariable;
 import android.util.Base64;
 
-import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -53,6 +53,9 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
 import com.tribe.app.presentation.utils.DateUtils;
+import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 
 import java.io.File;
 import java.io.IOException;
@@ -82,7 +85,6 @@ import okhttp3.Cache;
 import okhttp3.CertificatePinner;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -217,7 +219,7 @@ public class NetModule {
     @PerApplication
     TribeApi provideTribeApi(Context context, Gson gson, @Named("tribeApiOKHttp") OkHttpClient okHttpClient, TribeAuthorizer tribeAuthorizer,
                              final LoginApi loginApi, final AccessToken accessToken,
-                             final UserCache userCache) {
+                             final UserCache userCache, TagManager tagManager) {
         OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
         httpClientBuilder.addInterceptor(chain -> {
@@ -253,8 +255,18 @@ public class NetModule {
                         response.body().close();
                     }
 
-                    if (responseRefresh != null && responseRefresh.errorBody() != null) {
-                        responseRefresh.errorBody().close();
+                    if (responseRefresh != null) {
+                        if (!StringUtils.isEmpty(responseRefresh.message())) {
+                            Bundle properties = new Bundle();
+                            properties.putString(TagManagerConstants.ERROR, responseRefresh.message());
+                            tagManager.trackEvent(TagManagerConstants.TOKEN_DISCONNECT, properties);
+                        } else {
+                            tagManager.trackEvent(TagManagerConstants.TOKEN_DISCONNECT);
+                        }
+
+                        if (responseRefresh.errorBody() != null) {
+                            responseRefresh.errorBody().close();
+                        }
                     }
 
                     Observable.just("")
@@ -282,12 +294,12 @@ public class NetModule {
             }
         });
 
-        if (BuildConfig.DEBUG) {
+        /*if (BuildConfig.DEBUG) {
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
             httpClientBuilder.addInterceptor(loggingInterceptor);
             httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
-        }
+        }*/
 
         return new Retrofit.Builder()
                 .baseUrl(BuildConfig.TRIBE_API)
@@ -348,12 +360,12 @@ public class NetModule {
             return chain.proceed(request);
         });
 
-        if (BuildConfig.DEBUG) {
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-            httpClientBuilder.addInterceptor(loggingInterceptor);
-            httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
-        }
+//        if (BuildConfig.DEBUG) {
+//            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+//            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+//            httpClientBuilder.addInterceptor(loggingInterceptor);
+//            httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+//        }
 
         return new Retrofit.Builder()
                 .baseUrl(BuildConfig.TRIBE_AUTH)

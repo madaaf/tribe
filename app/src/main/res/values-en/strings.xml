@@ -34,9 +34,9 @@
 	<string name="contacts_section_facebook_notifying">Notifying</string>
 	<string name="contacts_section_facebook_next_sync">Notify them again in %1$s</string>
 	<string name="contacts_section_facebook_no_os_facebook_title">Facebook friends</string>
-	<string name="contacts_section_facebook_no_os_facebook_description">Connect easily your Facebook account in the settings.</string>
+	<string name="contacts_section_facebook_no_os_facebook_description">Got to the Settings of your phone to connect your Facebook account!</string>
 	<string name="contacts_section_facebook_no_os_facebook_cancel">Cancel</string>
-	<string name="contacts_section_facebook_no_os_facebook_settings">Go to Settings</string>
+	<string name="contacts_section_facebook_no_os_facebook_settings">Got it!</string>
 	<string name="contacts_section_addressbook_sync_description">Automatically sync your Address Book contacts when they join</string>
 	<string name="contacts_section_addressbook_syncing">Syncing</string>
 	<string name="contacts_section_addressbook_empty">No more contacts to invite</string>
@@ -82,7 +82,7 @@
 	<string name="permission_screen_push_next_popup_title">Messages are coming!</string>
 	<string name="permission_screen_push_next_popup_description">If you don\'t enable the push notifications, you\'ll miss out messages from your friends.</string>
 	<string name="permission_screen_push_next_popup_cancel">Don\'t care</string>
-	<string name="permission_screen_push_next_popup_authorize">Sure! Enable.</string>
+	<string name="permission_screen_push_next_popup_authorize">Sure! Enable</string>
 	<string name="permission_screen_camera_mic_title">Camera &amp; Microphone</string>
 	<string name="permission_screen_camera_mic_points">Enabling camera &amp; mic</string>
 	<string name="permission_screen_camera_mic_description">Make sure you’ll be\nable to send messages.</string>
@@ -90,7 +90,7 @@
 	<string name="permission_screen_camera_mic_next_popup_title">Camera and mic disabled!</string>
 	<string name="permission_screen_camera_mic_next_popup_description">If you don\'t enable the camera and mic, you won\'t be able to send messages.</string>
 	<string name="permission_screen_camera_mic_next_popup_cancel">Don\'t care</string>
-	<string name="permission_screen_camera_mic_next_popup_authorize">Right! Enable.</string>
+	<string name="permission_screen_camera_mic_next_popup_authorize">Right! Enable</string>
 	
 	<!-- Invitations -->
 	<string name="invitation_sms_error_parse_number_title">The phone number of this contact doesn\'t look right</string>
@@ -481,7 +481,8 @@
 	<string name="tutorial_message_contacts">Tap to add friends</string>
 	<string name="tutorial_message_groups">Tap to create a group</string>
 	<string name="tutorial_message_refresh">Tap to refresh</string>
-	<string name="tutorial_message_reply">Hold down to record\nyour response</string>
+	<string name="tutorial_message_reply">Tap to reply</string>
+	<string name="tutorial_message_record_reply">Hold down to record\nyour response</string>
 	<string name="tutorial_message_release">Release your finger\nto end recording</string>
 	<string name="tutorial_message_tap_to_cancel">Tap to cancel if needed</string>
 	

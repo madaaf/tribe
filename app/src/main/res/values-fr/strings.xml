@@ -34,9 +34,9 @@
 	<string name="contacts_section_facebook_notifying">Notification en cours</string>
 	<string name="contacts_section_facebook_next_sync">Notifiez-les à nouveau dans %1$s</string>
 	<string name="contacts_section_facebook_no_os_facebook_title">Amis Facebook</string>
-	<string name="contacts_section_facebook_no_os_facebook_description">Connecter facilement votre compte Facebook dans les paramètres.</string>
+	<string name="contacts_section_facebook_no_os_facebook_description">Rendez-vous dans les Paramètres de votre téléphone pour connecter votre compte Facebook!</string>
 	<string name="contacts_section_facebook_no_os_facebook_cancel">Annuler</string>
-	<string name="contacts_section_facebook_no_os_facebook_settings">Aller dans Paramètres</string>
+	<string name="contacts_section_facebook_no_os_facebook_settings">C\'est noté !</string>
 	<string name="contacts_section_addressbook_sync_description">Synchroniser automatiquement\nvos contacts</string>
 	<string name="contacts_section_addressbook_syncing">Synchronisation</string>
 	<string name="contacts_section_addressbook_empty">Plus aucun contact à inviter</string>
@@ -481,7 +481,8 @@
 	<string name="tutorial_message_contacts">Ajouter des amis</string>
 	<string name="tutorial_message_groups">Créer un groupe</string>
 	<string name="tutorial_message_refresh">Appuyer pour rafraichir</string>
-	<string name="tutorial_message_reply">Maintenez appuyé pour\nenregister votre réponse</string>
+	<string name="tutorial_message_reply">Appuyez pour répondre</string>
+	<string name="tutorial_message_record_reply">Maintenez appuyé pour\nenregister votre réponse</string>
 	<string name="tutorial_message_release">Relâchez votre doigt\npour arrêter l\'enregistrement</string>
 	<string name="tutorial_message_tap_to_cancel">Annuler l\'envoi si besoin</string>
 	

@@ -49,4 +49,7 @@ public interface ContactCache {
 
     Observable<List<ContactABRealm>> findContactsByValue(String value);
     Observable<SearchResultRealm> findContactByUsername(String username);
+
+    void deleteContactsFB();
+    void deleteContactsAB();
 }

@@ -34,7 +34,6 @@ public class FacebookHiddenActivity extends BaseActivity {
         init();
 
         if (savedInstanceState == null || rxFacebook.getCountHandle() <= 1) {
-            System.out.println("HANDLING INTENT");
             rxFacebook.incrementCountHandle();
             handleIntent(getIntent());
         } else {

@@ -16,9 +16,9 @@ import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.domain.interactor.user.AddMembersToGroup;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.CreateMembership;
-import com.tribe.app.domain.interactor.user.DiskUpdateFriendship;
 import com.tribe.app.domain.interactor.user.DiskFindContactByValue;
 import com.tribe.app.domain.interactor.user.DiskSearchResults;
+import com.tribe.app.domain.interactor.user.DiskUpdateFriendship;
 import com.tribe.app.domain.interactor.user.DoBootstrapSupport;
 import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
 import com.tribe.app.domain.interactor.user.DoRegister;
@@ -26,6 +26,7 @@ import com.tribe.app.domain.interactor.user.FindByUsername;
 import com.tribe.app.domain.interactor.user.GetBlockedFriendshipList;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetDiskContactList;
+import com.tribe.app.domain.interactor.user.GetDiskFBContactList;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.GetGroupMembers;
 import com.tribe.app.domain.interactor.user.GetHeadDeepLink;
@@ -197,6 +198,13 @@ public class UserModule {
     @Named("diskContactList")
     UseCaseDisk provideGetContactList(GetDiskContactList getDiskContactList) {
         return getDiskContactList;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("diskFBContactList")
+    UseCaseDisk provideGetFBContactList(GetDiskFBContactList getDiskFBContactList) {
+        return getDiskFBContactList;
     }
 
     @Provides

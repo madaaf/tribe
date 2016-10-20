@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.utils.analytics;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 /**
@@ -7,6 +8,9 @@ import android.os.Bundle;
  */
 public interface TagManager {
 
+    void setUserId(String userId);
+    void onStart(Activity activity);
+    void onStop(Activity activity);
     void trackInstall();
     void trackEvent(String event);
     void trackEvent(String event, Bundle properties);

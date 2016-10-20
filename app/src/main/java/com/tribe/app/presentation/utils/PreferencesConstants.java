@@ -22,4 +22,5 @@ public class PreferencesConstants {
     public static String SHARE_PROFILE = "SHARE_PROFILE";
     public static String ADDRESS_BOOK = "ADDRESS_BOOK";
     public static String HAS_RECEIVED_POINTS_FOR_CAMERA_PERMISSION = "HAS_RECEIVED_POINTS_FOR_CAMERA_PERMISSION";
+    public static String LAST_SYNC = "LAST_SYNC";
 }
