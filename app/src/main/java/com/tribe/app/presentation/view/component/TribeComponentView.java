@@ -30,6 +30,7 @@ import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.video.TribeMediaPlayer;
@@ -169,9 +170,13 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         avatarView.load(tribe.getFrom().getProfilePicture());
         txtTime.setText(DateUtils.getRelativeTimeSpanString(tribe.getRecordedAt().getTime(), new Date().getTime(), DateUtils.SECOND_IN_MILLIS));
 
-        ScoreUtils.Level level = ScoreUtils.getLevelForScore(tribe.getFrom().getScore());
-        labelLevel.setText(level.getStringId());
-        labelLevel.setDrawableResource(level.getDrawableId());
+        if (tribe.getFrom() != null && !tribe.getFrom().getId().equals(Constants.SUPPORT_ID)) {
+            ScoreUtils.Level level = ScoreUtils.getLevelForScore(tribe.getFrom().getScore());
+            labelLevel.setText(level.getStringId());
+            labelLevel.setDrawableResource(level.getDrawableId());
+        } else {
+            labelLevel.setVisibility(View.GONE);
+        }
 
         updateLocation();
 

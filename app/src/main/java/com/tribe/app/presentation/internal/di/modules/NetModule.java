@@ -85,6 +85,7 @@ import okhttp3.Cache;
 import okhttp3.CertificatePinner;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -294,12 +295,12 @@ public class NetModule {
             }
         });
 
-//        if (BuildConfig.DEBUG) {
-//            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-//            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
-//            httpClientBuilder.addInterceptor(loggingInterceptor);
-//            //httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
-//        }
+        if (BuildConfig.DEBUG) {
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+            httpClientBuilder.addInterceptor(loggingInterceptor);
+            //httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+        }
 
         return new Retrofit.Builder()
                 .baseUrl(BuildConfig.TRIBE_API)

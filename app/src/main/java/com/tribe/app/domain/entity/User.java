@@ -1,6 +1,7 @@
 package com.tribe.app.domain.entity;
 
 import com.tribe.app.presentation.mvp.view.UpdateScore;
+import com.tribe.app.presentation.view.utils.Constants;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -252,7 +253,7 @@ public class User implements Serializable {
         List<Recipient> result = getFriendshipList();
         if (result != null && result.size() == 1) {
             for (Recipient fr : result) {
-                if (fr.getSubId() != null && fr.getSubId().equals("XSUPPORT")) {
+                if (fr.getSubId() != null && fr.getSubId().equals(Constants.SUPPORT_ID)) {
                     hasOnlySupport = true;
                 }
             }

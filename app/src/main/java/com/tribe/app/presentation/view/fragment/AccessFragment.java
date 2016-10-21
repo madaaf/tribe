@@ -37,6 +37,7 @@ import com.tribe.app.presentation.view.component.AccessLockView;
 import com.tribe.app.presentation.view.component.TextFriendsView;
 import com.tribe.app.presentation.view.dialog_fragment.GetNotifiedDialogFragment;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
@@ -497,7 +498,7 @@ public class AccessFragment extends BaseFragment implements AccessView {
 
         if (currentUser.getFriendships() != null) {
             for (Friendship fr : currentUser.getFriendships()) {
-                if (!relationsInApp.containsKey(fr.getFriend().getId()) && fr.getSubId() != null && !fr.getSubId().equals("XSUPPORT")) {
+                if (!relationsInApp.containsKey(fr.getFriend().getId()) && fr.getSubId() != null && !fr.getSubId().equals(Constants.SUPPORT_ID)) {
                     relationsInApp.put(fr.getFriend().getId(), fr.getFriend());
                 }
             }
