@@ -273,20 +273,20 @@ public class CloudUserDataStore implements UserDataStore {
                 toIds.add(fr.getFriend().getId());
             }
 
-            List<TribeRealm> lastTribesSent = tribeCache.tribesSent(toIds);
-
-            int countTribes = 0;
-            for (TribeRealm tribeRealm : lastTribesSent) {
-                if (!StringUtils.isEmpty(tribeRealm.getId())) {
-                    idsTribes.append((countTribes > 0 ? "," : "") + "\"" + tribeRealm.getId() + "\"");
-                    countTribes++;
-                }
-            }
+//            List<TribeRealm> lastTribesSent = tribeCache.tribesSent(toIds);
+//
+//            int countTribes = 0;
+//            for (TribeRealm tribeRealm : lastTribesSent) {
+//                if (!StringUtils.isEmpty(tribeRealm.getId())) {
+//                    idsTribes.append((countTribes > 0 ? "," : "") + "\"" + tribeRealm.getId() + "\"");
+//                    countTribes++;
+//                }
+//            }
         }
 
         String req = context.getString(R.string.messages_infos,
-                !StringUtils.isEmpty(lastMessageRequest.get()) ? context.getString(R.string.input_start, lastMessageRequest.get()) : "",
-                !StringUtils.isEmpty(idsTribes.toString()) ? context.getString(R.string.tribe_sent_infos, idsTribes) : "");
+                !StringUtils.isEmpty(lastMessageRequest.get()) ? context.getString(R.string.input_start, lastMessageRequest.get()) : "");
+                //!StringUtils.isEmpty(idsTribes.toString()) ? context.getString(R.string.tribe_sent_infos, idsTribes) : "");
 
         return tribeApi.messages(req)
                 .flatMap(messageRealmInterfaceList -> {

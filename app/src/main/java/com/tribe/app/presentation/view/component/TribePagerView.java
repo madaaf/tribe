@@ -509,8 +509,8 @@ public class TribePagerView extends FrameLayout {
                         updateNbTribes();
                     }
                     
-                    if (message.getType().equals(CameraWrapper.VIDEO) || message.getType().equals(CameraWrapper.AUDIO)) viewToUpdate.preparePlayer(isCurrent);
-                    if (message.getType().equals(CameraWrapper.PHOTO)) viewToUpdate.setupTribePhoto(message.getContent());
+                    viewToUpdate.preparePlayer(isCurrent);
+                    //if (message.getType().equals(CameraWrapper.PHOTO)) viewToUpdate.setupTribePhoto(message.getContent());
                 }
             }
 

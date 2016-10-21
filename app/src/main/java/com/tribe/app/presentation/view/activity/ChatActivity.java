@@ -867,7 +867,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
         }
 
         for (String id : toRemove) {
-            Observable.just(avatarsMap.remove(id))
+            subscriptions.add(Observable.just(avatarsMap.remove(id))
                     .delay(0, TimeUnit.MILLISECONDS)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -876,7 +876,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
                         layoutContent.requestLayout();
                         section1.setImageView(null);
                         section1 = null;
-                    });
+                    }));
         }
 
         if (messageLayoutManager.findFirstVisibleItemPosition() != -1) {

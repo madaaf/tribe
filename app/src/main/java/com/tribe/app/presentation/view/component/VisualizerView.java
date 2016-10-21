@@ -5,11 +5,10 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.support.v4.app.Fragment;
+import android.os.BadParcelableException;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
@@ -49,6 +48,8 @@ public class VisualizerView extends FrameLayout {
     private int size;
 
     private ValueAnimator vaAlpha;
+    private ValueAnimator vaCircleInside;
+    private ValueAnimator vaCircleOutside;
 
     @Inject
     ScreenUtils screenUtils;
@@ -83,7 +84,7 @@ public class VisualizerView extends FrameLayout {
 
         circleParamsLarge = new FrameLayout.LayoutParams(size, size);
         circleParamsSmall = new FrameLayout.LayoutParams(size, size);
-        FrameLayout.LayoutParams imageAvatarParams = new FrameLayout.LayoutParams(size+screenUtils.dpToPx(100f), size+screenUtils.dpToPx(100f));
+        FrameLayout.LayoutParams imageAvatarParams = new FrameLayout.LayoutParams(size + screenUtils.dpToPx(30f), size + screenUtils.dpToPx(30f));
         circleParamsLarge.gravity = Gravity.CENTER;
         circleParamsSmall.gravity = Gravity.CENTER;
         imageAvatarParams.gravity = Gravity.CENTER;
@@ -166,17 +167,17 @@ public class VisualizerView extends FrameLayout {
             if (shouldMultiply) tempWidth = (int) (this.radiusSmall * randomFloat(1.2f, 1.5f));
             else tempWidth = (int) this.radiusSmall;
 //            tempWidth  += screenUtils.dpToPx(10f);
-            ValueAnimator va = ValueAnimator.ofInt(circleParamsSmall.width, tempWidth);
-            va.setDuration(300);
-            va.setInterpolator(new DecelerateInterpolator());
-            va.setStartDelay(0);
-            va.addUpdateListener(animation -> {
+            vaCircleInside = ValueAnimator.ofInt(circleParamsSmall.width, tempWidth);
+            vaCircleInside.setDuration(300);
+            vaCircleInside.setInterpolator(new DecelerateInterpolator());
+            vaCircleInside.setStartDelay(0);
+            vaCircleInside.addUpdateListener(animation -> {
                 Integer value = (Integer) animation.getAnimatedValue();
                 circleViewInside.getLayoutParams().height = value.intValue();
                 circleViewInside.getLayoutParams().width = value.intValue();
                 circleViewInside.requestLayout();
             });
-            va.start();
+            vaCircleInside.start();
         }
 
         if (Math.abs(radiusLarge - this.radiusLarge) >= screenUtils.dpToPx(2.5f)) {
@@ -194,19 +195,16 @@ public class VisualizerView extends FrameLayout {
             else widthTarget = (int) this.radiusLarge;
 //            widthTarget += screenUtils.dpToPx(10f);
 
-            ValueAnimator va = ValueAnimator.ofInt(circleParamsLarge.width, widthTarget);
-            va.setDuration(300);
-            va.setInterpolator(new DecelerateInterpolator());
-            va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    Integer value = (Integer) animation.getAnimatedValue();
-                    circleViewOutside.getLayoutParams().height = value.intValue();
-                    circleViewOutside.getLayoutParams().width = value.intValue();
-                    circleViewOutside.requestLayout();
-                }
+            vaCircleOutside = ValueAnimator.ofInt(circleParamsLarge.width, widthTarget);
+            vaCircleOutside.setDuration(300);
+            vaCircleOutside.setInterpolator(new DecelerateInterpolator());
+            vaCircleOutside.addUpdateListener(animation -> {
+                Integer value = (Integer) animation.getAnimatedValue();
+                circleViewOutside.getLayoutParams().height = value.intValue();
+                circleViewOutside.getLayoutParams().width = value.intValue();
+                circleViewOutside.requestLayout();
             });
-
-            va.start();
+            vaCircleOutside.start();
 
             float alpha = 1;
 
@@ -221,7 +219,12 @@ public class VisualizerView extends FrameLayout {
             vaAlpha.setInterpolator(new DecelerateInterpolator());
             vaAlpha.addUpdateListener(animation -> {
                 Float value = (Float) animation.getAnimatedValue();
-                circleViewOutside.setAlpha(value.floatValue());
+                try {
+                    if (circleViewOutside != null)
+                        circleViewOutside.setAlpha(value.floatValue());
+                } catch (BadParcelableException ex) {
+                    // TODO BETTER :)
+                }
             });
             vaAlpha.start();
         }
@@ -232,4 +235,20 @@ public class VisualizerView extends FrameLayout {
         return rand.nextFloat() * (x - y) + x;
     }
 
+    public void release() {
+        if (circleViewInside != null) circleViewInside.clearAnimation();
+        if (circleViewOutside != null) circleViewOutside.clearAnimation();
+        if (vaAlpha != null) {
+            vaAlpha.removeAllUpdateListeners();
+            vaAlpha.cancel();
+        }
+        if (vaCircleInside != null) {
+            vaCircleInside.removeAllUpdateListeners();
+            vaCircleInside.cancel();
+        }
+        if (vaCircleOutside != null) {
+            vaCircleInside.removeAllUpdateListeners();
+            vaCircleOutside.cancel();
+        }
+    }
 }

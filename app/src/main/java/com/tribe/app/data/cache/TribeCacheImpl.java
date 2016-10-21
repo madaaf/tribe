@@ -86,36 +86,31 @@ public class TribeCacheImpl implements TribeCache {
     @Override
     public TribeRealm insert(TribeRealm tribeRealm) {
         tribeRealm.setUpdatedAt(new Date());
-        Realm obsRealm = Realm.getDefaultInstance();
 
-        try {
-            obsRealm.executeTransaction(realm1 -> {
-                TribeRealm obj = obsRealm.where(TribeRealm.class).equalTo("localId", tribeRealm.getLocalId()).findFirst();
-                if (obj == null) {
-                    obsRealm.insertOrUpdate(tribeRealm);
-                }
+        realm.executeTransactionAsync(realm1 -> {
+            TribeRealm obj = realm1.where(TribeRealm.class).equalTo("localId", tribeRealm.getLocalId()).findFirst();
+            if (obj == null) {
+                realm1.insertOrUpdate(tribeRealm);
+            }
 
-                if (!tribeRealm.isToGroup()) {
-                    RealmResults<TribeRealm> tribesSentToRecipient = realm1.where(TribeRealm.class)
-                            .equalTo("friendshipRealm.id", tribeRealm.getFriendshipRealm().getId())
-                            .equalTo("from.id", currentUser.getId())
-                            .notEqualTo("id", tribeRealm.getLocalId())
-                            .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
-                            .findAllSorted("recorded_at", Sort.ASCENDING);
-                    if (tribesSentToRecipient != null) tribesSentToRecipient.deleteAllFromRealm();
-                } else {
-                    RealmResults<TribeRealm> tribesSentToRecipient = realm1.where(TribeRealm.class)
-                            .equalTo("membershipRealm.id", tribeRealm.getMembershipRealm().getId())
-                            .equalTo("from.id", currentUser.getId())
-                            .notEqualTo("id", tribeRealm.getLocalId())
-                            .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
-                            .findAllSorted("recorded_at", Sort.ASCENDING);
-                    if (tribesSentToRecipient != null) tribesSentToRecipient.deleteAllFromRealm();
-                }
-            });
-        } finally {
-            obsRealm.close();
-        }
+            if (!tribeRealm.isToGroup()) {
+                RealmResults<TribeRealm> tribesSentToRecipient = realm1.where(TribeRealm.class)
+                        .equalTo("friendshipRealm.id", tribeRealm.getFriendshipRealm().getId())
+                        .equalTo("from.id", currentUser.getId())
+                        .notEqualTo("id", tribeRealm.getLocalId())
+                        .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
+                        .findAllSorted("recorded_at", Sort.ASCENDING);
+                if (tribesSentToRecipient != null) tribesSentToRecipient.deleteAllFromRealm();
+            } else {
+                RealmResults<TribeRealm> tribesSentToRecipient = realm1.where(TribeRealm.class)
+                        .equalTo("membershipRealm.id", tribeRealm.getMembershipRealm().getId())
+                        .equalTo("from.id", currentUser.getId())
+                        .notEqualTo("id", tribeRealm.getLocalId())
+                        .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
+                        .findAllSorted("recorded_at", Sort.ASCENDING);
+                if (tribesSentToRecipient != null) tribesSentToRecipient.deleteAllFromRealm();
+            }
+        });
 
         return tribeRealm;
     }
@@ -236,15 +231,10 @@ public class TribeCacheImpl implements TribeCache {
 
     @Override
     public void delete(TribeRealm tribeRealm) {
-        Realm obsRealm = Realm.getDefaultInstance();
-        try {
-            obsRealm.executeTransaction(realm1 -> {
-                final TribeRealm result = obsRealm.where(TribeRealm.class).equalTo("localId", tribeRealm.getLocalId()).findFirst();
-                result.deleteFromRealm();
-            });
-        } finally {
-            obsRealm.close();
-        }
+        realm.executeTransactionAsync(realm1 -> {
+            final TribeRealm result = realm1.where(TribeRealm.class).equalTo("localId", tribeRealm.getLocalId()).findFirst();
+            result.deleteFromRealm();
+        });
     }
 
     @Override

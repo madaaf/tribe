@@ -16,7 +16,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.bumptech.glide.Glide;
 import com.f2prateek.rx.preferences.Preference;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.tribe.app.R;
@@ -74,9 +73,6 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
     @BindView(R.id.imgMore)
     ImageView imgMore;
-
-    @BindView(R.id.imageTribeView)
-    ImageView imageTribeView;
 
     @BindView(R.id.visualizerView)
     VisualizerView visualizerView;
@@ -265,14 +261,6 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         }
     }
 
-    public void setupTribePhoto(String imageUrl) {
-        Glide.with(getContext()).load(imageUrl)
-                .fitCenter()
-                .crossFade()
-                .into(imageTribeView);
-        removeProgressBar();
-    }
-
     private void setupVisualizerFxAndUI() {
         visualizer = new Visualizer(mediaPlayer.getAudioSessionId());
         visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
@@ -318,6 +306,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
             visualizer.release();
         }
 
+        if (visualizerView != null) visualizerView.release();
         mediaPlayer = null;
         isPrepared = false;
         lastPosition = -1;

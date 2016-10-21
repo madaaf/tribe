@@ -13,7 +13,7 @@ public class DiagonalLayout extends FrameLayout {
 
     private int height = 0;
     private int width = 0;
-    private float angle = 2;
+    private float angle = 5;
 
     private Path path;
     private Paint paint;

@@ -180,17 +180,19 @@ public class SettingPresenter extends UpdateUserPresenter {
 
         @Override
         public void onNext(List<Contact> contactList) {
-            int countInApp = 0;
+//            int countInApp = 0;
+//
+//            if (contactList != null) {
+//                for (Contact contact : contactList) {
+//                    if (contact.getUserList() != null && contact.getUserList().size() > 0) {
+//                        countInApp++;
+//                    }
+//                }
+//            }
 
             if (contactList != null) {
-                for (Contact contact : contactList) {
-                    if (contact.getUserList() != null && contact.getUserList().size() > 0) {
-                        countInApp++;
-                    }
-                }
+                settingView.onAddressBookContactSync(contactList.size());
             }
-
-            settingView.onAddressBookContactSync(countInApp);
         }
     }
 
@@ -207,17 +209,19 @@ public class SettingPresenter extends UpdateUserPresenter {
 
         @Override
         public void onNext(List<Contact> contactList) {
-            int countInApp = 0;
+//            int countInApp = 0;
+//
+//            if (contactList != null) {
+//                for (Contact contact : contactList) {
+//                    if (contact.getUserList() != null && contact.getUserList().size() > 0) {
+//                        countInApp++;
+//                    }
+//                }
+//            }
 
             if (contactList != null) {
-                for (Contact contact : contactList) {
-                    if (contact.getUserList() != null && contact.getUserList().size() > 0) {
-                        countInApp++;
-                    }
-                }
+                settingView.onFBContactsSync(contactList.size());
             }
-
-            settingView.onFBContactsSync(countInApp);
         }
     }
 }

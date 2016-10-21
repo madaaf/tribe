@@ -49,12 +49,12 @@
 	<!-- Permissions -->
 	<string name="permission_contacts_disabled_alert_title">Accès aux Contacts désactivé</string>
 	<string name="permission_contacts_disabled_alert_description">Rendez-vous dès maintenant dans les Paramètres de l\'iPhone pour l\'activer !</string>
-	<string name="permission_contacts_disabled_alert_redirect">Activer</string>
-	<string name="permission_contacts_disabled_alert_cancel">Ne pas activer</string>
+	<string name="permission_contacts_disabled_alert_redirect">Aller dans Paramètres</string>
+	<string name="permission_contacts_disabled_alert_cancel">Rester bloqué</string>
 	<string name="permission_location_disabled_alert_title">Accès à la Location désactivée</string>
 	<string name="permission_location_disabled_alert_description">Rendez-vous dès maintenant dans les Paramètres de l\'iPhone pour l\'activer !</string>
-	<string name="permission_location_disabled_alert_redirect">Activer</string>
-	<string name="permission_location_disabled_alert_cancel">Ne pas activer</string>
+	<string name="permission_location_disabled_alert_redirect">Aller dans Paramètres</string>
+	<string name="permission_location_disabled_alert_cancel">Non merci</string>
 	<string name="permission_camera_enable_button_title">Activer\nla caméra</string>
 	<string name="permission_popup_push_onboarding_title">Soyez notifié !</string>
 	<string name="permission_popup_push_onboarding_description">Recevez une notification lorsque vos\namis rejoignent l\'app.</string>
@@ -68,8 +68,8 @@
 	<string name="permission_popup_push_home_yes">Notifiez moi !</string>
 	<string name="permission_push_disabled_alert_title">Push désactivés</string>
 	<string name="permission_push_disabled_alert_description">Rendez-vous dès maintenant dans les Paramètres de l\'iPhone pour l\'activer !</string>
-	<string name="permission_push_disabled_alert_redirect">Activer</string>
-	<string name="permission_push_disabled_alert_cancel">Ne pas activer</string>
+	<string name="permission_push_disabled_alert_redirect">Aller dans Paramètres</string>
+	<string name="permission_push_disabled_alert_cancel">Rester seul</string>
 	<string name="permission_popup_location_home_title">Enrichissez vos messages !</string>
 	<string name="permission_popup_location_home_description">Profitez d\'une expérience plus riche en\naccédant à plus de contexte sur les messages.</string>
 	<string name="permission_popup_location_home_points">Autoriser la location</string>
@@ -81,38 +81,38 @@
 	<string name="permission_screen_push_action">Activer!</string>
 	<string name="permission_screen_push_next_popup_title">Les messages arrivent !</string>
 	<string name="permission_screen_push_next_popup_description">Si vous n\'activez pas les notifications, vous manquerez les messages de vos amis.</string>
-	<string name="permission_screen_push_next_popup_cancel">Rester seul.</string>
+	<string name="permission_screen_push_next_popup_cancel">Rester seul</string>
 	<string name="permission_screen_push_next_popup_authorize">Activer !</string>
 	<string name="permission_screen_camera_mic_title">Camera &amp; Micro</string>
 	<string name="permission_screen_camera_mic_points">Activer la caméra et le micro</string>
 	<string name="permission_screen_camera_mic_description">Offrez-vous la possibilité\nd\'envoyer des messages</string>
-	<string name="permission_screen_camera_mic_action">Activer et entrer!</string>
+	<string name="permission_screen_camera_mic_action">Activer !</string>
 	<string name="permission_camera_disabled_alert_title">Caméra ou Micro désactivé</string>
 	<string name="permission_camera_disabled_alert_description">Rendez-vous dès maintenant dans les Paramètres de l\'iPhone pour l\'activer !</string>
-	<string name="permission_camera_disabled_alert_redirect">Activer</string>
-	<string name="permission_camera_disabled_alert_cancel">Ne pas activer</string>
+	<string name="permission_camera_disabled_alert_redirect">Aller dans Paramètres</string>
+	<string name="permission_camera_disabled_alert_cancel">Rester bloqué</string>
 	<string name="permission_screen_camera_mic_next_popup_title">Camera &amp; micro désactivés !</string>
 	<string name="permission_screen_camera_mic_next_popup_description">Si vous n\'activez pas la caméra et le micro, vous ne pourrez pas envoyer de messages.</string>
-	<string name="permission_screen_camera_mic_next_popup_cancel">Rester bloqué.</string>
+	<string name="permission_screen_camera_mic_next_popup_cancel">Rester bloqué</string>
 	<string name="permission_screen_camera_mic_next_popup_authorize">Activer !</string>
-	<string name="permission_screen_location_title">Location</string>
-	<string name="permission_screen_location_points">Enabling Location</string>
-	<string name="permission_screen_location_description">Blablabla location blablabla</string>
-	<string name="permission_screen_location_action">Localize me!</string>
-	<string name="permission_screen_location_next_popup_title">Location disabled!</string>
-	<string name="permission_screen_location_next_popup_description">Blablabla location blablabla</string>
-	<string name="permission_screen_location_next_popup_cancel">Don\'t care</string>
-	<string name="permission_screen_location_next_popup_authorize">Right! Enable</string>
+	<string name="permission_screen_location_title">Géolocalisation</string>
+	<string name="permission_screen_location_points">Activer Position</string>
+	<string name="permission_screen_location_description">Météo, itinéraires, et\distances sur chaque message.</string>
+	<string name="permission_screen_location_action">Wow, activer !</string>
+	<string name="permission_screen_location_next_popup_title">Géolocalisation désactivée !</string>
+	<string name="permission_screen_location_next_popup_description">Vous allez passer à côté d\'une partie de la magie.</string>
+	<string name="permission_screen_location_next_popup_cancel">Non merci</string>
+	<string name="permission_screen_location_next_popup_authorize">Activer !</string>
 	
 	<!-- Rating -->
-	<string name="rating_title">Send us 5 stars to\nhelp us to the moon!</string>
-	<string name="rating_reviews">They already rated us</string>
-	<string name="rating_descriptions">“The fastest way\nto send messages”+“The fastest way\nto send messages”+“The fastest way\nto send messages”</string>
-	<string name="rating_rate">Let’s go!</string>
-	<string name="rating_next_popup_title">TODO</string>
+	<string name="rating_title">Envoyez-nous 5 étoiles\nen 1 minute !</string>
+	<string name="rating_reviews">Ils nous ont déjà noté</string>
+	<string name="rating_descriptions">“Facetime\nà mon rythme !”+“Les groupes donnent l\'impression\nd\'être dans la même pièce.”+“Plus pratique\nqu\'un appel en live !”+“Le moyen le plus rapide\nd\'envoyer des messages.”</string>
+	<string name="rating_rate">C\'est parti !</string>
+	<string name="rating_next_popup_title">Juste un coup de main</string>
 	<string name="rating_next_popup_description">TODO</string>
-	<string name="rating_next_popup_cancel">Don\'t care</string>
-	<string name="rating_next_popup_rate">OK, go</string>
+	<string name="rating_next_popup_cancel">Non merci</string>
+	<string name="rating_next_popup_rate">C\'est parti !</string>
 	
 	<!-- Invitations -->
 	<string name="invitation_sms_error_parse_number_title">Le format de ce numéro de téléphone ne semble pas parfait</string>

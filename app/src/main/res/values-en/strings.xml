@@ -49,12 +49,12 @@
 	<!-- Permissions -->
 	<string name="permission_contacts_disabled_alert_title">Address book permission denied</string>
 	<string name="permission_contacts_disabled_alert_description">Don\'t worry! You can enable it right now in your Settings.</string>
-	<string name="permission_contacts_disabled_alert_redirect">Fix this</string>
-	<string name="permission_contacts_disabled_alert_cancel">Don\'t fix this</string>
+	<string name="permission_contacts_disabled_alert_redirect">Go to Settings</string>
+	<string name="permission_contacts_disabled_alert_cancel">Stay blocked</string>
 	<string name="permission_location_disabled_alert_title">Location permission denied</string>
 	<string name="permission_location_disabled_alert_description">Don\'t worry! You can enable it right now in your Settings.</string>
-	<string name="permission_location_disabled_alert_redirect">Fix this</string>
-	<string name="permission_location_disabled_alert_cancel">Don\'t fix this</string>
+	<string name="permission_location_disabled_alert_redirect">Go to Settings</string>
+	<string name="permission_location_disabled_alert_cancel">No, thanks</string>
 	<string name="permission_camera_enable_button_title">Enable\ncamera</string>
 	<string name="permission_popup_push_onboarding_title">Get notified!</string>
 	<string name="permission_popup_push_onboarding_description">Receive a push notification when friends join Tribe.</string>
@@ -68,8 +68,8 @@
 	<string name="permission_popup_push_home_yes">Notify me</string>
 	<string name="permission_push_disabled_alert_title">Push permission denied</string>
 	<string name="permission_push_disabled_alert_description">Don\'t worry! You can enable it right now in your Settings.</string>
-	<string name="permission_push_disabled_alert_redirect">Fix this</string>
-	<string name="permission_push_disabled_alert_cancel">Don\'t fix this</string>
+	<string name="permission_push_disabled_alert_redirect">Go to Settings</string>
+	<string name="permission_push_disabled_alert_cancel">Stay alone</string>
 	<string name="permission_popup_location_home_title">Receive better messages!</string>
 	<string name="permission_popup_location_home_description">Using location will allow your messages to be more epic than ever!</string>
 	<string name="permission_popup_location_home_points">Enabling “Location services”</string>
@@ -81,38 +81,38 @@
 	<string name="permission_screen_push_action">Turn on!</string>
 	<string name="permission_screen_push_next_popup_title">Messages are coming!</string>
 	<string name="permission_screen_push_next_popup_description">If you don\'t enable the push notifications, you\'ll miss out messages from your friends.</string>
-	<string name="permission_screen_push_next_popup_cancel">Don\'t care</string>
-	<string name="permission_screen_push_next_popup_authorize">Sure! Enable</string>
+	<string name="permission_screen_push_next_popup_cancel">Stay alone</string>
+	<string name="permission_screen_push_next_popup_authorize">Turn on!</string>
 	<string name="permission_screen_camera_mic_title">Camera &amp; Microphone</string>
 	<string name="permission_screen_camera_mic_points">Enabling Camera &amp; mic</string>
 	<string name="permission_screen_camera_mic_description">Make sure you’ll be\nable to send messages.</string>
-	<string name="permission_screen_camera_mic_action">Turn on and enter!</string>
+	<string name="permission_screen_camera_mic_action">Turn on!</string>
 	<string name="permission_camera_disabled_alert_title">Camera or Microphone permission denied</string>
 	<string name="permission_camera_disabled_alert_description">Don\'t worry! You can enable it right now in your Settings.</string>
-	<string name="permission_camera_disabled_alert_redirect">Fix this</string>
-	<string name="permission_camera_disabled_alert_cancel">Don\'t fix this</string>
+	<string name="permission_camera_disabled_alert_redirect">Go to Settings</string>
+	<string name="permission_camera_disabled_alert_cancel">Stay blocked</string>
 	<string name="permission_screen_camera_mic_next_popup_title">Camera and mic disabled!</string>
 	<string name="permission_screen_camera_mic_next_popup_description">If you don\'t enable the camera and mic, you won\'t be able to send messages.</string>
-	<string name="permission_screen_camera_mic_next_popup_cancel">Don\'t care</string>
-	<string name="permission_screen_camera_mic_next_popup_authorize">Right! Enable</string>
-	<string name="permission_screen_location_title">Location</string>
+	<string name="permission_screen_camera_mic_next_popup_cancel">Stay blocked</string>
+	<string name="permission_screen_camera_mic_next_popup_authorize">Turn on!</string>
+	<string name="permission_screen_location_title">Location services</string>
 	<string name="permission_screen_location_points">Enabling Location services</string>
-	<string name="permission_screen_location_description">Blablabla location blablabla</string>
-	<string name="permission_screen_location_action">Localize me!</string>
+	<string name="permission_screen_location_description">Weather, directions and\nreal-time ETAs on every message.</string>
+	<string name="permission_screen_location_action">Wow, turn on!</string>
 	<string name="permission_screen_location_next_popup_title">Location disabled!</string>
-	<string name="permission_screen_location_next_popup_description">Blablabla location blablabla</string>
-	<string name="permission_screen_location_next_popup_cancel">Don\'t care</string>
-	<string name="permission_screen_location_next_popup_authorize">Right! Enable</string>
+	<string name="permission_screen_location_next_popup_description">You are going to feel half the magic.</string>
+	<string name="permission_screen_location_next_popup_cancel">No, thanks</string>
+	<string name="permission_screen_location_next_popup_authorize">Turn on!</string>
 	
 	<!-- Rating -->
-	<string name="rating_title">Send us 5 stars to\nhelp us to the moon!</string>
+	<string name="rating_title">Send us 5 stars\nin 1 minute!</string>
 	<string name="rating_reviews">They already rated us</string>
-	<string name="rating_descriptions">“The fastest way\nto send messages”+“The fastest way\nto send messages”+“The fastest way\nto send messages”</string>
+	<string name="rating_descriptions">“Facetime\non your time!”+“Emotions,\nin motion”+“Groups that feel like\nyou\'re in the same room.”+“More convenient\nto than live calls!”+“The quickest way\nto send messages!”</string>
 	<string name="rating_rate">Let’s go!</string>
-	<string name="rating_next_popup_title">TODO</string>
-	<string name="rating_next_popup_description">TODO</string>
-	<string name="rating_next_popup_cancel">Don\'t care</string>
-	<string name="rating_next_popup_rate">OK, go</string>
+	<string name="rating_next_popup_title">It really helps!</string>
+	<string name="rating_next_popup_description">If you only have 1 minute, it really</string>
+	<string name="rating_next_popup_cancel">I don\'t want to help</string>
+	<string name="rating_next_popup_rate">Let\'s go!</string>
 	
 	<!-- Invitations -->
 	<string name="invitation_sms_error_parse_number_title">The phone number of this contact doesn\'t look right</string>

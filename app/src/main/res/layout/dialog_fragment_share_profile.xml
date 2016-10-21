@@ -21,7 +21,7 @@
 
         <com.tribe.app.presentation.view.widget.DiagonalLayout
             android:layout_width="match_parent"
-            android:layout_height="132.75dp"
+            android:layout_height="145dp"
             android:clickable="true"
             >
 
