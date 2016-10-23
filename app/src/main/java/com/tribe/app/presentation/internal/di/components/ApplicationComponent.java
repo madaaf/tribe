@@ -63,6 +63,7 @@ import com.tribe.app.presentation.internal.di.scope.Preload;
 import com.tribe.app.presentation.internal.di.scope.ShareProfile;
 import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.internal.di.scope.Theme;
+import com.tribe.app.presentation.internal.di.scope.WasAskedForCameraPermission;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.service.TribeFirebaseInstanceIDService;
 import com.tribe.app.presentation.service.TribeFirebaseMessagingService;
@@ -288,6 +289,9 @@ public interface ApplicationComponent {
 
     @HasReceivedPointsForCameraPermission
     Preference<Boolean> hasReceivedPointsForCameraPermission();
+
+    @WasAskedForCameraPermission
+    Preference<Boolean> wasAskedForCameraPermission();
 
     @LastSync
     Preference<Long> lastSync();

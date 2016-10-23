@@ -22,6 +22,7 @@ import com.tribe.app.presentation.internal.di.scope.Preload;
 import com.tribe.app.presentation.internal.di.scope.ShareProfile;
 import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.internal.di.scope.Theme;
+import com.tribe.app.presentation.internal.di.scope.WasAskedForCameraPermission;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.utils.PreferencesConstants;
 import com.tribe.app.presentation.view.component.TribePagerView;
@@ -174,5 +175,11 @@ public class DataModule {
     @LastSync
     Preference<Long> provideLastSync(RxSharedPreferences prefs) {
         return prefs.getLong(PreferencesConstants.LAST_SYNC, 0L);
+    }
+
+    @Provides
+    @WasAskedForCameraPermission
+    Preference<Boolean> provideWasAskedForCameraPermission(RxSharedPreferences prefs) {
+        return prefs.getBoolean(PreferencesConstants.WAS_ASKED_FOR_CAMERA_PERMISSION, false);
     }
 }

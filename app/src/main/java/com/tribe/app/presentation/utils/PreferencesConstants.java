@@ -23,4 +23,5 @@ public class PreferencesConstants {
     public static String ADDRESS_BOOK = "ADDRESS_BOOK";
     public static String HAS_RECEIVED_POINTS_FOR_CAMERA_PERMISSION = "HAS_RECEIVED_POINTS_FOR_CAMERA_PERMISSION";
     public static String LAST_SYNC = "LAST_SYNC";
+    public static String WAS_ASKED_FOR_CAMERA_PERMISSION = "WAS_ASKED_FOR_CAMERA_PERMISSION";
 }

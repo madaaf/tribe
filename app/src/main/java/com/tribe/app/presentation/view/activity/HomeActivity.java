@@ -42,6 +42,7 @@ import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.internal.di.scope.HasReceivedPointsForCameraPermission;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
 import com.tribe.app.presentation.internal.di.scope.LocationPopup;
+import com.tribe.app.presentation.internal.di.scope.WasAskedForCameraPermission;
 import com.tribe.app.presentation.mvp.presenter.HomePresenter;
 import com.tribe.app.presentation.mvp.view.HomeView;
 import com.tribe.app.presentation.utils.DeepLinkUtils;
@@ -107,7 +108,11 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @Inject
     @HasReceivedPointsForCameraPermission
-    Preference<Boolean> hasReceivedPontsForCameraPermission;
+    Preference<Boolean> hasReceivedPointsForCameraPermission;
+
+    @Inject
+    @WasAskedForCameraPermission
+    Preference<Boolean> wasAskedForCameraPermission;
 
     @BindView(android.R.id.content)
     ViewGroup rootView;
@@ -216,20 +221,28 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     protected void onResume() {
         super.onResume();
 
-        subscriptions.add(Observable.
-                from(PERMISSIONS_CAMERA)
-                .map(permission -> RxPermissions.getInstance(HomeActivity.this).isGranted(permission))
-                .toList()
-                .subscribe(grantedList -> {
-                    boolean areAllGranted = true;
+        if (wasAskedForCameraPermission.get()) {
+            subscriptions.add(Observable.
+                    from(PERMISSIONS_CAMERA)
+                    .map(permission -> RxPermissions.getInstance(HomeActivity.this).isGranted(permission))
+                    .toList()
+                    .subscribe(grantedList -> {
+                        boolean areAllGranted = true;
 
-                    for (Boolean granted : grantedList) {
-                        if (!granted) areAllGranted = false;
-                    }
+                        for (Boolean granted : grantedList) {
+                            if (!granted) areAllGranted = false;
+                        }
 
-                    if (areAllGranted) cameraWrapper.onResume(false);
-                    else cameraWrapper.showPermissions();
-                }));
+                        handleCameraPermissions(areAllGranted, false);
+                    }));
+        } else {
+            RxPermissions
+                    .getInstance(HomeActivity.this)
+                    .request(PERMISSIONS_CAMERA)
+                    .subscribe(isGranted -> {
+                        handleCameraPermissions(isGranted, false);
+                    });
+        }
     }
 
     @Override
@@ -288,16 +301,24 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             RxPermissions.getInstance(this)
                     .request(PERMISSIONS_CAMERA)
                     .subscribe(granted -> {
-                        if (granted) {
-                            if (hasReceivedPontsForCameraPermission.get()) {
-                                hasReceivedPontsForCameraPermission.set(true);
-                                homePresenter.updateScoreCamera();
-                            }
-                            cameraWrapper.onResume(true);
-                        }
-                        else cameraWrapper.showPermissions();
+                        handleCameraPermissions(granted, true);
                     });
         }));
+    }
+
+    private void handleCameraPermissions(boolean isGranted, boolean shouldAnimate) {
+        wasAskedForCameraPermission.set(true);
+
+        if (isGranted) {
+            if (hasReceivedPointsForCameraPermission.get()) {
+                hasReceivedPointsForCameraPermission.set(true);
+                homePresenter.updateScoreCamera();
+            }
+
+            cameraWrapper.onResume(shouldAnimate);
+        }
+
+        else cameraWrapper.showPermissions();
     }
 
     private void initViewPager() {
