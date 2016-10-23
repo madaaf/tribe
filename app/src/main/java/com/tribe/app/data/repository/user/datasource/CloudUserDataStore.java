@@ -1130,5 +1130,10 @@ public class CloudUserDataStore implements UserDataStore {
     public Observable<RecipientRealmInterface> getRecipientInfos(String recipientId, boolean isToGroup) {
         return null;
     }
+
+    @Override
+    public Observable<Void> updateMessagesReceivedToNotSeen() {
+        return null;
+    }
 }
 

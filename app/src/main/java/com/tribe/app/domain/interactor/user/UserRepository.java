@@ -175,4 +175,6 @@ public interface UserRepository {
     Observable<Membership> createMembership(String groupId);
 
     Observable<Recipient> getRecipientInfos(String recipientId, boolean isToGroup);
+
+    Observable<Void> updateMessagesReceivedToNotSeen();
 }

@@ -553,4 +553,26 @@ public class TribeCacheImpl implements TribeCache {
         newRealm.close();
         return result;
     }
+
+    @Override
+    public void updateTribesReceivedToNotSeen() {
+        Realm otherRealm = Realm.getDefaultInstance();
+
+        try {
+            otherRealm.executeTransaction(realm1 -> {
+                final RealmResults<TribeRealm> result = realm1.where(TribeRealm.class)
+                        .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_RECEIVED)
+                        .notEqualTo("from.id", currentUser.getId())
+                        .findAllSorted("recorded_at", Sort.DESCENDING);
+
+                if (result != null && result.size() > 0) {
+                    for (TribeRealm tribeRealm : result) {
+                        tribeRealm.setMessageReceivingStatus(MessageReceivingStatus.STATUS_NOT_SEEN);
+                    }
+                }
+            });
+        } finally {
+            otherRealm.close();
+        }
+    }
 }

@@ -49,11 +49,14 @@ public class HomeGridPresenter extends SendTribePresenter {
     private final LeaveGroup leaveGroup;
     private final RemoveGroup removeGroup;
     private final DoBootstrapSupport doBootstrapSupport;
+    private final UseCaseDisk diskUpdateTribesReceivedToNotSeen;
 
     // SUBSCRIBERS
+    private UpdateTribesReceivedToNotSeenSubscriber updateTribesReceivedToNotSeenSubscriber;
     private TribePendingListSubscriber tribePendingListSubscriber;
     private FriendListSubscriber friendListSubscriber;
     private BootstrapSupportSubscriber bootstrapSupportSubscriber;
+    private MessageReceivedListSubscriber messageReceivedListSubscriber;
 
     @Inject
     public HomeGridPresenter(JobManager jobManager,
@@ -67,7 +70,8 @@ public class HomeGridPresenter extends SendTribePresenter {
                              LeaveGroup leaveGroup,
                              RemoveGroup removeGroup,
                              DiskUpdateFriendship diskUpdateFriendship,
-                             DoBootstrapSupport bootstrapSupport) {
+                             DoBootstrapSupport bootstrapSupport,
+                             @Named("diskUpdateMessagesReceivedToNotSeen") UseCaseDisk diskUpdateTribesReceivedToNotSeen) {
         super(jobManager, jobManagerDownload, diskSaveTribe, diskDeleteTribe);
         this.diskUserInfosUsecase = diskUserInfos;
         this.diskGetMessageReceivedListUsecase = diskGetReceivedMessageList;
@@ -77,6 +81,7 @@ public class HomeGridPresenter extends SendTribePresenter {
         this.removeGroup = removeGroup;
         this.diskUpdateFriendship = diskUpdateFriendship;
         this.doBootstrapSupport = bootstrapSupport;
+        this.diskUpdateTribesReceivedToNotSeen = diskUpdateTribesReceivedToNotSeen;
     }
 
     @Override
@@ -94,7 +99,7 @@ public class HomeGridPresenter extends SendTribePresenter {
 
     @Override
     public void onResume() {
-        loadFriendList(null);
+        reload();
         loadTribeList();
         loadPendingTribeList();
     }
@@ -114,6 +119,7 @@ public class HomeGridPresenter extends SendTribePresenter {
         diskMarkTribeListAsRead.unsubscribe();
         leaveGroup.unsubscribe();
         removeGroup.unsubscribe();
+        diskUpdateTribesReceivedToNotSeen.unsubscribe();
     }
 
     @Override
@@ -125,6 +131,15 @@ public class HomeGridPresenter extends SendTribePresenter {
     @Override
     public void attachView(View v) {
         homeGridView = (HomeGridView) v;
+    }
+
+    public void reload() {
+        if (updateTribesReceivedToNotSeenSubscriber != null) {
+            updateTribesReceivedToNotSeenSubscriber.unsubscribe();
+        }
+
+        updateTribesReceivedToNotSeenSubscriber = new UpdateTribesReceivedToNotSeenSubscriber();
+        diskUpdateTribesReceivedToNotSeen.execute(updateTribesReceivedToNotSeenSubscriber);
     }
 
     public void loadFriendList(String filter) {
@@ -141,7 +156,13 @@ public class HomeGridPresenter extends SendTribePresenter {
 
     public void loadTribeList() {
         jobManager.addJobInBackground(new UpdateMessagesJob());
-        diskGetMessageReceivedListUsecase.execute(new MessageReceivedListSubscriber());
+
+        if (messageReceivedListSubscriber != null) {
+            messageReceivedListSubscriber.unsubscribe();
+        }
+
+        messageReceivedListSubscriber = new MessageReceivedListSubscriber();
+        diskGetMessageReceivedListUsecase.execute(messageReceivedListSubscriber);
     }
 
     public void loadPendingTribeList() {
@@ -316,6 +337,23 @@ public class HomeGridPresenter extends SendTribePresenter {
         @Override
         public void onNext(Void aVoid) {
 
+        }
+    }
+
+    private class UpdateTribesReceivedToNotSeenSubscriber extends DefaultSubscriber<Void> {
+
+        @Override
+        public void onCompleted() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(Void aVoid) {
+            loadFriendList(null);
         }
     }
 }

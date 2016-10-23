@@ -8,6 +8,7 @@ import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.DiskMarkTribeListAsRead;
+import com.tribe.app.domain.interactor.user.DiskUpdateMessagesReceivedToNotSeen;
 import com.tribe.app.domain.interactor.tribe.GetNotSeenDiskTribeList;
 import com.tribe.app.domain.interactor.tribe.GetPendingTribeList;
 import com.tribe.app.domain.interactor.tribe.GetReceivedDiskTribeList;
@@ -278,5 +279,12 @@ public class UserModule {
     @PerActivity
     CreateMembership provideCreateMembership(CloudUserDataRepository cloudUserDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
         return new CreateMembership(cloudUserDataRepository, threadExecutor, postExecutionThread);
+    }
+
+    @Provides
+    @PerActivity
+    @Named("diskUpdateMessagesReceivedToNotSeen")
+    UseCaseDisk provideUpdateTribesReceivedToNotSeen(DiskUpdateMessagesReceivedToNotSeen diskUpdateMessagesReceivedToNotSeen) {
+        return diskUpdateMessagesReceivedToNotSeen;
     }
 }

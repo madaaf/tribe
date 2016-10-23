@@ -549,9 +549,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @OnClick(R.id.layoutNavNewMessages)
     public void updateGrid() {
         if (!isRecording) {
-            homePresenter.updateMessagesToNotSeen(newMessages);
+            homeViewPagerAdapter.getHomeGridFragment().updateNewTribes();
             homeViewPagerAdapter.getHomeGridFragment().scrollToTop();
-            homeViewPagerAdapter.getHomeGridFragment().reloadGridAfterNewTribes();
 
             AnimationUtils.replaceView(this, txtNewMessages, progressBarNewMessages, new AnimatorListenerAdapter() {
                 @Override

@@ -2,10 +2,13 @@ package com.tribe.app.data.repository.user.datasource;
 
 import android.util.Pair;
 
+import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.ContactCache;
+import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
@@ -16,10 +19,14 @@ import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
+import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import rx.Observable;
@@ -31,6 +38,8 @@ public class DiskUserDataStore implements UserDataStore {
 
     private final UserCache userCache;
     private final ContactCache contactCache;
+    private final TribeCache tribeCache;
+    private final ChatCache chatCache;
     private final AccessToken accessToken;
 
     /**
@@ -39,10 +48,13 @@ public class DiskUserDataStore implements UserDataStore {
      * @param accessToken A {@link AccessToken} that contains the current user id.
      * @param contactCache A {@link ContactCache} that contains the cached data of the user's possible contacts
      */
-    public DiskUserDataStore(UserCache userCache, AccessToken accessToken, ContactCache contactCache) {
+    public DiskUserDataStore(UserCache userCache, AccessToken accessToken, ContactCache contactCache,
+                             TribeCache tribeCache, ChatCache chatCache) {
         this.userCache = userCache;
         this.accessToken = accessToken;
         this.contactCache = contactCache;
+        this.chatCache = chatCache;
+        this.tribeCache = tribeCache;
     }
 
     @Override
@@ -215,5 +227,50 @@ public class DiskUserDataStore implements UserDataStore {
     @Override
     public Observable<RecipientRealmInterface> getRecipientInfos(String recipientId, boolean isToGroup) {
         return Observable.just(isToGroup ? userCache.membershipForGroupId(recipientId) : userCache.friendshipForUserId(recipientId));
+    }
+
+    @Override
+    public Observable<Void> updateMessagesReceivedToNotSeen() {
+        Map<String, List<android.support.v4.util.Pair<String, Object>>> chatUpdates = new HashMap<>();
+        Map<String, List<android.support.v4.util.Pair<String, Object>>> tribeUpdates = new HashMap<>();
+
+        List<TribeRealm> tribeRealmList = tribeCache.tribesReceivedNoObs(null);
+        List<ChatRealm> chatRealmList = chatCache.messagesReceivedNoObs();
+
+        for (TribeRealm tribeRealm : tribeRealmList) {
+            List<android.support.v4.util.Pair<String, Object>> values = new ArrayList<>();
+            values.add(android.support.v4.util.Pair.create(TribeRealm.MESSAGE_RECEIVING_STATUS, MessageReceivingStatus.STATUS_NOT_SEEN));
+
+            if (tribeRealm.isToGroup() && tribeRealm.getMembershipRealm() != null
+                    && (tribeRealm.getMembershipRealm().getUpdatedAt() == null || tribeRealm.getMembershipRealm().getUpdatedAt().before(tribeRealm.getRecordedAt()))) {
+                values.add(android.support.v4.util.Pair.create(TribeRealm.GROUP_ID_UPDATED_AT, tribeRealm.getRecordedAt()));
+            } else if (!tribeRealm.isToGroup() && tribeRealm.getFrom() != null
+                    && (tribeRealm.getFrom().getUpdatedAt() == null || tribeRealm.getFrom().getUpdatedAt().before(tribeRealm.getRecordedAt()))) {
+                values.add(android.support.v4.util.Pair.create(TribeRealm.FRIEND_ID_UPDATED_AT, tribeRealm.getRecordedAt()));
+            }
+
+            tribeUpdates.put(tribeRealm.getLocalId(), values);
+        }
+
+        tribeCache.update(tribeUpdates);
+
+        for (ChatRealm chatRealm : chatRealmList) {
+            List<android.support.v4.util.Pair<String, Object>> values = new ArrayList<>();
+            values.add(android.support.v4.util.Pair.create(ChatRealm.MESSAGE_RECEIVING_STATUS, MessageReceivingStatus.STATUS_NOT_SEEN));
+
+            if (chatRealm.isToGroup() && chatRealm.getMembershipRealm() != null
+                    && (chatRealm.getMembershipRealm().getUpdatedAt() == null || chatRealm.getMembershipRealm().getUpdatedAt().before(chatRealm.getRecordedAt()))) {
+                values.add(android.support.v4.util.Pair.create(ChatRealm.GROUP_ID_UPDATED_AT, chatRealm.getRecordedAt()));
+            } else if (!chatRealm.isToGroup() && chatRealm.getFrom() != null
+                    && (chatRealm.getFrom().getUpdatedAt() == null || chatRealm.getFrom().getUpdatedAt().before(chatRealm.getRecordedAt()))) {
+                values.add(android.support.v4.util.Pair.create(ChatRealm.FRIEND_ID_UPDATED_AT, chatRealm.getRecordedAt()));
+            }
+
+            chatUpdates.put(chatRealm.getLocalId(), values);
+        }
+
+        chatCache.update(chatUpdates);
+
+        return Observable.just(null);
     }
 }

@@ -203,11 +203,6 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
     @Override
     public void renderRecipientList(List<Recipient> recipientList) {
         if (recipientList != null && !isRecording) {
-            if (shouldReloadGrid) {
-                shouldReloadGrid = false;
-                reloadGrid();
-            }
-
             Bundle bundle = new Bundle();
             bundle.putInt(TagManagerConstants.COUNT_FRIENDS, currentUser.getFriendships().size());
             bundle.putInt(TagManagerConstants.COUNT_GROUPS, currentUser.getFriendships().size());
@@ -232,7 +227,10 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
 
     @Override
     public void scrollToTop() {
-        this.recyclerViewFriends.smoothScrollToPosition(0);
+        if (homeGridAdapter != null && homeGridAdapter.getItemCount() > 15)
+            this.recyclerViewFriends.scrollToPosition(10);
+
+        this.recyclerViewFriends.postDelayed(() -> recyclerViewFriends.smoothScrollToPosition(0), 100);
     }
 
     @Override
@@ -278,11 +276,11 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
     public void reloadGrid() {
         filter = null;
         homeGridAdapter.filterList(null);
-        this.homeGridPresenter.loadFriendList(filter);
+        this.homeGridPresenter.loadFriendList(null);
     }
 
-    public void reloadGridAfterNewTribes() {
-        shouldReloadGrid = true;
+    public void updateNewTribes() {
+        this.homeGridPresenter.reload();
     }
 
     private void init() {
@@ -578,7 +576,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
      * Loads all friends / tribes.
      */
     private void loadData() {
-        subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS).onBackpressureDrop().subscribe(t ->  {
+        subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS).onBackpressureDrop().observeOn(AndroidSchedulers.mainThread()).subscribe(t ->  {
             if (isAdded()) this.homeGridPresenter.onCreate();
         }));
     }

@@ -52,4 +52,5 @@ public interface ChatCache {
     List<ChatRealm> messagesPending(String recipientId);
     RealmList<MessageRecipientRealm> createMessageRecipientRealm(List<MessageRecipientRealm> messageRecipientRealmList);
     Observable<List<ChatRealm>> messagesReceived(String friendshipId);
+    List<ChatRealm> messagesReceivedNoObs();
 }

@@ -170,4 +170,6 @@ public interface UserDataStore {
     Observable<MembershipRealm> createMembership(String groupId);
 
     Observable<RecipientRealmInterface> getRecipientInfos(String recipientId, boolean isToGroup);
+
+    Observable<Void> updateMessagesReceivedToNotSeen();
 }

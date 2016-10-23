@@ -30,7 +30,6 @@ import com.tribe.app.data.network.job.UpdateMessagesJob;
 import com.tribe.app.data.network.job.UpdateMessagesVideoErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateScoreJob;
 import com.tribe.app.data.network.job.UpdateTribeDownloadedJob;
-import com.tribe.app.data.network.job.UpdateTribeListNotSeenStatusJob;
 import com.tribe.app.data.network.job.UpdateTribeToDownloadJob;
 import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
@@ -162,7 +161,6 @@ public interface ApplicationComponent {
     void inject(UpdateTribesErrorStatusJob updateTribesErrorStatusJob);
     void inject(MarkTribeListAsReadJob markTribeListAsReadJob);
     void inject(UpdateMessagesErrorStatusJob updateMessagesErrorStatusJob);
-    void inject(UpdateTribeListNotSeenStatusJob updateTribeListNotSeenStatusJob);
     void inject(UpdateChatMessagesJob updateChatMessagesJob);
     void inject(UpdateTribeDownloadedJob updateTribeDownloadedJob);
     void inject(DownloadChatVideoJob downloadChatVideoJob);

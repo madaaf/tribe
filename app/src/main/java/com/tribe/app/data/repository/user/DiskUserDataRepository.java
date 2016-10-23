@@ -398,4 +398,10 @@ public class DiskUserDataRepository implements UserRepository {
                     }
                 });
     }
+
+    @Override
+    public Observable<Void> updateMessagesReceivedToNotSeen() {
+        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+        return userDataStore.updateMessagesReceivedToNotSeen();
+    }
 }

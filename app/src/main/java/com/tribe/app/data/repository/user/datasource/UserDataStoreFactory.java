@@ -83,7 +83,7 @@ public class UserDataStoreFactory {
     /**
      * Create {@link UserDataStore}
      */
-    public UserDataStore createDiskDataStore() { return new DiskUserDataStore(userCache, accessToken, contactCache); }
+    public UserDataStore createDiskDataStore() { return new DiskUserDataStore(userCache, accessToken, contactCache, tribeCache, chatCache); }
 
     /**
      * Create {@link UserDataStore} to retrieve data from the Cloud.

@@ -763,4 +763,20 @@ public class ChatCacheImpl implements ChatCache {
             }
         });
     }
+
+    @Override
+    public List<ChatRealm> messagesReceivedNoObs() {
+        List<ChatRealm> result = new ArrayList<>();
+
+        RealmResults<ChatRealm> results = realm.where(ChatRealm.class)
+                .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_RECEIVED)
+                .notEqualTo("from.id", currentUser.getId())
+                .findAllSorted("recorded_at", Sort.DESCENDING);
+
+        if (results != null && results.size() > 0) {
+            result = realm.copyFromRealm(results);
+        }
+
+        return result;
+    }
 }

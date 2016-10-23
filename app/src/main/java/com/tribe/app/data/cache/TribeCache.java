@@ -52,4 +52,5 @@ public interface TribeCache {
     Observable<List<TribeRealm>> tribesToDownload(String recipientId);
     List<TribeRealm> tribesDownloading();
     void refactorTribeError(String tribeId);
+    void updateTribesReceivedToNotSeen();
 }

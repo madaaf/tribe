@@ -103,6 +103,10 @@
 	<string name="permission_screen_location_next_popup_description">You are going to feel half the magic.</string>
 	<string name="permission_screen_location_next_popup_cancel">No, thanks</string>
 	<string name="permission_screen_location_next_popup_authorize">Turn on!</string>
+	<string name="permission_photos_disabled_alert_title">Photo Album permission denied</string>
+	<string name="permission_photos_disabled_alert_description">Don\'t worry! You can enable it right now in your Settings.</string>
+	<string name="permission_photos_disabled_alert_redirect">Go to Settings</string>
+	<string name="permission_photos_disabled_alert_cancel">Stay blocked</string>
 	
 	<!-- Rating -->
 	<string name="rating_title">Send us 5 stars\nin 1 minute!</string>
@@ -201,6 +205,8 @@
 	<string name="chat_are_typing">are typing</string>
 	<string name="chat_and">and</string>
 	<string name="chat_copied_to_clipboard">Copied to clipboard!</string>
+	<string name="chat_attachment_more_save">Save in camera roll</string>
+	<string name="chat_attachment_more_save_success">Saved!</string>
 	
 	<!-- Private Group -->
 	<string name="group_family_title">:house_with_garden: Family</string>

@@ -103,6 +103,10 @@
 	<string name="permission_screen_location_next_popup_description">Vous allez passer à côté d\'une partie de la magie.</string>
 	<string name="permission_screen_location_next_popup_cancel">Non merci</string>
 	<string name="permission_screen_location_next_popup_authorize">Activer !</string>
+	<string name="permission_photos_disabled_alert_title">Accès aux Photos désactivé</string>
+	<string name="permission_photos_disabled_alert_description">Rendez-vous dès maintenant dans les Paramètres de l\'iPhone pour l\'activer !</string>
+	<string name="permission_photos_disabled_alert_redirect">Aller dans Paramètres</string>
+	<string name="permission_photos_disabled_alert_cancel">Rester bloqué</string>
 	
 	<!-- Rating -->
 	<string name="rating_title">Envoyez-nous 5 étoiles\nen 1 minute !</string>
@@ -201,6 +205,8 @@
 	<string name="chat_are_typing">sont en train d\'écrire</string>
 	<string name="chat_and">et</string>
 	<string name="chat_copied_to_clipboard">Copié dans le presse-papier</string>
+	<string name="chat_attachment_more_save">Sauvegarder dans votre bibliothèque</string>
+	<string name="chat_attachment_more_save_success">Sauvegardé !</string>
 	
 	<!-- Private Group -->
 	<string name="group_family_title">:house_with_garden: Famille</string>

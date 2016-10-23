@@ -311,4 +311,9 @@ public class CloudUserDataRepository implements UserRepository {
     public Observable<Recipient> getRecipientInfos(String recipientId, boolean isToGroup) {
         return null;
     }
+
+    @Override
+    public Observable<Void> updateMessagesReceivedToNotSeen() {
+        return null;
+    }
 }
