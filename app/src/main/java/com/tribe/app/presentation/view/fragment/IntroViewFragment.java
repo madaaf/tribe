@@ -133,7 +133,6 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
         final View fragmentView = inflater.inflate(R.layout.fragment_intro_view, container, false);
 
         if (savedInstanceState != null) {
-            System.out.println("ON SAVE INSTANCE STATE RESTORE");
             if (savedInstanceState.get(LOGIN_ENTITY) != null) loginEntity = (LoginEntity) savedInstanceState.getSerializable(LOGIN_ENTITY);
             if (savedInstanceState.get(ERROR_LOGIN) != null) errorLogin = (ErrorLogin) savedInstanceState.getSerializable(ERROR_LOGIN);
             if (savedInstanceState.get(PIN) != null) pin = (Pin) savedInstanceState.getSerializable(PIN);
@@ -188,7 +187,6 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        System.out.println("ON SAVE INSTANCE STATE");
         if (loginEntity != null) outState.putSerializable(LOGIN_ENTITY, loginEntity);
         if (errorLogin != null) outState.putSerializable(ERROR_LOGIN, errorLogin);
         if (pin != null) outState.putSerializable(PIN, pin);

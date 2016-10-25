@@ -283,10 +283,6 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
         this.homeGridPresenter.reload();
     }
 
-    public void updateTribeSeenListForRecipient(Recipient recipient, List<TribeMessage> tribeMessageList) {
-        homeGridAdapter.updateTribeSeenForRecipient(recipient, tribeMessageList);
-    }
-
     private void init() {
         this.getComponent(UserComponent.class).inject(this);
         this.currentUser = getCurrentUser();
@@ -356,9 +352,9 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
                 }));
 
         subscriptions.add(homeGridAdapter.onRecordStart()
+                .doOnNext(view -> isRecording = true)
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .map(recipient -> {
-                    isRecording = true;
                     timeRecording = System.currentTimeMillis();
                     TribeMessage currentTribe = homeGridPresenter.createTribe(currentUser, recipient, tribeMode);
                     homeGridAdapter.updateItemWithTribe(recipient.getPosition(), currentTribe);
@@ -373,7 +369,6 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .doOnNext(recipient -> {
-                    isRecording = false;
                     TileView tileView = (TileView) layoutManager.findViewByPosition(recipient.getPosition());
                     if ((System.currentTimeMillis() - timeRecording) > TIME_MIN_RECORDING) {
                         tileView.showTapToCancel(recipient.getTribe(), tribeMode);
@@ -388,11 +383,23 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
         subscriptions.add(homeGridAdapter.onClickTapToCancel()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .subscribe(recipient -> {
+                    isRecording = false;
                     cleanupCurrentTribe(recipient);
                 }));
 
         subscriptions.add(homeGridAdapter.onNotCancel()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
+                .filter(recipient -> {
+                    isRecording = false;
+                    TribeMessage tr = recipient.getTribe();
+
+                    if (tr == null || tr.getTo() == null) {
+                        cleanupCurrentTribe(recipient);
+                        return false;
+                    }
+
+                    return true;
+                })
                 .map(recipient -> {
                     TribeMessage tr = recipient.getTribe();
                     homeGridPresenter.sendTribe(recipient.getTribe());

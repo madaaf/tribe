@@ -86,14 +86,16 @@ public class RxFacebook {
                         List<ContactFBRealm> contactFBRealmList = new ArrayList<>();
 
                         try {
-                            JSONArray array = response.getJSONObject().getJSONArray("data");
+                            if (response.getJSONObject() != null) {
+                                JSONArray array = response.getJSONObject().getJSONArray("data");
 
-                            for (int i = 0; i < array.length(); i++) {
-                                JSONObject object = array.getJSONObject(i);
-                                ContactFBRealm contactFBRealm = new ContactFBRealm();
-                                contactFBRealm.setId(object.getString("id"));
-                                contactFBRealm.setName(object.getString("name"));
-                                contactFBRealmList.add(contactFBRealm);
+                                for (int i = 0; i < array.length(); i++) {
+                                    JSONObject object = array.getJSONObject(i);
+                                    ContactFBRealm contactFBRealm = new ContactFBRealm();
+                                    contactFBRealm.setId(object.getString("id"));
+                                    contactFBRealm.setName(object.getString("name"));
+                                    contactFBRealmList.add(contactFBRealm);
+                                }
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
