@@ -39,6 +39,7 @@ import com.tribe.app.domain.interactor.text.GetDiskChatMessageList;
 import com.tribe.app.domain.interactor.text.SendChat;
 import com.tribe.app.domain.interactor.tribe.CloudMarkTribeAsSave;
 import com.tribe.app.domain.interactor.tribe.CloudMarkTribeListAsRead;
+import com.tribe.app.domain.interactor.tribe.ConfirmTribe;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.domain.interactor.tribe.TribeRepository;
@@ -328,6 +329,12 @@ public class ApplicationModule {
     @Named("diskDeleteTribe")
     DeleteTribe provideDiskDeleteTribe(DeleteTribe deleteTribeDisk) {
         return deleteTribeDisk;
+    }
+
+    @Provides
+    @Named("diskConfirmTribe")
+    ConfirmTribe provideDiskConfirmTribe(ConfirmTribe confirmTribeDisk) {
+        return confirmTribeDisk;
     }
 
     @Provides

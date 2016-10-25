@@ -61,6 +61,7 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
     private static final String ERROR_LOGIN = "ERROR_LOGIN";
     private static final String PHONE_NUMBER = "PHONE_NUMBER";
     private static final String CODE = "CODE";
+    private static final String COUNTDOWN = "COUNTDOWN";
 
     public static IntroViewFragment newInstance() {
         Bundle args = new Bundle();
@@ -110,6 +111,7 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
     private Pin pin;
     private ErrorLogin errorLogin;
     private String phoneNumber, code;
+    private int currentCountdown = 0;
     private boolean countdownActive;
 
     public static final int PAGE_PHONE_NUMBER = 0,
@@ -119,7 +121,6 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private Subscription countdownSubscription;
-
 
     /**
      * Lifecycle methods
@@ -132,11 +133,15 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
         final View fragmentView = inflater.inflate(R.layout.fragment_intro_view, container, false);
 
         if (savedInstanceState != null) {
+            System.out.println("ON SAVE INSTANCE STATE RESTORE");
             if (savedInstanceState.get(LOGIN_ENTITY) != null) loginEntity = (LoginEntity) savedInstanceState.getSerializable(LOGIN_ENTITY);
             if (savedInstanceState.get(ERROR_LOGIN) != null) errorLogin = (ErrorLogin) savedInstanceState.getSerializable(ERROR_LOGIN);
             if (savedInstanceState.get(PIN) != null) pin = (Pin) savedInstanceState.getSerializable(PIN);
             if (savedInstanceState.get(CODE) != null) code = savedInstanceState.getString(CODE);
             if (savedInstanceState.get(PHONE_NUMBER) != null) phoneNumber = savedInstanceState.getString(PHONE_NUMBER);
+            if (savedInstanceState.get(COUNTDOWN) != null) {
+                currentCountdown = savedInstanceState.getInt(COUNTDOWN);
+            }
         }
 
         initDependencyInjector();
@@ -145,18 +150,26 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
         initPhoneNumberView();
         initPresenter();
 
+        if (currentCountdown != 0) initCountdown(currentCountdown);
+
         return fragmentView;
     }
 
     @Override
     public void onPause() {
         videoViewIntro.releasePlayer();
+        currentCountdown = viewCode.getCurrentCountdown();
+        viewCode.removeCountdown();
+        if (countdownSubscription != null) countdownSubscription.unsubscribe();
+
         super.onPause();
     }
 
     @Override
     public void onResume() {
         initPlayerView();
+        if (countdownActive) initCountdown(currentCountdown);
+
         super.onResume();
     }
 
@@ -175,11 +188,13 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        System.out.println("ON SAVE INSTANCE STATE");
         if (loginEntity != null) outState.putSerializable(LOGIN_ENTITY, loginEntity);
         if (errorLogin != null) outState.putSerializable(ERROR_LOGIN, errorLogin);
         if (pin != null) outState.putSerializable(PIN, pin);
         if (!StringUtils.isEmpty(phoneNumber)) outState.putString(PHONE_NUMBER, phoneNumber);
         if (!StringUtils.isEmpty(code)) outState.putString(CODE, code);
+        if (countdownActive) outState.putInt(COUNTDOWN, viewCode.getCurrentCountdown());
     }
 
     /**
@@ -324,7 +339,7 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
 
     private void requestCodeInResend() {
         introPresenter.requestCode(phoneNumber);
-        initCountdown();
+        initCountdown(0);
     }
 
     private void confirmPhoneNumber() {
@@ -357,10 +372,10 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
         }));
     }
 
-    private void initCountdown() {
+    private void initCountdown(int currentCountdown) {
         if (!countdownActive) {
             countdownActive = true;
-            viewCode.startCountdown();
+            viewCode.startCountdown(currentCountdown);
             countdownSubscription = viewCode.countdownExpired().subscribe(aVoid -> {
                 resend();
                 countdownActive = false;
@@ -376,7 +391,7 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
         viewPhoneNumber.fadeOutNext();
         txtIntroMessage.setText(getString(R.string.onboarding_step_code));
         viewPager.setCurrentItem(PAGE_CODE, true);
-        initCountdown();
+        initCountdown(0);
         viewCode.openKeyboard();
     }
 

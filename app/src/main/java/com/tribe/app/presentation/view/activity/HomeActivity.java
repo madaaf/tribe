@@ -59,6 +59,7 @@ import com.tribe.app.presentation.view.widget.CustomViewPager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -377,6 +378,13 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == TRIBES_RESULT) {
+            if (resultCode == RESULT_OK && data.hasExtra(TribeActivity.RECIPIENT) && data.hasExtra(TribeActivity.TRIBES_SEEN)) {
+                Recipient recipient = (Recipient) data.getSerializableExtra(TribeActivity.RECIPIENT);
+                List<TribeMessage> tribeSeenList = (ArrayList<TribeMessage>) data.getSerializableExtra(TribeActivity.TRIBES_SEEN);
+                if (homeViewPagerAdapter.getHomeGridFragment() != null)
+                    homeViewPagerAdapter.getHomeGridFragment().updateTribeSeenListForRecipient(recipient, tribeSeenList);
+            }
+
             if (!locationContext.get() && !locationPopup.get() && !PermissionUtils.hasPermissionsLocation(this)) {
                 LocationDialogFragment locationDialogFragment = LocationDialogFragment.newInstance();
                 locationDialogFragment.show(getSupportFragmentManager(), LocationDialogFragment.class.getName());

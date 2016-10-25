@@ -10,6 +10,7 @@ import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.exception.DefaultErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
+import com.tribe.app.domain.interactor.tribe.ConfirmTribe;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.GetReceivedDiskTribeList;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
@@ -35,8 +36,9 @@ public class TribePresenter extends SendTribePresenter implements Presenter {
                           @Named("jobManagerDownload") JobManager jobManagerDownload,
                           @Named("diskGetReceivedTribeList") UseCaseDisk diskGetReceivedTribeList,
                           @Named("diskSaveTribe") SaveTribe diskSaveTribe,
-                          @Named("diskDeleteTribe") DeleteTribe diskDeleteTribe) {
-        super(jobManager, jobManagerDownload, diskSaveTribe, diskDeleteTribe);
+                          @Named("diskDeleteTribe") DeleteTribe diskDeleteTribe,
+                          @Named("diskConfirmTribe") ConfirmTribe diskConfirmTribe) {
+        super(jobManager, jobManagerDownload, diskSaveTribe, diskDeleteTribe, diskConfirmTribe);
         this.diskGetReceivedTribeList = (GetReceivedDiskTribeList) diskGetReceivedTribeList;
     }
 

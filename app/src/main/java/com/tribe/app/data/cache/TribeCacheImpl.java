@@ -575,4 +575,10 @@ public class TribeCacheImpl implements TribeCache {
             otherRealm.close();
         }
     }
+
+    @Override
+    public TribeRealm get(String tribeId) {
+        TribeRealm tribeRealm = realm.where(TribeRealm.class).equalTo("localId", tribeId).findFirst();
+        return realm.copyFromRealm(tribeRealm);
+    }
 }

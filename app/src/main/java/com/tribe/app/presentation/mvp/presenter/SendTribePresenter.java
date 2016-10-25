@@ -7,6 +7,7 @@ import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.exception.ErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.tribe.ConfirmTribe;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
@@ -20,18 +21,22 @@ public abstract class SendTribePresenter implements Presenter {
     protected JobManager jobManagerDownload;
     protected SaveTribe diskSaveTribeUsecase;
     protected DeleteTribe diskDeleteTribeUsecase;
+    protected ConfirmTribe diskConfirmTribeUsecase;
 
     private TribeCreateSubscriber tribeCreateSubscriber;
     private TribeDeleteSubscriber tribeDeleteSubscriber;
+    private TribeConfirmSubscriber tribeConfirmSubscriber;
 
     public SendTribePresenter(JobManager jobManager,
                               JobManager jobManagerDownload,
                               SaveTribe diskSaveTribe,
-                              DeleteTribe diskDeleteTribe) {
+                              DeleteTribe diskDeleteTribe,
+                              ConfirmTribe diskConfirmTribe) {
         this.jobManager = jobManager;
         this.jobManagerDownload = jobManagerDownload;
         this.diskSaveTribeUsecase = diskSaveTribe;
         this.diskDeleteTribeUsecase = diskDeleteTribe;
+        this.diskConfirmTribeUsecase = diskConfirmTribe;
     }
 
     @Override
@@ -58,6 +63,17 @@ public abstract class SendTribePresenter implements Presenter {
         diskSaveTribeUsecase.setTribe(tribe);
         diskSaveTribeUsecase.execute(tribeCreateSubscriber);
         return tribe;
+    }
+
+    public void confirmTribe(String tribeId) {
+        if (tribeConfirmSubscriber != null) {
+            tribeConfirmSubscriber.unsubscribe();
+            diskConfirmTribeUsecase.unsubscribe();
+        }
+
+        tribeConfirmSubscriber = new TribeConfirmSubscriber();
+        diskConfirmTribeUsecase.setTribeId(tribeId);
+        diskConfirmTribeUsecase.execute(tribeConfirmSubscriber);
     }
 
     public void deleteTribe(TribeMessage... tribeList) {
@@ -123,6 +139,23 @@ public abstract class SendTribePresenter implements Presenter {
         @Override
         public void onError(Throwable e) {
 
+        }
+
+        @Override
+        public void onNext(Void aVoid) {
+
+        }
+    }
+
+    protected final class TribeConfirmSubscriber extends DefaultSubscriber<Void> {
+
+        @Override
+        public void onCompleted() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
         }
 
         @Override

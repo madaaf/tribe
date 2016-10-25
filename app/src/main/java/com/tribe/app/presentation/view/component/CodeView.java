@@ -84,6 +84,7 @@ public class CodeView extends FrameLayout {
     private PublishSubject<Void> countdownExpired = PublishSubject.create();
 
     private int timeCodeCountdown;
+    private int currentCountdown = 0;
 
     public CodeView(Context context) {
         super(context);
@@ -191,25 +192,36 @@ public class CodeView extends FrameLayout {
         }, 200);
     }
 
-    public void startCountdown() {
+    public void startCountdown(int startTime) {
         timeCodeCountdown = getContext().getResources().getInteger(R.integer.time_code_countdown);
         progressBarCountdown.setVisibility(VISIBLE);
-        progressBarCountdown.setProgress(0);
+        progressBarCountdown.setProgress(startTime);
 
         ObjectAnimator animator = ObjectAnimator.ofInt(progressBarCountdown, "progress", progressBarCountdown.getMax());
         animator.setDuration(timeCodeCountdown);
+        animator.addUpdateListener(animation -> {
+            currentCountdown = (Integer) animation.getAnimatedValue();
+        });
+
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
                 countdownExpired.onNext(null);
+                countdownExpired.onCompleted();
+                currentCountdown = 0;
             }
         });
+
         animator.start();
     }
 
     public void removeCountdown() {
         progressBarCountdown.setVisibility(INVISIBLE);
+    }
+
+    public int getCurrentCountdown() {
+        return currentCountdown;
     }
 
     /**

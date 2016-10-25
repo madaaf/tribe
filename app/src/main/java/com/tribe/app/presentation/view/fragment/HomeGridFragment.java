@@ -227,7 +227,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
 
     @Override
     public void scrollToTop() {
-        if (homeGridAdapter != null && homeGridAdapter.getItemCount() > 15)
+        if (homeGridAdapter != null && layoutManager.findFirstVisibleItemPosition() > 15)
             this.recyclerViewFriends.scrollToPosition(10);
 
         this.recyclerViewFriends.postDelayed(() -> recyclerViewFriends.smoothScrollToPosition(0), 100);
@@ -281,6 +281,10 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
 
     public void updateNewTribes() {
         this.homeGridPresenter.reload();
+    }
+
+    public void updateTribeSeenListForRecipient(Recipient recipient, List<TribeMessage> tribeMessageList) {
+        homeGridAdapter.updateTribeSeenForRecipient(recipient, tribeMessageList);
     }
 
     private void init() {
@@ -358,6 +362,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
                     timeRecording = System.currentTimeMillis();
                     TribeMessage currentTribe = homeGridPresenter.createTribe(currentUser, recipient, tribeMode);
                     homeGridAdapter.updateItemWithTribe(recipient.getPosition(), currentTribe);
+                    recyclerViewFriends.postDelayed(() -> homeGridAdapter.notifyItemChanged(recipient.getPosition()), 200);
                     recyclerViewFriends.requestDisallowInterceptTouchEvent(true);
                     return currentTribe.getLocalId();
                 })
@@ -388,9 +393,16 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
 
         subscriptions.add(homeGridAdapter.onNotCancel()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
-                .subscribe(recipient -> {
+                .map(recipient -> {
+                    TribeMessage tr = recipient.getTribe();
                     homeGridPresenter.sendTribe(recipient.getTribe());
                     homeGridAdapter.updateItemWithTribe(recipient.getPosition(), null);
+                    return tr.getLocalId();
+                })
+                .delay(2000, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> {
+                    homeGridPresenter.confirmTribe(s);
                 }));
 
         subscriptions.add(homeGridAdapter.onClickOpenPoints()
@@ -430,6 +442,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
     private void cleanupCurrentTribe(Recipient recipient) {
         homeGridPresenter.deleteTribe(recipient.getTribe());
         homeGridAdapter.updateItemWithTribe(recipient.getPosition(), null);
+        homeGridAdapter.notifyItemChanged(recipient.getPosition());
     }
 
     private void setupBottomSheetMore(Recipient recipient) {
@@ -441,8 +454,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
         moreTypes.add(new MoreType(getString(R.string.grid_menu_friendship_clear_tribes), MoreType.CLEAR_MESSAGES));
 
         if (recipient instanceof Friendship) {
-            moreTypes.add(new MoreType(getString(R.string.grid_menu_friendship_hide), MoreType.HIDE));
-            moreTypes.add(new MoreType(getString(R.string.grid_menu_friendship_block), MoreType.BLOCK_HIDE));
+            moreTypes.add(new MoreType(getString(R.string.grid_menu_friendship_hide, recipient.getDisplayName()), MoreType.HIDE));
+            moreTypes.add(new MoreType(getString(R.string.grid_menu_friendship_block, recipient.getDisplayName()), MoreType.BLOCK_HIDE));
         }
 
         if (recipient instanceof Membership) {
@@ -576,7 +589,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
      * Loads all friends / tribes.
      */
     private void loadData() {
-        subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS).onBackpressureDrop().observeOn(AndroidSchedulers.mainThread()).subscribe(t ->  {
+        subscriptions.add(Observable.timer(100, TimeUnit.MILLISECONDS).onBackpressureDrop().observeOn(AndroidSchedulers.mainThread()).subscribe(t ->  {
             if (isAdded()) this.homeGridPresenter.onCreate();
         }));
     }

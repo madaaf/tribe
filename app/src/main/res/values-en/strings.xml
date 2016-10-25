@@ -177,11 +177,11 @@
 	<string name="grid_menu_group_leave">Leave group</string>
 	<string name="grid_menu_group_leave_last_admin_error">Set a member as admin before leaving this group</string>
 	<string name="grid_menu_group_delete">Delete group</string>
-	<string name="grid_menu_friendship_hide">Hide</string>
-	<string name="grid_menu_friendship_unhide">Add</string>
-	<string name="grid_menu_friendship_block">Block</string>
-	<string name="grid_menu_friendship_unblock">Add</string>
-	<string name="grid_menu_friendship_report">Report</string>
+	<string name="grid_menu_friendship_hide">Hide %1$s</string>
+	<string name="grid_menu_friendship_unhide">Add %1$s</string>
+	<string name="grid_menu_friendship_block">Block %1$s</string>
+	<string name="grid_menu_friendship_unblock">Add %1$s</string>
+	<string name="grid_menu_friendship_report">Report %1$s</string>
 	<string name="grid_menu_friendship_report_success">Reported</string>
 	<string name="grid_menu_friendship_clear_tribes">Clear messages</string>
 	<string name="grid_menu_select_language">Subtitles language</string>
@@ -296,7 +296,7 @@
 	<string name="settings_audio_title">Audio only</string>
 	<string name="settings_audio_subtitle">Audio mode by default when you open the app.</string>
 	<string name="settings_mute_sounds_title">Sounds</string>
-	<string name="settings_mute_sounds_subtitle">Mute sounds when you tap buttons.</string>
+	<string name="settings_mute_sounds_subtitle">Enable sounds when you tap buttons.</string>
 	<string name="settings_preload_title">Preload</string>
 	<string name="settings_preload_subtitle">Incoming messages will automatically be ready to view.</string>
 	<string name="settings_facebook_sync_title">Facebook friends</string>

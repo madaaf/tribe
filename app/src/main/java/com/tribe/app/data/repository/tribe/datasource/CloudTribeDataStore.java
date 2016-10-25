@@ -140,4 +140,9 @@ public class CloudTribeDataStore implements TribeDataStore {
         String req = context.getString(R.string.mutation, markAsSaved);
         return this.tribeApi.markTribeAsSave(req);
     }
+
+    @Override
+    public Observable<Void> confirmTribe(String tribeId) {
+        return null;
+    }
 }

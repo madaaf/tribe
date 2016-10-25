@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.activity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -108,8 +110,6 @@ public class TribeActivity extends BaseActivity implements TribeView {
     protected void onResume() {
         super.onResume();
 
-        //startService(DownloadTribeService.getCallingIntent(this, recipient.getSubId()));
-
         viewTribePager.onResume();
         tribePresenter.onResume();
     }
@@ -171,6 +171,10 @@ public class TribeActivity extends BaseActivity implements TribeView {
                 .onDismissHorizontal()
                 .doOnNext(aVoid -> {
                     tribePresenter.markTribeListAsRead(recipient, viewTribePager.getTribeListSeens());
+                    Intent intentResult = new Intent();
+                    intentResult.putExtra(TRIBES_SEEN, (Serializable) viewTribePager.getTribeListSeens());
+                    intentResult.putExtra(RECIPIENT, recipient);
+                    setResult(Activity.RESULT_OK, intentResult);
                 })
                 .delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
 
@@ -179,6 +183,10 @@ public class TribeActivity extends BaseActivity implements TribeView {
                 .onDismissVertical()
                 .doOnNext(aVoid -> {
                     tribePresenter.markTribeListAsRead(recipient, viewTribePager.getTribeListSeens());
+                    Intent intentResult = new Intent();
+                    intentResult.putExtra(TRIBES_SEEN, (Serializable) viewTribePager.getTribeListSeens());
+                    intentResult.putExtra(RECIPIENT, recipient);
+                    setResult(Activity.RESULT_OK, intentResult);
                 })
                 .delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
 

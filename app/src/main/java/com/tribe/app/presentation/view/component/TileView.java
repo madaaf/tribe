@@ -63,6 +63,10 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class TileView extends SquareFrameLayout {
 
+    public final static int TYPE_GRID = 0;
+    public final static int TYPE_TILE = 1;
+    public final static int TYPE_SUPPORT = 2;
+
     private static final float BOUNCINESS_INSIDE = 10f;
     private static final float SPEED_INSIDE = 5f;
     private static final float BOUNCINESS_OUTSIDE = 1f;
@@ -70,9 +74,6 @@ public class TileView extends SquareFrameLayout {
     private static final SpringConfig SPRING_NO_BOUNCE = SpringConfig.fromBouncinessAndSpeed(BOUNCINESS_OUTSIDE, SPEED_OUTSIDE);
     private static final SpringConfig SPRING_BOUNCE = SpringConfig.fromBouncinessAndSpeed(BOUNCINESS_INSIDE, SPEED_INSIDE);
 
-    private final static int TYPE_GRID = 0;
-    private final static int TYPE_TILE = 1;
-    private final static int TYPE_SUPPORT = 2;
     private final float DIFF_DOWN = 20f;
     private final int LONG_PRESS = 200;
     private final int FADE_DURATION = 200;
@@ -555,28 +556,35 @@ public class TileView extends SquareFrameLayout {
         TribeMessage lastTribe = computeMostRecentTribe(receivedTribes, sentTribes, errorTribes);
 
         boolean isFinalStatus = false, isLoading = false;
-        int label = getStatusForType(MessageSendingStatus.STATUS_NONE);
+        int label = MessageSendingStatus.getStrRes(MessageSendingStatus.STATUS_NONE, type);
         int drawableRes = R.drawable.picto_tap_to_view;
         int textAppearence = R.style.Caption_Black_40;
 
         if (lastTribe != null && lastTribe.getMessageSendingStatus() != null) {
             switch (lastTribe.getMessageSendingStatus()) {
                 case MessageSendingStatus.STATUS_SENDING: case MessageSendingStatus.STATUS_PENDING:
-                    label = getStatusForType(lastTribe.getMessageSendingStatus());
+                    label = MessageSendingStatus.getStrRes(lastTribe.getMessageSendingStatus(), type);
                     drawableRes = R.drawable.picto_sending;
                     textAppearence = R.style.Caption_White_1;
                     isFinalStatus = true;
                     break;
 
+                case MessageSendingStatus.STATUS_CONFIRMED:
+                    label = MessageSendingStatus.getStrRes(lastTribe.getMessageSendingStatus(), type);
+                    drawableRes = R.drawable.picto_delivered;
+                    textAppearence = R.style.Caption_White_1;
+                    isFinalStatus = true;
+                    break;
+
                 case MessageSendingStatus.STATUS_SENT:
-                    label = getStatusForType(lastTribe.getMessageSendingStatus());
+                    label = MessageSendingStatus.getStrRes(lastTribe.getMessageSendingStatus(), type);
                     drawableRes = R.drawable.picto_sent;
                     textAppearence = R.style.Caption_White_1;
                     isFinalStatus = true;
                     break;
 
                 case MessageSendingStatus.STATUS_OPENED: case MessageSendingStatus.STATUS_OPENED_PARTLY:
-                    label = getStatusForType(lastTribe.getMessageSendingStatus());
+                    label = MessageSendingStatus.getStrRes(lastTribe.getMessageSendingStatus(), type);
                     drawableRes = R.drawable.picto_opened;
                     textAppearence = R.style.Caption_Black_40;
                     isFinalStatus = true;
@@ -629,22 +637,6 @@ public class TileView extends SquareFrameLayout {
         }
 
         if (viewNewText != null) viewNewText.setVisibility(receivedMessages != null && receivedMessages.size() > 0 ? View.VISIBLE : View.GONE);
-    }
-
-    private int getStatusForType(@MessageSendingStatus.Status String status) {
-        int res = 0;
-
-        if (status.equals(MessageSendingStatus.STATUS_NONE)) {
-            res = type == TYPE_SUPPORT ? R.string.grid_support_status_default : R.string.grid_friendship_status_default;
-        } else if (status.equals(MessageSendingStatus.STATUS_PENDING) || status.equals(MessageSendingStatus.STATUS_SENDING)) {
-            res = type == TYPE_SUPPORT ? R.string.grid_support_status_sending : R.string.grid_friendship_status_sending;
-        } else if (status.equals(MessageSendingStatus.STATUS_SENT)) {
-            res = type == TYPE_SUPPORT ? R.string.grid_support_status_sent : R.string.grid_friendship_status_sent;
-        } else if (status.equals(MessageSendingStatus.STATUS_OPENED) || status.equals(MessageSendingStatus.STATUS_OPENED_PARTLY)) {
-            res = type == TYPE_SUPPORT ? R.string.grid_support_status_opened : R.string.grid_friendship_status_opened;
-        }
-
-        return res;
     }
 
     public void setBackground(int position) {
@@ -719,24 +711,12 @@ public class TileView extends SquareFrameLayout {
         setTag(R.id.progress_bar_animation, animation);
     }
 
-    private String computeStrStatus(@MessageSendingStatus.Status String status) {
-        return MessageSendingStatus.getStrRes(getContext(), status);
-    }
-
-    private int computeIconStatus(@MessageSendingStatus.Status String status) {
-        return MessageSendingStatus.getIconRes(status);
-    }
 
     private TribeMessage computeMostRecentTribe(List<TribeMessage> received, List<TribeMessage> sent, List<TribeMessage> error) {
         TribeMessage recentReceived = received != null && received.size() > 0 ? received.get(received.size() - 1) : null;
         TribeMessage recentSent = sent != null && sent.size() > 0 ? sent.get(sent.size() - 1) : null;
         TribeMessage recentError = error != null && error.size() > 0 ? error.get(error.size() - 1) : null;
         return TribeMessage.getMostRecentTribe(recentReceived, recentSent, recentError);
-    }
-
-    private TribeMessage computeMostRecentSentTribe(List<TribeMessage> sent) {
-        TribeMessage recentSent = sent != null && sent.size() > 0 ? sent.get(sent.size() - 1) : null;
-        return recentSent;
     }
 
     private void setTextAppearence(TextView textView, int resId) {

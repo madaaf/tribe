@@ -6,9 +6,9 @@ import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
+import com.tribe.app.domain.interactor.tribe.ConfirmTribe;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.DiskMarkTribeListAsRead;
-import com.tribe.app.domain.interactor.user.DiskUpdateMessagesReceivedToNotSeen;
 import com.tribe.app.domain.interactor.tribe.GetNotSeenDiskTribeList;
 import com.tribe.app.domain.interactor.tribe.GetPendingTribeList;
 import com.tribe.app.domain.interactor.tribe.GetReceivedDiskTribeList;
@@ -20,6 +20,7 @@ import com.tribe.app.domain.interactor.user.CreateMembership;
 import com.tribe.app.domain.interactor.user.DiskFindContactByValue;
 import com.tribe.app.domain.interactor.user.DiskSearchResults;
 import com.tribe.app.domain.interactor.user.DiskUpdateFriendship;
+import com.tribe.app.domain.interactor.user.DiskUpdateMessagesReceivedToNotSeen;
 import com.tribe.app.domain.interactor.user.DoBootstrapSupport;
 import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
 import com.tribe.app.domain.interactor.user.DoRegister;
@@ -138,6 +139,13 @@ public class UserModule {
     @Named("diskDeleteTribe")
     DeleteTribe provideDiskDeleteTribe(DeleteTribe deleteTribeDisk) {
         return deleteTribeDisk;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("diskConfirmTribe")
+    ConfirmTribe provideDiskConfirmTribe(ConfirmTribe confirmTribeDisk) {
+        return confirmTribeDisk;
     }
 
     @Provides

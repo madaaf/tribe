@@ -1,8 +1,11 @@
 package com.tribe.app.data.repository.tribe.datasource;
 
+import android.support.v4.util.Pair;
+
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.realm.TribeRealm;
+import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -66,5 +69,17 @@ public class DiskTribeDataStore implements TribeDataStore {
     @Override
     public Observable<Void> markTribeAsSave(TribeRealm tribeRealm) {
         return null;
+    }
+
+    @Override
+    public Observable<Void> confirmTribe(String tribeId) {
+        TribeRealm tribeRealm = tribeCache.get(tribeId);
+
+        if (tribeRealm != null && tribeRealm.getMessageSendingStatus().equals(MessageSendingStatus.STATUS_PENDING)) {
+            Pair<String, Object> updatePair = android.support.v4.util.Pair.create(TribeRealm.MESSAGE_SENDING_STATUS, MessageSendingStatus.STATUS_CONFIRMED);
+            tribeCache.update(tribeId, updatePair);
+        }
+
+        return Observable.just(null);
     }
 }

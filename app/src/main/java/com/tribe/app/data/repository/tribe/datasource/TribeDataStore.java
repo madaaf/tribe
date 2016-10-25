@@ -68,4 +68,6 @@ public interface TribeDataStore {
      * @param tribeRealm the TribeRealm to put as saved
      */
     Observable<Void> markTribeAsSave(final TribeRealm tribeRealm);
+
+    Observable<Void> confirmTribe(String tribeId);
 }

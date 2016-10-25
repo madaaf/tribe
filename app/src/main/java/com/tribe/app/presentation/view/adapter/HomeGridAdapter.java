@@ -200,6 +200,32 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
         itemsFiltered.get(position).setTribe(tribe);
     }
 
+    public void updateTribeSeenForRecipient(Recipient recipient, List<TribeMessage> tribeMessageList) {
+        int position = 0;
+
+        if (items != null) {
+            for (Recipient recipientL : items) {
+                if (recipient.getId().equals(recipientL.getId()) && recipientL.getReceivedTribes() != null) {
+                    List<TribeMessage> tribeReceived = new ArrayList<>();
+                    for (TribeMessage received : recipientL.getReceivedTribes()) {
+                        for (TribeMessage seen : tribeMessageList) {
+                            if (!seen.getLocalId().equals(received)) {
+                                tribeReceived.add(received);
+                            }
+                        }
+                    }
+
+                    recipientL.setReceivedTribes(tribeReceived);
+                    notifyItemChanged(position);
+                    break;
+                }
+
+                System.out.println("LOOP");
+                position++;
+            }
+        }
+    }
+
     public void setAllItemsEnabled(boolean enable) {
         allEnabled = enable;
         notifyItemRangeChanged(0, getItemCount());

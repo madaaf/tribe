@@ -249,9 +249,6 @@ public class TribePagerView extends FrameLayout {
         springAlpha.addListener(springAlphaListener);
         springAlphaSwipeDown.addListener(springAlphaSwipeDownListener);
 
-        computeCurrentView();
-        currentView.releasePlayer();
-
         tribePagerAdapter.onDestroy();
 
         unbinder.unbind();
@@ -298,7 +295,7 @@ public class TribePagerView extends FrameLayout {
     private void initViewPager() {
         tribePagerAdapter.setColor(color);
         viewPager.setAdapter(tribePagerAdapter);
-        viewPager.setOffscreenPageLimit(2);
+        viewPager.setOffscreenPageLimit(1);
         viewPager.setScrollDurationFactor(1.0f);
         viewPager.setCurrentItem(0);
         viewPager.setAllowedSwipeDirection(CustomViewPager.SWIPE_MODE_ALL);
@@ -855,7 +852,7 @@ public class TribePagerView extends FrameLayout {
             if (ViewCompat.isAttachedToWindow(TribePagerView.this)) {
                 float value = (float) spring.getCurrentValue();
                 computeCurrentView();
-                currentView.setIconsAlpha(value);
+                if (currentView != null) currentView.setIconsAlpha(value);
             }
         }
     }
@@ -866,7 +863,7 @@ public class TribePagerView extends FrameLayout {
             if (ViewCompat.isAttachedToWindow(TribePagerView.this)) {
                 float value = (float) spring.getCurrentValue();
                 computeCurrentView();
-                currentView.setSwipeDownAlpha(value);
+                if (currentView != null) currentView.setSwipeDownAlpha(value);
             }
         }
     }
@@ -898,9 +895,8 @@ public class TribePagerView extends FrameLayout {
     }
 
     private void dismissScreenToLeft() {
-        if (currentView != null) {
-            currentView.pausePlayer();
-        }
+        computeCurrentView();
+        if (currentView != null) currentView.releasePlayer();
 
         springLeft.setVelocity(velocityTracker.getXVelocity()).setEndValue(-getWidth());
         onDismissHorizontal.onNext(null);
@@ -909,9 +905,8 @@ public class TribePagerView extends FrameLayout {
     }
 
     private void dismissScreenToBottom() {
-        if (currentView != null) {
-            currentView.pausePlayer();
-        }
+        computeCurrentView();
+        if (currentView != null) currentView.releasePlayer();
 
         springAlpha.setVelocity(velocityTracker.getYVelocity()).setEndValue(0);
         springAlphaSwipeDown.setCurrentValue(1).setAtRest();
@@ -1084,7 +1079,8 @@ public class TribePagerView extends FrameLayout {
     }
 
     private void computeCurrentView() {
-        currentView = (TribeComponentView) viewPager.findViewWithTag(tribeList.get(viewPager.getCurrentItem()).getId());
+        if (tribeList != null && tribeList.size() > 0)
+            currentView = (TribeComponentView) viewPager.findViewWithTag(tribeList.get(viewPager.getCurrentItem()).getId());
     }
 
     private void computeUpToRight(float offsetX) {

@@ -52,7 +52,7 @@ public class UserDataStoreFactory {
     public UserDataStoreFactory(Context context, UserCache userCache,
                                 TribeCache tribeCache, ChatCache chatCache,
                                 ContactCache contactCache, RxContacts rxContacts, RxFacebook rxFacebook,
-                                TribeApi tribeApi, LoginApi loginApi, User user, AccessToken accessToken,
+                                TribeApi tribeApi, LoginApi loginApi, @Named("userThreadSafe") User user, AccessToken accessToken,
                                 Installation installation, ReactiveLocationProvider reactiveLocationProvider,
                                 @LastMessageRequest Preference<String> lastMessageRequest,
                                 @LastUserRequest Preference<String> lastUserRequest,

@@ -16,6 +16,7 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.exception.DefaultErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
+import com.tribe.app.domain.interactor.tribe.ConfirmTribe;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.DiskMarkTribeListAsRead;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
@@ -64,6 +65,7 @@ public class HomeGridPresenter extends SendTribePresenter {
                              @Named("diskUserInfos") GetDiskUserInfos diskUserInfos,
                              @Named("diskSaveTribe") SaveTribe diskSaveTribe,
                              @Named("diskDeleteTribe") DeleteTribe diskDeleteTribe,
+                             @Named("diskConfirmTribe") ConfirmTribe confirmTribe,
                              @Named("diskGetReceivedMessages") UseCaseDisk diskGetReceivedMessageList,
                              @Named("diskGetPendingTribes") UseCaseDisk diskGetPendingTribeList,
                              @Named("diskMarkTribeListAsRead") DiskMarkTribeListAsRead diskMarkTribeListAsRead,
@@ -72,7 +74,7 @@ public class HomeGridPresenter extends SendTribePresenter {
                              DiskUpdateFriendship diskUpdateFriendship,
                              DoBootstrapSupport bootstrapSupport,
                              @Named("diskUpdateMessagesReceivedToNotSeen") UseCaseDisk diskUpdateTribesReceivedToNotSeen) {
-        super(jobManager, jobManagerDownload, diskSaveTribe, diskDeleteTribe);
+        super(jobManager, jobManagerDownload, diskSaveTribe, diskDeleteTribe, confirmTribe);
         this.diskUserInfosUsecase = diskUserInfos;
         this.diskGetMessageReceivedListUsecase = diskGetReceivedMessageList;
         this.diskGetPendingTribeListUsecase = diskGetPendingTribeList;

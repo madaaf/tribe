@@ -177,11 +177,11 @@
 	<string name="grid_menu_group_leave">Quitter ce groupe</string>
 	<string name="grid_menu_group_leave_last_admin_error">Nommez un membre en tant qu\'admin avant de quitter ce groupe</string>
 	<string name="grid_menu_group_delete">Supprimer ce groupe</string>
-	<string name="grid_menu_friendship_hide">Masquer</string>
-	<string name="grid_menu_friendship_unhide">Ajouter</string>
-	<string name="grid_menu_friendship_block">Bloquer</string>
-	<string name="grid_menu_friendship_unblock">Ajouter</string>
-	<string name="grid_menu_friendship_report">Signaler</string>
+	<string name="grid_menu_friendship_hide">Masquer %1$s</string>
+	<string name="grid_menu_friendship_unhide">Ajouter %1$s</string>
+	<string name="grid_menu_friendship_block">Bloquer %1$s</string>
+	<string name="grid_menu_friendship_unblock">Ajouter %1$s</string>
+	<string name="grid_menu_friendship_report">Signaler %1$s</string>
 	<string name="grid_menu_friendship_report_success">Signalé !</string>
 	<string name="grid_menu_friendship_clear_tribes">Effacer vos messages non-lus</string>
 	<string name="grid_menu_select_language">Langues des sous-titres</string>
@@ -296,7 +296,7 @@
 	<string name="settings_audio_title">Audio par defaut</string>
 	<string name="settings_audio_subtitle">Accéder au mode Audio par default à l\'ouverture de l\'app.</string>
 	<string name="settings_mute_sounds_title">Sons</string>
-	<string name="settings_mute_sounds_subtitle">Couper les sons lorque vous appuyez sur des boutons.</string>
+	<string name="settings_mute_sounds_subtitle">Activer les sons lorque vous appuyez sur des boutons.</string>
 	<string name="settings_preload_title">Pré-télécharger</string>
 	<string name="settings_preload_subtitle">Vos messages seront disponibles plus rapidement.</string>
 	<string name="settings_facebook_sync_title">Amis Facebook</string>

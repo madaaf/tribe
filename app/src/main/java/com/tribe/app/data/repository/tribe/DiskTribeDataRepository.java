@@ -93,4 +93,10 @@ public class DiskTribeDataRepository implements TribeRepository {
     public Observable<Void> markTribeAsSave(final TribeMessage tribe) {
         return null;
     }
+
+    @Override
+    public Observable<Void> confirmTribe(String tribeId) {
+        final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
+        return tribeDataStore.confirmTribe(tribeId);
+    }
 }

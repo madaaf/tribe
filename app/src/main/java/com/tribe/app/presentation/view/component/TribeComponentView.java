@@ -228,7 +228,8 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
                     .forceLegacy(true)
                     .build();
 
-            if (tribe.getType().equals(CameraWrapper.AUDIO)) {
+            if (tribe.getType().equals(CameraWrapper.AUDIO) && visualizer == null) {
+                System.out.println("VISUALIZER : " + tribe.getLocalId());
                 visualizerView.setVisibility(VISIBLE);
                 visualizerView.setAvatarPicture(tribe.getFrom().getProfilePicture());
                 setupVisualizerFxAndUI();
@@ -238,6 +239,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
                 mediaPlayer.setSurface(surfaceTexture);
 
             subscriptions.add(mediaPlayer.onPreparedPlayer().subscribe(prepared -> {
+                System.out.println("IS PREPARED : " + tribe.getLocalId());
                 isPrepared = true;
             }));
 
@@ -273,7 +275,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
                 new Visualizer.OnDataCaptureListener() {
                     public void onWaveFormDataCapture(Visualizer visualizer,
                                                       byte[] bytes, int samplingRate) {
-                        visualizerView.updateVisualizer(bytes);
+                        if (visualizerView != null) visualizerView.updateVisualizer(bytes);
                     }
 
                     public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int i) {
@@ -304,14 +306,16 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     }
 
     public void releasePlayer() {
-        if (mediaPlayer != null)
-            mediaPlayer.release();
-
         if (visualizer != null) {
             visualizer.release();
+            visualizer = null;
         }
 
         if (visualizerView != null) visualizerView.release();
+
+        if (mediaPlayer != null)
+            mediaPlayer.release();
+
         mediaPlayer = null;
         isPrepared = false;
         lastPosition = -1;

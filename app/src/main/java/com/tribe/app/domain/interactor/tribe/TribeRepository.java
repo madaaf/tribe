@@ -72,4 +72,6 @@ public interface TribeRepository {
      * @param tribe the TribeMessage to put as saved
      */
     Observable<Void> markTribeAsSave(final TribeMessage tribe);
+
+    Observable<Void> confirmTribe(String tribeId);
 }

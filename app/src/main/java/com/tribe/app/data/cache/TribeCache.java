@@ -53,4 +53,5 @@ public interface TribeCache {
     List<TribeRealm> tribesDownloading();
     void refactorTribeError(String tribeId);
     void updateTribesReceivedToNotSeen();
+    TribeRealm get(String tribeId);
 }

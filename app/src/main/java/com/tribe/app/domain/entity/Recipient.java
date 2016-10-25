@@ -49,6 +49,13 @@ public abstract class Recipient implements Serializable {
 
     public void setTribe(TribeMessage tribe) {
         this.tribe = tribe;
+
+        if (sentTribes == null) sentTribes = new ArrayList<>();
+
+        if (tribe != null)
+            sentTribes.add(tribe);
+        else if (sentTribes.size() > 0)
+            sentTribes.remove(sentTribes.size() - 1);
     }
 
     public TribeMessage getTribe() {
