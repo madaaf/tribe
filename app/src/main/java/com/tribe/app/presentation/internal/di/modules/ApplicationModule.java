@@ -63,6 +63,7 @@ import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.SoundManager;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -304,6 +305,12 @@ public class ApplicationModule {
     @Provides
     @Singleton
     ReactiveLocationProvider provideReactiveLocationProvider(Context context) { return new ReactiveLocationProvider(context); }
+
+    @Provides
+    @Singleton
+    SoundManager provideSoundManager(Context context) {
+        return new SoundManager(context);
+    }
 
     @Provides
     @Named("cloudSendTribe")

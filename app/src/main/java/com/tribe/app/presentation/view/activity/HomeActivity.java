@@ -285,7 +285,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         wasAskedForCameraPermission.set(true);
 
         if (isGranted) {
-            if (hasReceivedPointsForCameraPermission.get()) {
+            if (!hasReceivedPointsForCameraPermission.get()) {
                 hasReceivedPointsForCameraPermission.set(true);
                 homePresenter.updateScoreCamera();
             }

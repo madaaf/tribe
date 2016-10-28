@@ -40,6 +40,7 @@ import com.tribe.app.presentation.view.dialog_fragment.PointsDialogFragment;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 
 import java.util.ArrayList;
@@ -81,6 +82,9 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
     @Inject
     @HasRatedApp
     Preference<Boolean> hasRatedApp;
+
+    @Inject
+    SoundManager soundManager;
 
     @BindView(R.id.recyclerViewFriends)
     RecyclerView recyclerViewFriends;
@@ -343,6 +347,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
                             && recipient.getReceivedTribes().size() > 0
                             && recipient.hasLoadedOrErrorTribes();
 
+                    if (filter) soundManager.playSound(SoundManager.OPEN_TRIBE);
+
                     return filter;
                 })
                 .doOnError(throwable -> throwable.printStackTrace())
@@ -365,13 +371,16 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
                 }));
 
         subscriptions.add(homeGridAdapter.onRecordStart()
-                .doOnNext(view -> isRecording = true)
+                .doOnNext(view -> {
+                    isRecording = true;
+                    soundManager.playSound(SoundManager.START_RECORD);
+                })
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .map(recipient -> {
                     timeRecording = System.currentTimeMillis();
                     TribeMessage currentTribe = homeGridPresenter.createTribe(currentUser, recipient, tribeMode);
                     homeGridAdapter.updateItemWithTribe(recipient.getPosition(), currentTribe);
-                    recyclerViewFriends.postDelayed(() -> homeGridAdapter.notifyItemChanged(recipient.getPosition()), 200);
+                    recyclerViewFriends.postDelayed(() -> homeGridAdapter.notifyItemChanged(recipient.getPosition()), 300);
                     recyclerViewFriends.requestDisallowInterceptTouchEvent(true);
                     return currentTribe.getLocalId();
                 })
@@ -382,6 +391,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .doOnNext(recipient -> {
+                    soundManager.playSound(SoundManager.END_RECORD);
                     TileView tileView = (TileView) layoutManager.findViewByPosition(recipient.getPosition());
                     if ((System.currentTimeMillis() - timeRecording) > TIME_MIN_RECORDING) {
                         tileView.showTapToCancel(recipient.getTribe(), tribeMode);
@@ -397,6 +407,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .subscribe(recipient -> {
                     isRecording = false;
+                    soundManager.playSound(SoundManager.TAP_TO_CANCEL);
                     cleanupCurrentTribe(recipient);
                 }));
 
@@ -404,6 +415,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .filter(recipient -> {
                     isRecording = false;
+                    soundManager.playSound(SoundManager.SENT);
                     TribeMessage tr = recipient.getTribe();
 
                     if (tr == null || tr.getTo() == null) {

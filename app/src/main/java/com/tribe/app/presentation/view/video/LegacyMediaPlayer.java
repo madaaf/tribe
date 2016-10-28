@@ -25,7 +25,8 @@ import rx.android.schedulers.AndroidSchedulers;
 /**
  * Created by tiago on 28/08/2016.
  */
-public class LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.OnVideoSizeChangedListener,
+public class
+LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.OnVideoSizeChangedListener,
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener {
 
     @Inject

@@ -296,10 +296,8 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
     public void refactorNext() {
         if (profileInfoView.isUsernameSelected() && profileInfoView.isDisplayNameSelected() && profileInfoView.isAvatarSelected()) {
             imgNextIcon.setImageDrawable(getContext().getResources().getDrawable(R.drawable.picto_next_icon_black));
-            imgNextIcon.setClickable(true);
         } else {
             imgNextIcon.setImageDrawable(getContext().getResources().getDrawable(R.drawable.picto_next_icon));
-            imgNextIcon.setClickable(false);
         }
     }
 
@@ -308,15 +306,23 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
      */
     @OnClick(R.id.imgNextIcon)
     public void clickNext() {
-        screenUtils.hideKeyboard(getActivity());
+        if (profileInfoView.isUsernameSelected() && profileInfoView.isDisplayNameSelected() && profileInfoView.isAvatarSelected()) {
+            screenUtils.hideKeyboard(getActivity());
 
-        if (StringUtils.isEmpty(user.getId()))
-            profileInfoPresenter.register(profileInfoView.getDisplayName(), profileInfoView.getUsername(), loginEntity);
-        else {
-            tagManager.trackEvent(TagManagerConstants.ONBOARDING_CONNECTION);
-            showLoading();
-            profileInfoPresenter.updateUser(profileInfoView.getUsername(), profileInfoView.getDisplayName(), profileInfoView.getImgUri(),
-                    facebookEntity != null && !StringUtils.isEmpty(facebookEntity.getId()) ? facebookEntity.getId() : null);
+            if (StringUtils.isEmpty(user.getId())) {
+                profileInfoPresenter.register(profileInfoView.getDisplayName(), profileInfoView.getUsername(), loginEntity);
+            } else {
+                tagManager.trackEvent(TagManagerConstants.ONBOARDING_CONNECTION);
+                showLoading();
+                profileInfoPresenter.updateUser(profileInfoView.getUsername(), profileInfoView.getDisplayName(), profileInfoView.getImgUri(),
+                        facebookEntity != null && !StringUtils.isEmpty(facebookEntity.getId()) ? facebookEntity.getId() : null);
+            }
+        } else if (!profileInfoView.isAvatarSelected()) {
+            profileInfoView.shakeAvatar();
+        } else if (!profileInfoView.isDisplayNameSelected()) {
+            profileInfoView.shakeDisplayName();
+        } else if (!profileInfoView.isUsernameSelected()) {
+            profileInfoView.shakeUsername();
         }
     }
 

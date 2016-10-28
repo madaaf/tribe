@@ -87,7 +87,7 @@ android {
 
     buildTypes {
         debug {
-            generateStrings()
+            //generateStrings()
             
             signingConfig signingConfigs.debug
             testCoverageEnabled = "true"
@@ -189,7 +189,6 @@ dependencies {
     compile presentationDependencies.imageCropper
     compile presentationDependencies.firebaseInvites
     compile presentationDependencies.appBoy
-    compile presentationDependencies.firebaseRemote
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker

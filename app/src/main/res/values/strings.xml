@@ -108,7 +108,7 @@
     <!-- Rating -->
     <string name="rating_title">Send us 5 stars\nin 1 minute!</string>
     <string name="rating_reviews">They already rated us</string>
-    <string name="rating_descriptions">“Facetime\non your time!”+“Emotions,\nin motion”+“Groups that feel like\nyou\'re in the same room.”+“More convenient\nto than live calls!”+“The quickest way\nto send messages!”</string>
+    <string name="rating_descriptions">“Facetime\non your time!”+“Emotions,\nin motion”+“Groups that feel like\nyou\'re in the same room.”+“More convenient\nthan live calls!”+“The quickest way\nto send messages!”</string>
     <string name="rating_rate">Let’s go!</string>
     <string name="rating_next_popup_title">It really helps!</string>
     <string name="rating_next_popup_description">If you only have 1 minute, it really</string>
@@ -164,11 +164,13 @@
     <string name="grid_support_status_loading">Loading</string>
     <string name="grid_support_status_reply">Reply to the CEO</string>
     <string name="grid_ghost">Has not joined yet</string>
+    <string name="grid_friendship_recording_message">%1$d message</string>
+    <string name="grid_friendship_recording_messages">%1$d messages</string>
     <string name="grid_friendship_recording_tap_to_cancel">Wrapping up</string>
     <string name="grid_friendship_recording_validated">Ready!</string>
-    <string name="grid_unsent_tribes_action_resend">Resend %1$s</string>
+    <string name="grid_unsent_tribes_action_resend">Try to resend %1$s</string>
     <string name="grid_unsent_tribes_action_delete">Delete %1$s</string>
-    <string name="grid_unsent_tribes_action_resend_all">Resend all</string>
+    <string name="grid_unsent_tribes_action_resend_all">Try to resend all</string>
     <string name="grid_unsent_tribes_action_delete_all">Delete all</string>
     <string name="grid_menu_group_infos">Details &amp; invites</string>
     <string name="grid_menu_group_leave">Leave group</string>
@@ -182,9 +184,10 @@
     <string name="grid_menu_friendship_report_success">Reported</string>
     <string name="grid_menu_friendship_clear_tribes">Clear messages</string>
     <string name="grid_menu_select_language">Subtitles language</string>
-    <string name="grid_menu_group_mute">Desactivate notifications</string>
+    <string name="grid_menu_group_mute">De-activate notifications</string>
     <string name="grid_menu_group_unmute">Activate notifications</string>
     <string name="grid_menu_group_mute_confirm">Please confirm</string>
+    <string name="grid_menu_group_hide">Hide group</string>
 
     <!-- Chat -->
     <string name="chat_tutorial_statuses_title">Message statuses</string>

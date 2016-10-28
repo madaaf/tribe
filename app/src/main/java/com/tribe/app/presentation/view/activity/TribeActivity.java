@@ -30,6 +30,7 @@ import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
+import com.tribe.app.presentation.view.utils.SoundManager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -72,6 +73,9 @@ public class TribeActivity extends BaseActivity implements TribeView {
     @Inject
     @SpeedPlayback
     Preference<Float> speedPlayback;
+
+    @Inject
+    SoundManager soundManager;
 
     @BindView(R.id.viewTribePager)
     TribePagerView viewTribePager;
@@ -192,6 +196,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
         subscriptions.add(viewTribePager.onRecordStart()
                 .map(view -> {
+                    soundManager.playSound(SoundManager.START_RECORD);
                     isRecording = true;
                     currentTribe = tribePresenter.createTribe(currentUser, recipient, viewTribePager.getTribeMode());
                     recipient.setTribe(currentTribe);
@@ -202,6 +207,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
         subscriptions.add(
                 viewTribePager.onRecordEnd()
                 .subscribe(view -> {
+                    soundManager.playSound(SoundManager.END_RECORD);
                     isRecording = false;
                     viewTribePager.stopRecording();
                     viewTribePager.showTapToCancel(currentTribe);
@@ -209,6 +215,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
         subscriptions.add(viewTribePager.onClickTapToCancel()
                 .subscribe(friendship -> {
+                    soundManager.playSound(SoundManager.TAP_TO_CANCEL);
                     FileUtils.delete(context(), currentTribe.getLocalId(), FileUtils.VIDEO);
                     tribePresenter.deleteTribe(currentTribe);
                     currentTribe = null;
@@ -216,6 +223,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
         subscriptions.add(viewTribePager.onNotCancel()
                 .subscribe(friendship -> {
+                    soundManager.playSound(SoundManager.SENT);
                     tribePresenter.sendTribe(currentTribe);
                     currentTribe = null;
                 }));

@@ -1,8 +1,4 @@
 <resources>
-	
-	<!-- App -->
-	<string name="app_name">Tribe</string>
-	
 	<!-- Actions -->
 	<string name="action_cancel">Cancel</string>
 	<string name="action_delete">Delete</string>

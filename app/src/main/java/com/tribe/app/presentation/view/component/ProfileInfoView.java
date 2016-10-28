@@ -375,6 +375,18 @@ public class ProfileInfoView extends LinearLayout {
         return imgUri;
     }
 
+    public void shakeAvatar() {
+        imgAvatar.startAnimation(android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.shake));
+    }
+
+    public void shakeDisplayName() {
+        editDisplayName.startAnimation(android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.shake));
+    }
+
+    public void shakeUsername() {
+        editUsername.startAnimation(android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.shake));
+    }
+
     private void refactorInfosValid() {
         infoValid.onNext(displayNameSelected && avatarSelected && usernameSelected);
     }

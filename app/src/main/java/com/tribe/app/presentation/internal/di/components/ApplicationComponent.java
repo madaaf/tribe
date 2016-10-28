@@ -98,6 +98,7 @@ import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.video.LegacyMediaPlayer;
 import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.ButtonCardView;
@@ -314,4 +315,6 @@ public interface ApplicationComponent {
 
     @HasRatedApp
     Preference<Boolean> hasRatedApp();
+
+    SoundManager soundManager();
 }
