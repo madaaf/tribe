@@ -188,7 +188,8 @@ public class MessageRealmListDeserializer {
         if (!(json.get("weather") instanceof JsonNull)) {
             JsonObject weather = json.get("weather").getAsJsonObject();
             WeatherRealm weatherRealm = new WeatherRealm();
-            weatherRealm.setIcon(weather.get("icon").getAsString());
+            JsonElement icon = weather.get("icon");
+            weatherRealm.setIcon((icon != null && !(icon instanceof JsonNull)) ? icon.getAsString() : "");
             weatherRealm.setTempC(weather.get("temp_c").getAsInt());
             weatherRealm.setTempF(weather.get("temp_f").getAsInt());
             tribeRealm.setWeatherRealm(weatherRealm);

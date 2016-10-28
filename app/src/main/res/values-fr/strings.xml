@@ -167,6 +167,8 @@
 	<string name="grid_support_status_loading">Chargement</string>
 	<string name="grid_support_status_reply">Répondez à l’Équipe</string>
 	<string name="grid_ghost">Pas encore inscrit</string>
+	<string name="grid_friendship_recording_message">%1$d message</string>
+	<string name="grid_friendship_recording_messages">%1$d messages</string>
 	<string name="grid_friendship_recording_tap_to_cancel">Préparation</string>
 	<string name="grid_friendship_recording_validated">Prêt à envoyer !</string>
 	<string name="grid_unsent_tribes_action_resend">Renvoyer %1$s</string>
@@ -188,6 +190,7 @@
 	<string name="grid_menu_group_mute">Désactiver les notifications</string>
 	<string name="grid_menu_group_unmute">Activer les notifications</string>
 	<string name="grid_menu_group_mute_confirm">Confirmez-vous ?</string>
+	<string name="grid_menu_group_hide">Masquer ce groupe</string>
 	
 	<!-- Chat -->
 	<string name="chat_tutorial_statuses_title">Statuts des messages</string>
@@ -363,7 +366,7 @@
 	<string name="onboarding_queue_declined_popup_confirm_button">Notifiez moi !</string>
 	<string name="onboarding_queue_valid_title">Yay ! Vous pouvez entrer.</string>
 	<string name="onboarding_queue_valid_description">Certains de vos amis\nsont déjà là !</string>
-	<string name="onboarding_queue_valid_button_title">Activer les permissions</string>
+	<string name="onboarding_queue_valid_button_title">Entrer maintenant</string>
 	<string name="onboarding_popup_confirm_description">Nous allons envoyer un code\nà ce numéro de téléphone.</string>
 	<string name="onboarding_popup_confirm_edit_button_title">Modifier</string>
 	<string name="onboarding_popup_confirm_send_button_title">Envoyer !</string>

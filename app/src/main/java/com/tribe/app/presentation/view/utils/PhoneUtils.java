@@ -87,8 +87,6 @@ public class PhoneUtils {
 
                 if (phoneUtil.isPossibleNumber(numberProto)) {
                     return numberProto;
-                } else {
-                    System.out.println("WARNING : formatNumber - number(" + numberProto + ") is NOT PossibleNumber");
                 }
             } catch (NumberParseException e2) {
             }

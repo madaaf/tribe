@@ -9,12 +9,14 @@ import com.tribe.app.presentation.internal.di.scope.AddressBook;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;
 import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
 import com.tribe.app.presentation.internal.di.scope.Filter;
+import com.tribe.app.presentation.internal.di.scope.HasRatedApp;
 import com.tribe.app.presentation.internal.di.scope.HasReceivedPointsForCameraPermission;
 import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
 import com.tribe.app.presentation.internal.di.scope.LastNotifyRequest;
 import com.tribe.app.presentation.internal.di.scope.LastSync;
 import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
+import com.tribe.app.presentation.internal.di.scope.LastVersionCode;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
 import com.tribe.app.presentation.internal.di.scope.LocationPopup;
 import com.tribe.app.presentation.internal.di.scope.Memories;
@@ -22,10 +24,12 @@ import com.tribe.app.presentation.internal.di.scope.Preload;
 import com.tribe.app.presentation.internal.di.scope.ShareProfile;
 import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.internal.di.scope.Theme;
+import com.tribe.app.presentation.internal.di.scope.TribeSentCount;
 import com.tribe.app.presentation.internal.di.scope.WasAskedForCameraPermission;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.utils.PreferencesConstants;
 import com.tribe.app.presentation.view.component.TribePagerView;
+import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.Distance;
 
 import javax.inject.Singleton;
@@ -166,20 +170,44 @@ public class DataModule {
     }
 
     @Provides
+    @Singleton
     @HasReceivedPointsForCameraPermission
     Preference<Boolean> provideHasReceivedPointsForCameraPermission(RxSharedPreferences prefs) {
         return prefs.getBoolean(PreferencesConstants.HAS_RECEIVED_POINTS_FOR_CAMERA_PERMISSION, false);
     }
 
     @Provides
+    @Singleton
     @LastSync
     Preference<Long> provideLastSync(RxSharedPreferences prefs) {
         return prefs.getLong(PreferencesConstants.LAST_SYNC, 0L);
     }
 
     @Provides
+    @Singleton
     @WasAskedForCameraPermission
     Preference<Boolean> provideWasAskedForCameraPermission(RxSharedPreferences prefs) {
         return prefs.getBoolean(PreferencesConstants.WAS_ASKED_FOR_CAMERA_PERMISSION, false);
+    }
+
+    @Provides
+    @Singleton
+    @TribeSentCount
+    Preference<Integer> tribeSentCount(RxSharedPreferences prefs) {
+        return prefs.getInteger(PreferencesConstants.TRIBE_SENT_COUNT, 0);
+    }
+
+    @Provides
+    @Singleton
+    @LastVersionCode
+    Preference<Integer> provideLastVersionCode(Context context, RxSharedPreferences prefs) {
+        return prefs.getInteger(PreferencesConstants.PREVIOUS_VERSION_CODE, DeviceUtils.getVersionCode(context));
+    }
+
+    @Provides
+    @Singleton
+    @HasRatedApp
+    Preference<Boolean> provideHasRatedApp(RxSharedPreferences prefs) {
+        return prefs.getBoolean(PreferencesConstants.HAS_RATED_APP, false);
     }
 }

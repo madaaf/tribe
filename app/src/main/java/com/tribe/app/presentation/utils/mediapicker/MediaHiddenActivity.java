@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.utils.mediapicker;
 
-import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -15,6 +14,8 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.utils.PermissionUtils;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 
 import java.text.SimpleDateFormat;
@@ -26,9 +27,6 @@ import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
 
 public class MediaHiddenActivity extends BaseActivity {
-
-    private static final String[] PERMISSIONS_CAMERA = new String[]{Manifest.permission.CAMERA,
-            Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     private static final String KEY_CAMERA_PICTURE_URL = "cameraPictureUrl";
 
@@ -124,8 +122,12 @@ public class MediaHiddenActivity extends BaseActivity {
 
     private void handleIntent(Intent intent) {
         subscriptions.add(RxPermissions.getInstance(this)
-                .request(PERMISSIONS_CAMERA)
+                .request(PermissionUtils.PERMISSIONS_CAMERA)
                 .subscribe(granted -> {
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean(TagManagerConstants.CAMERA_ENABLED, granted);
+                    this.getTagManager().setProperty(bundle);
+
                     if (granted) {
                         Sources sourceType = Sources.values()[intent.getIntExtra(IMAGE_SOURCE, 0)];
                         int chooseCode = 0;
@@ -178,6 +180,6 @@ public class MediaHiddenActivity extends BaseActivity {
                 .setBorderLineColor(getResources().getColor(R.color.black_opacity_40))
                 .setBorderCornerColor(getResources().getColor(R.color.black_opacity_40))
                 .start(this);
-        overridePendingTransition(R.anim.activity_in_from_right, R.anim.activity_out_scale_down);
+        overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
 }

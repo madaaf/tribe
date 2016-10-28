@@ -100,8 +100,6 @@ public class IntroPresenter implements Presenter {
         LoginEntity loginEntity = new LoginEntity(phoneNumber, code, pinId);
         showViewLoading();
 
-        System.out.println("LOGIN LAUNCHED");
-
         if (IntroActivity.uiOnlyMode) {
             isActive2 = true;
             Handler handler = new Handler();

@@ -24,4 +24,7 @@ public class PreferencesConstants {
     public static String HAS_RECEIVED_POINTS_FOR_CAMERA_PERMISSION = "HAS_RECEIVED_POINTS_FOR_CAMERA_PERMISSION";
     public static String LAST_SYNC = "LAST_SYNC";
     public static String WAS_ASKED_FOR_CAMERA_PERMISSION = "WAS_ASKED_FOR_CAMERA_PERMISSION";
+    public static String TRIBE_SENT_COUNT = "TRIBE_SENT_COUNT";
+    public static String PREVIOUS_VERSION_CODE = "PREVIOUS_VERSION_CODE";
+    public static String HAS_RATED_APP = "HAS_RATED_APP";
 }

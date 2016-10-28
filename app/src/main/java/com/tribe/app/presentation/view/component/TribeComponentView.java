@@ -200,7 +200,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
             labelLocation.setText(currentUser.getLocation() != null ? currentUser.getLocation().distanceTo(getContext(), distanceUnits.get(), tribe.getLocation()) : getContext().getString(R.string.tribe_metadata_activate_location));
 
-            if (tribe.getWeather() != null) {
+            if (tribe.getWeather() != null && !StringUtils.isEmpty(tribe.getWeather().getIcon())) {
                 labelWeather.setVisibility(View.VISIBLE);
                 labelWeather.setText((weatherUnits.get().equals(com.tribe.app.presentation.view.utils.Weather.CELSIUS) ? weatherObj.getTempC() : weatherObj.getTempF()) + "°");
                 labelWeather.setDrawableResource(getResources().getIdentifier("weather_" + weatherObj.getIcon(), "drawable", getContext().getPackageName()));
@@ -229,7 +229,6 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
                     .build();
 
             if (tribe.getType().equals(CameraWrapper.AUDIO) && visualizer == null) {
-                System.out.println("VISUALIZER : " + tribe.getLocalId());
                 visualizerView.setVisibility(VISIBLE);
                 visualizerView.setAvatarPicture(tribe.getFrom().getProfilePicture());
                 setupVisualizerFxAndUI();
@@ -239,7 +238,6 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
                 mediaPlayer.setSurface(surfaceTexture);
 
             subscriptions.add(mediaPlayer.onPreparedPlayer().subscribe(prepared -> {
-                System.out.println("IS PREPARED : " + tribe.getLocalId());
                 isPrepared = true;
             }));
 

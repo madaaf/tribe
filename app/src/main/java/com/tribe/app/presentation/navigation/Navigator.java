@@ -1,20 +1,23 @@
 package com.tribe.app.presentation.navigation;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.Extras;
+import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.activity.BaseActionActivity;
 import com.tribe.app.presentation.view.activity.ChatActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.GroupInfoActivity;
@@ -43,8 +46,8 @@ public class Navigator {
     public static String TWITTER = "com.twitter.android";
 
     @Inject
-    public Navigator() {
-
+    public Navigator(Context context) {
+        ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
     }
 
     public void navigateToLauncher(Context context) {
@@ -100,9 +103,10 @@ public class Navigator {
                     intent.setData(uriDeepLink);
                     intent.putExtra(Extras.IS_FROM_LOGIN, true);
                 }
+
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 activity.startActivity(intent);
-//                activity.finish();
+                activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
             }
         }
     }
@@ -117,7 +121,7 @@ public class Navigator {
         if (activity != null) {
             Intent intent = ChatActivity.getCallingIntent(activity, recipientId, isToGroup);
             activity.startActivity(intent);
-            activity.overridePendingTransition(R.anim.activity_in_from_right, R.anim.activity_out_scale_down);
+            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
         }
     }
 
@@ -158,7 +162,7 @@ public class Navigator {
         if (activity != null) {
             Intent intent = PointsActivity.getCallingIntent(activity);
             activity.startActivity(intent);
-            activity.overridePendingTransition(R.anim.activity_in_from_right, R.anim.activity_out_scale_down);
+            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
         }
     }
 
@@ -170,7 +174,7 @@ public class Navigator {
     public void navigateToSettings(Activity activity, int result) {
         if (activity != null) {
             Intent intent = SettingActivity.getCallingIntent(activity);
-            activity.overridePendingTransition(R.anim.activity_in_from_right, R.anim.activity_out_scale_down);
+            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
             activity.startActivityForResult(intent, result);
         }
     }
@@ -188,7 +192,7 @@ public class Navigator {
             bundle.putLong("privateGroupLinkExpiresAt", privateGroupLinkExpiresAt.getTime());
             intent.putExtras(bundle);
             activity.startActivity(intent);
-            activity.overridePendingTransition(R.anim.activity_in_from_right, R.anim.activity_out_scale_down);
+            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
         }
     }
 
@@ -205,31 +209,51 @@ public class Navigator {
     }
 
     /**
+     * Goes to the permissions screens or home.
+     *
+     * @param activity activity needed to open the destiny activity.
+     */
+    public void computeActions(Activity activity, boolean isOnboarding, @Nullable @BaseActionActivity.ActionType Integer type) {
+        boolean hasPermissionsCamera = PermissionUtils.hasPermissionsCamera(activity);
+        boolean hasPermissionsLocation = PermissionUtils.hasPermissionsLocation(activity);
+
+        if (type != null && type == BaseActionActivity.ACTION_RATING) {
+            Intent intent = BaseActionActivity.getCallingIntent(activity, false, BaseActionActivity.ACTION_RATING);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+        } else if (activity != null && (!hasPermissionsCamera || !hasPermissionsLocation)) {
+            Intent intent = BaseActionActivity.getCallingIntent(activity, isOnboarding, type != null ? type :
+                    (!hasPermissionsCamera ? BaseActionActivity.ACTION_PERMISSIONS_CAMERA : BaseActionActivity.ACTION_PERMISSIONS_LOCATION));
+
+            activity.startActivity(intent);
+
+            if (isOnboarding) {
+                activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
+            } else {
+                activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+            }
+        } else if (hasPermissionsCamera && hasPermissionsLocation) {
+            navigateToHome(activity, !isOnboarding, null);
+        }
+    }
+
+    /**
      * Goes to the app page in the playstore so the user may rate the app.
      *
      * @param context context needed to open the destiny activity.
      */
     public void rateApp(Context context) {
+        final String appPackageName = "com.tribe.app";
 
-        String appPackage = "com.tribe.app";
-        // http://stackoverflow.com/questions/10816757/rate-this-app-link-in-google-play-store-app-on-the-phone
-        Uri uri = Uri.parse("market://details?id=" + appPackage);
-        Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
-        // To count with Play market backstack, After pressing back button,
-        // to taken back to our application, we need to add following flags to intent.
-        goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
-                Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
-                Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         try {
-            context.startActivity(goToMarket);
-        } catch (ActivityNotFoundException e) {
-            context.startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("http://play.google.com/store/apps/details?id=" + appPackage)));
+            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+        } catch (android.content.ActivityNotFoundException anfe) {
+            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
         }
-
     }
 
     /**
+     *
      * Composes a tweet to post and opens Twitter app.
      * @param context context needed to open the intent.
      * @param tweet the pre-filled tweet.

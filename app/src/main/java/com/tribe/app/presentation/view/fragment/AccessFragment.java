@@ -30,6 +30,7 @@ import com.tribe.app.presentation.internal.di.scope.AddressBook;
 import com.tribe.app.presentation.mvp.presenter.AccessPresenter;
 import com.tribe.app.presentation.mvp.view.AccessView;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.component.AccessBottomBarView;
@@ -414,8 +415,12 @@ public class AccessFragment extends BaseFragment implements AccessView {
 
     private void requestPermissions() {
         RxPermissions.getInstance(getContext())
-                .request(Manifest.permission.READ_CONTACTS)
+                .request(PermissionUtils.PERMISSIONS_CONTACTS)
                 .subscribe(hasPermission -> {
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean(TagManagerConstants.ADDRESS_BOOK_ENABLED, hasPermission);
+                    tagManager.setProperty(bundle);
+
                     if (hasPermission) {
                         addressBook.set(true);
                         goToHangTight();
@@ -427,7 +432,7 @@ public class AccessFragment extends BaseFragment implements AccessView {
 
     private void goToHome() {
         tagManager.trackEvent(TagManagerConstants.ONBOARDING_COMPLETED);
-        navigator.navigateToHome(getActivity(), false, deepLink);
+        navigator.computeActions(getActivity(), true, null);
     }
 
     /**

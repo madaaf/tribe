@@ -6,6 +6,7 @@ import android.content.Context;
 import android.view.animation.LinearInterpolator;
 
 import com.tribe.app.R;
+import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.io.Serializable;
@@ -58,10 +59,10 @@ public class ScoreUtils {
         NEW_FRIENDSHIP          ("NEW_FRIENDSHIP", R.string.points_NewFriendship_title, R.string.points_NewFriendship_description, 15, R.drawable.picto_points_friend),
         INVITE                  ("INVITE_FRIEND", R.string.points_InviteTribe_title, R.string.points_InviteTribe_description, 30, R.drawable.picto_points_invite),
         CREATE_GROUP            ("CREATE_GROUP", R.string.points_CreateGroup_title, R.string.points_CreateGroup_description, 50, R.drawable.picto_group),
-        CAMERA                  ("ENABLE_CAMERA", R.string.points_Camera_title, R.string.points_Camera_description, 100, R.drawable.picto_photo_white),
+        CAMERA                  ("ENABLE_CAMERA", R.string.points_Camera_title, R.string.points_Camera_description, 100, R.drawable.picto_photo_white, PermissionUtils.PERMISSIONS_CONTACTS),
         RATE_APP                ("RATE_APP", R.string.points_RateApp_title, R.string.points_RateApp_description, 200, R.drawable.picto_points_rate),
         SHARE_PROFILE           ("SHARE_PROFILE", R.string.points_ShareProfile_title, R.string.points_ShareProfile_description, 300, R.drawable.picto_share),
-        LOCATION                ("ENABLE_LOCATION", R.string.points_LocationPermission_title, R.string.points_LocationPermission_description, 350, R.drawable.picto_location),
+        LOCATION                ("ENABLE_LOCATION", R.string.points_LocationPermission_title, R.string.points_LocationPermission_description, 350, R.drawable.picto_location, PermissionUtils.PERMISSIONS_LOCATION),
         SYNCHRONIZE_FRIENDS     ("SYNC_FACEBOOK", R.string.points_ConnectFacebook_title, R.string.points_ConnectFacebook_description, 350, R.drawable.picto_points_facebook),
         INVITE_FACEBOOK         ("FB_INVITE_ALL", R.string.points_InviteFacebookFriends_title, R.string.points_InviteFacebookFriends_description, 1500, R.drawable.picto_points_facebook);
 
@@ -70,13 +71,16 @@ public class ScoreUtils {
         private final int stringSubLabelId;
         private final int points;
         private final int drawableId;
+        private final String [] permissions;
 
-        Point(String serverKey, int stringLabelId, int stringSubLabelId, int points, int drawableId) {
+        Point(String serverKey, int stringLabelId, int stringSubLabelId, int points, int drawableId,
+              String ... permissions) {
             this.serverKey = serverKey;
             this.stringLabelId = stringLabelId;
             this.stringSubLabelId = stringSubLabelId;
             this.points = points;
             this.drawableId = drawableId;
+            this.permissions = permissions;
         }
 
         public String getServerKey() {
@@ -97,6 +101,10 @@ public class ScoreUtils {
 
         public int getStringSubLabelId() {
             return stringSubLabelId;
+        }
+
+        public String [] getPermissions() {
+            return permissions;
         }
     }
 

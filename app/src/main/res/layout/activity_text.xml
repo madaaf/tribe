@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="@null"
     android:orientation="vertical"
+    android:animateLayoutChanges="true"
     >
 
     <FrameLayout
@@ -61,6 +62,7 @@
         android:layout_marginTop="@dimen/chat_bar_height"
         android:background="@null"
         android:orientation="vertical"
+        android:animateLayoutChanges="true"
         >
 
         <FrameLayout

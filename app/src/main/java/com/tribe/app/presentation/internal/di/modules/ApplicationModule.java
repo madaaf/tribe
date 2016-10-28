@@ -56,9 +56,7 @@ import com.tribe.app.presentation.internal.di.scope.Theme;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.FileUtils;
-import com.tribe.app.presentation.utils.analytics.AmplitudeTagManager;
 import com.tribe.app.presentation.utils.analytics.AnalyticsManager;
-import com.tribe.app.presentation.utils.analytics.AppboyTagManager;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
@@ -184,8 +182,8 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    Navigator provideNavigator() {
-        return new Navigator();
+    Navigator provideNavigator(Context context) {
+        return new Navigator(context);
     }
 
     @Provides
@@ -277,18 +275,6 @@ public class ApplicationModule {
     @Singleton
     PaletteGrid providePaletteGrid(Context context, @Theme Preference<Integer> theme) {
         return new PaletteGrid(context, theme);
-    }
-
-    @Provides
-    @Singleton
-    AmplitudeTagManager provideAmplitudeTagManager(Context context, @Named("userThreadSafe") User user) {
-        return new AmplitudeTagManager(context, user);
-    }
-
-    @Provides
-    @Singleton
-    AppboyTagManager provideAppboyTagManager(Context context) {
-        return new AppboyTagManager(context);
     }
 
     @Provides

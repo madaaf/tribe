@@ -32,7 +32,6 @@ import com.tribe.app.presentation.view.activity.SettingActivity;
 import com.tribe.app.presentation.view.component.SettingFilterView;
 import com.tribe.app.presentation.view.component.SettingItemView;
 import com.tribe.app.presentation.view.component.SettingThemeView;
-import com.tribe.app.presentation.view.dialog_fragment.LocationDialogFragment;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.Weather;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -214,25 +213,17 @@ public class SettingFragment extends BaseFragment implements SettingView {
         }));
 
         subscriptions.add(messageSettingContext.checkedSwitch().subscribe(isChecked -> {
-            if (isChecked && !locationPopup.get() && !PermissionUtils.hasPermissionsLocation(getActivity())) {
-                LocationDialogFragment locationDialogFragment = LocationDialogFragment.newInstance();
-                locationDialogFragment.show(getFragmentManager(), LocationDialogFragment.class.getName());
-                subscriptions.add(locationDialogFragment.onClickYes().subscribe(aVoid -> {
-                    RxPermissions.getInstance(getActivity())
-                            .request(PermissionUtils.PERMISSIONS_LOCATION)
-                            .subscribe(granted -> {
-                                if (granted) {
-                                    locationPopup.set(true);
-                                    settingPresenter.updateScoreLocation();
-                                } else {
-                                    messageSettingContext.setCheckedSwitch(false);
-                                }
-                            });
-                }));
-
-                subscriptions.add(locationDialogFragment.onClickNo().subscribe(aVoid -> {
-                    messageSettingContext.setCheckedSwitch(false);
-                }));
+            if (isChecked && !PermissionUtils.hasPermissionsLocation(getActivity())) {
+                RxPermissions.getInstance(getActivity())
+                        .request(PermissionUtils.PERMISSIONS_LOCATION)
+                        .subscribe(granted -> {
+                            if (granted) {
+                                locationPopup.set(true);
+                                settingPresenter.updateScoreLocation();
+                            } else {
+                                messageSettingContext.setCheckedSwitch(false);
+                            }
+                        });
             }
 
             Bundle bundle = new Bundle();
@@ -278,6 +269,10 @@ public class SettingFragment extends BaseFragment implements SettingView {
             RxPermissions.getInstance(getContext())
                     .request(Manifest.permission.READ_CONTACTS)
                     .subscribe(hasPermission -> {
+                        Bundle bundle = new Bundle();
+                        bundle.putBoolean(TagManagerConstants.ADDRESS_BOOK_ENABLED, hasPermission);
+                        tagManager.setProperty(bundle);
+
                         if (hasPermission && isChecked) {
                             addressBook.set(true);
                             sync();
@@ -317,12 +312,16 @@ public class SettingFragment extends BaseFragment implements SettingView {
         subscriptions.add(RxView.clicks(settingsLogOut).subscribe(aVoid -> {
             DialogFactory.createConfirmationDialog(getContext(),
                     getString(R.string.settings_logout_title), getString(R.string.settings_logout_confirm_message), getString(R.string.settings_logout_title),
+                    getString(R.string.action_cancel),
                     (dialog, which) -> {
                         ProgressDialog pd = new ProgressDialog(getContext());
                         pd.setTitle(R.string.settings_logout_wait);
                         pd.show();
                         settingPresenter.logout();
-                    }).show();
+                    },
+                    null)
+
+                    .show();
         }));
     }
 

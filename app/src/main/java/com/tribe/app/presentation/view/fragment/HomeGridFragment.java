@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
@@ -21,11 +22,14 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
+import com.tribe.app.presentation.internal.di.scope.HasRatedApp;
+import com.tribe.app.presentation.internal.di.scope.TribeSentCount;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.HomeView;
 import com.tribe.app.presentation.mvp.view.UpdateScore;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.view.activity.BaseActionActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
@@ -33,6 +37,7 @@ import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 import com.tribe.app.presentation.view.component.PullToSearchContainer;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.dialog_fragment.PointsDialogFragment;
+import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
@@ -68,6 +73,14 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
 
     @Inject
     ScreenUtils screenUtils;
+
+    @Inject
+    @TribeSentCount
+    Preference<Integer> tribeSentCount;
+
+    @Inject
+    @HasRatedApp
+    Preference<Boolean> hasRatedApp;
 
     @BindView(R.id.recyclerViewFriends)
     RecyclerView recyclerViewFriends;
@@ -402,15 +415,23 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
                 })
                 .map(recipient -> {
                     TribeMessage tr = recipient.getTribe();
+
                     homeGridPresenter.sendTribe(recipient.getTribe());
                     homeGridAdapter.updateItemWithTribe(recipient.getPosition(), null);
                     return tr.getLocalId();
                 })
-                .delay(2000, TimeUnit.MILLISECONDS)
+                .delay(500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(s -> {
-                    homeGridPresenter.confirmTribe(s);
-                }));
+                .doOnNext(s -> {
+                    int tribeSent = tribeSentCount.get();
+                    tribeSentCount.set(++tribeSent);
+
+                    if (tribeSentCount.get() >= Constants.RATING_COUNT && tribeSentCount.get() % Constants.RATING_COUNT == 0 && !hasRatedApp.get())
+                        navigator.computeActions(getActivity(), false, BaseActionActivity.ACTION_RATING);
+                })
+                .delay(1500, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> homeGridPresenter.confirmTribe(s)));
 
         subscriptions.add(homeGridAdapter.onClickOpenPoints()
                 .subscribe(clickOpenPoints));

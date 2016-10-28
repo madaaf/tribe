@@ -185,7 +185,7 @@ public class SettingActivity extends BaseActivity implements SettingView {
     public void goToMain() {
         screenUtils.hideKeyboard(this);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.setCustomAnimations(R.anim.fragment_in_from_left, R.anim.fragment_out_from_right);
+        fragmentTransaction.setCustomAnimations(R.anim.fragment_in_from_left, R.anim.out_from_right);
         fragmentTransaction.replace(R.id.layoutFragmentContainer, settingFragment);
         fragmentTransaction.commit();
         txtTitle.setText(getString(R.string.settings_title));
@@ -195,7 +195,7 @@ public class SettingActivity extends BaseActivity implements SettingView {
 
     public void goToUpdateProfile() {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.setCustomAnimations(R.anim.fragment_in_from_right, R.anim.fragment_out_from_left);
+        fragmentTransaction.setCustomAnimations(R.anim.fragment_in_from_right, R.anim.out_from_left);
         fragmentTransaction.add(R.id.layoutFragmentContainer, settingUpdateProfileFragment);
         fragmentTransaction.addToBackStack("Update");
         fragmentTransaction.commit();
@@ -209,7 +209,7 @@ public class SettingActivity extends BaseActivity implements SettingView {
 
     public void goToBlock() {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.setCustomAnimations(R.anim.fragment_in_from_right, R.anim.fragment_out_from_left);
+        fragmentTransaction.setCustomAnimations(R.anim.fragment_in_from_right, R.anim.out_from_left);
         fragmentTransaction.add(R.id.layoutFragmentContainer, settingBlockFragment);
         fragmentTransaction.addToBackStack("Block");
         fragmentTransaction.commit();

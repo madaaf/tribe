@@ -1,32 +1,22 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
-import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.fragment.GroupMemberFragment;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
-import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -113,7 +103,7 @@ public class GroupInfoActivity extends BaseActivity {
     private void goToMain() {
         screenUtils.hideKeyboard(this);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.setCustomAnimations(R.anim.fragment_in_from_left, R.anim.fragment_out_from_right);
+        fragmentTransaction.setCustomAnimations(R.anim.fragment_in_from_left, R.anim.out_from_right);
         fragmentTransaction.replace(R.id.layoutFragmentContainer, groupsGridFragment);
         fragmentTransaction.commit();
     }
@@ -124,7 +114,7 @@ public class GroupInfoActivity extends BaseActivity {
         bundle.putString("groupId", groupsGridFragment.getGroupId());
         groupMemberFragment = GroupMemberFragment.newInstance(bundle);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.setCustomAnimations(R.anim.fragment_in_from_right, R.anim.fragment_out_from_left);
+        fragmentTransaction.setCustomAnimations(R.anim.fragment_in_from_right, R.anim.out_from_left);
         fragmentTransaction.add(R.id.layoutFragmentContainer, groupMemberFragment);
         fragmentTransaction.addToBackStack("GroupMember");
         fragmentTransaction.commit();

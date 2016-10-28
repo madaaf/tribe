@@ -327,7 +327,6 @@ public class ChatPresenter implements Presenter {
 
         @Override
         public void onNext(List<ChatMessage> chatMessageList) {
-            System.out.println("chatmessages");
             messageView.renderMessageList(chatMessageList);
         }
     }

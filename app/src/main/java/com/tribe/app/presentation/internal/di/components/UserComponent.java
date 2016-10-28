@@ -7,6 +7,7 @@ import com.tribe.app.presentation.mvp.presenter.GroupPresenter;
 import com.tribe.app.presentation.mvp.presenter.SettingPresenter;
 import com.tribe.app.presentation.utils.facebook.FacebookHiddenActivity;
 import com.tribe.app.presentation.utils.mediapicker.MediaHiddenActivity;
+import com.tribe.app.presentation.view.activity.BaseActionActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.GroupInfoActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
@@ -20,7 +21,6 @@ import com.tribe.app.presentation.view.component.SearchFriendsView;
 import com.tribe.app.presentation.view.component.SettingFilterView;
 import com.tribe.app.presentation.view.component.SettingItemView;
 import com.tribe.app.presentation.view.component.SettingThemeView;
-import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.dialog_fragment.LocationDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.PointsDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.ShareDialogFragment;
@@ -74,4 +74,5 @@ public interface UserComponent extends ActivityComponent {
     void inject(PointsDialogFragment pointsDialogFragment);
     void inject(LocationDialogFragment locationDialogFragment);
     void inject(ShareDialogProfileFragment shareDialogProfileFragment);
+    void inject(BaseActionActivity baseActionActivity);
 }

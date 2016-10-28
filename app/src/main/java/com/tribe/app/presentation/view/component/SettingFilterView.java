@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.view.component;
 
-import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
@@ -22,6 +21,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.internal.di.scope.Filter;
+import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
@@ -39,9 +39,6 @@ import rx.subscriptions.CompositeSubscription;
  * Created by horatiothomas on 9/6/16.
  */
 public class SettingFilterView extends FrameLayout {
-
-    public static final String[] PERMISSIONS_CAMERA = new String[]{ Manifest.permission.CAMERA,
-            Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE };
 
     @BindView(R.id.imgFilterUnderline)
     ImageView imgFilterUnderline;
@@ -185,7 +182,7 @@ public class SettingFilterView extends FrameLayout {
 
     public void onResume() {
         subscriptions.add(Observable.
-            from(PERMISSIONS_CAMERA)
+            from(PermissionUtils.PERMISSIONS_CAMERA)
             .map(permission -> RxPermissions.getInstance(getContext()).isGranted(permission))
             .toList()
             .subscribe(grantedList -> {

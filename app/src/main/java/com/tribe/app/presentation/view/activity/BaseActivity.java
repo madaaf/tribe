@@ -77,4 +77,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected User getCurrentUser() {
         return ((AndroidApplication) getApplication()).getApplicationComponent().currentUser();
     }
+
+    public TagManager getTagManager() {
+        return tagManager;
+    }
 }

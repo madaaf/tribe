@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.internal.di.modules;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.ConditionVariable;
 import android.util.Base64;
@@ -56,6 +57,7 @@ import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.view.utils.DeviceUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -85,7 +87,6 @@ import okhttp3.Cache;
 import okhttp3.CertificatePinner;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -231,6 +232,7 @@ public class NetModule {
 
             requestBuilder.header("Authorization", tribeAuthorizer.getAccessToken().getTokenType()
                                 + " " + tribeAuthorizer.getAccessToken().getAccessToken());
+            appendUserAgent(context, requestBuilder);
 
             requestBuilder.method(original.method(), original.body());
 
@@ -295,12 +297,12 @@ public class NetModule {
             }
         });
 
-        if (BuildConfig.DEBUG) {
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
-            httpClientBuilder.addInterceptor(loggingInterceptor);
-            //httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
-        }
+//        if (BuildConfig.DEBUG) {
+//            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+//            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+//            httpClientBuilder.addInterceptor(loggingInterceptor);
+//            //httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+//        }
 
         return new Retrofit.Builder()
                 .baseUrl(BuildConfig.TRIBE_API)
@@ -337,7 +339,8 @@ public class NetModule {
 
     @Provides
     @PerApplication
-    LoginApi provideLoginApi(Gson gson, @Named("tribeApiOKHttp") OkHttpClient okHttpClient, TribeAuthorizer tribeAuthorizer) {
+    LoginApi provideLoginApi(Gson gson, @Named("tribeApiOKHttp") OkHttpClient okHttpClient, TribeAuthorizer tribeAuthorizer,
+                             Context context) {
         OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
         httpClientBuilder
@@ -354,7 +357,7 @@ public class NetModule {
             String base64 = Base64.encodeToString(data, Base64.DEFAULT).replace("\n", "");
 
             requestBuilder.header("Authorization", "Basic " + base64);
-
+            appendUserAgent(context, requestBuilder);
             requestBuilder.method(original.method(), original.body());
 
             Request request = requestBuilder.build();
@@ -363,7 +366,7 @@ public class NetModule {
 
 //        if (BuildConfig.DEBUG) {
 //            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-//            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+//            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
 //            httpClientBuilder.addInterceptor(loggingInterceptor);
 //            httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
 //        }
@@ -383,7 +386,12 @@ public class NetModule {
 
         return new OkHttpClient.Builder()
                 .cache(cache)
-        .connectTimeout(60, TimeUnit.SECONDS)
-        .readTimeout(60, TimeUnit.SECONDS);
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS);
+    }
+
+    private void appendUserAgent(Context context, Request.Builder requestBuilder) {
+        requestBuilder.header("User-Agent", context.getPackageName() + "/"
+                + DeviceUtils.getVersionCode(context) + " android/" + Build.VERSION.RELEASE + " okhttp/3.2");
     }
 }

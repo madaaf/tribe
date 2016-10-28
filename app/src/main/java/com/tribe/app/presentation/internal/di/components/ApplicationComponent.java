@@ -50,6 +50,7 @@ import com.tribe.app.presentation.internal.di.scope.AddressBook;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;
 import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
 import com.tribe.app.presentation.internal.di.scope.Filter;
+import com.tribe.app.presentation.internal.di.scope.HasRatedApp;
 import com.tribe.app.presentation.internal.di.scope.HasReceivedPointsForCameraPermission;
 import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
@@ -60,15 +61,19 @@ import com.tribe.app.presentation.internal.di.scope.LocationPopup;
 import com.tribe.app.presentation.internal.di.scope.Memories;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
 import com.tribe.app.presentation.internal.di.scope.Preload;
+import com.tribe.app.presentation.internal.di.scope.LastVersionCode;
 import com.tribe.app.presentation.internal.di.scope.ShareProfile;
 import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.internal.di.scope.Theme;
+import com.tribe.app.presentation.internal.di.scope.TribeSentCount;
 import com.tribe.app.presentation.internal.di.scope.WasAskedForCameraPermission;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.TribeFirebaseInstanceIDService;
 import com.tribe.app.presentation.service.TribeFirebaseMessagingService;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.analytics.AnalyticsManager;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
@@ -84,6 +89,7 @@ import com.tribe.app.presentation.view.camera.view.GlPreview;
 import com.tribe.app.presentation.view.camera.view.HistogramVisualizerView;
 import com.tribe.app.presentation.view.component.PullToSearchContainer;
 import com.tribe.app.presentation.view.component.PullToSearchView;
+import com.tribe.app.presentation.view.component.RatingView;
 import com.tribe.app.presentation.view.component.SettingItemView;
 import com.tribe.app.presentation.view.component.TribeComponentView;
 import com.tribe.app.presentation.view.component.TribePagerView;
@@ -121,9 +127,12 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 @Component(modules = {ApplicationModule.class, NetModule.class})
 public interface ApplicationComponent {
 
+    void inject(Navigator navigator);
+
     void inject(BaseFragment baseFragment);
     void inject(BaseActivity baseActivity);
     void inject(TribeFirebaseMessagingService tribeFirebaseMessagingService);
+    void inject(AnalyticsManager analyticsManager);
 
     void inject(LauncherActivity launcherActivity);
     void inject(MeGridAdapterDelegate meGridAdapterDelegate);
@@ -151,6 +160,7 @@ public interface ApplicationComponent {
     void inject(ButtonCardView buttonCardView);
     void inject(GlPreview glPreview);
     void inject(VisualizerView visualizerView);
+    void inject(RatingView ratingView);
 
     // JOBS
     void inject(BaseJob baseJob);
@@ -295,4 +305,13 @@ public interface ApplicationComponent {
 
     @LastSync
     Preference<Long> lastSync();
+
+    @TribeSentCount
+    Preference<Integer> tribeSentCount();
+
+    @LastVersionCode
+    Preference<Integer> lastVersionCode();
+
+    @HasRatedApp
+    Preference<Boolean> hasRatedApp();
 }

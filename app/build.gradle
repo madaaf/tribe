@@ -29,7 +29,6 @@ android {
 
     dexOptions {
         maxProcessCount 2
-        incremental = true
         preDexLibraries = false
         javaMaxHeapSize "4g"
     }
@@ -190,6 +189,7 @@ dependencies {
     compile presentationDependencies.imageCropper
     compile presentationDependencies.firebaseInvites
     compile presentationDependencies.appBoy
+    compile presentationDependencies.firebaseRemote
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker

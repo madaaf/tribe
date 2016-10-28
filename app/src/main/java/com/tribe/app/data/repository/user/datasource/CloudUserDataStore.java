@@ -1,8 +1,6 @@
 package com.tribe.app.data.repository.user.datasource;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.telephony.TelephonyManager;
@@ -43,6 +41,7 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
+import com.tribe.app.presentation.view.utils.DeviceUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -213,14 +212,6 @@ public class CloudUserDataStore implements UserDataStore {
     private Observable<Installation> createInstallation(String token, Installation installation) {
         TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
         String operatorName = telephonyManager.getNetworkOperatorName();
-        PackageManager manager = context.getPackageManager();
-        PackageInfo info = null;
-
-        try {
-            info = manager.getPackageInfo(context.getPackageName(), 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
 
         String base = context.getString(R.string.install_base,
                 accessToken.getUserId(),
@@ -229,7 +220,7 @@ public class CloudUserDataStore implements UserDataStore {
                 Build.VERSION.RELEASE,
                 Build.MANUFACTURER,
                 Build.MODEL,
-                info != null ? info.versionName : "UNKNOWN",
+                DeviceUtils.getVersionName(context),
                 context.getPackageName(),
                 context.getResources().getConfiguration().locale.toString(),
                 operatorName
@@ -832,11 +823,13 @@ public class CloudUserDataStore implements UserDataStore {
             UserRealm dbUser = userCache.userInfosNoObs(accessToken.getUserId());
             dbUser.setProfilePicture(userRealm.getProfilePicture());
             dbUser.setUsername(userRealm.getUsername());
-            user.setUsername(userRealm.getUsername());
             dbUser.setDisplayName(userRealm.getDisplayName());
-            user.setDisplayName(userRealm.getDisplayName());
-            userCache.put(dbUser);
+            dbUser.setTribeSave(userRealm.isTribeSave());
             user.setProfilePicture(userRealm.getProfilePicture());
+            user.setDisplayName(userRealm.getDisplayName());
+            user.setTribeSave(userRealm.isTribeSave());
+            user.setUsername(userRealm.getUsername());
+            userCache.put(dbUser);
         }
     };
 

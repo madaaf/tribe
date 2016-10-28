@@ -18,6 +18,7 @@ package com.tribe.app.presentation.view.utils;
 
 import android.app.UiModeManager;
 import android.content.Context;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -25,6 +26,8 @@ import android.support.annotation.NonNull;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import static android.R.attr.versionName;
 
 /**
  * A Utility class to help determine characteristics about the device
@@ -86,6 +89,36 @@ public class DeviceUtils {
         }
 
         return false;
+    }
+
+    public static String getVersionName(Context context) {
+        PackageManager manager = context.getPackageManager();
+        PackageInfo info = null;
+        String versionName = "UNKNOWN";
+
+        try {
+            info = manager.getPackageInfo(context.getPackageName(), 0);
+            if (info != null) versionName = info.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return versionName;
+    }
+
+    public static int getVersionCode(Context context) {
+        PackageManager manager = context.getPackageManager();
+        PackageInfo info = null;
+        int versionCode = 0;
+
+        try {
+            info = manager.getPackageInfo(context.getPackageName(), 0);
+            if (info != null) versionCode = info.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return versionCode;
     }
 
     public static class NonCompatibleDevice {

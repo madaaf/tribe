@@ -87,7 +87,7 @@ public class IntroVideoView extends FrameLayout implements TextureView.SurfaceTe
             }
 
             subscriptions.add(mediaPlayer.onErrorPlayer().subscribe(error -> {
-                System.out.println("MEDIA PLAYER ERROR");
+                //System.out.println("MEDIA PLAYER ERROR");
             }));
         }));
     }

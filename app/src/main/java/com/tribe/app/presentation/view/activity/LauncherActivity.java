@@ -5,10 +5,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.internal.di.scope.LastVersionCode;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.utils.DeviceUtils;
 
 import javax.inject.Inject;
 
@@ -22,6 +25,10 @@ public class LauncherActivity extends BaseActivity {
 
     @Inject
     FileUtils fileUtils;
+
+    @Inject
+    @LastVersionCode
+    Preference<Integer> lastVersion;
 
     public static Intent getCallingIntent(Context context) {
         return new Intent(context, LauncherActivity.class);
@@ -41,8 +48,11 @@ public class LauncherActivity extends BaseActivity {
         } else {
             if (currentUser != null && currentUser.hasOnlySupport())
                 navigator.navigateToLogin(this, deepLink);
-            else
+            else if (lastVersion.get().equals(DeviceUtils.getVersionCode(this))) {
                 navigator.navigateToHome(this, true, deepLink);
+            } else {
+                navigator.computeActions(this, false, null);
+            }
         }
 
         finish();

@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
@@ -40,15 +39,13 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.internal.di.scope.HasReceivedPointsForCameraPermission;
-import com.tribe.app.presentation.internal.di.scope.LocationContext;
-import com.tribe.app.presentation.internal.di.scope.LocationPopup;
 import com.tribe.app.presentation.internal.di.scope.WasAskedForCameraPermission;
 import com.tribe.app.presentation.mvp.presenter.HomePresenter;
 import com.tribe.app.presentation.mvp.view.HomeView;
 import com.tribe.app.presentation.utils.DeepLinkUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.dialog_fragment.LocationDialogFragment;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.fragment.ContactsGridFragment;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
@@ -73,15 +70,10 @@ import rx.subscriptions.CompositeSubscription;
 
 public class HomeActivity extends BaseActivity implements HasComponent<UserComponent>, HomeView, GoogleApiClient.OnConnectionFailedListener {
 
-    public static final String[] PERMISSIONS_CAMERA = new String[]{ Manifest.permission.CAMERA,
-            Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE };
     public static final int SETTINGS_RESULT = 101, TRIBES_RESULT = 104;
 
-    private static final int THRESHOLD_SCROLL = 12;
     private static final int DURATION = 500;
     private static final int DURATION_SMALL = 300;
-    private static final int DELAY_DISMISS_PENDING = 1000;
-    private static final int DELAY_DISMISS_NEW_TRIBES = 1000;
     private static final float OVERSHOOT = 1f;
 
     public static final int CONTACTS_FRAGMENT_PAGE = 0;
@@ -97,14 +89,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @Inject
     ScreenUtils screenUtils;
-
-    @Inject
-    @LocationPopup
-    Preference<Boolean> locationPopup;
-
-    @Inject
-    @LocationContext
-    Preference<Boolean> locationContext;
 
     @Inject
     @HasReceivedPointsForCameraPermission
@@ -221,28 +205,19 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     protected void onResume() {
         super.onResume();
 
-        if (wasAskedForCameraPermission.get()) {
-            subscriptions.add(Observable.
-                    from(PERMISSIONS_CAMERA)
-                    .map(permission -> RxPermissions.getInstance(HomeActivity.this).isGranted(permission))
-                    .toList()
-                    .subscribe(grantedList -> {
-                        boolean areAllGranted = true;
+        subscriptions.add(Observable.
+                from(PermissionUtils.PERMISSIONS_CAMERA)
+                .map(permission -> RxPermissions.getInstance(HomeActivity.this).isGranted(permission))
+                .toList()
+                .subscribe(grantedList -> {
+                    boolean areAllGranted = true;
 
-                        for (Boolean granted : grantedList) {
-                            if (!granted) areAllGranted = false;
-                        }
+                    for (Boolean granted : grantedList) {
+                        if (!granted) areAllGranted = false;
+                    }
 
-                        handleCameraPermissions(areAllGranted, false);
-                    }));
-        } else {
-            RxPermissions
-                    .getInstance(HomeActivity.this)
-                    .request(PERMISSIONS_CAMERA)
-                    .subscribe(isGranted -> {
-                        handleCameraPermissions(isGranted, false);
-                    });
-        }
+                    handleCameraPermissions(areAllGranted, false);
+                }));
     }
 
     @Override
@@ -299,7 +274,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
         subscriptions.add(cameraWrapper.cameraPermissions().subscribe(aVoid -> {
             RxPermissions.getInstance(this)
-                    .request(PERMISSIONS_CAMERA)
+                    .request(PermissionUtils.PERMISSIONS_CAMERA)
                     .subscribe(granted -> {
                         handleCameraPermissions(granted, true);
                     });
@@ -316,9 +291,13 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             }
 
             cameraWrapper.onResume(shouldAnimate);
+        } else {
+            cameraWrapper.showPermissions();
         }
 
-        else cameraWrapper.showPermissions();
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(TagManagerConstants.CAMERA_ENABLED, isGranted);
+        tagManager.setProperty(bundle);
     }
 
     private void initViewPager() {
@@ -370,23 +349,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     private void initPresenter() {
         this.homePresenter.attachView(this);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == TRIBES_RESULT) {
-            if (!locationContext.get() && !locationPopup.get() && !PermissionUtils.hasPermissionsLocation(this)) {
-                LocationDialogFragment locationDialogFragment = LocationDialogFragment.newInstance();
-                locationDialogFragment.show(getSupportFragmentManager(), LocationDialogFragment.class.getName());
-                subscriptions.add(locationDialogFragment.onClickYes().subscribe(aVoid -> {
-                    homePresenter.updateScoreLocation();
-                    locationPopup.set(true);
-                    locationContext.set(true);
-                }));
-            }
-        }
     }
 
     @Override

@@ -99,7 +99,7 @@ public class PlayerView extends FrameLayout implements TextureView.SurfaceTextur
             }
 
             subscriptions.add(mediaPlayer.onErrorPlayer().subscribe(error -> {
-                System.out.println("MEDIA PLAYER ERROR");
+                //System.out.println("MEDIA PLAYER ERROR");
             }));
         }));
     }

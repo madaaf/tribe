@@ -166,7 +166,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        System.out.println("ON SAVE INSTANCE");
+
         if (recipient != null) outState.putSerializable(RECIPIENT, recipient);
         if (!StringUtils.isEmpty(recipientId)) outState.putString(RECIPIENT_ID, recipientId);
         outState.putBoolean(IS_TO_GROUP, isToGroup);
@@ -175,7 +175,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        System.out.println("ON RESTORE INSTANCE");
+
         if (savedInstanceState != null) {
             if (savedInstanceState.getSerializable(RECIPIENT) != null) recipient = (Recipient) savedInstanceState.getSerializable(RECIPIENT);
             if (savedInstanceState.getString(RECIPIENT_ID) != null) recipientId = savedInstanceState.getString(RECIPIENT_ID);
@@ -407,7 +407,9 @@ public class ChatActivity extends BaseActivity implements MessageView {
         DialogFactory.createConfirmationDialog(this, getString(R.string.chat_erase_conversation_title),
                     getString(R.string.chat_erase_conversation_message),
                     getString(R.string.action_delete),
-                    (dialog, which) -> chatPresenter.deleteConversation(recipient.getSubId()))
+                    getString(R.string.action_cancel),
+                    (dialog, which) -> chatPresenter.deleteConversation(recipient.getSubId()),
+                    null)
                 .show();
     }
 
@@ -915,8 +917,6 @@ public class ChatActivity extends BaseActivity implements MessageView {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        System.out.println("ACTIVITY RESULT");
 
         if (requestCode == REQUEST_GALLERY && data != null && data.getData() != null) {
             String type = getContentResolver().getType(data.getData());
