@@ -321,7 +321,8 @@ public class NetModule {
 
         httpClientBuilder
                 .connectTimeout(5, TimeUnit.MINUTES)
-                .readTimeout(5, TimeUnit.MINUTES);
+                .readTimeout(5, TimeUnit.MINUTES)
+                .writeTimeout(5, TimeUnit.MINUTES);
 
 //        if (BuildConfig.DEBUG) {
 //            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();

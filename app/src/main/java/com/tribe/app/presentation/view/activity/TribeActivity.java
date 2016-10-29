@@ -260,6 +260,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
         subscriptions.add(viewTribePager.onErrorTribe()
                 .subscribe(tribeMessage -> {
                     FileUtils.delete(context(), tribeMessage.getLocalId(), FileUtils.VIDEO);
+                    tribePresenter.updateTribeToDownload(tribeMessage.getId());
                 }));
     }
 

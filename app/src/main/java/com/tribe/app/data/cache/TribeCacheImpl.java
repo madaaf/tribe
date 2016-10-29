@@ -24,6 +24,7 @@ import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by tiago on 06/05/2016.
@@ -515,7 +516,8 @@ public class TribeCacheImpl implements TribeCache {
 
         return realmResults.asObservable()
                 .filter(tribeRealms -> tribeRealms.isLoaded())
-                .map(tribeRealms -> realm.copyFromRealm(tribeRealms));
+                .map(tribeRealms -> realm.copyFromRealm(tribeRealms))
+                .unsubscribeOn(AndroidSchedulers.mainThread());
     }
 
     @Override
@@ -536,6 +538,7 @@ public class TribeCacheImpl implements TribeCache {
             otherRealm.close();
         }
     }
+
 
     @Override
     public List<TribeRealm> tribesDownloading() {

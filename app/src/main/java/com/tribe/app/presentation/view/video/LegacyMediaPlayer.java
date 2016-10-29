@@ -54,7 +54,6 @@ LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.OnVideoSizeCha
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
-        onErrorPlayer.onNext("Error : " + what + " / extra : " + extra);
         return false;
     }
 

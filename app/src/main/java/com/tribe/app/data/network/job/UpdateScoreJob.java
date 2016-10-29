@@ -14,7 +14,6 @@ import com.tribe.app.presentation.view.utils.ScoreUtils;
 import javax.inject.Inject;
 
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by tiago on 15/07/2016.
@@ -33,10 +32,12 @@ public class UpdateScoreJob extends BaseJob {
     UserCache userCache;
 
     private ScoreUtils.Point point;
+    private int count;
 
     public UpdateScoreJob(ScoreUtils.Point point) {
         super(new Params(Priority.MID).requireNetwork().groupBy(TAG));
         this.point = point;
+        this.count = 0;
     }
 
     @Override
@@ -48,7 +49,6 @@ public class UpdateScoreJob extends BaseJob {
     public void onRun() throws Throwable {
         tribeApi.updateScore(getApplicationContext().getString(R.string.user_mutate_score, point.getServerKey(),
                 getApplicationContext().getString(R.string.userfragment_infos)))
-                .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(userRealm -> userCache.put(userRealm));
     }
