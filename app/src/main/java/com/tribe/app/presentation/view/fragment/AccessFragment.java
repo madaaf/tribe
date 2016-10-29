@@ -213,17 +213,32 @@ public class AccessFragment extends BaseFragment implements AccessView {
         subscriptions.add(
                 textFriendsView
                         .onShareFB()
-                        .subscribe(aVoid -> navigator.openFacebookMessenger(getString(R.string.share_onboarding, BuildConfig.TRIBE_URL), getContext())));
+                        .subscribe(aVoid -> {
+                            Bundle bundle = new Bundle();
+                            bundle.putString(TagManagerConstants.TYPE, TagManagerConstants.TYPE_INVITE_MESSENGER);
+                            tagManager.trackEvent(TagManagerConstants.ONBOARDING_INVITE, bundle);
+                            navigator.openFacebookMessenger(getString(R.string.share_onboarding, BuildConfig.TRIBE_URL), getContext());
+                        }));
 
         subscriptions.add(
                 textFriendsView
                         .onShareWhatsapp()
-                        .subscribe(aVoid -> navigator.openWhatsApp(getString(R.string.share_onboarding, BuildConfig.TRIBE_URL), getContext())));
+                        .subscribe(aVoid -> {
+                            Bundle bundle = new Bundle();
+                            bundle.putString(TagManagerConstants.TYPE, TagManagerConstants.TYPE_INVITE_WHATSAPP);
+                            tagManager.trackEvent(TagManagerConstants.ONBOARDING_INVITE, bundle);
+                            navigator.openWhatsApp(getString(R.string.share_onboarding, BuildConfig.TRIBE_URL), getContext());
+                        }));
 
         subscriptions.add(
                 textFriendsView
                         .onShareSMS()
-                        .subscribe(aVoid -> navigator.sendText(getString(R.string.share_onboarding, BuildConfig.TRIBE_URL), getContext())));
+                        .subscribe(aVoid -> {
+                            Bundle bundle = new Bundle();
+                            bundle.putString(TagManagerConstants.TYPE, TagManagerConstants.TYPE_INVITE_SMS);
+                            tagManager.trackEvent(TagManagerConstants.ONBOARDING_INVITE, bundle);
+                            navigator.sendText(getString(R.string.share_onboarding, BuildConfig.TRIBE_URL), getContext());
+                        }));
     }
 
     private void initResources() {

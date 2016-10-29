@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="com_appboy_api_key">965c7a8c-d277-4e0c-9fa3-b44921967357</string>
-    <drawable name="com_appboy_push_small_notification_icon">@drawable/ic_notification</drawable>
-    <drawable name="com_appboy_push_large_notification_icon">@mipmap/ic_launcher</drawable>
+    <string name="com_appboy_api_key" translatable="false">965c7a8c-d277-4e0c-9fa3-b44921967357</string>
+    <drawable name="com_appboy_push_small_notification_icon" translatable="false">@drawable/ic_notification</drawable>
+    <drawable name="com_appboy_push_large_notification_icon" translatable="false">@mipmap/ic_launcher</drawable>
 </resources>

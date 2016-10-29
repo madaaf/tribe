@@ -376,6 +376,8 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
                     soundManager.playSound(SoundManager.START_RECORD);
                 })
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
+                .delay(300, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
                 .map(recipient -> {
                     timeRecording = System.currentTimeMillis();
                     TribeMessage currentTribe = homeGridPresenter.createTribe(currentUser, recipient, tribeMode);

@@ -45,6 +45,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class TribeActivity extends BaseActivity implements TribeView {
@@ -195,8 +196,10 @@ public class TribeActivity extends BaseActivity implements TribeView {
                 .delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
 
         subscriptions.add(viewTribePager.onRecordStart()
+                .doOnNext(view -> soundManager.playSound(SoundManager.START_RECORD))
+                .delay(300, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
                 .map(view -> {
-                    soundManager.playSound(SoundManager.START_RECORD);
                     isRecording = true;
                     currentTribe = tribePresenter.createTribe(currentUser, recipient, viewTribePager.getTribeMode());
                     recipient.setTribe(currentTribe);

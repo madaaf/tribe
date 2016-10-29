@@ -244,7 +244,10 @@ public class User implements Serializable {
     }
 
     private void notifyAllScoreListeners(int previousScore, int newScore) {
-        for (UpdateScore updateScore : scoreListenerList) updateScore.updateScore(previousScore, newScore);
+        if (newScore > previousScore) {
+            for (UpdateScore updateScore : scoreListenerList)
+                updateScore.updateScore(previousScore, newScore);
+        }
     }
 
     public boolean hasOnlySupport() {

@@ -101,7 +101,7 @@ public class SendChatJob extends BaseJob {
 
         @Override
         public void onNext(ChatMessage chatMessage) {
-            jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.SEND_RECEIVE_CHAT));
+            jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.SEND_RECEIVE_CHAT, 1));
             setStatus(MessageSendingStatus.STATUS_SENT);
         }
     }

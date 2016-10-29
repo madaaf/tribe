@@ -92,7 +92,6 @@
                 android:layout_height="wrap_content"
                 android:singleLine="true"
                 style="@style/Points.Reg.Yellow"
-                android:text="1000"
                 />
 
             <com.tribe.app.presentation.view.widget.TextViewFont

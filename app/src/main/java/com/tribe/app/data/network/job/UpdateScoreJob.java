@@ -32,12 +32,12 @@ public class UpdateScoreJob extends BaseJob {
     UserCache userCache;
 
     private ScoreUtils.Point point;
-    private int count;
+    private int count = 1;
 
-    public UpdateScoreJob(ScoreUtils.Point point) {
+    public UpdateScoreJob(ScoreUtils.Point point, int count) {
         super(new Params(Priority.MID).requireNetwork().groupBy(TAG));
         this.point = point;
-        this.count = 0;
+        this.count = count;
     }
 
     @Override
@@ -47,10 +47,17 @@ public class UpdateScoreJob extends BaseJob {
 
     @Override
     public void onRun() throws Throwable {
-        tribeApi.updateScore(getApplicationContext().getString(R.string.user_mutate_score, point.getServerKey(),
-                getApplicationContext().getString(R.string.userfragment_infos)))
+        StringBuffer buffer = new StringBuffer();
+
+        for (int i = 0; i < count; i++) {
+            buffer.append(getApplicationContext().getString(R.string.user_mutate_score_core, i, point.getServerKey()));
+        }
+
+        String scoreMutation = getApplicationContext().getString(R.string.user_mutate_score, buffer.toString());
+
+        tribeApi.updateScore(scoreMutation)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(userRealm -> userCache.put(userRealm));
+                .subscribe(scoreEntity -> userCache.updateScore(currentUser.getId(), scoreEntity.getScore()));
     }
 
     @Override

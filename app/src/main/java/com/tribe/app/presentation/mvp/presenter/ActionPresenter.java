@@ -46,15 +46,15 @@ public class ActionPresenter implements Presenter {
     }
 
     public void updateScoreLocation() {
-        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.LOCATION));
+        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.LOCATION, 1));
     }
 
     public void updateScoreCamera() {
-        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.CAMERA));
+        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.CAMERA, 1));
     }
 
     public void updateScoreRating() {
-        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.RATE_APP));
+        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.RATE_APP, 1));
     }
 
     @Override

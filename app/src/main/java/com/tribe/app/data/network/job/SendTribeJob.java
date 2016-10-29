@@ -117,7 +117,7 @@ public class  SendTribeJob extends BaseJob {
 
         @Override
         public void onNext(TribeMessage tribe) {
-            jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.SEND_RECEIVE_TRIBE));
+            jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.SEND_RECEIVE_TRIBE, 1));
             setStatus(MessageSendingStatus.STATUS_SENT);
             Bundle bundle = new Bundle();
             bundle.putString(TagManagerConstants.TYPE, tribeRealm.isToGroup() ? TagManagerConstants.TYPE_TRIBE_GROUP : TagManagerConstants.TYPE_TRIBE_USER);

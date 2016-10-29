@@ -113,11 +113,11 @@ public class SettingPresenter extends UpdateUserPresenter {
     }
 
     public void updateScoreLocation() {
-        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.LOCATION));
+        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.LOCATION, 1));
     }
 
     public void updateScoreRateApp() {
-        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.RATE_APP));
+        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.RATE_APP, 1));
     }
 
     public void deleteABContacts() {

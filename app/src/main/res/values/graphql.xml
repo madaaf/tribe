@@ -568,12 +568,14 @@
 
     <string name="user.mutate.score" translatable="false">
         mutation {
-            updateScore(action: %1$s) {
-                ...UserInfos
-            }
+            %1$s
         }
+    </string>
 
-        %2$s
+    <string name="user.mutate.score.core" translatable="false">
+        updateScore%1$d : updateScore(action: %2$s) {
+            score
+        }
     </string>
 
     <string name="boostrap.support" translatable="false">

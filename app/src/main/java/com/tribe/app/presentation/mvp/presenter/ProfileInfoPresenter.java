@@ -1,6 +1,8 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.entity.LoginEntity;
+import com.tribe.app.data.network.job.UpdateScoreJob;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.domain.entity.User;
@@ -15,6 +17,7 @@ import com.tribe.app.presentation.mvp.view.UpdateUserView;
 import com.tribe.app.presentation.mvp.view.View;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
+import com.tribe.app.presentation.view.utils.ScoreUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -25,6 +28,7 @@ public class ProfileInfoPresenter extends UpdateUserPresenter {
     private ProfileInfoView profileInfoView;
 
     // USECASES
+    private final JobManager jobManager;
     private final DoRegister doRegister;
     private final DoBootstrapSupport bootstrapSupport;
     private final GetCloudUserInfos cloudUserInfos;
@@ -35,13 +39,15 @@ public class ProfileInfoPresenter extends UpdateUserPresenter {
     private UserInfoSubscriber userInfoSubscriber;
 
     @Inject
-    public ProfileInfoPresenter(RxFacebook rxFacebook,
+    public ProfileInfoPresenter(JobManager jobManager,
+                                RxFacebook rxFacebook,
                                 @Named("lookupByUsername") LookupUsername lookupUsername,
                                 DoRegister doRegister,
                                 DoBootstrapSupport bootstrapSupport,
                                 UpdateUser updateUser,
                                 GetCloudUserInfos cloudUserInfos) {
         super(updateUser, lookupUsername, rxFacebook);
+        this.jobManager = jobManager;
         this.doRegister = doRegister;
         this.bootstrapSupport = bootstrapSupport;
         this.cloudUserInfos = cloudUserInfos;
@@ -107,6 +113,10 @@ public class ProfileInfoPresenter extends UpdateUserPresenter {
 
     public void loadFacebookInfos() {
         subscriptions.add(rxFacebook.requestInfos().subscribe(new FacebookInfosSubscriber()));
+    }
+
+    public void updateFacebookScoreLogin() {
+        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.SYNCHRONIZE_FRIENDS, 1));
     }
 
     public void register(String displayName, String username, LoginEntity loginEntity) {

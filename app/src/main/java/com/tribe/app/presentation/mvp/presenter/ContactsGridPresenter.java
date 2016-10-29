@@ -178,15 +178,15 @@ public class ContactsGridPresenter implements Presenter {
     }
 
     public void updateScoreInvite() {
-        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.INVITE));
+        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.INVITE, 1));
     }
 
     public void updateScoreShare() {
-        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.SHARE_PROFILE));
+        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.SHARE_PROFILE, 1));
     }
 
     public void updateScoreFBSync() {
-        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.SYNCHRONIZE_FRIENDS));
+        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.SYNCHRONIZE_FRIENDS, 1));
     }
 
     private final class ContactListSubscriber extends DefaultSubscriber<List<Contact>> {
@@ -255,7 +255,7 @@ public class ContactsGridPresenter implements Presenter {
         public void onNext(Friendship friendship) {
             if (friendship == null) contactsView.onAddError();
             else {
-                jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.NEW_FRIENDSHIP));
+                jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.NEW_FRIENDSHIP, 1));
                 contactsView.onAddSuccess(friendship);
             }
         }

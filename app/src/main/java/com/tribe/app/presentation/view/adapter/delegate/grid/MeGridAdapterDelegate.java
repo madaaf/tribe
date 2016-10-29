@@ -81,8 +81,10 @@ public class MeGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>> {
 
         int score = me.getScore();
         int oldScore = vh.txtPoints.getTag(R.id.old_score) != null ? (Integer) vh.txtPoints.getTag(R.id.old_score) : score;
-        ScoreUtils.setScore(context, vh.txtPoints, oldScore, score, -1);
-        vh.txtPoints.setTag(R.id.old_score, score);
+        if (score >= oldScore) {
+            ScoreUtils.setScore(context, vh.txtPoints, oldScore, score, -1);
+            vh.txtPoints.setTag(R.id.old_score, score);
+        }
 
         vh.imgLevel.setImageResource(ScoreUtils.getLevelForScore(me.getScore()).getDrawableId());
 

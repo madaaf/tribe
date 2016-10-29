@@ -21,6 +21,7 @@ public class TagManagerConstants {
     public static final String ONBOARDING_SMS_NOT_RECEIVED = "Onboarding - SMS Not Received";
     public static final String ONBOARDING_RESEND_PIN = "Onboarding - Resend Pin";
     public static final String ONBOARDING_PIN_ERROR = "Onboarding - Pin Error";
+    public static final String ONBOARDING_INVITE = "Onboarding - Invite";
     public static final String TUTORIAL_OPEN_FIRST_SUPPORT = "Tutorial - Open First Support Tribe";
     public static final String TUTORIAL_DONE = "Tutorial - Done";
     public static final String KPI_TRIBES_OPENED = "KPI - Tribes Opened";
@@ -57,6 +58,9 @@ public class TagManagerConstants {
     public static final String TYPE_DEEPLINK_NONE = "None";
     public static final String TYPE_DEEPLINK_USER = "User";
     public static final String TYPE_DEEPLINK_GROUP = "Group";
+    public static final String TYPE_INVITE_MESSENGER = "Messenger";
+    public static final String TYPE_INVITE_SMS = "SMS";
+    public static final String TYPE_INVITE_WHATSAPP = "WhatsApp";
 
     /**
      * USER PROPERTIES

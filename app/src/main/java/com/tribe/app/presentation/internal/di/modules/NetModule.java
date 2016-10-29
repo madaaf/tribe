@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.ConditionVariable;
 import android.util.Base64;
 
-import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -34,6 +33,7 @@ import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
 import com.tribe.app.data.network.deserializer.NewMembershipDeserializer;
 import com.tribe.app.data.network.deserializer.NewMessageDeserializer;
 import com.tribe.app.data.network.deserializer.NewTribeDeserializer;
+import com.tribe.app.data.network.deserializer.ScoreEntityDeserializer;
 import com.tribe.app.data.network.deserializer.SearchResultDeserializer;
 import com.tribe.app.data.network.deserializer.TribeAccessTokenDeserializer;
 import com.tribe.app.data.network.deserializer.TribeUserDeserializer;
@@ -42,6 +42,7 @@ import com.tribe.app.data.network.deserializer.UserMessageListDeserializer;
 import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.network.entity.RefreshEntity;
+import com.tribe.app.data.network.entity.ScoreEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.GroupRealm;
@@ -143,6 +144,7 @@ public class NetModule {
                 .registerTypeAdapter(SearchResultRealm.class, new SearchResultDeserializer())
                 .registerTypeAdapter(MembershipRealm.class, new NewMembershipDeserializer())
                 .registerTypeAdapter(new TypeToken<List<Installation>>(){}.getType(), new InstallsDeserializer())
+                .registerTypeAdapter(ScoreEntity.class, new ScoreEntityDeserializer())
                 .registerTypeHierarchyAdapter(Collection.class, new CollectionAdapter())
                 .create();
     }
@@ -300,7 +302,7 @@ public class NetModule {
 
         if (BuildConfig.DEBUG) {
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
             httpClientBuilder.addInterceptor(loggingInterceptor);
             //httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
         }
@@ -366,12 +368,12 @@ public class NetModule {
             return chain.proceed(request);
         });
 
-        if (BuildConfig.DEBUG) {
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
-            httpClientBuilder.addInterceptor(loggingInterceptor);
-            httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
-        }
+//        if (BuildConfig.DEBUG) {
+//            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+//            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+//            httpClientBuilder.addInterceptor(loggingInterceptor);
+//            httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+//        }
 
         return new Retrofit.Builder()
                 .baseUrl(BuildConfig.TRIBE_AUTH)

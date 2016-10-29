@@ -286,6 +286,7 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
     @Override
     public void successUpdateUser(User user) {
         this.user.copy(user);
+        if (FacebookUtils.isLoggedIn()) this.profileInfoPresenter.updateFacebookScoreLogin();
         ((IntroActivity) getActivity()).goToAccess(this.user);
     }
 

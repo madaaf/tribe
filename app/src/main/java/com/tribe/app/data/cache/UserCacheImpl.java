@@ -503,7 +503,7 @@ public class UserCacheImpl implements UserCache {
         try {
             obsRealm.beginTransaction();
             UserRealm userDB = obsRealm.where(UserRealm.class).equalTo("id", userId).findFirst();
-            if (userDB != null) {
+            if (userDB != null && score > userDB.getScore()) {
                 userDB.setScore(score);
             }
             obsRealm.commitTransaction();

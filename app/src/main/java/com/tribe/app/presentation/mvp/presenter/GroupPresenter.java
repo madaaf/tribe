@@ -62,7 +62,7 @@ public class GroupPresenter implements Presenter {
     }
 
     public void updateScore() {
-        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.CREATE_GROUP));
+        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.CREATE_GROUP, 1));
     }
 
     public void updateGroup(String groupId, String groupName, String pictureUri) {
