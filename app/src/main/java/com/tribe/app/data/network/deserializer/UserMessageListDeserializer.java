@@ -12,8 +12,10 @@ import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.MessageRealmInterface;
+import com.tribe.app.data.realm.MessageRecipientRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
@@ -49,6 +51,18 @@ public class UserMessageListDeserializer<T> extends MessageRealmListDeserializer
                     JsonObject json = obj.getAsJsonObject();
                     tribeRealm.setId(json.get("id").getAsString());
                     tribeRealm.setRecipientList(tribeCache.createTribeRecipientRealm(parseRecipients(tribeRealm.getId(), json.getAsJsonArray("recipients"))));
+
+                    if (tribeRealm.getRecipientList() != null) {
+                        int countSeen = 0;
+
+                        for (MessageRecipientRealm recipient : tribeRealm.getRecipientList()) {
+                            if (recipient.isSeen()) countSeen++;
+                        }
+
+                        if (countSeen == tribeRealm.getRecipientList().size()) tribeRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_OPENED);
+                        else tribeRealm.setMessageSendingStatus(MessageSendingStatus.STATUS_OPENED_PARTLY);
+                    }
+
                     messages.add(tribeRealm);
                 }
             }

@@ -183,7 +183,7 @@ public class MessageRealmListDeserializer {
         tribeRealm.setType(json.get("type").getAsString());
         tribeRealm.setUrl(json.get("url").getAsString());
 
-        tribeRealm.setRecipientList(tribeCache.createTribeRecipientRealm(parseRecipients(tribeRealm.getId(), json.getAsJsonArray("recipients"))));
+        //tribeRealm.setRecipientList(tribeCache.createTribeRecipientRealm(parseRecipients(tribeRealm.getId(), json.getAsJsonArray("recipients"))));
 
         if (!(json.get("weather") instanceof JsonNull)) {
             JsonObject weather = json.get("weather").getAsJsonObject();

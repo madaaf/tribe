@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -41,7 +42,7 @@ public class TribeCacheImpl implements TribeCache {
     private RealmResults<TribeRealm> tribesToDownload;
 
     @Inject
-    public TribeCacheImpl(Context context, Realm realm, User currentUser) {
+    public TribeCacheImpl(Context context, Realm realm, @Named("userThreadSafe") User currentUser) {
         this.context = context;
         this.currentUser = currentUser;
         this.realm = realm;
@@ -70,8 +71,11 @@ public class TribeCacheImpl implements TribeCache {
 
                         boolean shouldUpdate = false;
 
+                        if (tribeRealm.getMessageSendingStatus() != null && tribeRealm.getMessageSendingStatus().equals(MessageSendingStatus.STATUS_OPENED))
+                            shouldUpdate = true;
+
                         if (shouldUpdate) {
-                            toEdit.setUpdatedAt(new Date());
+                            toEdit.setMessageSendingStatus(tribeRealm.getMessageSendingStatus());
                             realm1.insertOrUpdate(toEdit);
                         }
                     } else if (toEdit == null) {

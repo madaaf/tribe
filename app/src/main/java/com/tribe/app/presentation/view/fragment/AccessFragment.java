@@ -36,7 +36,6 @@ import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.component.AccessBottomBarView;
 import com.tribe.app.presentation.view.component.AccessLockView;
 import com.tribe.app.presentation.view.component.TextFriendsView;
-import com.tribe.app.presentation.view.dialog_fragment.GetNotifiedDialogFragment;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -471,18 +470,6 @@ public class AccessFragment extends BaseFragment implements AccessView {
         txtAccessDesc.setText(descTxt);
         accessBottomBarView.setText(tryAgainTxt);
         accessBottomBarView.setBackground(ContextCompat.getDrawable(getContext(), tryAgainBackground));
-    }
-
-    private void showGetNotifiedDialog() {
-        Observable.timer(4000, TimeUnit.MILLISECONDS)
-                .onBackpressureDrop()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(time -> {
-                    GetNotifiedDialogFragment getNotifiedDialogFragment = GetNotifiedDialogFragment.newInstance();
-                    getNotifiedDialogFragment.show(getFragmentManager(), GetNotifiedDialogFragment.class.getName());
-                });
-
     }
 
     private void fadeTextInOut() {

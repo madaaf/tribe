@@ -586,7 +586,7 @@ public class TileView extends SquareFrameLayout {
                 case MessageSendingStatus.STATUS_OPENED: case MessageSendingStatus.STATUS_OPENED_PARTLY:
                     label = MessageSendingStatus.getStrRes(lastTribe.getMessageSendingStatus(), type);
                     drawableRes = R.drawable.picto_opened;
-                    textAppearence = R.style.Caption_Black_40;
+                    textAppearence = R.style.Caption_White_1;
                     isFinalStatus = true;
                     break;
             }
