@@ -402,7 +402,7 @@ public class TribePagerView extends FrameLayout {
                     cameraWrapper.setVisibility(View.VISIBLE);
                     cameraWrapper.onResume(false);
                     computeCurrentView();
-                    currentView.pausePlayer();
+                    if (currentView != null) currentView.pausePlayer();
                     inReplyMode = true;
                     openReplyMode(bool);
                 })
