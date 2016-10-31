@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Created by tiago on 05/07/2016.
@@ -26,7 +27,7 @@ import javax.inject.Inject;
 public class UpdateTribesErrorStatusJob extends BaseJob {
 
     @Inject
-    User currentUser;
+    @Named("userThreadSafe") User currentUser;
 
     @Inject
     JobManager jobManager;

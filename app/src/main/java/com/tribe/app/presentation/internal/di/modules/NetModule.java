@@ -115,7 +115,7 @@ public class NetModule {
                      UserCache userCache,
                      TribeCache tribeCache,
                      ChatCache chatCache,
-                     User currentUser) {
+                     @Named("userThreadSafe") User currentUser) {
         return new GsonBuilder()
                 .setExclusionStrategies(new ExclusionStrategy() {
                     @Override
