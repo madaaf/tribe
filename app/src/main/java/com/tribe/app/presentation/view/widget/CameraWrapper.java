@@ -175,6 +175,16 @@ public class CameraWrapper extends CardView {
         } else {
             imgVideo.setTranslationX(screenUtils.getWidthPx() / RATIO);
         }
+
+        // Corners & Shadows
+
+        if (cameraType == RECORDING) {
+            setCardElevation(screenUtils.dpToPx(10));
+            setRadius(screenUtils.dpToPx(5));
+        } else {
+            setCardElevation(0);
+            setRadius(0);
+        }
     }
 
     public void onPause() {
@@ -551,13 +561,16 @@ public class CameraWrapper extends CardView {
     }
 
     private void addPathView() {
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(getWidth(), getHeight());
+
+        int width  = getWidth();
+        int height = getHeight();
+
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width, height);
         pathView = new PathView(getContext());
-        pathView.setCardBackgroundColor(null);
         pathView.setLayoutParams(params);
 
         addView(pathView);
-        pathView.start(getWidth(), getHeight());
+        pathView.start(width, height);
     }
 
     private void removePathView() {

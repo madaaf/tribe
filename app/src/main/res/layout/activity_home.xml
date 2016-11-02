@@ -152,9 +152,8 @@
         android:layout_width="@dimen/camera_width"
         android:layout_height="@dimen/camera_height"
         android:layout_gravity="top|left"
-        app:cardElevation="5dp"
-        android:clipToPadding="false"
-        app:cardCornerRadius="@dimen/camera_radius"
+        app:cardUseCompatPadding="true"
+        app:cardPreventCornerOverlap="false"
         android:background="@null"
         />
 </FrameLayout>

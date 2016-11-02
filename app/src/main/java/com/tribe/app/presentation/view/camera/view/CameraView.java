@@ -3,7 +3,6 @@ package com.tribe.app.presentation.view.camera.view;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.SurfaceTexture;
-import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.TextureView;
 import android.view.View;
@@ -26,7 +25,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
-public class CameraView extends CardView implements TextureView.SurfaceTextureListener {
+public class CameraView extends ViewGroup implements TextureView.SurfaceTextureListener {
 
     private static final String TAG = "CameraView";
 

@@ -8,8 +8,6 @@
         android:id="@+id/cameraView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:cardCornerRadius="@dimen/camera_radius"
-        app:cardElevation="0dp"
         android:background="@null">
 
     </com.tribe.app.presentation.view.camera.view.CameraView>
