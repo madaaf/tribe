@@ -8,6 +8,7 @@ import android.content.res.TypedArray;
 import android.media.AudioManager;
 import android.os.Build;
 import android.support.annotation.StringDef;
+import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -48,7 +49,7 @@ import rx.subjects.PublishSubject;
 /**
  * A layout which handles the preview aspect ratio.
  */
-public class CameraWrapper extends FrameLayout {
+public class CameraWrapper extends CardView {
 
     public static final int RECORDING = 0;
     public static final int SETTING = 1;
@@ -173,7 +174,6 @@ public class CameraWrapper extends FrameLayout {
             viewCameraForeground.setVisibility(View.GONE);
         } else {
             imgVideo.setTranslationX(screenUtils.getWidthPx() / RATIO);
-            setBackgroundResource(R.color.black_opacity_20);
         }
     }
 
@@ -553,7 +553,9 @@ public class CameraWrapper extends FrameLayout {
     private void addPathView() {
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(getWidth(), getHeight());
         pathView = new PathView(getContext());
+        pathView.setCardBackgroundColor(null);
         pathView.setLayoutParams(params);
+
         addView(pathView);
         pathView.start(getWidth(), getHeight());
     }

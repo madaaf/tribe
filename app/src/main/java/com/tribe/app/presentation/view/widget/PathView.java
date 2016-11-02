@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.widget;
 
 import android.animation.ObjectAnimator;
+import android.animation.TimeInterpolator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.DashPathEffect;
@@ -8,8 +9,10 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathEffect;
 import android.graphics.PathMeasure;
+import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
@@ -17,7 +20,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 import javax.inject.Inject;
 
-public class PathView extends View {
+public class PathView extends CardView {
 
     @Inject
     ScreenUtils screenUtils;
@@ -45,7 +48,10 @@ public class PathView extends View {
     private void init(Context context, AttributeSet attrs) {
         ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
 
-        strokeWidth = screenUtils.dpToPx(15);
+        setCardElevation(0);
+        setRadius(screenUtils.dpToPx(5));
+
+        strokeWidth = screenUtils.dpToPx(16);
         timeToRecord = context.getResources().getInteger(R.integer.time_record);
 
         setWillNotDraw(false);
@@ -58,7 +64,7 @@ public class PathView extends View {
         paint.setStrokeWidth(strokeWidth);
         paint.setStyle(Paint.Style.STROKE);
         paint.setDither(true);
-        //paint.setStrokeJoin(Paint.Join.ROUND);
+        paint.setStrokeJoin(Paint.Join.ROUND);
         //paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setAntiAlias(true);
 
@@ -78,6 +84,7 @@ public class PathView extends View {
 
         animator = ObjectAnimator.ofFloat(PathView.this, "phase", 1.0f, 0.0f);
         animator.setDuration(timeToRecord);
+        animator.setInterpolator(new LinearInterpolator());
         animator.start();
     }
 
