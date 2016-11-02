@@ -562,8 +562,8 @@ public class CameraWrapper extends CardView {
 
     private void addPathView() {
 
-        int width  = getWidth();
-        int height = getHeight();
+        int width  = viewCameraForeground.getWidth();
+        int height = viewCameraForeground.getHeight();
 
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width, height);
         pathView = new PathView(getContext());
