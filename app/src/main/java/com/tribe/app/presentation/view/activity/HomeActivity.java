@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -14,8 +15,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.inputmethod.InputMethodManager;
@@ -49,6 +53,10 @@ import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.fragment.ContactsGridFragment;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
+import com.tribe.app.presentation.view.tutorial.Overlay;
+import com.tribe.app.presentation.view.tutorial.Pointer;
+import com.tribe.app.presentation.view.tutorial.ToolTip;
+import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
@@ -160,9 +168,11 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private boolean isRecording;
     private boolean navVisible = true;
     private boolean layoutNavPendingVisible = false;
+    private Tutorial tutorial;
 
     // DIMEN
     private int sizeNavMax, sizeNavSmall, marginHorizontalSmall, translationBackToTop;
+    private int tapToRefreshTutorialSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,7 +190,38 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         subscriptions.add(
                 Observable.timer(1000, TimeUnit.MILLISECONDS)
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(aLong -> startService(DownloadTribeService.getCallingIntent(this, null))));
+                        .subscribe(aLong -> {
+                            startService(DownloadTribeService.getCallingIntent(this, null));
+                            /* setup enter and exit animation */
+                            Animation enterAnimation = new AlphaAnimation(0f, 1f);
+                            enterAnimation.setDuration(300);
+                            enterAnimation.setFillAfter(true);
+
+                            Animation exitAnimation = new AlphaAnimation(1f, 0f);
+                            exitAnimation.setDuration(300);
+                            exitAnimation.setFillAfter(true);
+
+                            layoutNavGridMain.setDrawingCacheEnabled(true);
+                            layoutNavGridMain.buildDrawingCache();
+                            Bitmap imageView = layoutNavGridMain.getDrawingCache();
+
+                            tutorial = Tutorial.init(this, screenUtils).with(Tutorial.CLICK)
+                                    .setPointer(new Pointer())
+                                    .setToolTip(new ToolTip(this)
+                                            .setTitle(getString(R.string.tutorial_message_refresh))
+                                            .setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL)
+                                            .setEnterAnimation(enterAnimation)
+                                            .setBackgroundRes(R.drawable.bg_tuto_center_downward)
+                                    )
+                                    .setOverlay(new Overlay(this)
+                                            .setHoleRadius(tapToRefreshTutorialSize)
+                                            .setStyle(Overlay.RECTANGLE)
+                                            .setHoleCornerRadius(screenUtils.dpToPx(5))
+                                            .setImageOverlay(imageView)
+                                            .setEnterAnimation(enterAnimation)
+                                            .setExitAnimation(exitAnimation)
+                                    ).playOn(imgNavGrid);
+                        }));
     }
 
     @Override
@@ -249,6 +290,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         sizeNavSmall = getResources().getDimensionPixelSize(R.dimen.nav_size_small);
         marginHorizontalSmall = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
         translationBackToTop = getResources().getDimensionPixelSize(R.dimen.transition_grid_back_to_top);
+        tapToRefreshTutorialSize = 10;
     }
 
     private void initCamera() {
@@ -549,6 +591,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @OnClick(R.id.layoutNavGridMain)
     public void reloadGrid() {
         animateToGrid();
+        if (tutorial != null) {
+            tutorial.cleanUp();
+            tutorial = null;
+        }
         if (!isRecording) {
             if (viewPager.getCurrentItem() == GRID_FRAGMENT_PAGE) {
                 homePresenter.reloadData();

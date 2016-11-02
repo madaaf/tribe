@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -42,7 +43,7 @@ public class ChatCacheImpl implements ChatCache {
     private User currentUser;
 
     @Inject
-    public ChatCacheImpl(Context context, Realm realm, User currentUser) {
+    public ChatCacheImpl(Context context, Realm realm, @Named("userThreadSafe") User currentUser) {
         this.context = context;
         this.realm = realm;
         this.currentUser = currentUser;
