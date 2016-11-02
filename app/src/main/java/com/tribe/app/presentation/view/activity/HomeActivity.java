@@ -18,8 +18,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.inputmethod.InputMethodManager;
@@ -54,7 +52,6 @@ import com.tribe.app.presentation.view.fragment.ContactsGridFragment;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
 import com.tribe.app.presentation.view.tutorial.Overlay;
-import com.tribe.app.presentation.view.tutorial.Pointer;
 import com.tribe.app.presentation.view.tutorial.ToolTip;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
@@ -188,38 +185,32 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         manageDeepLink(getIntent());
 
         subscriptions.add(
-                Observable.timer(1000, TimeUnit.MILLISECONDS)
+                Observable.timer(3000, TimeUnit.MILLISECONDS)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(aLong -> {
                             startService(DownloadTribeService.getCallingIntent(this, null));
-                            /* setup enter and exit animation */
-                            Animation enterAnimation = new AlphaAnimation(0f, 1f);
-                            enterAnimation.setDuration(300);
-                            enterAnimation.setFillAfter(true);
-
-                            Animation exitAnimation = new AlphaAnimation(1f, 0f);
-                            exitAnimation.setDuration(300);
-                            exitAnimation.setFillAfter(true);
 
                             layoutNavGridMain.setDrawingCacheEnabled(true);
                             layoutNavGridMain.buildDrawingCache();
-                            Bitmap imageView = layoutNavGridMain.getDrawingCache();
+                            Bitmap bitmapForTutorialOverlay = Bitmap.createBitmap(layoutNavGridMain.getDrawingCache(true));
+                            layoutNavGridMain.setDrawingCacheEnabled(false);
 
-                            tutorial = Tutorial.init(this, screenUtils).with(Tutorial.CLICK)
-                                    .setPointer(new Pointer())
-                                    .setToolTip(new ToolTip(this)
+                            tutorial = Tutorial.init(this, screenUtils, Tutorial.REFRESH).with(Tutorial.CLICK)
+                                    .setToolTip(new ToolTip(this, screenUtils)
                                             .setTitle(getString(R.string.tutorial_message_refresh))
                                             .setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL)
-                                            .setEnterAnimation(enterAnimation)
                                             .setBackgroundRes(R.drawable.bg_tuto_center_downward)
                                     )
                                     .setOverlay(new Overlay(this)
                                             .setHoleRadius(tapToRefreshTutorialSize)
                                             .setStyle(Overlay.RECTANGLE)
                                             .setHoleCornerRadius(screenUtils.dpToPx(5))
-                                            .setImageOverlay(imageView)
-                                            .setEnterAnimation(enterAnimation)
-                                            .setExitAnimation(exitAnimation)
+                                            .setImageOverlay(bitmapForTutorialOverlay)
+                                            .withDefaultAnimation(true)
+                                            .setOnClickListener(v -> {
+                                                tutorial.cleanUp();
+                                                tutorial = null;
+                                            })
                                     ).playOn(imgNavGrid);
                         }));
     }
@@ -591,10 +582,22 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @OnClick(R.id.layoutNavGridMain)
     public void reloadGrid() {
         animateToGrid();
+
         if (tutorial != null) {
             tutorial.cleanUp();
             tutorial = null;
+            subscriptions.add(
+                    Observable
+                            .timer(300, TimeUnit.MILLISECONDS)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(aLong -> doReload())
+            );
+        } else {
+            doReload();
         }
+    }
+
+    private void doReload() {
         if (!isRecording) {
             if (viewPager.getCurrentItem() == GRID_FRAGMENT_PAGE) {
                 homePresenter.reloadData();

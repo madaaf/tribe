@@ -181,9 +181,14 @@ public class FrameLayoutWithHole extends FrameLayout {
         }
 
         expandAnimation.start();
+        pulseAnimation.start();
     }
 
     protected void cleanUp() {
+        expandAnimation.cancel();
+        pulseAnimation.cancel();
+        dismissAnimation.start();
+
         if (getParent() != null) {
             if (overlay != null && overlay.exitAnimation != null) {
                 performOverlayExitAnimation();
@@ -329,6 +334,7 @@ public class FrameLayoutWithHole extends FrameLayout {
             .duration(1250)
             .repeat(ValueAnimator.INFINITE)
             .interpolator(new AccelerateDecelerateInterpolator())
+            .delayBy(300)
             .onUpdate(value -> {
                 final float pulseValue = delayedValue(value, 0.5f);
                 pulseCircleRadius = (1.0f + pulseValue) * screenUtils.dpToPx(CIRCLE_RADIUS);
@@ -343,7 +349,12 @@ public class FrameLayoutWithHole extends FrameLayout {
             .delayBy(250)
             .interpolator(new AccelerateDecelerateInterpolator())
             .onUpdate(value -> expandContractUpdateListener.onUpdate(value))
-            .onEnd(() -> pulseAnimation.start())
+            .build();
+
+    final ValueAnimator dismissAnimation = new FloatValueAnimatorBuilder(true)
+            .duration(250)
+            .interpolator(new AccelerateDecelerateInterpolator())
+            .onUpdate(lerpTime -> expandContractUpdateListener.onUpdate(lerpTime))
             .build();
 
     float delayedValue(float linearTime, float threshold) {

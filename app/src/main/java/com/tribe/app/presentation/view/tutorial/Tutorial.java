@@ -1,31 +1,55 @@
 package com.tribe.app.presentation.view.tutorial;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.graphics.Point;
 import android.os.Build;
 import android.support.annotation.IntDef;
+import android.support.annotation.StringDef;
 import android.support.v4.view.ViewCompat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
 import android.widget.FrameLayout;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
+import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.internal.di.scope.TutorialState;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
+import java.util.Set;
+
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 
+
 /**
- * Created by tanjunrong on 2/10/15.
+ * created by tiago on 11/01/2016 based on : https://github.com/worker8/TourGuide
  */
 public class Tutorial {
+
+    @Inject
+    @TutorialState
+    Preference<Set<String>> tutorialState;
+
+    @StringDef({REFRESH, MESSAGES_SUPPORT, NEXT, CLOSE, REPLY_MODE, REPLY, RELEASE, CANCEL})
+    public @interface TutorialKey {
+    }
+
+    public static final String REFRESH = "REFRESH";
+    public static final String MESSAGES_SUPPORT = "MESSAGES_SUPPORT";
+    public static final String NEXT = "NEXT";
+    public static final String CLOSE = "CLOSE";
+    public static final String REPLY_MODE = "REPLY_MODE";
+    public static final String REPLY = "REPLY";
+    public static final String RELEASE = "RELEASE";
+    public static final String CANCEL = "CANCEL";
 
     @IntDef({CLICK, HORIZONTAL_LEFT, HORIZONTAL_RIGHT, VERTICAL_UPWARD, VERTICAL_DOWNWARD})
     public @interface Technique {
@@ -45,24 +69,27 @@ public class Tutorial {
     public static final int CLICK_ONLY = 1;
     public static final int SWIPE_ONLY = 2;
 
-    protected @Technique int technique;
-    protected View highlightedView;
+    private @TutorialKey String key;
+    private @Technique int technique;
+    private View highlightedView;
     private Activity activity;
     private ScreenUtils screenUtils;
-    protected @MotionType int motionType;
-    protected FrameLayoutWithHole frameLayout;
+    private @MotionType int motionType;
+    private FrameLayoutWithHole frameLayout;
     private View toolTipViewGroup;
-    public ToolTip toolTip;
-    public Overlay overlay;
-    public Pointer pointer;
+    private ToolTip toolTip;
+    private Overlay overlay;
 
-    public static Tutorial init(Activity activity, ScreenUtils screenUtils) {
-        return new Tutorial(activity, screenUtils);
+    public static Tutorial init(Activity activity, ScreenUtils screenUtils, @TutorialKey String key) {
+        return new Tutorial(activity, screenUtils, key);
     }
 
-    public Tutorial(Activity activity, ScreenUtils screenUtils) {
+    public Tutorial(Activity activity, ScreenUtils screenUtils, @TutorialKey String key) {
         this.activity = activity;
         this.screenUtils = screenUtils;
+        this.key = key;
+
+        ((AndroidApplication) activity.getApplicationContext()).getApplicationComponent().inject(this);
     }
 
     public Tutorial with(@Technique int technique) {
@@ -76,18 +103,17 @@ public class Tutorial {
     }
 
     public Tutorial playOn(View targetView) {
-        highlightedView = targetView;
-        setupView();
-        return this;
+        //if (StringUtils.isEmpty(key) || !tutorialState.get().contains(key)) {
+            highlightedView = targetView;
+            setupView();
+            return this;
+        //}
+
+        //return null;
     }
 
     public Tutorial setOverlay(Overlay overlay) {
         this.overlay = overlay;
-        return this;
-    }
-
-    public Tutorial setPointer(Pointer pointer) {
-        this.pointer = pointer;
         return this;
     }
 
@@ -97,11 +123,38 @@ public class Tutorial {
     }
 
     public void cleanUp() {
-        frameLayout.cleanUp();
+        if (!StringUtils.isEmpty(key)) {
+            Set<String> tut = tutorialState.get();
+            tut.add(key);
+            tutorialState.set(tut);
+        }
 
+        if (toolTip.exitAnimation != null) {
+            Animation animation = toolTip.exitAnimation;
+            animation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {}
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    cleanUpRest();
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {}
+            });
+            toolTipViewGroup.startAnimation(toolTip.exitAnimation);
+        } else {
+            cleanUpRest();
+        }
+    }
+
+    private void cleanUpRest() {
         if (toolTipViewGroup != null) {
             ((ViewGroup) activity.getWindow().getDecorView()).removeView(toolTipViewGroup);
         }
+
+        frameLayout.cleanUp();
     }
 
     public FrameLayoutWithHole getOverlay() {
@@ -110,33 +163,6 @@ public class Tutorial {
 
     public View getToolTip() {
         return toolTipViewGroup;
-    }
-
-    private int getXBasedOnGravity(int width) {
-        int[] pos = new int[2];
-        highlightedView.getLocationOnScreen(pos);
-        int x = pos[0];
-        if ((pointer.gravity & Gravity.RIGHT) == Gravity.RIGHT) {
-            return x + highlightedView.getWidth() - width;
-        } else if ((pointer.gravity & Gravity.LEFT) == Gravity.LEFT) {
-            return x;
-        } else { // this is center
-            return x + highlightedView.getWidth() / 2 - width / 2;
-        }
-    }
-
-    private int getYBasedOnGravity(int height) {
-        int[] pos = new int[2];
-        highlightedView.getLocationInWindow(pos);
-        int y = pos[1];
-
-        if ((pointer.gravity & Gravity.BOTTOM) == Gravity.BOTTOM) {
-            return y + highlightedView.getHeight() - height;
-        } else if ((pointer.gravity & Gravity.TOP) == Gravity.TOP) {
-            return y;
-        } else { // this is center
-            return y + highlightedView.getHeight() / 2 - height / 2;
-        }
     }
 
     protected void setupView() {
@@ -152,6 +178,7 @@ public class Tutorial {
                     } else {
                         highlightedView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     }
+
                     startView();
                 }
             });
@@ -225,7 +252,7 @@ public class Tutorial {
             resultPoint.y = getYForTooTip(toolTip.gravity, toolTipMeasuredHeight, targetViewY, adjustment);
 
             // add view to parent
-//            ((ViewGroup) activity.getWindow().getDecorView().findViewById(android.R.id.content)).addView(toolTipViewGroup, layoutParams);
+            // ((ViewGroup) activity.getWindow().getDecorView().findViewById(android.R.id.content)).addView(toolTipViewGroup, layoutParams);
             parent.addView(toolTipViewGroup, layoutParams);
 
             // 1. width < screen check
@@ -322,198 +349,5 @@ public class Tutorial {
 
         layoutParams.setMargins(0, -pos[1], 0, 0);
         contentArea.addView(frameLayout, layoutParams);
-    }
-
-    private void performAnimationOn(final View view) {
-        if (technique == Tutorial.HORIZONTAL_LEFT) {
-
-            final AnimatorSet animatorSet = new AnimatorSet();
-            final AnimatorSet animatorSet2 = new AnimatorSet();
-            Animator.AnimatorListener lis1 = new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animator) {
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animator) {
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animator) {
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animator) {
-                    view.setScaleX(1f);
-                    view.setScaleY(1f);
-                    view.setTranslationX(0);
-                    animatorSet2.start();
-                }
-            };
-            Animator.AnimatorListener lis2 = new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animator) {
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animator) {
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animator) {
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animator) {
-                    view.setScaleX(1f);
-                    view.setScaleY(1f);
-                    view.setTranslationX(0);
-                    animatorSet.start();
-                }
-            };
-
-            long fadeInDuration = 800;
-            long scaleDownDuration = 800;
-            long goLeftXDuration = 2000;
-            long fadeOutDuration = goLeftXDuration;
-            float translationX = screenUtils.getWidthPx() >> 1;
-
-            final ValueAnimator fadeInAnim = ObjectAnimator.ofFloat(view, "alpha", 0f, 1f);
-            fadeInAnim.setDuration(fadeInDuration);
-            final ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0.85f);
-            scaleDownX.setDuration(scaleDownDuration);
-            final ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 0.85f);
-            scaleDownY.setDuration(scaleDownDuration);
-            final ObjectAnimator goLeftX = ObjectAnimator.ofFloat(view, "translationX", -translationX);
-            goLeftX.setDuration(goLeftXDuration);
-            final ValueAnimator fadeOutAnim = ObjectAnimator.ofFloat(view, "alpha", 1f, 0f);
-            fadeOutAnim.setDuration(fadeOutDuration);
-
-            final ValueAnimator fadeInAnim2 = ObjectAnimator.ofFloat(view, "alpha", 0f, 1f);
-            fadeInAnim2.setDuration(fadeInDuration);
-            final ObjectAnimator scaleDownX2 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0.85f);
-            scaleDownX2.setDuration(scaleDownDuration);
-            final ObjectAnimator scaleDownY2 = ObjectAnimator.ofFloat(view, "scaleY", 1f, 0.85f);
-            scaleDownY2.setDuration(scaleDownDuration);
-            final ObjectAnimator goLeftX2 = ObjectAnimator.ofFloat(view, "translationX", -translationX);
-            goLeftX2.setDuration(goLeftXDuration);
-            final ValueAnimator fadeOutAnim2 = ObjectAnimator.ofFloat(view, "alpha", 1f, 0f);
-            fadeOutAnim2.setDuration(fadeOutDuration);
-
-            animatorSet.play(fadeInAnim);
-            animatorSet.play(scaleDownX).with(scaleDownY).after(fadeInAnim);
-            animatorSet.play(goLeftX).with(fadeOutAnim).after(scaleDownY);
-
-            animatorSet2.play(fadeInAnim2);
-            animatorSet2.play(scaleDownX2).with(scaleDownY2).after(fadeInAnim2);
-            animatorSet2.play(goLeftX2).with(fadeOutAnim2).after(scaleDownY2);
-
-            animatorSet.addListener(lis1);
-            animatorSet2.addListener(lis2);
-            animatorSet.start();
-
-            /* these animatorSets are kept track in FrameLayout, so that they can be cleaned up when FrameLayout is detached from window */
-            frameLayout.addAnimatorSet(animatorSet);
-            frameLayout.addAnimatorSet(animatorSet2);
-        } else {
-            final AnimatorSet animatorSet = new AnimatorSet();
-            final AnimatorSet animatorSet2 = new AnimatorSet();
-            Animator.AnimatorListener lis1 = new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animator) {
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animator) {
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animator) {
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animator) {
-                    view.setScaleX(1f);
-                    view.setScaleY(1f);
-                    view.setTranslationX(0);
-                    animatorSet2.start();
-                }
-            };
-            Animator.AnimatorListener lis2 = new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animator) {
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animator) {
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animator) {
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animator) {
-                    view.setScaleX(1f);
-                    view.setScaleY(1f);
-                    view.setTranslationX(0);
-                    animatorSet.start();
-                }
-            };
-
-            long fadeInDuration = 800;
-            long scaleDownDuration = 800;
-            long fadeOutDuration = 800;
-            long delay = 1000;
-
-            final ValueAnimator delayAnim = ObjectAnimator.ofFloat(view, "translationX", 0);
-            delayAnim.setDuration(delay);
-            final ValueAnimator fadeInAnim = ObjectAnimator.ofFloat(view, "alpha", 0f, 1f);
-            fadeInAnim.setDuration(fadeInDuration);
-            final ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0.85f);
-            scaleDownX.setDuration(scaleDownDuration);
-            final ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 0.85f);
-            scaleDownY.setDuration(scaleDownDuration);
-            final ObjectAnimator scaleUpX = ObjectAnimator.ofFloat(view, "scaleX", 0.85f, 1f);
-            scaleUpX.setDuration(scaleDownDuration);
-            final ObjectAnimator scaleUpY = ObjectAnimator.ofFloat(view, "scaleY", 0.85f, 1f);
-            scaleUpY.setDuration(scaleDownDuration);
-            final ValueAnimator fadeOutAnim = ObjectAnimator.ofFloat(view, "alpha", 1f, 0f);
-            fadeOutAnim.setDuration(fadeOutDuration);
-
-            final ValueAnimator delayAnim2 = ObjectAnimator.ofFloat(view, "translationX", 0);
-            delayAnim2.setDuration(delay);
-            final ValueAnimator fadeInAnim2 = ObjectAnimator.ofFloat(view, "alpha", 0f, 1f);
-            fadeInAnim2.setDuration(fadeInDuration);
-            final ObjectAnimator scaleDownX2 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0.85f);
-            scaleDownX2.setDuration(scaleDownDuration);
-            final ObjectAnimator scaleDownY2 = ObjectAnimator.ofFloat(view, "scaleY", 1f, 0.85f);
-            scaleDownY2.setDuration(scaleDownDuration);
-            final ObjectAnimator scaleUpX2 = ObjectAnimator.ofFloat(view, "scaleX", 0.85f, 1f);
-            scaleUpX2.setDuration(scaleDownDuration);
-            final ObjectAnimator scaleUpY2 = ObjectAnimator.ofFloat(view, "scaleY", 0.85f, 1f);
-            scaleUpY2.setDuration(scaleDownDuration);
-            final ValueAnimator fadeOutAnim2 = ObjectAnimator.ofFloat(view, "alpha", 1f, 0f);
-            fadeOutAnim2.setDuration(fadeOutDuration);
-            view.setAlpha(0);
-            animatorSet.setStartDelay(toolTip != null ? toolTip.enterAnimation.getDuration() : 0);
-            animatorSet.play(fadeInAnim);
-            animatorSet.play(scaleDownX).with(scaleDownY).after(fadeInAnim);
-            animatorSet.play(scaleUpX).with(scaleUpY).with(fadeOutAnim).after(scaleDownY);
-            animatorSet.play(delayAnim).after(scaleUpY);
-
-            animatorSet2.play(fadeInAnim2);
-            animatorSet2.play(scaleDownX2).with(scaleDownY2).after(fadeInAnim2);
-            animatorSet2.play(scaleUpX2).with(scaleUpY2).with(fadeOutAnim2).after(scaleDownY2);
-            animatorSet2.play(delayAnim2).after(scaleUpY2);
-
-            animatorSet.addListener(lis1);
-            animatorSet2.addListener(lis2);
-            animatorSet.start();
-
-            /* these animatorSets are kept track in FrameLayout, so that they can be cleaned up when FrameLayout is detached from window */
-            frameLayout.addAnimatorSet(animatorSet);
-            frameLayout.addAnimatorSet(animatorSet2);
-        }
     }
 }

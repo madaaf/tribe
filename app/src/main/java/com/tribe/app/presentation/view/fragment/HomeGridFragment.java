@@ -37,6 +37,7 @@ import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 import com.tribe.app.presentation.view.component.PullToSearchContainer;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.dialog_fragment.PointsDialogFragment;
+import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -121,8 +122,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
     private RecyclerView recyclerViewPending;
     private LabelSheetAdapter labelSheetAdapter;
     private int verticalScrollOffset = 0;
-    private String filter = null;
-    private boolean shouldReloadGrid = false;
+    private Tutorial tutorial;
 
     @Override
     public void onAttach(Context context) {
@@ -291,7 +291,6 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
     }
 
     public void reloadGrid() {
-        filter = null;
         homeGridAdapter.filterList(null);
         this.homeGridPresenter.loadFriendList(null);
     }
@@ -476,7 +475,6 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
         }).subscribe(activePullToSearch));
 
         subscriptions.add(pullToSearchContainer.onLetterSelected().subscribe(s -> {
-            filter = s;
             homeGridAdapter.filterList(s);
         }));
     }

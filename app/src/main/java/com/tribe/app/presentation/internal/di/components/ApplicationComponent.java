@@ -56,12 +56,12 @@ import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
 import com.tribe.app.presentation.internal.di.scope.LastSync;
 import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
+import com.tribe.app.presentation.internal.di.scope.LastVersionCode;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
 import com.tribe.app.presentation.internal.di.scope.LocationPopup;
 import com.tribe.app.presentation.internal.di.scope.Memories;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
 import com.tribe.app.presentation.internal.di.scope.Preload;
-import com.tribe.app.presentation.internal.di.scope.LastVersionCode;
 import com.tribe.app.presentation.internal.di.scope.ShareProfile;
 import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.internal.di.scope.Theme;
@@ -95,6 +95,7 @@ import com.tribe.app.presentation.view.component.TribeComponentView;
 import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
+import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -129,6 +130,7 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 public interface ApplicationComponent {
 
     void inject(Navigator navigator);
+    void inject(Tutorial tutorial);
 
     void inject(BaseFragment baseFragment);
     void inject(BaseActivity baseActivity);

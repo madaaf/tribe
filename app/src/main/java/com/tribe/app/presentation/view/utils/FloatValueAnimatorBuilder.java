@@ -22,7 +22,7 @@ public class FloatValueAnimatorBuilder {
         this(false);
     }
 
-    protected FloatValueAnimatorBuilder(boolean reverse) {
+    public FloatValueAnimatorBuilder(boolean reverse) {
         if (reverse) {
             this.animator = ValueAnimator.ofFloat(1.0f, 0.0f);
         } else {

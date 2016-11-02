@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.support.annotation.IntDef;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 
 import com.tribe.app.R;
@@ -44,6 +45,20 @@ public class Overlay {
 
     public Overlay setBackgroundColor(int backgroundColor) {
         this.backgroundColor = backgroundColor;
+        return this;
+    }
+
+    public Overlay withDefaultAnimation(boolean yesNo) {
+        if (yesNo) {
+            enterAnimation = new AlphaAnimation(0f, 1f);
+            enterAnimation.setDuration(200);
+            enterAnimation.setFillAfter(true);
+
+            exitAnimation = new AlphaAnimation(1f, 0f);
+            exitAnimation.setDuration(200);
+            exitAnimation.setFillAfter(true);
+        }
+
         return this;
     }
 

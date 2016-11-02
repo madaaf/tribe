@@ -27,4 +27,5 @@ public class PreferencesConstants {
     public static String TRIBE_SENT_COUNT = "TRIBE_SENT_COUNT";
     public static String PREVIOUS_VERSION_CODE = "PREVIOUS_VERSION_CODE";
     public static String HAS_RATED_APP = "HAS_RATED_APP";
+    public static String TUTORIAL_STATE = "TUTORIAL_STATE";
 }

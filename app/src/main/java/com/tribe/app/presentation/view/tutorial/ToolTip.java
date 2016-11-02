@@ -7,7 +7,11 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.view.animation.BounceInterpolator;
+import android.view.animation.AnimationSet;
+import android.view.animation.OvershootInterpolator;
+import android.view.animation.TranslateAnimation;
+
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 public class ToolTip {
 
@@ -25,18 +29,14 @@ public class ToolTip {
     public Animation enterAnimation, exitAnimation;
     public int gravity;
     public int textColor;
+    private ScreenUtils screenUtils;
 
-    public ToolTip(Context context) {
+    public ToolTip(Context context, ScreenUtils screenUtils) {
         title = "";
         backgroundRes = Color.WHITE;
         textColor = Color.BLACK;
-
-        enterAnimation = new AlphaAnimation(0f, 1f);
-        enterAnimation.setDuration(1000);
-        enterAnimation.setFillAfter(true);
-        enterAnimation.setInterpolator(new BounceInterpolator());
-
         gravity = Gravity.CENTER;
+        this.screenUtils = screenUtils;
     }
 
     public ToolTip setTitle(String title) {
@@ -64,8 +64,41 @@ public class ToolTip {
         return this;
     }
 
+    public ToolTip setExitAnimation(Animation exitAnimation) {
+        this.exitAnimation = exitAnimation;
+        return this;
+    }
+
     public ToolTip setGravity(int gravity) {
         this.gravity = gravity;
+        computeDefaultAnimations();
         return this;
+    }
+
+    private void computeDefaultAnimations() {
+        Animation tooltipEnAlphaAnimation = new AlphaAnimation(0f, 1f);
+        Animation tooltipEnTranslateAnimation = new TranslateAnimation(0f, 0f, screenUtils.dpToPx((gravity & Gravity.BOTTOM) == Gravity.BOTTOM ? 100 : -100), 0f);
+        tooltipEnTranslateAnimation.setInterpolator(new OvershootInterpolator(2f));
+
+        AnimationSet tooltipEnterSet = new AnimationSet(false);
+        tooltipEnterSet.setDuration(600);
+        tooltipEnterSet.setFillAfter(true);
+        tooltipEnterSet.setStartOffset(300);
+        tooltipEnterSet.addAnimation(tooltipEnAlphaAnimation);
+        tooltipEnterSet.addAnimation(tooltipEnTranslateAnimation);
+        enterAnimation = tooltipEnterSet;
+
+        Animation tooltipExAlphaAnimation = new AlphaAnimation(1f, 0f);
+        tooltipExAlphaAnimation.setFillAfter(true);
+
+        Animation tooltipExTranslateAnimation = new TranslateAnimation(0f, 0f, 0f, screenUtils.dpToPx((gravity & Gravity.BOTTOM) == Gravity.BOTTOM ? 100 : -100));
+        tooltipExTranslateAnimation.setInterpolator(new OvershootInterpolator(1.2f));
+
+        AnimationSet tooltipExitSet = new AnimationSet(false);
+        tooltipExitSet.setDuration(300);
+        tooltipExitSet.setFillAfter(true);
+        tooltipExitSet.addAnimation(tooltipExAlphaAnimation);
+        tooltipExitSet.addAnimation(tooltipExTranslateAnimation);
+        exitAnimation = tooltipExitSet;
     }
 }
