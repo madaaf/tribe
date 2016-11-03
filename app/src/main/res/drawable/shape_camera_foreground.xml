@@ -2,6 +2,7 @@
     <item>
         <shape
             android:shape="rectangle">
+
             <stroke
                 android:width="@dimen/camera_stroke_width"
                 android:antialias="true"
