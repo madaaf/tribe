@@ -66,6 +66,7 @@ import com.tribe.app.presentation.internal.di.scope.ShareProfile;
 import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.internal.di.scope.Theme;
 import com.tribe.app.presentation.internal.di.scope.TribeSentCount;
+import com.tribe.app.presentation.internal.di.scope.TutorialState;
 import com.tribe.app.presentation.internal.di.scope.WasAskedForCameraPermission;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.navigation.Navigator;
@@ -96,6 +97,7 @@ import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
+import com.tribe.app.presentation.view.tutorial.TutorialManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -113,6 +115,7 @@ import com.tribe.app.presentation.view.widget.TribeVideoView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Set;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -318,5 +321,10 @@ public interface ApplicationComponent {
     @HasRatedApp
     Preference<Boolean> hasRatedApp();
 
+    @TutorialState
+    Preference<Set<String>> tutorialState();
+
     SoundManager soundManager();
+
+    TutorialManager tutorialManager();
 }

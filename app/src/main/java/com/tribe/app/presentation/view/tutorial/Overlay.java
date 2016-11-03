@@ -31,7 +31,11 @@ public class Overlay {
     public int holeCornerRadius = 0;
     public int holePadding = 0;
     public int holeRadius = NOT_SET;
-    public Bitmap imageOverlay;
+    public int holeRadiusPulsePadding = 0;
+    public Bitmap imgOverlay;
+    public int imgOverlaySize;
+    public int imgOverlayOffsetX;
+    public int imgOverlayOffsetY;
 
     public Overlay(Context context) {
         this(true, ContextCompat.getColor(context, R.color.black_opacity_50), CIRCLE);
@@ -93,7 +97,22 @@ public class Overlay {
     }
 
     public Overlay setImageOverlay(Bitmap bitmap) {
-        this.imageOverlay = bitmap;
+        this.imgOverlay = bitmap;
+        return this;
+    }
+
+    public Overlay setImageOverlaySize(int size) {
+        this.imgOverlaySize = size;
+        return this;
+    }
+
+    public Overlay setImageOverlayOffsetX(int offsetX) {
+        this.imgOverlayOffsetX = offsetX;
+        return this;
+    }
+
+    public Overlay setImageOverlayOffsetY(int offsetY) {
+        this.imgOverlayOffsetY = offsetY;
         return this;
     }
 
@@ -115,6 +134,11 @@ public class Overlay {
 
     public Overlay setHolePadding(int padding) {
         holePadding = padding;
+        return this;
+    }
+
+    public Overlay setHoleRadiusPulsePadding(int padding) {
+        holeRadiusPulsePadding = padding;
         return this;
     }
 }

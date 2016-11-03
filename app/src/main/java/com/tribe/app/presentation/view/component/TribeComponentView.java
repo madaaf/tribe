@@ -120,8 +120,10 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     private final PublishSubject<View> clickEnableLocation = PublishSubject.create();
     private final PublishSubject<TribeMessage> onPlayerError = PublishSubject.create();
     private final PublishSubject<TribeMessage> clickMore = PublishSubject.create();
+    private final PublishSubject<TribeComponentView> onFirstLoop = PublishSubject.create();
 
     // PLAYER
+    private boolean isFirstLoop = true;
     private boolean isPrepared = false;
     private TribeMediaPlayer mediaPlayer;
     private TribeMessage tribe;
@@ -260,6 +262,11 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
             subscriptions.add(mediaPlayer.onCompletion().subscribe(started -> {
                 lastPosition = 0;
                 animateProgress();
+
+                if (isFirstLoop) {
+                    isFirstLoop = false;
+                    onFirstLoop.onNext(this);
+                }
             }));
 
             if (lastPosition != -1) mediaPlayer.seekTo(lastPosition);
@@ -407,6 +414,10 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
     public Observable<TribeMessage> onClickMore() {
         return clickMore;
+    }
+
+    public Observable<TribeComponentView> onFirstLoop() {
+        return onFirstLoop;
     }
 
     @OnClick(R.id.labelLocation)

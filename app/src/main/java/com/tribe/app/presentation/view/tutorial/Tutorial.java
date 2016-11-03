@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.graphics.Point;
 import android.os.Build;
 import android.support.annotation.IntDef;
-import android.support.annotation.StringDef;
 import android.support.v4.view.ViewCompat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -14,15 +13,10 @@ import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.widget.FrameLayout;
 
-import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.internal.di.scope.TutorialState;
-import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -35,21 +29,7 @@ import butterknife.ButterKnife;
 public class Tutorial {
 
     @Inject
-    @TutorialState
-    Preference<Set<String>> tutorialState;
-
-    @StringDef({REFRESH, MESSAGES_SUPPORT, NEXT, CLOSE, REPLY_MODE, REPLY, RELEASE, CANCEL})
-    public @interface TutorialKey {
-    }
-
-    public static final String REFRESH = "REFRESH";
-    public static final String MESSAGES_SUPPORT = "MESSAGES_SUPPORT";
-    public static final String NEXT = "NEXT";
-    public static final String CLOSE = "CLOSE";
-    public static final String REPLY_MODE = "REPLY_MODE";
-    public static final String REPLY = "REPLY";
-    public static final String RELEASE = "RELEASE";
-    public static final String CANCEL = "CANCEL";
+    TutorialManager tutorialManager;
 
     @IntDef({CLICK, HORIZONTAL_LEFT, HORIZONTAL_RIGHT, VERTICAL_UPWARD, VERTICAL_DOWNWARD})
     public @interface Technique {
@@ -69,7 +49,7 @@ public class Tutorial {
     public static final int CLICK_ONLY = 1;
     public static final int SWIPE_ONLY = 2;
 
-    private @TutorialKey String key;
+    private @TutorialManager.TutorialKey String key;
     private @Technique int technique;
     private View highlightedView;
     private Activity activity;
@@ -80,11 +60,11 @@ public class Tutorial {
     private ToolTip toolTip;
     private Overlay overlay;
 
-    public static Tutorial init(Activity activity, ScreenUtils screenUtils, @TutorialKey String key) {
+    public static Tutorial init(Activity activity, ScreenUtils screenUtils, @TutorialManager.TutorialKey String key) {
         return new Tutorial(activity, screenUtils, key);
     }
 
-    public Tutorial(Activity activity, ScreenUtils screenUtils, @TutorialKey String key) {
+    public Tutorial(Activity activity, ScreenUtils screenUtils, @TutorialManager.TutorialKey String key) {
         this.activity = activity;
         this.screenUtils = screenUtils;
         this.key = key;
@@ -103,13 +83,9 @@ public class Tutorial {
     }
 
     public Tutorial playOn(View targetView) {
-        //if (StringUtils.isEmpty(key) || !tutorialState.get().contains(key)) {
-            highlightedView = targetView;
-            setupView();
-            return this;
-        //}
-
-        //return null;
+        highlightedView = targetView;
+        setupView();
+        return this;
     }
 
     public Tutorial setOverlay(Overlay overlay) {
@@ -123,11 +99,7 @@ public class Tutorial {
     }
 
     public void cleanUp() {
-        if (!StringUtils.isEmpty(key)) {
-            Set<String> tut = tutorialState.get();
-            tut.add(key);
-            tutorialState.set(tut);
-        }
+        tutorialManager.addTutorialKey(key);
 
         if (toolTip.exitAnimation != null) {
             Animation animation = toolTip.exitAnimation;
@@ -244,12 +216,12 @@ public class Tutorial {
 
             // calculate x position, based on gravity, tooltipMeasuredWidth, parent max width, x position of target view, adjustment
             if (toolTipMeasuredWidth > parent.getWidth()) {
-                resultPoint.x = getXForTooTip(toolTip.gravity, parent.getWidth(), targetViewX, adjustment);
+                resultPoint.x = getXForTooTip(toolTip.gravity, parent.getWidth(), targetViewX, adjustment + toolTip.offsetX);
             } else {
-                resultPoint.x = getXForTooTip(toolTip.gravity, toolTipMeasuredWidth, targetViewX, adjustment);
+                resultPoint.x = getXForTooTip(toolTip.gravity, toolTipMeasuredWidth, targetViewX, adjustment + toolTip.offsetX);
             }
 
-            resultPoint.y = getYForTooTip(toolTip.gravity, toolTipMeasuredHeight, targetViewY, adjustment);
+            resultPoint.y = getYForTooTip(toolTip.gravity, toolTipMeasuredHeight, targetViewY, adjustment + toolTip.offsetY);
 
             // add view to parent
             // ((ViewGroup) activity.getWindow().getDecorView().findViewById(android.R.id.content)).addView(toolTipViewGroup, layoutParams);

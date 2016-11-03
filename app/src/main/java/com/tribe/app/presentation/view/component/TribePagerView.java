@@ -214,6 +214,7 @@ public class TribePagerView extends FrameLayout {
     private final PublishSubject<View> clickEnableLocation = PublishSubject.create();
     private final PublishSubject<TribeMessage> onErrorTribe = PublishSubject.create();
     private final PublishSubject<TribeMessage> clickOnMore = PublishSubject.create();
+    private final PublishSubject<TribeComponentView> onFirstLoop = PublishSubject.create();
 
     public TribePagerView(Context context) {
         super(context);
@@ -333,6 +334,7 @@ public class TribePagerView extends FrameLayout {
 
         subscriptions.add(tribePagerAdapter.onClickEnableLocation().subscribe(clickEnableLocation));
         subscriptions.add(tribePagerAdapter.onClickMore().subscribe(clickOnMore));
+        subscriptions.add(tribePagerAdapter.onFirstLoop().subscribe(onFirstLoop));
         subscriptions.add(tribePagerAdapter.onErrorTribe().subscribe(tribeError -> {
             tribeMapSeens.remove(tribeError);
             onErrorTribe.onNext(tribeError);
@@ -532,6 +534,10 @@ public class TribePagerView extends FrameLayout {
 
     private int getNbTribes() {
         return (tribeList.size() - tribeMapSeens.size());
+    }
+
+    public View getLayoutNbTribes() {
+        return layoutNbTribes;
     }
 
     public @CameraWrapper.TribeMode String getTribeMode() {
@@ -1199,4 +1205,6 @@ public class TribePagerView extends FrameLayout {
     }
 
     public Observable<TribeMessage> onClickMore() { return clickOnMore; }
+
+    public Observable<TribeComponentView> onFirstLoop() { return onFirstLoop; }
 }

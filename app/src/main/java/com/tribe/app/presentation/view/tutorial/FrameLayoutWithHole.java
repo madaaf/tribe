@@ -30,7 +30,7 @@ import java.util.ArrayList;
 
 public class FrameLayoutWithHole extends FrameLayout {
 
-    private static int CIRCLE_RADIUS = 45;
+    private int CIRCLE_RADIUS = 0;
 
     private int initCircleRadius;
     private int initPulseCircleRadius;
@@ -105,11 +105,6 @@ public class FrameLayoutWithHole extends FrameLayout {
 
         screenUtils = ((AndroidApplication) context.getApplication()).getApplicationComponent().screenUtils();
 
-        initCircleRadius = screenUtils.dpToPx(CIRCLE_RADIUS);
-        initPulseCircleRadius = (int) (initCircleRadius * 0.2f);
-        circleRadius = 0;
-        pulseCircleRadius = 0;
-
         activity = context;
         viewHole = view;
         this.overlay = overlay;
@@ -123,10 +118,17 @@ public class FrameLayoutWithHole extends FrameLayout {
         int padding = screenUtils.dpToPx(20);
 
         if (viewHole.getHeight() > viewHole.getWidth()) {
-            radius = viewHole.getHeight() / 2 + padding;
+            radius = (viewHole.getHeight() >> 1) + padding;
         } else {
-            radius = viewHole.getWidth() / 2 + padding;
+            radius = (viewHole.getWidth() >> 1) + padding;
         }
+
+        CIRCLE_RADIUS = overlay.holeRadius != Overlay.NOT_SET ? overlay.holeRadius + overlay.holeRadiusPulsePadding : radius;
+
+        initCircleRadius = CIRCLE_RADIUS;
+        initPulseCircleRadius = (int) (initCircleRadius * 0.2f);
+        circleRadius = 0;
+        pulseCircleRadius = 0;
 
         this.motionType = motionType;
     }
@@ -168,20 +170,18 @@ public class FrameLayoutWithHole extends FrameLayout {
         pulseCirclePaint.setAntiAlias(true);
         pulseCirclePaint.setColor(Color.WHITE);
 
-        if (overlay.imageOverlay != null) {
+        if (overlay.imgOverlay != null) {
             ImageView imageView = new ImageView(getContext());
-            imageView.setImageBitmap(overlay.imageOverlay);
+            imageView.setImageBitmap(overlay.imgOverlay);
             imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 
-            int padding = screenUtils.dpToPx(20);
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(viewHole.getWidth() + padding, viewHole.getHeight() + padding);
-            params.leftMargin = pos[0] - overlay.holePadding + overlay.holeOffsetLeft - (padding >> 1);
-            params.topMargin = pos[1] - overlay.holePadding + overlay.holeOffsetTop - (padding >> 1);
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(overlay.imgOverlaySize, overlay.imgOverlaySize);
+            params.leftMargin = pos[0] + overlay.imgOverlayOffsetX;
+            params.topMargin = pos[1] + overlay.imgOverlayOffsetY;
             addView(imageView, params);
         }
 
         expandAnimation.start();
-        pulseAnimation.start();
     }
 
     protected void cleanUp() {
@@ -314,9 +314,19 @@ public class FrameLayoutWithHole extends FrameLayout {
                 eraserCanvas.drawRoundRect(rect, overlay.holeCornerRadius, overlay.holeCornerRadius, eraser);
             } else {
                 int holeRadius = overlay.holeRadius != Overlay.NOT_SET ? overlay.holeRadius : radius;
+                int cx = pos[0] + viewHole.getWidth() / 2 + overlay.holeOffsetLeft;
+                int cy = pos[1] + viewHole.getHeight() / 2 + overlay.holeOffsetTop;
+
+                if (pulseCircleRadiusAlpha > 0) {
+                    pulseCirclePaint.setAlpha(pulseCircleRadiusAlpha);
+                }
+
+                eraserCanvas.drawCircle(cx, cy, pulseCircleRadius, pulseCirclePaint);
+                eraserCanvas.drawCircle(cx, cy, circleRadius, circlePaint);
+
                 eraserCanvas.drawCircle(
-                        pos[0] + viewHole.getWidth() / 2 + overlay.holeOffsetLeft,
-                        pos[1] + viewHole.getHeight() / 2 + overlay.holeOffsetTop,
+                        cx,
+                        cy,
                         holeRadius, eraser);
             }
         }
@@ -325,7 +335,7 @@ public class FrameLayoutWithHole extends FrameLayout {
     }
 
     final FloatValueAnimatorBuilder.UpdateListener expandContractUpdateListener = value -> {
-        circleRadius = screenUtils.dpToPx(CIRCLE_RADIUS) * value;
+        circleRadius = CIRCLE_RADIUS * value;
         pulseCircleRadius *= value;
         invalidate();
     };
@@ -337,9 +347,9 @@ public class FrameLayoutWithHole extends FrameLayout {
             .delayBy(300)
             .onUpdate(value -> {
                 final float pulseValue = delayedValue(value, 0.5f);
-                pulseCircleRadius = (1.0f + pulseValue) * screenUtils.dpToPx(CIRCLE_RADIUS);
+                pulseCircleRadius = (1.0f + pulseValue) * CIRCLE_RADIUS;
                 pulseCircleRadiusAlpha = (int) ((1.0f - pulseValue) * 255);
-                circleRadius = screenUtils.dpToPx(CIRCLE_RADIUS) + halfwayValue(pulseValue) * initPulseCircleRadius;
+                circleRadius = CIRCLE_RADIUS + halfwayValue(pulseValue) * initPulseCircleRadius;
                 invalidate();
             })
             .build();
@@ -349,6 +359,7 @@ public class FrameLayoutWithHole extends FrameLayout {
             .delayBy(250)
             .interpolator(new AccelerateDecelerateInterpolator())
             .onUpdate(value -> expandContractUpdateListener.onUpdate(value))
+            .onEnd(() -> pulseAnimation.start())
             .build();
 
     final ValueAnimator dismissAnimation = new FloatValueAnimatorBuilder(true)

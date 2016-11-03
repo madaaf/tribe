@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.fragment;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -38,11 +39,13 @@ import com.tribe.app.presentation.view.component.PullToSearchContainer;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.dialog_fragment.PointsDialogFragment;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
+import com.tribe.app.presentation.view.tutorial.TutorialManager;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
+import com.tribe.app.presentation.view.widget.SquareFrameLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +78,9 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
 
     @Inject
     ScreenUtils screenUtils;
+
+    @Inject
+    TutorialManager tutorialManager;
 
     @Inject
     @TribeSentCount
@@ -219,7 +225,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
 
     @Override
     public void renderRecipientList(List<Recipient> recipientList) {
-        if (recipientList != null && !isRecording) {
+        if (recipientList != null && !isRecording && tutorial == null) {
             Bundle bundle = new Bundle();
             bundle.putInt(TagManagerConstants.COUNT_FRIENDS, currentUser.getFriendships().size());
             bundle.putInt(TagManagerConstants.COUNT_GROUPS, currentUser.getFriendships().size());
@@ -228,6 +234,45 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
             // We remove the current user from the list
             if (pullToSearchContainer != null) pullToSearchContainer.updatePTSList(recipientList.subList(1, recipientList.size() - 1));
             this.homeGridAdapter.setItems(recipientList);
+
+            if (tutorialManager.shouldDisplay(TutorialManager.MESSAGES_SUPPORT)) {
+                //computeSupportTutorial(recipientList);
+            }
+        }
+    }
+
+    private void computeSupportTutorial(List<Recipient> recipientList) {
+        for (Recipient recipient : recipientList) {
+            if (Constants.SUPPORT_ID.equals(recipient.getSubId()) && recipient.getReceivedTribes() != null
+                    && recipient.getReceivedTribes().size() == 2) {
+                subscriptions.add(
+                        Observable.timer(500, TimeUnit.MILLISECONDS)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(aLong -> {
+                            View view = layoutManager.findViewByPosition(1);
+                            if (view != null && view instanceof SquareFrameLayout) {
+                                TileView tileView = (TileView) view.findViewById(R.id.viewTile);
+                                if (tileView != null && tileView.getType() == TileView.TYPE_SUPPORT) {
+                                    tileView.layoutNbTribes.setDrawingCacheEnabled(true);
+                                    tileView.layoutNbTribes.buildDrawingCache();
+                                    Bitmap bitmapForTutorialOverlay = Bitmap.createBitmap(tileView.layoutNbTribes.getDrawingCache(true));
+                                    tileView.layoutNbTribes.setDrawingCacheEnabled(false);
+
+                                    tutorial = tutorialManager.showMessagesSupport(
+                                            getActivity(),
+                                            tileView.avatar,
+                                            (tileView.avatar.getWidth() >> 1) + screenUtils.dpToPx(10),
+                                            -screenUtils.dpToPx(15),
+                                            (tileView.avatar.getWidth() >> 1) - screenUtils.dpToPx(1),
+                                            screenUtils.dpToPx(20f),
+                                            bitmapForTutorialOverlay,
+                                            tileView.layoutNbTribes.getWidth()
+                                    );
+                                }
+                            }
+                        }));
+
+            }
         }
     }
 
@@ -351,7 +396,19 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
                     return filter;
                 })
                 .doOnError(throwable -> throwable.printStackTrace())
-                .subscribe(clickOpenTribes));
+                .subscribe(recipient -> {
+                    if (tutorial == null) clickOpenTribes.onNext(recipient);
+                    else {
+                        tutorial.cleanUp();
+                        tutorial = null;
+
+                        subscriptions.add(
+                                Observable
+                                    .timer(300, TimeUnit.MILLISECONDS)
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(aLong -> clickOpenTribes.onNext(recipient)));
+                    }
+                }));
 
         subscriptions.add(homeGridAdapter.onClickChat()
             .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))

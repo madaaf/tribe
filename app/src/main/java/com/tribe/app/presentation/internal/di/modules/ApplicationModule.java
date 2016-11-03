@@ -53,6 +53,7 @@ import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.UIThread;
 import com.tribe.app.presentation.internal.di.scope.Theme;
+import com.tribe.app.presentation.internal.di.scope.TutorialState;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.FileUtils;
@@ -60,6 +61,7 @@ import com.tribe.app.presentation.utils.analytics.AnalyticsManager;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
+import com.tribe.app.presentation.view.tutorial.TutorialManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -67,6 +69,7 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.inject.Named;
@@ -310,6 +313,12 @@ public class ApplicationModule {
     @Singleton
     SoundManager provideSoundManager(Context context) {
         return new SoundManager(context);
+    }
+
+    @Provides
+    @Singleton
+    TutorialManager provideTutorialManager(ScreenUtils screenUtils, @TutorialState Preference<Set<String>> tutorialState) {
+        return new TutorialManager(screenUtils, tutorialState);
     }
 
     @Provides

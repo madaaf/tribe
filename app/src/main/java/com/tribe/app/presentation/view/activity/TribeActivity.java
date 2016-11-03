@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,7 +30,10 @@ import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.component.TribePagerView;
+import com.tribe.app.presentation.view.tutorial.Tutorial;
+import com.tribe.app.presentation.view.tutorial.TutorialManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 
 import java.io.Serializable;
@@ -63,6 +67,9 @@ public class TribeActivity extends BaseActivity implements TribeView {
     }
 
     @Inject
+    ScreenUtils screenUtils;
+
+    @Inject
     TribePresenter tribePresenter;
 
     @Inject
@@ -78,6 +85,9 @@ public class TribeActivity extends BaseActivity implements TribeView {
     @Inject
     SoundManager soundManager;
 
+    @Inject
+    TutorialManager tutorialManager;
+
     @BindView(R.id.viewTribePager)
     TribePagerView viewTribePager;
 
@@ -89,6 +99,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
     private BottomSheetDialog dialogMore;
     private LabelSheetAdapter moreTypeAdapter;
     private boolean isRecording = false;
+    private Tutorial tutorial;
 
     // BINDERS / SUBSCRIPTIONS
     private Unbinder unbinder;
@@ -258,6 +269,24 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
         subscriptions.add(viewTribePager.onClickMore().subscribe(tribeMessage -> {
             setupBottomSheetMore(tribeMessage);
+        }));
+
+        subscriptions.add(viewTribePager.onFirstLoop().subscribe(view -> {
+            View layoutNbTribes = viewTribePager.getLayoutNbTribes();
+            layoutNbTribes.setDrawingCacheEnabled(true);
+            layoutNbTribes.buildDrawingCache();
+            Bitmap bitmapForTutorialOverlay = Bitmap.createBitmap(layoutNbTribes.getDrawingCache(true));
+            layoutNbTribes.setDrawingCacheEnabled(false);
+            tutorial = tutorialManager.showNext(
+                    this,
+                    layoutNbTribes,
+                    (layoutNbTribes.getWidth() >> 1) + screenUtils.dpToPx(12.5f),
+                    -screenUtils.dpToPx(20),
+                    ((layoutNbTribes.getWidth() - screenUtils.dpToPx(20)) >> 1),
+                    screenUtils.dpToPx(20f),
+                    bitmapForTutorialOverlay,
+                    layoutNbTribes.getWidth()
+            );
         }));
 
         subscriptions.add(viewTribePager.onErrorTribe()

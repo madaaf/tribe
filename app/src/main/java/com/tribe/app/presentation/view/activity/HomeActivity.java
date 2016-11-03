@@ -15,7 +15,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
@@ -52,8 +51,8 @@ import com.tribe.app.presentation.view.fragment.ContactsGridFragment;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
 import com.tribe.app.presentation.view.tutorial.Overlay;
-import com.tribe.app.presentation.view.tutorial.ToolTip;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
+import com.tribe.app.presentation.view.tutorial.TutorialManager;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
@@ -94,6 +93,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @Inject
     ScreenUtils screenUtils;
+
+    @Inject
+    TutorialManager tutorialManager;
 
     @Inject
     @HasReceivedPointsForCameraPermission
@@ -190,28 +192,24 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                         .subscribe(aLong -> {
                             startService(DownloadTribeService.getCallingIntent(this, null));
 
-                            layoutNavGridMain.setDrawingCacheEnabled(true);
-                            layoutNavGridMain.buildDrawingCache();
-                            Bitmap bitmapForTutorialOverlay = Bitmap.createBitmap(layoutNavGridMain.getDrawingCache(true));
-                            layoutNavGridMain.setDrawingCacheEnabled(false);
+                            if (tutorialManager.shouldDisplay(TutorialManager.REFRESH)) {
+                                layoutNavGridMain.setDrawingCacheEnabled(true);
+                                layoutNavGridMain.buildDrawingCache();
+                                Bitmap bitmapForTutorialOverlay = Bitmap.createBitmap(layoutNavGridMain.getDrawingCache(true));
+                                layoutNavGridMain.setDrawingCacheEnabled(false);
 
-                            tutorial = Tutorial.init(this, screenUtils, Tutorial.REFRESH).with(Tutorial.CLICK)
-                                    .setToolTip(new ToolTip(this, screenUtils)
-                                            .setTitle(getString(R.string.tutorial_message_refresh))
-                                            .setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL)
-                                            .setBackgroundRes(R.drawable.bg_tuto_center_downward)
-                                    )
-                                    .setOverlay(new Overlay(this)
-                                            .setHoleRadius(tapToRefreshTutorialSize)
-                                            .setStyle(Overlay.RECTANGLE)
-                                            .setHoleCornerRadius(screenUtils.dpToPx(5))
-                                            .setImageOverlay(bitmapForTutorialOverlay)
-                                            .withDefaultAnimation(true)
-                                            .setOnClickListener(v -> {
-                                                tutorial.cleanUp();
-                                                tutorial = null;
-                                            })
-                                    ).playOn(imgNavGrid);
+                                tutorial = tutorialManager.showRefresh(
+                                        this,
+                                        imgNavGrid,
+                                        Overlay.NOT_SET,
+                                        bitmapForTutorialOverlay,
+                                        sizeNavMax,
+                                        v -> {
+                                            tutorial.cleanUp();
+                                            tutorial = null;
+                                        }
+                                );
+                            }
                         }));
     }
 

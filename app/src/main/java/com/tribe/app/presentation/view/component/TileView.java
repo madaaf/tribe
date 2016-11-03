@@ -739,6 +739,10 @@ public class TileView extends SquareFrameLayout {
         return currentTribeMode;
     }
 
+    public int getType() {
+        return type;
+    }
+
     public void cancelReplyMode() {
         Spring springAvatar = (Spring) getTag(R.id.spring_avatar);
         springAvatar.setEndValue(0);

@@ -224,8 +224,8 @@ LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.OnVideoSizeCha
                         .interval(mediaPlayer.getCurrentPosition(), mediaPlayer.getDuration(), TimeUnit.MILLISECONDS)
                         .onBackpressureDrop()
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(aLong -> {
-                            onCompletion.onNext(true);
+                        .subscribe(count -> {
+                            if (count > 0) onCompletion.onNext(true); // WE DON'T SEND THE FIRST EVENT
                         });
             }
         }
