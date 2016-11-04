@@ -211,7 +211,7 @@ LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.OnVideoSizeCha
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        onCompletion.onNext(true);
+        //onCompletion.onNext(true);
     }
 
     private void scheduleTimer() {

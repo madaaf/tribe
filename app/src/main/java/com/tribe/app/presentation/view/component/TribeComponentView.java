@@ -37,9 +37,8 @@ import com.tribe.app.presentation.view.video.TribeMediaPlayer;
 import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.ButtonCardView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
-import com.tribe.app.presentation.view.widget.ScalableTextureView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.VideoTextureView;
+import com.tribe.app.presentation.view.widget.video.ScalableVideoView;
 
 import java.util.Date;
 
@@ -67,7 +66,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     @Inject @WeatherUnits Preference<String> weatherUnits;
 
     @BindView(R.id.videoTextureView)
-    VideoTextureView videoTextureView;
+    ScalableVideoView videoTextureView;
 
     @BindView(R.id.avatar)
     AvatarView avatarView;
@@ -161,7 +160,6 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         unbinder = ButterKnife.bind(this);
         ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
 
-        videoTextureView.setScaleType(ScalableTextureView.CENTER_CROP_FILL);
         videoTextureView.setSurfaceTextureListener(this);
         super.onFinishInflate();
     }
@@ -244,11 +242,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
             }));
 
             subscriptions.add(mediaPlayer.onVideoSizeChanged().subscribe(videoSize -> {
-                if (videoTextureView != null && videoTextureView.getContentHeight() != videoSize.getHeight()) {
-                    videoTextureView.setContentWidth(videoSize.getWidth());
-                    videoTextureView.setContentHeight(videoSize.getHeight());
-                    videoTextureView.updateTextureViewSize();
-                }
+                videoTextureView.scaleVideoSize(videoSize.getWidth(), videoSize.getHeight());
             }));
 
             subscriptions.add(mediaPlayer.onErrorPlayer().subscribe(error -> {

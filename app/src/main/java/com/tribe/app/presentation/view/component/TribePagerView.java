@@ -203,10 +203,14 @@ public class TribePagerView extends FrameLayout {
     // CALLBACKS
     private final PublishSubject<Void> onDismissHorizontal = PublishSubject.create();
     private final PublishSubject<Void> onDismissVertical = PublishSubject.create();
+    private final PublishSubject<Void> onNext = PublishSubject.create();
+    private final PublishSubject<Void> onClose = PublishSubject.create();
+    private final PublishSubject<Boolean> onReplyMode = PublishSubject.create();
 
     // BINDERS / SUBSCRIPTIONS
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
+    private final PublishSubject<View> onDown = PublishSubject.create();
     private final PublishSubject<View> clickTapToCancel = PublishSubject.create();
     private final PublishSubject<View> onNotCancel = PublishSubject.create();
     private final PublishSubject<View> recordStarted = PublishSubject.create();
@@ -215,6 +219,7 @@ public class TribePagerView extends FrameLayout {
     private final PublishSubject<TribeMessage> onErrorTribe = PublishSubject.create();
     private final PublishSubject<TribeMessage> clickOnMore = PublishSubject.create();
     private final PublishSubject<TribeComponentView> onFirstLoop = PublishSubject.create();
+    private final PublishSubject<Void> onReplyModeOpened = PublishSubject.create();
 
     public TribePagerView(Context context) {
         super(context);
@@ -376,6 +381,9 @@ public class TribePagerView extends FrameLayout {
         viewTile.invalidate();
         viewTile.initClicks();
 
+        viewTile.onDown()
+                .subscribe(onDown);
+
         viewTile.onRecordStart()
                 .doOnNext(view -> hideExitCamera())
                 .subscribe(recordStarted);
@@ -398,16 +406,19 @@ public class TribePagerView extends FrameLayout {
                 })
                 .subscribe(onNotCancel);
 
-        subscriptions.add(viewTile
-                .onReplyModeStarted()
-                .subscribe(bool -> {
-                    cameraWrapper.setVisibility(View.VISIBLE);
-                    cameraWrapper.onResume(false);
-                    computeCurrentView();
-                    currentView.pausePlayer();
-                    inReplyMode = true;
-                    openReplyMode(bool);
-                })
+        subscriptions.add(
+                Observable
+                        .merge(
+                            viewTile.onReplyModeStarted(),
+                            viewTile.onReplyModeClickStarted()
+                                .doOnNext(b -> onReplyMode.onNext(b))
+                                .delay(300, TimeUnit.MILLISECONDS)
+                                .doOnNext(b -> viewTile.openCameraMode())
+                        )
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(bool -> {
+                            showCamera(bool);
+                        })
         );
 
         LayoutParams paramsCamera = (LayoutParams) cameraWrapper.getLayoutParams();
@@ -460,6 +471,9 @@ public class TribePagerView extends FrameLayout {
             @Override
             public void onSpringAtRest(Spring spring) {
                 super.onSpringAtRest(spring);
+                if (spring.getEndValue() == 0f) {
+                    onReplyModeOpened.onNext(null);
+                }
             }
         });
 
@@ -538,6 +552,18 @@ public class TribePagerView extends FrameLayout {
 
     public View getLayoutNbTribes() {
         return layoutNbTribes;
+    }
+
+    public View getBtnClose() {
+        return imgCancelReply;
+    }
+
+    public TileView getBtnReply() {
+        return viewTile;
+    }
+
+    public CameraWrapper getCameraWrapper() {
+        return cameraWrapper;
     }
 
     public @CameraWrapper.TribeMode String getTribeMode() {
@@ -1116,6 +1142,15 @@ public class TribePagerView extends FrameLayout {
         imgCancelReply.animate().translationX(screenUtils.getWidthPx()).setDuration(DURATION_REPLY).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
     }
 
+    private void showCamera(boolean bool) {
+        cameraWrapper.setVisibility(View.VISIBLE);
+        cameraWrapper.onResume(false);
+        computeCurrentView();
+        currentView.pausePlayer();
+        inReplyMode = true;
+        openReplyMode(bool);
+    }
+
     private void openReplyMode(boolean showExitCamera) {
         springReplyMode.setEndValue(0f);
         hideNbTribes();
@@ -1135,17 +1170,21 @@ public class TribePagerView extends FrameLayout {
 
     @OnClick(R.id.imgCancelReply)
     public void stopReply() {
+        onClose.onNext(null);
+
         if (inReplyMode) {
             closeReplyMode();
             viewTile.cancelReplyMode();
             inReplyMode = false;
         } else {
-            onDismissHorizontal.onNext(null);
+            dismissScreenToBottom();
         }
     }
 
     @OnClick(R.id.layoutNbTribes)
     public void goToNext() {
+        onNext.onNext(null);
+
         if (tribeList.size() - tribeMapSeens.size() > 0)
             viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
     }
@@ -1172,6 +1211,8 @@ public class TribePagerView extends FrameLayout {
     //////////////////////
     //   OBSERVABLES    //
     //////////////////////
+    public Observable<View> onDown() { return onDown; }
+
     public Observable<View> onRecordStart() {
         return recordStarted;
     }
@@ -1207,4 +1248,14 @@ public class TribePagerView extends FrameLayout {
     public Observable<TribeMessage> onClickMore() { return clickOnMore; }
 
     public Observable<TribeComponentView> onFirstLoop() { return onFirstLoop; }
+
+    public Observable<Void> onNext() { return onNext; }
+
+    public Observable<Void> onClose() { return onClose; }
+
+    public Observable<Boolean> onReplyMode() { return onReplyMode; }
+
+    public Observable<Void> onReplyModeOpened() {
+        return onReplyModeOpened;
+    }
 }

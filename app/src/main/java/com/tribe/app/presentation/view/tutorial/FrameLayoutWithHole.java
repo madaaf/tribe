@@ -123,12 +123,14 @@ public class FrameLayoutWithHole extends FrameLayout {
             radius = (viewHole.getWidth() >> 1) + padding;
         }
 
-        CIRCLE_RADIUS = overlay.holeRadius != Overlay.NOT_SET ? overlay.holeRadius + overlay.holeRadiusPulsePadding : radius;
+        if (overlay != null) {
+            CIRCLE_RADIUS = overlay.holeRadius != Overlay.NOT_SET ? overlay.holeRadius + overlay.holeRadiusPulsePadding : radius;
 
-        initCircleRadius = CIRCLE_RADIUS;
-        initPulseCircleRadius = (int) (initCircleRadius * 0.2f);
-        circleRadius = 0;
-        pulseCircleRadius = 0;
+            initCircleRadius = CIRCLE_RADIUS;
+            initPulseCircleRadius = (int) (initCircleRadius * 0.2f);
+            circleRadius = 0;
+            pulseCircleRadius = 0;
+        }
 
         this.motionType = motionType;
     }
@@ -170,7 +172,7 @@ public class FrameLayoutWithHole extends FrameLayout {
         pulseCirclePaint.setAntiAlias(true);
         pulseCirclePaint.setColor(Color.WHITE);
 
-        if (overlay.imgOverlay != null) {
+        if (overlay != null && overlay.imgOverlay != null) {
             ImageView imageView = new ImageView(getContext());
             imageView.setImageBitmap(overlay.imgOverlay);
             imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -185,9 +187,10 @@ public class FrameLayoutWithHole extends FrameLayout {
     }
 
     protected void cleanUp() {
-        expandAnimation.cancel();
-        pulseAnimation.cancel();
-        dismissAnimation.start();
+
+        //expandAnimation.cancel();
+        //pulseAnimation.cancel();
+        //dismissAnimation.start();
 
         if (getParent() != null) {
             if (overlay != null && overlay.exitAnimation != null) {
@@ -294,44 +297,46 @@ public class FrameLayoutWithHole extends FrameLayout {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        eraserBitmap.eraseColor(Color.TRANSPARENT);
+        if (!cleanUpLock) {
+            eraserBitmap.eraseColor(Color.TRANSPARENT);
 
-        if (overlay != null) {
-            eraserCanvas.drawColor(overlay.backgroundColor);
+            if (overlay != null) {
+                eraserCanvas.drawColor(overlay.backgroundColor);
 
-            if (overlay.style == Overlay.RECTANGLE) {
-                RectF rect = new RectF(pos[0] - overlay.holePadding + overlay.holeOffsetLeft,
-                        pos[1] - overlay.holePadding + overlay.holeOffsetTop,
-                        pos[0] + viewHole.getWidth() + overlay.holePadding + overlay.holeOffsetLeft,
-                        pos[1] + viewHole.getHeight() + overlay.holePadding + overlay.holeOffsetTop);
+                if (overlay.style == Overlay.RECTANGLE) {
+                    RectF rect = new RectF(pos[0] - overlay.holePadding + overlay.holeOffsetLeft,
+                            pos[1] - overlay.holePadding + overlay.holeOffsetTop,
+                            pos[0] + viewHole.getWidth() + overlay.holePadding + overlay.holeOffsetLeft,
+                            pos[1] + viewHole.getHeight() + overlay.holePadding + overlay.holeOffsetTop);
 
-                if (pulseCircleRadiusAlpha > 0) {
-                    pulseCirclePaint.setAlpha(pulseCircleRadiusAlpha);
+                    if (pulseCircleRadiusAlpha > 0) {
+                        pulseCirclePaint.setAlpha(pulseCircleRadiusAlpha);
+                    }
+
+                    eraserCanvas.drawCircle(rect.centerX(), rect.centerY(), pulseCircleRadius, pulseCirclePaint);
+                    eraserCanvas.drawCircle(rect.centerX(), rect.centerY(), circleRadius, circlePaint);
+                    eraserCanvas.drawRoundRect(rect, overlay.holeCornerRadius, overlay.holeCornerRadius, eraser);
+                } else {
+                    int holeRadius = overlay.holeRadius != Overlay.NOT_SET ? overlay.holeRadius : radius;
+                    int cx = pos[0] + viewHole.getWidth() / 2 + overlay.holeOffsetLeft;
+                    int cy = pos[1] + viewHole.getHeight() / 2 + overlay.holeOffsetTop;
+
+                    if (pulseCircleRadiusAlpha > 0) {
+                        pulseCirclePaint.setAlpha(pulseCircleRadiusAlpha);
+                    }
+
+                    eraserCanvas.drawCircle(cx, cy, pulseCircleRadius, pulseCirclePaint);
+                    eraserCanvas.drawCircle(cx, cy, circleRadius, circlePaint);
+
+                    eraserCanvas.drawCircle(
+                            cx,
+                            cy,
+                            holeRadius, eraser);
                 }
-
-                eraserCanvas.drawCircle(rect.centerX(), rect.centerY(), pulseCircleRadius, pulseCirclePaint);
-                eraserCanvas.drawCircle(rect.centerX(), rect.centerY(), circleRadius, circlePaint);
-                eraserCanvas.drawRoundRect(rect, overlay.holeCornerRadius, overlay.holeCornerRadius, eraser);
-            } else {
-                int holeRadius = overlay.holeRadius != Overlay.NOT_SET ? overlay.holeRadius : radius;
-                int cx = pos[0] + viewHole.getWidth() / 2 + overlay.holeOffsetLeft;
-                int cy = pos[1] + viewHole.getHeight() / 2 + overlay.holeOffsetTop;
-
-                if (pulseCircleRadiusAlpha > 0) {
-                    pulseCirclePaint.setAlpha(pulseCircleRadiusAlpha);
-                }
-
-                eraserCanvas.drawCircle(cx, cy, pulseCircleRadius, pulseCirclePaint);
-                eraserCanvas.drawCircle(cx, cy, circleRadius, circlePaint);
-
-                eraserCanvas.drawCircle(
-                        cx,
-                        cy,
-                        holeRadius, eraser);
             }
-        }
 
-        canvas.drawBitmap(eraserBitmap, 0, 0, null);
+            canvas.drawBitmap(eraserBitmap, 0, 0, null);
+        }
     }
 
     final FloatValueAnimatorBuilder.UpdateListener expandContractUpdateListener = value -> {

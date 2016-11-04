@@ -29,12 +29,14 @@ import com.tribe.app.presentation.mvp.view.TribeView;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
+import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
+import com.tribe.app.presentation.view.widget.CameraWrapper;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -49,6 +51,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
@@ -100,6 +103,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
     private LabelSheetAdapter moreTypeAdapter;
     private boolean isRecording = false;
     private Tutorial tutorial;
+    private boolean isReplyMode;
 
     // BINDERS / SUBSCRIPTIONS
     private Unbinder unbinder;
@@ -206,8 +210,55 @@ public class TribeActivity extends BaseActivity implements TribeView {
                 })
                 .delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
 
+        subscriptions.add(
+                Observable.merge(
+                    viewTribePager.onClose(),
+                    viewTribePager.onNext(),
+                    viewTribePager.onReplyMode()
+                ).subscribe(o -> {
+                    cleanUpTutorial();
+                })
+        );
+
+        subscriptions.add(
+                viewTribePager.onReplyModeOpened()
+                        .delay(300, TimeUnit.MILLISECONDS)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(o -> {
+                            isReplyMode = true;
+
+                            if (tutorialManager.shouldDisplay(TutorialManager.REPLY)) {
+                                TileView tileView = viewTribePager.getBtnReply();
+                                tutorial = tutorialManager.showReply(
+                                        this,
+                                        tileView.avatar,
+                                        tileView.avatar.getWidth() - screenUtils.dpToPx(30),
+                                        screenUtils.dpToPx(20f),
+                                        v -> cleanUpTutorial()
+                                );
+                            }
+                        })
+        );
+
+        subscriptions.add(
+                viewTribePager.onDown()
+                        .subscribe(o -> {
+                            if (isReplyMode) cleanUpTutorial();
+                        })
+        );
+
         subscriptions.add(viewTribePager.onRecordStart()
-                .doOnNext(view -> soundManager.playSound(SoundManager.START_RECORD))
+                .doOnNext(view -> {
+                    soundManager.playSound(SoundManager.START_RECORD);
+
+                    if (tutorialManager.shouldDisplay(TutorialManager.RELEASE)) {
+                        CameraWrapper cameraWrapper = viewTribePager.getCameraWrapper();
+                        tutorial = tutorialManager.showRelease(
+                                this,
+                                cameraWrapper
+                        );
+                    }
+                })
                 .delay(300, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(view -> {
@@ -222,6 +273,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
                 viewTribePager.onRecordEnd()
                 .subscribe(view -> {
                     soundManager.playSound(SoundManager.END_RECORD);
+                    cleanUpTutorial();
                     isRecording = false;
                     viewTribePager.stopRecording();
                     viewTribePager.showTapToCancel(currentTribe);
@@ -272,21 +324,51 @@ public class TribeActivity extends BaseActivity implements TribeView {
         }));
 
         subscriptions.add(viewTribePager.onFirstLoop().subscribe(view -> {
-            View layoutNbTribes = viewTribePager.getLayoutNbTribes();
-            layoutNbTribes.setDrawingCacheEnabled(true);
-            layoutNbTribes.buildDrawingCache();
-            Bitmap bitmapForTutorialOverlay = Bitmap.createBitmap(layoutNbTribes.getDrawingCache(true));
-            layoutNbTribes.setDrawingCacheEnabled(false);
-            tutorial = tutorialManager.showNext(
-                    this,
-                    layoutNbTribes,
-                    (layoutNbTribes.getWidth() >> 1) + screenUtils.dpToPx(12.5f),
-                    -screenUtils.dpToPx(20),
-                    ((layoutNbTribes.getWidth() - screenUtils.dpToPx(20)) >> 1),
-                    screenUtils.dpToPx(20f),
-                    bitmapForTutorialOverlay,
-                    layoutNbTribes.getWidth()
-            );
+            if (recipient.getReceivedTribes() != null && recipient.getReceivedTribes().size() > 1
+                    && tutorialManager.shouldDisplay(TutorialManager.NEXT)) {
+                View layoutNbTribes = viewTribePager.getLayoutNbTribes();
+                layoutNbTribes.setDrawingCacheEnabled(true);
+                layoutNbTribes.buildDrawingCache();
+                Bitmap bitmapForTutorialOverlay = Bitmap.createBitmap(layoutNbTribes.getDrawingCache(true));
+                layoutNbTribes.setDrawingCacheEnabled(false);
+                tutorial = tutorialManager.showNext(
+                        this,
+                        layoutNbTribes,
+                        (layoutNbTribes.getWidth() >> 1) + screenUtils.dpToPx(12.5f),
+                        -screenUtils.dpToPx(20),
+                        ((layoutNbTribes.getWidth() - screenUtils.dpToPx(20)) >> 1),
+                        screenUtils.dpToPx(20f),
+                        bitmapForTutorialOverlay,
+                        layoutNbTribes.getWidth()
+                );
+            }
+
+            if (tutorialManager.shouldDisplay(TutorialManager.CLOSE)) {
+                View btnClose = viewTribePager.getBtnClose();
+                btnClose.setDrawingCacheEnabled(true);
+                btnClose.buildDrawingCache();
+                Bitmap bitmapForTutorialOverlay = Bitmap.createBitmap(btnClose.getDrawingCache(true));
+                btnClose.setDrawingCacheEnabled(false);
+                tutorial = tutorialManager.showClose(
+                        this,
+                        btnClose,
+                        (btnClose.getWidth() >> 1) + screenUtils.dpToPx(12.5f),
+                        -screenUtils.dpToPx(20),
+                        ((btnClose.getWidth() - screenUtils.dpToPx(20)) >> 1),
+                        screenUtils.dpToPx(20f),
+                        bitmapForTutorialOverlay,
+                        btnClose.getWidth()
+                );
+            } else if (tutorialManager.shouldDisplay(TutorialManager.REPLY_MODE)) {
+                TileView tileView = viewTribePager.getBtnReply();
+                tutorial = tutorialManager.showReplyMode(
+                        this,
+                        tileView.avatar,
+                        tileView.avatar.getWidth() - screenUtils.dpToPx(15),
+                        screenUtils.dpToPx(20f),
+                        v -> cleanUpTutorial()
+                );
+            }
         }));
 
         subscriptions.add(viewTribePager.onErrorTribe()
@@ -427,6 +509,13 @@ public class TribeActivity extends BaseActivity implements TribeView {
         }
 
         return false;
+    }
+
+    private void cleanUpTutorial() {
+        if (tutorial != null) {
+            tutorial.cleanUp();
+            tutorial = null;
+        }
     }
 
     @Override

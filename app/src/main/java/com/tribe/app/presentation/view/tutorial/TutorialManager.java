@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.tutorial;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.support.annotation.StringDef;
 import android.view.Gravity;
 import android.view.View;
@@ -53,7 +54,7 @@ public class TutorialManager {
     public boolean shouldDisplay(@TutorialKey String key) {
         boolean result = false;
 
-        //if (key.equals(REFRESH)) return false;
+        if (key.equals(REPLY)) return true;
 
         if (tutorialState.get().contains(key)) return result;
 
@@ -141,6 +142,86 @@ public class TutorialManager {
                             .setImageOverlayOffsetX((target.getWidth() >> 1) - (overlayImageSize >> 1))
                             .setImageOverlayOffsetY((target.getHeight() >> 1) - (overlayImageSize >> 1))
                             .withDefaultAnimation(true)
+                    ).playOn(target);
+        }
+
+        return null;
+    }
+
+    public Tutorial showClose(Activity activity, View target, int toolTipOffsetX, int toolTipOffsetY,
+                             int holeRadius, int holeRadiusPulsePadding, Bitmap overlayImage, int overlayImageSize) {
+        if (activity != null) {
+            return Tutorial.init(activity, screenUtils, CLOSE).with(Tutorial.CLICK)
+                    .setToolTip(new ToolTip(activity, screenUtils)
+                            .setTitle(activity.getString(R.string.tutorial_message_close_message))
+                            .setGravity(Gravity.TOP | Gravity.LEFT)
+                            .setOffsetX(toolTipOffsetX)
+                            .setOffsetY(toolTipOffsetY)
+                            .setBackgroundRes(R.drawable.bg_tuto_right_downward)
+                    )
+                    .setOverlay(new Overlay(activity)
+                            .setStyle(Overlay.CIRCLE)
+                            .setHoleRadius(holeRadius)
+                            .setHoleRadiusPulsePadding(holeRadiusPulsePadding)
+                            .setImageOverlay(overlayImage)
+                            .setImageOverlaySize(overlayImageSize)
+                            .setImageOverlayOffsetX((target.getWidth() >> 1) - (overlayImageSize >> 1))
+                            .setImageOverlayOffsetY((target.getHeight() >> 1) - (overlayImageSize >> 1))
+                            .withDefaultAnimation(true)
+                    ).playOn(target);
+        }
+
+        return null;
+    }
+
+    public Tutorial showReplyMode(Activity activity, View target, int holeRadius, int holeRadiusPulsePadding, View.OnClickListener onClickListener) {
+        if (activity != null) {
+            return Tutorial.init(activity, screenUtils, REPLY_MODE).with(Tutorial.CLICK)
+                    .setToolTip(new ToolTip(activity, screenUtils)
+                            .setTitle(activity.getString(R.string.tutorial_message_reply))
+                            .setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL)
+                            .setBackgroundRes(R.drawable.bg_tuto_center_downward)
+                    )
+                    .setOverlay(new Overlay(activity)
+                            .setStyle(Overlay.CIRCLE)
+                            .setHoleRadius(holeRadius)
+                            .setHoleRadiusPulsePadding(holeRadiusPulsePadding)
+                            .withDefaultAnimation(true)
+                            .setOnClickListener(onClickListener)
+                    ).playOn(target);
+        }
+
+        return null;
+    }
+
+    public Tutorial showReply(Activity activity, View target, int holeRadius, int holeRadiusPulsePadding, View.OnClickListener onClickListener) {
+        if (activity != null) {
+            return Tutorial.init(activity, screenUtils, REPLY).with(Tutorial.CLICK)
+                    .setToolTip(new ToolTip(activity, screenUtils)
+                            .setTitle(activity.getString(R.string.tutorial_message_record_reply))
+                            .setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL)
+                            .setBackgroundRes(R.drawable.bg_tuto_center_downward)
+                    )
+                    .setOverlay(new Overlay(activity)
+                            .setStyle(Overlay.CIRCLE)
+                            .setBackgroundColor(Color.TRANSPARENT)
+                            .setHoleRadius(holeRadius)
+                            .setHoleRadiusPulsePadding(holeRadiusPulsePadding)
+                            .withDefaultAnimation(true)
+                            .setOnClickListener(onClickListener)
+                    ).playOn(target);
+        }
+
+        return null;
+    }
+
+    public Tutorial showRelease(Activity activity, View target) {
+        if (activity != null) {
+            return Tutorial.init(activity, screenUtils, REPLY).with(Tutorial.CLICK)
+                    .setToolTip(new ToolTip(activity, screenUtils)
+                            .setTitle(activity.getString(R.string.tutorial_message_release))
+                            .setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL)
+                            .setBackgroundRes(R.drawable.bg_tuto_no_ind)
                     ).playOn(target);
         }
 
