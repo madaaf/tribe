@@ -42,15 +42,14 @@
         android:padding="5dp"
         />
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
+    <com.tribe.app.presentation.view.widget.TextViewAnimatedDots
         android:id="@+id/txtSending"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="15dp"
-        android:text="@string/grid_friendship_status_sending"
-        style="@style/Caption.White.1"
         android:alpha="0"
+        app:textStyle="@style/Caption.White.1"
         />
 
     <View

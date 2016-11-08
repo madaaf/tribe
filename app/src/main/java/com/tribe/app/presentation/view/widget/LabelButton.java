@@ -2,7 +2,6 @@ package com.tribe.app.presentation.view.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.os.Build;
 import android.support.annotation.IntDef;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -14,6 +13,7 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.transformer.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.TextViewUtils;
 
 import javax.inject.Inject;
 
@@ -79,17 +79,9 @@ public class LabelButton extends LinearLayout {
         a.recycle();
     }
 
-    private void setTextAppearence(int resId) {
-        if (Build.VERSION.SDK_INT < 23) {
-            txtLabel.setTextAppearance(getContext(), resId);
-        } else {
-            txtLabel.setTextAppearance(resId);
-        }
-    }
-
     public void setType(int type) {
         this.type = type;
-        setTextAppearence(type == INFOS ? R.style.Body_One_White : R.style.Body_Two_Black);
+        TextViewUtils.setTextAppearence(getContext(), txtLabel, type == INFOS ? R.style.Body_One_White : R.style.Body_Two_Black);
         setBackgroundResource(type == INFOS ? R.drawable.bg_infos_transparent_disabled : R.drawable.bg_infos_transparent_enabled);
     }
 

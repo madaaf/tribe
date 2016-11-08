@@ -112,6 +112,7 @@ import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.LabelButton;
 import com.tribe.app.presentation.view.widget.PathView;
 import com.tribe.app.presentation.view.widget.PlayerView;
+import com.tribe.app.presentation.view.widget.TextViewAnimatedDots;
 import com.tribe.app.presentation.view.widget.TribeVideoView;
 
 import java.text.DateFormat;
@@ -168,6 +169,7 @@ public interface ApplicationComponent {
     void inject(GlPreview glPreview);
     void inject(VisualizerView visualizerView);
     void inject(RatingView ratingView);
+    void inject(TextViewAnimatedDots textViewAnimatedDots);
 
     // JOBS
     void inject(BaseJob baseJob);

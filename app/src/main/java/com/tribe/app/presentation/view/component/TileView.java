@@ -21,7 +21,6 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
@@ -39,10 +38,12 @@ import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
+import com.tribe.app.presentation.view.utils.TextViewUtils;
 import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.PlayerView;
 import com.tribe.app.presentation.view.widget.SquareFrameLayout;
+import com.tribe.app.presentation.view.widget.TextViewAnimatedDots;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
@@ -92,7 +93,7 @@ public class TileView extends SquareFrameLayout {
     @Nullable @BindView(R.id.btnMore) public ImageView btnMore;
     @Nullable @BindView(R.id.txtStatus) public TextViewFont txtStatus;
     @Nullable @BindView(R.id.txtStatusError) public TextViewFont txtStatusError;
-    @Nullable @BindView(R.id.txtSending) public TextViewFont txtSending;
+    @Nullable @BindView(R.id.txtSending) public TextViewAnimatedDots txtSending;
     @BindView(R.id.viewShadow) public View viewShadow;
     @BindView(R.id.avatar) public AvatarView avatar;
     @BindView(R.id.progressBar) public ProgressBar progressBar;
@@ -476,7 +477,6 @@ public class TileView extends SquareFrameLayout {
         }
 
         AnimationUtils.fadeOut(viewForeground, 0);
-        //AnimationUtils.fadeOut(txtSending, 0);
 
         if (getTag(R.id.progress_bar_animation) != null) {
             ObjectAnimator animator = (ObjectAnimator) getTag(R.id.progress_bar_animation);
@@ -503,6 +503,8 @@ public class TileView extends SquareFrameLayout {
             Spring springReplyBG = (Spring) getTag(R.id.spring_reply_bg);
             springReplyBG.setEndValue(0f);
         } else {
+            AnimationUtils.fadeOut(txtSending, 0);
+            txtSending.stopDotsAnimation();
             Spring springOutside = (Spring) getTag(R.id.spring_outside);
             springOutside.setEndValue(0f);
         }
@@ -516,7 +518,8 @@ public class TileView extends SquareFrameLayout {
     }
 
     private void showSending() {
-        txtSending.setText(R.string.grid_friendship_status_sending);
+        txtSending.setText(R.string.grid_friendship_recording_tap_to_cancel);
+        txtSending.startDotsAnimation();
 
         AnimationUtils.fadeIn(txtSending, 0);
     }
@@ -622,7 +625,7 @@ public class TileView extends SquareFrameLayout {
             txtStatusError.setVisibility(View.GONE);
             txtStatus.setVisibility(View.VISIBLE);
 
-            setTextAppearence(txtStatus, textAppearence);
+            TextViewUtils.setTextAppearence(getContext(), txtStatus, textAppearence);
 
             txtStatus.setText(label);
             txtStatus.setCompoundDrawablesWithIntrinsicBounds(getContext().getResources().getDrawable(drawableRes), null, null, null);
@@ -680,7 +683,7 @@ public class TileView extends SquareFrameLayout {
         ((TransitionDrawable) ((LayerDrawable) viewForeground.getBackground()).getDrawable(0)).startTransition(FADE_DURATION);
         AnimationUtils.scaleUp(imgCancel, SCALE_DURATION, new OvershootInterpolator(OVERSHOOT));
 
-        //showSending();
+        if (type != TYPE_TILE) showSending();
 
         ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", 0, timeTapToCancel);
         animation.setDuration(timeTapToCancel);
@@ -691,7 +694,10 @@ public class TileView extends SquareFrameLayout {
                 AnimationUtils.scaleDown(imgCancel, SCALE_DURATION, new DecelerateInterpolator());
                 AnimationUtils.scaleUp(imgDone, SCALE_DURATION, SCALE_DURATION, new OvershootInterpolator(OVERSHOOT));
 
-                //txtSending.setText(R.string.Grid_User_Sent);
+                if (type != TYPE_TILE) {
+                    txtSending.stopDotsAnimation();
+                    txtSending.setText(R.string.grid_friendship_recording_validated);
+                }
 
                 Observable.timer(END_RECORD_DELAY, TimeUnit.MILLISECONDS)
                         .onBackpressureDrop()
@@ -723,14 +729,6 @@ public class TileView extends SquareFrameLayout {
         TribeMessage recentSent = sent != null && sent.size() > 0 ? sent.get(sent.size() - 1) : null;
         TribeMessage recentError = error != null && error.size() > 0 ? error.get(error.size() - 1) : null;
         return TribeMessage.getMostRecentTribe(recentReceived, recentSent, recentError);
-    }
-
-    private void setTextAppearence(TextView textView, int resId) {
-        if (Build.VERSION.SDK_INT < 23) {
-            textView.setTextAppearance(getContext(), resId);
-        } else {
-            textView.setTextAppearance(resId);
-        }
     }
 
     public boolean isRecording() {
