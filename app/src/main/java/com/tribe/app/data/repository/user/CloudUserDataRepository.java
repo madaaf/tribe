@@ -4,6 +4,7 @@ import android.util.Pair;
 
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
@@ -144,7 +145,7 @@ public class CloudUserDataRepository implements UserRepository {
     @Override
     public Observable<List<Contact>> contacts() {
         final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-        return userDataStore.contacts().map(collection -> this.contactRealmDataMapper.transform(new ArrayList<>(collection)));
+        return userDataStore.contacts().map(collection -> this.contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection)));
     }
 
     @Override

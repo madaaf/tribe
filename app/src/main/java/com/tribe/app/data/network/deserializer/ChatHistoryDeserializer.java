@@ -10,8 +10,8 @@ import com.google.gson.JsonParseException;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
+import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ChatRealm;
-import com.tribe.app.domain.entity.User;
 
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
@@ -24,8 +24,8 @@ import java.util.List;
 public class ChatHistoryDeserializer extends MessageRealmListDeserializer implements JsonDeserializer<List<ChatRealm>> {
 
     public ChatHistoryDeserializer(SimpleDateFormat utcSimpleDate, UserCache userCache,
-                                       TribeCache tribeCache, ChatCache chatCache, User currentUser) {
-        super(utcSimpleDate, userCache, tribeCache, chatCache, currentUser);
+                                       TribeCache tribeCache, ChatCache chatCache, AccessToken accessToken) {
+        super(utcSimpleDate, userCache, tribeCache, chatCache, accessToken);
     }
 
     @Override

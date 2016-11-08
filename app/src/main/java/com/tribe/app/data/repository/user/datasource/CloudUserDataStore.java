@@ -37,7 +37,6 @@ import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.repository.user.contact.RxContacts;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
@@ -82,7 +81,6 @@ public class CloudUserDataStore implements UserDataStore {
     private final RxFacebook rxFacebook;
     private final Context context;
     private AccessToken accessToken = null;
-    private User user = null;
     private Installation installation = null;
     private final ReactiveLocationProvider reactiveLocationProvider;
     private Preference<String> lastMessageRequest;
@@ -100,7 +98,7 @@ public class CloudUserDataStore implements UserDataStore {
      */
     public CloudUserDataStore(UserCache userCache, TribeCache tribeCache, ChatCache chatCache,
                               ContactCache contactCache, RxContacts rxContacts, RxFacebook rxFacebook,
-                              TribeApi tribeApi, LoginApi loginApi, User user,
+                              TribeApi tribeApi, LoginApi loginApi,
                               AccessToken accessToken, Installation installation,
                               ReactiveLocationProvider reactiveLocationProvider, Context context,
                               Preference<String> lastMessageRequest, Preference<String> lastUserRequest, SimpleDateFormat utcSimpleDate) {
@@ -113,7 +111,6 @@ public class CloudUserDataStore implements UserDataStore {
         this.tribeApi = tribeApi;
         this.loginApi = loginApi;
         this.context = context;
-        this.user = user;
         this.accessToken = accessToken;
         this.installation = installation;
         this.reactiveLocationProvider = reactiveLocationProvider;
@@ -264,20 +261,20 @@ public class CloudUserDataStore implements UserDataStore {
                 toIds.add(fr.getFriend().getId());
             }
 
-//            List<TribeRealm> lastTribesSent = tribeCache.tribesSent(toIds);
-//
-//            int countTribes = 0;
-//            for (TribeRealm tribeRealm : lastTribesSent) {
-//                if (!StringUtils.isEmpty(tribeRealm.getId())) {
-//                    idsTribes.append((countTribes > 0 ? "," : "") + "\"" + tribeRealm.getId() + "\"");
-//                    countTribes++;
-//                }
-//            }
+            List<TribeRealm> lastTribesSent = tribeCache.tribesSent(toIds);
+
+            int countTribes = 0;
+            for (TribeRealm tribeRealm : lastTribesSent) {
+                if (!StringUtils.isEmpty(tribeRealm.getId())) {
+                    idsTribes.append((countTribes > 0 ? "," : "") + "\"" + tribeRealm.getId() + "\"");
+                    countTribes++;
+                }
+            }
         }
 
         String req = context.getString(R.string.messages_infos,
-                !StringUtils.isEmpty(lastMessageRequest.get()) ? context.getString(R.string.input_start, lastMessageRequest.get()) : "");
-                //!StringUtils.isEmpty(idsTribes.toString()) ? context.getString(R.string.tribe_sent_infos, idsTribes) : "");
+                !StringUtils.isEmpty(lastMessageRequest.get()) ? context.getString(R.string.input_start, lastMessageRequest.get()) : "",
+                !StringUtils.isEmpty(idsTribes.toString()) ? context.getString(R.string.tribe_sent_infos, idsTribes) : "");
 
         return tribeApi.messages(req)
                 .flatMap(messageRealmInterfaceList -> {
@@ -674,6 +671,7 @@ public class CloudUserDataStore implements UserDataStore {
                         searchResultRealmRet.setPicture(searchResultRealm.getPicture());
                         searchResultRealmRet.setId(searchResultRealm.getId());
                         searchResultRealmRet.setUsername(searchResultRealm.getUsername());
+                        searchResultRealmRet.setInvisibleMode(searchResultRealm.isInvisibleMode());
                     }
 
                     searchResultRealmRet.setUsername(searchResultInit.getUsername());
@@ -825,10 +823,7 @@ public class CloudUserDataStore implements UserDataStore {
             dbUser.setUsername(userRealm.getUsername());
             dbUser.setDisplayName(userRealm.getDisplayName());
             dbUser.setTribeSave(userRealm.isTribeSave());
-            user.setProfilePicture(userRealm.getProfilePicture());
-            user.setDisplayName(userRealm.getDisplayName());
-            user.setTribeSave(userRealm.isTribeSave());
-            user.setUsername(userRealm.getUsername());
+            dbUser.setInvisibleMode(userRealm.isInvisibleMode());
             userCache.put(dbUser);
         }
     };
@@ -876,7 +871,7 @@ public class CloudUserDataStore implements UserDataStore {
                                 context.getString(R.string.groupfragment_info));
                         return this.tribeApi.createMembership(requestCreateMembership);
                     }, (groupRealm, newMembership) -> {
-                        userCache.insertMembership(user.getId(), newMembership);
+                        userCache.insertMembership(accessToken.getUserId(), newMembership);
                         return newMembership;
                     });
         } else {
@@ -909,7 +904,7 @@ public class CloudUserDataStore implements UserDataStore {
                         final String requestCreateMembership = context.getString(R.string.create_membership, groupRealm.getId(), context.getString(R.string.membershipfragment_info), context.getString(R.string.groupfragment_info));
                         return this.tribeApi.createMembership(requestCreateMembership);
                     }, (groupRealm, newMembership) -> {
-                        userCache.insertMembership(user.getId(), newMembership);
+                        userCache.insertMembership(accessToken.getUserId(), newMembership);
                         return newMembership;
                     });
         }
@@ -1028,7 +1023,7 @@ public class CloudUserDataStore implements UserDataStore {
                 context.getString(R.string.membershipfragment_info),
                 context.getString(R.string.groupfragment_info));
         return this.tribeApi.modifyPrivateGroupLink(request).doOnNext(membershipRealm -> {
-            userCache.updateMembershipLink(user.getId(), membershipId, membershipRealm);
+            userCache.updateMembershipLink(accessToken.getUserId(), membershipId, membershipRealm);
         });
     }
 
@@ -1115,7 +1110,7 @@ public class CloudUserDataStore implements UserDataStore {
                     context.getString(R.string.membershipfragment_info),
                     context.getString(R.string.groupfragment_info));
         return this.tribeApi.createMembership(requestCreateMembership).doOnNext(membershipRealm -> {
-            userCache.insertMembership(user.getId(), membershipRealm);
+            userCache.insertMembership(accessToken.getUserId(), membershipRealm);
         });
     }
 

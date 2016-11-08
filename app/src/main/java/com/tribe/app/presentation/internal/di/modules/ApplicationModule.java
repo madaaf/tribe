@@ -53,6 +53,7 @@ import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.UIThread;
 import com.tribe.app.presentation.internal.di.scope.Theme;
+import com.tribe.app.presentation.internal.di.scope.TutorialState;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.FileUtils;
@@ -60,6 +61,7 @@ import com.tribe.app.presentation.utils.analytics.AnalyticsManager;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
+import com.tribe.app.presentation.view.tutorial.TutorialManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -67,6 +69,7 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.inject.Named;
@@ -85,7 +88,7 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 public class ApplicationModule {
 
     private final AndroidApplication application;
-    private UserRealm userRealm;
+    private RealmResults<UserRealm> userRealm;
 
     public ApplicationModule(AndroidApplication application) {
         this.application = application;
@@ -223,11 +226,17 @@ public class ApplicationModule {
     User provideCurrentUser(Realm realm, AccessToken accessToken, UserRealmDataMapper userRealmDataMapper) {
         final User user = new User("");
 
-        userRealm = realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
-        if (userRealm != null) {
-            userRealm.addChangeListener(element -> user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealm), true)));
+        userRealm = realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findAll();
+        userRealm.addChangeListener(element -> {
+            UserRealm userRealmRes = realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
 
-            user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealm), true));
+            if (userRealmRes != null) {
+                user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealmRes), true));
+            }
+        });
+
+        if (userRealm != null && userRealm.size() > 0) {
+            user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealm.get(0)), true));
         }
 
         return user;
@@ -310,6 +319,12 @@ public class ApplicationModule {
     @Singleton
     SoundManager provideSoundManager(Context context) {
         return new SoundManager(context);
+    }
+
+    @Provides
+    @Singleton
+    TutorialManager provideTutorialManager(ScreenUtils screenUtils, @TutorialState Preference<Set<String>> tutorialState) {
+        return new TutorialManager(screenUtils, tutorialState);
     }
 
     @Provides

@@ -198,7 +198,7 @@ dependencies {
     androidTestCompile presentationTestDependencies.testingSupportLib
 
     // Development
-    //compile developmentDependencies.leakCanary
+    compile developmentDependencies.leakCanary
     compile developmentDependencies.stetho
     compile developmentDependencies.stethoOkHttp
 

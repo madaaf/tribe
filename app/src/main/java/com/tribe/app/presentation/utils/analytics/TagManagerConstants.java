@@ -86,4 +86,5 @@ public class TagManagerConstants {
     public static final String CAMERA_ENABLED = "Camera Enabled";
     public static final String PUSH_ENABLED = "Push Enabled";
     public static final String MICROPHONE_ENABLED = "Microphone Enabled";
+    public static final String USERNAME = "username";
 }

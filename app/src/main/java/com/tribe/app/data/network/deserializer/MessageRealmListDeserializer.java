@@ -7,13 +7,13 @@ import com.google.gson.JsonObject;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
+import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.LocationRealm;
 import com.tribe.app.data.realm.MessageRecipientRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.WeatherRealm;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
@@ -29,18 +29,18 @@ import java.util.List;
 public class MessageRealmListDeserializer {
 
     protected SimpleDateFormat utcSimpleDate;
-    protected User currentUser;
+    protected AccessToken accessToken;
     protected UserCache userCache;
     protected TribeCache tribeCache;
     protected ChatCache chatCache;
 
     public MessageRealmListDeserializer(SimpleDateFormat utcSimpleDate, UserCache userCache,
-                                        TribeCache tribeCache, ChatCache chatCache, User currentUser) {
+                                        TribeCache tribeCache, ChatCache chatCache, AccessToken accessToken) {
         this.utcSimpleDate = utcSimpleDate;
         this.userCache = userCache;
         this.tribeCache = tribeCache;
         this.chatCache = chatCache;
-        this.currentUser = currentUser;
+        this.accessToken = accessToken;
     }
 
     protected List<ChatRealm> deserializeChatRealmArray(JsonArray array) {
@@ -58,7 +58,7 @@ public class MessageRealmListDeserializer {
                 int countSeen = 0;
 
                 for (MessageRecipientRealm recipient : chatRealm.getRecipientList()) {
-                    if (recipient.getTo().equals(currentUser.getId())) recipient.setIsSeen(true);
+                    if (recipient.getTo().equals(accessToken.getUserId())) recipient.setIsSeen(true);
 
                     if (recipient.isSeen()) countSeen++;
                 }
@@ -82,7 +82,7 @@ public class MessageRealmListDeserializer {
         if (toGroup) {
             chatRealm.setMembershipRealm(userCache.membershipForGroupId(json.get("to").getAsString()));
         } else {
-            if (!currentUser.getId().equals(json.get("to").getAsString())) {
+            if (!accessToken.getUserId().equals(json.get("to").getAsString())) {
                 chatRealm.setFriendshipRealm(userCache.friendshipForUserId(json.get("to").getAsString()));
             }
         }
@@ -148,7 +148,7 @@ public class MessageRealmListDeserializer {
         if (toGroup) {
             tribeRealm.setMembershipRealm(userCache.membershipForGroupId(json.get("to").getAsString()));
         } else {
-            if (!currentUser.getId().equals(json.get("to").getAsString())) {
+            if (!accessToken.getUserId().equals(json.get("to").getAsString())) {
                 tribeRealm.setFriendshipRealm(userCache.friendshipForUserId(json.get("to").getAsString()));
             }
         }
@@ -183,7 +183,7 @@ public class MessageRealmListDeserializer {
         tribeRealm.setType(json.get("type").getAsString());
         tribeRealm.setUrl(json.get("url").getAsString());
 
-        tribeRealm.setRecipientList(tribeCache.createTribeRecipientRealm(parseRecipients(tribeRealm.getId(), json.getAsJsonArray("recipients"))));
+        //tribeRealm.setRecipientList(tribeCache.createTribeRecipientRealm(parseRecipients(tribeRealm.getId(), json.getAsJsonArray("recipients"))));
 
         if (!(json.get("weather") instanceof JsonNull)) {
             JsonObject weather = json.get("weather").getAsJsonObject();
@@ -223,7 +223,7 @@ public class MessageRealmListDeserializer {
             MessageRecipientRealm chatRecipientRealm = new MessageRecipientRealm();
             chatRecipientRealm.setId(id + jsonRecipient.get("to").getAsString());
             chatRecipientRealm.setTo(jsonRecipient.get("to").getAsString());
-            chatRecipientRealm.setIsSeen(currentUser.getId().equals(chatRecipientRealm.getTo()) ? true : jsonRecipient.get("is_seen").getAsBoolean());
+            chatRecipientRealm.setIsSeen(accessToken.getUserId().equals(chatRecipientRealm.getTo()) ? true : jsonRecipient.get("is_seen").getAsBoolean());
             messageRecipientRealmList.add(chatRecipientRealm);
         }
 

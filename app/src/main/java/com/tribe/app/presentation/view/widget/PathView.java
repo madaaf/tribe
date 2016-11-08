@@ -10,6 +10,7 @@ import android.graphics.PathEffect;
 import android.graphics.PathMeasure;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
@@ -45,7 +46,7 @@ public class PathView extends View {
     private void init(Context context, AttributeSet attrs) {
         ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
 
-        strokeWidth = screenUtils.dpToPx(15);
+        strokeWidth = screenUtils.dpToPx(16);
         timeToRecord = context.getResources().getInteger(R.integer.time_record);
 
         setWillNotDraw(false);
@@ -58,7 +59,7 @@ public class PathView extends View {
         paint.setStrokeWidth(strokeWidth);
         paint.setStyle(Paint.Style.STROKE);
         paint.setDither(true);
-        //paint.setStrokeJoin(Paint.Join.ROUND);
+        paint.setStrokeJoin(Paint.Join.ROUND);
         //paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setAntiAlias(true);
 
@@ -78,6 +79,7 @@ public class PathView extends View {
 
         animator = ObjectAnimator.ofFloat(PathView.this, "phase", 1.0f, 0.0f);
         animator.setDuration(timeToRecord);
+        animator.setInterpolator(new LinearInterpolator());
         animator.start();
     }
 

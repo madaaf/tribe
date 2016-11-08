@@ -7,5 +7,5 @@
         android:type="linear" />
 
     <corners
-        android:radius="0dp" />
+        android:radius="@dimen/camera_radius" />
 </shape>

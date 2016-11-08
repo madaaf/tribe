@@ -10,7 +10,8 @@ import javax.inject.Singleton;
  * Created by tiago on 06/05/2016.
  */
 @Singleton
-public class SearchResultRealmDataMapper {
+public class
+SearchResultRealmDataMapper {
 
     FriendshipRealmDataMapper friendshipRealmDataMapper;
 

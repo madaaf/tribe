@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <com.tribe.app.presentation.view.widget.VideoTextureView
+    <com.tribe.app.presentation.view.widget.video.ScalableVideoView
         android:id="@+id/videoTextureView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

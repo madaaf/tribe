@@ -113,6 +113,7 @@ public class TileView extends SquareFrameLayout {
     private Subscription timer;
 
     // RX SUBSCRIPTIONS / SUBJECTS
+    private final PublishSubject<View> onDown = PublishSubject.create();
     private final PublishSubject<View> clickErrorTribes = PublishSubject.create();
     private final PublishSubject<View> clickOpenTribes = PublishSubject.create();
     private final PublishSubject<View> clickChatView = PublishSubject.create();
@@ -121,7 +122,8 @@ public class TileView extends SquareFrameLayout {
     private final PublishSubject<View> onNotCancel = PublishSubject.create();
     private final PublishSubject<View> recordStarted = PublishSubject.create();
     private final PublishSubject<View> recordEnded = PublishSubject.create();
-    private final PublishSubject<Boolean> replyModeStarted = PublishSubject.create();
+    private final PublishSubject<Boolean> replyModeStarted = PublishSubject.create(); // OPEN THE CAMERA WHILE RECORDING
+    private final PublishSubject<Boolean> replyModeClickStarted = PublishSubject.create(); // JUST TO OPEN THE CAMERA
     private final PublishSubject<Boolean> replyModeEndedAtRest = PublishSubject.create();
 
     // RESOURCES
@@ -241,6 +243,8 @@ public class TileView extends SquareFrameLayout {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 if (isDown) return false;
 
+                onDown.onNext(this);
+
                 if (timer != null) timer.unsubscribe();
 
                 if (getTag(R.id.is_tap_to_cancel) != null)
@@ -248,7 +252,7 @@ public class TileView extends SquareFrameLayout {
 
                 if (isTapToCancel) {
                     clickTapToCancel.onNext(this);
-                    resetViewAfterTapToCancel(false);
+                    if (type != TYPE_TILE) resetViewAfterTapToCancel(false);
                     return false;
                 } else {
                     longDown = System.currentTimeMillis();
@@ -304,9 +308,7 @@ public class TileView extends SquareFrameLayout {
                     if ((type == TYPE_GRID || type == TYPE_SUPPORT)) {
                         clickOpenTribes.onNext(this);
                     } else {
-                        Spring springAvatar = (Spring) v.getTag(R.id.spring_avatar);
-                        springAvatar.setEndValue(REPLY_OPEN_CAMERA);
-                        replyModeStarted.onNext(true);
+                        replyModeClickStarted.onNext(true);
                     }
                 }
 
@@ -586,7 +588,7 @@ public class TileView extends SquareFrameLayout {
                 case MessageSendingStatus.STATUS_OPENED: case MessageSendingStatus.STATUS_OPENED_PARTLY:
                     label = MessageSendingStatus.getStrRes(lastTribe.getMessageSendingStatus(), type);
                     drawableRes = R.drawable.picto_opened;
-                    textAppearence = R.style.Caption_Black_40;
+                    textAppearence = R.style.Caption_White_1;
                     isFinalStatus = true;
                     break;
             }
@@ -697,7 +699,7 @@ public class TileView extends SquareFrameLayout {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(time -> {
                             onNotCancel.onNext(TileView.this);
-                            resetViewAfterTapToCancel(true);
+                            if (type != TYPE_TILE) resetViewAfterTapToCancel(true);
                         });
             }
 
@@ -711,6 +713,10 @@ public class TileView extends SquareFrameLayout {
         setTag(R.id.progress_bar_animation, animation);
     }
 
+    public void openCameraMode() {
+        Spring springAvatar = (Spring) getTag(R.id.spring_avatar);
+        springAvatar.setEndValue(REPLY_OPEN_CAMERA);
+    }
 
     private TribeMessage computeMostRecentTribe(List<TribeMessage> received, List<TribeMessage> sent, List<TribeMessage> error) {
         TribeMessage recentReceived = received != null && received.size() > 0 ? received.get(received.size() - 1) : null;
@@ -739,6 +745,10 @@ public class TileView extends SquareFrameLayout {
         return currentTribeMode;
     }
 
+    public int getType() {
+        return type;
+    }
+
     public void cancelReplyMode() {
         Spring springAvatar = (Spring) getTag(R.id.spring_avatar);
         springAvatar.setEndValue(0);
@@ -750,6 +760,8 @@ public class TileView extends SquareFrameLayout {
     }
 
     // OBSERVABLES
+    public Observable<View> onDown() { return onDown; }
+
     public Observable<View> onClickErrorTribes() {
         return clickErrorTribes;
     }
@@ -784,5 +796,9 @@ public class TileView extends SquareFrameLayout {
 
     public Observable<Boolean> onReplyModeStarted() {
         return replyModeStarted;
+    }
+
+    public Observable<Boolean> onReplyModeClickStarted() {
+        return replyModeClickStarted;
     }
 }

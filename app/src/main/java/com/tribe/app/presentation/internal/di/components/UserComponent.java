@@ -9,6 +9,7 @@ import com.tribe.app.presentation.utils.facebook.FacebookHiddenActivity;
 import com.tribe.app.presentation.utils.mediapicker.MediaHiddenActivity;
 import com.tribe.app.presentation.view.activity.BaseActionActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
+import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.GroupInfoActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.IntroActivity;
@@ -44,6 +45,7 @@ import dagger.Component;
 @PerActivity
 @Component(dependencies = ApplicationComponent.class, modules = {ActivityModule.class, UserModule.class})
 public interface UserComponent extends ActivityComponent {
+    void inject(DebugActivity debugActivity);
     void inject(IntroActivity introActivity);
     void inject(FacebookHiddenActivity facebookHiddenActivity);
     void inject(CountryActivity countryActivity);

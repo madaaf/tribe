@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -49,6 +50,9 @@ import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.fragment.ContactsGridFragment;
 import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
 import com.tribe.app.presentation.view.fragment.HomeGridFragment;
+import com.tribe.app.presentation.view.tutorial.Overlay;
+import com.tribe.app.presentation.view.tutorial.Tutorial;
+import com.tribe.app.presentation.view.tutorial.TutorialManager;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
@@ -89,6 +93,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @Inject
     ScreenUtils screenUtils;
+
+    @Inject
+    TutorialManager tutorialManager;
 
     @Inject
     @HasReceivedPointsForCameraPermission
@@ -160,9 +167,11 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private boolean isRecording;
     private boolean navVisible = true;
     private boolean layoutNavPendingVisible = false;
+    private Tutorial tutorial;
 
     // DIMEN
     private int sizeNavMax, sizeNavSmall, marginHorizontalSmall, translationBackToTop;
+    private int tapToRefreshTutorialSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,7 +189,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         subscriptions.add(
                 Observable.timer(1000, TimeUnit.MILLISECONDS)
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(aLong -> startService(DownloadTribeService.getCallingIntent(this, null))));
+                        .subscribe(aLong -> {
+                            startService(DownloadTribeService.getCallingIntent(this, null));
+                        }));
     }
 
     @Override
@@ -218,12 +229,33 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
                     handleCameraPermissions(areAllGranted, false);
                 }));
+
+        if (tutorialManager.shouldDisplay(TutorialManager.REFRESH)) {
+            subscriptions.add(
+                    Observable.timer(1000, TimeUnit.MILLISECONDS)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(aLong -> {
+                                layoutNavGridMain.setDrawingCacheEnabled(true);
+                                layoutNavGridMain.buildDrawingCache();
+                                Bitmap bitmapForTutorialOverlay = Bitmap.createBitmap(layoutNavGridMain.getDrawingCache(true));
+                                layoutNavGridMain.setDrawingCacheEnabled(false);
+
+                                tutorial = tutorialManager.showRefresh(
+                                        this,
+                                        imgNavGrid,
+                                        Overlay.NOT_SET,
+                                        bitmapForTutorialOverlay,
+                                        sizeNavMax,
+                                        v -> cleanTutorial()
+                                );
+                            }));
+        }
     }
 
     @Override
     protected void onPause() {
         cameraWrapper.onPause();
-
+        cleanTutorial();
         super.onPause();
     }
 
@@ -249,6 +281,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         sizeNavSmall = getResources().getDimensionPixelSize(R.dimen.nav_size_small);
         marginHorizontalSmall = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
         translationBackToTop = getResources().getDimensionPixelSize(R.dimen.transition_grid_back_to_top);
+        tapToRefreshTutorialSize = 10;
     }
 
     private void initCamera() {
@@ -549,6 +582,21 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @OnClick(R.id.layoutNavGridMain)
     public void reloadGrid() {
         animateToGrid();
+
+        if (tutorial != null) {
+            cleanTutorial();
+            subscriptions.add(
+                    Observable
+                            .timer(300, TimeUnit.MILLISECONDS)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(aLong -> doReload())
+            );
+        } else {
+            doReload();
+        }
+    }
+
+    private void doReload() {
         if (!isRecording) {
             if (viewPager.getCurrentItem() == GRID_FRAGMENT_PAGE) {
                 homePresenter.reloadData();
@@ -877,5 +925,12 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         slideUpNav(layoutNavMaster);
         viewPager.setSwipeable(true);
         navVisible = true;
+    }
+
+    private void cleanTutorial() {
+        if (tutorial != null) {
+            tutorial.cleanUp();
+            tutorial = null;
+        }
     }
 }

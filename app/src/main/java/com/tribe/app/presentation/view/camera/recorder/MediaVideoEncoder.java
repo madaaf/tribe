@@ -41,7 +41,7 @@ public class MediaVideoEncoder extends MediaEncoder {
         }
 
         int endWidth = (int) ((float) width / 16) * 16;
-        int endHeight = (int) (endWidth / ((float) width / height));
+        int endHeight = (int) ((float) height / 16) * 16;
 
         try {
             MediaFormat format = MediaFormat.createVideoFormat(
@@ -66,6 +66,7 @@ public class MediaVideoEncoder extends MediaEncoder {
             mediaCodec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
             muxerStarted = isEOS = false;
         } catch (Exception e) {
+            e.printStackTrace();
             release();
             throw (RuntimeException) e;
         }
