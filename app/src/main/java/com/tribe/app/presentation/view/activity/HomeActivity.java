@@ -187,29 +187,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         manageDeepLink(getIntent());
 
         subscriptions.add(
-                Observable.timer(3000, TimeUnit.MILLISECONDS)
+                Observable.timer(1000, TimeUnit.MILLISECONDS)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(aLong -> {
                             startService(DownloadTribeService.getCallingIntent(this, null));
-
-                            if (tutorialManager.shouldDisplay(TutorialManager.REFRESH)) {
-                                layoutNavGridMain.setDrawingCacheEnabled(true);
-                                layoutNavGridMain.buildDrawingCache();
-                                Bitmap bitmapForTutorialOverlay = Bitmap.createBitmap(layoutNavGridMain.getDrawingCache(true));
-                                layoutNavGridMain.setDrawingCacheEnabled(false);
-
-                                tutorial = tutorialManager.showRefresh(
-                                        this,
-                                        imgNavGrid,
-                                        Overlay.NOT_SET,
-                                        bitmapForTutorialOverlay,
-                                        sizeNavMax,
-                                        v -> {
-                                            tutorial.cleanUp();
-                                            tutorial = null;
-                                        }
-                                );
-                            }
                         }));
     }
 
@@ -248,12 +229,33 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
                     handleCameraPermissions(areAllGranted, false);
                 }));
+
+        if (tutorialManager.shouldDisplay(TutorialManager.REFRESH)) {
+            subscriptions.add(
+                    Observable.timer(1000, TimeUnit.MILLISECONDS)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(aLong -> {
+                                layoutNavGridMain.setDrawingCacheEnabled(true);
+                                layoutNavGridMain.buildDrawingCache();
+                                Bitmap bitmapForTutorialOverlay = Bitmap.createBitmap(layoutNavGridMain.getDrawingCache(true));
+                                layoutNavGridMain.setDrawingCacheEnabled(false);
+
+                                tutorial = tutorialManager.showRefresh(
+                                        this,
+                                        imgNavGrid,
+                                        Overlay.NOT_SET,
+                                        bitmapForTutorialOverlay,
+                                        sizeNavMax,
+                                        v -> cleanTutorial()
+                                );
+                            }));
+        }
     }
 
     @Override
     protected void onPause() {
         cameraWrapper.onPause();
-
+        cleanTutorial();
         super.onPause();
     }
 
@@ -582,8 +584,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         animateToGrid();
 
         if (tutorial != null) {
-            tutorial.cleanUp();
-            tutorial = null;
+            cleanTutorial();
             subscriptions.add(
                     Observable
                             .timer(300, TimeUnit.MILLISECONDS)
@@ -924,5 +925,12 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         slideUpNav(layoutNavMaster);
         viewPager.setSwipeable(true);
         navVisible = true;
+    }
+
+    private void cleanTutorial() {
+        if (tutorial != null) {
+            tutorial.cleanUp();
+            tutorial = null;
+        }
     }
 }

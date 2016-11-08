@@ -88,7 +88,7 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 public class ApplicationModule {
 
     private final AndroidApplication application;
-    private UserRealm userRealm;
+    private RealmResults<UserRealm> userRealm;
 
     public ApplicationModule(AndroidApplication application) {
         this.application = application;
@@ -226,11 +226,17 @@ public class ApplicationModule {
     User provideCurrentUser(Realm realm, AccessToken accessToken, UserRealmDataMapper userRealmDataMapper) {
         final User user = new User("");
 
-        userRealm = realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
-        if (userRealm != null) {
-            userRealm.addChangeListener(element -> user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealm), true)));
+        userRealm = realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findAll();
+        userRealm.addChangeListener(element -> {
+            UserRealm userRealmRes = realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
 
-            user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealm), true));
+            if (userRealmRes != null) {
+                user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealmRes), true));
+            }
+        });
+
+        if (userRealm != null && userRealm.size() > 0) {
+            user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealm.get(0)), true));
         }
 
         return user;

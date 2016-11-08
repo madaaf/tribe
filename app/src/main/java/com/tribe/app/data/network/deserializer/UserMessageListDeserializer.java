@@ -10,11 +10,11 @@ import com.google.gson.JsonParseException;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
+import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.MessageRecipientRealm;
 import com.tribe.app.data.realm.TribeRealm;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import java.lang.reflect.Type;
@@ -25,8 +25,8 @@ import java.util.List;
 public class UserMessageListDeserializer<T> extends MessageRealmListDeserializer implements JsonDeserializer<T> {
 
     public UserMessageListDeserializer(SimpleDateFormat utcSimpleDate, UserCache userCache,
-                                     TribeCache tribeCache, ChatCache chatCache, User currentUser) {
-        super(utcSimpleDate, userCache, tribeCache, chatCache, currentUser);
+                                     TribeCache tribeCache, ChatCache chatCache, AccessToken accessToken) {
+        super(utcSimpleDate, userCache, tribeCache, chatCache, accessToken);
     }
 
     @Override

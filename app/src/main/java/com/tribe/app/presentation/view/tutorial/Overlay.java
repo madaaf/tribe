@@ -21,6 +21,7 @@ public class Overlay {
     public static final int RECTANGLE = 1;
 
     public int backgroundColor;
+    public boolean hasPulse = true;
     public boolean disableClick;
     public boolean disableClickThroughHole;
     public View.OnClickListener onClickListener;
@@ -134,6 +135,11 @@ public class Overlay {
 
     public Overlay setHolePadding(int padding) {
         holePadding = padding;
+        return this;
+    }
+
+    public Overlay hasPulse(boolean hasPulse) {
+        this.hasPulse = hasPulse;
         return this;
     }
 

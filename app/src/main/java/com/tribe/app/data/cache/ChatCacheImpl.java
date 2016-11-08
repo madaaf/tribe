@@ -3,12 +3,12 @@ package com.tribe.app.data.cache;
 import android.content.Context;
 import android.support.v4.util.Pair;
 
+import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.MessageRecipientRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -40,13 +39,13 @@ public class ChatCacheImpl implements ChatCache {
     private RealmResults<ChatRealm> messages;
     private RealmResults<ChatRealm> messagesError;
     private RealmResults<ChatRealm> messagesReceived;
-    private User currentUser;
+    private AccessToken accessToken;
 
     @Inject
-    public ChatCacheImpl(Context context, Realm realm, @Named("userThreadSafe") User currentUser) {
+    public ChatCacheImpl(Context context, Realm realm, AccessToken accessToken) {
         this.context = context;
         this.realm = realm;
-        this.currentUser = currentUser;
+        this.accessToken = accessToken;
     }
 
     public boolean isExpired() {
@@ -80,7 +79,7 @@ public class ChatCacheImpl implements ChatCache {
                     Realm obsRealm = Realm.getDefaultInstance();
                     messagesNotSeen = realm.where(ChatRealm.class)
                             .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_NOT_SEEN)
-                            .notEqualTo("from.id", currentUser.getId())
+                            .notEqualTo("from.id", accessToken.getUserId())
                             .findAllSorted("created_at", Sort.DESCENDING);
                     subscriber.onNext(obsRealm.copyFromRealm(messagesNotSeen));
                     messagesNotSeen.removeChangeListeners();
@@ -172,7 +171,7 @@ public class ChatCacheImpl implements ChatCache {
                 if ((chatRealm.isToGroup() && chatRealm.getMembershipRealm() != null))
                     membershipSet.add(chatRealm.getMembershipRealm().getGroup().getId());
                 else if (!chatRealm.isToGroup()) {
-                    if (chatRealm.getFrom() != null && !chatRealm.getFrom().getId().equals(currentUser.getId()))
+                    if (chatRealm.getFrom() != null && !chatRealm.getFrom().getId().equals(accessToken.getUserId()))
                         friendshipSet.add(chatRealm.getFrom().getId());
                     else if (chatRealm.getFriendshipRealm() != null) {
                         friendshipSet.add(chatRealm.getFriendshipRealm().getFriend().getId());
@@ -492,7 +491,7 @@ public class ChatCacheImpl implements ChatCache {
             // WE GET THE OLDER SENT CHAT MESSAGES TO REMOVE THEIR STATUS
             RealmResults<ChatRealm> sentMessages = obsRealm.where(ChatRealm.class)
                     .beginGroup()
-                    .equalTo("from.id", currentUser.getId())
+                    .equalTo("from.id", accessToken.getUserId())
                     .notEqualTo("localId", result.getLocalId())
                     .endGroup()
                     .findAllSorted("created_at", Sort.ASCENDING);
@@ -752,7 +751,7 @@ public class ChatCacheImpl implements ChatCache {
                 if (friendshipId == null) {
                     messagesReceived = realm.where(ChatRealm.class)
                             .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_RECEIVED)
-                            .notEqualTo("from.id", currentUser.getId())
+                            .notEqualTo("from.id", accessToken.getUserId())
                             .findAllSorted("recorded_at", Sort.DESCENDING);
                 }
 
@@ -771,7 +770,7 @@ public class ChatCacheImpl implements ChatCache {
 
         RealmResults<ChatRealm> results = realm.where(ChatRealm.class)
                 .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_RECEIVED)
-                .notEqualTo("from.id", currentUser.getId())
+                .notEqualTo("from.id", accessToken.getUserId())
                 .findAllSorted("recorded_at", Sort.DESCENDING);
 
         if (results != null && results.size() > 0) {

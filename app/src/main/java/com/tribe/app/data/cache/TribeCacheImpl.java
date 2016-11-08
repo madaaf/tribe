@@ -3,9 +3,9 @@ package com.tribe.app.data.cache;
 import android.content.Context;
 import android.support.v4.util.Pair;
 
+import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.MessageRecipientRealm;
 import com.tribe.app.data.realm.TribeRealm;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -33,7 +32,7 @@ import rx.android.schedulers.AndroidSchedulers;
 public class TribeCacheImpl implements TribeCache {
 
     private Context context;
-    private User currentUser;
+    private AccessToken accessToken;
     private Realm realm;
     private RealmResults<TribeRealm> pendingTribes;
     private RealmResults<TribeRealm> tribesNotSeen;
@@ -42,9 +41,9 @@ public class TribeCacheImpl implements TribeCache {
     private RealmResults<TribeRealm> tribesToDownload;
 
     @Inject
-    public TribeCacheImpl(Context context, Realm realm, @Named("userThreadSafe") User currentUser) {
+    public TribeCacheImpl(Context context, Realm realm, AccessToken accessToken) {
         this.context = context;
-        this.currentUser = currentUser;
+        this.accessToken = accessToken;
         this.realm = realm;
     }
 
@@ -101,7 +100,7 @@ public class TribeCacheImpl implements TribeCache {
             if (!tribeRealm.isToGroup()) {
                 RealmResults<TribeRealm> tribesSentToRecipient = realm1.where(TribeRealm.class)
                         .equalTo("friendshipRealm.id", tribeRealm.getFriendshipRealm().getId())
-                        .equalTo("from.id", currentUser.getId())
+                        .equalTo("from.id", accessToken.getUserId())
                         .notEqualTo("id", tribeRealm.getLocalId())
                         .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
                         .findAllSorted("recorded_at", Sort.ASCENDING);
@@ -109,7 +108,7 @@ public class TribeCacheImpl implements TribeCache {
             } else {
                 RealmResults<TribeRealm> tribesSentToRecipient = realm1.where(TribeRealm.class)
                         .equalTo("membershipRealm.id", tribeRealm.getMembershipRealm().getId())
-                        .equalTo("from.id", currentUser.getId())
+                        .equalTo("from.id", accessToken.getUserId())
                         .notEqualTo("id", tribeRealm.getLocalId())
                         .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
                         .findAllSorted("recorded_at", Sort.ASCENDING);
@@ -253,10 +252,10 @@ public class TribeCacheImpl implements TribeCache {
                     tribesNotSeen = realm.where(TribeRealm.class)
                             .beginGroup()
                             .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_NOT_SEEN)
-                            .notEqualTo("from.id", currentUser.getId())
+                            .notEqualTo("from.id", accessToken.getUserId())
                             .endGroup()
                             .or()
-                            .equalTo("from.id", currentUser.getId())
+                            .equalTo("from.id", accessToken.getUserId())
                             .findAllSorted("recorded_at", Sort.ASCENDING);
                 } else {
                     tribesNotSeen = realm.where(TribeRealm.class)
@@ -297,10 +296,10 @@ public class TribeCacheImpl implements TribeCache {
             realmResults = obsRealm.where(TribeRealm.class)
                     .beginGroup()
                     .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_NOT_SEEN)
-                    .notEqualTo("from.id", currentUser.getId())
+                    .notEqualTo("from.id", accessToken.getUserId())
                     .endGroup()
                     .or()
-                    .equalTo("from.id", currentUser.getId())
+                    .equalTo("from.id", accessToken.getUserId())
                     .findAllSorted("recorded_at", Sort.ASCENDING);
         } else {
             realmResults = obsRealm.where(TribeRealm.class)
@@ -341,7 +340,7 @@ public class TribeCacheImpl implements TribeCache {
                 if (recipientId == null) {
                     tribesReceived = realm.where(TribeRealm.class)
                             .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_RECEIVED)
-                            .notEqualTo("from.id", currentUser.getId())
+                            .notEqualTo("from.id", accessToken.getUserId())
                             .findAllSorted("recorded_at", Sort.DESCENDING);
                 }
 
@@ -369,7 +368,7 @@ public class TribeCacheImpl implements TribeCache {
                         .or()
                         .equalTo("membershipRealm.group.id", recipientId)
                         .endGroup()
-                        .notEqualTo("from.id", currentUser.getId())
+                        .notEqualTo("from.id", accessToken.getUserId())
                         .beginGroup()
                         .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_RECEIVED)
                         .or()
@@ -394,7 +393,7 @@ public class TribeCacheImpl implements TribeCache {
         if (recipientId == null) {
             RealmResults realmResults = tmpRealm.where(TribeRealm.class)
                     .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_RECEIVED)
-                    .notEqualTo("from.id", currentUser.getId())
+                    .notEqualTo("from.id", accessToken.getUserId())
                     .findAllSorted("recorded_at", Sort.DESCENDING);
 
             if (realmResults != null && realmResults.size() > 0)
@@ -412,7 +411,7 @@ public class TribeCacheImpl implements TribeCache {
             @Override
             public void call(final Subscriber<? super List<TribeRealm>> subscriber) {
                 pendingTribes = realm.where(TribeRealm.class)
-                        .equalTo("from.id", currentUser.getId())
+                        .equalTo("from.id", accessToken.getUserId())
                         .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_ERROR)
                         .findAllSorted("recorded_at", Sort.ASCENDING);
                 pendingTribes.removeChangeListeners();
@@ -426,7 +425,7 @@ public class TribeCacheImpl implements TribeCache {
     public List<TribeRealm> tribesNotSent() {
         Realm otherRealm = Realm.getDefaultInstance();
         List<TribeRealm> tribeRealmList;
-        RealmResults<TribeRealm> sentTribes = otherRealm.where(TribeRealm.class).equalTo("from.id", currentUser.getId())
+        RealmResults<TribeRealm> sentTribes = otherRealm.where(TribeRealm.class).equalTo("from.id", accessToken.getUserId())
                 .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_PENDING).findAllSorted("recorded_at", Sort.ASCENDING);
         tribeRealmList = otherRealm.copyFromRealm(sentTribes);
         otherRealm.close();
@@ -494,7 +493,7 @@ public class TribeCacheImpl implements TribeCache {
         if (recipientId == null) {
             realmResults = realm.where(TribeRealm.class)
                     .equalTo("messageDownloadingStatus", MessageDownloadingStatus.STATUS_TO_DOWNLOAD)
-                    .notEqualTo("from.id", currentUser.getId())
+                    .notEqualTo("from.id", accessToken.getUserId())
                     .findAllSorted("recorded_at", Sort.DESCENDING);
         } else {
             realmResults = realm.where(TribeRealm.class)
@@ -551,7 +550,7 @@ public class TribeCacheImpl implements TribeCache {
 
         RealmResults<TribeRealm> realmResults = newRealm.where(TribeRealm.class)
                 .equalTo("messageDownloadingStatus", MessageDownloadingStatus.STATUS_DOWNLOADING)
-                .notEqualTo("from.id", currentUser.getId())
+                .notEqualTo("from.id", accessToken.getUserId())
                 .findAllSorted("recorded_at", Sort.DESCENDING);
 
         if (realmResults != null && realmResults.size() > 0)
@@ -569,7 +568,7 @@ public class TribeCacheImpl implements TribeCache {
             otherRealm.executeTransaction(realm1 -> {
                 final RealmResults<TribeRealm> result = realm1.where(TribeRealm.class)
                         .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_RECEIVED)
-                        .notEqualTo("from.id", currentUser.getId())
+                        .notEqualTo("from.id", accessToken.getUserId())
                         .findAllSorted("recorded_at", Sort.DESCENDING);
 
                 if (result != null && result.size() > 0) {

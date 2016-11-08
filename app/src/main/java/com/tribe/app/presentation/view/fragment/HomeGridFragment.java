@@ -236,7 +236,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
             this.homeGridAdapter.setItems(recipientList);
 
             if (tutorialManager.shouldDisplay(TutorialManager.MESSAGES_SUPPORT)) {
-                //computeSupportTutorial(recipientList);
+                computeSupportTutorial(recipientList);
             }
         }
     }
@@ -244,7 +244,7 @@ public class HomeGridFragment extends BaseFragment implements HomeGridView, Upda
     private void computeSupportTutorial(List<Recipient> recipientList) {
         for (Recipient recipient : recipientList) {
             if (Constants.SUPPORT_ID.equals(recipient.getSubId()) && recipient.getReceivedTribes() != null
-                    && recipient.getReceivedTribes().size() == 2) {
+                    && recipient.getReceivedTribes().size() == 2 && recipient.hasLoadedOrErrorTribes()) {
                 subscriptions.add(
                         Observable.timer(500, TimeUnit.MILLISECONDS)
                         .observeOn(AndroidSchedulers.mainThread())

@@ -12,7 +12,6 @@ import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.repository.user.contact.RxContacts;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
 import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
@@ -40,7 +39,6 @@ public class UserDataStoreFactory {
     private final RxFacebook rxFacebook;
     private final TribeApi tribeApi;
     private final LoginApi loginApi;
-    private final User user;
     private final AccessToken accessToken;
     private final Installation installation;
     private final ReactiveLocationProvider reactiveLocationProvider;
@@ -52,7 +50,7 @@ public class UserDataStoreFactory {
     public UserDataStoreFactory(Context context, UserCache userCache,
                                 TribeCache tribeCache, ChatCache chatCache,
                                 ContactCache contactCache, RxContacts rxContacts, RxFacebook rxFacebook,
-                                TribeApi tribeApi, LoginApi loginApi, @Named("userThreadSafe") User user, AccessToken accessToken,
+                                TribeApi tribeApi, LoginApi loginApi, AccessToken accessToken,
                                 Installation installation, ReactiveLocationProvider reactiveLocationProvider,
                                 @LastMessageRequest Preference<String> lastMessageRequest,
                                 @LastUserRequest Preference<String> lastUserRequest,
@@ -71,7 +69,6 @@ public class UserDataStoreFactory {
         this.rxFacebook = rxFacebook;
         this.tribeApi = tribeApi;
         this.loginApi = loginApi;
-        this.user = user;
         this.accessToken = accessToken;
         this.installation = installation;
         this.reactiveLocationProvider = reactiveLocationProvider;
@@ -91,7 +88,7 @@ public class UserDataStoreFactory {
     public UserDataStore createCloudDataStore() {
         return new CloudUserDataStore(this.userCache, this.tribeCache, this.chatCache, this.contactCache,
                 this.rxContacts, this.rxFacebook, this.tribeApi, this.loginApi,
-                this.user, this.accessToken, this.installation, this.reactiveLocationProvider, this.context,
+                this.accessToken, this.installation, this.reactiveLocationProvider, this.context,
                 this.lastMessageRequest, this.lastUserRequest, this.utcSimpleDate);
     }
 }

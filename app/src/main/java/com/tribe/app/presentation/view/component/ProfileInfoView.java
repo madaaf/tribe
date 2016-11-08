@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.component;
 
+import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
@@ -16,6 +17,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -376,15 +378,27 @@ public class ProfileInfoView extends LinearLayout {
     }
 
     public void shakeAvatar() {
-        imgAvatar.startAnimation(android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.shake));
+        shake(imgAvatar);
     }
 
     public void shakeDisplayName() {
-        editDisplayName.startAnimation(android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.shake));
+        shake(editDisplayName);
     }
 
     public void shakeUsername() {
-        editUsername.startAnimation(android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.shake));
+        shake(editUsername);
+    }
+
+    private void shake(View v) {
+        ValueAnimator valueAnimator = ValueAnimator.ofFloat(screenUtils.dpToPx(-3f), screenUtils.dpToPx(3f), screenUtils.dpToPx(-3f), screenUtils.dpToPx(3f),
+                screenUtils.dpToPx(-1f), screenUtils.dpToPx(1f), 0);
+        valueAnimator.setInterpolator(new LinearInterpolator());
+        valueAnimator.setDuration(800);
+        valueAnimator.addUpdateListener(animation -> {
+            float value = (Float) animation.getAnimatedValue();
+            v.setTranslationX(value);
+        });
+        valueAnimator.start();
     }
 
     private void refactorInfosValid() {

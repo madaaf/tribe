@@ -393,17 +393,9 @@ public class TribePagerView extends FrameLayout {
                 .subscribe(recordEnded);
 
         viewTile.onTapToCancel()
-                .doOnNext(view -> {
-                    viewTile.cancelReplyMode();
-                    inReplyMode = false;
-                })
                 .subscribe(clickTapToCancel);
 
         viewTile.onNotCancel()
-                .doOnNext(view -> {
-                    viewTile.cancelReplyMode();
-                    inReplyMode = false;
-                })
                 .subscribe(onNotCancel);
 
         subscriptions.add(
@@ -587,6 +579,23 @@ public class TribePagerView extends FrameLayout {
 
     public void showTapToCancel(TribeMessage tribe) {
         viewTile.showTapToCancel(tribe, tribeMode);
+    }
+
+    public void resetTileView(boolean shouldDelay, boolean hasFinished) {
+        if (shouldDelay) {
+            subscriptions.add(Observable
+                    .timer(300, TimeUnit.MILLISECONDS)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(aLong -> {
+                        viewTile.cancelReplyMode();
+                        inReplyMode = false;
+                        viewTile.resetViewAfterTapToCancel(hasFinished);
+                    }));
+        } else {
+            viewTile.cancelReplyMode();
+            inReplyMode = false;
+            viewTile.resetViewAfterTapToCancel(hasFinished);
+        }
     }
 
     /////////////////////

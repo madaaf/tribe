@@ -123,7 +123,7 @@ public class FrameLayoutWithHole extends FrameLayout {
             radius = (viewHole.getWidth() >> 1) + padding;
         }
 
-        if (overlay != null) {
+        if (overlay != null && overlay.hasPulse) {
             CIRCLE_RADIUS = overlay.holeRadius != Overlay.NOT_SET ? overlay.holeRadius + overlay.holeRadiusPulsePadding : radius;
 
             initCircleRadius = CIRCLE_RADIUS;
@@ -187,10 +187,9 @@ public class FrameLayoutWithHole extends FrameLayout {
     }
 
     protected void cleanUp() {
-
-        //expandAnimation.cancel();
-        //pulseAnimation.cancel();
-        //dismissAnimation.start();
+        expandAnimation.cancel();
+        pulseAnimation.cancel();
+        dismissAnimation.start();
 
         if (getParent() != null) {
             if (overlay != null && overlay.exitAnimation != null) {
@@ -327,7 +326,6 @@ public class FrameLayoutWithHole extends FrameLayout {
 
                     eraserCanvas.drawCircle(cx, cy, pulseCircleRadius, pulseCirclePaint);
                     eraserCanvas.drawCircle(cx, cy, circleRadius, circlePaint);
-
                     eraserCanvas.drawCircle(
                             cx,
                             cy,

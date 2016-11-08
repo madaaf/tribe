@@ -85,6 +85,9 @@ public class AnalyticsManager implements TagManager {
         bundle.putBoolean(TagManagerConstants.MICROPHONE_ENABLED, PermissionUtils.hasPermissionsCamera(context));
         bundle.putBoolean(TagManagerConstants.PUSH_ENABLED, true); // ALWAYS TRUE ON ANDROID
 
+        if (user != null)
+            bundle.putString(TagManagerConstants.USERNAME, user.getUsername());
+
         setProperty(bundle);
     }
 

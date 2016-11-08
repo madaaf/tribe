@@ -105,12 +105,12 @@ public class Tutorial {
             Animation animation = toolTip.exitAnimation;
             animation.setAnimationListener(new Animation.AnimationListener() {
                 @Override
-                public void onAnimationStart(Animation animation) {}
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
+                public void onAnimationStart(Animation animation) {
                     cleanUpRest();
                 }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {}
 
                 @Override
                 public void onAnimationRepeat(Animation animation) {}

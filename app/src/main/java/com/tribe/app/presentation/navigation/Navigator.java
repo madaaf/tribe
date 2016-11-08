@@ -20,6 +20,7 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.BaseActionActivity;
 import com.tribe.app.presentation.view.activity.ChatActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
+import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.GroupInfoActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.IntroActivity;
@@ -205,6 +206,19 @@ public class Navigator {
             Intent i = new Intent(activity, IntroActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             activity.startActivity(i);
+        }
+    }
+
+    /**
+     * Goes to the debug screen.
+     *
+     * @param activity activity needed to open the destiny activity.
+     */
+    public void navigateToDebugMode(Activity activity) {
+        if (activity != null) {
+            Intent intent = DebugActivity.getCallingIntent(activity);
+            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+            activity.startActivity(intent);
         }
     }
 

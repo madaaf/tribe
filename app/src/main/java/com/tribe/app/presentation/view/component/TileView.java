@@ -252,7 +252,7 @@ public class TileView extends SquareFrameLayout {
 
                 if (isTapToCancel) {
                     clickTapToCancel.onNext(this);
-                    resetViewAfterTapToCancel(false);
+                    if (type != TYPE_TILE) resetViewAfterTapToCancel(false);
                     return false;
                 } else {
                     longDown = System.currentTimeMillis();
@@ -699,7 +699,7 @@ public class TileView extends SquareFrameLayout {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(time -> {
                             onNotCancel.onNext(TileView.this);
-                            resetViewAfterTapToCancel(true);
+                            if (type != TYPE_TILE) resetViewAfterTapToCancel(true);
                         });
             }
 

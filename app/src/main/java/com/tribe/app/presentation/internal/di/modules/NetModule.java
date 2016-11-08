@@ -52,7 +52,6 @@ import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
 import com.tribe.app.presentation.utils.DateUtils;
@@ -89,7 +88,6 @@ import okhttp3.Cache;
 import okhttp3.CertificatePinner;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -115,7 +113,7 @@ public class NetModule {
                      UserCache userCache,
                      TribeCache tribeCache,
                      ChatCache chatCache,
-                     @Named("userThreadSafe") User currentUser) {
+                     AccessToken accessToken) {
         return new GsonBuilder()
                 .setExclusionStrategies(new ExclusionStrategy() {
                     @Override
@@ -133,11 +131,11 @@ public class NetModule {
                 .registerTypeAdapter(TribeRealm.class, new NewTribeDeserializer<>())
                 .registerTypeAdapter(GroupRealm.class, new GroupDeserializer())
                 .registerTypeAdapter(ChatRealm.class, new NewMessageDeserializer<>())
-                .registerTypeAdapter(new TypeToken<List<MessageRealmInterface>>(){}.getType(), new UserMessageListDeserializer<>(utcSimpleDate, userCache, tribeCache, chatCache, currentUser))
+                .registerTypeAdapter(new TypeToken<List<MessageRealmInterface>>(){}.getType(), new UserMessageListDeserializer<>(utcSimpleDate, userCache, tribeCache, chatCache, accessToken))
                 .registerTypeAdapter(Installation.class, new NewInstallDeserializer<>())
                 .registerTypeAdapter(Date.class, new DateDeserializer(utcSimpleDateFull))
                 .registerTypeAdapter(new TypeToken<List<UserRealm>>(){}.getType(), new UserListDeserializer<>())
-                .registerTypeAdapter(new TypeToken<List<ChatRealm>>(){}.getType(), new ChatHistoryDeserializer(utcSimpleDate, userCache, tribeCache, chatCache, currentUser))
+                .registerTypeAdapter(new TypeToken<List<ChatRealm>>(){}.getType(), new ChatHistoryDeserializer(utcSimpleDate, userCache, tribeCache, chatCache, accessToken))
                 .registerTypeAdapter(LookupEntity.class, new LookupDeserializer())
                 .registerTypeAdapter(CreateFriendshipEntity.class, new CreateFriendshipDeserializer())
                 .registerTypeAdapter(new TypeToken<List<Integer>>(){}.getType(), new HowManyFriendsDeserializer())
@@ -300,12 +298,12 @@ public class NetModule {
             }
         });
 
-        if (BuildConfig.DEBUG) {
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-            httpClientBuilder.addInterceptor(loggingInterceptor);
-            //httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
-        }
+//        if (BuildConfig.DEBUG) {
+//            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+//            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+//            httpClientBuilder.addInterceptor(loggingInterceptor);
+//            //httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+//        }
 
         return new Retrofit.Builder()
                 .baseUrl(BuildConfig.TRIBE_API)

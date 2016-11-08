@@ -192,6 +192,11 @@
             android:theme="@style/AppTheme.FullScreen"
             />
 
+        <activity android:name=".presentation.view.activity.DebugActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.FullScreen"
+            />
+
         <service
             android:name=".data.network.DownloadTribeService"
             >

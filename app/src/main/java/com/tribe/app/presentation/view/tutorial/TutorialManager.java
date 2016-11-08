@@ -43,6 +43,10 @@ public class TutorialManager {
         this.tutorialState = tutorialState;
     }
 
+    public void clearTutorial() {
+        tutorialState.delete();
+    }
+
     public void addTutorialKey(@TutorialKey String key) {
         if (!StringUtils.isEmpty(key)) {
             Set<String> tut = tutorialState.get();
@@ -54,7 +58,7 @@ public class TutorialManager {
     public boolean shouldDisplay(@TutorialKey String key) {
         boolean result = false;
 
-        if (key.equals(REPLY)) return true;
+        //if (key.equals(REPLY)) return true;
 
         if (tutorialState.get().contains(key)) return result;
 
@@ -99,7 +103,7 @@ public class TutorialManager {
     public Tutorial showMessagesSupport(Activity activity, View target, int toolTipOffsetX, int toolTipOffsetY,
                                         int holeRadius, int holeRadiusPulsePadding, Bitmap overlayImage, int overlayImageSize) {
         if (activity != null) {
-            return Tutorial.init(activity, screenUtils, REFRESH).with(Tutorial.CLICK)
+            return Tutorial.init(activity, screenUtils, MESSAGES_SUPPORT).with(Tutorial.CLICK)
                     .setToolTip(new ToolTip(activity, screenUtils)
                             .setTitle(activity.getString(R.string.tutorial_message_support, 2))
                             .setGravity(Gravity.BOTTOM | Gravity.LEFT)
@@ -217,11 +221,31 @@ public class TutorialManager {
 
     public Tutorial showRelease(Activity activity, View target) {
         if (activity != null) {
-            return Tutorial.init(activity, screenUtils, REPLY).with(Tutorial.CLICK)
+            return Tutorial.init(activity, screenUtils, RELEASE).with(Tutorial.CLICK)
                     .setToolTip(new ToolTip(activity, screenUtils)
                             .setTitle(activity.getString(R.string.tutorial_message_release))
                             .setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL)
                             .setBackgroundRes(R.drawable.bg_tuto_no_ind)
+                    ).playOn(target);
+        }
+
+        return null;
+    }
+
+    public Tutorial showTapToCancel(Activity activity, View target, int holeRadius, int holeRadiusPulsePadding, View.OnClickListener onClickListener) {
+        if (activity != null) {
+            return Tutorial.init(activity, screenUtils, CANCEL).with(Tutorial.CLICK)
+                    .setToolTip(new ToolTip(activity, screenUtils)
+                            .setTitle(activity.getString(R.string.tutorial_message_tap_to_cancel))
+                            .setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL)
+                            .setBackgroundRes(R.drawable.bg_tuto_center_downward)
+                    )
+                    .setOverlay(new Overlay(activity)
+                            .setStyle(Overlay.CIRCLE)
+                            .setHoleRadius(holeRadius)
+                            .hasPulse(false)
+                            .withDefaultAnimation(true)
+                            .setOnClickListener(onClickListener)
                     ).playOn(target);
         }
 

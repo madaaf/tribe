@@ -48,6 +48,7 @@ import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
 import com.tribe.app.presentation.internal.di.modules.NetModule;
 import com.tribe.app.presentation.internal.di.scope.AddressBook;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;
+import com.tribe.app.presentation.internal.di.scope.DebugMode;
 import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
 import com.tribe.app.presentation.internal.di.scope.Filter;
 import com.tribe.app.presentation.internal.di.scope.HasRatedApp;
@@ -323,6 +324,9 @@ public interface ApplicationComponent {
 
     @TutorialState
     Preference<Set<String>> tutorialState();
+
+    @DebugMode
+    Preference<Boolean> debugMode();
 
     SoundManager soundManager();
 

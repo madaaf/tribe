@@ -136,6 +136,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
     @Override
     protected void onPause() {
+        cleanUpTutorial();
         viewTribePager.onPause();
         tribePresenter.onPause();
         super.onPause();
@@ -225,9 +226,9 @@ public class TribeActivity extends BaseActivity implements TribeView {
                         .delay(300, TimeUnit.MILLISECONDS)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(o -> {
-                            isReplyMode = true;
-
                             if (tutorialManager.shouldDisplay(TutorialManager.REPLY)) {
+                                isReplyMode = true;
+
                                 TileView tileView = viewTribePager.getBtnReply();
                                 tutorial = tutorialManager.showReply(
                                         this,
@@ -243,13 +244,21 @@ public class TribeActivity extends BaseActivity implements TribeView {
         subscriptions.add(
                 viewTribePager.onDown()
                         .subscribe(o -> {
-                            if (isReplyMode) cleanUpTutorial();
+                            if (isReplyMode) {
+                                isReplyMode = false;
+                                cleanUpTutorial();
+                            }
                         })
         );
 
         subscriptions.add(viewTribePager.onRecordStart()
-                .doOnNext(view -> {
-                    soundManager.playSound(SoundManager.START_RECORD);
+                .doOnNext(view -> soundManager.playSound(SoundManager.START_RECORD))
+                .delay(300, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(view -> {
+                    isRecording = true;
+                    currentTribe = tribePresenter.createTribe(currentUser, recipient, viewTribePager.getTribeMode());
+                    recipient.setTribe(currentTribe);
 
                     if (tutorialManager.shouldDisplay(TutorialManager.RELEASE)) {
                         CameraWrapper cameraWrapper = viewTribePager.getCameraWrapper();
@@ -258,40 +267,57 @@ public class TribeActivity extends BaseActivity implements TribeView {
                                 cameraWrapper
                         );
                     }
-                })
-                .delay(300, TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .map(view -> {
-                    isRecording = true;
-                    currentTribe = tribePresenter.createTribe(currentUser, recipient, viewTribePager.getTribeMode());
-                    recipient.setTribe(currentTribe);
+
                     return currentTribe;
                 })
                 .subscribe(tribe -> viewTribePager.startRecording(tribe.getLocalId())));
 
         subscriptions.add(
                 viewTribePager.onRecordEnd()
-                .subscribe(view -> {
+                .doOnNext(v -> {
                     soundManager.playSound(SoundManager.END_RECORD);
                     cleanUpTutorial();
                     isRecording = false;
                     viewTribePager.stopRecording();
                     viewTribePager.showTapToCancel(currentTribe);
+                })
+                .delay(300, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(view -> {
+                    if (tutorialManager.shouldDisplay(TutorialManager.CANCEL)) {
+                        TileView tileView = viewTribePager.getBtnReply();
+                        tutorial = tutorialManager.showTapToCancel(
+                                this,
+                                tileView.avatar,
+                                tileView.avatar.getWidth() - screenUtils.dpToPx(40f),
+                                screenUtils.dpToPx(20f),
+                                v -> {
+                                    cleanUpTutorial();
+                                }
+                        );
+                    }
                 }));
 
         subscriptions.add(viewTribePager.onClickTapToCancel()
                 .subscribe(friendship -> {
-                    soundManager.playSound(SoundManager.TAP_TO_CANCEL);
-                    FileUtils.delete(context(), currentTribe.getLocalId(), FileUtils.VIDEO);
-                    tribePresenter.deleteTribe(currentTribe);
-                    currentTribe = null;
+                    viewTribePager.resetTileView(true, false);
+
+                    if (tutorial != null) {
+                        cleanUpTutorial();
+                    }
+
+                    tapToCancel();
                 }));
 
         subscriptions.add(viewTribePager.onNotCancel()
                 .subscribe(friendship -> {
-                    soundManager.playSound(SoundManager.SENT);
-                    tribePresenter.sendTribe(currentTribe);
-                    currentTribe = null;
+                    viewTribePager.resetTileView(tutorial != null, true);
+
+                    if (tutorial != null) {
+                        cleanUpTutorial();
+                    }
+
+                    onNotCancel();
                 }));
 
         subscriptions.add(viewTribePager.onClickEnableLocation()
@@ -516,6 +542,19 @@ public class TribeActivity extends BaseActivity implements TribeView {
             tutorial.cleanUp();
             tutorial = null;
         }
+    }
+
+    private void tapToCancel() {
+        soundManager.playSound(SoundManager.TAP_TO_CANCEL);
+        FileUtils.delete(context(), currentTribe.getLocalId(), FileUtils.VIDEO);
+        tribePresenter.deleteTribe(currentTribe);
+        currentTribe = null;
+    }
+
+    private void onNotCancel() {
+        soundManager.playSound(SoundManager.SENT);
+        tribePresenter.sendTribe(currentTribe);
+        currentTribe = null;
     }
 
     @Override
