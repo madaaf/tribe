@@ -1,4 +1,5 @@
 <resources>
+	
 	<!-- Actions -->
 	<string name="action_cancel">Annuler</string>
 	<string name="action_delete">Supprimer</string>
@@ -12,12 +13,14 @@
 	<string name="error_unknown">:bird: Léger problème. Réessayez dans 30s.</string>
 	<string name="error_technical">:warning: Problème technique.</string>
 	<string name="error_no_network">:satellite: Aucune connexion.</string>
-	<string name="error_traffic">:rocket: Trop de trafic. Réessayez dans une heure.</string>
 	
 	<!-- Image Picker -->
 	<string name="image_picker_title">Ajouter un avatar</string>
 	<string name="image_picker_camera">Utiliser l\'appareil photo</string>
 	<string name="image_picker_library">Ouvrir ma bibliothèque</string>
+	
+	<!-- Points -->
+	<string name="points_suffix">%1$s pts</string>
 	
 	<!-- Contacts -->
 	<string name="contacts_search_placeholder">Rechercher un(e) ami(e)</string>
@@ -35,7 +38,6 @@
 	<string name="contacts_section_facebook_no_os_facebook_settings">C\'est noté !</string>
 	<string name="contacts_section_addressbook_sync_description">Synchroniser automatiquement\nvos contacts</string>
 	<string name="contacts_section_addressbook_syncing">Synchronisation</string>
-	<string name="contacts_section_addressbook_empty">Plus aucun contact à inviter</string>
 	<string name="contacts_section_addressbook_friends_in_app">Aurait %1$d amis sur Tribe</string>
 	<string name="contacts_section_search_usernames">Résultat précis</string>
 	<string name="contacts_section_search_searching">Recherche en cours</string>
@@ -93,7 +95,7 @@
 	<string name="permission_screen_camera_mic_next_popup_authorize">Activer !</string>
 	<string name="permission_screen_location_title">Géolocalisation</string>
 	<string name="permission_screen_location_points">Activer Position</string>
-	<string name="permission_screen_location_description">Météo, itinéraires, et\distances sur chaque message.</string>
+	<string name="permission_screen_location_description">Météo, itinéraires, et\ndistances sur chaque message.</string>
 	<string name="permission_screen_location_action">Wow, activer !</string>
 	<string name="permission_screen_location_next_popup_title">Géolocalisation désactivée !</string>
 	<string name="permission_screen_location_next_popup_description">Vous allez passer à côté d\'une partie de la magie.</string>
@@ -122,7 +124,6 @@
 	
 	<!-- Tribe -->
 	<string name="tribe_gesture_close_text">Glisser vers le bas pour fermer</string>
-	<string name="tribe_gesture_reply_close_text">Retour au message</string>
 	<string name="tribe_distance_nearby">Proche</string>
 	<string name="tribe_snooze_title">Reporter à plus tard</string>
 	<string name="tribe_snooze_1_hour_title">Dans 1 heure</string>
@@ -173,10 +174,9 @@
 	<string name="grid_unsent_tribes_action_delete_all">Supprimer tous</string>
 	<string name="grid_menu_group_infos">Détails &amp; invitations</string>
 	<string name="grid_menu_group_leave">Quitter ce groupe</string>
-	<string name="grid_menu_group_leave_last_admin_error">Nommez un membre en tant qu\'admin avant de quitter ce groupe</string>
 	<string name="grid_menu_group_delete">Supprimer ce groupe</string>
 	<string name="grid_menu_friendship_hide">Masquer %1$s</string>
-	<string name="grid_menu_friendship_unhide">Ajouter %1$s</string>
+	<string name="grid_menu_friendship_unhide">Ré-afficher %1$s</string>
 	<string name="grid_menu_friendship_block">Bloquer %1$s</string>
 	<string name="grid_menu_friendship_unblock">Ajouter %1$s</string>
 	<string name="grid_menu_friendship_report">Signaler %1$s</string>
@@ -187,6 +187,7 @@
 	<string name="grid_menu_group_unmute">Activer les notifications</string>
 	<string name="grid_menu_group_mute_confirm">Confirmez-vous ?</string>
 	<string name="grid_menu_group_hide">Masquer ce groupe</string>
+	<string name="grid_menu_group_unhide">Ré-afficher ce groupe</string>
 	
 	<!-- Chat -->
 	<string name="chat_tutorial_statuses_title">Statuts des messages</string>
@@ -253,11 +254,8 @@
 	<string name="group_share_description">Envoyez le lien du groupe dans d\'autres apps</string>
 	<string name="group_share_description_expiration">Ce lien sera supprimé dans %1$s</string>
 	<string name="group_button_creating">Création en cours...</string>
-	<string name="group_empty_list">Pas d\'autres amis à ajouter à ce groupe</string>
 	
 	<!-- Group Infos -->
-	<string name="group_infos_add_new_members_placeholder">Ajouter des nouveaux membres</string>
-	<string name="group_infos_empty_list">Pas d\'autres amis à ajouter à ce groupe</string>
 	<string name="group_infos_error_edit_not_admin">:lock: Seuls les admins peuvent éditer un groupe</string>
 	
 	<!-- Group Members -->
@@ -274,16 +272,8 @@
 	
 	<!-- Settings -->
 	<string name="settings_title">Paramètres</string>
-	<string name="settings_section_profile">Profil</string>
 	<string name="settings_profile_title">Profil</string>
 	<string name="settings_profile_subtitle">Modifier votre photo de profil, nom d\'affichage et nom d\'utilisateur.</string>
-	<string name="settings_picture_title">Photo de profil</string>
-	<string name="settings_picture_subtitle">Prendre un selfie ou importer une photo.</string>
-	<string name="settings_displayname_title">Nom d\'affichage</string>
-	<string name="settings_displayname_subtitle">Être facilement reconnaissable par vos ami(e).</string>
-	<string name="settings_username_title">Nom d\'utilisateur</string>
-	<string name="settings_username_subtitle">Le moyen le plus simple de vous ajouter après la sync.</string>
-	<string name="settings_section_messages">Messages</string>
 	<string name="settings_filter_title">Sélectionner un filtre</string>
 	<string name="settings_theme_title">Sélectionner un thème</string>
 	<string name="settings_notifications_title">Notifications</string>
@@ -308,7 +298,6 @@
 	<string name="settings_weatherunits_subtitle">Afficher la température en Fahrenheit sur les messages.</string>
 	<string name="settings_invisible_title">Mode Invisible</string>
 	<string name="settings_invisible_subtitle">Vous seul pouvez ajouter des membres hors de votre carnet d\'adresses. Vous ne pouvez pas être ajouté.</string>
-	<string name="settings_section_support">Support</string>
 	<string name="settings_support_title">Envoyer un message sur Tribe</string>
 	<string name="settings_support_subtitle">Nous répondons en moins de 12h à chaque message.</string>
 	<string name="settings_tweet_title">Tweeter @heytribe</string>
@@ -319,8 +308,10 @@
 	<string name="settings_email_subject">À propos de Tribe</string>
 	<string name="settings_rate_title">Noter l\'app</string>
 	<string name="settings_rate_subtitle">Le moyen le plus simple de nous envoyer du love.</string>
-	<string name="settings_blocked_title">Contacts bloqués</string>
-	<string name="settings_blocked_subtitle">Retrouvez la liste des contacts que vous avez bloqué.</string>
+	<string name="settings_blocked_title">Contacts bloqués ou masqués</string>
+	<string name="settings_blocked_subtitle">Retrouvez la liste des contacts que vous avez bloqué ou masqué.</string>
+	<string name="settings_hidden_groups_title">Groupes masqués</string>
+	<string name="settings_hidden_groups_subtitle">Retrouvez la liste des groupes que vous avez masqué.</string>
 	<string name="settings_logout_title">Déconnexion</string>
 	<string name="settings_logout_subtitle">Déconnecter ce compte de ce terminal.</string>
 	<string name="settings_logout_confirm_message">Êtes-vous sûr de vouloir déconnecter ce compte de ce terminal ?</string>
@@ -330,8 +321,10 @@
 	<string name="settings_version">Version %1$s (%2$s) réalisée à San Francisco, CA.</string>
 	
 	<!-- HiddenBlocked -->
-	<string name="hiddenblocked_title">%1$d bloqué(e)(s)</string>
-	<string name="hiddenblocked_empty_title">0 bloqué(e)(s)</string>
+	<string name="hiddenblocked_title">%1$d bloqué(s) ou masqué(s)</string>
+	<string name="hiddenblocked_empty_title">0 bloqué(s) ou masqué(s)</string>
+	<string name="hidden_title">%1$d masqué(s)</string>
+	<string name="hidden_empty_title">0 masqué(s)</string>
 	
 	<!-- Onboarding -->
 	<string name="onboarding_step_phone">Entrez votre numéro de téléphone pour démarrer.</string>
@@ -354,12 +347,7 @@
 	<string name="onboarding_queue_loading_friends">ami(e)s</string>
 	<string name="onboarding_queue_declined_title">Vous n\'avez pas encore accès. :pensive:</string>
 	<string name="onboarding_queue_declined_description">Vous avez besoin d\'un ami.\nEnvoyez des invitations!</string>
-	<string name="onboarding_queue_declined_message_button">Text friends</string>
 	<string name="onboarding_queue_declined_button_title">Réessayer</string>
-	<string name="onboarding_queue_declined_popup_title">Soyez notifié !</string>
-	<string name="onboarding_queue_declined_popup_description">Recevez une notification lorsque vos amis rejoignent Tribe.</string>
-	<string name="onboarding_queue_declined_popup_cancel_button">Rester seul.</string>
-	<string name="onboarding_queue_declined_popup_confirm_button">Notifiez moi !</string>
 	<string name="onboarding_queue_valid_title">Yay ! Vous pouvez entrer.</string>
 	<string name="onboarding_queue_valid_description">Certains de vos amis\nsont déjà là !</string>
 	<string name="onboarding_queue_valid_button_title">Entrer maintenant</string>
@@ -376,6 +364,17 @@
 	<!-- Pull to search -->
 	<string name="pull_to_search_swipe_down_action">Continuez à tirer pour rechercher</string>
 	<string name="pull_to_search_title">Trier votre grille par lettre</string>
+	
+	<!-- Grid Filter -->
+	<string name="grid_filter_title">Filter la grille par lettre</string>
+	
+	<!-- Top Bar -->
+	<string name="topbar_create_group">Créer un groupe</string>
+	<string name="topbar_invite_friend">Inviter un ami</string>
+	
+	<!-- Ear Mode -->
+	<string name="earmode_title">Mode oreille.</string>
+	<string name="earmode_description">La caméra est masquée. Placez votre téléphone contre votre oreille pour écouter ou retirez le pour écouter en mode haut parleur.</string>
 	
 	<!-- Score -->
 	<string name="score_current_level">Votre niveau</string>
@@ -551,4 +550,8 @@
 	<string name="support_popup_app">Version app</string>
 	<string name="support_popup_lang">Langue</string>
 	<string name="support_popup_created_at">Inscription</string>
+	
+	<!-- Search -->
+	<string name="search_title">Rechercher un utilisateur Tribe</string>
+	<string name="search_user_placeholder">Recherche un username Tribe</string>
 </resources>

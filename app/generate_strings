@@ -9,7 +9,7 @@ $config->url = 'https://docs.google.com/spreadsheets/u/0/d/16cSTGj1HUnhNqlEAPcxR
 $config->columnForSections = 0;
 $config->columnForKeys     = 1;
 $config->columnsForLangs = array(
-	'src/main/res/values-en/strings.xml' => 2,
+	'src/main/res/values/strings.xml'    => 2,
 	'src/main/res/values-fr/strings.xml' => 3,
 );
 
@@ -131,7 +131,11 @@ function export_android($config, $lines) {
 
 $config->langs = array_keys($config->columnsForLangs);
 
-$contents = @file_get_contents($config->url);
+$contents = @file_get_contents($config->url, false, stream_context_create(array(
+	'ssl' => array(
+		'verify_peer' => false,
+	)
+)));
 
 if ($contents !== false) {
 

@@ -46,6 +46,8 @@ android {
         multiDexEnabled = true;
 
         resValue "string", "app_name", "Tribe"
+        resValue "string", "facebook_app_id", "1743579545897830"
+        resValue "string", "no_profile_picture_url", "http://no"
     }
 
     compileOptions {
@@ -87,7 +89,7 @@ android {
 
     buildTypes {
         debug {
-            //generateStrings()
+            generateStrings()
             
             signingConfig signingConfigs.debug
             testCoverageEnabled = "true"
