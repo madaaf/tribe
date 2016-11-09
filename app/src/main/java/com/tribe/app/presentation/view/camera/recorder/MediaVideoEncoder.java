@@ -41,7 +41,7 @@ public class MediaVideoEncoder extends MediaEncoder {
         }
 
         int endWidth = (int) ((float) width / 16) * 16;
-        int endHeight = (int) (endWidth / ((float) width / height));
+        int endHeight = (int) ((float) height / 16) * 16;
 
         try {
             MediaFormat format = MediaFormat.createVideoFormat(
@@ -53,6 +53,7 @@ public class MediaVideoEncoder extends MediaEncoder {
             format.setInteger(MediaFormat.KEY_BIT_RATE, BITRATE);
             format.setInteger(MediaFormat.KEY_FRAME_RATE, FRAME_RATE);
             format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, FRAME_INTERVAL);
+            format.setInteger(MediaFormat.KEY_DURATION, timeRecord);
 
             final MediaCodecInfo videoCodecInfo = selectVideoCodec(MIME_TYPE);
 
@@ -66,6 +67,7 @@ public class MediaVideoEncoder extends MediaEncoder {
             mediaCodec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
             muxerStarted = isEOS = false;
         } catch (Exception e) {
+            e.printStackTrace();
             release();
             throw (RuntimeException) e;
         }

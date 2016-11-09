@@ -9,6 +9,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,9 +34,14 @@ import com.tribe.app.presentation.mvp.view.TribeView;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
+import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.TribePagerView;
+import com.tribe.app.presentation.view.tutorial.Tutorial;
+import com.tribe.app.presentation.view.tutorial.TutorialManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
+import com.tribe.app.presentation.view.widget.CameraWrapper;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -50,6 +56,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
@@ -68,6 +75,9 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
     }
 
     @Inject
+    ScreenUtils screenUtils;
+
+    @Inject
     TribePresenter tribePresenter;
 
     @Inject
@@ -83,6 +93,9 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
     @Inject
     SoundManager soundManager;
 
+    @Inject
+    TutorialManager tutorialManager;
+
     @BindView(R.id.viewTribePager)
     TribePagerView viewTribePager;
 
@@ -97,6 +110,8 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
     private AudioManager audioManager;
     private SensorManager sensorManager;
     private Sensor proximity;
+    private Tutorial tutorial;
+    private boolean isReplyMode;
 
     // BINDERS / SUBSCRIPTIONS
     private Unbinder unbinder;
@@ -132,6 +147,7 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
 
     @Override
     protected void onPause() {
+        cleanUpTutorial();
         viewTribePager.onPause();
         tribePresenter.onPause();
 
@@ -215,6 +231,46 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
                 })
                 .delay(300, TimeUnit.MILLISECONDS).subscribe(aVoid -> finish()));
 
+        subscriptions.add(
+                Observable.merge(
+                    viewTribePager.onClose(),
+                    viewTribePager.onNext(),
+                    viewTribePager.onReplyMode()
+                ).subscribe(o -> {
+                    cleanUpTutorial();
+                })
+        );
+
+        subscriptions.add(
+                viewTribePager.onReplyModeOpened()
+                        .delay(300, TimeUnit.MILLISECONDS)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(o -> {
+                            if (tutorialManager.shouldDisplay(TutorialManager.REPLY)) {
+                                isReplyMode = true;
+
+                                TileView tileView = viewTribePager.getBtnReply();
+                                tutorial = tutorialManager.showReply(
+                                        this,
+                                        tileView.avatar,
+                                        tileView.avatar.getWidth() - screenUtils.dpToPx(30),
+                                        screenUtils.dpToPx(20f),
+                                        v -> cleanUpTutorial()
+                                );
+                            }
+                        })
+        );
+
+        subscriptions.add(
+                viewTribePager.onDown()
+                        .subscribe(o -> {
+                            if (isReplyMode) {
+                                isReplyMode = false;
+                                cleanUpTutorial();
+                            }
+                        })
+        );
+
         subscriptions.add(viewTribePager.onRecordStart()
                 .doOnNext(view -> soundManager.playSound(SoundManager.START_RECORD))
                 .delay(300, TimeUnit.MILLISECONDS)
@@ -223,32 +279,65 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
                     isRecording = true;
                     currentTribe = tribePresenter.createTribe(currentUser, recipient, viewTribePager.getTribeMode());
                     recipient.setTribe(currentTribe);
+
+                    if (tutorialManager.shouldDisplay(TutorialManager.RELEASE)) {
+                        CameraWrapper cameraWrapper = viewTribePager.getCameraWrapper();
+                        tutorial = tutorialManager.showRelease(
+                                this,
+                                cameraWrapper
+                        );
+                    }
+
                     return currentTribe;
                 })
                 .subscribe(tribe -> viewTribePager.startRecording(tribe.getLocalId())));
 
         subscriptions.add(
                 viewTribePager.onRecordEnd()
-                .subscribe(view -> {
+                .doOnNext(v -> {
                     soundManager.playSound(SoundManager.END_RECORD);
+                    cleanUpTutorial();
                     isRecording = false;
                     viewTribePager.stopRecording();
                     viewTribePager.showTapToCancel(currentTribe);
+                })
+                .delay(300, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(view -> {
+                    if (tutorialManager.shouldDisplay(TutorialManager.CANCEL)) {
+                        TileView tileView = viewTribePager.getBtnReply();
+                        tutorial = tutorialManager.showTapToCancel(
+                                this,
+                                tileView.avatar,
+                                tileView.avatar.getWidth() - screenUtils.dpToPx(40f),
+                                screenUtils.dpToPx(20f),
+                                v -> {
+                                    cleanUpTutorial();
+                                }
+                        );
+                    }
                 }));
 
         subscriptions.add(viewTribePager.onClickTapToCancel()
                 .subscribe(friendship -> {
-                    soundManager.playSound(SoundManager.TAP_TO_CANCEL);
-                    FileUtils.delete(context(), currentTribe.getLocalId(), FileUtils.VIDEO);
-                    tribePresenter.deleteTribe(currentTribe);
-                    currentTribe = null;
+                    viewTribePager.resetTileView(true, false);
+
+                    if (tutorial != null) {
+                        cleanUpTutorial();
+                    }
+
+                    tapToCancel();
                 }));
 
         subscriptions.add(viewTribePager.onNotCancel()
                 .subscribe(friendship -> {
-                    soundManager.playSound(SoundManager.SENT);
-                    tribePresenter.sendTribe(currentTribe);
-                    currentTribe = null;
+                    viewTribePager.resetTileView(tutorial != null, true);
+
+                    if (tutorial != null) {
+                        cleanUpTutorial();
+                    }
+
+                    onNotCancel();
                 }));
 
         subscriptions.add(viewTribePager.onClickEnableLocation()
@@ -278,6 +367,54 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
 
         subscriptions.add(viewTribePager.onClickMore().subscribe(tribeMessage -> {
             setupBottomSheetMore(tribeMessage);
+        }));
+
+        subscriptions.add(viewTribePager.onFirstLoop().subscribe(view -> {
+            if (recipient.getReceivedTribes() != null && recipient.getReceivedTribes().size() > 1
+                    && tutorialManager.shouldDisplay(TutorialManager.NEXT)) {
+                View layoutNbTribes = viewTribePager.getLayoutNbTribes();
+                layoutNbTribes.setDrawingCacheEnabled(true);
+                layoutNbTribes.buildDrawingCache();
+                Bitmap bitmapForTutorialOverlay = Bitmap.createBitmap(layoutNbTribes.getDrawingCache(true));
+                layoutNbTribes.setDrawingCacheEnabled(false);
+                tutorial = tutorialManager.showNext(
+                        this,
+                        layoutNbTribes,
+                        (layoutNbTribes.getWidth() >> 1) + screenUtils.dpToPx(12.5f),
+                        -screenUtils.dpToPx(20),
+                        ((layoutNbTribes.getWidth() - screenUtils.dpToPx(20)) >> 1),
+                        screenUtils.dpToPx(20f),
+                        bitmapForTutorialOverlay,
+                        layoutNbTribes.getWidth()
+                );
+            }
+
+            if (tutorialManager.shouldDisplay(TutorialManager.CLOSE)) {
+                View btnClose = viewTribePager.getBtnClose();
+                btnClose.setDrawingCacheEnabled(true);
+                btnClose.buildDrawingCache();
+                Bitmap bitmapForTutorialOverlay = Bitmap.createBitmap(btnClose.getDrawingCache(true));
+                btnClose.setDrawingCacheEnabled(false);
+                tutorial = tutorialManager.showClose(
+                        this,
+                        btnClose,
+                        (btnClose.getWidth() >> 1) + screenUtils.dpToPx(12.5f),
+                        -screenUtils.dpToPx(20),
+                        ((btnClose.getWidth() - screenUtils.dpToPx(20)) >> 1),
+                        screenUtils.dpToPx(20f),
+                        bitmapForTutorialOverlay,
+                        btnClose.getWidth()
+                );
+            } else if (tutorialManager.shouldDisplay(TutorialManager.REPLY_MODE)) {
+                TileView tileView = viewTribePager.getBtnReply();
+                tutorial = tutorialManager.showReplyMode(
+                        this,
+                        tileView.avatar,
+                        tileView.avatar.getWidth() - screenUtils.dpToPx(15),
+                        screenUtils.dpToPx(20f),
+                        v -> cleanUpTutorial()
+                );
+            }
         }));
 
         subscriptions.add(viewTribePager.onErrorTribe()
@@ -418,6 +555,26 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
         }
 
         return false;
+    }
+
+    private void cleanUpTutorial() {
+        if (tutorial != null) {
+            tutorial.cleanUp();
+            tutorial = null;
+        }
+    }
+
+    private void tapToCancel() {
+        soundManager.playSound(SoundManager.TAP_TO_CANCEL);
+        FileUtils.delete(context(), currentTribe.getLocalId(), FileUtils.VIDEO);
+        tribePresenter.deleteTribe(currentTribe);
+        currentTribe = null;
+    }
+
+    private void onNotCancel() {
+        soundManager.playSound(SoundManager.SENT);
+        tribePresenter.sendTribe(currentTribe);
+        currentTribe = null;
     }
 
     @Override

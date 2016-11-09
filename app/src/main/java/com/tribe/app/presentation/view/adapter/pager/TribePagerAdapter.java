@@ -37,6 +37,7 @@ public class TribePagerAdapter extends PagerAdapter {
     private final PublishSubject<View> clickEnableLocation = PublishSubject.create();
     private final PublishSubject<TribeMessage> clickMore = PublishSubject.create();
     private final PublishSubject<TribeMessage> onErrorTribe = PublishSubject.create();
+    private final PublishSubject<TribeComponentView> onFirstLoop = PublishSubject.create();
 
     @Inject
     public TribePagerAdapter(Context context) {
@@ -57,6 +58,7 @@ public class TribePagerAdapter extends PagerAdapter {
         tribeComponentView.setTribe(tribe);
         tribeComponentView.onClickEnableLocation().subscribe(clickEnableLocation);
         tribeComponentView.onClickMore().subscribe(clickMore);
+        tribeComponentView.onFirstLoop().subscribe(onFirstLoop);
         tribeComponentView.onErrorTribe().subscribe(onErrorTribe);
 
         if (!tribe.getMessageDownloadingStatus().equals(MessageDownloadingStatus.STATUS_DOWNLOADING))
@@ -126,5 +128,9 @@ public class TribePagerAdapter extends PagerAdapter {
 
     public Observable<TribeMessage> onErrorTribe() {
         return onErrorTribe;
+    }
+
+    public Observable<TribeComponentView> onFirstLoop() {
+        return onFirstLoop;
     }
 }

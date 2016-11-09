@@ -9,7 +9,6 @@ import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.realm.TribeRealm;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
@@ -19,15 +18,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  * Created by tiago on 05/07/2016.
  */
 public class UpdateTribesErrorStatusJob extends BaseJob {
-
-    @Inject
-    @Named("userThreadSafe") User currentUser;
 
     @Inject
     JobManager jobManager;

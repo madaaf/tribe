@@ -30,6 +30,8 @@ public class ToolTip {
     public int gravity;
     public int textColor;
     private ScreenUtils screenUtils;
+    public int offsetX = 0;
+    public int offsetY = 0;
 
     public ToolTip(Context context, ScreenUtils screenUtils) {
         title = "";
@@ -56,6 +58,16 @@ public class ToolTip {
 
     public ToolTip setTextColor(int textColor) {
         this.textColor = textColor;
+        return this;
+    }
+
+    public ToolTip setOffsetX(int offsetX) {
+        this.offsetX = offsetX;
+        return this;
+    }
+
+    public ToolTip setOffsetY(int offsetY) {
+        this.offsetY = offsetY;
         return this;
     }
 

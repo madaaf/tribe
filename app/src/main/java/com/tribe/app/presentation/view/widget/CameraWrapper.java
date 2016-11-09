@@ -179,7 +179,8 @@ public class CameraWrapper extends CardView {
         // Corners & Shadows
 
         if (cameraType == RECORDING) {
-            setCardElevation(screenUtils.dpToPx(10));
+            setCardBackgroundColor(getResources().getColor(R.color.grey_text_friends_verify));
+            setCardElevation(screenUtils.dpToPx(3f));
             setRadius(screenUtils.dpToPx(5));
         } else {
             setCardElevation(0);

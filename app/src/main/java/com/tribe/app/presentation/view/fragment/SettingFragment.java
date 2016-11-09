@@ -7,17 +7,20 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
+import com.tribe.app.data.network.Constant;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.scope.AddressBook;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;
+import com.tribe.app.presentation.internal.di.scope.DebugMode;
 import com.tribe.app.presentation.internal.di.scope.LastSync;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
 import com.tribe.app.presentation.internal.di.scope.LocationPopup;
@@ -32,6 +35,7 @@ import com.tribe.app.presentation.view.activity.SettingActivity;
 import com.tribe.app.presentation.view.component.SettingFilterView;
 import com.tribe.app.presentation.view.component.SettingItemView;
 import com.tribe.app.presentation.view.component.SettingThemeView;
+import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.Weather;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -40,6 +44,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 import rx.subscriptions.CompositeSubscription;
@@ -97,6 +102,12 @@ public class SettingFragment extends BaseFragment implements SettingView {
     @BindView(R.id.settingsLogOut)
     SettingItemView settingsLogOut;
 
+    @BindView(R.id.settingsDebugMode)
+    SettingItemView settingsDebugMode;
+
+    @BindView(R.id.layoutDebugMode)
+    ViewGroup layoutDebugMode;
+
     @BindView(R.id.txtVersion)
     TextViewFont txtVersion;
 
@@ -135,12 +146,17 @@ public class SettingFragment extends BaseFragment implements SettingView {
     Preference<Long> lastSync;
 
     @Inject
+    @DebugMode
+    Preference<Boolean> debugMode;
+
+    @Inject
     SettingPresenter settingPresenter;
 
     // VARIABLES
     private User user;
     Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
+    private int debugModeCount = 0;
 
     public static SettingFragment newInstance() {
 
@@ -323,6 +339,10 @@ public class SettingFragment extends BaseFragment implements SettingView {
 
                     .show();
         }));
+
+        subscriptions.add(RxView.clicks(settingsDebugMode).subscribe(aVoid -> {
+            navigator.navigateToDebugMode(getActivity());
+        }));
     }
 
     private void initUi() {
@@ -398,7 +418,13 @@ public class SettingFragment extends BaseFragment implements SettingView {
                 getString(R.string.settings_logout_subtitle),
                 SettingItemView.SIMPLE);
 
+        settingsDebugMode.setTitleBodyViewType("Access debug mode",
+                "Only for OGs",
+                SettingItemView.SIMPLE);
+
         txtVersion.setText(getString(R.string.settings_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE));
+
+        if (debugMode.get()) layoutDebugMode.setVisibility(View.VISIBLE);
     }
 
     public void setPicture(String profilePicUrl) {
@@ -538,5 +564,18 @@ public class SettingFragment extends BaseFragment implements SettingView {
     @Override
     public Context context() {
         return null;
+    }
+
+    @OnClick(R.id.txtVersion)
+    void clickVersion(View v) {
+        debugModeCount++;
+
+        if (debugModeCount == Constants.DEBUG_MODE) {
+            debugMode.set(true);
+            layoutDebugMode.setVisibility(View.VISIBLE);
+        } else if (debugModeCount >= 3) {
+            Toast.makeText(getActivity(),
+                    (Constants.DEBUG_MODE - debugModeCount) + " taps to go before DEBUG MODE", Toast.LENGTH_SHORT).show();
+        }
     }
 }

@@ -48,6 +48,7 @@ import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
 import com.tribe.app.presentation.internal.di.modules.NetModule;
 import com.tribe.app.presentation.internal.di.scope.AddressBook;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;
+import com.tribe.app.presentation.internal.di.scope.DebugMode;
 import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
 import com.tribe.app.presentation.internal.di.scope.Filter;
 import com.tribe.app.presentation.internal.di.scope.HasRatedApp;
@@ -66,6 +67,7 @@ import com.tribe.app.presentation.internal.di.scope.ShareProfile;
 import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.internal.di.scope.Theme;
 import com.tribe.app.presentation.internal.di.scope.TribeSentCount;
+import com.tribe.app.presentation.internal.di.scope.TutorialState;
 import com.tribe.app.presentation.internal.di.scope.WasAskedForCameraPermission;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.navigation.Navigator;
@@ -96,6 +98,7 @@ import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
+import com.tribe.app.presentation.view.tutorial.TutorialManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -109,10 +112,12 @@ import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.LabelButton;
 import com.tribe.app.presentation.view.widget.PathView;
 import com.tribe.app.presentation.view.widget.PlayerView;
+import com.tribe.app.presentation.view.widget.TextViewAnimatedDots;
 import com.tribe.app.presentation.view.widget.TribeVideoView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Set;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -164,6 +169,7 @@ public interface ApplicationComponent {
     void inject(GlPreview glPreview);
     void inject(VisualizerView visualizerView);
     void inject(RatingView ratingView);
+    void inject(TextViewAnimatedDots textViewAnimatedDots);
 
     // JOBS
     void inject(BaseJob baseJob);
@@ -318,5 +324,13 @@ public interface ApplicationComponent {
     @HasRatedApp
     Preference<Boolean> hasRatedApp();
 
+    @TutorialState
+    Preference<Set<String>> tutorialState();
+
+    @DebugMode
+    Preference<Boolean> debugMode();
+
     SoundManager soundManager();
+
+    TutorialManager tutorialManager();
 }

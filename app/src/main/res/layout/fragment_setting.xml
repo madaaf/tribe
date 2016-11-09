@@ -217,21 +217,29 @@
 
         </LinearLayout>
 
-        <!--<LinearLayout
+        <LinearLayout
+            android:id="@+id/layoutDebugMode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_white_rect_grey_border"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <com.tribe.app.presentation.view.component.SettingItemView
-                android:id="@+id/settingsSendToken"
+                android:id="@+id/settingsDebugMode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/section_button_vertical_padding"
                 android:paddingBottom="@dimen/section_button_vertical_padding"
                 />
 
-        </LinearLayout>-->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider_size"
+                android:background="@color/grey.light"
+                />
+
+        </LinearLayout>
 
         <ImageView
             android:layout_width="wrap_content"
@@ -250,6 +258,7 @@
             android:layout_gravity="center"
             android:layout_marginBottom="@dimen/vertical_margin"
             android:gravity="center"
+            android:clickable="true"
             style="@style/Body.One.Black40"
             />
 

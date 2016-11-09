@@ -7,6 +7,7 @@ import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.tribe.app.presentation.internal.di.scope.AddressBook;
 import com.tribe.app.presentation.internal.di.scope.AudioDefault;
+import com.tribe.app.presentation.internal.di.scope.DebugMode;
 import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
 import com.tribe.app.presentation.internal.di.scope.Filter;
 import com.tribe.app.presentation.internal.di.scope.HasRatedApp;
@@ -220,5 +221,12 @@ public class DataModule {
     @TutorialState
     Preference<Set<String>> provideTutorialState(RxSharedPreferences prefs) {
         return prefs.getStringSet(PreferencesConstants.TUTORIAL_STATE, new HashSet<>());
+    }
+
+    @Provides
+    @Singleton
+    @DebugMode
+    Preference<Boolean> provideDebugMode(RxSharedPreferences prefs) {
+        return prefs.getBoolean(PreferencesConstants.DEBUG_MODE, false);
     }
 }

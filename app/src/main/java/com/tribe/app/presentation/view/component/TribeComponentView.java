@@ -38,9 +38,8 @@ import com.tribe.app.presentation.view.video.TribeMediaPlayer;
 import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.ButtonCardView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
-import com.tribe.app.presentation.view.widget.ScalableTextureView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.VideoTextureView;
+import com.tribe.app.presentation.view.widget.video.ScalableVideoView;
 
 import java.util.Date;
 
@@ -68,7 +67,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     @Inject @WeatherUnits Preference<String> weatherUnits;
 
     @BindView(R.id.videoTextureView)
-    VideoTextureView videoTextureView;
+    ScalableVideoView videoTextureView;
 
     @BindView(R.id.avatar)
     AvatarView avatarView;
@@ -121,8 +120,10 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     private final PublishSubject<View> clickEnableLocation = PublishSubject.create();
     private final PublishSubject<TribeMessage> onPlayerError = PublishSubject.create();
     private final PublishSubject<TribeMessage> clickMore = PublishSubject.create();
+    private final PublishSubject<TribeComponentView> onFirstLoop = PublishSubject.create();
 
     // PLAYER
+    private boolean isFirstLoop = true;
     private boolean isPrepared = false;
     private TribeMediaPlayer mediaPlayer;
     private TribeMessage tribe;
@@ -160,7 +161,6 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         unbinder = ButterKnife.bind(this);
         ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
 
-        videoTextureView.setScaleType(ScalableTextureView.CENTER_CROP_FILL);
         videoTextureView.setSurfaceTextureListener(this);
         super.onFinishInflate();
     }
@@ -244,11 +244,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
             }));
 
             subscriptions.add(mediaPlayer.onVideoSizeChanged().subscribe(videoSize -> {
-                if (videoTextureView != null && videoTextureView.getContentHeight() != videoSize.getHeight()) {
-                    videoTextureView.setContentWidth(videoSize.getWidth());
-                    videoTextureView.setContentHeight(videoSize.getHeight());
-                    videoTextureView.updateTextureViewSize();
-                }
+                videoTextureView.scaleVideoSize(videoSize.getWidth(), videoSize.getHeight());
             }));
 
             subscriptions.add(mediaPlayer.onErrorPlayer().subscribe(error -> {
@@ -262,6 +258,11 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
             subscriptions.add(mediaPlayer.onCompletion().subscribe(started -> {
                 lastPosition = 0;
                 animateProgress();
+
+                if (isFirstLoop) {
+                    isFirstLoop = false;
+                    onFirstLoop.onNext(this);
+                }
             }));
 
             if (lastPosition != -1) mediaPlayer.seekTo(lastPosition);
@@ -409,6 +410,10 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
     public Observable<TribeMessage> onClickMore() {
         return clickMore;
+    }
+
+    public Observable<TribeComponentView> onFirstLoop() {
+        return onFirstLoop;
     }
 
     @OnClick(R.id.labelLocation)
