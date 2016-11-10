@@ -147,6 +147,7 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
         tribePresenter.onResume();
 
         sensorManager.registerListener(this, proximity, SensorManager.SENSOR_DELAY_NORMAL);
+        audioManager.setMode(AudioManager.MODE_IN_CALL);
     }
 
     @Override
@@ -156,6 +157,7 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
         tribePresenter.onPause();
 
         sensorManager.unregisterListener(this);
+        audioManager.setMode(AudioManager.MODE_NORMAL);
 
         super.onPause();
     }
