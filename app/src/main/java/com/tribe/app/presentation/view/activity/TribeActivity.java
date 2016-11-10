@@ -16,6 +16,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.tbruyelle.rxpermissions.RxPermissions;
@@ -98,6 +99,9 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
 
     @BindView(R.id.viewTribePager)
     TribePagerView viewTribePager;
+
+    @BindView(R.id.earModeView)
+    View earModeView;
 
     // VARIABLES
     private Recipient recipient;
@@ -600,7 +604,19 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
             // In this case, the sensor should report its maximum range value in the far state and a lesser value in the near state.
             boolean isNear = sensorEvent.values[0] < sensorEvent.sensor.getMaximumRange();
 
-            audioManager.setSpeakerphoneOn(!isNear);
+            if (isNear) {
+                audioManager.setSpeakerphoneOn(false);
+                earModeView.setVisibility(View.VISIBLE);
+                earModeView.setOnClickListener(view -> {
+
+                    // Nothing here, just listening to catch the touch events.
+                });
+
+            } else {
+                audioManager.setSpeakerphoneOn(true);
+                earModeView.setVisibility(View.GONE);
+                earModeView.setOnClickListener(null);
+            }
         }
     }
 }
