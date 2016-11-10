@@ -79,8 +79,20 @@ public class UserCacheImpl implements UserCache {
                             membershipDB.getGroup().setMembers(membersEnd);
                         } else {
                             membershipRealm.setUpdatedAt(new Date());
-                            MembershipRealm addedMembership = obsRealm.copyToRealmOrUpdate(membershipRealm);
-                            userDB.getMemberships().add(addedMembership);
+
+                            RealmList<UserRealm> members = new RealmList<>();
+
+                            if (membershipRealm.getGroup() != null && membershipRealm.getGroup().getMembers() != null) {
+                                for (UserRealm member : membershipRealm.getGroup().getMembers()) {
+                                    if (member.getId().equals(userDB.getId())) members.add(userDB);
+                                    else members.add(member);
+                                }
+
+                                membershipRealm.getGroup().setMembers(members);
+                            }
+
+                            membershipDB = obsRealm.copyToRealmOrUpdate(membershipRealm);
+                            userDB.getMemberships().add(membershipDB);
                         }
 
                         boolean found = false;
@@ -90,7 +102,7 @@ public class UserCacheImpl implements UserCache {
                         }
 
                         if (!found) {
-                            userDB.getMemberships().add(membershipRealm);
+                            userDB.getMemberships().add(membershipDB);
                         }
                     }
                 }

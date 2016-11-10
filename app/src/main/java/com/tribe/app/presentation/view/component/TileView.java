@@ -33,7 +33,6 @@ import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.utils.FileUtils;
-import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
@@ -526,11 +525,7 @@ public class TileView extends SquareFrameLayout {
 
     public void setInfo(Recipient recipient) {
         // WE DON'T LOAD THE AVATAR AGAIN IF THE URL IS THE SAME
-        String previousAvatar = (String) avatar.getTag(R.id.profile_picture);
-        if (StringUtils.isEmpty(previousAvatar) || !previousAvatar.equals(recipient.getProfilePicture())) {
-            avatar.setTag(R.id.profile_picture, recipient.getProfilePicture());
-            avatar.load(recipient.getProfilePicture());
-        }
+        avatar.load(recipient);
 
         if ((type == TYPE_GRID || type == TYPE_SUPPORT)) {
             if (recipient instanceof Membership) {

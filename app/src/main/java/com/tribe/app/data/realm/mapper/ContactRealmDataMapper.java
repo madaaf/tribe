@@ -43,14 +43,14 @@ public class ContactRealmDataMapper {
             contact.setLastTimeContacted(contactABRealm.getLastTimeContacted());
             contact.setVersion(contactABRealm.getVersion());
             contact.setName(contactABRealm.getName());
-            contact.setUserList(userRealmDataMapper.transform(contactABRealm.getUsers()));
+            contact.setUserList(userRealmDataMapper.transform(contactABRealm.getUsers(), false));
             contact.setHowManyFriends(contactABRealm.getHowManyFriends());
             return contact;
         } else {
             ContactFBRealm contactFBRealm = (ContactFBRealm) contactI;
             ContactFB contact = new ContactFB(contactFBRealm.getId());
             contact.setName(contactFBRealm.getName());
-            contact.setUserList(userRealmDataMapper.transform(contactFBRealm.getUserList()));
+            contact.setUserList(userRealmDataMapper.transform(contactFBRealm.getUserList(), false));
             contact.setHowManyFriends(contactFBRealm.getHowManyFriends());
             return contact;
         }

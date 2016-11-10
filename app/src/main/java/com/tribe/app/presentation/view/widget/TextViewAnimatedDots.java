@@ -86,16 +86,12 @@ public class TextViewAnimatedDots extends LinearLayout {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {
                     if (aLong % 4 == 0) {
-                        System.out.println("HEY : " + aLong);
                         txtDots.setText("");
                     } else if (aLong % 4 == 1) {
-                        System.out.println("HEY . : " + aLong);
                         txtDots.setText(".");
                     } else if (aLong % 4 == 2) {
-                        System.out.println("HEY .. : " + aLong);
                         txtDots.setText("..");
                     } else if (aLong % 4 == 3) {
-                        System.out.println("HEY ... : " + aLong);
                         txtDots.setText("...");
                     }
                 });

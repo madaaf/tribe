@@ -22,34 +22,38 @@ import io.realm.RealmList;
 public class GroupDeserializer implements JsonDeserializer<GroupRealm> {
     @Override
     public GroupRealm deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        JsonObject data = json.getAsJsonObject().getAsJsonObject("data");
+        JsonObject group = null;
+        JsonArray groupsArray = data.getAsJsonArray("groups");
+        if (groupsArray != null && groupsArray.get(0) != null && !(groupsArray.get(0) instanceof JsonNull)) {
+            group = data.getAsJsonArray("groups").get(0).getAsJsonObject();
+        }
 
+        if (group == null) group = data.getAsJsonObject("createGroup");
+        if (group == null) group = data.getAsJsonObject("updateGroup");
+
+        return parseGroup(group);
+    }
+
+    public GroupRealm parseGroup(JsonObject group) {
         GroupRealm groupRealm = new GroupRealm();
 
-        JsonObject data = json.getAsJsonObject().getAsJsonObject("data");
-        JsonObject group;
-
-        try {
-            group = data.getAsJsonArray("groups").get(0).getAsJsonObject();
-            JsonArray members = group.getAsJsonArray("members");
-            if (members != null) {
-                for (int i = 0; i < members.size(); i++) {
-                    if (members.get(i).isJsonNull()) {
-                        members.remove(i);
-                    }
+        JsonArray members = group.getAsJsonArray("members");
+        if (members != null) {
+            for (int i = 0; i < members.size(); i++) {
+                if (members.get(i).isJsonNull()) {
+                    members.remove(i);
                 }
             }
+        }
 
-            JsonArray admins = group.getAsJsonArray("admins");
+        JsonArray admins = group.getAsJsonArray("admins");
 
-            if (admins != null && members != null && members.size() > 0) {
-                RealmList<UserRealm> users = new GsonBuilder().create().fromJson(members, new TypeToken<RealmList<UserRealm>>() {}.getType());
-                RealmList<UserRealm> adminsList = new GsonBuilder().create().fromJson(admins, new TypeToken<RealmList<UserRealm>>() {}.getType());
-                groupRealm.setMembers(users);
-                groupRealm.setAdmins(adminsList);
-            }
-        } catch (NullPointerException e) {
-            group = data.getAsJsonObject("updateGroup");
-            if (group == null) group = data.getAsJsonObject("createGroup");
+        if (admins != null && members != null && members.size() > 0) {
+            RealmList<UserRealm> users = new GsonBuilder().create().fromJson(members, new TypeToken<RealmList<UserRealm>>() {}.getType());
+            RealmList<UserRealm> adminsList = new GsonBuilder().create().fromJson(admins, new TypeToken<RealmList<UserRealm>>() {}.getType());
+            groupRealm.setMembers(users);
+            groupRealm.setAdmins(adminsList);
         }
 
         JsonElement groupLink = group.get("link");

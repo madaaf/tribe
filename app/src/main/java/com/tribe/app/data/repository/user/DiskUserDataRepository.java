@@ -234,13 +234,13 @@ public class DiskUserDataRepository implements UserRepository {
     @Override
     public Observable<List<Contact>> contacts() {
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-        return userDataStore.contacts().map(collection -> contactRealmDataMapper.transform(new ArrayList<>(collection)));
+        return userDataStore.contacts().map(collection -> contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection)));
     }
 
     @Override
     public Observable<List<Contact>> contactsFB() {
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-        return userDataStore.contactsFB().map(collection -> contactRealmDataMapper.transform(new ArrayList<>(collection)));
+        return userDataStore.contactsFB().map(collection -> contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection)));
     }
 
     @Override

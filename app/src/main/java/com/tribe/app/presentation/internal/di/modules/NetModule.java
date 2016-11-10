@@ -115,6 +115,9 @@ public class NetModule {
                      TribeCache tribeCache,
                      ChatCache chatCache,
                      AccessToken accessToken) {
+
+        GroupDeserializer groupDeserializer = new GroupDeserializer();
+
         return new GsonBuilder()
                 .setExclusionStrategies(new ExclusionStrategy() {
                     @Override
@@ -127,10 +130,10 @@ public class NetModule {
                         return false;
                     }
                 })
-                .registerTypeAdapter(new TypeToken<UserRealm>() {}.getType(), new TribeUserDeserializer(utcSimpleDate))
+                .registerTypeAdapter(new TypeToken<UserRealm>() {}.getType(), new TribeUserDeserializer(groupDeserializer, utcSimpleDate))
                 .registerTypeAdapter(AccessToken.class, new TribeAccessTokenDeserializer())
                 .registerTypeAdapter(TribeRealm.class, new NewTribeDeserializer<>())
-                .registerTypeAdapter(GroupRealm.class, new GroupDeserializer())
+                .registerTypeAdapter(GroupRealm.class, groupDeserializer)
                 .registerTypeAdapter(ChatRealm.class, new NewMessageDeserializer<>())
                 .registerTypeAdapter(new TypeToken<List<MessageRealmInterface>>(){}.getType(), new UserMessageListDeserializer<>(utcSimpleDate, userCache, tribeCache, chatCache, accessToken))
                 .registerTypeAdapter(Installation.class, new NewInstallDeserializer<>())
@@ -301,7 +304,7 @@ public class NetModule {
 
         if (BuildConfig.DEBUG) {
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
             httpClientBuilder.addInterceptor(loggingInterceptor);
             //httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
         }

@@ -67,12 +67,12 @@ public class UserRealmDataMapper {
      * @param userRealmCollection Object Collection to be transformed.
      * @return {@link User} if valid {@link UserRealm} otherwise null.
      */
-    public List<User> transform(Collection<UserRealm> userRealmCollection) {
+    public List<User> transform(Collection<UserRealm> userRealmCollection, boolean shouldTransformFriendships) {
         List<User> userList = new ArrayList<>();
         User user;
         if (userRealmCollection != null) {
             for (UserRealm userRealm : userRealmCollection) {
-                user = transform(userRealm, true);
+                user = transform(userRealm, shouldTransformFriendships);
                 if (user != null) {
                     userList.add(user);
                 }

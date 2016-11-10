@@ -39,8 +39,8 @@ public class GroupRealmDataMapper {
             group.setName(groupRealm.getName());
             group.setPicture(groupRealm.getPicture());
             group.setGroupLink(groupRealm.getLink());
-            group.setMembers(userRealmDataMapper.transform(groupRealm.getMembers()));
-            group.setAdmins(userRealmDataMapper.transform(groupRealm.getAdmins()));
+            group.setMembers(userRealmDataMapper.transform(groupRealm.getMembers(), false));
+            group.setAdmins(userRealmDataMapper.transform(groupRealm.getAdmins(), false));
             group.setPrivateGroup(groupRealm.isPrivateGroup());
         }
 

@@ -1,6 +1,9 @@
 package com.tribe.app.domain.entity;
 
+import com.tribe.app.presentation.utils.StringUtils;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -74,5 +77,17 @@ public class Group implements Serializable {
 
     public void setAdmins(List<User> admins) {
         this.admins = admins;
+    }
+
+    public List<String> getMembersPics() {
+        List<String> pics = new ArrayList<>();
+
+        for (User user : members) {
+            String url = user.getProfilePicture();
+            if (!StringUtils.isEmpty(url))
+                pics.add(url);
+        }
+
+        return pics;
     }
 }

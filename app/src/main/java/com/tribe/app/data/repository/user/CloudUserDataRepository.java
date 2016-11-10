@@ -293,7 +293,7 @@ public class CloudUserDataRepository implements UserRepository {
     @Override
     public Observable<List<User>> updateUserListScore(Set<String> userIds) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-        return cloudDataStore.updateUserListScore(userIds).map(userRealmList -> this.userRealmDataMapper.transform(userRealmList));
+        return cloudDataStore.updateUserListScore(userIds).map(userRealmList -> this.userRealmDataMapper.transform(userRealmList, false));
     }
 
     @Override

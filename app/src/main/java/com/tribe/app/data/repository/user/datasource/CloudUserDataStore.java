@@ -156,7 +156,7 @@ public class CloudUserDataStore implements UserDataStore {
                 !StringUtils.isEmpty(lastUserRequest.get()) ? context.getString(R.string.input_start, lastUserRequest.get()) : "",
                 !StringUtils.isEmpty(lastUserRequest.get()) ? context.getString(R.string.input_start, lastUserRequest.get()) : "",
                 context.getString(R.string.userfragment_infos),
-                context.getString(R.string.groupfragment_info),
+                context.getString(R.string.groupfragment_info_members),
                 context.getString(R.string.membershipfragment_info))),
                 reactiveLocationProvider.getLastKnownLocation().onErrorReturn(throwable -> null).defaultIfEmpty(null),
                 (userRealm, location) -> {

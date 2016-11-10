@@ -419,6 +419,20 @@
         }
     </string>
 
+    <string name="groupfragment.info.members" translatable="false">
+        fragment GroupInfo on Group {
+            id
+            name
+            type
+            picture
+            link
+            created_at
+            members {
+                ...UserInfos
+            }
+        }
+    </string>
+
     <string name="membershipfragment.info" translatable="false">
         fragment MembershipInfo on Membership {
             id

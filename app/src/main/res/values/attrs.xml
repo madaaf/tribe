@@ -6,6 +6,10 @@
 
     <declare-styleable name="AvatarView">
         <attr name="border" format="boolean"></attr>
+        <attr name="avatarType" format="enum">
+            <enum name="group" value="0" />
+            <enum name="single" value="1" />
+        </attr>
     </declare-styleable>
 
     <declare-styleable name="RoundedCornerLayout">
