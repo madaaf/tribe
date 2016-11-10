@@ -4,6 +4,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.SurfaceTexture;
+import android.media.AudioManager;
 import android.media.audiofx.Visualizer;
 import android.net.Uri;
 import android.text.format.DateUtils;
@@ -226,6 +227,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
                     .mute(false)
                     .canChangeSpeed(true)
                     .forceLegacy(true)
+                    .audioStreamType(AudioManager.STREAM_VOICE_CALL)
                     .build();
 
             if (tribe.getType().equals(CameraWrapper.AUDIO) && visualizer == null) {

@@ -12,4 +12,7 @@
         android:background="@null"
         />
 
+    <include
+        layout="@layout/view_earmode" />
+
 </FrameLayout>

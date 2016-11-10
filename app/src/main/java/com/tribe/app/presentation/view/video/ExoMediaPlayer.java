@@ -12,6 +12,9 @@ import com.google.android.exoplayer.MediaCodecAudioTrackRenderer;
 import com.google.android.exoplayer.MediaCodecSelector;
 import com.google.android.exoplayer.MediaCodecTrackRenderer;
 import com.google.android.exoplayer.MediaCodecVideoTrackRenderer;
+import com.google.android.exoplayer.SampleSource;
+import com.google.android.exoplayer.audio.AudioCapabilities;
+import com.google.android.exoplayer.drm.DrmSessionManager;
 import com.google.android.exoplayer.extractor.ExtractorSampleSource;
 import com.google.android.exoplayer.extractor.mp4.Mp4Extractor;
 import com.google.android.exoplayer.upstream.Allocator;
@@ -41,6 +44,7 @@ public class ExoMediaPlayer extends TribeMediaPlayer implements MediaCodecVideoT
         this.mute = builder.isMute();
         this.autoStart = builder.isAutoStart();
         this.changeSpeed = builder.isChangeSpeed();
+        this.audioStreamType = builder.getAudioStreamType();
 
         setup();
     }
@@ -86,8 +90,8 @@ public class ExoMediaPlayer extends TribeMediaPlayer implements MediaCodecVideoT
         videoRenderer = new MediaCodecVideoTrackRenderer(
                 context, sampleSource, MediaCodecSelector.DEFAULT, MediaCodec.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING,
                 1, new Handler(), this, 1);
-
-        audioRenderer = new MediaCodecAudioTrackRenderer(sampleSource, MediaCodecSelector.DEFAULT);
+        audioRenderer = new MediaCodecAudioTrackRenderer(sampleSource, MediaCodecSelector.DEFAULT,
+                null, true, null, null, null, getAudioStreamType());
         exoPlayer.prepare(videoRenderer, audioRenderer);
         exoPlayer.setPlayWhenReady(autoStart);
     }

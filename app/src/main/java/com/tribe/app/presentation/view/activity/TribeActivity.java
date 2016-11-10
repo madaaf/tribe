@@ -4,6 +4,11 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.media.AudioManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
@@ -11,6 +16,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.tbruyelle.rxpermissions.RxPermissions;
@@ -55,7 +61,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
-public class TribeActivity extends BaseActivity implements TribeView {
+public class TribeActivity extends BaseActivity implements TribeView, SensorEventListener {
 
     public static final String[] PERMISSIONS_LOCATION = new String[]{ Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION };
     public static final String RECIPIENT = "RECIPIENT";
@@ -94,6 +100,9 @@ public class TribeActivity extends BaseActivity implements TribeView {
     @BindView(R.id.viewTribePager)
     TribePagerView viewTribePager;
 
+    @BindView(R.id.earModeView)
+    View earModeView;
+
     // VARIABLES
     private Recipient recipient;
     private int position;
@@ -102,6 +111,9 @@ public class TribeActivity extends BaseActivity implements TribeView {
     private BottomSheetDialog dialogMore;
     private LabelSheetAdapter moreTypeAdapter;
     private boolean isRecording = false;
+    private AudioManager audioManager;
+    private SensorManager sensorManager;
+    private Sensor proximity;
     private Tutorial tutorial;
     private boolean isReplyMode;
 
@@ -119,6 +131,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
         initTribePagerView();
         initSubscriptions();
         initPresenter();
+        initProximitySensor();
     }
 
     @Override
@@ -132,6 +145,8 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
         viewTribePager.onResume();
         tribePresenter.onResume();
+
+        sensorManager.registerListener(this, proximity, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -139,6 +154,9 @@ public class TribeActivity extends BaseActivity implements TribeView {
         cleanUpTutorial();
         viewTribePager.onPause();
         tribePresenter.onPause();
+
+        sensorManager.unregisterListener(this);
+
         super.onPause();
     }
 
@@ -170,6 +188,12 @@ public class TribeActivity extends BaseActivity implements TribeView {
         Bundle bundle = new Bundle();
         bundle.putString(TagManagerConstants.TYPE, recipient instanceof Membership ? TagManagerConstants.TYPE_TRIBE_GROUP : TagManagerConstants.TYPE_TRIBE_USER);
         tagManager.trackEvent(TagManagerConstants.KPI_TRIBES_OPENED, bundle);
+    }
+
+    private void initProximitySensor() {
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        proximity = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
     }
 
     private void initUi() {
@@ -562,5 +586,37 @@ public class TribeActivity extends BaseActivity implements TribeView {
         tribePresenter.markTribeListAsRead(recipient, viewTribePager.getTribeListSeens());
 
         super.onBackPressed();
+    }
+
+    // SENSOR MANAGER
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_PROXIMITY &&
+                sensorEvent.values.length > 0) {
+
+            // From Android doc : Note: Some proximity sensors only support a binary near or far measurement.
+            // In this case, the sensor should report its maximum range value in the far state and a lesser value in the near state.
+            boolean isNear = sensorEvent.values[0] < sensorEvent.sensor.getMaximumRange();
+
+            if (isNear) {
+                audioManager.setSpeakerphoneOn(false);
+                earModeView.setVisibility(View.VISIBLE);
+                earModeView.setOnClickListener(view -> {
+
+                    // Nothing here, just listening to catch the touch events.
+                });
+
+            } else {
+                audioManager.setSpeakerphoneOn(true);
+                earModeView.setVisibility(View.GONE);
+                earModeView.setOnClickListener(null);
+            }
+        }
     }
 }

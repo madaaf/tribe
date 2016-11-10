@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.video;
 
 import android.content.Context;
 import android.graphics.SurfaceTexture;
+import android.media.AudioManager;
 import android.os.Build;
 import android.support.annotation.StringDef;
 
@@ -29,6 +30,7 @@ public abstract class TribeMediaPlayer {
     protected boolean changeSpeed;
     protected boolean isLocal;
     protected VideoSize videoSize;
+    protected int audioStreamType;
 
     // OBSERVABLES
     PublishSubject<String> onErrorPlayer = PublishSubject.create();
@@ -55,6 +57,8 @@ public abstract class TribeMediaPlayer {
 
     public Observable<Boolean> onCompletion() { return onCompletion; }
 
+    public int getAudioStreamType() { return audioStreamType; }
+
     protected abstract void setup();
     public abstract void setMedia(String media);
     public abstract void setSurface(SurfaceTexture surfaceTexture);
@@ -76,6 +80,7 @@ public abstract class TribeMediaPlayer {
         private boolean changeSpeed = false;
         private boolean forceLegacy = false;
         private boolean isLocal = false;
+        private int audioStreamType = AudioManager.USE_DEFAULT_STREAM_TYPE;
 
         public TribeMediaPlayerBuilder(Context context, String media) {
             this.context = context;
@@ -109,6 +114,11 @@ public abstract class TribeMediaPlayer {
 
         public TribeMediaPlayerBuilder isLocal(boolean isLocal) {
             this.isLocal = isLocal;
+            return this;
+        }
+
+        public TribeMediaPlayerBuilder audioStreamType(int audioStreamType) {
+            this.audioStreamType = audioStreamType;
             return this;
         }
 
@@ -148,5 +158,9 @@ public abstract class TribeMediaPlayer {
         }
 
         public boolean isLocal() { return isLocal; }
+
+        public int getAudioStreamType() {
+            return audioStreamType;
+        }
     }
 }
