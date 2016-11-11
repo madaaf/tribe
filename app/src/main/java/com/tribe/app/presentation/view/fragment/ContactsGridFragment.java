@@ -137,10 +137,10 @@ public class ContactsGridFragment extends BaseFragment implements ContactsView {
         super.onViewCreated(view, savedInstanceState);
         this.contactsGridPresenter.attachView(this);
 
-        if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
-            contactsGridPresenter.lookupContacts();
-            lastSync.set(System.currentTimeMillis());
-        }
+//        if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
+//            contactsGridPresenter.lookupContacts();
+//            lastSync.set(System.currentTimeMillis());
+//        }
     }
 
     @Override

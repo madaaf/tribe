@@ -10,7 +10,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +46,7 @@ import com.tribe.app.presentation.view.component.GroupSuggestionsView;
 import com.tribe.app.presentation.view.component.SearchFriendsView;
 import com.tribe.app.presentation.view.dialog_fragment.ShareDialogFragment;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 import java.util.ArrayList;
@@ -118,6 +118,7 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
     RxImagePicker rxImagePicker;
 
     // VARIABLES
+    private Group group;
     private BottomSheetDialog dialogCamera;
     private LabelSheetAdapter cameraTypeAdapter;
     private List<Friendship> friendshipsList = new ArrayList<>();
@@ -401,6 +402,11 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     @Override
     public void setupGroup(Group group) {
+        subscriptions.add(ImageUtils
+                .createGroupAvatar(getContext(), group.getId(), group.getMembersPics(), getContext().getResources().getDimensionPixelSize(R.dimen.avatar_size))
+                .subscribe());
+
+        this.group = group;
         groupName = group.getName();
         privateGroup = group.isPrivateGroup();
         if (group.getGroupLink() != null) groupLink = group.getGroupLink();
@@ -860,6 +866,10 @@ public class GroupsGridFragment extends BaseFragment implements GroupView {
 
     @Override
     public void memberAddedSuccessfully() {
+        subscriptions.add(ImageUtils
+                .createGroupAvatar(getContext(), groupId, group.getMembersPics(), getContext().getResources().getDimensionPixelSize(R.dimen.avatar_size))
+                .subscribe());
+
         tagManager.trackEvent(TagManagerConstants.KPI_GROUP_MEMBERS_ADDED);
 
         //TODO: navigate to home fragment

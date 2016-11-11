@@ -41,6 +41,7 @@ import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
+import com.tribe.app.presentation.view.utils.ImageUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -56,6 +57,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.realm.RealmList;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -150,6 +152,7 @@ public class CloudUserDataStore implements UserDataStore {
     @Override
     public Observable<UserRealm> userInfos(String userId, String filterRecipient) {
         String initRequest = utcSimpleDate.format(new Date());
+        int avatarSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size);
 
         return Observable.zip(this.tribeApi.getUserInfos(context.getString(R.string.user_infos,
                 !StringUtils.isEmpty(lastUserRequest.get()) ? context.getString(R.string.input_start, lastUserRequest.get()) : "",
@@ -173,8 +176,31 @@ public class CloudUserDataStore implements UserDataStore {
 
                     return userRealm;
                 })
-                .doOnNext(user -> {
-                    lastUserRequest.set(initRequest);
+                .doOnNext(user -> lastUserRequest.set(initRequest))
+                .flatMap(userRealm -> Observable
+                        .from(userRealm.getMemberships())
+                        .flatMap(membershipRealm -> {
+                            if (StringUtils.isEmpty(membershipRealm.getPicture())) {
+                                File groupAvatarFile = FileUtils.getAvatarForGroupId(context, membershipRealm.getSubId(), FileUtils.PHOTO);
+                                
+                                if (!groupAvatarFile.exists() && membershipRealm.getMembersPic() != null && membershipRealm.getMembersPic().size() > 0) {
+                                    return ImageUtils.createGroupAvatar(context, membershipRealm.getSubId(), membershipRealm.getMembersPic(), avatarSize)
+                                            .map(bitmap -> bitmap != null);
+                                }
+                            }
+
+                            return Observable.just(true);
+                        }, 1).toList(), (userRealm, successList) -> userRealm)
+                .doOnNext(userRealm -> {
+                    if (userRealm.getMemberships() != null) {
+                        for (MembershipRealm membershipRealm : userRealm.getMemberships()) {
+                            membershipRealm.getGroup().setMembers(new RealmList<>());
+                        }
+
+                        for (GroupRealm groupRealm : userRealm.getGroups()) {
+                            groupRealm.setMembers(new RealmList<>());
+                        }
+                    }
                 })
                 .doOnNext(saveToCacheUser);
     }
@@ -568,6 +594,9 @@ public class CloudUserDataStore implements UserDataStore {
                         if (createFriendshipEntity != null && createFriendshipEntity.getNewFriendshipList() != null
                                 && createFriendshipEntity.getNewFriendshipList().size() > 0) {
                             UserRealm currentUser = userCache.userInfosNoObs(accessToken.getUserId());
+
+                            System.out.println("FRIENDSHIPS CREATE FRIENDSHIPS SIZE : " + currentUser.getFriendships().size());
+                            System.out.println("MEMBERSHIPS CREATE FRIENDSHIPS SIZE : " + currentUser.getMemberships().size());
                             currentUser.getFriendships().addAll(createFriendshipEntity.getNewFriendshipList());
                             userCache.put(currentUser);
                         }
@@ -960,20 +989,20 @@ public class CloudUserDataStore implements UserDataStore {
     public Observable<Void> addMembersToGroup(String groupId, List<String> memberIds) {
         String memberIdsJson = listToArrayReq(memberIds);
         String request = context.getString(R.string.add_members_group, groupId, memberIdsJson);
+
         return this.tribeApi.addMembersToGroup(request)
-                .doOnNext(aVoid -> {
-                    userCache.addMembersToGroup(groupId, memberIds);
-                });
+                .doOnNext(aVoid -> userCache.addMembersToGroup(groupId, memberIds))
+                .doOnNext(aVoid -> clearGroupAvatar(groupId));
     }
 
     @Override
     public Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds) {
         String memberIdsJson = listToArrayReq(memberIds);
         String request = context.getString(R.string.remove_members_group, groupId, memberIdsJson);
+
         return this.tribeApi.removeMembersFromGroup(request)
-                .doOnNext(aVoid -> {
-                    userCache.removeMembersFromGroup(groupId, memberIds);
-                });
+                .doOnNext(aVoid -> userCache.removeMembersFromGroup(groupId, memberIds))
+                .doOnNext(aVoid -> clearGroupAvatar(groupId));
     }
 
     @Override
@@ -999,9 +1028,11 @@ public class CloudUserDataStore implements UserDataStore {
     @Override
     public Observable<Void> removeGroup(String groupId) {
         String request = context.getString(R.string.remove_group, groupId);
+
         return this.tribeApi.removeGroup(request)
                 .doOnError(throwable -> throwable.printStackTrace())
-                .doOnNext(aVoid -> userCache.removeGroup(groupId));
+                .doOnNext(aVoid -> userCache.removeGroup(groupId))
+                .doOnNext(aVoid -> clearGroupAvatar(groupId));
     }
 
     @Override
@@ -1122,6 +1153,11 @@ public class CloudUserDataStore implements UserDataStore {
     @Override
     public Observable<Void> updateMessagesReceivedToNotSeen() {
         return null;
+    }
+
+    private void clearGroupAvatar(String groupId) {
+        File groupAvatarFile = FileUtils.getAvatarForGroupId(context, groupId, FileUtils.PHOTO);
+        if (groupAvatarFile != null && groupAvatarFile.exists()) groupAvatarFile.delete();
     }
 }
 

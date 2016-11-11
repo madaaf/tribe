@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -30,6 +31,7 @@ import rx.schedulers.Schedulers;
  * Utility methods for manipulating images.
  * Created by horatiothomas on 8/25/16.
  */
+@Singleton
 public class ImageUtils {
 
     public static final int IMG_SIZE = 500;
@@ -114,6 +116,9 @@ public class ImageUtils {
         }
 
         int halfSize = avatarSize >> 1;
+
+        File finalFile = FileUtils.getAvatarForGroupId(context, id, FileUtils.PHOTO);
+        if (finalFile.exists()) finalFile.delete();
 
         return Observable
                 .from(positionUrls)
@@ -214,8 +219,8 @@ public class ImageUtils {
 
                     System.out.println("CREATING AVATAR FOR : " + id);
 
-                    File finalFile = FileUtils.getAvatarForGroupId(context, id, FileUtils.PHOTO);
-                    FileUtils.bitmapToFile(base, finalFile);
+                    File endFile = FileUtils.getAvatarForGroupId(context, id, FileUtils.PHOTO);
+                    FileUtils.bitmapToFile(base, endFile);
                     return base;
                 })
                 .observeOn(AndroidSchedulers.mainThread())

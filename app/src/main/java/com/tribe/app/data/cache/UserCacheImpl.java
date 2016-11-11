@@ -53,99 +53,7 @@ public class UserCacheImpl implements UserCache {
             UserRealm userDB = obsRealm.where(UserRealm.class).equalTo("id", userRealm.getId()).findFirst();
 
             if (userDB != null) {
-                if (userRealm.getMemberships() != null) {
-                    for (MembershipRealm membershipRealm : userRealm.getMemberships()) {
-                        MembershipRealm membershipDB = obsRealm.where(MembershipRealm.class).equalTo("id", membershipRealm.getId()).findFirst();
-
-                        if (membershipDB != null) {
-                            membershipDB.getGroup().setName(membershipRealm.getGroup().getName());
-                            membershipDB.getGroup().setPicture(membershipRealm.getGroup().getPicture());
-                            membershipDB.setMute(membershipRealm.isMute());
-
-                            RealmList<UserRealm> membersEnd = new RealmList<>();
-
-                            if (membershipRealm.getGroup().getMembers() != null) {
-                                for (UserRealm member : membershipRealm.getGroup().getMembers()) {
-                                    UserRealm memberDB = obsRealm.where(UserRealm.class).equalTo("id", member.getId()).findFirst();
-
-                                    if (memberDB == null) {
-                                        memberDB = obsRealm.copyToRealmOrUpdate(member);
-                                    }
-
-                                    membersEnd.add(memberDB);
-                                }
-                            }
-
-                            membershipDB.getGroup().setMembers(membersEnd);
-                        } else {
-                            membershipRealm.setUpdatedAt(new Date());
-
-                            RealmList<UserRealm> members = new RealmList<>();
-
-                            if (membershipRealm.getGroup() != null && membershipRealm.getGroup().getMembers() != null) {
-                                for (UserRealm member : membershipRealm.getGroup().getMembers()) {
-                                    if (member.getId().equals(userDB.getId())) members.add(userDB);
-                                    else members.add(member);
-                                }
-
-                                membershipRealm.getGroup().setMembers(members);
-                            }
-
-                            membershipDB = obsRealm.copyToRealmOrUpdate(membershipRealm);
-                            userDB.getMemberships().add(membershipDB);
-                        }
-
-                        boolean found = false;
-                        for (MembershipRealm membershipRealmDB : userDB.getMemberships()) {
-                            if (membershipRealmDB.getId().equals(membershipRealm.getId()))
-                                found = true;
-                        }
-
-                        if (!found) {
-                            userDB.getMemberships().add(membershipDB);
-                        }
-                    }
-                }
-
-                if (userRealm.getGroups() != null) {
-                    for (GroupRealm groupRealm : userRealm.getGroups()) {
-                        GroupRealm groupRealmDB = obsRealm.where(GroupRealm.class).equalTo("id", groupRealm.getId()).findFirst();
-
-                        if (groupRealmDB != null) {
-                            groupRealmDB.setName(groupRealm.getName());
-                            groupRealmDB.setPicture(groupRealm.getPicture());
-                        }
-                    }
-                }
-
-                if (userRealm.getFriendships() != null) {
-                    for (FriendshipRealm friendshipRealm : userRealm.getFriendships()) {
-                        FriendshipRealm friendshipDB = obsRealm.where(FriendshipRealm.class).equalTo("id", friendshipRealm.getId()).findFirst();
-
-                        if (friendshipDB != null) {
-                            friendshipDB.getFriend().setProfilePicture(friendshipRealm.getFriend().getProfilePicture());
-                            friendshipDB.getFriend().setDisplayName(friendshipRealm.getFriend().getDisplayName());
-                            friendshipDB.getFriend().setScore(friendshipRealm.getFriend().getScore());
-                            friendshipDB.getFriend().setUsername(friendshipRealm.getFriend().getUsername());
-                            friendshipDB.getFriend().setPhone(friendshipRealm.getFriend().getPhone());
-                            friendshipDB.getFriend().setFbid(friendshipRealm.getFriend().getFbid());
-                        } else {
-                            friendshipRealm.getFriend().setUpdatedAt(new Date());
-                            FriendshipRealm addedFriendship = obsRealm.copyToRealmOrUpdate(friendshipRealm);
-                            userDB.getFriendships().add(addedFriendship);
-                        }
-
-                        boolean found = false;
-                        for (FriendshipRealm friendshipRealmDB : userDB.getFriendships()) {
-                            if (friendshipRealmDB.getId().equals(friendshipRealm.getId()))
-                                found = true;
-                        }
-
-                        if (!found) {
-                            userDB.getFriendships().add(friendshipRealm);
-                        }
-                    }
-                }
+                updateFriendships(obsRealm, userRealm, userDB);
 
                 userDB.setUsername(userRealm.getUsername());
                 userDB.setScore(userRealm.getScore());
@@ -172,6 +80,102 @@ public class UserCacheImpl implements UserCache {
             ex.printStackTrace();
         } finally {
             obsRealm.close();
+        }
+    }
+
+    private void updateFriendships(Realm obsRealm, UserRealm userRealm, UserRealm userDB) {
+        if (userRealm.getMemberships() != null) {
+            for (MembershipRealm membershipRealm : userRealm.getMemberships()) {
+                MembershipRealm membershipDB = obsRealm.where(MembershipRealm.class).equalTo("id", membershipRealm.getId()).findFirst();
+
+                if (membershipDB != null) {
+                    membershipDB.getGroup().setName(membershipRealm.getGroup().getName());
+                    membershipDB.getGroup().setPicture(membershipRealm.getGroup().getPicture());
+                    membershipDB.setMute(membershipRealm.isMute());
+
+                    RealmList<UserRealm> membersEnd = new RealmList<>();
+
+                    if (membershipRealm.getGroup().getMembers() != null) {
+                        for (UserRealm member : membershipRealm.getGroup().getMembers()) {
+                            UserRealm memberDB = obsRealm.where(UserRealm.class).equalTo("id", member.getId()).findFirst();
+
+                            if (memberDB == null) {
+                                memberDB = obsRealm.copyToRealmOrUpdate(member);
+                            }
+
+                            membersEnd.add(memberDB);
+                        }
+                    }
+
+                    membershipDB.getGroup().setMembers(membersEnd);
+                } else {
+                    membershipRealm.setUpdatedAt(new Date());
+
+                    RealmList<UserRealm> members = new RealmList<>();
+
+                    if (membershipRealm.getGroup() != null && membershipRealm.getGroup().getMembers() != null) {
+                        for (UserRealm member : membershipRealm.getGroup().getMembers()) {
+                            if (member.getId().equals(userDB.getId())) members.add(userDB);
+                            else members.add(member);
+                        }
+
+                        membershipRealm.getGroup().setMembers(members);
+                    }
+
+                    membershipDB = obsRealm.copyToRealmOrUpdate(membershipRealm);
+                    userDB.getMemberships().add(membershipDB);
+                }
+
+                boolean found = false;
+                for (MembershipRealm membershipRealmDB : userDB.getMemberships()) {
+                    if (membershipRealmDB.getId().equals(membershipRealm.getId()))
+                        found = true;
+                }
+
+                if (!found) {
+                    userDB.getMemberships().add(membershipDB);
+                }
+            }
+        }
+
+        if (userRealm.getGroups() != null) {
+            for (GroupRealm groupRealm : userRealm.getGroups()) {
+                GroupRealm groupRealmDB = obsRealm.where(GroupRealm.class).equalTo("id", groupRealm.getId()).findFirst();
+
+                if (groupRealmDB != null) {
+                    groupRealmDB.setName(groupRealm.getName());
+                    groupRealmDB.setPicture(groupRealm.getPicture());
+                }
+            }
+        }
+
+        if (userRealm.getFriendships() != null) {
+            for (FriendshipRealm friendshipRealm : userRealm.getFriendships()) {
+                FriendshipRealm friendshipDB = obsRealm.where(FriendshipRealm.class).equalTo("id", friendshipRealm.getId()).findFirst();
+
+                if (friendshipDB != null) {
+                    friendshipDB.getFriend().setProfilePicture(friendshipRealm.getFriend().getProfilePicture());
+                    friendshipDB.getFriend().setDisplayName(friendshipRealm.getFriend().getDisplayName());
+                    friendshipDB.getFriend().setScore(friendshipRealm.getFriend().getScore());
+                    friendshipDB.getFriend().setUsername(friendshipRealm.getFriend().getUsername());
+                    friendshipDB.getFriend().setPhone(friendshipRealm.getFriend().getPhone());
+                    friendshipDB.getFriend().setFbid(friendshipRealm.getFriend().getFbid());
+                } else {
+                    friendshipRealm.getFriend().setUpdatedAt(new Date());
+                    FriendshipRealm addedFriendship = obsRealm.copyToRealmOrUpdate(friendshipRealm);
+                    userDB.getFriendships().add(addedFriendship);
+                }
+
+                boolean found = false;
+                for (FriendshipRealm friendshipRealmDB : userDB.getFriendships()) {
+                    if (friendshipRealmDB.getId().equals(friendshipRealm.getId()))
+                        found = true;
+                }
+
+                if (!found) {
+                    userDB.getFriendships().add(friendshipRealm);
+                }
+            }
         }
     }
 

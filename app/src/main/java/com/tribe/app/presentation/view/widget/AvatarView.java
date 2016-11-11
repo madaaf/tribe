@@ -13,17 +13,16 @@ import android.view.LayoutInflater;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.signature.StringSignature;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.utils.ImageUtils;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -108,46 +107,33 @@ public class AvatarView extends RoundedCornerLayout {
     public void load(Recipient recipient) {
         String previousAvatar = (String) getTag(R.id.profile_picture);
 
-        List<String> urls = new ArrayList<>();
+        if (recipient instanceof Friendship) {
+            if (StringUtils.isEmpty(previousAvatar) || !previousAvatar.equals(recipient.getProfilePicture()))
+                load(recipient.getProfilePicture());
+        } else if (recipient instanceof Membership) {
+            if (StringUtils.isEmpty(recipient.getProfilePicture())) {
+                File groupAvatarFile = FileUtils.getAvatarForGroupId(getContext(), recipient.getSubId(), FileUtils.PHOTO);
 
-        if (StringUtils.isEmpty(previousAvatar) || !previousAvatar.equals(recipient.getProfilePicture())) {
-            if (recipient instanceof Membership && StringUtils.isEmpty(recipient.getProfilePicture())) {
-                Membership membership = (Membership) recipient;
-                urls.addAll(membership.getMembersPic());
-            } else {
-                urls.add(recipient.getProfilePicture());
-            }
-        }
-
-        if (urls != null && urls.size() == 1) {
-            setTag(R.id.profile_picture, urls.get(0));
-            load(urls.get(0));
-        } else if (urls != null && urls.size() > 1) {
-            File groupAvatarFile = FileUtils.getAvatarForGroupId(getContext(), recipient.getSubId(), FileUtils.PHOTO);
-
-            if (StringUtils.isEmpty(previousAvatar) || !previousAvatar.equals(groupAvatarFile.getAbsolutePath())) {
-                if (!groupAvatarFile.exists()) {
-                    System.out.println("CREATE");
-                    ImageUtils.createGroupAvatar(getContext(), recipient.getSubId(), urls, avatarSize)
-                            .subscribe(bitmap -> {
-                                setTag(R.id.profile_picture, groupAvatarFile.getAbsolutePath());
-                                imgAvatar.setImageBitmap(bitmap);
-                            });
-                } else {
+                if ((StringUtils.isEmpty(previousAvatar) || !previousAvatar.equals(groupAvatarFile.getAbsolutePath()))
+                        && groupAvatarFile.exists()) {
                     setTag(R.id.profile_picture, groupAvatarFile.getAbsolutePath());
-                    System.out.println("EXISTS");
 
                     Glide.with(getContext())
                             .load(groupAvatarFile)
+                            .signature(new StringSignature(String.valueOf(groupAvatarFile.lastModified())))
                             .crossFade()
                             .into(imgAvatar);
-                }
+                } else if (!groupAvatarFile.exists()) loadPlaceholder();
+            } else {
+                load(recipient.getProfilePicture());
             }
         }
     }
 
     public void load(String url) {
         if (!StringUtils.isEmpty(url) && !url.equals(getContext().getString(R.string.no_profile_picture_url))) {
+            setTag(R.id.profile_picture, url);
+
             Glide.with(getContext())
                     .load(url)
                     .override(avatarSize, avatarSize)

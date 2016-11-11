@@ -92,7 +92,7 @@ android {
             generateStrings()
             
             signingConfig signingConfigs.debug
-            testCoverageEnabled = "true"
+            testCoverageEnabled true
             applicationIdSuffix = ".debug"
             resValue "string", "app_name", "Tribe DEBUG"
             resValue "string", "tribe_url_filter", "\"${tribe_url_filter_debug}\""

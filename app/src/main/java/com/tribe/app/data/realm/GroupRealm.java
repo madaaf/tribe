@@ -2,7 +2,11 @@ package com.tribe.app.data.realm;
 
 import android.support.annotation.StringDef;
 
+import com.tribe.app.presentation.utils.StringUtils;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -101,5 +105,23 @@ public class GroupRealm extends RealmObject {
 
     public void setAdmins(RealmList<UserRealm> admins) {
         this.admins = admins;
+    }
+
+    public List<String> getMembersPics() {
+        List<String> pics = new ArrayList<>();
+
+        if (members != null) {
+            List<UserRealm> subMembers = members.subList(Math.max(members.size() - 4, 0), members.size());
+
+            if (subMembers != null) {
+                for (UserRealm user : subMembers) {
+                    String url = user.getProfilePicture();
+                    if (!StringUtils.isEmpty(url))
+                        pics.add(url);
+                }
+            }
+        }
+
+        return pics;
     }
 }

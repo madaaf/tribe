@@ -99,6 +99,7 @@ import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
+import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -248,6 +249,8 @@ public interface ApplicationComponent {
     DateUtils dateUtils();
 
     PaletteGrid paletteGrid();
+
+    ImageUtils imageUtils();
 
     @SpeedPlayback
     Preference<Float> speedPlayblack();

@@ -428,7 +428,7 @@
             link
             created_at
             members {
-                ...UserInfos
+                picture
             }
         }
     </string>

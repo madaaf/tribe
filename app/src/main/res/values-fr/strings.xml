@@ -5,6 +5,10 @@
 	<string name="action_delete">Supprimer</string>
 	<string name="action_done">Terminé</string>
 	
+	<!-- User -->
+	<string name="user_friend">amis</string>
+	<string name="user_friends">amis</string>
+	
 	<!-- Group -->
 	<string name="group_member">membre</string>
 	<string name="group_members">membres</string>
@@ -209,15 +213,15 @@
 	<string name="chat_attachment_more_save_success">Sauvegardé !</string>
 	
 	<!-- Private Group -->
-	<string name="group_family_title">:house_with_garden: Famille</string>
-	<string name="group_roomies_title">:pizza: Collocataires</string>
-	<string name="group_bffs_title">:fire: BFFs</string>
-	<string name="group_abroad_title">:airplane: Étranger</string>
-	<string name="group_work_title">:briefcase: Travail</string>
-	<string name="group_classmates_title">:mortar_board: Classe</string>
-	<string name="group_teammates_title">:trophy: Équipe</string>
-	<string name="group_baddest_title">:punch: Les boys</string>
-	<string name="group_not_allowed_title">:nail_care: Les Girls</string>
+	<string name="group_family_title">Famille</string>
+	<string name="group_roomies_title">Collocataires</string>
+	<string name="group_bffs_title">BFFs</string>
+	<string name="group_abroad_title">Étranger</string>
+	<string name="group_work_title">Travail</string>
+	<string name="group_classmates_title">Classe</string>
+	<string name="group_teammates_title">Équipe</string>
+	<string name="group_baddest_title">Les boys</string>
+	<string name="group_not_allowed_title">Les girls</string>
 	
 	<!-- Public Group -->
 	<string name="group_public_family_title">:loudspeaker: Election 2016</string>
@@ -229,6 +233,27 @@
 	<string name="group_public_teammates_title">:muscle: Dab All Day</string>
 	<string name="group_public_baddest_title">:skull: Skate Or Die</string>
 	<string name="group_public_not_allowed_title">:key: Life hacks</string>
+	
+	<!-- Group Identification -->
+	<string name="group_identification_title">Nouveau groupe</string>
+	<string name="group_identification_custom_name_placeholder">Nom du groupe</string>
+	<string name="group_identification_suggestions_title">Suggestions</string>
+	<string name="group_identification_pick_avatar_title">Sélectionner une photo pour le groupe</string>
+	
+	<!-- Add Members -->
+	<string name="group_add_members_title">Ajouter des membres</string>
+	<string name="group_add_members_search_placeholder">Rechercher vos amis</string>
+	
+	<!-- Group Details -->
+	<string name="group_details_title">Détails du groupe</string>
+	<string name="group_details_send_link">Partager le lien du groupe</string>
+	<string name="group_details_add_members_title">Ajouter de nouveaux membres</string>
+	<string name="group_details_add_members_search">Rechercher</string>
+	<string name="group_details_notifications_title">Notifications</string>
+	<string name="group_details_notifications_subtitle">Soyez notifié pour les nouveaux\nmessages dans ce groupe</string>
+	<string name="group_details_leave_title">Quitter le groupe</string>
+	<string name="group_details_leave_subtitle">Vous devrez être à nouveau invité par des membres du groupe pour recevoir des messages dans ce groupe.</string>
+	<string name="group_details_lang_title">Langue des sous-titres</string>
 	
 	<!-- Create group -->
 	<string name="group_create_title">Créer un groupe</string>
@@ -274,6 +299,8 @@
 	<string name="settings_title">Paramètres</string>
 	<string name="settings_profile_title">Profil</string>
 	<string name="settings_profile_subtitle">Modifier votre photo de profil, nom d\'affichage et nom d\'utilisateur.</string>
+	<string name="settings_profile_share_title">Lien vers %1$s</string>
+	<string name="settings_score_subtitle">Jetez un oeil à votre niveau et les suivants.</string>
 	<string name="settings_filter_title">Sélectionner un filtre</string>
 	<string name="settings_theme_title">Sélectionner un thème</string>
 	<string name="settings_notifications_title">Notifications</string>
@@ -369,14 +396,15 @@
 	<string name="grid_filter_title">Filter la grille par lettre</string>
 	
 	<!-- Top Bar -->
-	<string name="topbar_create_group">Créer un groupe</string>
-	<string name="topbar_invite_friend">Inviter un ami</string>
+	<string name="topbar_create_group">Groupe</string>
+	<string name="topbar_invite_friend">Invitations</string>
 	
 	<!-- Ear Mode -->
 	<string name="earmode_title">Mode oreille.</string>
 	<string name="earmode_description">La caméra est masquée. Placez votre téléphone contre votre oreille pour écouter ou retirez le pour écouter en mode haut parleur.</string>
 	
 	<!-- Score -->
+	<string name="score_title">Score</string>
 	<string name="score_current_level">Votre niveau</string>
 	<string name="score_next_level">Prochain niveau dans</string>
 	<string name="score_points_system_button">Régles du jeu</string>

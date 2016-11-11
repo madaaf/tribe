@@ -82,10 +82,16 @@ public class Group implements Serializable {
     public List<String> getMembersPics() {
         List<String> pics = new ArrayList<>();
 
-        for (User user : members) {
-            String url = user.getProfilePicture();
-            if (!StringUtils.isEmpty(url))
-                pics.add(url);
+        if (members != null) {
+            List<User> subMembers = members.subList(Math.max(members.size() - 4, 0), members.size());
+
+            if (subMembers != null) {
+                for (User user : subMembers) {
+                    String url = user.getProfilePicture();
+                    if (!StringUtils.isEmpty(url))
+                        pics.add(url);
+                }
+            }
         }
 
         return pics;

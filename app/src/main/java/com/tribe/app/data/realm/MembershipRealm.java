@@ -1,6 +1,7 @@
 package com.tribe.app.data.realm;
 
 import java.util.Date;
+import java.util.List;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -113,5 +114,13 @@ public class MembershipRealm extends RealmObject implements RecipientRealmInterf
     @Override
     public String getSubId() {
         return group.getId();
+    }
+
+    public List<String> getMembersPic() {
+        return group.getMembersPics();
+    }
+
+    public String getPicture() {
+        return group.getPicture();
     }
 }
