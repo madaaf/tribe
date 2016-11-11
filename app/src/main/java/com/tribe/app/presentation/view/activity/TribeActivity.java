@@ -647,22 +647,17 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
             pitch = filterPitch.lowPass(pitch);
             roll = filterRoll.lowPass(roll);
 
-            //System.out.println("yaw : " + yaw);
-            //System.out.println("pitch : " + pitch);
-            //System.out.println("roll : " + roll);
-            //System.out.println("isNear : " + isNear);
-
-            if (Math.abs(pitch) > 25 && Math.abs(pitch) < 50
+            if (Math.abs(pitch) > 15 && Math.abs(pitch) < 50
                     && isNear
-                    && Math.abs(roll) > 90 && Math.abs(roll) < 110
+                    && Math.abs(roll) > 80 && Math.abs(roll) < 130
                     && !earMode) {
                 earMode = true;
                 viewTribePager.changeAudioStreamType(AudioManager.STREAM_VOICE_CALL);
                 audioManager.setSpeakerphoneOn(false);
                 earModeView.setVisibility(View.VISIBLE);
-            } else if ((Math.abs(pitch) < 25 || Math.abs(pitch) > 50
+            } else if ((Math.abs(pitch) < 15 || Math.abs(pitch) > 50
                     || !isNear
-                    || Math.abs(roll) < 90 || Math.abs(roll) > 110)
+                    || Math.abs(roll) < 80 || Math.abs(roll) > 130)
                     && earMode) {
                 earMode = false;
                 viewTribePager.changeAudioStreamType(AudioManager.STREAM_MUSIC);

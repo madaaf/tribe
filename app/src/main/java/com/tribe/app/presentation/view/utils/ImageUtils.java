@@ -186,7 +186,8 @@ public class ImageUtils {
                             }
 
                             case 3: {
-                                left = 0;
+                                int bitmapSize = bitmapPairList.get(i).second.getWidth();
+                                left = bitmapSize > halfSize ? halfSize - bitmapSize : 0;
                                 top = halfSize;
                             }
                         }
