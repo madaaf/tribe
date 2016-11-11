@@ -4,19 +4,18 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.tbruyelle.rxpermissions.RxPermissions;
@@ -39,6 +38,7 @@ import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
+import com.tribe.app.presentation.view.utils.LowPassFilter;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
@@ -112,10 +112,26 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
     private LabelSheetAdapter moreTypeAdapter;
     private boolean isRecording = false;
     private AudioManager audioManager;
-    private SensorManager sensorManager;
-    private Sensor proximity;
     private Tutorial tutorial;
     private boolean isReplyMode;
+
+    // SENSORS
+    private SensorManager sensorManager;
+    private Sensor proximity;
+    private Sensor magnetic;
+    private Sensor accelerometer;
+    private float[] lastMagFields = new float[3];
+    private float[] lastAccels = new float[3];
+    private float[] rotationMatrix = new float[16];
+    private float[] orientation = new float[4];
+    private boolean isNear;
+    private boolean earMode = false;
+    private float pitch = 0.f;
+    private float yaw = 0.f;
+    private float roll = 0.f;
+    private LowPassFilter filterYaw = new LowPassFilter(0.03f);
+    private LowPassFilter filterPitch = new LowPassFilter(0.03f);
+    private LowPassFilter filterRoll = new LowPassFilter(0.03f);
 
     // BINDERS / SUBSCRIPTIONS
     private Unbinder unbinder;
@@ -147,6 +163,8 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
         tribePresenter.onResume();
 
         sensorManager.registerListener(this, proximity, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, magnetic, SensorManager.SENSOR_DELAY_GAME);
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         audioManager.setMode(AudioManager.MODE_IN_CALL);
     }
 
@@ -196,6 +214,8 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         proximity = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        magnetic = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
     }
 
     private void initUi() {
@@ -598,26 +618,56 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
+        switch (sensorEvent.sensor.getType()) {
+            case Sensor.TYPE_PROXIMITY:
+                if (sensorEvent.values.length > 0) {
+                    // From Android doc : Note: Some proximity sensors only support a binary near or far measurement.
+                    // In this case, the sensor should report its maximum range value in the far state and a lesser value in the near state.
+                    isNear = sensorEvent.values[0] < sensorEvent.sensor.getMaximumRange();
+                }
+                break;
+            case Sensor.TYPE_ACCELEROMETER:
+                System.arraycopy(sensorEvent.values, 0, lastAccels, 0, 3);
+                break;
+            case Sensor.TYPE_MAGNETIC_FIELD:
+                System.arraycopy(sensorEvent.values, 0, lastMagFields, 0, 3);
+                break;
+            default:
+                return;
+        }
 
-        if (sensorEvent.sensor.getType() == Sensor.TYPE_PROXIMITY &&
-                sensorEvent.values.length > 0) {
+        if (SensorManager.getRotationMatrix(rotationMatrix, null, lastAccels, lastMagFields)) {
+            SensorManager.getOrientation(rotationMatrix, orientation);
 
-            // From Android doc : Note: Some proximity sensors only support a binary near or far measurement.
-            // In this case, the sensor should report its maximum range value in the far state and a lesser value in the near state.
-            boolean isNear = sensorEvent.values[0] < sensorEvent.sensor.getMaximumRange();
+            float yaw = (float) (Math.toDegrees(orientation[0]));
+            float pitch = (float) Math.toDegrees(orientation[1]);
+            float roll = (float) Math.toDegrees(orientation[2]);
 
-            if (isNear) {
+            yaw = filterYaw.lowPass(yaw);
+            pitch = filterPitch.lowPass(pitch);
+            roll = filterRoll.lowPass(roll);
+
+            //System.out.println("yaw : " + yaw);
+            //System.out.println("pitch : " + pitch);
+            //System.out.println("roll : " + roll);
+            //System.out.println("isNear : " + isNear);
+
+            if (Math.abs(pitch) > 25 && Math.abs(pitch) < 50
+                    && isNear
+                    && Math.abs(roll) > 90 && Math.abs(roll) < 110
+                    && !earMode) {
+                earMode = true;
+                viewTribePager.changeAudioStreamType(AudioManager.STREAM_VOICE_CALL);
                 audioManager.setSpeakerphoneOn(false);
                 earModeView.setVisibility(View.VISIBLE);
-                earModeView.setOnClickListener(view -> {
-
-                    // Nothing here, just listening to catch the touch events.
-                });
-
-            } else {
+            } else if ((Math.abs(pitch) < 25 || Math.abs(pitch) > 50
+                    || !isNear
+                    || Math.abs(roll) < 90 || Math.abs(roll) > 110)
+                    && earMode) {
+                earMode = false;
+                viewTribePager.changeAudioStreamType(AudioManager.STREAM_MUSIC);
                 audioManager.setSpeakerphoneOn(true);
                 earModeView.setVisibility(View.GONE);
-                earModeView.setOnClickListener(null);
             }
         }
     }

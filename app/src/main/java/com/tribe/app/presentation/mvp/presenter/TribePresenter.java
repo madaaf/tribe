@@ -2,8 +2,6 @@ package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.MarkTribeAsSavedJob;
-import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
-import com.tribe.app.data.network.job.UpdateScoreJob;
 import com.tribe.app.data.network.job.UpdateTribeToDownloadJob;
 import com.tribe.app.data.network.job.UpdateUserListScoreJob;
 import com.tribe.app.domain.entity.Recipient;
@@ -18,7 +16,6 @@ import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.presentation.mvp.view.SendTribeView;
 import com.tribe.app.presentation.mvp.view.TribeView;
 import com.tribe.app.presentation.mvp.view.View;
-import com.tribe.app.presentation.view.utils.ScoreUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -91,10 +88,10 @@ public class TribePresenter extends SendTribePresenter implements Presenter {
     }
 
     public void markTribeListAsRead(Recipient recipient, List<TribeMessage> tribeList) {
-        if (tribeList != null && tribeList.size() > 0)
-            jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.SEND_RECEIVE_TRIBE, tribeList.size()));
-
-        jobManager.addJobInBackground(new MarkTribeListAsReadJob(recipient, tribeList));
+//        if (tribeList != null && tribeList.size() > 0)
+//            jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.SEND_RECEIVE_TRIBE, tribeList.size()));
+//
+//        jobManager.addJobInBackground(new MarkTribeListAsReadJob(recipient, tribeList));
     }
 
     public void markTribeAsSave(Recipient recipient, TribeMessage tribeMessage) {

@@ -1211,6 +1211,11 @@ public class TribePagerView extends FrameLayout {
         currentView.changeSpeed();
     }
 
+    public void changeAudioStreamType(int audioStreamType) {
+        computeCurrentView();
+        if (currentView != null) currentView.changeAudioStreamType(audioStreamType);
+    }
+
     public void updateCurrentView() {
         computeCurrentView();
         currentView.updateLocation();

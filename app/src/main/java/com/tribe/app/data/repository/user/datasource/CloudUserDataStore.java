@@ -182,7 +182,7 @@ public class CloudUserDataStore implements UserDataStore {
                         .flatMap(membershipRealm -> {
                             if (StringUtils.isEmpty(membershipRealm.getPicture())) {
                                 File groupAvatarFile = FileUtils.getAvatarForGroupId(context, membershipRealm.getSubId(), FileUtils.PHOTO);
-                                
+
                                 if (!groupAvatarFile.exists() && membershipRealm.getMembersPic() != null && membershipRealm.getMembersPic().size() > 0) {
                                     return ImageUtils.createGroupAvatar(context, membershipRealm.getSubId(), membershipRealm.getMembersPic(), avatarSize)
                                             .map(bitmap -> bitmap != null);

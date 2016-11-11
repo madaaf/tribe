@@ -7,6 +7,9 @@
         android:id="@+id/earModeView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:clickable="true"
         android:background="@color/black.tribe"
         android:visibility="gone">
 
