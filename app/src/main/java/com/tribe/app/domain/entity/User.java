@@ -1,6 +1,5 @@
 package com.tribe.app.domain.entity;
 
-import com.tribe.app.presentation.mvp.view.UpdateScore;
 import com.tribe.app.presentation.view.utils.Constants;
 
 import java.io.Serializable;
@@ -30,11 +29,8 @@ public class User implements Serializable {
     private String fbid;
     private boolean invisible_mode;
 
-    private List<UpdateScore> scoreListenerList;
-
     public User(String id) {
         this.id = id;
-        scoreListenerList = new ArrayList<>();
     }
 
     public int getScore() {
@@ -161,10 +157,6 @@ public class User implements Serializable {
         this.invisible_mode = invisibleMode;
     }
 
-    public List<UpdateScore> getScoreListenerList() {
-        return scoreListenerList;
-    }
-
     public List<Recipient> getFriendshipList() {
         friendshipList = new ArrayList<>();
 
@@ -205,9 +197,7 @@ public class User implements Serializable {
             setDisplayName(user.getDisplayName());
             setUsername(user.getUsername());
             setProfilePicture(user.getProfilePicture());
-            int previousScore = score;
             setScore(user.getScore());
-            if (previousScore != score) notifyAllScoreListeners(previousScore, score);
             setPhone(user.getPhone());
             setFbid(user.getFbid());
             setInvisibleMode(user.isInvisibleMode());
@@ -233,21 +223,6 @@ public class User implements Serializable {
         setLocation(null);
         setMembershipList(null);
         setFriendships(null);
-    }
-
-    public void addScoreListener(UpdateScore listener) {
-        if (!scoreListenerList.contains(listener)) scoreListenerList.add(listener);
-    }
-
-    public void removeScoreListener(UpdateScore listener) {
-        scoreListenerList.remove(listener);
-    }
-
-    private void notifyAllScoreListeners(int previousScore, int newScore) {
-        if (newScore >= previousScore) {
-            for (UpdateScore updateScore : scoreListenerList)
-                updateScore.updateScore(previousScore, newScore);
-        }
     }
 
     public boolean hasOnlySupport() {

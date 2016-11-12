@@ -4,6 +4,10 @@
 	<string name="action_cancel">Annuler</string>
 	<string name="action_delete">Supprimer</string>
 	<string name="action_done">Terminé</string>
+	<string name="action_back">Retour</string>
+	<string name="action_save">Valider</string>
+	<string name="action_create">Créer</string>
+	<string name="action_close">Fermer</string>
 	
 	<!-- User -->
 	<string name="user_friend">amis</string>
@@ -255,11 +259,14 @@
 	<string name="group_details_leave_subtitle">Vous devrez être à nouveau invité par des membres du groupe pour recevoir des messages dans ce groupe.</string>
 	<string name="group_details_lang_title">Langue des sous-titres</string>
 	
+	<!-- Group Name -->
+	<string name="group_name_title">Identité du groupe</string>
+	<string name="group_pick_avatar_title">Selectionner une photo pour le groupe</string>
+	
 	<!-- Create group -->
 	<string name="group_create_title">Créer un groupe</string>
 	<string name="group_private_name_placeholder">Nom du groupe privé</string>
 	<string name="group_public_name_placeholder">Nom du groupe public</string>
-	<string name="group_pick_avatar_title">Selectionner une photo pour le groupe</string>
 	<string name="group_suggestions_title">Suggestions de noms</string>
 	<string name="group_private_title">Privé</string>
 	<string name="group_private_description">Groupe fermés pour vos conversations privées</string>
@@ -465,7 +472,7 @@
 	<string name="share_add_friends_addressbook_suggestions">I was able to get access to Tribe. Just noticed that you already have %1$d friends on this app. I can get you in: %2$s #JoinTheTribe</string>
 	<string name="share_group_public_link">Here is your invite to join the %1$s group on Tribe. %2$s #JoinTheTribe</string>
 	<string name="share_group_private_link">Here is your invite to join the %1$s group on Tribe. Join quickly because this invite will expire in %2$s ! %3$s #JoinTheTribe</string>
-	<string name="share_add_friends_handle">I locked up %1$s handle on Tribe. Reserve yours now before it\'s too late on %2$s #JoinTheTribe</string>
+	<string name="share_add_friends_handle">Je suis %1$s sur Tribe. Je peux te donner accès maintenant. %2$s</string>
 	<string name="share_score">I have %1$s points on Tribe %2$s. Try to beat me on http://tribe.pm #JoinTheTribe</string>
 	<string name="share_onboarding">I just discovered Tribe, but I can’t enter alone. Come now so we can get access together. Waiting for you. Go on %1$s #JoinTheTribe</string>
 	<string name="share_copied_redirecting">:paperclip: Ajouté au presse-papier. Préparez-vous à coller.</string>

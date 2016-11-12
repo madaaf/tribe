@@ -218,8 +218,6 @@ public class ImageUtils {
                         canvas.drawLine(halfSize, 0, halfSize, avatarSize, drawLinePaint);
                     }
 
-                    System.out.println("CREATING AVATAR FOR : " + id);
-
                     File endFile = FileUtils.getAvatarForGroupId(context, id, FileUtils.PHOTO);
                     FileUtils.bitmapToFile(base, endFile);
                     return base;

@@ -4,11 +4,14 @@ import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
 import com.tribe.app.data.network.job.UpdateFriendshipJob;
 import com.tribe.app.data.network.job.UpdateMessagesJob;
+import com.tribe.app.data.network.job.UpdateScoreJob;
 import com.tribe.app.data.network.job.UpdateTribeDownloadedJob;
 import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.data.realm.Installation;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
@@ -20,14 +23,19 @@ import com.tribe.app.domain.interactor.tribe.ConfirmTribe;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.DiskMarkTribeListAsRead;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
+import com.tribe.app.domain.interactor.user.CreateMembership;
 import com.tribe.app.domain.interactor.user.DiskUpdateFriendship;
 import com.tribe.app.domain.interactor.user.DoBootstrapSupport;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
+import com.tribe.app.domain.interactor.user.GetHeadDeepLink;
 import com.tribe.app.domain.interactor.user.LeaveGroup;
 import com.tribe.app.domain.interactor.user.RemoveGroup;
+import com.tribe.app.domain.interactor.user.SendToken;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.SendTribeView;
 import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.utils.ScoreUtils;
 
 import java.util.List;
 
@@ -35,8 +43,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 public class HomeGridPresenter extends SendTribePresenter {
-
-    private static final int PRELOAD_MAX = 5;
 
     // VIEW ATTACHED
     private HomeGridView homeGridView;
@@ -47,10 +53,13 @@ public class HomeGridPresenter extends SendTribePresenter {
     private UseCaseDisk diskGetPendingTribeListUsecase;
     private DiskMarkTribeListAsRead diskMarkTribeListAsRead;
     private DiskUpdateFriendship diskUpdateFriendship;
-    private final LeaveGroup leaveGroup;
-    private final RemoveGroup removeGroup;
-    private final DoBootstrapSupport doBootstrapSupport;
-    private final UseCaseDisk diskUpdateTribesReceivedToNotSeen;
+    private LeaveGroup leaveGroup;
+    private RemoveGroup removeGroup;
+    private DoBootstrapSupport doBootstrapSupport;
+    private UseCaseDisk diskUpdateTribesReceivedToNotSeen;
+    private SendToken sendTokenUseCase;
+    private GetHeadDeepLink getHeadDeepLink;
+    private CreateMembership createMembership;
 
     // SUBSCRIBERS
     private UpdateTribesReceivedToNotSeenSubscriber updateTribesReceivedToNotSeenSubscriber;
@@ -73,7 +82,10 @@ public class HomeGridPresenter extends SendTribePresenter {
                              RemoveGroup removeGroup,
                              DiskUpdateFriendship diskUpdateFriendship,
                              DoBootstrapSupport bootstrapSupport,
-                             @Named("diskUpdateMessagesReceivedToNotSeen") UseCaseDisk diskUpdateTribesReceivedToNotSeen) {
+                             @Named("diskUpdateMessagesReceivedToNotSeen") UseCaseDisk diskUpdateTribesReceivedToNotSeen,
+                             @Named("sendToken") SendToken sendToken,
+                             GetHeadDeepLink getHeadDeepLink,
+                             CreateMembership createMembership) {
         super(jobManager, jobManagerDownload, diskSaveTribe, diskDeleteTribe, confirmTribe);
         this.diskUserInfosUsecase = diskUserInfos;
         this.diskGetMessageReceivedListUsecase = diskGetReceivedMessageList;
@@ -84,6 +96,9 @@ public class HomeGridPresenter extends SendTribePresenter {
         this.diskUpdateFriendship = diskUpdateFriendship;
         this.doBootstrapSupport = bootstrapSupport;
         this.diskUpdateTribesReceivedToNotSeen = diskUpdateTribesReceivedToNotSeen;
+        this.sendTokenUseCase = sendToken;
+        this.getHeadDeepLink = getHeadDeepLink;
+        this.createMembership = createMembership;
     }
 
     @Override
@@ -114,6 +129,7 @@ public class HomeGridPresenter extends SendTribePresenter {
     @Override
     public void onPause() {
         super.onPause();
+        sendTokenUseCase.unsubscribe();
         diskDeleteTribeUsecase.unsubscribe();
         diskSaveTribeUsecase.unsubscribe();
         diskGetMessageReceivedListUsecase.unsubscribe();
@@ -122,6 +138,8 @@ public class HomeGridPresenter extends SendTribePresenter {
         leaveGroup.unsubscribe();
         removeGroup.unsubscribe();
         diskUpdateTribesReceivedToNotSeen.unsubscribe();
+        getHeadDeepLink.unsubscribe();
+        createMembership.unsubscribe();
     }
 
     @Override
@@ -207,12 +225,23 @@ public class HomeGridPresenter extends SendTribePresenter {
         removeGroup.execute(new RemoveGroupSubscriber());
     }
 
-    public void boostrapSupport() {
-        if (bootstrapSupportSubscriber != null)
-            bootstrapSupportSubscriber.unsubscribe();
+    public void getHeadDeepLink(String url) {
+        getHeadDeepLink.prepare(url);
+        getHeadDeepLink.execute(new GetHeadDeepLinkSubscriber());
+    }
 
-        bootstrapSupportSubscriber = new BootstrapSupportSubscriber();
-        doBootstrapSupport.execute(bootstrapSupportSubscriber);
+    public void createMembership(String groupId) {
+        createMembership.setGroupId(groupId);
+        createMembership.execute(new CreateMembershipSubscriber());
+    }
+
+    public void updateScoreCamera() {
+        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.CAMERA, 1));
+    }
+
+    public void sendToken(String token) {
+        sendTokenUseCase.setToken(token);
+        sendTokenUseCase.execute(new SendTokenSubscriber());
     }
 
     @Override
@@ -223,8 +252,7 @@ public class HomeGridPresenter extends SendTribePresenter {
     private final class FriendListSubscriber extends DefaultSubscriber<User> {
 
         @Override
-        public void onCompleted() {
-        }
+        public void onCompleted() {}
 
         @Override
         public void onError(Throwable e) {
@@ -259,8 +287,7 @@ public class HomeGridPresenter extends SendTribePresenter {
     private final class TribePendingListSubscriber extends DefaultSubscriber<List<TribeMessage>> {
 
         @Override
-        public void onCompleted() {
-        }
+        public void onCompleted() {}
 
         @Override
         public void onError(Throwable e) {
@@ -276,9 +303,7 @@ public class HomeGridPresenter extends SendTribePresenter {
 
     private final class LeaveGroupSubscriber extends DefaultSubscriber<Void> {
         @Override
-        public void onCompleted() {
-
-        }
+        public void onCompleted() {}
 
         @Override
         public void onError(Throwable e) {
@@ -293,9 +318,7 @@ public class HomeGridPresenter extends SendTribePresenter {
 
     private final class RemoveGroupSubscriber extends DefaultSubscriber<Void> {
         @Override
-        public void onCompleted() {
-
-        }
+        public void onCompleted() {}
 
         @Override
         public void onError(Throwable e) {
@@ -311,8 +334,7 @@ public class HomeGridPresenter extends SendTribePresenter {
     private final class UpdateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
 
         @Override
-        public void onCompleted() {
-        }
+        public void onCompleted() {}
 
         @Override
         public void onError(Throwable e) {
@@ -328,8 +350,7 @@ public class HomeGridPresenter extends SendTribePresenter {
     private class BootstrapSupportSubscriber extends DefaultSubscriber<Void> {
 
         @Override
-        public void onCompleted() {
-        }
+        public void onCompleted() {}
 
         @Override
         public void onError(Throwable e) {
@@ -345,8 +366,7 @@ public class HomeGridPresenter extends SendTribePresenter {
     private class UpdateTribesReceivedToNotSeenSubscriber extends DefaultSubscriber<Void> {
 
         @Override
-        public void onCompleted() {
-        }
+        public void onCompleted() {}
 
         @Override
         public void onError(Throwable e) {
@@ -356,6 +376,51 @@ public class HomeGridPresenter extends SendTribePresenter {
         @Override
         public void onNext(Void aVoid) {
             loadFriendList(null);
+        }
+    }
+
+    private final class GetHeadDeepLinkSubscriber extends DefaultSubscriber<String> {
+
+        @Override
+        public void onCompleted() {}
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(String url) {
+            if (!StringUtils.isEmpty(url)) homeGridView.onDeepLink(url);
+        }
+    }
+
+    private final class CreateMembershipSubscriber extends DefaultSubscriber<Membership> {
+
+        @Override
+        public void onCompleted() {}
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(Membership membership) {
+            homeGridView.onMembershipCreated(membership);
+        }
+    }
+
+    private final class SendTokenSubscriber extends DefaultSubscriber<Installation> {
+
+        @Override
+        public void onCompleted() {}
+
+        @Override
+        public void onError(Throwable e) {}
+
+        @Override
+        public void onNext(Installation installation) {
         }
     }
 }
