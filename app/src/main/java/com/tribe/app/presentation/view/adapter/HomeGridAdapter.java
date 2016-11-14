@@ -16,7 +16,6 @@ import com.tribe.app.presentation.view.adapter.delegate.grid.SupportGridAdapterD
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.filter.RecipientFilter;
 import com.tribe.app.presentation.view.adapter.interfaces.RecyclerViewItemEnabler;
-import com.tribe.app.presentation.view.component.PullToSearchView;
 import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
@@ -206,7 +205,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
     }
 
     public void filterList(String text) {
-        if (!StringUtils.isEmpty(text) && !text.equals(PullToSearchView.HOME)) {
+        if (!StringUtils.isEmpty(text)) {
             hasFilter = true;
             filter.filter(text);
         } else {

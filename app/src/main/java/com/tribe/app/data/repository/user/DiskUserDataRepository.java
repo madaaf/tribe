@@ -32,7 +32,7 @@ import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.component.PullToSearchView;
+import com.tribe.app.presentation.view.component.FilterView;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import java.util.ArrayList;
@@ -166,12 +166,12 @@ public class DiskUserDataRepository implements UserRepository {
                     return user;
                 }
         ).map(user -> {
-            if (!StringUtils.isEmpty(filterRecipient) && !filterRecipient.equals(PullToSearchView.HOME)) {
+            if (!StringUtils.isEmpty(filterRecipient)) {
                 List<Friendship> filteredFriendshipList = new ArrayList<>();
                 List<Membership> filteredMembershipList = new ArrayList<>();
 
                 for (Friendship friendship : user.getFriendships()) {
-                    if (PullToSearchView.shouldFilter(filterRecipient, friendship)) {
+                    if (FilterView.shouldFilter(filterRecipient, friendship)) {
                         filteredFriendshipList.add(friendship);
                     }
                 }
@@ -179,7 +179,7 @@ public class DiskUserDataRepository implements UserRepository {
                 user.setFriendships(filteredFriendshipList);
 
                 for (Membership membership : user.getMembershipList()) {
-                    if (PullToSearchView.shouldFilter(filterRecipient, membership)) {
+                    if (FilterView.shouldFilter(filterRecipient, membership)) {
                         filteredMembershipList.add(membership);
                     }
                 }

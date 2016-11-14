@@ -90,7 +90,7 @@ import com.tribe.app.presentation.view.adapter.delegate.text.VideoMessageAdapter
 import com.tribe.app.presentation.view.camera.view.GlPreview;
 import com.tribe.app.presentation.view.camera.view.HistogramVisualizerView;
 import com.tribe.app.presentation.view.component.PullToSearchContainer;
-import com.tribe.app.presentation.view.component.PullToSearchView;
+import com.tribe.app.presentation.view.component.FilterView;
 import com.tribe.app.presentation.view.component.RatingView;
 import com.tribe.app.presentation.view.component.SettingItemView;
 import com.tribe.app.presentation.view.component.TribeComponentView;
@@ -164,7 +164,7 @@ public interface ApplicationComponent {
     void inject(ButtonPointsView buttonPointsView);
     void inject(SearchResultGridAdapterDelegate searchResultGridAdapterDelegate);
     void inject(PullToSearchContainer pullToSearchContainer);
-    void inject(PullToSearchView pullToSearchView);
+    void inject(FilterView filterView);
     void inject(SettingItemView settingItemView);
     void inject(ButtonCardView buttonCardView);
     void inject(GlPreview glPreview);

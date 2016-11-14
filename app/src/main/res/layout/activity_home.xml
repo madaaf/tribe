@@ -13,6 +13,17 @@
         android:layout_height="match_parent"
         android:background="@android:color/white"
         />
+
+    <ImageView
+        android:id="@+id/imgFilterView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="8.5dp"
+        android:src="@drawable/picto_keyboard_search"
+        android:foreground="@drawable/selectable_button"
+        android:clickable="true"
+        />
     
     <com.tribe.app.presentation.view.widget.CameraWrapper
         android:id="@+id/cameraWrapper"
@@ -22,5 +33,15 @@
         app:cardUseCompatPadding="true"
         app:cardPreventCornerOverlap="false"
         android:background="@null"
+        />
+
+    <com.tribe.app.presentation.view.component.FilterView
+        android:id="@+id/viewFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:elevation="10dp"
+        android:background="@null"
+        android:visibility="invisible"
         />
 </FrameLayout>

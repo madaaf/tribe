@@ -4,7 +4,7 @@ import android.widget.Filter;
 
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
-import com.tribe.app.presentation.view.component.PullToSearchView;
+import com.tribe.app.presentation.view.component.FilterView;
 import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
@@ -36,7 +36,7 @@ public class RecipientFilter extends Filter {
             filteredRecipientList.add(recipientList.get(0));
 
             for (final Recipient item : recipientList.subList(1, recipientList.size() - 1)) {
-                if (!item.getId().equals(Recipient.ID_EMPTY) && PullToSearchView.shouldFilter(constraint.toString(), item)) {
+                if (!item.getId().equals(Recipient.ID_EMPTY) && FilterView.shouldFilter(constraint.toString(), item)) {
                     filteredRecipientList.add(item);
                 }
             }

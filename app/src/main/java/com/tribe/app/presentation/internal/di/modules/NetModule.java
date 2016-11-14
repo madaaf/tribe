@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.ConditionVariable;
 import android.util.Base64;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -304,9 +305,9 @@ public class NetModule {
 
         if (BuildConfig.DEBUG) {
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
             httpClientBuilder.addInterceptor(loggingInterceptor);
-            //httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+            httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
         }
 
         return new Retrofit.Builder()
@@ -370,12 +371,12 @@ public class NetModule {
             return chain.proceed(request);
         });
 
-//        if (BuildConfig.DEBUG) {
-//            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-//            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
-//            httpClientBuilder.addInterceptor(loggingInterceptor);
-//            httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
-//        }
+        if (BuildConfig.DEBUG) {
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+            httpClientBuilder.addInterceptor(loggingInterceptor);
+            httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+        }
 
         return new Retrofit.Builder()
                 .baseUrl(BuildConfig.TRIBE_AUTH)

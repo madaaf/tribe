@@ -7,11 +7,11 @@ import android.support.v7.widget.RecyclerView;
 /**
  * Layout manager to position items inside a {@link RecyclerView}.
  */
-public class PullToSearchLayoutManager extends GridLayoutManager {
+public class FilterViewLayoutManager extends GridLayoutManager {
 
-    public static final int spanCount = 5;
+    public static final int spanCount = 6;
 
-    public PullToSearchLayoutManager(Context context) {
+    public FilterViewLayoutManager(Context context) {
         super(context, spanCount);
     }
 

@@ -116,8 +116,7 @@
     <dimen name="friend_adapter_fill_size">30dp</dimen>
     <dimen name="group_member_image_size">50dp</dimen>
     <dimen name="nav_icon_size">50dp</dimen>
-    <dimen name="pull_to_search_letter_size">30dp</dimen>
-    <dimen name="pull_to_search_letter_selected_size">40dp</dimen>
+    <dimen name="filter_letter_size">35dp</dimen>
     <dimen name="image_badge_size">20dp</dimen>
     <dimen name="group_cpv_size">28dp</dimen>
     <dimen name="cards_icon_size">15dp</dimen>

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
-import com.tribe.app.domain.entity.PTSEntity;
+import com.tribe.app.domain.entity.FilterEntity;
 import com.tribe.app.presentation.view.adapter.delegate.pulltosearch.IconAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.pulltosearch.LetterAdapterDelegate;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -20,19 +20,19 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by tiago on 18/05/2016.
  */
-public class PullToSearchAdapter extends RecyclerView.Adapter {
+public class FilterViewAdapter extends RecyclerView.Adapter {
 
     // DELEGATES
-    private RxAdapterDelegatesManager<List<PTSEntity>> delegatesManager;
+    private RxAdapterDelegatesManager<List<FilterEntity>> delegatesManager;
     private LetterAdapterDelegate letterAdapterDelegate;
 
-    private List<PTSEntity> items;
+    private List<FilterEntity> items;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
     @Inject
-    public PullToSearchAdapter(Context context) {
+    public FilterViewAdapter(Context context) {
         delegatesManager = new RxAdapterDelegatesManager<>();
         delegatesManager.addDelegate(new IconAdapterDelegate(context));
 
@@ -51,8 +51,8 @@ public class PullToSearchAdapter extends RecyclerView.Adapter {
 
     @Override
     public long getItemId(int position) {
-        PTSEntity ptsEntity = getPTSEntity(position);
-        return ptsEntity.hashCode();
+        FilterEntity filterEntity = getPTSEntity(position);
+        return filterEntity.hashCode();
     }
 
     @Override
@@ -75,13 +75,13 @@ public class PullToSearchAdapter extends RecyclerView.Adapter {
         delegatesManager.releaseSubscriptions();
     }
 
-    public void setItems(List<PTSEntity> ptsEntityList) {
+    public void setItems(List<FilterEntity> filterEntityList) {
         items.clear();
-        items.addAll(ptsEntityList);
+        items.addAll(filterEntityList);
         notifyDataSetChanged();
     }
 
-    public PTSEntity getPTSEntity(int position) {
+    public FilterEntity getPTSEntity(int position) {
         return items.get(position);
     }
 

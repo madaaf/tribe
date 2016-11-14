@@ -12,9 +12,14 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 import com.f2prateek.rx.preferences.Preference;
+import com.facebook.rebound.SimpleSpringListener;
+import com.facebook.rebound.Spring;
+import com.facebook.rebound.SpringConfig;
+import com.facebook.rebound.SpringSystem;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -46,6 +51,7 @@ import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
+import com.tribe.app.presentation.view.component.FilterView;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
@@ -63,12 +69,15 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class HomeActivity extends BaseActivity implements HasComponent<UserComponent>, HomeGridView, GoogleApiClient.OnConnectionFailedListener {
+
+    private static final SpringConfig FILTER_VIEW_BOUNCE_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(1f, 20f);
 
     private static final int TIME_MIN_RECORDING = 1500; // IN MS
 
@@ -118,6 +127,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @BindView(R.id.cameraWrapper)
     CameraWrapper cameraWrapper;
 
+    @BindView(R.id.viewFilter)
+    FilterView viewFilter;
+
     // OBSERVABLES
     private UserComponent userComponent;
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -134,6 +146,14 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private BottomSheetDialog bottomSheetPendingTribeDialog;
     private RecyclerView recyclerViewPending;
     private LabelSheetAdapter labelSheetAdapter;
+    private boolean isFilterMode = false;
+
+    // SPRINGS
+    private SpringSystem springSystem = null;
+    private Spring springFilterView;
+    private FilterSpringListener springFilterListener;
+    //private Spring springFilterView;
+    //private FilterSpringListener springFilterListener;
 
     // DIMEN
     private int marginHorizontalSmall, translationBackToTop;
@@ -143,11 +163,13 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         super.onCreate(savedInstanceState);
 
         initDependencyInjector();
+        init();
         initUi();
         initDimensions();
         initCamera();
         initPresenter();
         initRegistrationToken();
+        initFilterView();
         initRecyclerView();
         manageDeepLink(getIntent());
 
@@ -216,6 +238,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
 
         super.onDestroy();
+    }
+
+    private void init() {
+        pendingTribes = new ArrayList<>();
     }
 
     private void initUi() {
@@ -426,6 +452,28 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 .subscribe(view -> navigateToSettings()));
     }
 
+    private void initFilterView() {
+        springSystem = SpringSystem.create();
+        springFilterListener = new FilterSpringListener();
+        springFilterView = springSystem.createSpring();
+        springFilterView.setSpringConfig(FILTER_VIEW_BOUNCE_SPRING_CONFIG);
+        springFilterView.addListener(springFilterListener);
+        springFilterView.setEndValue(screenUtils.getHeightPx());
+
+        viewFilter.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                viewFilter.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                showFilterView();
+                viewFilter.setVisibility(View.VISIBLE);
+            }
+        });
+
+        subscriptions.add(viewFilter.onCloseClick().subscribe(aVoid -> {
+            hideFilterView();
+        }));
+    }
+
     private void initDependencyInjector() {
         this.userComponent = DaggerUserComponent.builder()
                 .applicationComponent(getApplicationComponent())
@@ -465,8 +513,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             bundle.putInt(TagManagerConstants.COUNT_GROUPS, getCurrentUser().getFriendships().size());
             tagManager.setProperty(bundle);
 
-            // We remove the current user from the list
-            this.homeGridAdapter.setItems(recipientList);
+            homeGridAdapter.setItems(recipientList);
+            viewFilter.updateFilterList(recipientList.subList(1, recipientList.size() - 1));
 
             if (tutorialManager.shouldDisplay(TutorialManager.MESSAGES_SUPPORT)) {
                 computeSupportTutorial(recipientList);
@@ -516,7 +564,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @Override
     public void updatePendingTribes(List<TribeMessage> pendingTribes) {
-
+        this.pendingTribes.clear();
+        this.pendingTribes.addAll(pendingTribes);
     }
 
     @Override
@@ -568,11 +617,15 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        // This is important : Hack to open a dummy activity for 200-500ms (cannot be noticed by user as it is for 500ms
-        // and transparent floating activity and auto finishes)
-        startActivity(new Intent(this, DummyActivity.class));
-        finish();
+        if (!isFilterMode) {
+            super.onBackPressed();
+            // This is important : Hack to open a dummy activity for 200-500ms (cannot be noticed by user as it is for 500ms
+            // and transparent floating activity and auto finishes)
+            startActivity(new Intent(this, DummyActivity.class));
+            finish();
+        } else {
+            hideFilterView();
+        }
     }
 
     @Override
@@ -793,4 +846,36 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     public void setCurrentTribe(TribeMessage tribe) {
 
     }
+
+    @OnClick(R.id.imgFilterView)
+    void openFilterView() {
+        isFilterMode = true;
+        springFilterView.setEndValue(0f);
+        recyclerViewFriends.requestDisallowInterceptTouchEvent(true);
+    }
+
+    private void hideFilterView() {
+        isFilterMode = false;
+        springFilterView.setEndValue(viewFilter.getHeight());
+    }
+
+    private void showFilterView() {
+        springFilterView.setEndValue(0f);
+    }
+
+    private class FilterSpringListener extends SimpleSpringListener {
+        @Override
+        public void onSpringUpdate(Spring spring) {
+            int value = (int) spring.getCurrentValue();
+            viewFilter.setTranslationY(value);
+        }
+    }
+
+//    private class FilterSpringListener extends SimpleSpringListener {
+//        @Override
+//        public void onSpringUpdate(Spring spring) {
+//            int value = (int) spring.getCurrentValue();
+//            viewFilter.setTranslationY(value);
+//        }
+//    }
 }

@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.PTSEntity;
+import com.tribe.app.domain.entity.FilterEntity;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
@@ -22,7 +22,7 @@ import rx.subjects.PublishSubject;
 /**
  * Created by tiago on 18/05/2016.
  */
-public class LetterAdapterDelegate extends RxAdapterDelegate<List<PTSEntity>> {
+public class LetterAdapterDelegate extends RxAdapterDelegate<List<FilterEntity>> {
 
     // VARIABLES
     protected LayoutInflater layoutInflater;
@@ -39,8 +39,8 @@ public class LetterAdapterDelegate extends RxAdapterDelegate<List<PTSEntity>> {
     }
 
     @Override
-    public boolean isForViewType(@NonNull List<PTSEntity> items, int position) {
-        return items.get(position).getType().equals(PTSEntity.LETTER);
+    public boolean isForViewType(@NonNull List<FilterEntity> items, int position) {
+        return items.get(position).getType().equals(FilterEntity.LETTER);
     }
 
     @NonNull
@@ -52,14 +52,22 @@ public class LetterAdapterDelegate extends RxAdapterDelegate<List<PTSEntity>> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull List<PTSEntity> items, int position, @NonNull RecyclerView.ViewHolder holder) {
-        PTSEntity ptsEntity = items.get(position);
+    public void onBindViewHolder(@NonNull List<FilterEntity> items, int position, @NonNull RecyclerView.ViewHolder holder) {
+        FilterEntity filterEntity = items.get(position);
         LetterViewHolder letterViewHolder = (LetterViewHolder) holder;
-        letterViewHolder.txtLetter.setText(ptsEntity.getLetter());
-        letterViewHolder.txtLetter.setAlpha(ptsEntity.isActivated() ? 1 : 0.25f);
+        letterViewHolder.txtLetter.setText(filterEntity.getLetter());
+
+        if (filterEntity.isActivated()) {
+            letterViewHolder.txtLetter.setAlpha(1);
+            letterViewHolder.txtLetter.setBackgroundResource(R.drawable.bg_filter_letter);
+        } else {
+            letterViewHolder.txtLetter.setBackground(null);
+            letterViewHolder.txtLetter.setAlpha(filterEntity.isActivated() ? 1 : 0.40f);
+        }
+
         letterViewHolder.txtLetter.setTag(R.id.tag_position, position);
 
-        if (ptsEntity.isActivated()) {
+        if (filterEntity.isActivated()) {
             letterViewHolder.txtLetter.setOnClickListener(v -> clickLetter.onNext(letterViewHolder.txtLetter));
         }
     }

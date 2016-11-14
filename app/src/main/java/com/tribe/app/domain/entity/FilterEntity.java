@@ -11,22 +11,22 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Created by tiago on 15/09/2016.
  */
-public class PTSEntity implements Serializable {
+public class FilterEntity implements Serializable {
 
     @StringDef({ICON, LETTER})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface PTSType {
+    public @interface FilterType {
     }
 
     public static final String ICON = "icon";
     public static final String LETTER = "letter";
 
-    private @PTSType String type;
+    private @FilterType String type;
     private boolean activated = false;
     private String letter;
     private int drawable;
 
-    public PTSEntity(@PTSType String type) {
+    public FilterEntity(@FilterType String type) {
         this.type = type;
     }
 

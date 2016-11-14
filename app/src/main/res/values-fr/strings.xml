@@ -401,10 +401,11 @@
 	
 	<!-- Grid Filter -->
 	<string name="grid_filter_title">Filter la grille par lettre</string>
+	<string name="grid_manage_title">Gérer vos amis</string>
 	
 	<!-- Top Bar -->
 	<string name="topbar_create_group">Groupe</string>
-	<string name="topbar_invite_friend">Invitations</string>
+	<string name="topbar_invite_friend">Invits</string>
 	
 	<!-- Ear Mode -->
 	<string name="earmode_title">Mode oreille.</string>
@@ -546,6 +547,8 @@
 	<string name="tutorial_message_record_reply">Maintenez appuyé pour\nenregister votre réponse</string>
 	<string name="tutorial_message_release">Relâchez votre doigt\npour arrêter l\'enregistrement</string>
 	<string name="tutorial_message_tap_to_cancel">Annuler l\'envoi si besoin</string>
+	<string name="tutorial_message_filter_grid">Filtrer vos amis</string>
+	<string name="tutorial_message_invite_friends">Donnez accès à vos 3 meilleurs amis</string>
 	
 	<!-- NewLevelPopup -->
 	<string name="newlevel_title">%1$s pts!</string>
@@ -589,4 +592,27 @@
 	<!-- Search -->
 	<string name="search_title">Rechercher un utilisateur Tribe</string>
 	<string name="search_user_placeholder">Recherche un username Tribe</string>
+	
+	<!-- Spring Cleaning -->
+	<string name="spring_cleaning_friendship_title">Supprimer %1$s ?</string>
+	<string name="spring_cleaning_friendship_description">Vous pourrez ajouter à nouveau\n%1$s depuis les réglages.</string>
+	<string name="spring_cleaning_friendship_block">Bloquer cet ami</string>
+	<string name="spring_cleaning_membership_title">Quitter %1$s ?</string>
+	<string name="spring_cleaning_membership_description">Vous devrez être à nouveau invité\npour rejoindre le groupe.</string>
+	<string name="spring_cleaning_group_leave">Quitter le groupe</string>
+	<string name="spring_cleaning_group_delete">Quitter et supprimer le groupe</string>
+	
+	<!-- Carousel -->
+	<string name="carousel_friend_title">Donner accès à %1$s ?</string>
+	<string name="carousel_friend_subtitle">Aurait %1$d amis sur Tribe</string>
+	<string name="carousel_friend_validate">Oui ! :heart:</string>
+	<string name="carousel_friend_later">Plus tard :broken_heart:</string>
+	<string name="carousel_facebook_title">Remplir votre grille avec vos amis Facebook ?</string>
+	<string name="carousel_facebook_subtitle">Connectez votre grille à Facebook</string>
+	<string name="carousel_facebook_validate">Bien sûr ! :tada:</string>
+	<string name="carousel_facebook_later">Rester seul</string>
+	<string name="carousel_address_book_title">Remplir votre grille avec vos contacts ?</string>
+	<string name="carousel_address_book_subtitle">Connectez votre grille à votre répertoire</string>
+	<string name="carousel_address_book_validate">Bien sûr ! :v:</string>
+	<string name="carousel_address_book_later">Rester seul</string>
 </resources>

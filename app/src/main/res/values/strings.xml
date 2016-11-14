@@ -401,6 +401,7 @@
 	
 	<!-- Grid Filter -->
 	<string name="grid_filter_title">Filter the grid by letters</string>
+	<string name="grid_manage_title">Manage friends</string>
 	
 	<!-- Top Bar -->
 	<string name="topbar_create_group">Group</string>
@@ -546,6 +547,8 @@
 	<string name="tutorial_message_record_reply">Hold down to record\nyour response</string>
 	<string name="tutorial_message_release">Release your finger\nto end recording</string>
 	<string name="tutorial_message_tap_to_cancel">Tap to cancel if needed</string>
+	<string name="tutorial_message_filter_grid">Filter your friends</string>
+	<string name="tutorial_message_invite_friends">Give access to your 3 best friends</string>
 	
 	<!-- NewLevelPopup -->
 	<string name="newlevel_title">%1$s pts!</string>
@@ -589,4 +592,27 @@
 	<!-- Search -->
 	<string name="search_title">Search on Tribe</string>
 	<string name="search_user_placeholder">Search Tribe username</string>
+	
+	<!-- Spring Cleaning -->
+	<string name="spring_cleaning_friendship_title">Delete %1$s ?</string>
+	<string name="spring_cleaning_friendship_description">You will be able to add back\n%1$s from the Settings.</string>
+	<string name="spring_cleaning_friendship_block">Block friend</string>
+	<string name="spring_cleaning_membership_title">Leave %1$s ?</string>
+	<string name="spring_cleaning_membership_description">You will need to be invited\nto joined the group.</string>
+	<string name="spring_cleaning_group_leave">Leave group</string>
+	<string name="spring_cleaning_group_delete">Leave and delete group</string>
+	
+	<!-- Carousel -->
+	<string name="carousel_friend_title">Give access to %1$s?</string>
+	<string name="carousel_friend_subtitle">Would have %1$d friends on Tribe</string>
+	<string name="carousel_friend_validate">Yes! :heart:</string>
+	<string name="carousel_friend_later">Not now :broken_heart:</string>
+	<string name="carousel_facebook_title">Fill your grid with your Facebook friends?</string>
+	<string name="carousel_facebook_subtitle">Connect your grid with Facebook!</string>
+	<string name="carousel_facebook_validate">Sure! :tada:</string>
+	<string name="carousel_facebook_later">Stay alone</string>
+	<string name="carousel_address_book_title">Fill your grid with your contacts?</string>
+	<string name="carousel_address_book_subtitle">Connect your grid with your address book!</string>
+	<string name="carousel_address_book_validate">Of course! :v:</string>
+	<string name="carousel_address_book_later">Stay alone</string>
 </resources>
