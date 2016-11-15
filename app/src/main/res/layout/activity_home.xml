@@ -32,7 +32,18 @@
         android:layout_marginBottom="8.5dp"
         android:src="@drawable/picto_filter_cancel"
         android:clickable="true"
-        android:visibility="gone"
+        android:translationY="@dimen/transition_grid_back_to_top"
+        />
+
+    <ImageView
+        android:id="@+id/imgBackToTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="8.5dp"
+        android:src="@drawable/picto_back_to_top"
+        android:clickable="true"
+        android:translationY="@dimen/transition_grid_back_to_top"
         />
     
     <com.tribe.app.presentation.view.widget.CameraWrapper

@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.view.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,6 +14,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
 
 import com.f2prateek.rx.preferences.Preference;
@@ -82,6 +86,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private static final SpringConfig FILTER_VIEW_NO_BOUNCE_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(1f, 2.5f);
 
     private static final int TIME_MIN_RECORDING = 1500; // IN MS
+    private static final float OVERSHOOT_TENSION_LIGHT = 1.25f;
+    private static final int DURATION = 600;
+    private static final int DURATION_FAST = 300;
 
     public static final int SETTINGS_RESULT = 101, TRIBES_RESULT = 104;
 
@@ -144,6 +151,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @BindView(R.id.imgFilterSelected)
     View imgFilterSelected;
 
+    @BindView(R.id.imgBackToTop)
+    View imgBackToTop;
+
     // OBSERVABLES
     private UserComponent userComponent;
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -161,6 +171,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private RecyclerView recyclerViewPending;
     private LabelSheetAdapter labelSheetAdapter;
     private boolean isFilterMode = false;
+    private boolean hasFilter = false;
+    private boolean isAnimatingNavigation = false;
 
     // SPRINGS
     private SpringSystem springSystem = null;
@@ -329,9 +341,17 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         recyclerViewFriends.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                recyclerView.computeVerticalScrollOffset();
-                // TODO SCROLL
+                float percent = recyclerView.computeVerticalScrollOffset() / translationBackToTop;
+
+                if (!hasFilter && percent >= 1 && !isAnimatingNavigation && imgFilter.getTranslationY() == 0) {
+                    isAnimatingNavigation = true;
+                    showView(imgBackToTop, DURATION_FAST);
+                    hideView(imgFilter, DURATION_FAST);
+                } else if (!hasFilter && percent < 1 && !isAnimatingNavigation && imgFilter.getTranslationY() == translationBackToTop) {
+                    isAnimatingNavigation = true;
+                    hideView(imgBackToTop, DURATION_FAST);
+                    showView(imgFilter, DURATION_FAST);
+                }
             }
         });
 
@@ -481,8 +501,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         }));
 
         subscriptions.add(viewFilter.onLetterSelected().subscribe(s -> {
-            imgFilterSelected.setVisibility(View.VISIBLE);
-            imgFilter.setVisibility(View.GONE);
+            hasFilter = true;
+            hideView(imgFilter, DURATION);
+            showView(imgFilterSelected, DURATION);
             homeGridAdapter.filterList(s);
             hideFilterView();
         }));
@@ -868,14 +889,23 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @OnClick(R.id.imgFilterSelected)
     void clearFilter() {
-        imgFilter.setVisibility(View.VISIBLE);
-        imgFilterSelected.setVisibility(View.GONE);
+        hasFilter = false;
+        hideView(imgFilterSelected, DURATION);
+        showView(imgFilter, DURATION);
         homeGridAdapter.filterList(null);
     }
 
     @OnClick(R.id.viewBG)
     void closeFilterView() {
         hideFilterView();
+    }
+
+    @OnClick(R.id.imgBackToTop)
+    void backToTop() {
+        if (homeGridAdapter != null && layoutManager.findFirstVisibleItemPosition() > 15)
+            this.recyclerViewFriends.scrollToPosition(10);
+
+        this.recyclerViewFriends.postDelayed(() -> recyclerViewFriends.smoothScrollToPosition(0), 100);
     }
 
     private void hideFilterView() {
@@ -895,6 +925,31 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         springGrid.setEndValue(0.925f);
         recyclerViewFriends.requestDisallowInterceptTouchEvent(true);
         homeGridAdapter.setAllItemsEnabled(false);
+    }
+
+    private void hideView(View view, int duration) {
+        view.clearAnimation();
+        view.animate()
+                .setDuration(duration)
+                .translationY(translationBackToTop)
+                .setInterpolator(new DecelerateInterpolator())
+                .start();
+    }
+
+    private void showView(View view, int duration) {
+        view.clearAnimation();
+        view.animate()
+                .setDuration(duration)
+                .translationY(0)
+                .setInterpolator(new OvershootInterpolator(OVERSHOOT_TENSION_LIGHT))
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        view.animate().setListener(null).start();
+                        isAnimatingNavigation = false;
+                    }
+                })
+                .start();
     }
 
     private class FilterSpringListener extends SimpleSpringListener {
