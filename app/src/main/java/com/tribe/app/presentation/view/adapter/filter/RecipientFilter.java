@@ -33,9 +33,7 @@ public class RecipientFilter extends Filter {
         final FilterResults results = new FilterResults();
 
         if (recipientList != null && recipientList.size() > 0) {
-            filteredRecipientList.add(recipientList.get(0));
-
-            for (final Recipient item : recipientList.subList(1, recipientList.size() - 1)) {
+            for (final Recipient item : recipientList) {
                 if (!item.getId().equals(Recipient.ID_EMPTY) && FilterView.shouldFilter(constraint.toString(), item)) {
                     filteredRecipientList.add(item);
                 }

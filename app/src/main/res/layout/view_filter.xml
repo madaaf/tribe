@@ -38,7 +38,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_margin="@dimen/horizontal_margin"
+        android:layout_marginTop="@dimen/horizontal_margin"
+        android:layout_marginBottom="@dimen/horizontal_margin"
+        android:layout_marginLeft="@dimen/horizontal_margin_small"
+        android:layout_marginRight="@dimen/horizontal_margin_small"
         android:background="@null"
         />
 
@@ -73,4 +76,9 @@
             android:scaleType="centerInside"
             />
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/horizontal_margin_small"
+        />
 </merge>

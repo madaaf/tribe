@@ -11,7 +11,6 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.GroupGridAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.SupportGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.filter.RecipientFilter;
@@ -35,7 +34,6 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
     private ScreenUtils screenUtils;
 
     protected RxAdapterDelegatesManager delegatesManager;
-    private MeGridAdapterDelegate meGridAdapterDelegate;
     private UserGridAdapterDelegate userGridAdapterDelegate;
     private GroupGridAdapterDelegate groupGridAdapterDelegate;
     private SupportGridAdapterDelegate supportGridAdapterDelegate;
@@ -55,9 +53,6 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
         screenUtils = ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().screenUtils();
         delegatesManager = new RxAdapterDelegatesManager<>();
         delegatesManager.addDelegate(new EmptyGridAdapterDelegate(context));
-
-        meGridAdapterDelegate = new MeGridAdapterDelegate(context);
-        delegatesManager.addDelegate(meGridAdapterDelegate);
 
         userGridAdapterDelegate = new UserGridAdapterDelegate(context);
         delegatesManager.addDelegate(userGridAdapterDelegate);
@@ -153,14 +148,6 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
         return Observable.merge(userGridAdapterDelegate.onClickErrorTribes(),
                 groupGridAdapterDelegate.onClickErrorTribes(),
                 supportGridAdapterDelegate.onClickErrorTribes());
-    }
-
-    public Observable<View> onClickOpenPoints() {
-        return meGridAdapterDelegate.clickOpenPoints();
-    }
-
-    public Observable<View> onClickOpenSettings() {
-        return meGridAdapterDelegate.clickOpenSettings();
     }
 
     public void setItems(List<Recipient> items) {

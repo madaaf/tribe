@@ -22,7 +22,7 @@ public class UserGridAdapterDelegate extends RecipientGridAdapterDelegate {
 
     @Override
     public boolean isForViewType(@NonNull List<Recipient> items, int position) {
-        return position != 0 && items.get(position) instanceof Friendship
+        return items.get(position) instanceof Friendship
                 && (StringUtils.isEmpty(items.get(position).getSubId())
                 || !items.get(position).getSubId().equals(Constants.SUPPORT_ID));
     }

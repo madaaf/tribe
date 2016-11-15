@@ -225,7 +225,7 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
     }
 
     private void initTribePagerView() {
-        int color = PaletteGrid.get(position - 1);
+        int color = PaletteGrid.get(position);
         viewTribePager.setBackgroundColor(color);
         viewTribePager.initWithInfo(recipient);
     }

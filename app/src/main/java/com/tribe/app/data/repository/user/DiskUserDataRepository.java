@@ -159,10 +159,6 @@ public class DiskUserDataRepository implements UserRepository {
                         recipient.setReceivedMessages(receivedChatMessage);
                     }
 
-                    Friendship friendship = new Friendship(user.getId());
-                    friendship.setFriend(user);
-                    result.add(0, friendship);
-
                     return user;
                 }
         ).map(user -> {

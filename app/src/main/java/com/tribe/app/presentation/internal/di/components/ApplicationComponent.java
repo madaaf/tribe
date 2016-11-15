@@ -89,10 +89,11 @@ import com.tribe.app.presentation.view.adapter.delegate.text.TutorialMessageAdap
 import com.tribe.app.presentation.view.adapter.delegate.text.VideoMessageAdapterDelegate;
 import com.tribe.app.presentation.view.camera.view.GlPreview;
 import com.tribe.app.presentation.view.camera.view.HistogramVisualizerView;
-import com.tribe.app.presentation.view.component.PullToSearchContainer;
 import com.tribe.app.presentation.view.component.FilterView;
+import com.tribe.app.presentation.view.component.PullToSearchContainer;
 import com.tribe.app.presentation.view.component.RatingView;
 import com.tribe.app.presentation.view.component.SettingItemView;
+import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.TribeComponentView;
 import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.component.VisualizerView;
@@ -171,6 +172,7 @@ public interface ApplicationComponent {
     void inject(VisualizerView visualizerView);
     void inject(RatingView ratingView);
     void inject(TextViewAnimatedDots textViewAnimatedDots);
+    void inject(TileView tileView);
 
     // JOBS
     void inject(BaseJob baseJob);

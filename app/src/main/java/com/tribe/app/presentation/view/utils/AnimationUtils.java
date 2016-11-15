@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.utils;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -19,6 +20,7 @@ import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.tribe.app.R;
 
@@ -312,4 +314,11 @@ public class AnimationUtils {
                 });
     }
 
+    public static void animateTextColor(TextView txtView, int colorFrom, int colorTo, int duration) {
+        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+        colorAnimation.addUpdateListener(animator -> txtView.setTextColor((Integer) animator.getAnimatedValue()));
+        colorAnimation.setDuration(duration);
+        colorAnimation.setInterpolator(new DecelerateInterpolator());
+        colorAnimation.start();
+    }
 }

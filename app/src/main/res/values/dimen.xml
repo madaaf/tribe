@@ -117,6 +117,7 @@
     <dimen name="group_member_image_size">50dp</dimen>
     <dimen name="nav_icon_size">50dp</dimen>
     <dimen name="filter_letter_size">35dp</dimen>
+    <dimen name="filter_letter_container_size">50dp</dimen>
     <dimen name="image_badge_size">20dp</dimen>
     <dimen name="group_cpv_size">28dp</dimen>
     <dimen name="cards_icon_size">15dp</dimen>

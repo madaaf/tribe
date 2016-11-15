@@ -590,8 +590,8 @@
 	<string name="support_popup_created_at">Inscription</string>
 	
 	<!-- Search -->
-	<string name="search_title">Rechercher un utilisateur Tribe</string>
-	<string name="search_user_placeholder">Recherche un username Tribe</string>
+	<string name="search_title">Rechercher un utilisateur</string>
+	<string name="search_user_placeholder">Entrez un nom d\'utilisateur</string>
 	
 	<!-- Spring Cleaning -->
 	<string name="spring_cleaning_friendship_title">Supprimer %1$s ?</string>

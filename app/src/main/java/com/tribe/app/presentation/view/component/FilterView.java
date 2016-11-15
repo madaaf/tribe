@@ -123,8 +123,14 @@ public class FilterView extends LinearLayout {
         recyclerViewFilter.setAdapter(filterViewAdapter);
         recyclerViewFilter.setHasFixedSize(true);
         recyclerViewFilter.getRecycledViewPool().setMaxRecycledViews(0, 50);
+        recyclerViewFilter.addItemDecoration(new GridDividerTopAllItemDecoration(0, filterViewLayoutManager.getSpanCount()));
 
-        recyclerViewFilter.addItemDecoration(new GridDividerTopAllItemDecoration(marginTopDivider, filterViewLayoutManager.getSpanCount()));
+        subscriptions.add(
+                filterViewAdapter
+                .onClickLetter()
+                .subscribe(viewFrom -> {
+                    letterSelected.onNext(ENTITIES[(Integer) viewFrom.getTag(R.id.tag_position)]);
+                }));
     }
 
     private void initItems() {
@@ -156,6 +162,14 @@ public class FilterView extends LinearLayout {
             }
         }
 
+        filterViewAdapter.notifyDataSetChanged();
+    }
+
+    public void clean() {
+        recyclerViewFilter.setAdapter(null);
+        recyclerViewFilter.setLayoutManager(null);
+        recyclerViewFilter.setAdapter(filterViewAdapter);
+        recyclerViewFilter.setLayoutManager(filterViewLayoutManager);
         filterViewAdapter.notifyDataSetChanged();
     }
 

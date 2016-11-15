@@ -12,7 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 import com.f2prateek.rx.preferences.Preference;
@@ -20,6 +19,7 @@ import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
+import com.facebook.rebound.SpringUtil;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -56,6 +56,7 @@ import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
 import com.tribe.app.presentation.view.utils.Constants;
+import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
@@ -77,7 +78,8 @@ import rx.subscriptions.CompositeSubscription;
 
 public class HomeActivity extends BaseActivity implements HasComponent<UserComponent>, HomeGridView, GoogleApiClient.OnConnectionFailedListener {
 
-    private static final SpringConfig FILTER_VIEW_BOUNCE_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(1f, 20f);
+    private static final SpringConfig FILTER_VIEW_BOUNCE_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(1f, 2.5f);
+    private static final SpringConfig FILTER_VIEW_NO_BOUNCE_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(1f, 2.5f);
 
     private static final int TIME_MIN_RECORDING = 1500; // IN MS
 
@@ -95,6 +97,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @Inject
     ScreenUtils screenUtils;
+
+    @Inject
+    PaletteGrid paletteGrid;
 
     @Inject
     TutorialManager tutorialManager;
@@ -130,6 +135,15 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @BindView(R.id.viewFilter)
     FilterView viewFilter;
 
+    @BindView(R.id.viewBG)
+    View viewBG;
+
+    @BindView(R.id.imgFilter)
+    View imgFilter;
+
+    @BindView(R.id.imgFilterSelected)
+    View imgFilterSelected;
+
     // OBSERVABLES
     private UserComponent userComponent;
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -152,14 +166,16 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private SpringSystem springSystem = null;
     private Spring springFilterView;
     private FilterSpringListener springFilterListener;
-    //private Spring springFilterView;
-    //private FilterSpringListener springFilterListener;
+    private Spring springGrid;
+    private GridSpringListener springGridListener;
 
     // DIMEN
     private int marginHorizontalSmall, translationBackToTop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().setBackgroundDrawableResource(android.R.color.black);
+
         super.onCreate(savedInstanceState);
 
         initDependencyInjector();
@@ -301,11 +317,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         this.layoutManager = new HomeLayoutManager(context());
         this.recyclerViewFriends.setLayoutManager(layoutManager);
         this.recyclerViewFriends.setItemAnimator(null);
-        List<Recipient> recipientList = new ArrayList<>();
-        Friendship friendship = new Friendship(getCurrentUser().getId());
-        friendship.setFriend(getCurrentUser());
-        recipientList.add(0, friendship);
-        homeGridAdapter.setItems(recipientList);
+        homeGridAdapter.setItems(new ArrayList<>());
         this.recyclerViewFriends.setAdapter(homeGridAdapter);
 
         // TODO HACK FIND ANOTHER WAY OF OPTIMIZING THE VIEW?
@@ -447,29 +459,31 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 .delay(1500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> homeGridPresenter.confirmTribe(s)));
-
-        subscriptions.add(homeGridAdapter.onClickOpenSettings()
-                .subscribe(view -> navigateToSettings()));
     }
 
     private void initFilterView() {
         springSystem = SpringSystem.create();
+
         springFilterListener = new FilterSpringListener();
         springFilterView = springSystem.createSpring();
         springFilterView.setSpringConfig(FILTER_VIEW_BOUNCE_SPRING_CONFIG);
         springFilterView.addListener(springFilterListener);
-        springFilterView.setEndValue(screenUtils.getHeightPx());
+        springFilterView.setCurrentValue(screenUtils.getHeightPx(), true);
 
-        viewFilter.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                viewFilter.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                showFilterView();
-                viewFilter.setVisibility(View.VISIBLE);
-            }
-        });
+        springGridListener = new GridSpringListener();
+        springGrid = springSystem.createSpring();
+        springGrid.setSpringConfig(FILTER_VIEW_NO_BOUNCE_SPRING_CONFIG);
+        springGrid.addListener(springGridListener);
+        springGrid.setEndValue(1f);
 
         subscriptions.add(viewFilter.onCloseClick().subscribe(aVoid -> {
+            hideFilterView();
+        }));
+
+        subscriptions.add(viewFilter.onLetterSelected().subscribe(s -> {
+            imgFilterSelected.setVisibility(View.VISIBLE);
+            imgFilter.setVisibility(View.GONE);
+            homeGridAdapter.filterList(s);
             hideFilterView();
         }));
     }
@@ -514,7 +528,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             tagManager.setProperty(bundle);
 
             homeGridAdapter.setItems(recipientList);
-            viewFilter.updateFilterList(recipientList.subList(1, recipientList.size() - 1));
+            viewFilter.updateFilterList(recipientList);
 
             if (tutorialManager.shouldDisplay(TutorialManager.MESSAGES_SUPPORT)) {
                 computeSupportTutorial(recipientList);
@@ -847,20 +861,40 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     }
 
-    @OnClick(R.id.imgFilterView)
+    @OnClick(R.id.imgFilter)
     void openFilterView() {
-        isFilterMode = true;
-        springFilterView.setEndValue(0f);
-        recyclerViewFriends.requestDisallowInterceptTouchEvent(true);
+        showFilterView();
+    }
+
+    @OnClick(R.id.imgFilterSelected)
+    void clearFilter() {
+        imgFilter.setVisibility(View.VISIBLE);
+        imgFilterSelected.setVisibility(View.GONE);
+        homeGridAdapter.filterList(null);
+    }
+
+    @OnClick(R.id.viewBG)
+    void closeFilterView() {
+        hideFilterView();
     }
 
     private void hideFilterView() {
         isFilterMode = false;
-        springFilterView.setEndValue(viewFilter.getHeight());
+        springFilterView.setSpringConfig(FILTER_VIEW_NO_BOUNCE_SPRING_CONFIG);
+        springFilterView.setEndValue(screenUtils.getHeightPx());
+        springGrid.setEndValue(1f);
+        recyclerViewFriends.requestDisallowInterceptTouchEvent(false);
+        homeGridAdapter.setAllItemsEnabled(true);
     }
 
     private void showFilterView() {
-        springFilterView.setEndValue(0f);
+        isFilterMode = true;
+        viewBG.setVisibility(View.VISIBLE);
+        springFilterView.setSpringConfig(FILTER_VIEW_BOUNCE_SPRING_CONFIG);
+        springFilterView.setEndValue(marginHorizontalSmall);
+        springGrid.setEndValue(0.925f);
+        recyclerViewFriends.requestDisallowInterceptTouchEvent(true);
+        homeGridAdapter.setAllItemsEnabled(false);
     }
 
     private class FilterSpringListener extends SimpleSpringListener {
@@ -868,14 +902,31 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         public void onSpringUpdate(Spring spring) {
             int value = (int) spring.getCurrentValue();
             viewFilter.setTranslationY(value);
+            float alpha = 1 - ((float) SpringUtil.mapValueFromRangeToRange(value, marginHorizontalSmall, screenUtils.getHeightPx(), 0, 1));
+            viewBG.setAlpha(alpha);
+
+            if (spring.getEndValue() == screenUtils.getHeightPx() && spring.getEndValue() - value > marginHorizontalSmall * 2) {
+                viewBG.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void onSpringAtRest(Spring spring) {
+            if (spring.getEndValue() == screenUtils.getHeightPx())
+                viewFilter.clean();
         }
     }
 
-//    private class FilterSpringListener extends SimpleSpringListener {
-//        @Override
-//        public void onSpringUpdate(Spring spring) {
-//            int value = (int) spring.getCurrentValue();
-//            viewFilter.setTranslationY(value);
-//        }
-//    }
+    private class GridSpringListener extends SimpleSpringListener {
+        @Override
+        public void onSpringUpdate(Spring spring) {
+            float value = (float) spring.getCurrentValue();
+            scale(value);
+        }
+    }
+
+    private void scale(float value) {
+        recyclerViewFriends.setScaleX(value);
+        recyclerViewFriends.setScaleY(value);
+    }
 }

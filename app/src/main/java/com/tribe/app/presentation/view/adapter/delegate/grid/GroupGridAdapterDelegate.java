@@ -20,7 +20,7 @@ public class GroupGridAdapterDelegate extends RecipientGridAdapterDelegate {
 
     @Override
     public boolean isForViewType(@NonNull List<Recipient> items, int position) {
-        return position != 0 && items.get(position) instanceof Membership;
+        return items.get(position) instanceof Membership;
     }
 
     @Override

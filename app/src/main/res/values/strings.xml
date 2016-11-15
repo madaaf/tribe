@@ -590,8 +590,8 @@
 	<string name="support_popup_created_at">Member since</string>
 	
 	<!-- Search -->
-	<string name="search_title">Search on Tribe</string>
-	<string name="search_user_placeholder">Search Tribe username</string>
+	<string name="search_title">Search a user</string>
+	<string name="search_user_placeholder">Enter a username</string>
 	
 	<!-- Spring Cleaning -->
 	<string name="spring_cleaning_friendship_title">Delete %1$s ?</string>

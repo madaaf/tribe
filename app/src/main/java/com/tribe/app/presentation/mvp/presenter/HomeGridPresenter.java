@@ -263,9 +263,6 @@ public class HomeGridPresenter extends SendTribePresenter {
         @Override
         public void onNext(User user) {
             List<Recipient> recipients = user.getFriendshipList();
-            Friendship recipient = new Friendship(user.getId());
-            recipient.setFriend(user);
-            recipients.add(0, recipient);
             showFriendCollectionInView(recipients);
         }
     }

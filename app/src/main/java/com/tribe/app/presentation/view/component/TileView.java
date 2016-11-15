@@ -32,12 +32,14 @@ import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
+import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
-import com.tribe.app.presentation.view.utils.PaletteGrid;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.TextViewUtils;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.PlayerView;
@@ -47,6 +49,8 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -85,6 +89,9 @@ public class TileView extends SquareFrameLayout {
     private final float REPLY_RECORD = 1f;
     private final float REPLY_TAP_TO_CANCEL = 0.7f;
     private final int ANIMATION_DELAY = 500;
+
+    @Inject
+    ScreenUtils screenUtils;
 
     @Nullable @BindView(R.id.txtName) public TextViewFont txtName;
     @Nullable @BindView(R.id.btnText) public ImageView btnText;
@@ -206,6 +213,8 @@ public class TileView extends SquareFrameLayout {
 
         LayoutInflater.from(getContext()).inflate(resLayout, this);
         unbinder = ButterKnife.bind(this);
+
+        ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
     }
 
     @Override
@@ -640,7 +649,7 @@ public class TileView extends SquareFrameLayout {
     }
 
     public void setBackground(int position) {
-        setBackgroundColor(PaletteGrid.get(position - 1));
+        UIUtils.setBackgroundGrid(screenUtils, this, position);
     }
 
     public void setAvatarScale(float scale, int duration, int delay, Interpolator interpolator) {
