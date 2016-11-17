@@ -42,7 +42,7 @@ public class AvatarView extends RoundedCornerLayout {
     ImageView imgAvatar;
 
     // VARIABLES
-    private boolean hasBorder = true;
+    private boolean hasBorder = false;
     private int type;
 
     // RESOURCES
@@ -65,7 +65,7 @@ public class AvatarView extends RoundedCornerLayout {
         ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AvatarView);
-        hasBorder = a.getBoolean(R.styleable.AvatarView_border, false);
+        //hasBorder = a.getBoolean(R.styleable.AvatarView_border, false);
         type = a.getInt(R.styleable.AvatarView_avatarType, SINGLE);
 
         avatarSize = getResources().getDimensionPixelSize(R.dimen.avatar_size);

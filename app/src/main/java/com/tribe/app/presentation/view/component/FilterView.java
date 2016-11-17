@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -30,6 +31,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -128,6 +130,8 @@ public class FilterView extends LinearLayout {
         subscriptions.add(
                 filterViewAdapter
                 .onClickLetter()
+                .delay(200, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(viewFrom -> {
                     letterSelected.onNext(ENTITIES[(Integer) viewFrom.getTag(R.id.tag_position)]);
                 }));
@@ -148,7 +152,7 @@ public class FilterView extends LinearLayout {
 
     public void updateFilterList(List<Recipient> recipientList) {
         for (Recipient recipient : recipientList) {
-            if (!Friendship.ID_EMPTY.equals(recipient.getId())) {
+            if (!Friendship.ID_EMPTY.equals(recipient.getId()) && !Friendship.ID_HEADER.equals(recipient.getId())) {
                 if (isEmoji(recipient)) {
                     entityMap.get(EMOJI).setActivated(true);
                 } else if (isLetter(recipient)) {

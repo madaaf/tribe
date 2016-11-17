@@ -13,8 +13,8 @@ public class UIUtils {
     public static void setBackgroundGrid(ScreenUtils screenUtils, View v, int position) {
         Drawable background = v.getBackground();
         int color = PaletteGrid.get(position);
-        int radiusTopLeft = position == 0 ? screenUtils.dpToPx(5) : 0;
-        int radiusTopRight = position == 1 ? screenUtils.dpToPx(5) : 0;
+        int radiusTopLeft = position == 1 ? screenUtils.dpToPx(5) : 0;
+        int radiusTopRight = position == 2 ? screenUtils.dpToPx(5) : 0;
         float [] radiusMatrix = new float[] { radiusTopLeft, radiusTopLeft, radiusTopRight, radiusTopRight, 0, 0, 0, 0 };
 
         if (background == null) {

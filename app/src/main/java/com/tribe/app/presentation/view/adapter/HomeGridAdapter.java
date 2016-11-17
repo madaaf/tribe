@@ -5,11 +5,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyHeaderGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.GroupGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.SupportGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate;
@@ -30,6 +32,8 @@ import rx.subscriptions.CompositeSubscription;
  * Created by tiago on 18/05/2016.
  */
 public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerViewItemEnabler {
+
+    public static final int EMPTY_HEADER_VIEW_TYPE = 99;
 
     private ScreenUtils screenUtils;
 
@@ -53,6 +57,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
         screenUtils = ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().screenUtils();
         delegatesManager = new RxAdapterDelegatesManager<>();
         delegatesManager.addDelegate(new EmptyGridAdapterDelegate(context));
+        delegatesManager.addDelegate(EMPTY_HEADER_VIEW_TYPE, new EmptyHeaderGridAdapterDelegate(context));
 
         userGridAdapterDelegate = new UserGridAdapterDelegate(context);
         delegatesManager.addDelegate(userGridAdapterDelegate);
@@ -152,6 +157,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
 
     public void setItems(List<Recipient> items) {
         this.items.clear();
+        this.items.add(new Friendship(Recipient.ID_HEADER));
         this.items.addAll(items);
 
         ListUtils.addEmptyItems(screenUtils, this.items);

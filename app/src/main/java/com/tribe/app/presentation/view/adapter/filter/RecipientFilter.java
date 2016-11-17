@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.adapter.filter;
 
 import android.widget.Filter;
 
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
 import com.tribe.app.presentation.view.component.FilterView;
@@ -30,11 +31,12 @@ public class RecipientFilter extends Filter {
     protected FilterResults performFiltering(CharSequence constraint) {
         filter = constraint.toString();
         filteredRecipientList.clear();
+        filteredRecipientList.add(new Friendship(Recipient.ID_HEADER));
         final FilterResults results = new FilterResults();
 
         if (recipientList != null && recipientList.size() > 0) {
             for (final Recipient item : recipientList) {
-                if (!item.getId().equals(Recipient.ID_EMPTY) && FilterView.shouldFilter(constraint.toString(), item)) {
+                if (!item.getSubId().equals(Recipient.ID_EMPTY) && !item.getSubId().equals(Recipient.ID_HEADER) && FilterView.shouldFilter(constraint.toString(), item)) {
                     filteredRecipientList.add(item);
                 }
             }

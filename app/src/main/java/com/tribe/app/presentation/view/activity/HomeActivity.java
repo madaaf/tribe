@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -57,6 +58,7 @@ import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 import com.tribe.app.presentation.view.component.FilterView;
 import com.tribe.app.presentation.view.component.TileView;
+import com.tribe.app.presentation.view.component.TopBarContainer;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
 import com.tribe.app.presentation.view.utils.Constants;
@@ -154,6 +156,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @BindView(R.id.imgBackToTop)
     View imgBackToTop;
 
+    @BindView(R.id.topBarContainer)
+    TopBarContainer topBarContainer;
+
     // OBSERVABLES
     private UserComponent userComponent;
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -199,6 +204,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         initRegistrationToken();
         initFilterView();
         initRecyclerView();
+        initPullToRefresh();
         manageDeepLink(getIntent());
 
         subscriptions.add(
@@ -338,6 +344,18 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         this.recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(2, 50);
         this.recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(3, 50);
 
+        this.layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                switch(homeGridAdapter.getItemViewType(position)) {
+                    case HomeGridAdapter.EMPTY_HEADER_VIEW_TYPE:
+                        return layoutManager.getSpanCount();
+                    default:
+                        return 1;
+                }
+            }
+        });
+
         recyclerViewFriends.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -362,7 +380,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                             && recipient.getReceivedTribes().size() > 0
                             && recipient.hasLoadedOrErrorTribes();
 
-                    if (filter) soundManager.playSound(SoundManager.OPEN_TRIBE);
+                    if (filter) soundManager.playSound(SoundManager.OPEN_TRIBE, SoundManager.SOUND_MAX);
 
                     return filter;
                 })
@@ -402,7 +420,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         subscriptions.add(homeGridAdapter.onRecordStart()
                 .doOnNext(view -> {
                     isRecording = true;
-                    soundManager.playSound(SoundManager.START_RECORD);
+                    soundManager.playSound(SoundManager.START_RECORD, SoundManager.SOUND_MAX);
                 })
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .delay(300, TimeUnit.MILLISECONDS)
@@ -426,7 +444,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 })
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .subscribe(recipient -> {
-                    soundManager.playSound(SoundManager.END_RECORD);
+                    soundManager.playSound(SoundManager.END_RECORD, SoundManager.SOUND_MAX);
                     TileView tileView = (TileView) layoutManager.findViewByPosition(recipient.getPosition());
 
                     if ((System.currentTimeMillis() - timeRecording) > TIME_MIN_RECORDING) {
@@ -442,7 +460,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .subscribe(recipient -> {
                     isRecording = false;
-                    soundManager.playSound(SoundManager.TAP_TO_CANCEL);
+                    soundManager.playSound(SoundManager.TAP_TO_CANCEL, SoundManager.SOUND_MAX);
                     cleanupCurrentTribe(recipient);
                 }));
 
@@ -450,7 +468,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .filter(recipient -> {
                     isRecording = false;
-                    soundManager.playSound(SoundManager.SENT);
+                    soundManager.playSound(SoundManager.SENT, SoundManager.SOUND_MAX);
                     TribeMessage tr = recipient.getTribe();
 
                     if (tr == null || tr.getTo() == null) {
@@ -523,6 +541,16 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     private void initPresenter() {
         this.homeGridPresenter.attachView(this);
+    }
+
+    private void initPullToRefresh() {
+        subscriptions.add(topBarContainer.onRefresh().filter(b -> b).subscribe(refresh -> {
+            subscriptions.add(Observable.timer(2000, TimeUnit.MILLISECONDS)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(aLong -> {
+                        topBarContainer.setRefreshing(false);
+                    }));
+        }));
     }
 
     @Override
@@ -884,7 +912,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @OnClick(R.id.imgFilter)
     void openFilterView() {
-        showFilterView();
+        if (!isRecording) showFilterView();
     }
 
     @OnClick(R.id.imgFilterSelected)

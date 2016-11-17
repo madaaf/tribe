@@ -8,6 +8,8 @@
 	<string name="action_save">Save</string>
 	<string name="action_create">Create</string>
 	<string name="action_close">Close</string>
+	<string name="action_add">Add (%1$d)</string>
+	<string name="action_more">More</string>
 	
 	<!-- User -->
 	<string name="user_friend">friend</string>
@@ -180,11 +182,11 @@
 	<string name="grid_unsent_tribes_action_delete">Delete %1$s</string>
 	<string name="grid_unsent_tribes_action_resend_all">Try to resend all</string>
 	<string name="grid_unsent_tribes_action_delete_all">Delete all</string>
-	<string name="grid_menu_group_infos">Details &amp; invites</string>
+	<string name="grid_menu_group_infos">Settings &amp; members</string>
 	<string name="grid_menu_group_leave">Leave group</string>
 	<string name="grid_menu_group_delete">Delete group</string>
-	<string name="grid_menu_friendship_hide">Hide %1$s</string>
-	<string name="grid_menu_friendship_unhide">Un-hide %1$s</string>
+	<string name="grid_menu_friendship_hide">Remove %1$s</string>
+	<string name="grid_menu_friendship_unhide">Add %1$s</string>
 	<string name="grid_menu_friendship_block">Block %1$s</string>
 	<string name="grid_menu_friendship_unblock">Add %1$s</string>
 	<string name="grid_menu_friendship_report">Report %1$s</string>
@@ -194,8 +196,8 @@
 	<string name="grid_menu_group_mute">De-activate notifications</string>
 	<string name="grid_menu_group_unmute">Activate notifications</string>
 	<string name="grid_menu_group_mute_confirm">Please confirm</string>
-	<string name="grid_menu_group_hide">Hide group</string>
-	<string name="grid_menu_group_unhide">Un-hide group</string>
+	<string name="grid_menu_group_hide">Remove group</string>
+	<string name="grid_menu_group_unhide">Add group</string>
 	
 	<!-- Chat -->
 	<string name="chat_tutorial_statuses_title">Message statuses</string>
@@ -215,6 +217,7 @@
 	<string name="chat_copied_to_clipboard">Copied to clipboard!</string>
 	<string name="chat_attachment_more_save">Save in camera roll</string>
 	<string name="chat_attachment_more_save_success">Saved!</string>
+	<string name="chat_more_erase_conversation">Erase this conversation</string>
 	
 	<!-- Private Group -->
 	<string name="group_family_title">Family</string>
@@ -247,17 +250,25 @@
 	<!-- Add Members -->
 	<string name="group_add_members_title">Add members</string>
 	<string name="group_add_members_search_placeholder">Search friends</string>
+	<string name="group_add_members_already_member">Member</string>
 	
 	<!-- Group Details -->
 	<string name="group_details_title">Group details</string>
-	<string name="group_details_send_link">Send group link</string>
+	<string name="group_details_send_link">Shareable group link</string>
 	<string name="group_details_add_members_title">Add new members</string>
 	<string name="group_details_add_members_search">Search</string>
 	<string name="group_details_notifications_title">Notifications</string>
 	<string name="group_details_notifications_subtitle">Get notified for new\nmessages in this group</string>
 	<string name="group_details_leave_title">Leave group</string>
 	<string name="group_details_leave_subtitle">You’ll need to be invited again by group members to send receive messages in this group.</string>
+	<string name="group_details_delete_title">Delete group</string>
+	<string name="group_details_delete_subtitle">-</string>
 	<string name="group_details_lang_title">Subtitles language</string>
+	<string name="group_details_settings_title">Settings</string>
+	<string name="group_details_settings_subtitle">Identity, subtitles &amp; push notifications</string>
+	
+	<!-- Group Settings -->
+	<string name="group_settings_title">Group settings</string>
 	
 	<!-- Group Name -->
 	<string name="group_name_title">Group identity</string>
@@ -473,7 +484,7 @@
 	<string name="share_add_friends_addressbook_suggestions">I was able to get access to Tribe. Just noticed that you already have %1$d friends on this app. I can get you in: %2$s #JoinTheTribe</string>
 	<string name="share_group_public_link">Here is your invite to join the %1$s group on Tribe. %2$s #JoinTheTribe</string>
 	<string name="share_group_private_link">Here is your invite to join the %1$s group on Tribe. Join quickly because this invite will expire in %2$s ! %3$s #JoinTheTribe</string>
-	<string name="share_add_friends_handle">I\'m %1$s on Tribe. I can get you access right now. %2$s</string>
+	<string name="share_add_friends_handle">Here\'s the invitation to join my Tribe! &#128079;&#127996;  %2$s</string>
 	<string name="share_score">I have %1$s points on Tribe %2$s. Try to beat me on http://tribe.pm #JoinTheTribe</string>
 	<string name="share_onboarding">I just discovered Tribe, but I can’t enter alone. Come now so we can get access together. Waiting for you. Go on %1$s #JoinTheTribe</string>
 	<string name="share_copied_redirecting">:paperclip: Copied to the clipboard. Prepare to paste.</string>
@@ -596,11 +607,13 @@
 	<!-- Spring Cleaning -->
 	<string name="spring_cleaning_friendship_title">Delete %1$s ?</string>
 	<string name="spring_cleaning_friendship_description">You will be able to add back\n%1$s from the Settings.</string>
+	<string name="spring_cleaning_friendship_hide">Remove friend</string>
 	<string name="spring_cleaning_friendship_block">Block friend</string>
 	<string name="spring_cleaning_membership_title">Leave %1$s ?</string>
 	<string name="spring_cleaning_membership_description">You will need to be invited\nto joined the group.</string>
-	<string name="spring_cleaning_group_leave">Leave group</string>
-	<string name="spring_cleaning_group_delete">Leave and delete group</string>
+	<string name="spring_cleaning_membership_hide">Remove group</string>
+	<string name="spring_cleaning_membership_leave">Leave group</string>
+	<string name="spring_cleaning_group_delete">Delete group</string>
 	
 	<!-- Carousel -->
 	<string name="carousel_friend_title">Give access to %1$s?</string>
