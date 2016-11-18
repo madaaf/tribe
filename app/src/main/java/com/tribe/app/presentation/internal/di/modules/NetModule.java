@@ -305,7 +305,7 @@ public class NetModule {
 
         if (BuildConfig.DEBUG) {
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
             httpClientBuilder.addInterceptor(loggingInterceptor);
             httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
         }
@@ -351,8 +351,8 @@ public class NetModule {
         OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
         httpClientBuilder
-                .connectTimeout(5, TimeUnit.MINUTES)
-                .readTimeout(5, TimeUnit.MINUTES);
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS);
 
         httpClientBuilder.addInterceptor(chain -> {
             Request original = chain.request();
@@ -373,7 +373,7 @@ public class NetModule {
 
         if (BuildConfig.DEBUG) {
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
             httpClientBuilder.addInterceptor(loggingInterceptor);
             httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
         }

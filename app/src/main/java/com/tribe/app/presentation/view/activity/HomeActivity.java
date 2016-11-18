@@ -178,6 +178,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private boolean isFilterMode = false;
     private boolean hasFilter = false;
     private boolean isAnimatingNavigation = false;
+    private boolean canEndRefresh = false;
+    private List<Recipient> latestRecipientList;
 
     // SPRINGS
     private SpringSystem springSystem = null;
@@ -276,6 +278,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     private void init() {
         pendingTribes = new ArrayList<>();
+        latestRecipientList = new ArrayList<>();
     }
 
     private void initUi() {
@@ -544,13 +547,19 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     }
 
     private void initPullToRefresh() {
-        subscriptions.add(topBarContainer.onRefresh().filter(b -> b).subscribe(refresh -> {
-            subscriptions.add(Observable.timer(2000, TimeUnit.MILLISECONDS)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(aLong -> {
-                        topBarContainer.setRefreshing(false);
-                    }));
-        }));
+        subscriptions.add(topBarContainer.onRefresh()
+                .filter(b -> b)
+                .doOnNext(b -> {
+                    canEndRefresh = false;
+                    homeGridPresenter.reload();
+                })
+                .delay(TopBarContainer.MIN_LENGTH, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(refresh -> {
+                    if (canEndRefresh) topBarContainer.setRefreshing(false);
+
+                    canEndRefresh = true;
+                }));
     }
 
     @Override
@@ -579,7 +588,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             homeGridAdapter.setItems(recipientList);
             viewFilter.updateFilterList(recipientList);
 
-            if (tutorialManager.shouldDisplay(TutorialManager.MESSAGES_SUPPORT)) {
+            if (tutorialManager.shouldDisplay(TutorialManager.MESSAGES_SUPPORT) && !topBarContainer.isRefreshing()) {
                 computeSupportTutorial(recipientList);
             }
         }
@@ -622,7 +631,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @Override
     public void updateReceivedMessages(List<Message> messageList) {
-
+        System.out.println("ON RECEIVED : " + messageList.size());
     }
 
     @Override
@@ -703,7 +712,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @Override
     public void hideLoading() {
-
+        if (topBarContainer.isRefreshing() && canEndRefresh) topBarContainer.setRefreshing(false);
+        canEndRefresh = true;
     }
 
     @Override
@@ -718,7 +728,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @Override
     public void showError(String message) {
-
+        topBarContainer.showError();
     }
 
     @Override

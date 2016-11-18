@@ -3,7 +3,6 @@ package com.tribe.app.presentation.mvp.presenter;
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
 import com.tribe.app.data.network.job.UpdateFriendshipJob;
-import com.tribe.app.data.network.job.UpdateMessagesJob;
 import com.tribe.app.data.network.job.UpdateScoreJob;
 import com.tribe.app.data.network.job.UpdateTribeDownloadedJob;
 import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
@@ -18,6 +17,7 @@ import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.exception.DefaultErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
 import com.tribe.app.domain.interactor.tribe.ConfirmTribe;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
@@ -60,6 +60,8 @@ public class HomeGridPresenter extends SendTribePresenter {
     private SendToken sendTokenUseCase;
     private GetHeadDeepLink getHeadDeepLink;
     private CreateMembership createMembership;
+    private UseCase cloudUserInfos;
+    private UseCase cloudGetMessages;
 
     // SUBSCRIBERS
     private UpdateTribesReceivedToNotSeenSubscriber updateTribesReceivedToNotSeenSubscriber;
@@ -67,6 +69,7 @@ public class HomeGridPresenter extends SendTribePresenter {
     private FriendListSubscriber friendListSubscriber;
     private BootstrapSupportSubscriber bootstrapSupportSubscriber;
     private MessageReceivedListSubscriber messageReceivedListSubscriber;
+    private CloudMessageListSubscriber cloudMessageListSubscriber;
 
     @Inject
     public HomeGridPresenter(JobManager jobManager,
@@ -85,7 +88,9 @@ public class HomeGridPresenter extends SendTribePresenter {
                              @Named("diskUpdateMessagesReceivedToNotSeen") UseCaseDisk diskUpdateTribesReceivedToNotSeen,
                              @Named("sendToken") SendToken sendToken,
                              GetHeadDeepLink getHeadDeepLink,
-                             CreateMembership createMembership) {
+                             CreateMembership createMembership,
+                             @Named("cloudUserInfos") UseCase cloudUserInfos,
+                             @Named("cloudGetMessages") UseCase cloudGetMessages) {
         super(jobManager, jobManagerDownload, diskSaveTribe, diskDeleteTribe, confirmTribe);
         this.diskUserInfosUsecase = diskUserInfos;
         this.diskGetMessageReceivedListUsecase = diskGetReceivedMessageList;
@@ -99,6 +104,8 @@ public class HomeGridPresenter extends SendTribePresenter {
         this.sendTokenUseCase = sendToken;
         this.getHeadDeepLink = getHeadDeepLink;
         this.createMembership = createMembership;
+        this.cloudUserInfos = cloudUserInfos;
+        this.cloudGetMessages = cloudGetMessages;
     }
 
     @Override
@@ -140,6 +147,8 @@ public class HomeGridPresenter extends SendTribePresenter {
         diskUpdateTribesReceivedToNotSeen.unsubscribe();
         getHeadDeepLink.unsubscribe();
         createMembership.unsubscribe();
+        cloudGetMessages.unsubscribe();
+        cloudUserInfos.unsubscribe();
     }
 
     @Override
@@ -154,6 +163,8 @@ public class HomeGridPresenter extends SendTribePresenter {
     }
 
     public void reload() {
+        showViewLoading();
+
         if (updateTribesReceivedToNotSeenSubscriber != null) {
             updateTribesReceivedToNotSeenSubscriber.unsubscribe();
         }
@@ -163,26 +174,40 @@ public class HomeGridPresenter extends SendTribePresenter {
     }
 
     public void loadFriendList(String filter) {
-        showViewLoading();
-
         if (friendListSubscriber != null) {
             friendListSubscriber.unsubscribe();
         }
 
-        friendListSubscriber = new FriendListSubscriber();
+        friendListSubscriber = new FriendListSubscriber(false);
         diskUserInfosUsecase.prepare(null, filter);
         diskUserInfosUsecase.execute(friendListSubscriber);
     }
 
-    public void loadTribeList() {
-        jobManager.addJobInBackground(new UpdateMessagesJob());
+    public void syncFriendList() {
+        if (friendListSubscriber != null) {
+            friendListSubscriber.unsubscribe();
+        }
 
+        friendListSubscriber = new FriendListSubscriber(true);
+        cloudUserInfos.execute(friendListSubscriber);
+    }
+
+    public void loadTribeList() {
         if (messageReceivedListSubscriber != null) {
             messageReceivedListSubscriber.unsubscribe();
         }
 
         messageReceivedListSubscriber = new MessageReceivedListSubscriber();
         diskGetMessageReceivedListUsecase.execute(messageReceivedListSubscriber);
+    }
+
+    public void syncTribeList() {
+        if (cloudMessageListSubscriber != null) {
+            cloudMessageListSubscriber.unsubscribe();
+        }
+
+        cloudMessageListSubscriber = new CloudMessageListSubscriber();
+        cloudGetMessages.execute(cloudMessageListSubscriber);
     }
 
     public void loadPendingTribeList() {
@@ -251,19 +276,29 @@ public class HomeGridPresenter extends SendTribePresenter {
 
     private final class FriendListSubscriber extends DefaultSubscriber<User> {
 
+        private boolean cloud = false;
+
+        public FriendListSubscriber(boolean cloud) {
+            this.cloud = cloud;
+        }
+
         @Override
         public void onCompleted() {}
 
         @Override
         public void onError(Throwable e) {
-            hideViewLoading();
-            showErrorMessage(new DefaultErrorBundle((Exception) e));
+            if (cloud) showErrorMessage(new DefaultErrorBundle((Exception) e));
         }
 
         @Override
         public void onNext(User user) {
-            List<Recipient> recipients = user.getFriendshipList();
-            showFriendCollectionInView(recipients);
+            if (!cloud) {
+                List<Recipient> recipients = user.getFriendshipList();
+                showFriendCollectionInView(recipients);
+                syncFriendList();
+            } else {
+                syncTribeList();
+            }
         }
     }
 
@@ -281,6 +316,22 @@ public class HomeGridPresenter extends SendTribePresenter {
         }
     }
 
+    private final class CloudMessageListSubscriber extends DefaultSubscriber<List<Message>> {
+
+        @Override
+        public void onCompleted() {}
+
+        @Override
+        public void onError(Throwable e) {
+            showErrorMessage(new DefaultErrorBundle((Exception) e));
+        }
+
+        @Override
+        public void onNext(List<Message> messageList) {
+            hideViewLoading();
+        }
+    }
+
     private final class TribePendingListSubscriber extends DefaultSubscriber<List<TribeMessage>> {
 
         @Override
@@ -288,8 +339,6 @@ public class HomeGridPresenter extends SendTribePresenter {
 
         @Override
         public void onError(Throwable e) {
-            hideViewLoading();
-            showErrorMessage(new DefaultErrorBundle((Exception) e));
         }
 
         @Override

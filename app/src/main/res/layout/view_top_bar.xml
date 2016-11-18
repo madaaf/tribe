@@ -50,6 +50,15 @@
             android:scaleType="centerInside"
             />
 
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtNbMessages"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:maxLines="1"
+            style="@style/Body.Two.White"
+            />
+
         <com.github.rahatarmanahmed.cpv.CircularProgressView
             android:id="@+id/progressRefresh"
             android:layout_width="17.5dp"

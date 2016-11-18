@@ -31,6 +31,8 @@ import rx.subscriptions.CompositeSubscription;
 
 public class TopBarContainer extends FrameLayout {
 
+    public static final int MIN_LENGTH = 1250; // ms
+
     private static final SpringConfig PULL_TO_SEARCH_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(0f, 5f);
     private static final float DRAG_RATE = 0.5f;
     private static final int DRAG_THRESHOLD = 20;
@@ -71,6 +73,7 @@ public class TopBarContainer extends FrameLayout {
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private PublishSubject<Boolean> onRefresh = PublishSubject.create();
+    private PublishSubject<Void> clickSettings = PublishSubject.create();
 
     public TopBarContainer(Context context) {
         super(context);
@@ -136,7 +139,19 @@ public class TopBarContainer extends FrameLayout {
     }
 
     private void initSubscriptions() {
+        subscriptions.add(
+                topBarView.onClickRefresh()
+                    .subscribe(aVoid -> {
+                        setRefreshing(true);
+                    })
+        );
 
+        subscriptions.add(
+                topBarView.onErrorDone()
+                        .subscribe(aVoid -> {
+                            setRefreshing(false);
+                        })
+        );
     }
 
     public boolean beingDragged() {
@@ -153,8 +168,17 @@ public class TopBarContainer extends FrameLayout {
             topBarView.reset();
             soundManager.playSound(SoundManager.END_REFRESH, SoundManager.SOUND_LOW);
         } else {
-            if (isRefreshing) soundManager.playSound(SoundManager.START_REFRESH, SoundManager.SOUND_LOW);
+            refresh();
         }
+    }
+
+    private void refresh() {
+        soundManager.playSound(SoundManager.START_REFRESH, SoundManager.SOUND_LOW);
+        onRefresh.onNext(true);
+    }
+
+    public void showError() {
+        topBarView.showError();
     }
 
     ///////////////////////
@@ -292,9 +316,7 @@ public class TopBarContainer extends FrameLayout {
 
         if (beingDragged && !isRefreshing) {
             isRefreshing = topBarView.animatePull(value, 0, getTotalDragDistance());
-            onRefresh.onNext(isRefreshing);
-
-            if (isRefreshing) soundManager.playSound(SoundManager.START_REFRESH, SoundManager.SOUND_LOW);
+            if (isRefreshing) refresh();
         }
     }
 
@@ -335,5 +357,9 @@ public class TopBarContainer extends FrameLayout {
 
     public Observable<Boolean> onRefresh() {
         return onRefresh;
+    }
+
+    public Observable<Void> onClickSettings() {
+        return clickSettings;
     }
 }

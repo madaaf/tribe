@@ -26,6 +26,7 @@ import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
 import com.tribe.app.domain.interactor.user.DoRegister;
 import com.tribe.app.domain.interactor.user.FindByUsername;
 import com.tribe.app.domain.interactor.user.GetBlockedFriendshipList;
+import com.tribe.app.domain.interactor.user.GetCloudMessageList;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetDiskContactList;
 import com.tribe.app.domain.interactor.user.GetDiskFBContactList;
@@ -111,6 +112,13 @@ public class UserModule {
     @Named("cloudUserInfos")
     UseCase provideCloudGetUserInfos(GetCloudUserInfos getCloudUserInfos) {
         return getCloudUserInfos;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("cloudGetMessages")
+    UseCase provideCloudGetMessageList(GetCloudMessageList getCloudMessageList) {
+        return getCloudMessageList;
     }
 
     @Provides

@@ -1,5 +1,8 @@
 package com.tribe.app.presentation.view.component;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
@@ -7,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -14,11 +18,15 @@ import com.bumptech.glide.Glide;
 import com.facebook.rebound.SpringUtil;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -26,6 +34,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -66,7 +76,9 @@ public class TopBarView extends FrameLayout {
     View btnInvites;
 
     // VARIABLES
-    float startX, startY = 0;
+    private float startX, startY = 0;
+    private List<Message> newMessageList;
+    private List<Message> pendingMessageList;
 
     // RESOURCES
     private int avatarSize;
@@ -77,6 +89,10 @@ public class TopBarView extends FrameLayout {
     // OBSERVABLES
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
+    private PublishSubject<Void> clickRefresh = PublishSubject.create();
+    private PublishSubject<Void> clickSettings = PublishSubject.create();
+    private PublishSubject<Void> clickSearch = PublishSubject.create();
+    private PublishSubject<Void> errorDone = PublishSubject.create();
 
     public TopBarView(Context context) {
         super(context);
@@ -112,7 +128,7 @@ public class TopBarView extends FrameLayout {
     }
 
     private void init(Context context, AttributeSet attrs) {
-
+        newMessageList = new ArrayList<>();
     }
 
     private void initUI() {
@@ -144,8 +160,6 @@ public class TopBarView extends FrameLayout {
         switch (action & MotionEvent.ACTION_MASK) {
 
             case MotionEvent.ACTION_UP: {
-                System.out.println("UP : start x : " + startX + " / start Y : " + startY + " / x : " + event.getX() + " / y : " + event.getY());
-
                 if (isAClick(startX, event.getX(), startY, event.getY())) {
                     if (isAClickInView(imgAvatar, (int) startX, (int) startY)) imgAvatar.performClick();
                     else if (isAClickInView(imgSearch, (int) startX, (int) startY)) imgSearch.performClick();
@@ -172,17 +186,18 @@ public class TopBarView extends FrameLayout {
 
     @OnClick(R.id.imgSearch)
     void launchSearch() {
-        System.out.println("LAUNCH SEARCH");
+        clickSearch.onNext(null);
     }
 
     @OnClick(R.id.imgAvatar)
-    void launchAvatar() {
-        System.out.println("LAUNCH AVATAR");
+    void launchSettings() {
+        clickSettings.onNext(null);
     }
 
     @OnClick(R.id.syncLayout)
     void launchSyncLayout() {
-        System.out.println("LAUNCH SYNC");
+        showSpinner();
+        clickRefresh.onNext(null);
     }
 
     public boolean animatePull(float value, int min, float max) {
@@ -222,7 +237,6 @@ public class TopBarView extends FrameLayout {
                 10
         );
 
-        System.out.println("Alpha Spinner : " + alphaSpinner);
         imgTick.setAlpha(1 - alphaSpinner);
         progressRefresh.setAlpha(alphaSpinner);
 
@@ -252,11 +266,32 @@ public class TopBarView extends FrameLayout {
         AnimationUtils.fadeIn(imgSearch, DURATION);
     }
 
+    public void showError() {
+        ValueAnimator valueAnimator = ValueAnimator.ofFloat(screenUtils.dpToPx(-3f), screenUtils.dpToPx(3f), screenUtils.dpToPx(-3f), screenUtils.dpToPx(3f),
+                screenUtils.dpToPx(-1f), screenUtils.dpToPx(1f), 0);
+        valueAnimator.setInterpolator(new LinearInterpolator());
+        valueAnimator.setDuration(600);
+        valueAnimator.addUpdateListener(animation -> {
+            float value = (Float) animation.getAnimatedValue();
+            syncLayout.setTranslationX(value);
+        });
+        valueAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                errorDone.onNext(null);
+            }
+        });
+        valueAnimator.start();
+    }
+
+    public void showNewMessages(List<Message> newMessages) {
+        //if (newMessageList != null && newMessageList.size() != new)
+        //newMessageList.clear();
+    }
+
     private boolean isAClick(float startX, float endX, float startY, float endY) {
         float differenceX = Math.abs(startX - endX);
         float differenceY = Math.abs(startY - endY);
-
-        System.out.println("DIFFERENCE X : " + differenceX + " / DIFFERENCE Y : " + differenceY + " / THRESHOLD : " + clickActionThreshold);
 
         if (differenceX > clickActionThreshold || differenceY > clickActionThreshold) {
             return false;
@@ -280,4 +315,20 @@ public class TopBarView extends FrameLayout {
     //////////////////////
     //   OBSERVABLES    //
     //////////////////////
+
+    public Observable<Void> onClickRefresh() {
+        return clickRefresh;
+    }
+
+    public Observable<Void> onClickSettings() {
+        return clickSettings;
+    }
+
+    public Observable<Void> onClickSearch() {
+        return clickSearch;
+    }
+
+    public Observable<Void> onErrorDone() {
+        return errorDone;
+    }
 }

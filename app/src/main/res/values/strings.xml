@@ -253,10 +253,7 @@
 	<string name="group_add_members_already_member">Member</string>
 	
 	<!-- Group Details -->
-	<string name="group_details_title">Group details</string>
 	<string name="group_details_send_link">Shareable group link</string>
-	<string name="group_details_add_members_title">Add new members</string>
-	<string name="group_details_add_members_search">Search</string>
 	<string name="group_details_notifications_title">Notifications</string>
 	<string name="group_details_notifications_subtitle">Get notified for new\nmessages in this group</string>
 	<string name="group_details_leave_title">Leave group</string>
@@ -317,7 +314,7 @@
 	<string name="settings_title">Settings</string>
 	<string name="settings_profile_title">Profile</string>
 	<string name="settings_profile_subtitle">Change your profile pic, display name and @handle</string>
-	<string name="settings_profile_share_title">Direct link to %1$s</string>
+	<string name="settings_profile_share_title">Shareable link to %1$s</string>
 	<string name="settings_score_subtitle">Check your current and next levels.</string>
 	<string name="settings_filter_title">Pick a filter</string>
 	<string name="settings_theme_title">Pick a theme</string>
@@ -484,7 +481,7 @@
 	<string name="share_add_friends_addressbook_suggestions">I was able to get access to Tribe. Just noticed that you already have %1$d friends on this app. I can get you in: %2$s #JoinTheTribe</string>
 	<string name="share_group_public_link">Here is your invite to join the %1$s group on Tribe. %2$s #JoinTheTribe</string>
 	<string name="share_group_private_link">Here is your invite to join the %1$s group on Tribe. Join quickly because this invite will expire in %2$s ! %3$s #JoinTheTribe</string>
-	<string name="share_add_friends_handle">Here\'s the invitation to join my Tribe! &#128079;&#127996;  %2$s</string>
+	<string name="share_add_friends_handle">Here\'s the invitation to join my Tribe! %2$s &#128079;&#127996;</string>
 	<string name="share_score">I have %1$s points on Tribe %2$s. Try to beat me on http://tribe.pm #JoinTheTribe</string>
 	<string name="share_onboarding">I just discovered Tribe, but I can’t enter alone. Come now so we can get access together. Waiting for you. Go on %1$s #JoinTheTribe</string>
 	<string name="share_copied_redirecting">:paperclip: Copied to the clipboard. Prepare to paste.</string>
