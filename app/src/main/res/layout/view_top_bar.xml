@@ -57,6 +57,7 @@
             android:layout_gravity="center"
             android:maxLines="1"
             style="@style/Body.Two.White"
+            android:alpha="0"
             />
 
         <com.github.rahatarmanahmed.cpv.CircularProgressView
@@ -87,6 +88,8 @@
         android:text="@string/topbar_create_group"
         android:singleLine="true"
         style="@style/Body.Two.White"
+        android:clickable="true"
+        android:foreground="@drawable/selectable_button_oval_light"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -102,6 +105,8 @@
         android:text="@string/topbar_invite_friend"
         android:singleLine="true"
         style="@style/Body.Two.White"
+        android:clickable="true"
+        android:foreground="@drawable/selectable_button_oval_light"
         />
 
 </FrameLayout>

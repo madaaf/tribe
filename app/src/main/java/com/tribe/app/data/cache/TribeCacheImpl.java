@@ -6,6 +6,7 @@ import android.support.v4.util.Pair;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.MessageRecipientRealm;
 import com.tribe.app.data.realm.TribeRealm;
+import com.tribe.app.data.realm.helpers.ChangeHelper;
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
@@ -23,7 +24,6 @@ import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 
 /**
@@ -34,11 +34,7 @@ public class TribeCacheImpl implements TribeCache {
     private Context context;
     private AccessToken accessToken;
     private Realm realm;
-    private RealmResults<TribeRealm> pendingTribes;
-    private RealmResults<TribeRealm> tribesNotSeen;
-    private RealmResults<TribeRealm> tribesReceived;
-    private RealmResults<TribeRealm> tribesForARecipient;
-    private RealmResults<TribeRealm> tribesToDownload;
+    private RealmResults<TribeRealm> messageNotSeen;
 
     @Inject
     public TribeCacheImpl(Context context, Realm realm, AccessToken accessToken) {
@@ -241,49 +237,55 @@ public class TribeCacheImpl implements TribeCache {
         });
     }
 
+    private ChangeHelper<RealmResults<TribeRealm>> changeSetNotSeen = new ChangeHelper<>();
+
     @Override
     public Observable<List<TribeRealm>> tribesNotSeen(String friendshipId) {
-        return Observable.create(new Observable.OnSubscribe<List<TribeRealm>>() {
-            @Override
-            public void call(final Subscriber<? super List<TribeRealm>> subscriber) {
-                realm.setAutoRefresh(true);
+        changeSetNotSeen.clear();
 
-                if (friendshipId == null) {
-                    tribesNotSeen = realm.where(TribeRealm.class)
-                            .beginGroup()
-                            .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_NOT_SEEN)
-                            .notEqualTo("from.id", accessToken.getUserId())
-                            .endGroup()
-                            .or()
-                            .equalTo("from.id", accessToken.getUserId())
-                            .findAllSorted("recorded_at", Sort.ASCENDING);
-                } else {
-                    tribesNotSeen = realm.where(TribeRealm.class)
-                            .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_NOT_SEEN)
-                            .beginGroup()
-                            .beginGroup()
-                            .beginGroup()
-                            .equalTo("from.id", friendshipId)
-                            .isNull("friendshipRealm")
-                            .isNull("membershipRealm")
-                            .endGroup()
-                            .or()
-                            .beginGroup()
-                            .equalTo("friendshipRealm.friend.id", friendshipId)
-                            .isNull("membershipRealm")
-                            .endGroup()
-                            .endGroup()
-                            .or()
-                            .equalTo("membershipRealm.group.id", friendshipId)
-                            .endGroup()
-                            .findAllSorted("recorded_at", Sort.ASCENDING);
-                }
+        if (friendshipId == null) {
+            messageNotSeen = realm.where(TribeRealm.class)
+                    .beginGroup()
+                    .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_NOT_SEEN)
+                    .notEqualTo("from.id", accessToken.getUserId())
+                    .endGroup()
+                    .or()
+                    .equalTo("from.id", accessToken.getUserId())
+                    .findAllSorted("recorded_at", Sort.ASCENDING);
+        } else {
+            messageNotSeen = realm.where(TribeRealm.class)
+                    .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_NOT_SEEN)
+                    .beginGroup()
+                    .beginGroup()
+                    .beginGroup()
+                    .equalTo("from.id", friendshipId)
+                    .isNull("friendshipRealm")
+                    .isNull("membershipRealm")
+                    .endGroup()
+                    .or()
+                    .beginGroup()
+                    .equalTo("friendshipRealm.friend.id", friendshipId)
+                    .isNull("membershipRealm")
+                    .endGroup()
+                    .endGroup()
+                    .or()
+                    .equalTo("membershipRealm.group.id", friendshipId)
+                    .endGroup()
+                    .findAllSorted("recorded_at", Sort.ASCENDING);
+        }
 
-                tribesNotSeen.removeChangeListeners();
-                tribesNotSeen.addChangeListener(tribesUpdated -> subscriber.onNext(realm.copyFromRealm(tribesUpdated)));
-                subscriber.onNext(realm.copyFromRealm(tribesNotSeen));
-            }
-        });
+        return messageNotSeen
+                .asObservable()
+                .filter(tribeRealms -> tribeRealms.isLoaded())
+                .filter(tribeRealms -> changeSetNotSeen.filter(tribeRealms))
+//                .flatMap(new Func1<List<TribeRealm>, Observable<DiffUtil.DiffResult>>() {
+//                    @Override
+//                    public Observable<DiffUtil.DiffResult> call(List<TribeRealm> products) {
+//                        return Observable.just(DiffUtil.calculateDiff(new ProductListDiffCallback(oldData, products)));
+//                    }
+//                })
+                .map(tribeRealms -> realm.copyFromRealm(tribeRealms))
+                .unsubscribeOn(AndroidSchedulers.mainThread());
     }
 
     @Override
@@ -332,57 +334,51 @@ public class TribeCacheImpl implements TribeCache {
         return tribeRealmList;
     }
 
+    private ChangeHelper<RealmResults<TribeRealm>> changeSetReceived = new ChangeHelper<>();
+
     @Override
     public Observable<List<TribeRealm>> tribesReceived(String recipientId) {
-        return Observable.create(new Observable.OnSubscribe<List<TribeRealm>>() {
-            @Override
-            public void call(final Subscriber<? super List<TribeRealm>> subscriber) {
-                if (recipientId == null) {
-                    tribesReceived = realm.where(TribeRealm.class)
-                            .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_RECEIVED)
-                            .notEqualTo("from.id", accessToken.getUserId())
-                            .findAllSorted("recorded_at", Sort.DESCENDING);
-                }
+        changeSetReceived.clear();
 
-                tribesReceived.removeChangeListeners();
-                tribesReceived.addChangeListener(tribesUpdated -> {
-                    subscriber.onNext(realm.copyFromRealm(tribesUpdated));
-                });
-                subscriber.onNext(realm.copyFromRealm(tribesReceived));
-            }
-        });
+        return realm.where(TribeRealm.class)
+                .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_RECEIVED)
+                .notEqualTo("from.id", accessToken.getUserId())
+                .findAllSorted("recorded_at", Sort.DESCENDING)
+                .asObservable()
+                .filter(tribeRealms -> tribeRealms.isLoaded())
+                .filter(tribeRealms -> changeSetReceived.filter(tribeRealms))
+                .map(tribeRealms -> realm.copyFromRealm(tribeRealms))
+                .unsubscribeOn(AndroidSchedulers.mainThread());
     }
+
+    private ChangeHelper<RealmResults<TribeRealm>> changeSetForRecipient = new ChangeHelper<>();
 
     @Override
     public Observable<List<TribeRealm>> tribesForARecipient(String recipientId) {
-        return Observable.create(new Observable.OnSubscribe<List<TribeRealm>>() {
-            @Override
-            public void call(final Subscriber<? super List<TribeRealm>> subscriber) {
-                tribesForARecipient = realm.where(TribeRealm.class)
-                        .beginGroup()
-                        .beginGroup()
-                        .equalTo("from.id", recipientId)
-                        .isNull("friendshipRealm")
-                        .isNull("membershipRealm")
-                        .endGroup()
-                        .or()
-                        .equalTo("membershipRealm.group.id", recipientId)
-                        .endGroup()
-                        .notEqualTo("from.id", accessToken.getUserId())
-                        .beginGroup()
-                        .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_RECEIVED)
-                        .or()
-                        .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_NOT_SEEN)
-                        .endGroup()
-                        .findAllSorted("recorded_at", Sort.ASCENDING);
+        changeSetForRecipient.clear();
 
-                tribesForARecipient.removeChangeListeners();
-                tribesForARecipient.addChangeListener(tribesUpdated -> {
-                    subscriber.onNext(realm.copyFromRealm(tribesUpdated));
-                });
-                subscriber.onNext(realm.copyFromRealm(tribesForARecipient));
-            }
-        });
+        return realm.where(TribeRealm.class)
+                .beginGroup()
+                .beginGroup()
+                .equalTo("from.id", recipientId)
+                .isNull("friendshipRealm")
+                .isNull("membershipRealm")
+                .endGroup()
+                .or()
+                .equalTo("membershipRealm.group.id", recipientId)
+                .endGroup()
+                .notEqualTo("from.id", accessToken.getUserId())
+                .beginGroup()
+                .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_RECEIVED)
+                .or()
+                .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_NOT_SEEN)
+                .endGroup()
+                .findAllSorted("recorded_at", Sort.ASCENDING)
+                .asObservable()
+                .filter(tribeRealms -> tribeRealms.isLoaded())
+                .filter(tribeRealms -> changeSetForRecipient.filter(tribeRealms))
+                .map(tribeRealms -> realm.copyFromRealm(tribeRealms))
+                .unsubscribeOn(AndroidSchedulers.mainThread());
     }
 
     @Override
@@ -405,20 +401,21 @@ public class TribeCacheImpl implements TribeCache {
         return results;
     }
 
+    private ChangeHelper<RealmResults<TribeRealm>> changeSetPending = new ChangeHelper<>();
+
     @Override
     public Observable<List<TribeRealm>> tribesPending() {
-        return Observable.create(new Observable.OnSubscribe<List<TribeRealm>>() {
-            @Override
-            public void call(final Subscriber<? super List<TribeRealm>> subscriber) {
-                pendingTribes = realm.where(TribeRealm.class)
-                        .equalTo("from.id", accessToken.getUserId())
-                        .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_ERROR)
-                        .findAllSorted("recorded_at", Sort.ASCENDING);
-                pendingTribes.removeChangeListeners();
-                pendingTribes.addChangeListener(tribesPending -> subscriber.onNext(realm.copyFromRealm(tribesPending)));
-                subscriber.onNext(realm.copyFromRealm(pendingTribes));
-            }
-        });
+        changeSetPending.clear();
+
+        return realm.where(TribeRealm.class)
+                .equalTo("from.id", accessToken.getUserId())
+                .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_ERROR)
+                .findAllSorted("recorded_at", Sort.ASCENDING)
+                .asObservable()
+                .filter(tribeRealms -> tribeRealms.isLoaded())
+                .filter(tribeRealms -> changeSetPending.filter(tribeRealms))
+                .map(tribeRealms -> realm.copyFromRealm(tribeRealms))
+                .unsubscribeOn(AndroidSchedulers.mainThread());
     }
 
     @Override
@@ -486,17 +483,24 @@ public class TribeCacheImpl implements TribeCache {
         return resultTribe;
     }
 
+    private ChangeHelper<RealmResults<TribeRealm>> changeSetToDownload = new ChangeHelper<>();
+
     @Override
     public Observable<List<TribeRealm>> tribesToDownload(String recipientId) {
-        RealmResults<TribeRealm> realmResults = null;
+        changeSetToDownload.clear();
 
         if (recipientId == null) {
-            realmResults = realm.where(TribeRealm.class)
+            return realm.where(TribeRealm.class)
                     .equalTo("messageDownloadingStatus", MessageDownloadingStatus.STATUS_TO_DOWNLOAD)
                     .notEqualTo("from.id", accessToken.getUserId())
-                    .findAllSorted("recorded_at", Sort.DESCENDING);
+                    .findAllSorted("recorded_at", Sort.DESCENDING)
+                    .asObservable()
+                    .filter(tribeRealms -> tribeRealms.isLoaded())
+                    .filter(tribeRealms -> changeSetToDownload.filter(tribeRealms))
+                    .map(tribeRealms -> realm.copyFromRealm(tribeRealms))
+                    .unsubscribeOn(AndroidSchedulers.mainThread());
         } else {
-            realmResults = realm.where(TribeRealm.class)
+            return realm.where(TribeRealm.class)
                     .equalTo("messageDownloadingStatus", MessageDownloadingStatus.STATUS_TO_DOWNLOAD)
                     .beginGroup()
                     .beginGroup()
@@ -514,13 +518,13 @@ public class TribeCacheImpl implements TribeCache {
                     .equalTo("membershipRealm.group.id", recipientId)
                     .endGroup()
                     .endGroup()
-                    .findAllSorted("recorded_at", Sort.ASCENDING);
+                    .findAllSorted("recorded_at", Sort.ASCENDING)
+                    .asObservable()
+                    .filter(tribeRealms -> tribeRealms.isLoaded())
+                    .filter(tribeRealms -> changeSetToDownload.filter(tribeRealms))
+                    .map(tribeRealms -> realm.copyFromRealm(tribeRealms))
+                    .unsubscribeOn(AndroidSchedulers.mainThread());
         }
-
-        return realmResults.asObservable()
-                .filter(tribeRealms -> tribeRealms.isLoaded())
-                .map(tribeRealms -> realm.copyFromRealm(tribeRealms))
-                .unsubscribeOn(AndroidSchedulers.mainThread());
     }
 
     @Override

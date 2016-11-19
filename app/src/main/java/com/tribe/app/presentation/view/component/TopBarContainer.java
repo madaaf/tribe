@@ -15,10 +15,13 @@ import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Message;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -74,6 +77,8 @@ public class TopBarContainer extends FrameLayout {
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private PublishSubject<Boolean> onRefresh = PublishSubject.create();
     private PublishSubject<Void> clickSettings = PublishSubject.create();
+    private PublishSubject<Void> clickInvites = PublishSubject.create();
+    private PublishSubject<Void> clickGroups = PublishSubject.create();
 
     public TopBarContainer(Context context) {
         super(context);
@@ -152,6 +157,16 @@ public class TopBarContainer extends FrameLayout {
                             setRefreshing(false);
                         })
         );
+
+        subscriptions.add(
+                topBarView.onClickGroups()
+                        .subscribe(clickGroups)
+        );
+
+        subscriptions.add(
+                topBarView.onClickInvites()
+                        .subscribe(clickInvites)
+        );
     }
 
     public boolean beingDragged() {
@@ -179,6 +194,10 @@ public class TopBarContainer extends FrameLayout {
 
     public void showError() {
         topBarView.showError();
+    }
+
+    public void showNewMessages(List<Message> newMessages) {
+        if (!isRefreshing) topBarView.showNewMessages(newMessages);
     }
 
     ///////////////////////
@@ -361,5 +380,13 @@ public class TopBarContainer extends FrameLayout {
 
     public Observable<Void> onClickSettings() {
         return clickSettings;
+    }
+
+    public Observable<Void> onClickInvites() {
+        return clickInvites;
+    }
+
+    public Observable<Void> onClickGroups() {
+        return clickGroups;
     }
 }

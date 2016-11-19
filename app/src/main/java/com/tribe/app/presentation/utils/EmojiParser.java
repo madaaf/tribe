@@ -33,6 +33,7 @@ public class EmojiParser {
         IEmojiMap.put(":key:", "\uD83D\uDD11");
         IEmojiMap.put(":bird:", "\uD83D\uDC26");
         IEmojiMap.put(":satellite:", "\uD83D\uDEF0");
+        IEmojiMap.put(":clap:", "\uD83D\uDC4F");
     }
 
     /**

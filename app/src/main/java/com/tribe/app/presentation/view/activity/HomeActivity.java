@@ -180,6 +180,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private boolean isAnimatingNavigation = false;
     private boolean canEndRefresh = false;
     private List<Recipient> latestRecipientList;
+    private boolean shouldOverridePendingTransactions = false;
 
     // SPRINGS
     private SpringSystem springSystem = null;
@@ -254,6 +255,11 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
                     handleCameraPermissions(areAllGranted, false);
                 }));
+
+        if (shouldOverridePendingTransactions) {
+            overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
+            shouldOverridePendingTransactions = false;
+        }
     }
 
     @Override
@@ -560,6 +566,11 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
                     canEndRefresh = true;
                 }));
+
+        subscriptions.add(topBarContainer.onClickInvites()
+                .subscribe(aVoid -> {
+                    navigateToInvites();
+                }));
     }
 
     @Override
@@ -631,7 +642,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @Override
     public void updateReceivedMessages(List<Message> messageList) {
-        System.out.println("ON RECEIVED : " + messageList.size());
+        topBarContainer.showNewMessages(messageList);
     }
 
     @Override
@@ -913,6 +924,11 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     private void navigateToChat(Recipient recipient) {
         HomeActivity.this.navigator.navigateToChat(HomeActivity.this, recipient.getSubId(), recipient instanceof Membership);
+    }
+
+    private void navigateToInvites() {
+        shouldOverridePendingTransactions = true;
+        HomeActivity.this.navigator.shareHandle(getCurrentUser().getUsername(), this);
     }
 
     @Override

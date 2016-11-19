@@ -66,7 +66,8 @@ public class HomeGridPresenter extends SendTribePresenter {
     // SUBSCRIBERS
     private UpdateTribesReceivedToNotSeenSubscriber updateTribesReceivedToNotSeenSubscriber;
     private TribePendingListSubscriber tribePendingListSubscriber;
-    private FriendListSubscriber friendListSubscriber;
+    private FriendListSubscriber diskFriendListSubscriber;
+    private FriendListSubscriber cloudFriendListSubscriber;
     private BootstrapSupportSubscriber bootstrapSupportSubscriber;
     private MessageReceivedListSubscriber messageReceivedListSubscriber;
     private CloudMessageListSubscriber cloudMessageListSubscriber;
@@ -174,22 +175,22 @@ public class HomeGridPresenter extends SendTribePresenter {
     }
 
     public void loadFriendList(String filter) {
-        if (friendListSubscriber != null) {
-            friendListSubscriber.unsubscribe();
+        if (diskFriendListSubscriber != null) {
+            diskFriendListSubscriber.unsubscribe();
         }
 
-        friendListSubscriber = new FriendListSubscriber(false);
+        diskFriendListSubscriber = new FriendListSubscriber(false);
         diskUserInfosUsecase.prepare(null, filter);
-        diskUserInfosUsecase.execute(friendListSubscriber);
+        diskUserInfosUsecase.execute(diskFriendListSubscriber);
     }
 
     public void syncFriendList() {
-        if (friendListSubscriber != null) {
-            friendListSubscriber.unsubscribe();
+        if (cloudFriendListSubscriber != null) {
+            cloudFriendListSubscriber.unsubscribe();
         }
 
-        friendListSubscriber = new FriendListSubscriber(true);
-        cloudUserInfos.execute(friendListSubscriber);
+        cloudFriendListSubscriber = new FriendListSubscriber(true);
+        cloudUserInfos.execute(cloudFriendListSubscriber);
     }
 
     public void loadTribeList() {
@@ -295,7 +296,6 @@ public class HomeGridPresenter extends SendTribePresenter {
             if (!cloud) {
                 List<Recipient> recipients = user.getFriendshipList();
                 showFriendCollectionInView(recipients);
-                syncFriendList();
             } else {
                 syncTribeList();
             }
@@ -422,6 +422,7 @@ public class HomeGridPresenter extends SendTribePresenter {
         @Override
         public void onNext(Void aVoid) {
             loadFriendList(null);
+            syncFriendList();
         }
     }
 

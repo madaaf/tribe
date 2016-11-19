@@ -39,34 +39,22 @@ public class DiskChatDataRepository implements ChatRepository {
 
     @Override
     public Observable<IMqttToken> connectAndSubscribe(String topic) {
-        return chatDataStoreFactory.createMQTTStore().connectAndSubscribe(topic);
+        return null;
     }
 
     @Override
     public Observable<List<ChatMessage>> subscribing(String topic) {
-        ChatDataStore mqttChatDataStore = chatDataStoreFactory.createMQTTStore();
-        ChatDataStore diskChatDataStore = chatDataStoreFactory.createDiskChatStore();
-
-        return Observable.combineLatest(
-                mqttChatDataStore.messages(topic)
-                    .map(messageListRealm -> chatRealmDataMapper.transform(messageListRealm)),
-                diskChatDataStore.messages(topic)
-                    .map(messageListRealm -> chatRealmDataMapper.transform(messageListRealm)),
-                (messageList, messageList2) -> {
-                    messageList2.addAll(messageList);
-                    return messageList2;
-                }
-        );
+        return null;
     }
 
     @Override
     public Observable<IMqttToken> disconnect() {
-        return chatDataStoreFactory.createMQTTStore().disconnect();
+        return null;
     }
 
     @Override
     public Observable<IMqttToken> unsubscribe(String topic) {
-        return chatDataStoreFactory.createMQTTStore().unsubscribe(topic);
+        return null;
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.tribe.app.data.realm;
 
 import android.support.annotation.StringDef;
 
+import com.tribe.app.data.realm.helpers.Changeable;
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
@@ -16,7 +17,7 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by tiago on 29/06/2016.
  */
-public class TribeRealm extends RealmObject implements MessageRealmInterface {
+public class TribeRealm extends RealmObject implements MessageRealmInterface, Changeable {
 
     @StringDef({MESSAGE_SENDING_STATUS, MESSAGE_RECEIVING_STATUS, MESSAGE_DOWNLOADING_STATUS,
             PROGRESS, TOTAL_SIZE, FRIEND_ID_UPDATED_AT, FRIEND_TO_ID_UPDATED_AT, GROUP_ID_UPDATED_AT})
@@ -230,5 +231,10 @@ public class TribeRealm extends RealmObject implements MessageRealmInterface {
 
     public boolean isCanSave() {
         return can_save;
+    }
+
+    @Override
+    public int getChangeHashCode() {
+        return (getLocalId() + getMessageSendingStatus() + getMessageDownloadingStatus() + getMessageReceivingStatus() + getCreatedAt()).hashCode();
     }
 }

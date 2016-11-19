@@ -24,6 +24,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,16 +76,23 @@ public class TopBarView extends FrameLayout {
     @BindView(R.id.btnInvites)
     View btnInvites;
 
+    @BindView(R.id.txtNbMessages)
+    TextViewFont txtNbMessages;
+
     // VARIABLES
     private float startX, startY = 0;
     private List<Message> newMessageList;
     private List<Message> pendingMessageList;
+    private int currentBGColor;
 
     // RESOURCES
     private int avatarSize;
     private int marginLeftSyncLayout;
     private int clickActionThreshold;
     private int spinnerThreshold;
+    private int pendingMessagesColor;
+    private int newMessagesColor;
+    private int noMessagesColor;
 
     // OBSERVABLES
     private Unbinder unbinder;
@@ -93,6 +101,8 @@ public class TopBarView extends FrameLayout {
     private PublishSubject<Void> clickSettings = PublishSubject.create();
     private PublishSubject<Void> clickSearch = PublishSubject.create();
     private PublishSubject<Void> errorDone = PublishSubject.create();
+    private PublishSubject<Void> clickInvites = PublishSubject.create();
+    private PublishSubject<Void> clickGroups = PublishSubject.create();
 
     public TopBarView(Context context) {
         super(context);
@@ -129,6 +139,8 @@ public class TopBarView extends FrameLayout {
 
     private void init(Context context, AttributeSet attrs) {
         newMessageList = new ArrayList<>();
+        pendingMessageList = new ArrayList<>();
+        currentBGColor = getResources().getColor(R.color.white_opacity_20);
     }
 
     private void initUI() {
@@ -151,6 +163,9 @@ public class TopBarView extends FrameLayout {
         avatarSize = getContext().getResources().getDimensionPixelSize(R.dimen.avatar_size_smaller);
         clickActionThreshold = screenUtils.dpToPx(CLICK_ACTION_THRESHOLD);
         spinnerThreshold = screenUtils.dpToPx(SPINNER_THRESHOLD);
+        noMessagesColor = getResources().getColor(R.color.white_opacity_20);
+        pendingMessagesColor = getResources().getColor(R.color.orange);
+        newMessagesColor = getResources().getColor(R.color.red);
     }
 
     @Override
@@ -158,12 +173,24 @@ public class TopBarView extends FrameLayout {
         int action = event.getAction();
 
         switch (action & MotionEvent.ACTION_MASK) {
-
             case MotionEvent.ACTION_UP: {
                 if (isAClick(startX, event.getX(), startY, event.getY())) {
-                    if (isAClickInView(imgAvatar, (int) startX, (int) startY)) imgAvatar.performClick();
-                    else if (isAClickInView(imgSearch, (int) startX, (int) startY)) imgSearch.performClick();
-                    else if (isAClickInView(syncLayout, (int) startX, (int) startY)) syncLayout.performClick();
+                    if (isAClickInView(imgAvatar, (int) startX, (int) startY)) {
+                        imgAvatar.onTouchEvent(event);
+                        imgAvatar.performClick();
+                    } else if (isAClickInView(imgSearch, (int) startX, (int) startY)) {
+                        imgSearch.onTouchEvent(event);
+                        imgSearch.performClick();
+                    } else if (isAClickInView(syncLayout, (int) startX, (int) startY)) {
+                        syncLayout.onTouchEvent(event);
+                        syncLayout.performClick();
+                    } else if (isAClickInView(btnInvites, (int) startX, (int) startY)) {
+                        btnInvites.onTouchEvent(event);
+                        btnInvites.performClick();
+                    } else if (isAClickInView(btnGroup, (int) startX, (int) startY)) {
+                        btnGroup.onTouchEvent(event);
+                        btnGroup.performClick();
+                    }
                 }
 
                 break;
@@ -178,6 +205,8 @@ public class TopBarView extends FrameLayout {
                 if (isAClickInView(imgAvatar, (int) event.getX(), (int) event.getY())) imgAvatar.onTouchEvent(event);
                 else if (isAClickInView(imgSearch, (int) event.getX(), (int) event.getY())) imgSearch.onTouchEvent(event);
                 else if (isAClickInView(syncLayout, (int) event.getX(), (int) event.getY())) syncLayout.onTouchEvent(event);
+                else if (isAClickInView(btnInvites, (int) event.getX(), (int) event.getY())) btnInvites.onTouchEvent(event);
+                else if (isAClickInView(btnGroup, (int) event.getX(), (int) event.getY())) btnGroup.onTouchEvent(event);
                 break;
         }
 
@@ -198,6 +227,16 @@ public class TopBarView extends FrameLayout {
     void launchSyncLayout() {
         showSpinner();
         clickRefresh.onNext(null);
+    }
+
+    @OnClick(R.id.btnInvites)
+    void launchInvites() {
+        clickInvites.onNext(null);
+    }
+
+    @OnClick(R.id.btnGroup)
+    void launchGroup() {
+        clickGroups.onNext(null);
     }
 
     public boolean animatePull(float value, int min, float max) {
@@ -237,8 +276,15 @@ public class TopBarView extends FrameLayout {
                 10
         );
 
-        imgTick.setAlpha(1 - alphaSpinner);
+        if (newMessageList.size() > 0)
+            txtNbMessages.setAlpha(1 - alphaSpinner);
+        else
+            imgTick.setAlpha(1 - alphaSpinner);
+
         progressRefresh.setAlpha(alphaSpinner);
+
+        if (alphaSpinner >= 1 && (currentBGColor == newMessagesColor || currentBGColor == pendingMessagesColor)) animateSyncBGColor(noMessagesColor);
+        else if (alphaSpinner < 1 && newMessageList.size() > 0) animateSyncBGColor(newMessagesColor);
 
         return leftMargin == maxLeftMargin;
     }
@@ -248,6 +294,8 @@ public class TopBarView extends FrameLayout {
         imgTick.clearAnimation();
         AnimationUtils.fadeIn(progressRefresh, DURATION_FADE);
         AnimationUtils.fadeOut(imgTick, DURATION_FADE);
+        AnimationUtils.fadeOut(txtNbMessages, DURATION_FADE);
+        resetNewMessages();
     }
 
     public void hideSpinner() {
@@ -264,6 +312,13 @@ public class TopBarView extends FrameLayout {
         AnimationUtils.fadeIn(btnInvites, DURATION);
         AnimationUtils.fadeIn(imgAvatar, DURATION);
         AnimationUtils.fadeIn(imgSearch, DURATION);
+        AnimationUtils.fadeOut(txtNbMessages, DURATION);
+        resetNewMessages();
+    }
+
+    private void resetNewMessages() {
+        animateSyncBGColor(noMessagesColor);
+        newMessageList.clear();
     }
 
     public void showError() {
@@ -285,8 +340,29 @@ public class TopBarView extends FrameLayout {
     }
 
     public void showNewMessages(List<Message> newMessages) {
-        //if (newMessageList != null && newMessageList.size() != new)
-        //newMessageList.clear();
+        if (newMessages != null) {
+            if (newMessages.size() != newMessageList.size()) {
+                if (newMessages.size() > 0 && newMessageList.size() == 0) {
+                    AnimationUtils.fadeIn(txtNbMessages, DURATION_FADE);
+                    AnimationUtils.fadeOut(imgTick, DURATION_FADE);
+                    animateSyncBGColor(newMessagesColor);
+                } else if (newMessages.size() == 0 && newMessageList.size() > 0) {
+                    AnimationUtils.fadeOut(txtNbMessages, DURATION_FADE);
+                    AnimationUtils.fadeIn(imgTick, DURATION_FADE);
+                    animateSyncBGColor(noMessagesColor);
+                }
+
+                txtNbMessages.setText("" + newMessages.size());
+            }
+
+            newMessageList.clear();
+            newMessageList.addAll(newMessages);
+        }
+    }
+
+    private void animateSyncBGColor(int colorTo) {
+        AnimationUtils.animateBGColor(syncLayout, currentBGColor, colorTo, DURATION_FADE);
+        currentBGColor = colorTo;
     }
 
     private boolean isAClick(float startX, float endX, float startY, float endY) {
@@ -331,4 +407,9 @@ public class TopBarView extends FrameLayout {
     public Observable<Void> onErrorDone() {
         return errorDone;
     }
+
+    public Observable<Void> onClickInvites() { return clickInvites; }
+
+    public Observable<Void> onClickGroups() { return clickGroups; }
 }
+

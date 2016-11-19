@@ -9,7 +9,7 @@
 	<string name="action_create">Créer</string>
 	<string name="action_close">Fermer</string>
 	<string name="action_add">Ajouter (%1$d)</string>
-	<string name="action_more">Plus</string>
+	<string name="action_more">Options</string>
 	
 	<!-- User -->
 	<string name="user_friend">amis</string>
@@ -49,7 +49,7 @@
 	<string name="contacts_section_addressbook_sync_description">Synchroniser automatiquement\nvos contacts</string>
 	<string name="contacts_section_addressbook_syncing">Synchronisation</string>
 	<string name="contacts_section_addressbook_friends_in_app">Aurait %1$d amis sur Tribe</string>
-	<string name="contacts_section_search_usernames">Résultat précis</string>
+	<string name="contacts_section_search_usernames">Résultat</string>
 	<string name="contacts_section_search_searching">Recherche en cours</string>
 	<string name="contacts_section_search_friends">Résultat(s) parmi vos amis</string>
 	<string name="contacts_section_addressbook_title">Inviter votre carnet d\'addresse</string>
@@ -185,7 +185,7 @@
 	<string name="grid_menu_group_infos">Paramêtres &amp; membres</string>
 	<string name="grid_menu_group_leave">Quitter ce groupe</string>
 	<string name="grid_menu_group_delete">Supprimer ce groupe</string>
-	<string name="grid_menu_friendship_hide">Supprimer %1$s</string>
+	<string name="grid_menu_friendship_hide">Masquer %1$s</string>
 	<string name="grid_menu_friendship_unhide">Ajouter %1$s</string>
 	<string name="grid_menu_friendship_block">Bloquer %1$s</string>
 	<string name="grid_menu_friendship_unblock">Ajouter %1$s</string>
@@ -196,7 +196,7 @@
 	<string name="grid_menu_group_mute">Désactiver les notifications</string>
 	<string name="grid_menu_group_unmute">Activer les notifications</string>
 	<string name="grid_menu_group_mute_confirm">Confirmez-vous ?</string>
-	<string name="grid_menu_group_hide">Supprimer ce groupe</string>
+	<string name="grid_menu_group_hide">Masquer ce groupe</string>
 	<string name="grid_menu_group_unhide">Ajouter ce groupe</string>
 	
 	<!-- Chat -->
@@ -253,13 +253,13 @@
 	<string name="group_add_members_already_member">Membre</string>
 	
 	<!-- Group Details -->
-	<string name="group_details_send_link">Lien du groupe</string>
+	<string name="group_details_send_link">Lien de partage du groupe</string>
 	<string name="group_details_notifications_title">Notifications</string>
 	<string name="group_details_notifications_subtitle">Soyez notifié pour les nouveaux\nmessages dans ce groupe</string>
 	<string name="group_details_leave_title">Quitter le groupe</string>
 	<string name="group_details_leave_subtitle">Vous devrez être à nouveau invité par des membres du groupe pour recevoir des messages dans ce groupe.</string>
 	<string name="group_details_delete_title">Supprimer le groupe</string>
-	<string name="group_details_delete_subtitle">-</string>
+	<string name="group_details_delete_subtitle">Faire disparaître le groupe en incluant les messages non-lus.</string>
 	<string name="group_details_lang_title">Langue des sous-titres</string>
 	<string name="group_details_settings_title">Réglages</string>
 	<string name="group_details_settings_subtitle">Identité, sous-titres et notifications push</string>
@@ -413,7 +413,7 @@
 	
 	<!-- Top Bar -->
 	<string name="topbar_create_group">Groupe</string>
-	<string name="topbar_invite_friend">Invits</string>
+	<string name="topbar_invite_friend">Invites</string>
 	
 	<!-- Ear Mode -->
 	<string name="earmode_title">Mode oreille.</string>
@@ -481,7 +481,7 @@
 	<string name="share_add_friends_addressbook_suggestions">I was able to get access to Tribe. Just noticed that you already have %1$d friends on this app. I can get you in: %2$s #JoinTheTribe</string>
 	<string name="share_group_public_link">Here is your invite to join the %1$s group on Tribe. %2$s #JoinTheTribe</string>
 	<string name="share_group_private_link">Here is your invite to join the %1$s group on Tribe. Join quickly because this invite will expire in %2$s ! %3$s #JoinTheTribe</string>
-	<string name="share_add_friends_handle">Voici une invitation pour me rejoindre sur Tribe. %2$s &#128079;&#127996;</string>
+	<string name="share_add_friends_handle">Voici une invitation pour me rejoindre sur Tribe. %1$s :clap:</string>
 	<string name="share_score">I have %1$s points on Tribe %2$s. Try to beat me on http://tribe.pm #JoinTheTribe</string>
 	<string name="share_onboarding">I just discovered Tribe, but I can’t enter alone. Come now so we can get access together. Waiting for you. Go on %1$s #JoinTheTribe</string>
 	<string name="share_copied_redirecting">:paperclip: Ajouté au presse-papier. Préparez-vous à coller.</string>
@@ -523,7 +523,7 @@
 	<string name="tribe_event_popup_date">Date</string>
 	<string name="tribe_event_popup_start">De</string>
 	<string name="tribe_event_popup_end">À</string>
-	<string name="tribe_event_popup_more">Édite et créé un évènement</string>
+	<string name="tribe_event_popup_more">Éditez et crééz un évènement</string>
 	<string name="tribe_event_popup_more_no_access">Vous devez donner les permissions pour l\'accès au calendrier</string>
 	<string name="tribe_event_today">Aujourd\'hui</string>
 	<string name="tribe_event_day_1_future">Demain</string>
@@ -602,13 +602,13 @@
 	<string name="search_user_placeholder">Entrez un nom d\'utilisateur</string>
 	
 	<!-- Spring Cleaning -->
-	<string name="spring_cleaning_friendship_title">Supprimer %1$s ?</string>
+	<string name="spring_cleaning_friendship_title">%1$s</string>
 	<string name="spring_cleaning_friendship_description">Vous pourrez ajouter à nouveau\n%1$s depuis les réglages.</string>
-	<string name="spring_cleaning_friendship_hide">Supprimer cet ami</string>
+	<string name="spring_cleaning_friendship_hide">Masquer cet ami</string>
 	<string name="spring_cleaning_friendship_block">Bloquer cet ami</string>
-	<string name="spring_cleaning_membership_title">Quitter %1$s ?</string>
+	<string name="spring_cleaning_membership_title">%1$s</string>
 	<string name="spring_cleaning_membership_description">Vous devrez être à nouveau invité\npour rejoindre le groupe.</string>
-	<string name="spring_cleaning_membership_hide">Supprimer ce groupe</string>
+	<string name="spring_cleaning_membership_hide">Masquer ce groupe</string>
 	<string name="spring_cleaning_membership_leave">Quitter ce groupe</string>
 	<string name="spring_cleaning_group_delete">Supprimer ce groupe</string>
 	
