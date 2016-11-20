@@ -478,6 +478,30 @@ public class TribeCacheImpl implements TribeCache {
             obsRealm.executeTransaction(realm1 -> {
                 final TribeRealm result = realm1.where(TribeRealm.class).equalTo("localId", local.getLocalId()).findFirst();
                 result.setId(server.getId());
+
+                // WE GET THE OLDER SENT CHAT MESSAGES TO REMOVE THEIR STATUS
+                RealmResults<TribeRealm> sentTribes = realm1.where(TribeRealm.class)
+                        .beginGroup()
+                        .equalTo("from.id", accessToken.getUserId())
+                        .notEqualTo("localId", result.getLocalId())
+                        .endGroup()
+                        .findAllSorted("created_at", Sort.ASCENDING);
+
+                if (!result.isToGroup()) {
+                    sentTribes = sentTribes.where()
+                            .beginGroup()
+                            .equalTo("friendshipRealm.friend.id", result.getFriendshipRealm().getFriend().getId())
+                            .endGroup()
+                            .findAllSorted("created_at", Sort.ASCENDING);
+                } else {
+                    sentTribes = sentTribes.where()
+                            .beginGroup()
+                            .equalTo("membershipRealm.group.id", result.getMembershipRealm().getGroup().getId())
+                            .endGroup()
+                            .findAllSorted("created_at", Sort.ASCENDING);
+                }
+
+                sentTribes.deleteAllFromRealm();
             });
         } finally {
             obsRealm.close();
