@@ -210,6 +210,10 @@ public class CloudUserDataStore implements UserDataStore {
         TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
         String operatorName = telephonyManager.getNetworkOperatorName();
 
+        if (!StringUtils.isEmpty(operatorName)) {
+            operatorName = operatorName.replaceAll("[^a-zA-Z0-9]+", "");
+        }
+
         String base = context.getString(R.string.install_base,
                 accessToken.getUserId(),
                 token,
