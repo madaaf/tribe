@@ -134,6 +134,10 @@ public class AnimationUtils {
         v.animate().alpha(0).setStartDelay(NO_START_DELAY).setInterpolator(new DecelerateInterpolator()).setDuration(duration).start();
     }
 
+    public static void fadeOutIntermediate(View v, long duration) {
+        v.animate().alpha(0.5f).setStartDelay(NO_START_DELAY).setInterpolator(new DecelerateInterpolator()).setDuration(duration).start();
+    }
+
     public static void fadeIn(View v, long duration) {
         v.animate().alpha(1).setStartDelay(NO_START_DELAY).setInterpolator(new DecelerateInterpolator()).setDuration(duration).start();
     }

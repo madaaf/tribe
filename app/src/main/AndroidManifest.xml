@@ -181,18 +181,17 @@
             android:theme="@style/AppTheme.FullScreen"
             />
 
-        <activity android:name=".presentation.view.activity.GroupInfoActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustNothing"
-            android:theme="@style/AppTheme.FullScreen"
-            />
-
         <activity android:name=".presentation.view.activity.BaseActionActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.FullScreen"
             />
 
         <activity android:name=".presentation.view.activity.DebugActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.FullScreen"
+            />
+
+        <activity android:name=".presentation.view.activity.GroupActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.FullScreen"
             />

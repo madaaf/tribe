@@ -571,6 +571,12 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 .subscribe(aVoid -> {
                     navigateToInvites();
                 }));
+
+        subscriptions.add(topBarContainer.onClickGroups()
+                .subscribe(aVoid -> {
+                    navigateToCreateGroup();
+                })
+        );
     }
 
     @Override
@@ -817,8 +823,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                         tagManager.trackEvent(TagManagerConstants.USER_TILE_HIDDEN);
                         homeGridPresenter.updateFriendship((Friendship) recipient, moreType.getMoreType().equals(MoreType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED : FriendshipRealm.HIDDEN);
                     } else if (moreType.getMoreType().equals(MoreType.GROUP_INFO)) {
-                        Membership membership = (Membership) recipient;
-                        navigator.navigateToGroupInfo(this, membership.getId(), membership.isAdmin(), membership.getGroup().getId(), membership.getGroup().getName(), membership.getGroup().getPicture(), membership.getLink(), membership.getLink_expires_at());
+                        //Membership membership = (Membership) recipient;
+                        //navigator.navigateToGroupInfo(this, membership.getId(), membership.isAdmin(), membership.getGroup().getId(), membership.getGroup().getName(), membership.getGroup().getPicture(), membership.getLink(), membership.getLink_expires_at());
                     } else if (moreType.getMoreType().equals(MoreType.GROUP_LEAVE)) {
                         homeGridPresenter.leaveGroup(recipient.getId());
                     } else if (moreType.getMoreType().equals(MoreType.GROUP_DELETE)) {
@@ -929,6 +935,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private void navigateToInvites() {
         shouldOverridePendingTransactions = true;
         HomeActivity.this.navigator.shareHandle(getCurrentUser().getUsername(), this);
+    }
+
+    private void navigateToCreateGroup() {
+        HomeActivity.this.navigator.navigateToCreateGroup(this);
     }
 
     @Override

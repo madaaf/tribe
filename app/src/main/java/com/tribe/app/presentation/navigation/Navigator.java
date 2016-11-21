@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
@@ -22,7 +21,7 @@ import com.tribe.app.presentation.view.activity.BaseActionActivity;
 import com.tribe.app.presentation.view.activity.ChatActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
-import com.tribe.app.presentation.view.activity.GroupInfoActivity;
+import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
@@ -32,7 +31,6 @@ import com.tribe.app.presentation.view.activity.SettingActivity;
 import com.tribe.app.presentation.view.activity.TribeActivity;
 
 import java.io.File;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -181,23 +179,6 @@ public class Navigator {
         }
     }
 
-    public void navigateToGroupInfo(Activity activity, String membershipId, boolean isCurrentUserAdmin, String groupId, String groupName, String groupPicture, String privateGroupLink, Date privateGroupLinkExpiresAt) {
-        if (activity != null) {
-            Intent intent = GroupInfoActivity.getCallingIntent(activity);
-            Bundle bundle = new Bundle();
-            bundle.putString("membershipId", membershipId);
-            bundle.putBoolean("isCurrentUserAdmin", isCurrentUserAdmin);
-            bundle.putString("groupId", groupId);
-            bundle.putString("groupName", groupName);
-            bundle.putString("groupPicture", groupPicture);
-            bundle.putString("privateGroupLink", privateGroupLink);
-            bundle.putLong("privateGroupLinkExpiresAt", privateGroupLinkExpiresAt.getTime());
-            intent.putExtras(bundle);
-            activity.startActivity(intent);
-            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
-        }
-    }
-
     /**
      * Logout -> new login
      * @param activity
@@ -222,6 +203,20 @@ public class Navigator {
             activity.startActivity(intent);
         }
     }
+
+    /**
+     * Goes to the group screen.
+     *
+     * @param activity activity needed to open the destiny activity.
+     */
+    public void navigateToCreateGroup(Activity activity) {
+        if (activity != null) {
+            Intent intent = GroupActivity.getCallingIntent(activity);
+            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+            activity.startActivity(intent);
+        }
+    }
+
 
     /**
      * Goes to the permissions screens or home.

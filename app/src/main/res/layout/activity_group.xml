@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.view.activity.GroupActivity"
+    >
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_bar_height_small"
+        android:background="@drawable/shape_white_rect_grey_border_no_top">
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtTitle"
+            style="@style/Title.2.Black"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/group_identification_title"
+            />
+
+        <ImageView
+            android:id="@+id/imgBack"
+            android:layout_width="@dimen/nav_icon_size"
+            android:layout_height="@dimen/nav_icon_size"
+            android:layout_gravity="left|center_vertical"
+            android:src="@drawable/picto_back"
+            android:scaleType="centerInside"
+            android:background="@drawable/selectable_button_oval"
+            android:clickable="true"
+            />
+
+    </FrameLayout>
+
+
+    <com.solera.defrag.ViewStack
+        android:id="@+id/viewNavigatorStack"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/top_bar_height_small"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_marginTop="@dimen/top_bar_height_small"
+        android:background="@drawable/shadow_bottom"
+        />
+</FrameLayout>

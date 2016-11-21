@@ -87,4 +87,16 @@
     <declare-styleable name="TextViewAnimatedDots">
         <attr name="textStyle" format="integer" />
     </declare-styleable>
+
+    <declare-styleable name="GroupSuggestionView">
+        <attr name="groupDrawable" format="integer" />
+        <attr name="groupType" format="enum">
+            <enum name="bestfriends" value="0" />
+            <enum name="teammates" value="1" />
+            <enum name="classmates" value="2" />
+            <enum name="roomies" value="3" />
+            <enum name="workteam" value="4" />
+            <enum name="family" value="5" />
+        </attr>
+    </declare-styleable>
 </resources>

@@ -98,6 +98,8 @@ import com.tribe.app.presentation.view.component.TopBarView;
 import com.tribe.app.presentation.view.component.TribeComponentView;
 import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.component.VisualizerView;
+import com.tribe.app.presentation.view.component.group.CreateGroupView;
+import com.tribe.app.presentation.view.component.group.GroupSuggestionView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
@@ -175,6 +177,8 @@ public interface ApplicationComponent {
     void inject(RatingView ratingView);
     void inject(TextViewAnimatedDots textViewAnimatedDots);
     void inject(TileView tileView);
+    void inject(CreateGroupView tileView);
+    void inject(GroupSuggestionView groupSuggestionView);
 
     // JOBS
     void inject(BaseJob baseJob);
