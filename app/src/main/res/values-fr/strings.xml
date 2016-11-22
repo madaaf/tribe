@@ -350,6 +350,8 @@
 	<string name="settings_email_subject">À propos de Tribe</string>
 	<string name="settings_rate_title">Noter l\'app</string>
 	<string name="settings_rate_subtitle">Le moyen le plus simple de nous envoyer du love.</string>
+	<string name="settings_hidden_blocked_title">Contacts/Groups bloqués ou masqués</string>
+	<string name="settings_hidden_blocked_subtitle">Retrouvez la liste des contacts/groups que vous avez bloqué ou masqué.</string>
 	<string name="settings_blocked_title">Contacts bloqués ou masqués</string>
 	<string name="settings_blocked_subtitle">Retrouvez la liste des contacts que vous avez bloqué ou masqué.</string>
 	<string name="settings_hidden_groups_title">Groupes masqués</string>
@@ -600,6 +602,10 @@
 	<!-- Search -->
 	<string name="search_title">Rechercher un utilisateur</string>
 	<string name="search_user_placeholder">Entrez un nom d\'utilisateur</string>
+	<string name="search_usernames">Résultat</string>
+	<string name="search_searching">Recherche en cours</string>
+	<string name="search_add_friends">Amis que vous devriez ajouter</string>
+	<string name="search_invite_friends">Amis que vous devriez inviter</string>
 	
 	<!-- Spring Cleaning -->
 	<string name="spring_cleaning_friendship_title">%1$s</string>
@@ -625,4 +631,8 @@
 	<string name="carousel_address_book_subtitle">Connectez votre grille à votre répertoire</string>
 	<string name="carousel_address_book_validate">Bien sûr ! :v:</string>
 	<string name="carousel_address_book_later">Rester seul</string>
+	
+	<!-- Camera -->
+	<string name="camera_permission">Activer\nla caméra</string>
+	<string name="camera_recording">REC</string>
 </resources>

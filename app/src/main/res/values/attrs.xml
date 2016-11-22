@@ -99,4 +99,14 @@
             <enum name="family" value="5" />
         </attr>
     </declare-styleable>
+
+    <declare-styleable name="ActionView">
+        <attr name="actionTitle" format="string" />
+        <attr name="actionBody" format="string" />
+        <attr name="actionType" format="enum">
+            <enum name="hierarchy" value="0" />
+            <enum name="sharing" value="1" />
+            <enum name="toggle" value="2" />
+        </attr>
+    </declare-styleable>
 </resources>

@@ -46,7 +46,7 @@ public class GroupSuggestionView extends FrameLayout {
     // VARIABLES
     private int drawableId;
     private int type;
-    private int label;
+    private String label;
 
     // RESOURCES
     private int paddingSmall;
@@ -96,13 +96,7 @@ public class GroupSuggestionView extends FrameLayout {
 
     public void setType(int type) {
         this.type = type;
-
-        if (type == BEST_FRIENDS) setLabel(R.string.group_bffs_title);
-        else if (type == TEAMMATES) setLabel(R.string.group_teammates_title);
-        else if (type == CLASSMATES) setLabel(R.string.group_classmates_title);
-        else if (type == ROOMIES) setLabel(R.string.group_roomies_title);
-        else if (type == WORKTEAM) setLabel(R.string.group_work_title);
-        else if (type == FAMILY) setLabel(R.string.group_family_title);
+        setLabel(getLabel());
     }
 
     public void setDrawableResource(int res) {
@@ -115,9 +109,22 @@ public class GroupSuggestionView extends FrameLayout {
                 .into(imageView);
     }
 
-    public void setLabel(int res) {
-        label = res;
+    public void setLabel(String str) {
+        label = str;
         txtLabel.setText(label);
+    }
+
+    public String getLabel() {
+        if (type == BEST_FRIENDS) return getContext().getString(R.string.group_bffs_title);
+        else if (type == TEAMMATES) return getContext().getString(R.string.group_teammates_title);
+        else if (type == CLASSMATES) return getContext().getString(R.string.group_classmates_title);
+        else if (type == ROOMIES) return getContext().getString(R.string.group_roomies_title);
+        else if (type == WORKTEAM) return getContext().getString(R.string.group_work_title);
+        else return getContext().getString(R.string.group_family_title);
+    }
+
+    public int getDrawableId() {
+        return drawableId;
     }
 
     @Override

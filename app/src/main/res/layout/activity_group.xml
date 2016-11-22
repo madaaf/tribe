@@ -5,12 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".presentation.view.activity.GroupActivity"
+    android:background="@drawable/shape_white_rect_grey_border_no_top"
     >
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/top_bar_height_small"
-        android:background="@drawable/shape_white_rect_grey_border_no_top">
+        android:layout_height="@dimen/top_bar_height_small">
 
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtTitle"
@@ -33,7 +33,6 @@
             />
 
     </FrameLayout>
-
 
     <com.solera.defrag.ViewStack
         android:id="@+id/viewNavigatorStack"

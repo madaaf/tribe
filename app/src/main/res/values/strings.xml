@@ -350,6 +350,8 @@
 	<string name="settings_email_subject">Something about Tribe</string>
 	<string name="settings_rate_title">Rate the app</string>
 	<string name="settings_rate_subtitle">We appreciate the love that you give us!</string>
+	<string name="settings_hidden_blocked_title">Removed or blocked friends/groups</string>
+	<string name="settings_hidden_blocked_subtitle">Get access to the list of contacts/groups you have blocked or hidden.</string>
 	<string name="settings_blocked_title">Blocked or hidden contacts</string>
 	<string name="settings_blocked_subtitle">Get access to the list of contacts you have blocked or hidden.</string>
 	<string name="settings_hidden_groups_title">Hidden groups</string>
@@ -600,6 +602,10 @@
 	<!-- Search -->
 	<string name="search_title">Search a user</string>
 	<string name="search_user_placeholder">Enter a username</string>
+	<string name="search_usernames">Result</string>
+	<string name="search_searching">Searching</string>
+	<string name="search_add_friends">Friends you should add</string>
+	<string name="search_invite_friends">Friends you should invite</string>
 	
 	<!-- Spring Cleaning -->
 	<string name="spring_cleaning_friendship_title">%1$s</string>
@@ -625,4 +631,8 @@
 	<string name="carousel_address_book_subtitle">Connect your grid with your address book!</string>
 	<string name="carousel_address_book_validate">Of course! :v:</string>
 	<string name="carousel_address_book_later">Stay alone</string>
+	
+	<!-- Camera -->
+	<string name="camera_permission">Enable\ncamera</string>
+	<string name="camera_recording">REC</string>
 </resources>

@@ -16,7 +16,9 @@ import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.CameraType;
 import com.tribe.app.domain.entity.LabelType;
+import com.tribe.app.domain.entity.NewGroupEntity;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
@@ -32,7 +34,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.Unbinder;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -56,30 +59,30 @@ public class CreateGroupView extends FrameLayout {
     View btnGo;
 
     // VARIABLES
-    private Unbinder unbinder;
     private String imgUri;
     private BottomSheetDialog dialogCamera;
     private LabelSheetAdapter cameraTypeAdapter;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions;
+    private PublishSubject<NewGroupEntity> createNewGroup = PublishSubject.create();
 
     public CreateGroupView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    @Override protected void onFinishInflate() {
+    @Override
+    protected void onFinishInflate() {
         super.onFinishInflate();
-        unbinder = ButterKnife.bind(this);
+        ButterKnife.bind(this);
         init();
     }
 
-    @Override protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-
-        if (unbinder != null) unbinder.unbind();
-
+    @Override
+    protected void onDetachedFromWindow() {
         if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+
+        super.onDetachedFromWindow();
     }
 
     @OnClick(R.id.imgAvatar)
@@ -89,7 +92,15 @@ public class CreateGroupView extends FrameLayout {
 
     @OnClick(R.id.btnGo)
     void clickGo() {
-        // TODO
+        createNewGroup.onNext(new NewGroupEntity(editGroupName.getText().toString(), imgUri));
+    }
+
+    @OnClick({ R.id.viewSuggestionBFF, R.id.viewSuggestionTeam, R.id.viewSuggestionClass, R.id.viewSuggestionRoomies,
+            R.id.viewSuggestionWork, R.id.viewSuggestionFamily })
+    void clickSuggestion(View v) {
+        GroupSuggestionView groupSuggestionView = (GroupSuggestionView) v;
+        NewGroupEntity newGroupEntity = new NewGroupEntity(groupSuggestionView.getLabel(), FileUtils.getUriToDrawable(getContext(), groupSuggestionView.getDrawableId()).toString());
+        createNewGroup.onNext(newGroupEntity);
     }
 
     private void init() {
@@ -185,5 +196,12 @@ public class CreateGroupView extends FrameLayout {
         }
 
         return false;
+    }
+
+    /**
+     * OBSERVABLES
+     */
+    public Observable<NewGroupEntity> onCreateNewGroup() {
+        return createNewGroup;
     }
 }

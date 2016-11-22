@@ -9,6 +9,14 @@
     android:background="@android:color/white"
     >
 
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:focusableInTouchMode="true"
+        android:focusable="true">
+        <requestFocus/>
+    </LinearLayout>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -37,8 +45,8 @@
                     android:layout_width="@dimen/avatar_size_small"
                     android:layout_height="@dimen/avatar_size_small"
                     android:layout_gravity="center_vertical"
-                    android:background="@drawable/shape_oval_grey"
-                    android:src="@drawable/picto_gallery"
+                    android:background="@drawable/shape_oval_purple_fill"
+                    android:src="@drawable/picto_new_pic"
                     android:scaleType="centerInside"
                     android:clickable="true"
                     android:foreground="@drawable/selectable_button_oval"
@@ -83,23 +91,7 @@
                     />
             </FrameLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/divider_size"
-                android:background="@color/grey.light"
-                />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="5dp"
-                android:background="@color/grey.background.profile_info"
-                />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/divider_size"
-                android:background="@color/grey.light"
-                />
+            <include layout="@layout/view_separator" />
 
             <com.tribe.app.presentation.view.widget.TextViewFont
                 android:layout_width="wrap_content"

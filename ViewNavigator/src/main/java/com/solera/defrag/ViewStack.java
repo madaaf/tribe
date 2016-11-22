@@ -208,15 +208,15 @@ public class ViewStack extends FrameLayout {
         return viewStack.size();
     }
 
-    public void push(@LayoutRes int layout) {
-        pushWithParameters(layout, null);
+    public View push(@LayoutRes int layout) {
+        return pushWithParameters(layout, null);
     }
 
-    public void pushWithParameter(@LayoutRes int layout, @Nullable Serializable parameter) {
-        pushWithParameters(layout, createSimpleBundle(parameter));
+    public View pushWithParameter(@LayoutRes int layout, @Nullable Serializable parameter) {
+        return pushWithParameters(layout, createSimpleBundle(parameter));
     }
 
-    public void pushWithParameters(@LayoutRes int layout, @Nullable Bundle parameters) {
+    public View pushWithParameters(@LayoutRes int layout, @Nullable Bundle parameters) {
         final ViewStackEntry viewStackEntry = new ViewStackEntry(layout, parameters, null);
         final View view = viewStackEntry.getView();
 
@@ -230,7 +230,7 @@ public class ViewStack extends FrameLayout {
                     setTraversingState(TraversingState.IDLE);
                 }
             });
-            return;
+            return view;
         }
 
         final ViewStackEntry peek = viewStack.peek();
@@ -245,6 +245,8 @@ public class ViewStack extends FrameLayout {
                 ViewStack.this.runAnimation(fromView, view, TraversingOperation.PUSH);
             }
         });
+
+        return view;
     }
 
     /**

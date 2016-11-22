@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.ImageView;
 
 import com.solera.defrag.AnimationHandler;
 import com.solera.defrag.TraversalAnimation;
@@ -16,10 +17,14 @@ import com.solera.defrag.TraversingOperation;
 import com.solera.defrag.TraversingState;
 import com.solera.defrag.ViewStack;
 import com.tribe.app.R;
+import com.tribe.app.presentation.view.component.group.AddMembersGroupView;
+import com.tribe.app.presentation.view.component.group.CreateGroupView;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 public class GroupActivity extends BaseActivity {
@@ -30,6 +35,16 @@ public class GroupActivity extends BaseActivity {
 
     @BindView(R.id.viewNavigatorStack)
     ViewStack viewStack;
+
+    @BindView(R.id.txtTitle)
+    TextViewFont txtTitle;
+
+    @BindView(R.id.imgBack)
+    ImageView imgBack;
+
+    // VIEWS
+    private CreateGroupView viewCreateGroup;
+    private AddMembersGroupView viewAddMembersGroup;
 
     // VARIABLES
     private boolean disableUI = false;
@@ -48,8 +63,17 @@ public class GroupActivity extends BaseActivity {
         viewStack.addTraversingListener(traversingState -> disableUI = traversingState != TraversingState.IDLE);
 
         if (savedInstanceState == null) {
-            viewStack.push(R.layout.view_create_group);
+            viewCreateGroup = (CreateGroupView) viewStack.push(R.layout.view_create_group);
+            viewCreateGroup.onCreateNewGroup().subscribe(newGroup -> {
+                System.out.println("NEW GROUP ZER");
+                viewStack.push(R.layout.view_add_members_group);
+            });
         }
+    }
+
+    @OnClick(R.id.imgBack)
+    void clickBack() {
+        onBackPressed();
     }
 
     @Override
@@ -61,6 +85,12 @@ public class GroupActivity extends BaseActivity {
         if (!viewStack.pop()) {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
     }
 
     @Override
