@@ -32,7 +32,15 @@ public class GroupRealm extends RealmObject {
     private boolean privateGroup;
     private Date created_at;
     private Date updated_at;
+
+    //private RealmList<GroupMember> memberIdList;
+
+    //@Ignore
     private RealmList<UserRealm> members;
+
+    //private RealmList<GroupMember> adminsIdList;
+
+    //@Ignore
     private RealmList<UserRealm> admins;
 
     public String getId() {

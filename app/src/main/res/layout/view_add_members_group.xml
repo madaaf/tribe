@@ -122,6 +122,12 @@
 
                 </FrameLayout>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_size"
+                    android:background="@color/grey.light"
+                    />
+
                 <RelativeLayout
                     android:id="@+id/layoutMembers"
                     android:layout_width="match_parent"

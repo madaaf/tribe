@@ -32,7 +32,7 @@ public abstract class AddAnimationAdapterDelegate<T> extends RxAdapterDelegate<T
     private final PublishSubject<View> clickAdd = PublishSubject.create();
     private final PublishSubject<View> clickRemove = PublishSubject.create();
 
-    private Map<AddAnimationViewHolder, AnimatorSet> animations = new HashMap<>();
+    protected Map<AddAnimationViewHolder, AnimatorSet> animations = new HashMap<>();
 
     public AddAnimationAdapterDelegate(Context context) {
         this.context = context;

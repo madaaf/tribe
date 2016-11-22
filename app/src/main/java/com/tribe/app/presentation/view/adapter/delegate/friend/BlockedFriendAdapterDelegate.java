@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.view.adapter.delegate.friend;
 
-import android.animation.AnimatorSet;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -18,13 +17,10 @@ import com.tribe.app.presentation.view.adapter.viewholder.AddAnimationViewHolder
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.subjects.PublishSubject;
 
 /**
  * Created by horatiothomas on 9/7/16.
@@ -32,11 +28,9 @@ import rx.subjects.PublishSubject;
 public class BlockedFriendAdapterDelegate extends AddAnimationAdapterDelegate<List<Friendship>> {
 
     // RX SUBSCRIPTIONS / SUBJECTS
-    private final PublishSubject<View> clickAdd = PublishSubject.create();
-    private final PublishSubject<View> clickRemove = PublishSubject.create();
 
+    // VARIABLES
     private int avatarSize;
-    private Map<BlockFriendViewHolder, AnimatorSet> animations = new HashMap<>();
 
     public BlockedFriendAdapterDelegate(Context context) {
         super(context);
