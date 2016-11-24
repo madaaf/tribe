@@ -79,10 +79,17 @@ public class CreateGroupView extends FrameLayout {
     }
 
     @Override
-    protected void onDetachedFromWindow() {
-        if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+    }
 
+    @Override
+    protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+    }
+
+    public void onDestroy() {
+        if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     }
 
     @OnClick(R.id.imgAvatar)

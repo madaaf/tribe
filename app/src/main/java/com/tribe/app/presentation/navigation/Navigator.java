@@ -211,7 +211,7 @@ public class Navigator {
      */
     public void navigateToCreateGroup(Activity activity) {
         if (activity != null) {
-            Intent intent = GroupActivity.getCallingIntent(activity);
+            Intent intent = GroupActivity.getCallingIntent(activity, null);
             activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
             activity.startActivity(intent);
         }

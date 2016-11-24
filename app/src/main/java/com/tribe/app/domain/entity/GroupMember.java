@@ -2,20 +2,66 @@ package com.tribe.app.domain.entity;
 
 import java.io.Serializable;
 
-import io.realm.RealmObject;
-
 /**
- * Created by tiago on 11/22/16.
+ * Created by tiago on 23/11/2016.
  */
-public class GroupMember extends RealmObject implements Serializable {
+public class GroupMember implements Serializable {
 
-    private String id;
+    private boolean ogMember = false;
+    private boolean member = false;
+    private boolean admin = false;
+    private User user;
 
-    public String getId() {
-        return id;
+    public GroupMember(User user) {
+        this.user = user;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+
+        GroupMember that = (GroupMember) o;
+
+        return user.getId() != null ? user.getId().equals(that.user.getId()) : that.user.getId() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (user.getId() != null ? user.getId().hashCode() : 0);
+        return result;
+    }
+
+    public boolean isMember() {
+        return member;
+    }
+
+    public boolean isOgMember() {
+        return ogMember;
+    }
+
+    public void setOgMember(boolean ogMember) {
+        this.ogMember = ogMember;
+    }
+
+    public void setMember(boolean member) {
+        this.member = member;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

@@ -2,26 +2,23 @@ package com.tribe.app.presentation.view.adapter.filter;
 
 import android.widget.Filter;
 
-import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.FriendMembersAdapter;
-import com.tribe.app.presentation.view.adapter.BlockedFriendAdapter;
+import com.tribe.app.presentation.view.adapter.FriendMembersAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.R.attr.filter;
-
 public class UserListFilter extends Filter {
 
-    private List<User> userList;
-    private List<User> filteredUserList;
+    private List<GroupMember> userList;
+    private List<GroupMember> filteredUserList;
     private FriendMembersAdapter adapter;
 
-    public UserListFilter(List<User> userList, FriendMembersAdapter adapter) {
+    public UserListFilter(List<GroupMember> userList, FriendMembersAdapter adapter) {
         this.userList = userList;
         this.filteredUserList = new ArrayList();
+        this.adapter = adapter;
     }
 
     @Override
@@ -30,10 +27,8 @@ public class UserListFilter extends Filter {
         final FilterResults results = new FilterResults();
 
         if (userList != null && userList.size() > 0) {
-            for (final User item : userList) {
-                String firstCharacter = StringUtils.getFirstCharacter(item.getDisplayName());
-
-                if (!firstCharacter.isEmpty() && firstCharacter.equalsIgnoreCase(constraint.toString())) {
+            for (final GroupMember item : userList) {
+                if (item.getUser().getDisplayName().toLowerCase().startsWith(constraint.toString().toLowerCase())) {
                     filteredUserList.add(item);
                 }
             }

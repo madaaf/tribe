@@ -17,8 +17,11 @@ import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 
 import io.fabric.sdk.android.Fabric;
+import io.realm.FieldAttribute;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmObjectSchema;
+import io.realm.RealmSchema;
 
 /**
  * Android Main Application
@@ -81,8 +84,26 @@ public class AndroidApplication extends Application {
         Realm.init(this);
         RealmConfiguration realmConfiguration = new RealmConfiguration
                 .Builder()
+                .schemaVersion(1)
                 .migration((realm, oldVersion, newVersion) -> {
+                    RealmSchema schema = realm.getSchema();
 
+                    if (oldVersion == 0) {
+                        RealmObjectSchema groupSchema = schema.get("GroupRealm");
+
+                        RealmObjectSchema groupMemberSchema = schema.create("GroupMember")
+                                .addField("id", String.class, FieldAttribute.REQUIRED);
+
+                        if (!groupSchema.hasField("memberIdList")) {
+                            groupSchema.addRealmListField("memberIdList", groupMemberSchema);
+                        }
+
+                        if (!groupSchema.hasField("adminIdList")) {
+                            groupSchema.addRealmListField("adminIdList", groupMemberSchema);
+                        }
+
+                        oldVersion++;
+                    }
                 })
                 .build();
         Realm.setDefaultConfiguration(realmConfiguration);

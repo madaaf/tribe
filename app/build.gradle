@@ -191,6 +191,7 @@ dependencies {
     compile presentationDependencies.imageCropper
     compile presentationDependencies.firebaseInvites
     compile presentationDependencies.appBoy
+    compile presentationDependencies.recyclerViewAnimators
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker

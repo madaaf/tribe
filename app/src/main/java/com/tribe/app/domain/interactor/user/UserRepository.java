@@ -15,6 +15,7 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
+import com.tribe.app.domain.entity.NewGroupEntity;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
@@ -144,7 +145,7 @@ public interface UserRepository {
 
     Observable<Group> getGroupInfos(String groupId);
 
-    Observable<Membership> createGroup(String groupName, List<String> memberIds, boolean isPrivate, String pictureUri);
+    Observable<Membership> createGroup(NewGroupEntity newGroupEntity);
 
     Observable<Group> updateGroup(String groupId, String groupName, String pictureUri);
 

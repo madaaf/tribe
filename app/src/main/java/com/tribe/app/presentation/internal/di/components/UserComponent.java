@@ -10,6 +10,7 @@ import com.tribe.app.presentation.utils.mediapicker.MediaHiddenActivity;
 import com.tribe.app.presentation.view.activity.BaseActionActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
+import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.activity.PointsActivity;
@@ -63,4 +64,5 @@ public interface UserComponent extends ActivityComponent {
     void inject(PointsDialogFragment pointsDialogFragment);
     void inject(ShareDialogProfileFragment shareDialogProfileFragment);
     void inject(BaseActionActivity baseActionActivity);
+    void inject(GroupActivity groupActivity);
 }

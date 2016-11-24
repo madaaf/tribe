@@ -21,6 +21,7 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
+import com.tribe.app.domain.entity.NewGroupEntity;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
@@ -218,9 +219,9 @@ public class CloudUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<Membership> createGroup(String groupName, List<String> memberIds, boolean isPrivate, String pictureUri) {
+    public Observable<Membership> createGroup(NewGroupEntity newGroupEntity) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-        return cloudDataStore.createGroup(groupName, memberIds, isPrivate, pictureUri)
+        return cloudDataStore.createGroup(newGroupEntity)
                 .map((membershipRealm) -> this.membershipRealmDataMapper.transform(membershipRealm));
     }
 

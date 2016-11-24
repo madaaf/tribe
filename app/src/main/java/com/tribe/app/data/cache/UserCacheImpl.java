@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.data.realm.GroupMember;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.LocationRealm;
@@ -19,7 +20,6 @@ import javax.inject.Inject;
 import io.realm.Realm;
 import io.realm.RealmList;
 import rx.Observable;
-import rx.Subscriber;
 
 /**
  * Created by tiago on 06/05/2016.
@@ -92,37 +92,14 @@ public class UserCacheImpl implements UserCache {
                     membershipDB.getGroup().setName(membershipRealm.getGroup().getName());
                     membershipDB.getGroup().setPicture(membershipRealm.getGroup().getPicture());
                     membershipDB.setMute(membershipRealm.isMute());
-
-                    RealmList<UserRealm> membersEnd = new RealmList<>();
-
-                    if (membershipRealm.getGroup().getMembers() != null) {
-                        for (UserRealm member : membershipRealm.getGroup().getMembers()) {
-                            UserRealm memberDB = obsRealm.where(UserRealm.class).equalTo("id", member.getId()).findFirst();
-
-                            if (memberDB == null) {
-                                memberDB = obsRealm.copyToRealmOrUpdate(member);
-                            }
-
-                            membersEnd.add(memberDB);
-                        }
-                    }
-
-                    membershipDB.getGroup().setMembers(membersEnd);
+                    refactorMembers(obsRealm, membershipRealm, membershipDB);
+                    refactorAdmins(membershipRealm, membershipDB);
                 } else {
                     membershipRealm.setUpdatedAt(new Date());
-
-                    RealmList<UserRealm> members = new RealmList<>();
-
-                    if (membershipRealm.getGroup() != null && membershipRealm.getGroup().getMembers() != null) {
-                        for (UserRealm member : membershipRealm.getGroup().getMembers()) {
-                            if (member.getId().equals(userDB.getId())) members.add(userDB);
-                            else members.add(member);
-                        }
-
-                        membershipRealm.getGroup().setMembers(members);
-                    }
-
-                    membershipDB = obsRealm.copyToRealmOrUpdate(membershipRealm);
+                    refactorMembers(obsRealm, membershipRealm, membershipRealm);
+                    refactorAdmins(membershipRealm, membershipRealm);
+                    obsRealm.insertOrUpdate(membershipRealm);
+                    membershipDB = obsRealm.where(MembershipRealm.class).equalTo("id", membershipRealm.getId()).findFirst();
                     userDB.getMemberships().add(membershipDB);
                 }
 
@@ -179,6 +156,38 @@ public class UserCacheImpl implements UserCache {
         }
     }
 
+    private void refactorMembers(Realm realm, MembershipRealm from, MembershipRealm to) {
+        RealmList<GroupMember> membersEnd = new RealmList<>();
+
+        if (from.getGroup().getMembers() != null) {
+            for (UserRealm member : from.getGroup().getMembers()) {
+                UserRealm memberDB = realm.where(UserRealm.class).equalTo("id", member.getId()).findFirst();
+
+                if (memberDB == null) {
+                    realm.insertOrUpdate(member);
+                }
+
+                memberDB = realm.where(UserRealm.class).equalTo("id", member.getId()).findFirst();
+
+                membersEnd.add(new GroupMember(memberDB.getId()));
+            }
+        }
+
+        to.getGroup().setMemberIdList(membersEnd);
+    }
+
+    private void refactorAdmins(MembershipRealm from, MembershipRealm to) {
+        RealmList<GroupMember> adminsEnd = new RealmList<>();
+
+        if (from.getGroup().getAdmins() != null) {
+            for (UserRealm member : from.getGroup().getAdmins()) {
+                adminsEnd.add(new GroupMember(member.getId()));
+            }
+        }
+
+        to.getGroup().setAdminIdList(adminsEnd);
+    }
+
     public void put(AccessToken accessToken) {
         Realm otherRealm = Realm.getDefaultInstance();
         try {
@@ -212,17 +221,37 @@ public class UserCacheImpl implements UserCache {
     // ALWAYS CALLED ON MAIN THREAD
     @Override
     public Observable<UserRealm> userInfos(String userId) {
-        return Observable.create(new Observable.OnSubscribe<UserRealm>() {
-            @Override
-            public void call(final Subscriber<? super UserRealm> subscriber) {
-                results = realm.where(UserRealm.class).equalTo("id", userId).findFirst();
-
-                if (results != null)
-                    subscriber.onNext(realm.copyFromRealm(results));
-
-                subscriber.onCompleted();
-            }
-        });
+        return realm.where(UserRealm.class).equalTo("id", userId)
+                .findFirst()
+                .asObservable()
+                .map(o -> (UserRealm) realm.copyFromRealm(o));
+//                .map(userRealm -> {
+//                    if (userRealm.getMemberships() != null) {
+//                        for (MembershipRealm membershipRealm : userRealm.getMemberships()) {
+//                            List<String> ids = new ArrayList<>();
+//
+//                            for (GroupMember member : membershipRealm.getGroup().getMemberIdList()) {
+//                                ids.add(member.getId());
+//                            }
+//
+//                            RealmResults<UserRealm> membersRealm = realm.where(UserRealm.class).in("id", ids.toArray(new String[ids.size()])).findAll();
+//                            membershipRealm.getGroup().getMembers().clear();
+//                            membershipRealm.getGroup().getMembers().addAll(realm.copyFromRealm(membersRealm));
+//
+//                            ids.clear();
+//
+//                            for (GroupMember admin : membershipRealm.getGroup().getAdminIdList()) {
+//                                ids.add(admin.getId());
+//                            }
+//
+//                            RealmResults<UserRealm> adminsRealm = realm.where(UserRealm.class).in("id", ids.toArray(new String[ids.size()])).findAll();
+//                            membershipRealm.getGroup().getAdmins().clear();
+//                            membershipRealm.getGroup().getAdmins().addAll(realm.copyFromRealm(adminsRealm));
+//                        }
+//                    }
+//
+//                    return userRealm;
+//                });
     }
 
     @Override
@@ -444,6 +473,10 @@ public class UserCacheImpl implements UserCache {
         Realm realm = Realm.getDefaultInstance();
         try {
             realm.beginTransaction();
+
+            refactorMembers(realm, membershipRealm, membershipRealm);
+            refactorAdmins(membershipRealm, membershipRealm);
+
             MembershipRealm membershipRealmDB = realm.copyToRealmOrUpdate(membershipRealm);
             UserRealm user = realm.where(UserRealm.class).equalTo("id", userId).findFirst();
 

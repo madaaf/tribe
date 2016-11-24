@@ -48,16 +48,31 @@
             />
 
         <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtBubble"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/txtUsername"
+            android:layout_below="@id/txtName"
+            android:layout_marginTop="6.5dp"
+            android:layout_marginLeft="2dp"
+            android:text="\u2022"
+            android:singleLine="true"
+            style="@style/Body.One.Black40"
+            android:visibility="gone"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtMember"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@id/txtUsername"
+            android:layout_toRightOf="@id/txtBubble"
             android:layout_below="@id/txtName"
             android:layout_marginTop="5dp"
+            android:layout_marginLeft="2dp"
             android:text="@string/group_add_members_already_member"
             android:singleLine="true"
             style="@style/Body.One.Black40"
+            android:visibility="gone"
             />
     </RelativeLayout>
     
@@ -67,7 +82,6 @@
         android:layout_height="@dimen/avatar_size_small"
         android:layout_gravity="center_vertical|right"
         android:background="@drawable/shape_oval_grey"
-        android:clickable="true"
         android:padding="5dp"
         >
         <View
@@ -84,8 +98,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/shape_oval_black40"
-            android:scaleY="0"
-            android:scaleX="0"
             />
     </FrameLayout>
 </FrameLayout>

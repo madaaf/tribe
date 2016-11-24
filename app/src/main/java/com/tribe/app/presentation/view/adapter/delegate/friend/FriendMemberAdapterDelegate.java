@@ -6,15 +6,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.User;
+import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.viewholder.AddAnimationViewHolder;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
@@ -25,12 +26,15 @@ import rx.Observable;
 import rx.subjects.PublishSubject;
 
 /**
- * Created by tiago on 9/7/16.
+ * Created by tiago on 11/22/16.
  */
-public class FriendMemberAdapterDelegate extends RxAdapterDelegate<List<User>> {
+public class FriendMemberAdapterDelegate extends RxAdapterDelegate<List<GroupMember>> {
+
+    private static final int DURATION_SCALE = 350;
+    private static final float OVERSHOOT = 0.45f;
 
     // RX SUBSCRIPTIONS / SUBJECTS
-    private PublishSubject<Boolean> clickAdd = PublishSubject.create();
+    private PublishSubject<View> clickAdd = PublishSubject.create();
 
     // VARIABLES
     private int avatarSize;
@@ -44,7 +48,7 @@ public class FriendMemberAdapterDelegate extends RxAdapterDelegate<List<User>> {
     }
 
     @Override
-    public boolean isForViewType(@NonNull List<User> items, int position) {
+    public boolean isForViewType(@NonNull List<GroupMember> items, int position) {
         return true;
     }
 
@@ -52,17 +56,16 @@ public class FriendMemberAdapterDelegate extends RxAdapterDelegate<List<User>> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
         RecyclerView.ViewHolder vh = new FriendMemberViewHolder(layoutInflater.inflate(R.layout.item_friend_member, parent, false));
-
         return vh;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull List<User> items, int position, @NonNull RecyclerView.ViewHolder holder) {
+    public void onBindViewHolder(@NonNull List<GroupMember> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         FriendMemberViewHolder vh = (FriendMemberViewHolder) holder;
-        User user = items.get(position);
+        GroupMember groupMember = items.get(position);
 
-        if (!StringUtils.isEmpty(user.getProfilePicture())) {
-            Glide.with(context).load(user.getProfilePicture())
+        if (!StringUtils.isEmpty(groupMember.getUser().getProfilePicture())) {
+            Glide.with(context).load(groupMember.getUser().getProfilePicture())
                     .thumbnail(0.25f)
                     .override(avatarSize, avatarSize)
                     .bitmapTransform(new CropCircleTransformation(context))
@@ -70,15 +73,39 @@ public class FriendMemberAdapterDelegate extends RxAdapterDelegate<List<User>> {
                     .into(vh.imgAvatar);
         }
 
-        vh.txtName.setText(user.getDisplayName());
-        vh.txtUsername.setText(user.getUsername());
+        vh.txtName.setText(groupMember.getUser().getDisplayName());
+        vh.txtUsername.setText("@" + groupMember.getUser().getUsername());
+
+        if (!groupMember.getUser().isOgMember()) {
+            vh.viewAdd.setVisibility(View.VISIBLE);
+            vh.viewMember.setVisibility(View.GONE);
+            vh.txtMember.setVisibility(View.GONE);
+            vh.txtBubble.setVisibility(View.GONE);
+
+            vh.itemView.setOnClickListener(v -> {
+                if (groupMember.isMember()) {
+                    groupMember.setMember(false);
+                    AnimationUtils.scaleDown(vh.viewAdd, DURATION_SCALE, 0, new OvershootInterpolator(OVERSHOOT));
+                } else {
+                    groupMember.setMember(true);
+                    AnimationUtils.scaleUp(vh.viewAdd, DURATION_SCALE, 0, new OvershootInterpolator(OVERSHOOT));
+                }
+
+                clickAdd.onNext(vh.itemView);
+            });
+        } else {
+            vh.viewAdd.setVisibility(View.GONE);
+            vh.viewMember.setVisibility(View.VISIBLE);
+            vh.txtMember.setVisibility(View.VISIBLE);
+            vh.txtBubble.setVisibility(View.VISIBLE);
+        }
     }
 
-    public Observable<Boolean> clickAdd() {
+    public Observable<View> clickAdd() {
         return clickAdd;
     }
 
-    static class FriendMemberViewHolder extends AddAnimationViewHolder {
+    static class FriendMemberViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.imgAvatar)
         ImageView imgAvatar;
@@ -88,6 +115,12 @@ public class FriendMemberAdapterDelegate extends RxAdapterDelegate<List<User>> {
 
         @BindView(R.id.txtUsername)
         TextViewFont txtUsername;
+
+        @BindView(R.id.txtMember)
+        TextViewFont txtMember;
+
+        @BindView(R.id.txtBubble)
+        TextViewFont txtBubble;
 
         @BindView(R.id.viewAdd)
         View viewAdd;

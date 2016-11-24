@@ -1,6 +1,7 @@
 package com.tribe.app.domain.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by tiago on 21/11/2016.
@@ -10,6 +11,7 @@ public class NewGroupEntity implements Serializable {
 
     private String name;
     private String imgPath;
+    private List<String> membersId;
 
     public NewGroupEntity(String name, String imgPath) {
         this.name = name;
@@ -30,5 +32,13 @@ public class NewGroupEntity implements Serializable {
 
     public void setImgPath(String imgPath) {
         this.imgPath = imgPath;
+    }
+
+    public void setMembersId(List<String> membersId) {
+        this.membersId = membersId;
+    }
+
+    public List<String> getMembersId() {
+        return membersId;
     }
 }

@@ -10,6 +10,9 @@
 	<string name="action_close">Fermer</string>
 	<string name="action_add">Ajouter (%1$d)</string>
 	<string name="action_more">Options</string>
+	<string name="action_next">Suivant</string>
+	<string name="action_enter">Entrer</string>
+	<string name="action_start">Commencer</string>
 	
 	<!-- User -->
 	<string name="user_friend">amis</string>
@@ -115,6 +118,17 @@
 	<string name="permission_photos_disabled_alert_description">Rendez-vous dès maintenant dans les Paramètres de l\'iPhone pour l\'activer !</string>
 	<string name="permission_photos_disabled_alert_redirect">Aller dans Paramètres</string>
 	<string name="permission_photos_disabled_alert_cancel">Rester bloqué</string>
+	<string name="permission_global_title">Félicitations !</string>
+	<string name="permission_global_shortcut_title">Me montrer les pop-ups et entrer !</string>
+	<string name="permission_global_shortcut_subtitle">S\'assurer que tout fonctionne.</string>
+	<string name="permission_global_camera_title">Caméra</string>
+	<string name="permission_global_camera_description">S\'assurer que vos amis peuvent vous\nvoir sur vos messages</string>
+	<string name="permission_global_mic_title">Micro</string>
+	<string name="permission_global_mic_description">S\'assurer que vos amis peuvent vous\nentendre sur vos messages</string>
+	<string name="permission_global_popup_title">Assurez vous que tout fonctionne parfaitement !</string>
+	<string name="permission_global_popup_message">Occupons nous des permissions pour que vous ne ratiez rien de l\'expérience de messagerie vidéo la plus incroyable.</string>
+	<string name="permission_global_popup_cancel">Rester nul</string>
+	<string name="permission_global_popup_confirm">C\'est parti !</string>
 	
 	<!-- Rating -->
 	<string name="rating_title">Envoyez-nous 5 étoiles\nen 1 minute !</string>
@@ -348,6 +362,24 @@
 	<string name="settings_email_subtitle">Nous répondons en moins de 48h à chaque email.</string>
 	<string name="settings_email_address">cyril@tribe.pm</string>
 	<string name="settings_email_subject">À propos de Tribe</string>
+	<string name="settings_filters_and_themes_title">Filters and themes</string>
+	<string name="settings_filters_and_themes_subtitle">Customize your experiences</string>
+	<string name="settings_permissions_title">Permissions</string>
+	<string name="settings_permissions_subtitle">Preload, Camera and more</string>
+	<string name="settings_cleanmygrid_title">Hide and block friends</string>
+	<string name="settings_cleanmygrid_subtitle">Pick friends you want to remove or block</string>
+	<string name="settings_parameters_title">Parameters</string>
+	<string name="settings_parameters_subtitle">data, invisible mode, audio only...</string>
+	<string name="settings_message_title">Message us</string>
+	<string name="settings_message_subtitle">Support, Tweets and more</string>
+	<string name="settings_message_tribe">Send a Tribe to the Support</string>
+	<string name="settings_message_email">Email the team</string>
+	<string name="settings_message_twitter">Twitter</string>
+	<string name="settings_follow_title">Suivez-nous</string>
+	<string name="settings_follow_subtitle">Twitter, Instagram et Snapchat</string>
+	<string name="settings_follow_twitter">Twitter</string>
+	<string name="settings_follow_instagram">Instagram</string>
+	<string name="settings_follow_snapchat">Snapchat</string>
 	<string name="settings_rate_title">Noter l\'app</string>
 	<string name="settings_rate_subtitle">Le moyen le plus simple de nous envoyer du love.</string>
 	<string name="settings_hidden_blocked_title">Contacts/Groups bloqués ou masqués</string>
@@ -376,24 +408,25 @@
 	<string name="onboarding_phone_number">Numéro de téléphone</string>
 	<string name="onboarding_error_wrong_pin">:closed_lock_with_key: Mauvais code de vérification</string>
 	<string name="onboarding_connected">Connecté</string>
-	<string name="onboarding_user_title">Hello ! Préparez-vous.</string>
+	<string name="onboarding_user_title">Configurer votre profil</string>
 	<string name="onboarding_user_avatar_library">Ouvrir ma bibliothèque</string>
 	<string name="onboarding_user_avatar_selfie">Utiliser l\'appareil photo</string>
 	<string name="onboarding_user_displayname_placeholder">Nom complet</string>
 	<string name="onboarding_user_username_placeholder">Nom d\'utilisateur</string>
 	<string name="onboarding_user_username_restrictions">Le nom d\'utilisateur ne doit contenir que des caractères alphanumériques ou tirets</string>
-	<string name="onboarding_user_facebook_button_title">Remplir avec Facebook</string>
-	<string name="onboarding_queue_title">Prêt à entrer !</string>
-	<string name="onboarding_queue_description">Au moins un ami est\nexigé pour pouvoir rentrer</string>
+	<string name="onboarding_user_facebook_button_title">Connexion avec facebook</string>
+	<string name="onboarding_user_facebook_button_subtitle">Conseillé, c\'est plus rapide !</string>
+	<string name="onboarding_queue_title">Trouver vos amis</string>
+	<string name="onboarding_queue_description">Trouver qui est déjà\ninscrit sur Tribe !</string>
 	<string name="onboarding_queue_button_title">Verifier mes amis</string>
-	<string name="onboarding_queue_loading_title">Patientez...</string>
-	<string name="onboarding_queue_loading_description">Nous vérifions si un de\nvos amis est déjà sur Tribe.</string>
+	<string name="onboarding_queue_loading_title">Trouver vos amis</string>
+	<string name="onboarding_queue_loading_description">Synchronisation de vos amis...</string>
 	<string name="onboarding_queue_loading_friends">ami(e)s</string>
 	<string name="onboarding_queue_declined_title">Vous n\'avez pas encore accès. :pensive:</string>
 	<string name="onboarding_queue_declined_description">Vous avez besoin d\'un ami.\nEnvoyez des invitations!</string>
 	<string name="onboarding_queue_declined_button_title">Réessayer</string>
-	<string name="onboarding_queue_valid_title">Yay ! Vous pouvez entrer.</string>
-	<string name="onboarding_queue_valid_description">Certains de vos amis\nsont déjà là !</string>
+	<string name="onboarding_queue_valid_title">Trouver vos amis</string>
+	<string name="onboarding_queue_valid_description">Amis synchronisés !</string>
 	<string name="onboarding_queue_valid_button_title">Entrer maintenant</string>
 	<string name="onboarding_popup_confirm_description">Nous allons envoyer un code\nà ce numéro de téléphone.</string>
 	<string name="onboarding_popup_confirm_edit_button_title">Modifier</string>
@@ -401,9 +434,23 @@
 	<string name="onboarding_popup_error_title">À votre service !</string>
 	<string name="onboarding_popup_error_description">Il semblerait que vous\nn\'ayez pas reçu le code.</string>
 	<string name="onboarding_popup_error_sent_to">Code envoyé à :</string>
-	<string name="onboarding_popup_error_edit_button_title">Modifier</string>
+	<string name="onboarding_popup_error_edit_button_title">Fermer</string>
 	<string name="onboarding_popup_error_resend_button_title">Réessayer</string>
 	<string name="onboarding_popup_error_team_notified">Notre équipe a été notifiée et vous viendra en aide rapidement. En attendant, n\'hésitez pas à réessayer.</string>
+	<string name="onboarding_friends_to_add_title">Sélectionnez vos amis</string>
+	<string name="onboarding_friends_to_add_shortcut_title">Sélectionnez les tous !</string>
+	<string name="onboarding_friends_to_add_shortcut_subtitle_one">%1$d ami synchronisé</string>
+	<string name="onboarding_friends_to_add_shortcut_subtitle">%1$d amis synchronisés</string>
+	<string name="onboarding_friends_to_add_popup_title">Assurez-vous de ne pas entrer seul dans Tribe !</string>
+	<string name="onboarding_friends_to_add_popup_message">Voudriez-vous commencer avec vos amis déjà présents sur tribe ?</string>
+	<string name="onboarding_friends_to_add_popup_cancel">Rester seul</string>
+	<string name="onboarding_friends_to_add_popup_confirm">Complètement !</string>
+	<string name="onboarding_friends_to_invite_title">Envoyer des invites</string>
+	<string name="onboarding_friends_to_invite_shortcut_title">Des amis sélectionnés manuellement</string>
+	<string name="onboarding_friends_to_invite_popup_title">Démarrez une expérience de groupe révolutionnaire avec vos meilleurs amis !</string>
+	<string name="onboarding_friends_to_invite_popup_message">Essayez avec vos amis, équipe, camarades, collocataires, collègues et relations longue distance.</string>
+	<string name="onboarding_friends_to_invite_popup_cancel">Jamais</string>
+	<string name="onboarding_friends_to_invite_popup_confirm">Complètement !</string>
 	
 	<!-- Pull to search -->
 	<string name="pull_to_search_swipe_down_action">Continuez à tirer pour rechercher</string>
@@ -604,8 +651,8 @@
 	<string name="search_user_placeholder">Entrez un nom d\'utilisateur</string>
 	<string name="search_usernames">Résultat</string>
 	<string name="search_searching">Recherche en cours</string>
-	<string name="search_add_friends">Amis que vous devriez ajouter</string>
-	<string name="search_invite_friends">Amis que vous devriez inviter</string>
+	<string name="search_add_friends">Amis déjà présents sur Tribe</string>
+	<string name="search_invite_friends">Sélectionnez vos amis les plus proches</string>
 	
 	<!-- Spring Cleaning -->
 	<string name="spring_cleaning_friendship_title">%1$s</string>

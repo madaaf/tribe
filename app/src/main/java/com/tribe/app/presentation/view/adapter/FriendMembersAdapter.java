@@ -1,12 +1,12 @@
-package com.tribe.app.presentation.view;
+package com.tribe.app.presentation.view.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.ViewGroup;
 
-import com.tribe.app.domain.entity.User;
+import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.adapter.RxAdapterDelegatesManager;
 import com.tribe.app.presentation.view.adapter.delegate.friend.FriendMemberAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.filter.UserListFilter;
 
@@ -20,11 +20,11 @@ import rx.Observable;
  */
 public class FriendMembersAdapter extends RecyclerView.Adapter {
 
-    protected RxAdapterDelegatesManager<List<User>> delegatesManager;
+    protected RxAdapterDelegatesManager<List<GroupMember>> delegatesManager;
     private FriendMemberAdapterDelegate friendMemberAdapterDelegate;
 
-    private List<User> items;
-    private List<User> itemsFiltered;
+    private List<GroupMember> items;
+    private List<GroupMember> itemsFiltered;
     private boolean hasFilter = false;
     private UserListFilter filter;
 
@@ -36,6 +36,7 @@ public class FriendMembersAdapter extends RecyclerView.Adapter {
 
         items = new ArrayList<>();
         itemsFiltered = new ArrayList<>();
+        filter = new UserListFilter(items, this);
 
         setHasStableIds(true);
     }
@@ -70,7 +71,7 @@ public class FriendMembersAdapter extends RecyclerView.Adapter {
         delegatesManager.releaseSubscriptions();
     }
 
-    public void setItems(List<User> items) {
+    public void setItems(List<GroupMember> items) {
         hasFilter = false;
         this.items.clear();
         this.items.addAll(items);
@@ -83,13 +84,13 @@ public class FriendMembersAdapter extends RecyclerView.Adapter {
         this.notifyDataSetChanged();
     }
 
-    public void setFilteredItems(List<User> items) {
+    public void setFilteredItems(List<GroupMember> items) {
         hasFilter = true;
         this.itemsFiltered.clear();
         this.itemsFiltered.addAll(items);
     }
 
-    public User getItemAtPosition(int position) {
+    public GroupMember getItemAtPosition(int position) {
         if (itemsFiltered.size() > 0 && position < itemsFiltered.size()) {
             return itemsFiltered.get(position);
         } else {
@@ -107,7 +108,7 @@ public class FriendMembersAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public Observable<Boolean> clickAdd() {
+    public Observable<View> clickAdd() {
         return friendMemberAdapterDelegate.clickAdd();
     }
 }

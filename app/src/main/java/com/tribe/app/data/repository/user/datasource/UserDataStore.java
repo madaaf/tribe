@@ -15,6 +15,7 @@ import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.NewGroupEntity;
 import com.tribe.app.domain.entity.User;
 
 import java.util.List;
@@ -141,7 +142,7 @@ public interface UserDataStore {
 
     Observable<GroupRealm> getGroupInfos(String groupId);
 
-    Observable<MembershipRealm> createGroup(String groupName, List<String> memberIds, Boolean isPrivate, String pictureUri);
+    Observable<MembershipRealm> createGroup(NewGroupEntity newGroupEntity);
 
     Observable<GroupRealm> updateGroup(String groupId, String groupName, String pictureUri);
 

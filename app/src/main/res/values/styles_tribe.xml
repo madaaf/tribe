@@ -52,6 +52,10 @@
         <item name="android:textColor">@color/black.opacity.40</item>
     </style>
 
+    <style name="Body.Two.Purple" parent="@style/Body.Two">
+        <item name="android:textColor">@color/purple.group</item>
+    </style>
+
     <style name="Body.Two.White" parent="@style/Body.Two">
         <item name="android:textColor">@android:color/white</item>
     </style>

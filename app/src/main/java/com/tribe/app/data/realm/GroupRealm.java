@@ -10,6 +10,7 @@ import java.util.List;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -17,10 +18,9 @@ import io.realm.annotations.PrimaryKey;
  */
 public class GroupRealm extends RealmObject {
 
-    @StringDef({PRIVATE, PUBLIC})
+    @StringDef({PUBLIC})
     public @interface GroupType {}
 
-    public static final String PRIVATE = "PRIVATE";
     public static final String PUBLIC = "PUBLIC";
 
     @PrimaryKey
@@ -33,15 +33,13 @@ public class GroupRealm extends RealmObject {
     private Date created_at;
     private Date updated_at;
 
-    //private RealmList<GroupMember> memberIdList;
-
-    //@Ignore
+    @Ignore
     private RealmList<UserRealm> members;
+    private RealmList<GroupMember> memberIdList;
 
-    //private RealmList<GroupMember> adminsIdList;
-
-    //@Ignore
+    @Ignore
     private RealmList<UserRealm> admins;
+    private RealmList<GroupMember> adminIdList;
 
     public String getId() {
         return id;
@@ -131,5 +129,21 @@ public class GroupRealm extends RealmObject {
         }
 
         return pics;
+    }
+
+    public void setMemberIdList(RealmList<GroupMember> memberIdList) {
+        this.memberIdList = memberIdList;
+    }
+
+    public void setAdminIdList(RealmList<GroupMember> adminIdList) {
+        this.adminIdList = adminIdList;
+    }
+
+    public RealmList<GroupMember> getMemberIdList() {
+        return memberIdList;
+    }
+
+    public RealmList<GroupMember> getAdminIdList() {
+        return adminIdList;
     }
 }

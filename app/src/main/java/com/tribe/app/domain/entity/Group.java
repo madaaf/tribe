@@ -96,4 +96,32 @@ public class Group implements Serializable {
 
         return pics;
     }
+
+    public void computeGroupMembers(List<GroupMember> groupMemberList) {
+        if (groupMemberList != null) {
+            for (GroupMember groupMember : groupMemberList) {
+                if (members != null) {
+                    for (User member : members) {
+                        if (groupMember.getUser().getId().equals(member.getId())) {
+                            groupMember.setMember(true);
+                            groupMember.setOgMember(true);
+                            break;
+                        }
+                    }
+                }
+
+                if (admins != null) {
+                    for (User admin : admins) {
+                        if (groupMember.getUser().getId().equals(admin.getId())) {
+                            groupMember.setMember(true);
+                            groupMember.setOgMember(true);
+                            groupMember.setAdmin(true);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+    }
 }

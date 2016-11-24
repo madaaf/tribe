@@ -54,6 +54,7 @@ ext {
     firebaseMessagingVersion = '9.4.0'
     firebaseCrashReportingVersion = '9.4.0'
     firebaseInvitesVersion = '9.4.0'
+    recyclerViewAnimatorsVersion = '2.2.4'
 
     //Testing
     robolectricVersion = '3.0'
@@ -112,7 +113,8 @@ ext {
             imageCropper            : "com.theartofdev.edmodo:android-image-cropper:${imageCropperVersion}",
             firebaseInvites         : "com.google.firebase:firebase-invites:${firebaseInvitesVersion}",
             appBoy                  : "com.appboy:android-sdk-ui:${appBoyVersion}",
-            firebaseRemote          : "com.google.firebase:firebase-config:${firebaseRemoteVersion}"
+            firebaseRemote          : "com.google.firebase:firebase-config:${firebaseRemoteVersion}",
+            recyclerViewAnimators   : "jp.wasabeef:recyclerview-animators:${recyclerViewAnimatorsVersion}"
     ]
 
     presentationTestDependencies = [
