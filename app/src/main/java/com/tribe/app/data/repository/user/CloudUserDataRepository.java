@@ -219,6 +219,11 @@ public class CloudUserDataRepository implements UserRepository {
     }
 
     @Override
+    public Observable<Membership> getMembershipInfos(String membershipId) {
+        return null;
+    }
+
+    @Override
     public Observable<Membership> createGroup(NewGroupEntity newGroupEntity) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
         return cloudDataStore.createGroup(newGroupEntity)

@@ -11,8 +11,8 @@ import android.widget.FrameLayout;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.GroupMember;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.NewGroupEntity;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -79,7 +79,7 @@ public class AddMembersGroupView extends FrameLayout {
     private FriendMembersLayoutManager layoutManager;
     private FriendMembersAdapter adapter;
     private NewGroupEntity newGroupEntity;
-    private Group group;
+    private Membership membership;
     private MembersLayoutManager layoutMembersManager;
     private MembersAdapter membersAdapter;
     private List<GroupMember> newMembers;
@@ -106,7 +106,7 @@ public class AddMembersGroupView extends FrameLayout {
         if (serializable instanceof NewGroupEntity) {
             newGroupEntity = (NewGroupEntity) serializable;
         } else {
-            group = (Group) serializable;
+            membership = (Membership) serializable;
         }
 
         setupInfos();
@@ -137,7 +137,7 @@ public class AddMembersGroupView extends FrameLayout {
         adapter = new FriendMembersAdapter(getContext());
         List<GroupMember> userListTemp = new ArrayList<>(user.getUserList());
 
-        if (group != null) group.computeGroupMembers(userListTemp);
+        if (membership != null) membership.getGroup().computeGroupMembers(userListTemp);
 
         List<GroupMember> userList = new ArrayList<>(userListTemp);
         adapter.setItems(userList);
@@ -216,7 +216,7 @@ public class AddMembersGroupView extends FrameLayout {
     }
 
     private String groupName() {
-        return newGroupEntity == null ? group.getName() : newGroupEntity.getName();
+        return newGroupEntity == null ? membership.getDisplayName() : newGroupEntity.getName();
     }
 
     public Observable<List<GroupMember>> onMembersChanged() {

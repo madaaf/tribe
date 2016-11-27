@@ -91,7 +91,7 @@ public class AndroidApplication extends Application {
                     if (oldVersion == 0) {
                         RealmObjectSchema groupSchema = schema.get("GroupRealm");
 
-                        RealmObjectSchema groupMemberSchema = schema.create("GroupMember")
+                        RealmObjectSchema groupMemberSchema = schema.create("GroupMemberRealm")
                                 .addField("id", String.class, FieldAttribute.REQUIRED);
 
                         if (!groupSchema.hasField("memberIdList")) {

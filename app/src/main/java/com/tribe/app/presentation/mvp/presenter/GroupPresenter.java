@@ -6,8 +6,8 @@ import com.tribe.app.domain.entity.NewGroupEntity;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.AddMembersToGroup;
 import com.tribe.app.domain.interactor.user.CreateGroup;
+import com.tribe.app.domain.interactor.user.DiskGetMembership;
 import com.tribe.app.domain.interactor.user.GetGroupMembers;
-import com.tribe.app.domain.interactor.user.ModifyPrivateGroupLink;
 import com.tribe.app.domain.interactor.user.UpdateGroup;
 import com.tribe.app.presentation.mvp.view.GroupView;
 import com.tribe.app.presentation.mvp.view.View;
@@ -23,8 +23,8 @@ public class GroupPresenter implements Presenter {
     private final CreateGroup createGroup;
     private final UpdateGroup updateGroup;
     private final AddMembersToGroup addMembersToGroup;
-    private final ModifyPrivateGroupLink modifyPrivateGroupLink;
     private final JobManager jobManager;
+    private final DiskGetMembership diskGetMembership;
 
     private GroupView groupView;
 
@@ -34,13 +34,13 @@ public class GroupPresenter implements Presenter {
                    CreateGroup createGroup,
                    UpdateGroup updateGroup,
                    AddMembersToGroup addMembersToGroup,
-                   ModifyPrivateGroupLink modifyPrivateGroupLink) {
+                   DiskGetMembership diskGetMembership) {
         this.jobManager = jobManager;
         this.getGroupMembers = getGroupMembers;
         this.createGroup = createGroup;
         this.updateGroup = updateGroup;
         this.addMembersToGroup = addMembersToGroup;
-        this.modifyPrivateGroupLink = modifyPrivateGroupLink;
+        this.diskGetMembership = diskGetMembership;
     }
 
     @Override
@@ -69,7 +69,7 @@ public class GroupPresenter implements Presenter {
         createGroup.unsubscribe();
         updateGroup.unsubscribe();
         addMembersToGroup.unsubscribe();
-        modifyPrivateGroupLink.unsubscribe();
+        diskGetMembership.unsubscribe();
     }
 
     @Override
@@ -80,6 +80,11 @@ public class GroupPresenter implements Presenter {
     @Override
     public void onCreate() {
 
+    }
+
+    public void membershipInfos(String membershipId) {
+        diskGetMembership.prepare(membershipId);
+        diskGetMembership.execute(new MembershipInfosSubscriber());
     }
 
     public void createGroup(NewGroupEntity newGroupEntity) {
@@ -103,6 +108,22 @@ public class GroupPresenter implements Presenter {
         public void onNext(Membership membership) {
             groupView.hideLoading();
             groupView.onGroupCreatedSuccess(membership);
+        }
+    }
+
+    private final class MembershipInfosSubscriber extends DefaultSubscriber<Membership> {
+        @Override
+        public void onCompleted() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+
+        }
+
+        @Override
+        public void onNext(Membership membership) {
+            groupView.onMembershipInfosSuccess(membership);
         }
     }
 

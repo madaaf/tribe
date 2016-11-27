@@ -23,6 +23,9 @@ public class Group implements Serializable {
     private List<User> members;
     private List<User> admins;
 
+    private List<GroupMemberId> memberIdList;
+    private List<GroupMemberId> adminIdList;
+
     public String getId() {
         return id;
     }
@@ -77,6 +80,22 @@ public class Group implements Serializable {
 
     public void setAdmins(List<User> admins) {
         this.admins = admins;
+    }
+
+    public List<GroupMemberId> getAdminIdList() {
+        return adminIdList;
+    }
+
+    public List<GroupMemberId> getMemberIdList() {
+        return memberIdList;
+    }
+
+    public void setAdminIdList(List<GroupMemberId> adminIdList) {
+        this.adminIdList = adminIdList;
+    }
+
+    public void setMemberIdList(List<GroupMemberId> memberIdList) {
+        this.memberIdList = memberIdList;
     }
 
     public List<String> getMembersPics() {

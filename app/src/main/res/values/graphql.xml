@@ -430,6 +430,9 @@
             members {
                 ...UserInfos
             }
+            admins {
+                ...UserInfos
+            }
         }
     </string>
 

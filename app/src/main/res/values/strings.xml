@@ -369,7 +369,7 @@
 	<string name="settings_cleanmygrid_title">Hide and block friends</string>
 	<string name="settings_cleanmygrid_subtitle">Pick friends you want to remove or block</string>
 	<string name="settings_parameters_title">Parameters</string>
-	<string name="settings_parameters_subtitle">data, invisible mode, audio only...</string>
+	<string name="settings_parameters_subtitle">Data, invisible mode, audio only...</string>
 	<string name="settings_message_title">Message us</string>
 	<string name="settings_message_subtitle">Support, Tweets and more</string>
 	<string name="settings_message_tribe">Send a Tribe to the Support</string>

@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.EmojiParser;
@@ -217,6 +218,19 @@ public class Navigator {
         }
     }
 
+    /**
+     * Goes to the group screen.
+     *
+     * @param activity activity needed to open the destiny activity.
+     * @param membership membership to detail
+     */
+    public void navigateToGroupDetails(Activity activity, Membership membership) {
+        if (activity != null) {
+            Intent intent = GroupActivity.getCallingIntent(activity, membership);
+            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+            activity.startActivity(intent);
+        }
+    }
 
     /**
      * Goes to the permissions screens or home.

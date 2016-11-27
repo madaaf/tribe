@@ -145,6 +145,8 @@ public interface UserRepository {
 
     Observable<Group> getGroupInfos(String groupId);
 
+    Observable<Membership> getMembershipInfos(String membershipId);
+
     Observable<Membership> createGroup(NewGroupEntity newGroupEntity);
 
     Observable<Group> updateGroup(String groupId, String groupName, String pictureUri);

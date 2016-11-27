@@ -35,11 +35,18 @@ public class GroupRealm extends RealmObject {
 
     @Ignore
     private RealmList<UserRealm> members;
-    private RealmList<GroupMember> memberIdList;
+    private RealmList<GroupMemberRealm> memberIdList;
 
     @Ignore
     private RealmList<UserRealm> admins;
-    private RealmList<GroupMember> adminIdList;
+    private RealmList<GroupMemberRealm> adminIdList;
+
+    public GroupRealm() {
+        this.members = new RealmList<>();
+        this.memberIdList = new RealmList<>();
+        this.admins = new RealmList<>();
+        this.adminIdList = new RealmList<>();
+    }
 
     public String getId() {
         return id;
@@ -131,19 +138,19 @@ public class GroupRealm extends RealmObject {
         return pics;
     }
 
-    public void setMemberIdList(RealmList<GroupMember> memberIdList) {
+    public void setMemberIdList(RealmList<GroupMemberRealm> memberIdList) {
         this.memberIdList = memberIdList;
     }
 
-    public void setAdminIdList(RealmList<GroupMember> adminIdList) {
+    public void setAdminIdList(RealmList<GroupMemberRealm> adminIdList) {
         this.adminIdList = adminIdList;
     }
 
-    public RealmList<GroupMember> getMemberIdList() {
+    public RealmList<GroupMemberRealm> getMemberIdList() {
         return memberIdList;
     }
 
-    public RealmList<GroupMember> getAdminIdList() {
+    public RealmList<GroupMemberRealm> getAdminIdList() {
         return adminIdList;
     }
 }

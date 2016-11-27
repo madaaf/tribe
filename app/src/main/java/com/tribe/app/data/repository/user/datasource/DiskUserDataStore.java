@@ -156,6 +156,11 @@ public class DiskUserDataStore implements UserDataStore {
     }
 
     @Override
+    public Observable<MembershipRealm> getMembershipInfos(String membershipId) {
+        return Observable.just(userCache.membershipInfos(membershipId));
+    }
+
+    @Override
     public Observable<MembershipRealm> createGroup(NewGroupEntity newGroupEntity) {
         return null;
     }

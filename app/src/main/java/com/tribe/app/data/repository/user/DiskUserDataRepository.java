@@ -10,6 +10,7 @@ import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.mapper.ChatRealmDataMapper;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
+import com.tribe.app.data.realm.mapper.MembershipRealmDataMapper;
 import com.tribe.app.data.realm.mapper.SearchResultRealmDataMapper;
 import com.tribe.app.data.realm.mapper.TribeRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
@@ -61,6 +62,7 @@ public class DiskUserDataRepository implements UserRepository {
     private final ChatRealmDataMapper chatRealmDataMapper;
     private final ContactRealmDataMapper contactRealmDataMapper;
     private final SearchResultRealmDataMapper searchResultRealmDataMapper;
+    private final MembershipRealmDataMapper membershipRealmDataMapper;
 
     /**
      * Constructs a {@link UserRepository}.
@@ -75,7 +77,8 @@ public class DiskUserDataRepository implements UserRepository {
                                   TribeRealmDataMapper tribeRealmDataMapper,
                                   ChatDataStoreFactory chatDataStoreFactory,
                                   ChatRealmDataMapper chatRealmDataMapper,
-                                  ContactRealmDataMapper contactRealmDataMapper) {
+                                  ContactRealmDataMapper contactRealmDataMapper,
+                                  MembershipRealmDataMapper membershipRealmDataMapper) {
         this.userDataStoreFactory = dataStoreFactory;
         this.userRealmDataMapper = realmDataMapper;
         this.tribeDataStoreFactory = tribeDataStoreFactory;
@@ -84,6 +87,7 @@ public class DiskUserDataRepository implements UserRepository {
         this.chatRealmDataMapper = chatRealmDataMapper;
         this.contactRealmDataMapper = contactRealmDataMapper;
         this.searchResultRealmDataMapper = new SearchResultRealmDataMapper(userRealmDataMapper.getFriendshipRealmDataMapper());
+        this.membershipRealmDataMapper = membershipRealmDataMapper;
     }
 
     @Override
@@ -286,6 +290,12 @@ public class DiskUserDataRepository implements UserRepository {
     @Override
     public Observable<Group> getGroupInfos(String groupId) {
         return null;
+    }
+
+    @Override
+    public Observable<Membership> getMembershipInfos(String membershipId) {
+        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+        return userDataStore.getMembershipInfos(membershipId).map(membershipRealm -> membershipRealmDataMapper.transform(membershipRealm));
     }
 
     public Observable<Membership> createGroup(NewGroupEntity newGroupEntity) {
