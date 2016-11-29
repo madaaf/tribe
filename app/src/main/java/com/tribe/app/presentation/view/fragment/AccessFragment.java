@@ -561,7 +561,7 @@ public class AccessFragment extends BaseFragment implements AccessView {
     public void groupInfosSuccess(Group group) {
         if (group != null) {
             this.group = group;
-            wasInvitedToPrivateGroup = group.isPrivateGroup();
+            wasInvitedToPrivateGroup = false;
         }
 
         if (viewState == STATE_HANG_TIGHT) lookupContacts();

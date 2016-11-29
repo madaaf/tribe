@@ -11,6 +11,8 @@ import io.realm.annotations.PrimaryKey;
  */
 public class MembershipRealm extends RealmObject implements RecipientRealmInterface {
 
+    public static final String MUTE = "mute";
+
     @PrimaryKey
     private String id;
 

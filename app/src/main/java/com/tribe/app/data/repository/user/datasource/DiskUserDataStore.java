@@ -166,7 +166,7 @@ public class DiskUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<GroupRealm> updateGroup(String groupId, String groupName, String pictureUri) {
+    public Observable<GroupRealm> updateGroup(String groupId, List<Pair<String, String>> values) {
         return null;
     }
 

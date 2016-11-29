@@ -1,7 +1,5 @@
 package com.tribe.app.data.realm;
 
-import android.support.annotation.StringDef;
-
 import com.tribe.app.presentation.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -18,10 +16,10 @@ import io.realm.annotations.PrimaryKey;
  */
 public class GroupRealm extends RealmObject {
 
-    @StringDef({PUBLIC})
-    public @interface GroupType {}
-
     public static final String PUBLIC = "PUBLIC";
+
+    public static final String NAME = "name";
+    public static final String PICTURE = "picture";
 
     @PrimaryKey
     private String id;
@@ -29,7 +27,6 @@ public class GroupRealm extends RealmObject {
     private String name;
     private String picture;
     private String link;
-    private boolean privateGroup;
     private Date created_at;
     private Date updated_at;
 
@@ -78,14 +75,6 @@ public class GroupRealm extends RealmObject {
 
     public void setLink(String groupLink) {
         this.link = groupLink;
-    }
-
-    public boolean isPrivateGroup() {
-        return privateGroup;
-    }
-
-    public void setPrivateGroup(boolean privateGroup) {
-        this.privateGroup = privateGroup;
     }
 
     public Date getCreatedAt() {

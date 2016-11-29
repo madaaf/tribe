@@ -45,7 +45,6 @@ public class GroupRealmDataMapper {
             group.setAdmins(userRealmDataMapper.transform(groupRealm.getAdmins(), false));
             group.setMemberIdList(transformGroupMemberIdList(groupRealm.getAdminIdList()));
             group.setAdminIdList(transformGroupMemberIdList(groupRealm.getMemberIdList()));
-            group.setPrivateGroup(groupRealm.isPrivateGroup());
         }
 
         return group;
@@ -88,7 +87,6 @@ public class GroupRealmDataMapper {
             groupRealm.setAdmins(userRealmDataMapper.transformList(group.getAdmins()));
             groupRealm.setMemberIdList(transformGroupMemberRealmList(group.getAdminIdList()));
             groupRealm.setAdminIdList(transformGroupMemberRealmList(group.getMemberIdList()));
-            groupRealm.setPrivateGroup(group.isPrivateGroup());
         }
 
         return groupRealm;

@@ -1,23 +1,26 @@
 package com.tribe.app.domain.interactor.user;
 
+import android.util.Pair;
+
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
 import rx.Observable;
 
 /**
- * Created by horatiothomas on 9/18/16.
+ * Created by tiago on 11/28/16.
  */
 public class UpdateGroup extends UseCase {
 
     private UserRepository userRepository;
     private String groupId;
-    private String groupName;
-    private String pictureUri;
+    private List<Pair<String, String>> values;
 
     @Inject
     UpdateGroup(CloudUserDataRepository userDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
@@ -25,14 +28,13 @@ public class UpdateGroup extends UseCase {
         this.userRepository = userDataRepository;
     }
 
-    public void prepare(String groupId, String groupName, String pictureUri) {
+    public void prepare(String groupId, List<Pair<String, String>> values) {
         this.groupId = groupId;
-        this.groupName = groupName;
-        this.pictureUri = pictureUri;
+        this.values = values;
     }
 
     @Override
     protected Observable buildUseCaseObservable() {
-        return this.userRepository.updateGroup(groupId, groupName, pictureUri);
+        return this.userRepository.updateGroup(groupId, values);
     }
 }

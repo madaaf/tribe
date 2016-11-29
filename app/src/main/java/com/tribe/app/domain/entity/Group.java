@@ -19,7 +19,6 @@ public class Group implements Serializable {
     private String picture;
     private String name;
     private String groupLink;
-    private boolean privateGroup;
     private List<User> members;
     private List<User> admins;
 
@@ -56,14 +55,6 @@ public class Group implements Serializable {
 
     public void setGroupLink(String groupLink) {
         this.groupLink = groupLink;
-    }
-
-    public boolean isPrivateGroup() {
-        return privateGroup;
-    }
-
-    public void setPrivateGroup(boolean privateGroup) {
-        this.privateGroup = privateGroup;
     }
 
     public List<User> getMembers() {
@@ -141,6 +132,15 @@ public class Group implements Serializable {
                 }
             }
         }
+    }
 
+    public List<GroupMember> getGroupMembers() {
+        List<GroupMember> groupMemberList = new ArrayList<>();
+
+        for (User user : members) {
+            groupMemberList.add(new GroupMember(user));
+        }
+
+        return groupMemberList;
     }
 }

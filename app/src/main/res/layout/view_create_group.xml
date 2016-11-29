@@ -81,14 +81,6 @@
                     android:alpha="0.5"
                     android:background="@drawable/selectable_button"
                     />
-
-                <View
-                    android:layout_width="@dimen/divider_size"
-                    android:layout_height="match_parent"
-                    android:layout_marginRight="45dp"
-                    android:layout_gravity="right"
-                    android:background="@color/grey.light"
-                    />
             </FrameLayout>
 
             <include layout="@layout/view_separator" />

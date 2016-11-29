@@ -6,16 +6,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginEnd="60dp"
         android:orientation="vertical">
         <include layout="@layout/view_action_base" />
     </LinearLayout>
 
-    <ImageView
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/viewSwitch"
         android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_gravity="center_vertical|right"
-        android:src="@drawable/picto_share_social_icons"
-        android:scaleType="centerInside"
+        android:layout_height="30dp"
+        android:layout_gravity="center_vertical|end"
+        android:theme="@style/ColorSwitchStyle"
         />
 </merge>

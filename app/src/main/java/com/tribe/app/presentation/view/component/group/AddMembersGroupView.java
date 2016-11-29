@@ -1,11 +1,14 @@
 package com.tribe.app.presentation.view.component.group;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
+import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 
@@ -20,6 +23,7 @@ import com.tribe.app.presentation.view.adapter.FriendMembersAdapter;
 import com.tribe.app.presentation.view.adapter.MembersAdapter;
 import com.tribe.app.presentation.view.adapter.manager.FriendMembersLayoutManager;
 import com.tribe.app.presentation.view.adapter.manager.MembersLayoutManager;
+import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.decorator.DividerFirstLastItemDecoration;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
@@ -66,6 +70,12 @@ public class AddMembersGroupView extends FrameLayout {
     @BindView(R.id.collapsingToolbar)
     CollapsingToolbarLayout collapsingToolbarLayout;
 
+    @BindView(R.id.viewActionSettings)
+    ActionView viewActionSettings;
+
+    @BindView(R.id.viewActionShareLink)
+    ActionView viewActionShareLink;
+
     @BindView(R.id.txtGroupName)
     TextViewFont txtGroupName;
 
@@ -74,6 +84,9 @@ public class AddMembersGroupView extends FrameLayout {
 
     @BindView(R.id.editTextSearch)
     EditTextFont editTextSearch;
+
+    @BindView(R.id.viewGroupFocus)
+    ViewGroup viewGroupFocus;
 
     // VARIABLES
     private FriendMembersLayoutManager layoutManager;
@@ -87,6 +100,8 @@ public class AddMembersGroupView extends FrameLayout {
     // OBSERVABLES
     private CompositeSubscription subscriptions;
     private PublishSubject<List<GroupMember>> onMembersChanged = PublishSubject.create();
+    private PublishSubject<Void> onClickShareLink = PublishSubject.create();
+    private PublishSubject<Void> onClickSettings = PublishSubject.create();
 
     public AddMembersGroupView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -101,18 +116,20 @@ public class AddMembersGroupView extends FrameLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        Serializable serializable = ViewStackHelper.getViewStack(getContext()).getParameter(this);
 
-        if (serializable instanceof NewGroupEntity) {
-            newGroupEntity = (NewGroupEntity) serializable;
-        } else {
-            membership = (Membership) serializable;
+        if (membership == null && newGroupEntity == null) {
+            Serializable serializable = ViewStackHelper.getViewStack(getContext()).getParameter(this);
+
+            if (serializable instanceof NewGroupEntity) {
+                newGroupEntity = (NewGroupEntity) serializable;
+            } else {
+                membership = (Membership) serializable;
+            }
+
+            initInfos();
+            initAppBar();
+            init();
         }
-
-        setupInfos();
-        setupAppBar();
-
-        init();
     }
 
     @Override
@@ -122,6 +139,24 @@ public class AddMembersGroupView extends FrameLayout {
 
     public void onDestroy() {
         if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            if (editTextSearch.hasFocus()) {
+                Rect outRect = new Rect();
+                editTextSearch.getGlobalVisibleRect(outRect);
+
+                if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
+                    editTextSearch.clearFocus();
+                    screenUtils.hideKeyboard(editTextSearch);
+                    viewGroupFocus.requestFocus();
+                }
+            }
+        }
+
+        return super.dispatchTouchEvent(event);
     }
 
     private void init() {
@@ -137,12 +172,24 @@ public class AddMembersGroupView extends FrameLayout {
         adapter = new FriendMembersAdapter(getContext());
         List<GroupMember> userListTemp = new ArrayList<>(user.getUserList());
 
-        if (membership != null) membership.getGroup().computeGroupMembers(userListTemp);
+        if (membership != null) {
+            membership.getGroup().computeGroupMembers(userListTemp);
+
+            subscriptions.add(
+                    viewActionSettings.onClick()
+                            .subscribe(onClickSettings)
+            );
+
+            subscriptions.add(
+                    viewActionShareLink.onClick()
+                            .subscribe(onClickShareLink)
+            );
+        }
 
         List<GroupMember> userList = new ArrayList<>(userListTemp);
         adapter.setItems(userList);
         recyclerView.setAdapter(adapter);
-        recyclerView.addItemDecoration(new DividerFirstLastItemDecoration(screenUtils.dpToPx(5), screenUtils.dpToPx(10)));
+        recyclerView.addItemDecoration(new DividerFirstLastItemDecoration(screenUtils.dpToPx(2.5f), screenUtils.dpToPx(10)));
         recyclerView.getRecycledViewPool().setMaxRecycledViews(0, 50);
         recyclerView.setHasFixedSize(true);
         recyclerView.setNestedScrollingEnabled(newGroupEntity == null);
@@ -167,15 +214,25 @@ public class AddMembersGroupView extends FrameLayout {
                         })
         );
 
+        editTextSearch.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                appBarLayout.setExpanded(false, true);
+            }
+        });
+
         setupMembers();
         refactorMembers();
     }
 
-    private void setupInfos() {
+    private void initInfos() {
         txtGroupName.setText(groupName());
+
+        if (membership != null) {
+            viewActionShareLink.setBody(membership.getGroup().getGroupLink());
+        }
     }
 
-    private void setupAppBar() {
+    private void initAppBar() {
         appBarLayout.setExpanded(newGroupEntity == null);
 
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) appBarLayout.getLayoutParams();
@@ -200,7 +257,12 @@ public class AddMembersGroupView extends FrameLayout {
         recyclerViewGroupMembers.getItemAnimator().setChangeDuration(RECYCLER_VIEW_ANIMATIONS_DURATION);
 
         membersAdapter = new MembersAdapter(getContext());
-        membersAdapter.add(new GroupMember(user));
+
+        if (newGroupEntity != null)
+            membersAdapter.add(new GroupMember(user));
+        else
+            membersAdapter.setItems(membership.getGroup().getGroupMembers());
+
         recyclerViewGroupMembers.setAdapter(membersAdapter);
         recyclerViewGroupMembers.getRecycledViewPool().setMaxRecycledViews(0, 50);
         recyclerViewGroupMembers.setHasFixedSize(true);
@@ -219,7 +281,17 @@ public class AddMembersGroupView extends FrameLayout {
         return newGroupEntity == null ? membership.getDisplayName() : newGroupEntity.getName();
     }
 
+    // OBSERVABLES
+
     public Observable<List<GroupMember>> onMembersChanged() {
         return onMembersChanged;
+    }
+
+    public Observable<Void> onClickSettings() {
+        return onClickSettings;
+    }
+
+    public Observable<Void> onClickShareLink() {
+        return onClickShareLink;
     }
 }

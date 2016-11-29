@@ -105,8 +105,10 @@
         <attr name="actionBody" format="string" />
         <attr name="actionType" format="enum">
             <enum name="hierarchy" value="0" />
-            <enum name="sharing" value="1" />
-            <enum name="toggle" value="2" />
+            <enum name="hierarchy_with_image" value="1" />
+            <enum name="sharing" value="2" />
+            <enum name="toggle" value="3" />
+            <enum name="critical" value="4" />
         </attr>
     </declare-styleable>
 </resources>

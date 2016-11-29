@@ -29,9 +29,6 @@ public class User implements Serializable {
     private String fbid;
     private boolean invisible_mode;
 
-    private boolean ogMember = false;
-    private boolean member = false;
-
     public User(String id) {
         this.id = id;
     }
@@ -261,21 +258,5 @@ public class User implements Serializable {
         int result = super.hashCode();
         result = 31 * result + (getId() != null ? getId().hashCode() : 0);
         return result;
-    }
-
-    public boolean isMember() {
-        return member;
-    }
-
-    public boolean isOgMember() {
-        return ogMember;
-    }
-
-    public void setOgMember(boolean ogMember) {
-        this.ogMember = ogMember;
-    }
-
-    public void setMember(boolean member) {
-        this.member = member;
     }
 }

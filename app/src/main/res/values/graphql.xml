@@ -412,7 +412,6 @@
         fragment GroupInfo on Group {
             id
             name
-            type
             picture
             link
             created_at
@@ -423,7 +422,6 @@
         fragment GroupInfo on Group {
             id
             name
-            type
             picture
             link
             created_at
@@ -499,12 +497,13 @@
 
     <string name="update.group" translatable="false">
         mutation {
-            updateGroup(id : \"%1$s\", group: {
-                name : \"%2$s\"
+            updateGroup(id : \"%1$s\",
+                %2$s
             }) {
                 ...GroupInfo
             }
         }
+
         %3$s
     </string>
 
@@ -561,6 +560,7 @@
 
         %2$s
         %3$s
+        %4$s
     </string>
     
     <string name="generate.private.link" translatable="false">

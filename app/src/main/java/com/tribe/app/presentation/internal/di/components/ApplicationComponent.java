@@ -102,6 +102,8 @@ import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.component.group.AddMembersGroupView;
 import com.tribe.app.presentation.view.component.group.CreateGroupView;
 import com.tribe.app.presentation.view.component.group.GroupSuggestionView;
+import com.tribe.app.presentation.view.component.group.SettingsGroupView;
+import com.tribe.app.presentation.view.component.group.UpdateGroupView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
@@ -183,6 +185,8 @@ public interface ApplicationComponent {
     void inject(GroupSuggestionView groupSuggestionView);
     void inject(AddMembersGroupView addMembersGroupView);
     void inject(ActionView actionView);
+    void inject(SettingsGroupView settingsGroupView);
+    void inject(UpdateGroupView updateGroupView);
 
     // JOBS
     void inject(BaseJob baseJob);

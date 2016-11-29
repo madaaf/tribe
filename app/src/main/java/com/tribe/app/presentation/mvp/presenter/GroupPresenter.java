@@ -1,6 +1,9 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.util.Pair;
+
 import com.birbit.android.jobqueue.JobManager;
+import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.NewGroupEntity;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
@@ -11,6 +14,10 @@ import com.tribe.app.domain.interactor.user.GetGroupMembers;
 import com.tribe.app.domain.interactor.user.UpdateGroup;
 import com.tribe.app.presentation.mvp.view.GroupView;
 import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.utils.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -94,6 +101,7 @@ public class GroupPresenter implements Presenter {
     }
 
     private final class CreateGroupSubscriber extends DefaultSubscriber<Membership> {
+
         @Override
         public void onCompleted() {
         }
@@ -112,6 +120,7 @@ public class GroupPresenter implements Presenter {
     }
 
     private final class MembershipInfosSubscriber extends DefaultSubscriber<Membership> {
+
         @Override
         public void onCompleted() {
         }
@@ -142,11 +151,35 @@ public class GroupPresenter implements Presenter {
 //        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.CREATE_GROUP, 1));
 //    }
 //
-//    public void updateGroup(String groupId, String groupName, String pictureUri) {
-//        updateGroup.prepare(groupId, groupName, pictureUri);
-//        updateGroup.execute(new UpdateGroupSubscriber());
-//    }
-//
+    public void updateGroup(String groupId, String name, String pictureUri) {
+        List<Pair<String, String>> values = new ArrayList<>();
+        values.add(new Pair<>(GroupRealm.NAME, name));
+        if (!StringUtils.isEmpty(pictureUri))
+            values.add(new Pair<>(GroupRealm.PICTURE, pictureUri));
+
+        updateGroup.prepare(groupId, values);
+        updateGroup.execute(new UpdateGroupSubscriber());
+    }
+
+    private final class UpdateGroupSubscriber extends DefaultSubscriber<Membership> {
+
+        @Override
+        public void onCompleted() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            groupView.hideLoading();
+            groupView.onGroupUpdatedError();
+        }
+
+        @Override
+        public void onNext(Membership membership) {
+            groupView.hideLoading();
+            groupView.onGroupUpdatedSuccess();
+        }
+    }
+
 //    public void addMembersToGroup(String groupId, List<String> memberIds) {
 //        addMembersToGroup.prepare(groupId, memberIds);
 //        addMembersToGroup.execute(new AddMembersToGroupSubscriber());

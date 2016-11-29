@@ -330,7 +330,7 @@ public class Navigator {
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, body);
-        context.startActivity(Intent.createChooser(sharingIntent, "Share via..."));
+        context.startActivity(sharingIntent);
     }
 
     public void sendText(String body, Context context) {

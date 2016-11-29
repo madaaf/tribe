@@ -149,7 +149,7 @@ public interface UserRepository {
 
     Observable<Membership> createGroup(NewGroupEntity newGroupEntity);
 
-    Observable<Group> updateGroup(String groupId, String groupName, String pictureUri);
+    Observable<Group> updateGroup(String groupId, List<Pair<String, String>> values);
 
     Observable<Void> addMembersToGroup(String groupId, List<String> memberIds);
 

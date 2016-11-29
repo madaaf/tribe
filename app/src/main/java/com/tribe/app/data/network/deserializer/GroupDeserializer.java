@@ -64,7 +64,6 @@ public class GroupDeserializer implements JsonDeserializer<GroupRealm> {
         groupRealm.setId(group.get("id").getAsString());
         groupRealm.setName(group.get("name").getAsString());
         groupRealm.setPicture(group.get("picture") != null && !group.get("picture").isJsonNull() ? group.get("picture").getAsString() : null);
-        groupRealm.setPrivateGroup(group.get("type").getAsString().equals("PRIVATE"));
 
         return groupRealm;
     }

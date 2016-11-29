@@ -76,7 +76,7 @@ public class FriendMemberAdapterDelegate extends RxAdapterDelegate<List<GroupMem
         vh.txtName.setText(groupMember.getUser().getDisplayName());
         vh.txtUsername.setText("@" + groupMember.getUser().getUsername());
 
-        if (!groupMember.getUser().isOgMember()) {
+        if (!groupMember.isOgMember()) {
             vh.viewAdd.setVisibility(View.VISIBLE);
             vh.viewMember.setVisibility(View.GONE);
             vh.txtMember.setVisibility(View.GONE);
@@ -98,6 +98,7 @@ public class FriendMemberAdapterDelegate extends RxAdapterDelegate<List<GroupMem
             vh.viewMember.setVisibility(View.VISIBLE);
             vh.txtMember.setVisibility(View.VISIBLE);
             vh.txtBubble.setVisibility(View.VISIBLE);
+            vh.itemView.setOnClickListener(null);
         }
     }
 

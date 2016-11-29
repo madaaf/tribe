@@ -888,15 +888,7 @@ public class CloudUserDataStore implements UserDataStore {
         if (newGroupEntity.getImgPath() == null) {
             return this.tribeApi.createGroup(request)
                     .doOnNext(groupRealm -> userCache.insertGroup(groupRealm))
-                    .flatMap(groupRealm -> {
-                        final String requestCreateMembership = context.getString(R.string.create_membership, groupRealm.getId(),
-                                context.getString(R.string.membershipfragment_info),
-                                context.getString(R.string.groupfragment_info));
-                        return this.tribeApi.createMembership(requestCreateMembership);
-                    }, (groupRealm, newMembership) -> {
-                        userCache.insertMembership(accessToken.getUserId(), newMembership);
-                        return newMembership;
-                    });
+                    .flatMap(groupRealm -> createMembership(groupRealm.getId()), (groupRealm, newMembership) -> newMembership);
         } else {
             RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
 
@@ -923,27 +915,42 @@ public class CloudUserDataStore implements UserDataStore {
 
             return this.tribeApi.createGroupMedia(query, body)
                     .doOnNext(groupRealm -> userCache.insertGroup(groupRealm))
-                    .flatMap(groupRealm -> {
-                        final String requestCreateMembership = context.getString(R.string.create_membership, groupRealm.getId(), context.getString(R.string.membershipfragment_info), context.getString(R.string.groupfragment_info_members));
-                        return this.tribeApi.createMembership(requestCreateMembership);
-                    }, (groupRealm, newMembership) -> {
-                        userCache.insertMembership(accessToken.getUserId(), newMembership);
-                        return newMembership;
-                    });
+                    .flatMap(groupRealm -> createMembership(groupRealm.getId()), (groupRealm, newMembership) -> newMembership);
         }
     }
 
     @Override
-    public Observable<GroupRealm> updateGroup(String groupId, String groupName, String pictureUri) {
-        String request = context.getString(R.string.update_group, groupId, groupName, context.getString(R.string.groupfragment_info));
-        if (pictureUri == null) {
-            return this.tribeApi.updateGroup(request)
-                    .doOnError(throwable -> {
-                        throwable.printStackTrace();
-                    })
-                    .doOnNext(groupRealm -> {
-                        userCache.updateGroup(groupId, groupName, pictureUri);
-                    });
+    public Observable<GroupRealm> updateGroup(String groupId, List<Pair<String, String>> values) {
+        String pictureUri = "";
+        StringBuilder groupInputBuilder = new StringBuilder();
+
+        for (Pair<String, String> value : values) {
+            if (!StringUtils.isEmpty(value.second) && !value.second.equals("null")) {
+                groupInputBuilder.append(value.first + ": \"" + value.second + "\"");
+                groupInputBuilder.append(",");
+            }
+
+            if (value.first.equals(GroupRealm.PICTURE)) {
+                pictureUri = value.second;
+            }
+        }
+
+        String groupInput = groupInputBuilder.length() > 0 ? groupInputBuilder.substring(0, groupInputBuilder.length() - 1) : "";
+
+        String request = context.getString(
+                R.string.update_group,
+                groupId,
+                groupInput,
+                context.getString(R.string.groupfragment_info)
+        );
+
+        if (StringUtils.isEmpty(pictureUri)) {
+            if (!StringUtils.isEmpty(groupInput)) {
+                return this.tribeApi.updateGroup(request)
+                        .doOnNext(groupRealm -> userCache.updateGroup(groupRealm));
+            } else {
+                return Observable.empty();
+            }
         } else {
             RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
 
@@ -962,21 +969,12 @@ public class CloudUserDataStore implements UserDataStore {
                 }
             }
 
-            RequestBody requestFile = null;
-            MultipartBody.Part body = null;
+            RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpeg"), file);
+            MultipartBody.Part body = MultipartBody.Part.createFormData("group_pic", "group_pic.jpg", requestFile);
 
-            requestFile = RequestBody.create(MediaType.parse("image/jpeg"), file);
-            body = MultipartBody.Part.createFormData("group_pic", "group_pic.jpg", requestFile);
-
-            return this.tribeApi.updateGroupMedia(query, body)
-                    .doOnError(throwable -> {
-                        throwable.printStackTrace();
-                    })
-                    .doOnNext(groupRealm -> {
-                        userCache.updateGroup(groupId, groupName, pictureUri);
-                    });
+            return tribeApi.updateGroupMedia(query, body)
+                    .doOnNext(groupRealm -> userCache.updateGroup(groupRealm));
         }
-
     }
 
     @Override
@@ -1131,12 +1129,14 @@ public class CloudUserDataStore implements UserDataStore {
     public Observable<MembershipRealm> createMembership(String groupId) {
         final String requestCreateMembership =
                 context.getString(
-                        R.string.create_membership, groupId,
-                    context.getString(R.string.membershipfragment_info),
-                    context.getString(R.string.groupfragment_info));
-        return this.tribeApi.createMembership(requestCreateMembership).doOnNext(membershipRealm -> {
-            userCache.insertMembership(accessToken.getUserId(), membershipRealm);
-        });
+                        R.string.create_membership,
+                        groupId,
+                        context.getString(R.string.membershipfragment_info),
+                        context.getString(R.string.groupfragment_info_members),
+                        context.getString(R.string.userfragment_infos)
+                );
+        return this.tribeApi.createMembership(requestCreateMembership)
+                .doOnNext(membershipRealm -> userCache.insertMembership(accessToken.getUserId(), membershipRealm));
     }
 
     @Override

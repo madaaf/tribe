@@ -24,12 +24,16 @@ import com.tribe.app.domain.entity.NewGroupEntity;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.GroupPresenter;
 import com.tribe.app.presentation.mvp.view.GroupView;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.component.group.AddMembersGroupView;
 import com.tribe.app.presentation.view.component.group.CreateGroupView;
+import com.tribe.app.presentation.view.component.group.SettingsGroupView;
+import com.tribe.app.presentation.view.component.group.UpdateGroupView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,7 +63,7 @@ public class GroupActivity extends BaseActivity implements GroupView {
         return intent;
     }
 
-    private static final int DURATION = 300;
+    private static final int DURATION = 200;
 
     @Inject
     ScreenUtils screenUtils;
@@ -88,6 +92,8 @@ public class GroupActivity extends BaseActivity implements GroupView {
     // VIEWS
     private CreateGroupView viewCreateGroup;
     private AddMembersGroupView viewAddMembersGroup;
+    private SettingsGroupView viewSettingsGroup;
+    private UpdateGroupView viewUpdateGroup;
 
     // VARIABLES
     private boolean disableUI = false;
@@ -101,6 +107,7 @@ public class GroupActivity extends BaseActivity implements GroupView {
     // OBSERVABLES
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
+    private CompositeSubscription settingsSubscriptions = new CompositeSubscription();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,8 +125,12 @@ public class GroupActivity extends BaseActivity implements GroupView {
     protected void onDestroy() {
         if (viewCreateGroup != null) viewCreateGroup.onDestroy();
         if (viewAddMembersGroup != null) viewAddMembersGroup.onDestroy();
+        if (viewSettingsGroup != null) viewSettingsGroup.onDestroy();
+        if (viewUpdateGroup != null) viewUpdateGroup.onDestroy();
         groupPresenter.onDestroy();
         if (unbinder != null) unbinder.unbind();
+        if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+        if (settingsSubscriptions.hasSubscriptions()) settingsSubscriptions.unsubscribe();
         super.onDestroy();
     }
 
@@ -163,25 +174,7 @@ public class GroupActivity extends BaseActivity implements GroupView {
                                 .subscribe(newGroup -> {
                                     newGroupEntity = newGroup;
                                     screenUtils.hideKeyboard(this);
-                                    viewAddMembersGroup = (AddMembersGroupView) viewStack.pushWithParameter(R.layout.view_add_members_group, newGroup);
-                                    subscriptions.add(
-                                            viewAddMembersGroup.onMembersChanged()
-                                                    .subscribe(addedMembers -> {
-                                                        newMembers.clear();
-                                                        newMembers.addAll(addedMembers);
-
-                                                        if (membershipId != null) {
-                                                            if (newMembers.size() > 0) {
-                                                                txtAction.setVisibility(View.VISIBLE);
-                                                                txtAction.setText(getString(R.string.action_add, newMembers.size()));
-                                                            } else {
-                                                                txtAction.setVisibility(View.GONE);
-                                                            }
-                                                        } else {
-                                                            txtAction.setVisibility(View.VISIBLE);
-                                                        }
-                                                    })
-                                    );
+                                    setupMembersView(newGroupEntity);
                                 }));
             }
         }
@@ -189,7 +182,10 @@ public class GroupActivity extends BaseActivity implements GroupView {
 
     private void initPresenter() {
         groupPresenter.attachView(this);
-        groupPresenter.membershipInfos(membershipId);
+
+        if (!StringUtils.isEmpty(membershipId)) {
+            groupPresenter.membershipInfos(membershipId);
+        }
     }
 
     private void initDependencyInjector() {
@@ -245,11 +241,12 @@ public class GroupActivity extends BaseActivity implements GroupView {
 
             AnimatorSet set = new AnimatorSet();
 
+            set.setDuration(DURATION);
             set.setInterpolator(new DecelerateInterpolator());
 
             final int width = from.getWidth();
 
-            computeTitle(forward, from);
+            computeTitle(forward, to);
 
             if (forward) {
                 to.setTranslationX(width);
@@ -266,11 +263,57 @@ public class GroupActivity extends BaseActivity implements GroupView {
         };
     }
 
-    private void computeTitle(boolean forward, View from) {
-        if (from instanceof AddMembersGroupView) {
+    private void setupMembersView(Serializable param) {
+        viewAddMembersGroup = (AddMembersGroupView) viewStack.pushWithParameter(R.layout.view_add_members_group, param);
+        subscriptions.add(
+                viewAddMembersGroup.onMembersChanged()
+                        .subscribe(addedMembers -> {
+                            newMembers.clear();
+                            newMembers.addAll(addedMembers);
+
+                            if (membershipId != null) {
+                                if (newMembers.size() > 0) {
+                                    txtAction.setVisibility(View.VISIBLE);
+                                    txtAction.setText(getString(R.string.action_add, newMembers.size()));
+                                } else {
+                                    txtAction.setVisibility(View.GONE);
+                                }
+                            } else {
+                                txtAction.setVisibility(View.VISIBLE);
+                            }
+                        })
+        );
+
+        if (param instanceof Membership) {
+            subscriptions.add(viewAddMembersGroup.onClickSettings()
+                    .subscribe(aVoid -> {
+                        setupSettingsView();
+                    })
+            );
+
+            subscriptions.add(viewAddMembersGroup.onClickShareLink()
+                    .subscribe(aVoid -> {
+                        navigator.shareGenericText(membership.getGroup().getGroupLink(), this);
+                    })
+            );
+        }
+    }
+
+    private void setupSettingsView() {
+        viewSettingsGroup = (SettingsGroupView) viewStack.pushWithParameter(R.layout.view_settings_group, membership);
+        viewSettingsGroup.onEditGroup()
+                .subscribe(aVoid -> {
+                    viewUpdateGroup = (UpdateGroupView) viewStack.pushWithParameter(R.layout.view_update_group, membership);
+                });
+    }
+
+    private void computeTitle(boolean forward, View to) {
+        if (to instanceof AddMembersGroupView) {
+            setupTitle(newGroupEntity == null ? groupName : newGroupEntity.getName(), forward);
+        } else if (to instanceof CreateGroupView) {
             setupTitle(getString(R.string.group_identification_title), forward);
-        } else if (from instanceof CreateGroupView) {
-            setupTitle(newGroupEntity.getName(), forward);
+        } else if (to instanceof SettingsGroupView) {
+            setupTitle(getString(R.string.group_settings_title), forward);
         }
     }
 
@@ -319,7 +362,7 @@ public class GroupActivity extends BaseActivity implements GroupView {
     @Override
     public void onMembershipInfosSuccess(Membership membership) {
         this.membership = membership;
-        viewAddMembersGroup = (AddMembersGroupView) viewStack.pushWithParameter(R.layout.view_add_members_group, membership);
+        setupMembersView(this.membership);
     }
 
     @Override

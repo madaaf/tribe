@@ -303,7 +303,7 @@ public class DiskUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<Group> updateGroup(String groupId, String groupName, String pictureUri) {
+    public Observable<Group> updateGroup(String groupId, List<Pair<String, String>> values) {
         return null;
     }
 

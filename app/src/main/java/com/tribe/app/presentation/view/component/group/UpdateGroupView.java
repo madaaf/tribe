@@ -8,24 +8,25 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.CameraType;
 import com.tribe.app.domain.entity.LabelType;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.NewGroupEntity;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
-import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.ViewStackHelper;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,10 +40,10 @@ import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
- * Created by tiago on 11/19/2016.
+ * Created by tiago on 11/28/2016.
  */
 
-public class CreateGroupView extends FrameLayout {
+public class UpdateGroupView extends LinearLayout {
 
     private int DURATION_FADE = 150;
 
@@ -55,19 +56,17 @@ public class CreateGroupView extends FrameLayout {
     @BindView(R.id.editGroupName)
     EditTextFont editGroupName;
 
-    @BindView(R.id.btnGo)
-    View btnGo;
-
     // VARIABLES
     private String imgUri;
     private BottomSheetDialog dialogCamera;
     private LabelSheetAdapter cameraTypeAdapter;
+    private Membership membership;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions;
-    private PublishSubject<NewGroupEntity> createNewGroup = PublishSubject.create();
+    private PublishSubject<NewGroupEntity> updateGroup = PublishSubject.create();
 
-    public CreateGroupView(Context context, AttributeSet attrs) {
+    public UpdateGroupView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -81,7 +80,15 @@ public class CreateGroupView extends FrameLayout {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        if (subscriptions == null) init();
+        if (membership == null) {
+            Serializable serializable = ViewStackHelper.getViewStack(getContext()).getParameter(this);
+
+            if (serializable instanceof Membership) {
+                membership = (Membership) serializable;
+            }
+
+            init();
+        }
     }
 
     @Override
@@ -93,27 +100,7 @@ public class CreateGroupView extends FrameLayout {
         if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     }
 
-    @OnClick(R.id.imgAvatar)
-    void clickAvatar() {
-        setupBottomSheetCamera();
-    }
-
-    @OnClick(R.id.btnGo)
-    void clickGo() {
-        createNewGroup.onNext(new NewGroupEntity(editGroupName.getText().toString(), imgUri));
-    }
-
-    @OnClick({ R.id.viewSuggestionBFF, R.id.viewSuggestionTeam, R.id.viewSuggestionClass, R.id.viewSuggestionRoomies,
-            R.id.viewSuggestionWork, R.id.viewSuggestionFamily })
-    void clickSuggestion(View v) {
-        GroupSuggestionView groupSuggestionView = (GroupSuggestionView) v;
-        NewGroupEntity newGroupEntity = new NewGroupEntity(groupSuggestionView.getLabel(), FileUtils.getUriToDrawable(getContext(), groupSuggestionView.getDrawableId()).toString());
-        createNewGroup.onNext(newGroupEntity);
-    }
-
     private void init() {
-        btnGo.setEnabled(false);
-
         ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
         subscriptions = new CompositeSubscription();
 
@@ -121,20 +108,22 @@ public class CreateGroupView extends FrameLayout {
                 RxTextView.textChanges(editGroupName)
                         .map(CharSequence::toString)
                         .subscribe(s -> {
-                            if (s.length() >= 2 && btnGo.getAlpha() == 0.5) {
-                                AnimationUtils.fadeIn(btnGo, DURATION_FADE);
-                                btnGo.setEnabled(true);
-                            } else if (s.length() < 2 && btnGo.getAlpha() == 1) {
-                                AnimationUtils.fadeOutIntermediate(btnGo, DURATION_FADE);
-                                btnGo.setEnabled(false);
-                            }
+
                         })
         );
+
+        loadAvatar(membership.getProfilePicture());
+        editGroupName.setText(membership.getDisplayName());
+    }
+
+    @OnClick(R.id.imgAvatar)
+    void clickAvatar() {
+        setupBottomSheetCamera();
     }
 
     private void loadAvatar(String url) {
         Glide.with(getContext()).load(url)
-                .override(imgAvatar.getWidth(), imgAvatar.getHeight())
+                .centerCrop()
                 .bitmapTransform(new CropCircleTransformation(getContext()))
                 .crossFade()
                 .into(imgAvatar);
@@ -209,7 +198,7 @@ public class CreateGroupView extends FrameLayout {
     /**
      * OBSERVABLES
      */
-    public Observable<NewGroupEntity> onCreateNewGroup() {
-        return createNewGroup;
+    public Observable<NewGroupEntity> onUpdateGroup() {
+        return updateGroup;
     }
 }
