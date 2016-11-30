@@ -25,15 +25,12 @@
         android:paddingLeft="@dimen/horizontal_margin_small"
         android:background="@android:color/white">
 
-        <ImageView
-            android:id="@+id/imgAvatar"
+        <com.tribe.app.presentation.view.widget.AvatarView
+            android:id="@+id/avatarView"
             android:layout_width="@dimen/avatar_size_small"
             android:layout_height="@dimen/avatar_size_small"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/picto_new_pic"
-            android:scaleType="centerInside"
-            android:clickable="true"
-            android:foreground="@drawable/selectable_button_oval"
+            android:background="@null"
             />
 
         <com.tribe.app.presentation.view.widget.EditTextFont
@@ -54,5 +51,6 @@
             />
     </FrameLayout>
 
-    <include layout="@layout/view_separator" />
+    <include layout="@layout/view_separator_simple" />
+
 </com.tribe.app.presentation.view.component.group.UpdateGroupView>

@@ -26,7 +26,7 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
-import com.tribe.app.domain.entity.NewGroupEntity;
+import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
@@ -298,12 +298,17 @@ public class DiskUserDataRepository implements UserRepository {
         return userDataStore.getMembershipInfos(membershipId).map(membershipRealm -> membershipRealmDataMapper.transform(membershipRealm));
     }
 
-    public Observable<Membership> createGroup(NewGroupEntity newGroupEntity) {
+    public Observable<Membership> createGroup(GroupEntity groupEntity) {
         return null;
     }
 
     @Override
     public Observable<Group> updateGroup(String groupId, List<Pair<String, String>> values) {
+        return null;
+    }
+
+    @Override
+    public Observable<Membership> updateMembership(String membershipId, List<Pair<String, String>> values) {
         return null;
     }
 

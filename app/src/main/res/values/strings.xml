@@ -52,7 +52,7 @@
 	<string name="contacts_section_addressbook_sync_description">Automatically sync your Address Book contacts when they join</string>
 	<string name="contacts_section_addressbook_syncing">Syncing</string>
 	<string name="contacts_section_addressbook_friends_in_app">Would have %1$d friends on Tribe</string>
-	<string name="contacts_section_search_usernames">Result</string>
+	<string name="contacts_section_search_usernames">Username</string>
 	<string name="contacts_section_search_searching">Searching</string>
 	<string name="contacts_section_search_friends">Friends result(s)</string>
 	<string name="contacts_section_addressbook_title">Address book invites</string>
@@ -315,6 +315,7 @@
 	
 	<!-- Group Infos -->
 	<string name="group_infos_error_edit_not_admin">:lock: Only admins can edit the group</string>
+	<string name="group_infos_error_cannot_leave">:lock: You\'re the only admin of the group, you can\'t leave</string>
 	
 	<!-- Group Members -->
 	<string name="group_members_search_placeholder">Search a member</string>
@@ -400,6 +401,8 @@
 	<string name="settings_remove_title">Delete account</string>
 	<string name="settings_remove_subtitle">Say goodbye to your\nfriendships, points and more.</string>
 	<string name="settings_version">Version %1$s (%2$s) handcrafted in San Francisco, CA</string>
+	<string name="settings_intro_video_title">Introduction video</string>
+	<string name="settings_intro_video_subtitle">Replay our nice video</string>
 	
 	<!-- HiddenBlocked -->
 	<string name="hiddenblocked_title">%1$d blocked or hidden</string>
@@ -423,7 +426,7 @@
 	<string name="onboarding_user_facebook_button_subtitle">Recommended route, it\'s quick &amp; easy!</string>
 	<string name="onboarding_queue_title">Find you friends</string>
 	<string name="onboarding_queue_description">Discover which of your\nfriends are already here.</string>
-	<string name="onboarding_queue_disclaimer">We send your contacts to the server to connect you with friends. Check out our Terms &amp; Privacy for details.</string>
+	<string name="onboarding_queue_disclaimer">We send your contacts to the server to connect you\nwith friends. Check out our Terms &amp; Privacy for details.</string>
 	<string name="onboarding_queue_button_title">Search for my friends</string>
 	<string name="onboarding_queue_loading_title">Find you friends</string>
 	<string name="onboarding_queue_loading_description">Connecting with your friends...</string>
@@ -457,7 +460,17 @@
 	<string name="onboarding_friends_to_invite_popup_message">Try friends, teammates, classmates, roommates, work teams and long distance relationships.</string>
 	<string name="onboarding_friends_to_invite_popup_cancel">Never</string>
 	<string name="onboarding_friends_to_invite_popup_confirm">Exciting!</string>
-	<string name="onboarding_friends_to_invite_disclaimer">By continuing, I agree that I have permission to invite my contacts. See Terms &amp; Privacy Policy</string>
+	<string name="onboarding_friends_to_invite_disclaimer">By continuing, I agree that I have permission to\ninvite my contacts. See Terms &amp; Privacy Policy</string>
+	
+	<!-- Legal -->
+	<string name="legal_terms">Terms of Service</string>
+	<string name="legal_privacy">Privacy Policy</string>
+	
+	<!-- Plus Menu -->
+	<string name="plus_menu_create_group">Create a group</string>
+	<string name="plus_menu_search">Add a user</string>
+	<string name="plus_menu_invite_friend_ios">Invite a friend on iMessage</string>
+	<string name="plus_menu_invite_friend_android">Invite a friend on Hangouts</string>
 	
 	<!-- Pull to search -->
 	<string name="pull_to_search_swipe_down_action">Keep pulling to search</string>
@@ -660,6 +673,8 @@
 	<string name="search_searching">Searching</string>
 	<string name="search_add_friends">They are already connected on Tribe</string>
 	<string name="search_invite_friends">Handpick your most wanted friends</string>
+	<string name="search_no_friends_to_add">No friends connected on Tribe</string>
+	<string name="search_no_friends_to_invite">No friends to invite on Tribe</string>
 	<string name="search_add_facebook_title">Load friends from facebook</string>
 	<string name="search_add_facebook_subtitle">Don’t miss people you talk to often.</string>
 	<string name="search_add_addressbook_title">Load friends from address book</string>

@@ -2,24 +2,23 @@ package com.tribe.app.domain.interactor.user;
 
 import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
-import com.tribe.app.domain.executor.ThreadExecutor;
-import com.tribe.app.domain.interactor.common.UseCase;
+import com.tribe.app.domain.interactor.common.UseCaseDisk;
 
 import javax.inject.Inject;
 
 import rx.Observable;
 
 /**
- * Created by horatiothomas on 9/14/16.
+ * Created by tiago on 11/28/16.
  */
-public class DiskGetMembership extends UseCase {
+public class DiskGetMembership extends UseCaseDisk {
 
     private UserRepository userRepository;
     private String membershipId;
 
     @Inject
-    public DiskGetMembership(DiskUserDataRepository userDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        super(threadExecutor, postExecutionThread);
+    public DiskGetMembership(DiskUserDataRepository userDataRepository, PostExecutionThread postExecutionThread) {
+        super(postExecutionThread);
         this.userRepository = userDataRepository;
     }
 

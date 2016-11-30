@@ -42,6 +42,7 @@ import com.tribe.app.domain.interactor.user.RemoveInstall;
 import com.tribe.app.domain.interactor.user.SendToken;
 import com.tribe.app.domain.interactor.user.SynchroContactList;
 import com.tribe.app.domain.interactor.user.UpdateGroup;
+import com.tribe.app.domain.interactor.user.UpdateMembership;
 import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.presentation.internal.di.scope.PerActivity;
 
@@ -99,6 +100,12 @@ public class UserModule {
     @PerActivity
     UseCase provideUpdateGroup(UpdateGroup updateGroup) {
         return updateGroup;
+    }
+
+    @Provides
+    @PerActivity
+    UseCase provideUpdateMembership(UpdateMembership updateMembership) {
+        return updateMembership;
     }
 
     @Provides

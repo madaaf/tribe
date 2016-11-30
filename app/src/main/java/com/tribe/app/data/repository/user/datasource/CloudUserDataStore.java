@@ -37,12 +37,11 @@ import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.repository.user.contact.RxContacts;
-import com.tribe.app.domain.entity.NewGroupEntity;
+import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
-import com.tribe.app.presentation.view.utils.ImageUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -177,20 +176,20 @@ public class CloudUserDataStore implements UserDataStore {
                     return userRealm;
                 })
                 .doOnNext(user -> lastUserRequest.set(initRequest))
-                .flatMap(userRealm -> Observable
-                        .from(userRealm.getMemberships())
-                        .flatMap(membershipRealm -> {
-                            if (StringUtils.isEmpty(membershipRealm.getPicture())) {
-                                File groupAvatarFile = FileUtils.getAvatarForGroupId(context, membershipRealm.getSubId(), FileUtils.PHOTO);
-
-                                if (!groupAvatarFile.exists() && membershipRealm.getMembersPic() != null && membershipRealm.getMembersPic().size() > 0) {
-                                    return ImageUtils.createGroupAvatar(context, membershipRealm.getSubId(), membershipRealm.getMembersPic(), avatarSize)
-                                            .map(bitmap -> bitmap != null);
-                                }
-                            }
-
-                            return Observable.just(true);
-                        }, 1).toList(), (userRealm, successList) -> userRealm)
+//                .flatMap(userRealm -> Observable
+//                        .from(userRealm.getMemberships())
+//                        .flatMap(membershipRealm -> {
+//                            if (StringUtils.isEmpty(membershipRealm.getPicture())) {
+//                                File groupAvatarFile = FileUtils.getAvatarForGroupId(context, membershipRealm.getSubId(), FileUtils.PHOTO);
+//
+//                                if (!groupAvatarFile.exists() && membershipRealm.getMembersPic() != null && membershipRealm.getMembersPic().size() > 0) {
+//                                    return ImageUtils.createGroupAvatar(context, membershipRealm.getSubId(), membershipRealm.getMembersPic(), avatarSize)
+//                                            .map(bitmap -> bitmap != null);
+//                                }
+//                            }
+//
+//                            return Observable.just(true);
+//                        }, 1).toList(), (userRealm, successList) -> userRealm)
                 .doOnNext(saveToCacheUser);
     }
 
@@ -866,8 +865,15 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<GroupRealm> getGroupInfos(String groupId) {
-        String request = context.getString(R.string.get_group_infos, groupId, context.getString(R.string.groupfragment_info));
-        return this.tribeApi.getGroupInfos(request);
+        String request = context.getString(
+                R.string.get_group_infos,
+                groupId,
+                context.getString(R.string.groupfragment_info_members),
+                context.getString(R.string.userfragment_infos)
+        );
+
+        return this.tribeApi.getGroupInfos(request)
+                .doOnNext(groupRealm -> userCache.updateGroup(groupRealm));
     }
 
     @Override
@@ -876,29 +882,29 @@ public class CloudUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<MembershipRealm> createGroup(NewGroupEntity newGroupEntity) {
-        String idList = listToJson(newGroupEntity.getMembersId());
+    public Observable<MembershipRealm> createGroup(GroupEntity groupEntity) {
+        String idList = listToJson(groupEntity.getMembersId());
 
         String members = "";
 
-        if (newGroupEntity.getMembersId() != null && newGroupEntity.getMembersId().size() > 0) members = context.getString(R.string.create_group_members, idList);
+        if (groupEntity.getMembersId() != null && groupEntity.getMembersId().size() > 0) members = context.getString(R.string.create_group_members, idList);
 
-        final String request = context.getString(R.string.create_group, newGroupEntity.getName(),
+        final String request = context.getString(R.string.create_group, groupEntity.getName(),
                 GroupRealm.PUBLIC, !StringUtils.isEmpty(members) ? members : "", context.getString(R.string.groupfragment_info));
-        if (newGroupEntity.getImgPath() == null) {
+        if (groupEntity.getImgPath() == null) {
             return this.tribeApi.createGroup(request)
                     .doOnNext(groupRealm -> userCache.insertGroup(groupRealm))
                     .flatMap(groupRealm -> createMembership(groupRealm.getId()), (groupRealm, newMembership) -> newMembership);
         } else {
             RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
 
-            File file = new File(Uri.parse(newGroupEntity.getImgPath()).getPath());
+            File file = new File(Uri.parse(groupEntity.getImgPath()).getPath());
 
             if (!(file != null && file.exists() && file.length() > 0)) {
                 InputStream inputStream = null;
                 file = FileUtils.getFile(context, FileUtils.generateIdForMessage(), FileUtils.PHOTO);
                 try {
-                    inputStream = context.getContentResolver().openInputStream(Uri.parse(newGroupEntity.getImgPath()));
+                    inputStream = context.getContentResolver().openInputStream(Uri.parse(groupEntity.getImgPath()));
                     FileUtils.copyInputStreamToFile(inputStream, file);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -925,13 +931,11 @@ public class CloudUserDataStore implements UserDataStore {
         StringBuilder groupInputBuilder = new StringBuilder();
 
         for (Pair<String, String> value : values) {
-            if (!StringUtils.isEmpty(value.second) && !value.second.equals("null")) {
-                groupInputBuilder.append(value.first + ": \"" + value.second + "\"");
-                groupInputBuilder.append(",");
-            }
-
             if (value.first.equals(GroupRealm.PICTURE)) {
                 pictureUri = value.second;
+            } else if (!StringUtils.isEmpty(value.second) && !value.second.equals("null")) {
+                groupInputBuilder.append(value.first + ": \"" + value.second + "\"");
+                groupInputBuilder.append(",");
             }
         }
 
@@ -974,6 +978,37 @@ public class CloudUserDataStore implements UserDataStore {
 
             return tribeApi.updateGroupMedia(query, body)
                     .doOnNext(groupRealm -> userCache.updateGroup(groupRealm));
+        }
+    }
+
+    @Override
+    public Observable<MembershipRealm> updateMembership(String membershipId, List<Pair<String, String>> values) {
+        StringBuilder membershipInputBuilder = new StringBuilder();
+
+        for (Pair<String, String> value : values) {
+            if (value.first.equals(MembershipRealm.MUTE)) {
+                membershipInputBuilder.append(value.first + ": " + Boolean.valueOf(value.second));
+                membershipInputBuilder.append(",");
+            } else if (!StringUtils.isEmpty(value.second) && !value.second.equals("null")) {
+                membershipInputBuilder.append(value.first + ": \"" + value.second + "\"");
+                membershipInputBuilder.append(",");
+            }
+        }
+
+        String membershipInput = membershipInputBuilder.length() > 0 ? membershipInputBuilder.substring(0, membershipInputBuilder.length() - 1) : "";
+
+        String request = context.getString(
+                R.string.update_membership,
+                membershipId,
+                membershipInput,
+                context.getString(R.string.membershipfragment_info_light)
+        );
+
+        if (!StringUtils.isEmpty(membershipInput)) {
+            return this.tribeApi.updateMembership(request)
+                    .doOnNext(membershipRealm -> userCache.updateMembership(membershipRealm));
+        } else {
+            return Observable.empty();
         }
     }
 
@@ -1036,18 +1071,7 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<MembershipRealm> modifyPrivateGroupLink(String membershipId, boolean create) {
-        String request;
-        if (create) request = context.getString(R.string.generate_private_link,
-                membershipId,
-                context.getString(R.string.membershipfragment_info),
-                context.getString(R.string.groupfragment_info));
-        else request = context.getString(R.string.remove_private_link,
-                membershipId,
-                context.getString(R.string.membershipfragment_info),
-                context.getString(R.string.groupfragment_info));
-        return this.tribeApi.modifyPrivateGroupLink(request).doOnNext(membershipRealm -> {
-            userCache.updateMembershipLink(accessToken.getUserId(), membershipId, membershipRealm);
-        });
+        return null;
     }
 
     public String listToJson(List<String> list) {

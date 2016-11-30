@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ImageView
-        android:id="@+id/imageView"
+    <com.tribe.app.presentation.view.widget.AvatarView
+        android:id="@+id/avatarView"
         android:layout_width="@dimen/avatar_size_small"
         android:layout_height="@dimen/avatar_size_small"
         android:layout_gravity="center_vertical"
-        android:scaleType="centerInside"
+        android:background="@null"
         />
 
     <LinearLayout

@@ -19,6 +19,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 11/22/16.
@@ -30,6 +32,8 @@ public class MemberAdapterDelegate extends RxAdapterDelegate<List<GroupMember>> 
     private int avatarSize;
     private Context context;
     private LayoutInflater layoutInflater;
+
+    private PublishSubject<Void> click = PublishSubject.create();
 
     public MemberAdapterDelegate(Context context) {
         this.avatarSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
@@ -46,6 +50,8 @@ public class MemberAdapterDelegate extends RxAdapterDelegate<List<GroupMember>> 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
         RecyclerView.ViewHolder vh = new MemberViewHolder(layoutInflater.inflate(R.layout.item_member, parent, false));
+
+        vh.itemView.setOnClickListener(v -> click.onNext(null));
 
         return vh;
     }
@@ -74,5 +80,9 @@ public class MemberAdapterDelegate extends RxAdapterDelegate<List<GroupMember>> 
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
+    }
+
+    public Observable<Void> onClick() {
+        return click;
     }
 }

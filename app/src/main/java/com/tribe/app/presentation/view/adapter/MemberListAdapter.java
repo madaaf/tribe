@@ -5,28 +5,26 @@ import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import com.tribe.app.domain.entity.GroupMember;
-import com.tribe.app.presentation.view.adapter.delegate.friend.MemberAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.friend.MemberListAdapterDelegate;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Observable;
-
 /**
- * Created by tiago on 11/22/16.
+ * Created by tiago on 11/29/16.
  */
-public class MembersAdapter extends RecyclerView.Adapter {
+public class MemberListAdapter extends RecyclerView.Adapter {
 
     protected RxAdapterDelegatesManager<List<GroupMember>> delegatesManager;
-    private MemberAdapterDelegate memberAdapterDelegate;
+    private MemberListAdapterDelegate memberListAdapterDelegate;
 
     private List<GroupMember> items;
 
-    public MembersAdapter(Context context) {
+    public MemberListAdapter(Context context) {
         delegatesManager = new RxAdapterDelegatesManager<>();
 
-        memberAdapterDelegate = new MemberAdapterDelegate(context);
-        delegatesManager.addDelegate(memberAdapterDelegate);
+        memberListAdapterDelegate = new MemberListAdapterDelegate(context);
+        delegatesManager.addDelegate(memberListAdapterDelegate);
 
         items = new ArrayList<>();
 
@@ -75,34 +73,5 @@ public class MembersAdapter extends RecyclerView.Adapter {
         } else {
             return null;
         }
-    }
-
-    // Returns true if add, false otherwise
-    public boolean compute(GroupMember groupMember) {
-        boolean result = false;
-
-        if (items.contains(groupMember)) {
-            remove(groupMember);
-        } else {
-            add(groupMember);
-            result = true;
-        }
-
-        return result;
-    }
-
-    public void remove(GroupMember groupMember) {
-        int position = items.indexOf(groupMember);
-        items.remove(position);
-        notifyItemRemoved(position);
-    }
-
-    public void add(GroupMember groupMember) {
-        items.add(groupMember);
-        notifyItemInserted(items.size() - 1);
-    }
-
-    public Observable<Void> onClick() {
-        return memberAdapterDelegate.onClick();
     }
 }

@@ -3,14 +3,21 @@ package com.tribe.app.presentation.view.component.group;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Membership;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.component.ActionView;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
 
 import java.io.Serializable;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,6 +31,9 @@ import rx.subscriptions.CompositeSubscription;
 
 public class SettingsGroupView extends FrameLayout {
 
+    @Inject
+    User currentUser;
+
     @BindView(R.id.viewActionInfos)
     ActionView viewActionInfos;
 
@@ -35,6 +45,7 @@ public class SettingsGroupView extends FrameLayout {
 
     // VARIABLES
     private Membership membership;
+    private boolean isCurrentUserAdmin = false;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions;
@@ -80,20 +91,83 @@ public class SettingsGroupView extends FrameLayout {
         ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
         subscriptions = new CompositeSubscription();
 
-        viewActionInfos.setTitle(membership.getDisplayName());
-        viewActionInfos.setImage(membership.getProfilePicture());
-        viewActionNotifications.setValue(!membership.isMute());
+        updateInfos();
 
         subscriptions.add(
                 viewActionInfos.onClick()
+                        .doOnNext(aVoid -> {
+                            if (!isCurrentUserAdmin) {
+                                Toast.makeText(
+                                        getContext(),
+                                        EmojiParser.demojizedText(getContext().getString(R.string.group_infos_error_edit_not_admin)),
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                            }
+                        })
+                        .filter(aVoid -> isCurrentUserAdmin)
                         .subscribe(aVoid -> editGroup.onNext(null))
         );
+
+        subscriptions.add(
+                viewActionLeaveGroup.onClick()
+                        .doOnNext(aVoid -> {
+                            if (isCurrentUserAdmin && membership.getGroup().getAdmins().size() == 1) {
+                                Toast.makeText(
+                                        getContext(),
+                                        EmojiParser.demojizedText(getContext().getString(R.string.group_infos_error_cannot_leave)),
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                            }
+                        })
+                        .filter(aVoid -> !isCurrentUserAdmin || membership.getGroup().getAdmins().size() > 1)
+                        .flatMap(x -> DialogFactory.dialog(
+                                getContext(),
+                                membership.getDisplayName(),
+                                null,
+                                getContext().getString(R.string.group_details_leave_title),
+                                getContext().getString(R.string.action_cancel)))
+                        .filter(x -> x == true)
+                        .subscribe(aVoid -> leaveGroup.onNext(null))
+        );
+
+        subscriptions.add(
+                viewActionNotifications.onChecked()
+                        .subscribe(notificationsChange)
+        );
+    }
+
+    public void updateGroup(Group group, boolean full) {
+        if (full) {
+            membership.setGroup(group);
+        } else {
+            membership.getGroup().setPicture(group.getPicture());
+            membership.getGroup().setName(group.getName());
+        }
+
+        updateInfos();
+    }
+
+    private void updateInfos() {
+        isCurrentUserAdmin = membership.isAdmin();
+
+        viewActionInfos.setTitle(membership.getDisplayName());
+        viewActionInfos.setRecipient(membership);
+        viewActionNotifications.setValue(!membership.isMute());
     }
 
     /**
      * OBSERVABLES
      */
+
     public Observable<Void> onEditGroup() {
         return editGroup;
+    }
+
+    public Observable<Void> onLeaveGroup() {
+        return leaveGroup;
+    }
+
+    public Observable<Boolean> onNotificationsChange() {
+        return notificationsChange;
     }
 }

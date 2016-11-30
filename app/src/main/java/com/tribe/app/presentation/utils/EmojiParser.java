@@ -34,6 +34,7 @@ public class EmojiParser {
         IEmojiMap.put(":bird:", "\uD83D\uDC26");
         IEmojiMap.put(":satellite:", "\uD83D\uDEF0");
         IEmojiMap.put(":clap:", "\uD83D\uDC4F");
+        IEmojiMap.put(":lock:", "\uD83D\uDD12");
     }
 
     /**
@@ -43,7 +44,8 @@ public class EmojiParser {
      */
     public static String demojizedText(String text){
     	String returnTextString = text;
-    	//Pattern to match    	
+
+        // Pattern to match
     	Pattern pattern = Pattern.compile("(\\:[^\\:]+\\:)");
         Matcher matcher = pattern.matcher(text);
         while (matcher.find()) {
@@ -51,7 +53,8 @@ public class EmojiParser {
         	if (IEmojiMap.get(found) == null) continue;
         	returnTextString = returnTextString.replace(found, IEmojiMap.get(found));
         }
-    	//Returning text
+
+    	// Returning text
     	return returnTextString;
     }
 }

@@ -39,7 +39,7 @@ public interface UserCache {
     void removeGroup(String groupId);
     void removeGroupFromMembership(String membershipId);
     void insertMembership(String userId, MembershipRealm membershipRealm);
-    void updateMembershipLink(String userId, String membershipId, MembershipRealm membershipRealm);
+    void updateMembership(MembershipRealm membershipRealm);
     void updateScore(String userId, ScoreUtils.Point point);
     void updateScore(String userId, int score);
     Observable<FriendshipRealm> updateFriendship(String friendshipId, @FriendshipRealm.FriendshipStatus String status);

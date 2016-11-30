@@ -21,7 +21,7 @@ import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.domain.entity.NewGroupEntity;
+import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 
 import java.util.ArrayList;
@@ -161,12 +161,17 @@ public class DiskUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<MembershipRealm> createGroup(NewGroupEntity newGroupEntity) {
+    public Observable<MembershipRealm> createGroup(GroupEntity groupEntity) {
         return null;
     }
 
     @Override
     public Observable<GroupRealm> updateGroup(String groupId, List<Pair<String, String>> values) {
+        return null;
+    }
+
+    @Override
+    public Observable<MembershipRealm> updateMembership(String membershipId, List<Pair<String, String>> values) {
         return null;
     }
 

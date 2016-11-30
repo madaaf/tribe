@@ -14,9 +14,10 @@ import android.widget.FrameLayout;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Group;
+import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.domain.entity.Membership;
-import com.tribe.app.domain.entity.NewGroupEntity;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.FriendMembersAdapter;
@@ -88,10 +89,13 @@ public class AddMembersGroupView extends FrameLayout {
     @BindView(R.id.viewGroupFocus)
     ViewGroup viewGroupFocus;
 
+    @BindView(R.id.layoutMembers)
+    ViewGroup layoutMembers;
+
     // VARIABLES
     private FriendMembersLayoutManager layoutManager;
     private FriendMembersAdapter adapter;
-    private NewGroupEntity newGroupEntity;
+    private GroupEntity groupEntity;
     private Membership membership;
     private MembersLayoutManager layoutMembersManager;
     private MembersAdapter membersAdapter;
@@ -99,9 +103,10 @@ public class AddMembersGroupView extends FrameLayout {
 
     // OBSERVABLES
     private CompositeSubscription subscriptions;
-    private PublishSubject<List<GroupMember>> onMembersChanged = PublishSubject.create();
-    private PublishSubject<Void> onClickShareLink = PublishSubject.create();
-    private PublishSubject<Void> onClickSettings = PublishSubject.create();
+    private PublishSubject<List<GroupMember>> membersChanged = PublishSubject.create();
+    private PublishSubject<Void> clickShareLink = PublishSubject.create();
+    private PublishSubject<Void> clickSettings = PublishSubject.create();
+    private PublishSubject<Void> clickMembers = PublishSubject.create();
 
     public AddMembersGroupView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -117,19 +122,21 @@ public class AddMembersGroupView extends FrameLayout {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        if (membership == null && newGroupEntity == null) {
+        if (membership == null && groupEntity == null) {
             Serializable serializable = ViewStackHelper.getViewStack(getContext()).getParameter(this);
 
-            if (serializable instanceof NewGroupEntity) {
-                newGroupEntity = (NewGroupEntity) serializable;
+            if (serializable instanceof GroupEntity) {
+                groupEntity = (GroupEntity) serializable;
             } else {
                 membership = (Membership) serializable;
             }
 
-            initInfos();
+            updateInfos();
             initAppBar();
             init();
         }
+
+        viewGroupFocus.requestFocus();
     }
 
     @Override
@@ -177,13 +184,15 @@ public class AddMembersGroupView extends FrameLayout {
 
             subscriptions.add(
                     viewActionSettings.onClick()
-                            .subscribe(onClickSettings)
+                            .subscribe(clickSettings)
             );
 
             subscriptions.add(
                     viewActionShareLink.onClick()
-                            .subscribe(onClickShareLink)
+                            .subscribe(clickShareLink)
             );
+
+            layoutMembers.setOnClickListener(v -> clickMembers.onNext(null));
         }
 
         List<GroupMember> userList = new ArrayList<>(userListTemp);
@@ -192,7 +201,7 @@ public class AddMembersGroupView extends FrameLayout {
         recyclerView.addItemDecoration(new DividerFirstLastItemDecoration(screenUtils.dpToPx(2.5f), screenUtils.dpToPx(10)));
         recyclerView.getRecycledViewPool().setMaxRecycledViews(0, 50);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setNestedScrollingEnabled(newGroupEntity == null);
+        recyclerView.setNestedScrollingEnabled(groupEntity == null);
 
         subscriptions.add(
                 RxTextView.textChanges(editTextSearch)
@@ -209,7 +218,7 @@ public class AddMembersGroupView extends FrameLayout {
                             boolean add = membersAdapter.compute(groupMember);
                             if (add) newMembers.add(groupMember);
                             else newMembers.remove(groupMember);
-                            onMembersChanged.onNext(newMembers);
+                            membersChanged.onNext(newMembers);
                             refactorMembers();
                         })
         );
@@ -224,7 +233,20 @@ public class AddMembersGroupView extends FrameLayout {
         refactorMembers();
     }
 
-    private void initInfos() {
+    public void updateGroup(Group group, boolean full) {
+        if (full) {
+            membership.setGroup(group);
+            membersAdapter.setItems(membership.getGroup().getGroupMembers());
+            refactorMembers();
+        } else {
+            membership.getGroup().setPicture(group.getPicture());
+            membership.getGroup().setName(group.getName());
+        }
+
+        updateInfos();
+    }
+
+    private void updateInfos() {
         txtGroupName.setText(groupName());
 
         if (membership != null) {
@@ -233,14 +255,14 @@ public class AddMembersGroupView extends FrameLayout {
     }
 
     private void initAppBar() {
-        appBarLayout.setExpanded(newGroupEntity == null);
+        appBarLayout.setExpanded(groupEntity == null);
 
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) appBarLayout.getLayoutParams();
         AppBarLayout.Behavior behavior = new AppBarLayout.Behavior();
         behavior.setDragCallback(new AppBarLayout.Behavior.DragCallback() {
             @Override
             public boolean canDrag(AppBarLayout appBarLayout) {
-                return newGroupEntity == null;
+                return groupEntity == null;
             }
         });
         params.setBehavior(behavior);
@@ -258,7 +280,7 @@ public class AddMembersGroupView extends FrameLayout {
 
         membersAdapter = new MembersAdapter(getContext());
 
-        if (newGroupEntity != null)
+        if (groupEntity != null)
             membersAdapter.add(new GroupMember(user));
         else
             membersAdapter.setItems(membership.getGroup().getGroupMembers());
@@ -266,6 +288,10 @@ public class AddMembersGroupView extends FrameLayout {
         recyclerViewGroupMembers.setAdapter(membersAdapter);
         recyclerViewGroupMembers.getRecycledViewPool().setMaxRecycledViews(0, 50);
         recyclerViewGroupMembers.setHasFixedSize(true);
+
+        subscriptions.add(
+                membersAdapter.onClick()
+                        .subscribe(clickMembers));
     }
 
     private void refactorMembers() {
@@ -278,20 +304,24 @@ public class AddMembersGroupView extends FrameLayout {
     }
 
     private String groupName() {
-        return newGroupEntity == null ? membership.getDisplayName() : newGroupEntity.getName();
+        return groupEntity == null ? membership.getDisplayName() : groupEntity.getName();
     }
 
     // OBSERVABLES
 
     public Observable<List<GroupMember>> onMembersChanged() {
-        return onMembersChanged;
+        return membersChanged;
     }
 
     public Observable<Void> onClickSettings() {
-        return onClickSettings;
+        return clickSettings;
     }
 
     public Observable<Void> onClickShareLink() {
-        return onClickShareLink;
+        return clickShareLink;
+    }
+
+    public Observable<Void> onClickMembers() {
+        return clickMembers;
     }
 }

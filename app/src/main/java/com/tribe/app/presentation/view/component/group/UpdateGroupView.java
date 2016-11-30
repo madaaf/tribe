@@ -8,22 +8,20 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.bumptech.glide.Glide;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.CameraType;
+import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Membership;
-import com.tribe.app.domain.entity.NewGroupEntity;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
-import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
+import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 
 import java.io.Serializable;
@@ -35,8 +33,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import rx.Observable;
-import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -50,8 +46,8 @@ public class UpdateGroupView extends LinearLayout {
     @Inject
     RxImagePicker rxImagePicker;
 
-    @BindView(R.id.imgAvatar)
-    ImageView imgAvatar;
+    @BindView(R.id.avatarView)
+    AvatarView avatarView;
 
     @BindView(R.id.editGroupName)
     EditTextFont editGroupName;
@@ -61,10 +57,10 @@ public class UpdateGroupView extends LinearLayout {
     private BottomSheetDialog dialogCamera;
     private LabelSheetAdapter cameraTypeAdapter;
     private Membership membership;
+    private GroupEntity groupEntity;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions;
-    private PublishSubject<NewGroupEntity> updateGroup = PublishSubject.create();
 
     public UpdateGroupView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -104,29 +100,31 @@ public class UpdateGroupView extends LinearLayout {
         ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
         subscriptions = new CompositeSubscription();
 
+        groupEntity = new GroupEntity();
+
         subscriptions.add(
                 RxTextView.textChanges(editGroupName)
                         .map(CharSequence::toString)
                         .subscribe(s -> {
-
+                            groupEntity.setName(s);
                         })
         );
 
-        loadAvatar(membership.getProfilePicture());
+        loadAvatar(membership);
         editGroupName.setText(membership.getDisplayName());
     }
 
-    @OnClick(R.id.imgAvatar)
+    @OnClick(R.id.avatarView)
     void clickAvatar() {
         setupBottomSheetCamera();
     }
 
+    private void loadAvatar(Membership membership) {
+        avatarView.load(membership);
+    }
+
     private void loadAvatar(String url) {
-        Glide.with(getContext()).load(url)
-                .centerCrop()
-                .bitmapTransform(new CropCircleTransformation(getContext()))
-                .crossFade()
-                .into(imgAvatar);
+        avatarView.load(url);
     }
 
     /**
@@ -171,6 +169,7 @@ public class UpdateGroupView extends LinearLayout {
 
     public void loadUri(Uri uri) {
         imgUri = uri.toString();
+        groupEntity.setImgPath(uri.toString());
         loadAvatar(uri.toString());
     }
 
@@ -195,10 +194,12 @@ public class UpdateGroupView extends LinearLayout {
         return false;
     }
 
+    public GroupEntity getGroupEntity() {
+        return groupEntity;
+    }
+
     /**
      * OBSERVABLES
      */
-    public Observable<NewGroupEntity> onUpdateGroup() {
-        return updateGroup;
-    }
+
 }

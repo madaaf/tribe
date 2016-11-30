@@ -449,6 +449,18 @@
         }
     </string>
 
+    <string name="membershipfragment.info.light" translatable="false">
+        fragment MembershipInfo on Membership {
+            id
+            mute
+            is_admin
+            link
+            link_expires_at
+            created_at
+            updated_at
+        }
+    </string>
+
     <string name="get.group.infos" translatable="false">
         {
             groups (ids : [\"%1$s\"]) {
@@ -457,6 +469,7 @@
         }
 
         %2$s
+        %3$s
     </string>
 
     <string name="get.group.members" translatable="false">
@@ -498,9 +511,31 @@
     <string name="update.group" translatable="false">
         mutation {
             updateGroup(id : \"%1$s\",
-                %2$s
-            }) {
+                group : { %2$s }
+            ) {
                 ...GroupInfo
+            }
+        }
+
+        %3$s
+    </string>
+
+    <string name="membership.infos" translatable="false">
+        {
+            memberships (ids : [\"%1$s\"]) {
+                ...GroupInfo
+            }
+        }
+
+        %2$s
+    </string>
+
+    <string name="update.membership" translatable="false">
+        mutation {
+            updateMembership(membershipId : \"%1$s\",
+                membership : { %2$s }
+            ) {
+                ...MembershipInfo
             }
         }
 

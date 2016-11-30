@@ -21,7 +21,7 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
-import com.tribe.app.domain.entity.NewGroupEntity;
+import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
@@ -220,13 +220,15 @@ public class CloudUserDataRepository implements UserRepository {
 
     @Override
     public Observable<Membership> getMembershipInfos(String membershipId) {
-        return null;
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.getMembershipInfos(membershipId)
+                .map(this.membershipRealmDataMapper::transform);
     }
 
     @Override
-    public Observable<Membership> createGroup(NewGroupEntity newGroupEntity) {
+    public Observable<Membership> createGroup(GroupEntity groupEntity) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-        return cloudDataStore.createGroup(newGroupEntity)
+        return cloudDataStore.createGroup(groupEntity)
                 .map((membershipRealm) -> this.membershipRealmDataMapper.transform(membershipRealm));
     }
 
@@ -235,6 +237,13 @@ public class CloudUserDataRepository implements UserRepository {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
         return  cloudDataStore.updateGroup(groupId, values)
                 .map(this.groupRealmDataMapper::transform);
+    }
+
+    @Override
+    public Observable<Membership> updateMembership(String membershipId, List<Pair<String, String>> values) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return  cloudDataStore.updateMembership(membershipId, values)
+                .map(this.membershipRealmDataMapper::transform);
     }
 
     @Override

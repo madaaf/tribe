@@ -10,6 +10,8 @@ public class GroupMember implements Serializable {
     private boolean ogMember = false;
     private boolean member = false;
     private boolean admin = false;
+    private boolean friend = false;
+    private boolean animateAdd = false;
     private User user;
 
     public GroupMember(User user) {
@@ -55,6 +57,22 @@ public class GroupMember implements Serializable {
 
     public void setAdmin(boolean admin) {
         this.admin = admin;
+    }
+
+    public boolean isAnimateAdd() {
+        return animateAdd;
+    }
+
+    public void setAnimateAdd(boolean animateAdd) {
+        this.animateAdd = animateAdd;
+    }
+
+    public boolean isFriend() {
+        return friend;
+    }
+
+    public void setFriend(boolean friend) {
+        this.friend = friend;
     }
 
     public User getUser() {

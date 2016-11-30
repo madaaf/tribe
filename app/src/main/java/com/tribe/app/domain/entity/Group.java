@@ -137,10 +137,28 @@ public class Group implements Serializable {
     public List<GroupMember> getGroupMembers() {
         List<GroupMember> groupMemberList = new ArrayList<>();
 
-        for (User user : members) {
-            groupMemberList.add(new GroupMember(user));
+        for (User member : members) {
+            GroupMember groupMember = new GroupMember(member);
+            groupMember.setMember(true);
+            groupMember.setOgMember(true);
+
+            for (User admin : admins) {
+                if (member.equals(admin)) groupMember.setAdmin(true);
+            }
+
+            groupMemberList.add(groupMember);
         }
 
         return groupMemberList;
+    }
+
+    public boolean isUserAdmin(User user) {
+        for (User admin : admins) {
+            if (admin.equals(user)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

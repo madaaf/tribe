@@ -112,7 +112,7 @@
                     android:background="@color/grey.light"
                     />
 
-                <LinearLayout
+                <FrameLayout
                     android:id="@+id/layoutMembers"
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
@@ -160,9 +160,9 @@
                         android:id="@+id/recyclerViewGroupMembers"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/group_members_height"
-                        android:orientation="horizontal"
+                        android:layout_gravity="bottom"
                         />
-                </LinearLayout>
+                </FrameLayout>
 
                 <View
                     android:layout_width="match_parent"

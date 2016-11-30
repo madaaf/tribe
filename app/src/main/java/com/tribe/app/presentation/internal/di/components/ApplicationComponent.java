@@ -82,6 +82,7 @@ import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.friend.MemberListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.text.PhotoMessageAdapterDelegate;
@@ -102,6 +103,7 @@ import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.component.group.AddMembersGroupView;
 import com.tribe.app.presentation.view.component.group.CreateGroupView;
 import com.tribe.app.presentation.view.component.group.GroupSuggestionView;
+import com.tribe.app.presentation.view.component.group.MembersGroupView;
 import com.tribe.app.presentation.view.component.group.SettingsGroupView;
 import com.tribe.app.presentation.view.component.group.UpdateGroupView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
@@ -187,6 +189,8 @@ public interface ApplicationComponent {
     void inject(ActionView actionView);
     void inject(SettingsGroupView settingsGroupView);
     void inject(UpdateGroupView updateGroupView);
+    void inject(MembersGroupView membersGroupView);
+    void inject(MemberListAdapterDelegate memberListAdapterDelegate);
 
     // JOBS
     void inject(BaseJob baseJob);

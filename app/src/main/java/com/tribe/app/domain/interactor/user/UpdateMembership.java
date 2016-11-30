@@ -1,35 +1,40 @@
 package com.tribe.app.domain.interactor.user;
 
+import android.util.Pair;
+
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
-import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
 import rx.Observable;
 
 /**
- * Created by horatiothomas on 9/17/16.
+ * Created by tiago on 11/29/16.
  */
-public class CreateGroup extends UseCase {
+public class UpdateMembership extends UseCase {
 
     private UserRepository userRepository;
-    private GroupEntity groupEntity;
+    private String membershipId;
+    private List<Pair<String, String>> values;
 
     @Inject
-    CreateGroup(CloudUserDataRepository userDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+    UpdateMembership(CloudUserDataRepository userDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
         super(threadExecutor, postExecutionThread);
         this.userRepository = userDataRepository;
     }
 
-    public void prepare(GroupEntity groupEntity) {
-        this.groupEntity = groupEntity;
+    public void prepare(String membershipId, List<Pair<String, String>> values) {
+        this.membershipId = membershipId;
+        this.values = values;
     }
 
     @Override
     protected Observable buildUseCaseObservable() {
-        return this.userRepository.createGroup(groupEntity);
+        return this.userRepository.updateMembership(membershipId, values);
     }
 }

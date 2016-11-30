@@ -11,14 +11,13 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import javax.inject.Inject;
@@ -54,8 +53,8 @@ public class ActionView extends FrameLayout {
     TextViewFont txtBody;
 
     @Nullable
-    @BindView(R.id.imageView)
-    ImageView imageView;
+    @BindView(R.id.avatarView)
+    AvatarView avatarView;
 
     @Nullable
     @BindView(R.id.viewSwitch)
@@ -67,6 +66,7 @@ public class ActionView extends FrameLayout {
     private String imageUrl;
     private String body;
     private String title;
+    private Recipient recipient;
 
     // OBSERVABLES
     private PublishSubject<Void> onClick = PublishSubject.create();
@@ -130,7 +130,11 @@ public class ActionView extends FrameLayout {
         setClickable(true);
         setForeground(ContextCompat.getDrawable(context, R.drawable.selectable_button));
         setMinimumHeight(screenUtils.dpToPx(72));
-        setOnClickListener(v -> onClick.onNext(null));
+
+        if (type != TOGGLE)
+            setOnClickListener(v -> onClick.onNext(null));
+        else
+            viewSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> onChecked.onNext(isChecked));
 
         if (type == HIERARCHY_WITH_IMAGE) computeImageView();
     }
@@ -151,6 +155,11 @@ public class ActionView extends FrameLayout {
 
     public void setImage(String url) {
         imageUrl = url;
+        computeImageView();
+    }
+
+    public void setRecipient(Recipient recipient) {
+        this.recipient = recipient;
         computeImageView();
     }
 
@@ -179,12 +188,10 @@ public class ActionView extends FrameLayout {
     }
 
     private void computeImageView() {
-        if (imageView != null && !StringUtils.isEmpty(imageUrl)) {
-            Glide.with(getContext()).load(imageUrl)
-                    .centerCrop()
-                    .bitmapTransform(new CropCircleTransformation(getContext()))
-                    .crossFade()
-                    .into(imageView);
+        if (avatarView != null && !StringUtils.isEmpty(imageUrl)) {
+            avatarView.load(imageUrl);
+        } else if (avatarView != null && recipient != null) {
+            avatarView.load(recipient);
         }
     }
 

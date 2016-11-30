@@ -137,6 +137,10 @@ public interface TribeApi {
     @POST("/graphql")
     Observable<GroupRealm> updateGroup(@Field("query") String query);
 
+    @FormUrlEncoded
+    @POST("/graphql")
+    Observable<MembershipRealm> updateMembership(@Field("query") String query);
+
     @Multipart
     @POST("/graphql")
     Observable<GroupRealm> updateGroupMedia(@Part("query") RequestBody query, @Part MultipartBody.Part file);

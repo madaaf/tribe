@@ -26,6 +26,7 @@ import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.Subscription;
 
 /**
  * Created by tiago on 17/02/2016.
@@ -47,6 +48,9 @@ public class AvatarView extends RoundedCornerLayout {
 
     // RESOURCES
     private int avatarSize;
+
+    // SUBSCRIPTIONS
+    private Subscription createImageSubscription;
 
     public AvatarView(Context context) {
         this(context, null);
@@ -107,10 +111,13 @@ public class AvatarView extends RoundedCornerLayout {
     public void load(Recipient recipient) {
         String previousAvatar = (String) getTag(R.id.profile_picture);
 
+        if (createImageSubscription != null) createImageSubscription.unsubscribe();
+
         if (recipient instanceof Friendship) {
             if (StringUtils.isEmpty(previousAvatar) || !previousAvatar.equals(recipient.getProfilePicture()))
                 load(recipient.getProfilePicture());
         } else if (recipient instanceof Membership) {
+            Membership membership = (Membership) recipient;
             if (StringUtils.isEmpty(recipient.getProfilePicture())) {
                 File groupAvatarFile = FileUtils.getAvatarForGroupId(getContext(), recipient.getSubId(), FileUtils.PHOTO);
 
@@ -123,7 +130,16 @@ public class AvatarView extends RoundedCornerLayout {
                             .signature(new StringSignature(String.valueOf(groupAvatarFile.lastModified())))
                             .crossFade()
                             .into(imgAvatar);
-                } else if (!groupAvatarFile.exists()) loadPlaceholder();
+                } else if (!groupAvatarFile.exists()) {
+//                    if (!groupAvatarFile.exists() && membership.getMembersPic() != null && membership.getMembersPic().size() > 0) {
+//                        createImageSubscription = ImageUtils.createGroupAvatar(getContext(), membership.getSubId(), membership.getMembersPic(), avatarSize)
+//                                .observeOn(AndroidSchedulers.mainThread())
+//                                .subscribeOn(Schedulers.io())
+//                                .subscribe(bitmap -> imgAvatar.setImageBitmap(bitmap));
+//                    }
+
+                    loadPlaceholder();
+                }
             } else {
                 load(recipient.getProfilePicture());
             }

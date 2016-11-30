@@ -7,16 +7,18 @@ import java.util.List;
  * Created by tiago on 21/11/2016.
  */
 
-public class NewGroupEntity implements Serializable {
+public class GroupEntity implements Serializable {
 
     private String name;
     private String imgPath;
     private List<String> membersId;
 
-    public NewGroupEntity(String name, String imgPath) {
+    public GroupEntity(String name, String imgPath) {
         this.name = name;
         this.imgPath = imgPath;
     }
+
+    public GroupEntity() { }
 
     public String getName() {
         return name;

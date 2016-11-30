@@ -16,7 +16,7 @@ import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.CameraType;
 import com.tribe.app.domain.entity.LabelType;
-import com.tribe.app.domain.entity.NewGroupEntity;
+import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
@@ -65,7 +65,7 @@ public class CreateGroupView extends FrameLayout {
 
     // OBSERVABLES
     private CompositeSubscription subscriptions;
-    private PublishSubject<NewGroupEntity> createNewGroup = PublishSubject.create();
+    private PublishSubject<GroupEntity> createNewGroup = PublishSubject.create();
 
     public CreateGroupView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -100,15 +100,15 @@ public class CreateGroupView extends FrameLayout {
 
     @OnClick(R.id.btnGo)
     void clickGo() {
-        createNewGroup.onNext(new NewGroupEntity(editGroupName.getText().toString(), imgUri));
+        createNewGroup.onNext(new GroupEntity(editGroupName.getText().toString(), imgUri));
     }
 
     @OnClick({ R.id.viewSuggestionBFF, R.id.viewSuggestionTeam, R.id.viewSuggestionClass, R.id.viewSuggestionRoomies,
             R.id.viewSuggestionWork, R.id.viewSuggestionFamily })
     void clickSuggestion(View v) {
         GroupSuggestionView groupSuggestionView = (GroupSuggestionView) v;
-        NewGroupEntity newGroupEntity = new NewGroupEntity(groupSuggestionView.getLabel(), FileUtils.getUriToDrawable(getContext(), groupSuggestionView.getDrawableId()).toString());
-        createNewGroup.onNext(newGroupEntity);
+        GroupEntity groupEntity = new GroupEntity(groupSuggestionView.getLabel(), FileUtils.getUriToDrawable(getContext(), groupSuggestionView.getDrawableId()).toString());
+        createNewGroup.onNext(groupEntity);
     }
 
     private void init() {
@@ -209,7 +209,7 @@ public class CreateGroupView extends FrameLayout {
     /**
      * OBSERVABLES
      */
-    public Observable<NewGroupEntity> onCreateNewGroup() {
+    public Observable<GroupEntity> onCreateNewGroup() {
         return createNewGroup;
     }
 }

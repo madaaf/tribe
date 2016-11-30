@@ -6,7 +6,6 @@ import com.tribe.app.data.network.job.UpdateFriendshipJob;
 import com.tribe.app.data.network.job.UpdateScoreJob;
 import com.tribe.app.data.network.job.UpdateTribeDownloadedJob;
 import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
-import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.domain.entity.Friendship;
@@ -113,7 +112,6 @@ public class HomeGridPresenter extends SendTribePresenter {
     public void onCreate() {
         jobManager.addJobInBackground(new UpdateTribeDownloadedJob());
         jobManager.addJobInBackground(new UpdateTribesErrorStatusJob());
-        jobManager.addJobInBackground(new UpdateUserJob());
         onResume();
     }
 

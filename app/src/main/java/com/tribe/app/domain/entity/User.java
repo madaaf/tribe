@@ -253,6 +253,17 @@ public class User implements Serializable {
         return userList;
     }
 
+    public void computeFriends(List<GroupMember> groupMemberList) {
+        for (GroupMember groupMember : groupMemberList) {
+            for (Friendship friendship : friendships) {
+                if (friendship.getFriend().equals(groupMember.getUser())) {
+                    groupMember.setFriend(true);
+                }
+            }
+        }
+
+    }
+
     @Override
     public int hashCode() {
         int result = super.hashCode();
