@@ -14,7 +14,6 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
-import com.tribe.app.data.network.Constant;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -23,7 +22,6 @@ import com.tribe.app.presentation.internal.di.scope.AudioDefault;
 import com.tribe.app.presentation.internal.di.scope.DebugMode;
 import com.tribe.app.presentation.internal.di.scope.LastSync;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
-import com.tribe.app.presentation.internal.di.scope.LocationPopup;
 import com.tribe.app.presentation.internal.di.scope.Preload;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.mvp.presenter.SettingPresenter;
@@ -124,10 +122,6 @@ public class SettingFragment extends BaseFragment implements SettingView {
     @Inject
     @LocationContext
     Preference<Boolean> locationContext;
-
-    @Inject
-    @LocationPopup
-    Preference<Boolean> locationPopup;
 
     @Inject
     @AudioDefault
@@ -234,7 +228,6 @@ public class SettingFragment extends BaseFragment implements SettingView {
                         .request(PermissionUtils.PERMISSIONS_LOCATION)
                         .subscribe(granted -> {
                             if (granted) {
-                                locationPopup.set(true);
                                 settingPresenter.updateScoreLocation();
                             } else {
                                 messageSettingContext.setCheckedSwitch(false);
@@ -422,7 +415,7 @@ public class SettingFragment extends BaseFragment implements SettingView {
                 "Only for OGs",
                 SettingItemView.SIMPLE);
 
-        txtVersion.setText(getString(R.string.settings_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE));
+        txtVersion.setText(getString(R.string.settings_version, BuildConfig.VERSION_NAME, String.valueOf(BuildConfig.VERSION_CODE)));
 
         if (debugMode.get()) layoutDebugMode.setVisibility(View.VISIBLE);
     }

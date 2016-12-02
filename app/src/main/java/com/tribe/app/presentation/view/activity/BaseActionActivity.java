@@ -18,7 +18,6 @@ import com.tribe.app.presentation.internal.di.scope.HasRatedApp;
 import com.tribe.app.presentation.internal.di.scope.HasReceivedPointsForCameraPermission;
 import com.tribe.app.presentation.internal.di.scope.LastVersionCode;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
-import com.tribe.app.presentation.internal.di.scope.LocationPopup;
 import com.tribe.app.presentation.internal.di.scope.WasAskedForCameraPermission;
 import com.tribe.app.presentation.mvp.presenter.ActionPresenter;
 import com.tribe.app.presentation.utils.PermissionUtils;
@@ -71,10 +70,6 @@ public class BaseActionActivity extends BaseActivity {
 
     @Inject
     ReactiveLocationProvider reactiveLocationProvider;
-
-    @Inject
-    @LocationPopup
-    Preference<Boolean> locationPopup;
 
     @Inject
     @LocationContext
@@ -285,7 +280,6 @@ public class BaseActionActivity extends BaseActivity {
 
         if (isGranted) {
             actionPresenter.updateScoreLocation();
-            locationPopup.set(true);
             locationContext.set(true);
             subscriptions.add(reactiveLocationProvider
                     .getLastKnownLocation().subscribe(locationProvided -> {
@@ -303,6 +297,7 @@ public class BaseActionActivity extends BaseActivity {
                         handleFinish();
                     }));
         } else {
+            locationContext.set(false);
             handleFinish();
         }
     }
