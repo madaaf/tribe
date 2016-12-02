@@ -177,4 +177,6 @@ public interface UserDataStore {
     Observable<RecipientRealmInterface> getRecipientInfos(String recipientId, boolean isToGroup);
 
     Observable<Void> updateMessagesReceivedToNotSeen();
+
+    Observable<Void> sendOnlineNotification();
 }

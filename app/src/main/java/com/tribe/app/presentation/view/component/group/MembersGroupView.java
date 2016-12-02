@@ -6,13 +6,16 @@ import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.GenericType;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.MemberListAdapter;
+import com.tribe.app.presentation.view.adapter.decorator.DividerFirstLastItemDecoration;
 import com.tribe.app.presentation.view.adapter.manager.MemberListLayoutManager;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
 
@@ -24,6 +27,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -49,10 +53,10 @@ public class MembersGroupView extends FrameLayout {
 
     // OBSERVABLES
     private CompositeSubscription subscriptions;
-    private PublishSubject<User> clickRemoveFromGroup = PublishSubject.create();
+    private PublishSubject<GroupMember> clickRemoveFromGroup = PublishSubject.create();
     private PublishSubject<User> clickAddFriend = PublishSubject.create();
-    private PublishSubject<User> clickRemoveAdmin = PublishSubject.create();
-    private PublishSubject<User> clickAddAdmin = PublishSubject.create();
+    private PublishSubject<GroupMember> clickRemoveAdmin = PublishSubject.create();
+    private PublishSubject<GroupMember> clickAddAdmin = PublishSubject.create();
 
     public MembersGroupView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -84,8 +88,11 @@ public class MembersGroupView extends FrameLayout {
         if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     }
 
-    public void updateGroup(Group group) {
+    public void updateGroup(Group group, boolean full) {
         membership.setGroup(group);
+        List<GroupMember> memberList = new ArrayList<>(membership.getGroup().getGroupMembers());
+        user.computeFriends(memberList);
+        adapter.setItems(memberList);
     }
 
     private void init() {
@@ -96,7 +103,7 @@ public class MembersGroupView extends FrameLayout {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(null);
 
-        adapter = new MemberListAdapter(getContext());
+        adapter = new MemberListAdapter(getContext(), membership != null ? membership.isAdmin() : false);
 
         List<GroupMember> memberList = new ArrayList<>(membership.getGroup().getGroupMembers());
         user.computeFriends(memberList);
@@ -104,7 +111,47 @@ public class MembersGroupView extends FrameLayout {
         recyclerView.setAdapter(adapter);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(0, 50);
         recyclerView.setHasFixedSize(true);
+        recyclerView.addItemDecoration(new DividerFirstLastItemDecoration(screenUtils.dpToPx(5), screenUtils.dpToPx(5)));
+
+        subscriptions.add(adapter.clickAdd()
+                .map(view -> adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view)).getUser())
+                .subscribe(clickAddFriend));
+
+        subscriptions.add(adapter.longClick()
+                .map(view -> adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view)))
+                .filter(groupMember -> !groupMember.getUser().equals(user))
+                .flatMap(groupMember -> DialogFactory.showBottomSheetForGroupMembers(
+                        getContext(),
+                        groupMember),
+                        (groupMember, genericType) -> {
+                            if (genericType.getTypeDef().equals(GenericType.SET_AS_ADMIN)) {
+                                clickAddAdmin.onNext(groupMember);
+                            } else if (genericType.getTypeDef().equals(GenericType.REMOVE_FROM_ADMIN)) {
+                                clickRemoveAdmin.onNext(groupMember);
+                            } else if (genericType.getTypeDef().equals(GenericType.REMOVE_FROM_GROUP)) {
+                                clickRemoveFromGroup.onNext(groupMember);
+                            }
+
+                            return groupMember.getUser();
+                        }
+                )
+                .subscribe());
     }
 
     // OBSERVABLES
+    public Observable<User> onClickAddFriend() {
+        return clickAddFriend;
+    }
+
+    public Observable<GroupMember> onClickAddAdmin() {
+        return clickAddAdmin;
+    }
+
+    public Observable<GroupMember> onClickRemoveFromGroup() {
+        return clickRemoveFromGroup;
+    }
+
+    public Observable<GroupMember> onClickRemoveAdmin() {
+        return clickRemoveAdmin;
+    }
 }

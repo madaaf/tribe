@@ -6,6 +6,7 @@ import android.support.v4.util.Pair;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.MessageRecipientRealm;
 import com.tribe.app.data.realm.TribeRealm;
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.helpers.ChangeHelper;
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
@@ -13,6 +14,7 @@ import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,13 +56,13 @@ public class TribeCacheImpl implements TribeCache {
     @Override
     public void insert(List<TribeRealm> tribeRealmList) {
         Realm realm = Realm.getDefaultInstance();
+        Set<String> setProcessedRecipient = new HashSet<>();
 
         try {
             realm.executeTransaction(realm1 -> {
                 for (TribeRealm tribeRealm : tribeRealmList) {
                     TribeRealm toEdit = realm1.where(TribeRealm.class)
                             .equalTo("id", tribeRealm.getId()).findFirst();
-
                     if (toEdit != null) {
                         toEdit = realm1.copyFromRealm(toEdit);
 
@@ -74,7 +76,22 @@ public class TribeCacheImpl implements TribeCache {
                             realm1.insertOrUpdate(toEdit);
                         }
                     } else if (toEdit == null) {
-                        realm1.insertOrUpdate(tribeRealm);
+                        try {
+                            realm1.insertOrUpdate(tribeRealm);
+                            if (tribeRealm.getFrom() != null && tribeRealm.getMembershipRealm() == null) {
+                                if (!setProcessedRecipient.contains(tribeRealm.getFrom().getId())) {
+                                    deletePreviousSentTribeForFriendship(realm1, tribeRealm.getFrom());
+                                    setProcessedRecipient.add(tribeRealm.getFrom().getId());
+                                }
+                            } else if (tribeRealm.getMembershipRealm() != null) {
+                                if (!setProcessedRecipient.contains(tribeRealm.getMembershipRealm().getId())) {
+                                    deletePreviousSentTribe(realm1, tribeRealm);
+                                    setProcessedRecipient.add(tribeRealm.getMembershipRealm().getId());
+                                }
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 }
             });
@@ -93,26 +110,46 @@ public class TribeCacheImpl implements TribeCache {
                 realm1.insertOrUpdate(tribeRealm);
             }
 
-            if (!tribeRealm.isToGroup()) {
-                RealmResults<TribeRealm> tribesSentToRecipient = realm1.where(TribeRealm.class)
-                        .equalTo("friendshipRealm.id", tribeRealm.getFriendshipRealm().getId())
-                        .equalTo("from.id", accessToken.getUserId())
-                        .notEqualTo("id", tribeRealm.getLocalId())
-                        .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
-                        .findAllSorted("recorded_at", Sort.ASCENDING);
-                if (tribesSentToRecipient != null) tribesSentToRecipient.deleteAllFromRealm();
-            } else {
-                RealmResults<TribeRealm> tribesSentToRecipient = realm1.where(TribeRealm.class)
-                        .equalTo("membershipRealm.id", tribeRealm.getMembershipRealm().getId())
-                        .equalTo("from.id", accessToken.getUserId())
-                        .notEqualTo("id", tribeRealm.getLocalId())
-                        .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
-                        .findAllSorted("recorded_at", Sort.ASCENDING);
-                if (tribesSentToRecipient != null) tribesSentToRecipient.deleteAllFromRealm();
-            }
+            deletePreviousSentTribe(realm1, tribeRealm);
         });
 
         return tribeRealm;
+    }
+
+    private void deletePreviousSentTribeForFriendship(Realm realm1, UserRealm userRealm) {
+        RealmResults<TribeRealm> tribesSentToRecipient = realm1.where(TribeRealm.class)
+                .equalTo("friendshipRealm.friend.id", userRealm.getId())
+                .equalTo("from.id", accessToken.getUserId())
+                .beginGroup()
+                .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
+                .or()
+                .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED)
+                .or()
+                .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_OPENED_PARTLY)
+                .endGroup()
+                .findAllSorted("recorded_at", Sort.ASCENDING);
+
+        if (tribesSentToRecipient != null) tribesSentToRecipient.deleteAllFromRealm();
+    }
+
+    private void deletePreviousSentTribe(Realm realm1, TribeRealm tribeRealm) {
+        if (!tribeRealm.isToGroup()) {
+            RealmResults<TribeRealm> tribesSentToRecipient = realm1.where(TribeRealm.class)
+                    .equalTo("friendshipRealm.id", tribeRealm.getFriendshipRealm().getId())
+                    .equalTo("from.id", accessToken.getUserId())
+                    .notEqualTo("id", tribeRealm.getLocalId())
+                    .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
+                    .findAllSorted("recorded_at", Sort.ASCENDING);
+            if (tribesSentToRecipient != null) tribesSentToRecipient.deleteAllFromRealm();
+        } else {
+            RealmResults<TribeRealm> tribesSentToRecipient = realm1.where(TribeRealm.class)
+                    .equalTo("membershipRealm.id", tribeRealm.getMembershipRealm().getId())
+                    .equalTo("from.id", accessToken.getUserId())
+                    .notEqualTo("id", tribeRealm.getLocalId())
+                    .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_SENT)
+                    .findAllSorted("recorded_at", Sort.ASCENDING);
+            if (tribesSentToRecipient != null) tribesSentToRecipient.deleteAllFromRealm();
+        }
     }
 
     @Override

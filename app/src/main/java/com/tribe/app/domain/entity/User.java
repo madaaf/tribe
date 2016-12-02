@@ -243,6 +243,8 @@ public class User implements Serializable {
     public List<GroupMember> getUserList() {
         List<GroupMember> userList = new ArrayList<>();
 
+        Collections.sort(friendships, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
+
         for (Friendship friendship : friendships) {
             if (!friendship.getSubId().equals(Constants.SUPPORT_ID)
                     && !friendship.getSubId().equals(Recipient.ID_EMPTY)) {

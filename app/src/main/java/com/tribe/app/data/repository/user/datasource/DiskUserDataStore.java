@@ -284,4 +284,9 @@ public class DiskUserDataStore implements UserDataStore {
 
         return Observable.just(null);
     }
+
+    @Override
+    public Observable<Void> sendOnlineNotification() {
+        return null;
+    }
 }

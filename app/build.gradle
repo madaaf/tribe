@@ -192,6 +192,7 @@ dependencies {
     compile presentationDependencies.firebaseInvites
     compile presentationDependencies.appBoy
     compile presentationDependencies.recyclerViewAnimators
+    compile presentationDependencies.firebaseRemote
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker

@@ -24,6 +24,8 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 11/29/16.
@@ -33,13 +35,16 @@ public class MemberListAdapterDelegate extends AddAnimationAdapterDelegate<List<
     @Inject
     User user;
 
-    // RX SUBSCRIPTIONS / SUBJECTS
-
     // VARIABLES
     private int avatarSize;
+    private boolean currentUserAdmin = false;
 
-    public MemberListAdapterDelegate(Context context) {
+    // RX SUBSCRIPTIONS / SUBJECTS
+    private PublishSubject<View> longClick = PublishSubject.create();
+
+    public MemberListAdapterDelegate(Context context, boolean currentUserAdmin) {
         super(context);
+        this.currentUserAdmin = currentUserAdmin;
         this.avatarSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
         ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
     }
@@ -52,7 +57,14 @@ public class MemberListAdapterDelegate extends AddAnimationAdapterDelegate<List<
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
-        RecyclerView.ViewHolder vh = new GroupMemberViewHolder(layoutInflater.inflate(R.layout.item_search, parent, false));
+        RecyclerView.ViewHolder vh = new GroupMemberViewHolder(layoutInflater.inflate(R.layout.item_member_list, parent, false));
+
+        if (currentUserAdmin) {
+            vh.itemView.setOnLongClickListener(v -> {
+                longClick.onNext(v);
+                return true;
+            });
+        }
 
         return vh;
     }
@@ -66,6 +78,9 @@ public class MemberListAdapterDelegate extends AddAnimationAdapterDelegate<List<
             animations.get(holder).cancel();
         }
 
+        vh.btnAdd.setVisibility(View.VISIBLE);
+        vh.imgGhost.setVisibility(View.GONE);
+
         if (groupMember.isAnimateAdd()) {
             animateAddSuccessful(vh);
         } else if (groupMember.isFriend()) {
@@ -73,10 +88,27 @@ public class MemberListAdapterDelegate extends AddAnimationAdapterDelegate<List<
             vh.imgPicto.setImageResource(R.drawable.picto_done_white);
             vh.btnAddBG.setVisibility(View.VISIBLE);
             vh.progressBarAdd.setVisibility(View.GONE);
+        } else if (groupMember.getUser().isInvisibleMode()) {
+            vh.btnAdd.setVisibility(View.GONE);
+            vh.imgGhost.setVisibility(View.VISIBLE);
         }
 
         vh.txtName.setText(groupMember.getUser().getDisplayName());
-        vh.txtUsername.setText("@" + groupMember.getUser().getUsername());
+
+        if (!StringUtils.isEmpty(groupMember.getUser().getUsername()))
+            vh.txtUsername.setText("@" + groupMember.getUser().getUsername());
+        else
+            vh.txtUsername.setText("");
+
+        if (groupMember.isAdmin()) {
+            vh.imgMemberBadge.setVisibility(View.VISIBLE);
+            vh.imgMemberBadge.setImageResource(R.drawable.picto_badge_admin);
+        } else if (currentUserAdmin) {
+            vh.imgMemberBadge.setVisibility(View.VISIBLE);
+            vh.imgMemberBadge.setImageResource(R.drawable.picto_badge_more);
+        } else {
+            vh.imgMemberBadge.setVisibility(View.GONE);
+        }
 
         if (!StringUtils.isEmpty(groupMember.getUser().getProfilePicture())) {
             Glide.with(context).load(groupMember.getUser().getProfilePicture())
@@ -87,19 +119,29 @@ public class MemberListAdapterDelegate extends AddAnimationAdapterDelegate<List<
                     .into(vh.imgAvatar);
         }
 
-        if (!user.equals(groupMember.getUser()) && !groupMember.isFriend()) setClicks(vh, null);
+        if (!user.equals(groupMember.getUser()) && !groupMember.isFriend() && !groupMember.getUser().isInvisibleMode()) setClicks(vh, null);
+    }
+
+    public Observable<View> onLongClick() {
+        return longClick;
     }
 
     static class GroupMemberViewHolder extends AddAnimationViewHolder {
 
         @BindView(R.id.imgAvatar)
-        public ImageView imgAvatar;
+        ImageView imgAvatar;
 
         @BindView(R.id.txtName)
-        public TextViewFont txtName;
+        TextViewFont txtName;
 
         @BindView(R.id.txtUsername)
-        public TextViewFont txtUsername;
+        TextViewFont txtUsername;
+
+        @BindView(R.id.imgGhost)
+        ImageView imgGhost;
+
+        @BindView(R.id.imgMemberBadge)
+        ImageView imgMemberBadge;
 
         public GroupMemberViewHolder(View itemView) {
             super(itemView);

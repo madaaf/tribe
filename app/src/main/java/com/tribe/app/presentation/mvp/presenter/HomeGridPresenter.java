@@ -29,6 +29,7 @@ import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.GetHeadDeepLink;
 import com.tribe.app.domain.interactor.user.LeaveGroup;
 import com.tribe.app.domain.interactor.user.RemoveGroup;
+import com.tribe.app.domain.interactor.user.SendOnlineNotification;
 import com.tribe.app.domain.interactor.user.SendToken;
 import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.mvp.view.SendTribeView;
@@ -61,6 +62,7 @@ public class HomeGridPresenter extends SendTribePresenter {
     private CreateMembership createMembership;
     private UseCase cloudUserInfos;
     private UseCase cloudGetMessages;
+    private SendOnlineNotification sendOnlineNotification;
 
     // SUBSCRIBERS
     private UpdateTribesReceivedToNotSeenSubscriber updateTribesReceivedToNotSeenSubscriber;
@@ -90,7 +92,8 @@ public class HomeGridPresenter extends SendTribePresenter {
                              GetHeadDeepLink getHeadDeepLink,
                              CreateMembership createMembership,
                              @Named("cloudUserInfos") UseCase cloudUserInfos,
-                             @Named("cloudGetMessages") UseCase cloudGetMessages) {
+                             @Named("cloudGetMessages") UseCase cloudGetMessages,
+                             SendOnlineNotification sendOnlineNotification) {
         super(jobManager, jobManagerDownload, diskSaveTribe, diskDeleteTribe, confirmTribe);
         this.diskUserInfosUsecase = diskUserInfos;
         this.diskGetMessageReceivedListUsecase = diskGetReceivedMessageList;
@@ -106,6 +109,7 @@ public class HomeGridPresenter extends SendTribePresenter {
         this.createMembership = createMembership;
         this.cloudUserInfos = cloudUserInfos;
         this.cloudGetMessages = cloudGetMessages;
+        this.sendOnlineNotification = sendOnlineNotification;
     }
 
     @Override
@@ -148,6 +152,7 @@ public class HomeGridPresenter extends SendTribePresenter {
         createMembership.unsubscribe();
         cloudGetMessages.unsubscribe();
         cloudUserInfos.unsubscribe();
+        sendOnlineNotification.unsubscribe();
     }
 
     @Override
@@ -266,6 +271,10 @@ public class HomeGridPresenter extends SendTribePresenter {
     public void sendToken(String token) {
         sendTokenUseCase.setToken(token);
         sendTokenUseCase.execute(new SendTokenSubscriber());
+    }
+
+    public void sendOnlineNotification() {
+        sendOnlineNotification.execute(new DefaultSubscriber());
     }
 
     @Override

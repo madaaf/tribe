@@ -28,7 +28,10 @@ import com.facebook.rebound.SpringUtil;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.tbruyelle.rxpermissions.RxPermissions;
+import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.network.DownloadTribeService;
 import com.tribe.app.data.realm.FriendshipRealm;
@@ -45,6 +48,7 @@ import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.internal.di.scope.HasRatedApp;
 import com.tribe.app.presentation.internal.di.scope.HasReceivedPointsForCameraPermission;
+import com.tribe.app.presentation.internal.di.scope.LastOnlineNotification;
 import com.tribe.app.presentation.internal.di.scope.TribeSentCount;
 import com.tribe.app.presentation.internal.di.scope.WasAskedForCameraPermission;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
@@ -130,6 +134,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     Preference<Boolean> hasRatedApp;
 
     @Inject
+    @LastOnlineNotification
+    Preference<Long> lastOnlineNotification;
+
+    @Inject
     SoundManager soundManager;
 
     @BindView(R.id.recyclerViewFriends)
@@ -181,6 +189,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private boolean canEndRefresh = false;
     private List<Recipient> latestRecipientList;
     private boolean shouldOverridePendingTransactions = false;
+    private FirebaseRemoteConfig firebaseRemoteConfig;
 
     // SPRINGS
     private SpringSystem springSystem = null;
@@ -208,6 +217,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         initFilterView();
         initRecyclerView();
         initPullToRefresh();
+        initRemoteConfig();
         manageDeepLink(getIntent());
 
         subscriptions.add(
@@ -579,6 +589,22 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         );
     }
 
+    private void initRemoteConfig() {
+        firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                .setDeveloperModeEnabled(BuildConfig.DEBUG).build();
+        firebaseRemoteConfig.setConfigSettings(configSettings);
+        firebaseRemoteConfig.setDefaults(R.xml.firebase_default_config);
+
+        firebaseRemoteConfig.fetch().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                firebaseRemoteConfig.activateFetched();
+            }
+        });
+
+        sendOnlineNotification();
+    }
+
     @Override
     public void onDeepLink(String url) {
         if (!StringUtils.isEmpty(url)) {
@@ -784,13 +810,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         if (recipient instanceof Friendship) {
             moreTypes.add(new MoreType(getString(R.string.grid_menu_friendship_hide, recipient.getDisplayName()), MoreType.HIDE));
             moreTypes.add(new MoreType(getString(R.string.grid_menu_friendship_block, recipient.getDisplayName()), MoreType.BLOCK_HIDE));
-        }
-
-        if (recipient instanceof Membership) {
-            Membership membership = (Membership) recipient;
+        } else if (recipient instanceof Membership) {
             moreTypes.add(new MoreType(getString(R.string.grid_menu_group_infos), MoreType.GROUP_INFO));
-            if (membership.isAdmin())moreTypes.add(new MoreType(getString(R.string.grid_menu_group_delete), MoreType.GROUP_DELETE));
-            else  moreTypes.add(new MoreType(getString(R.string.grid_menu_group_leave), MoreType.GROUP_LEAVE));
         }
 
         prepareBottomSheetMore(recipient, moreTypes);
@@ -827,8 +848,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                         navigator.navigateToGroupDetails(this, membership);
                     } else if (moreType.getMoreType().equals(MoreType.GROUP_LEAVE)) {
                         homeGridPresenter.leaveGroup(recipient.getId());
-                    } else if (moreType.getMoreType().equals(MoreType.GROUP_DELETE)) {
-                        homeGridPresenter.removeGroup(recipient.getSubId());
                     }
 
                     dismissDialogSheetMore();
@@ -1047,5 +1066,15 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private void scale(float value) {
         recyclerViewFriends.setScaleX(value);
         recyclerViewFriends.setScaleY(value);
+    }
+
+    private void sendOnlineNotification() {
+        boolean canSendOnlineNotification = !firebaseRemoteConfig.getBoolean(Constants.FIREBASE_DISABLE_ONLINE_NOTIFICATIONS);
+        int onlineNotificationIntervalMs = Integer.valueOf(firebaseRemoteConfig.getString(Constants.FIREBASE_DELAY_ONLINE_NOTIFICATIONS)) * 60 * 1000;
+
+        if (canSendOnlineNotification && (System.currentTimeMillis() - lastOnlineNotification.get()) > onlineNotificationIntervalMs) {
+            homeGridPresenter.sendOnlineNotification();
+            lastOnlineNotification.set(System.currentTimeMillis());
+        }
     }
 }

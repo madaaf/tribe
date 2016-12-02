@@ -15,6 +15,7 @@ import com.tribe.app.presentation.internal.di.scope.HasReceivedPointsForCameraPe
 import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
 import com.tribe.app.presentation.internal.di.scope.LastNotifyRequest;
+import com.tribe.app.presentation.internal.di.scope.LastOnlineNotification;
 import com.tribe.app.presentation.internal.di.scope.LastSync;
 import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
 import com.tribe.app.presentation.internal.di.scope.LastVersionCode;
@@ -228,5 +229,12 @@ public class DataModule {
     @DebugMode
     Preference<Boolean> provideDebugMode(RxSharedPreferences prefs) {
         return prefs.getBoolean(PreferencesConstants.DEBUG_MODE, false);
+    }
+
+    @Provides
+    @Singleton
+    @LastOnlineNotification
+    Preference<Long> provideLastOnlineNotification(RxSharedPreferences prefs) {
+        return prefs.getLong(PreferencesConstants.LAST_ONLINE_NOTIFICATION, 0L);
     }
 }

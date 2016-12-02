@@ -9,8 +9,8 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
+import com.tribe.app.data.realm.GroupMemberRealm;
 import com.tribe.app.data.realm.GroupRealm;
-import com.tribe.app.data.realm.UserRealm;
 
 import java.lang.reflect.Type;
 
@@ -50,12 +50,12 @@ public class GroupDeserializer implements JsonDeserializer<GroupRealm> {
         JsonArray admins = group.getAsJsonArray("admins");
 
         if (members != null && members.size() > 0) {
-            RealmList<UserRealm> users = new GsonBuilder().create().fromJson(members, new TypeToken<RealmList<UserRealm>>() {}.getType());
-            groupRealm.setMembers(users);
+            RealmList<GroupMemberRealm> memberRealmList = new GsonBuilder().create().fromJson(members, new TypeToken<RealmList<GroupMemberRealm>>() {}.getType());
+            groupRealm.setMembers(memberRealmList);
         }
 
         if (admins != null && admins.size() > 0) {
-            RealmList<UserRealm> adminsList = new GsonBuilder().create().fromJson(admins, new TypeToken<RealmList<UserRealm>>() {}.getType());
+            RealmList<GroupMemberRealm> adminsList = new GsonBuilder().create().fromJson(admins, new TypeToken<RealmList<GroupMemberRealm>>() {}.getType());
             groupRealm.setAdmins(adminsList);
         }
 

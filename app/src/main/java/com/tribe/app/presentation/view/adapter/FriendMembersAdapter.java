@@ -63,7 +63,7 @@ public class FriendMembersAdapter extends RecyclerView.Adapter {
 
     @Override
     public long getItemId(int position) {
-        Object obj = getItemAtPosition(position);
+        GroupMember obj = getItemAtPosition(position);
         return obj.hashCode();
     }
 

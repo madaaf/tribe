@@ -1,9 +1,7 @@
 package com.tribe.app.data.realm.mapper;
 
-import com.tribe.app.data.realm.GroupMemberRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.domain.entity.Group;
-import com.tribe.app.domain.entity.GroupMemberId;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,10 +20,12 @@ import io.realm.RealmList;
 public class GroupRealmDataMapper {
 
     UserRealmDataMapper userRealmDataMapper;
+    GroupMemberRealmDataMapper groupMemberRealmDataMapper;
 
     @Inject
-    public GroupRealmDataMapper(UserRealmDataMapper userRealmDataMapper) {
+    public GroupRealmDataMapper(UserRealmDataMapper userRealmDataMapper, GroupMemberRealmDataMapper groupRealmDataMapper) {
         this.userRealmDataMapper = userRealmDataMapper;
+        this.groupMemberRealmDataMapper = groupRealmDataMapper;
     }
 
     /**
@@ -41,10 +41,8 @@ public class GroupRealmDataMapper {
             group.setName(groupRealm.getName());
             group.setPicture(groupRealm.getPicture());
             group.setGroupLink(groupRealm.getLink());
-            group.setMembers(userRealmDataMapper.transform(groupRealm.getMembers(), false));
-            group.setAdmins(userRealmDataMapper.transform(groupRealm.getAdmins(), false));
-            group.setMemberIdList(transformGroupMemberIdList(groupRealm.getAdminIdList()));
-            group.setAdminIdList(transformGroupMemberIdList(groupRealm.getMemberIdList()));
+            group.setMembers(groupMemberRealmDataMapper.transform(groupRealm.getMembers()));
+            group.setAdmins(groupMemberRealmDataMapper.transform(groupRealm.getAdmins()));
         }
 
         return group;
@@ -83,10 +81,8 @@ public class GroupRealmDataMapper {
             groupRealm.setId(group.getId());
             groupRealm.setPicture(group.getPicture());
             groupRealm.setName(group.getName());
-            groupRealm.setMembers(userRealmDataMapper.transformList(group.getMembers()));
-            groupRealm.setAdmins(userRealmDataMapper.transformList(group.getAdmins()));
-            groupRealm.setMemberIdList(transformGroupMemberRealmList(group.getAdminIdList()));
-            groupRealm.setAdminIdList(transformGroupMemberRealmList(group.getMemberIdList()));
+            groupRealm.setMembers(groupMemberRealmDataMapper.transformList(group.getMembers()));
+            groupRealm.setAdmins(groupMemberRealmDataMapper.transformList(group.getAdmins()));
         }
 
         return groupRealm;
@@ -111,53 +107,5 @@ public class GroupRealmDataMapper {
         }
 
         return groupRealmList;
-    }
-
-    public GroupMemberId transform(GroupMemberRealm groupMemberRealm) {
-        GroupMemberId groupMemberId = null;
-
-        if (groupMemberRealm != null) {
-            groupMemberId = new GroupMemberId(groupMemberRealm.getId(), groupMemberRealm.getGroupId());
-        }
-
-        return groupMemberId;
-    }
-
-    public GroupMemberRealm transform(GroupMemberId groupMemberId) {
-        GroupMemberRealm groupMemberRealm = null;
-
-        if (groupMemberId != null) {
-            groupMemberRealm = new GroupMemberRealm(groupMemberId.getId(), groupMemberId.getGroupId());
-        }
-
-        return groupMemberRealm;
-    }
-
-    public RealmList<GroupMemberRealm> transformGroupMemberRealmList(Collection<GroupMemberId> groupMemberIdList) {
-        RealmList<GroupMemberRealm> groupMemberRealmList = new RealmList<>();
-        GroupMemberRealm groupMemberRealm;
-
-        for (GroupMemberId groupMemberId : groupMemberIdList) {
-            groupMemberRealm = transform(groupMemberId);
-            if (groupMemberRealm != null) {
-                groupMemberRealmList.add(groupMemberRealm);
-            }
-        }
-
-        return groupMemberRealmList;
-    }
-
-    public List<GroupMemberId> transformGroupMemberIdList(Collection<GroupMemberRealm> groupMemberRealmList) {
-        List<GroupMemberId> groupMemberIdList = new ArrayList<>();
-        GroupMemberId groupMemberId;
-
-        for (GroupMemberRealm groupMemberRealm : groupMemberRealmList) {
-            groupMemberId = transform(groupMemberRealm);
-            if (groupMemberId != null) {
-                groupMemberIdList.add(groupMemberId);
-            }
-        }
-
-        return groupMemberIdList;
     }
 }

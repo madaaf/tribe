@@ -96,7 +96,6 @@ public class TileView extends SquareFrameLayout {
     @Nullable @BindView(R.id.txtName) public TextViewFont txtName;
     @Nullable @BindView(R.id.btnText) public ImageView btnText;
     @Nullable @BindView(R.id.viewNewText) public View viewNewText;
-    @Nullable @BindView(R.id.btnMore) public ImageView btnMore;
     @Nullable @BindView(R.id.txtStatus) public TextViewFont txtStatus;
     @Nullable @BindView(R.id.txtStatusError) public TextViewFont txtStatusError;
     @Nullable @BindView(R.id.txtSending) public TextViewAnimatedDots txtSending;
@@ -240,7 +239,7 @@ public class TileView extends SquareFrameLayout {
     }
 
     private void prepareTouchesMore() {
-        btnMore.setOnClickListener(v -> clickMoreView.onNext(this));
+        txtName.setOnClickListener(v -> clickMoreView.onNext(this));
     }
 
     private void prepareTouchesErrorTribe() {
@@ -348,7 +347,6 @@ public class TileView extends SquareFrameLayout {
 
                     if (type == TYPE_GRID) {
                         btnText.setAlpha(alpha);
-                        btnMore.setAlpha(alpha);
                         layoutNbTribes.setAlpha(alpha);
                         viewNewText.setAlpha(alpha);
                     }
@@ -609,11 +607,7 @@ public class TileView extends SquareFrameLayout {
                 firstLoaded = true;
             }
 
-            if (firstLoaded) {
-                label = (type == TYPE_SUPPORT ? R.string.grid_support_status_new_messages : R.string.grid_friendship_status_new_messages);
-                drawableRes = R.drawable.picto_tap_to_view;
-                textAppearence = R.style.Caption_Black_40;
-            } else if (!firstLoaded && tribeMessage.isDownloadPending()) {
+            if (!firstLoaded && tribeMessage.isDownloadPending()) {
                 isLoading = true;
                 label = (type == TYPE_SUPPORT ? R.string.grid_support_status_loading : R.string.grid_friendship_status_loading);
                 drawableRes = R.drawable.picto_loading;
@@ -625,9 +619,8 @@ public class TileView extends SquareFrameLayout {
             txtStatus.setVisibility(View.GONE);
             txtStatusError.setVisibility(View.VISIBLE);
             txtStatusError.setText("" + errorTribes.size());
-        } else {
+        } else if (isLoading || isFinalStatus) {
             txtStatusError.setVisibility(View.GONE);
-            txtStatus.setVisibility(View.VISIBLE);
 
             TextViewUtils.setTextAppearence(getContext(), txtStatus, textAppearence);
 
@@ -635,14 +628,23 @@ public class TileView extends SquareFrameLayout {
             txtStatus.setCompoundDrawablesWithIntrinsicBounds(getContext().getResources().getDrawable(drawableRes), null, null, null);
 
             if (isLoading) {
+                txtStatus.setVisibility(View.GONE);
+
                 if (circularProgressView.getVisibility() == View.GONE) {
                     txtNbTribes.setVisibility(View.GONE);
                     circularProgressView.setVisibility(View.VISIBLE);
                 }
-            } else if (circularProgressView.getVisibility() == View.VISIBLE) {
-                txtNbTribes.setVisibility(View.VISIBLE);
-                circularProgressView.setVisibility(View.GONE);
+            } else {
+                txtStatus.setVisibility(View.VISIBLE);
+
+                if (circularProgressView.getVisibility() == View.VISIBLE) {
+                    txtNbTribes.setVisibility(View.VISIBLE);
+                    circularProgressView.setVisibility(View.GONE);
+                }
             }
+        } else {
+            txtStatusError.setVisibility(View.GONE);
+            txtStatus.setVisibility(View.GONE);
         }
 
         if (viewNewText != null) viewNewText.setVisibility(receivedMessages != null && receivedMessages.size() > 0 ? View.VISIBLE : View.GONE);

@@ -17,4 +17,13 @@
         android:background="@drawable/shape_oval_grey_lighter"
         android:scaleType="centerCrop"
         />
+
+    <View
+        android:id="@+id/viewRing"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_gravity="center_vertical|right"
+        android:background="@drawable/shape_oval_purple_ring"
+        android:visibility="gone"
+        />
 </FrameLayout>

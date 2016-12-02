@@ -199,4 +199,8 @@ public interface TribeApi {
 
     @HEAD
     Observable<Response<Void>> getHeadDeepLink(@Url String url);
+
+    @FormUrlEncoded
+    @POST("/graphql")
+    Observable<Void> sendOnlineNotification(@Field("query") String query);
 }

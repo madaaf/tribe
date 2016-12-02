@@ -24,7 +24,7 @@
         android:layout_marginRight="@dimen/horizontal_margin_small"
         android:drawableLeft="@drawable/picto_to_send"
         android:drawablePadding="8dp"
-        android:text="@string/grid_friendship_status_default"
+        android:visibility="gone"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont

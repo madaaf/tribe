@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.decorator;
+package com.tribe.app.presentation.view.adapter.decorator;
 
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;

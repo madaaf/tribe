@@ -21,12 +21,15 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.utils.ImageUtils;
 
 import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by tiago on 17/02/2016.
@@ -118,6 +121,7 @@ public class AvatarView extends RoundedCornerLayout {
                 load(recipient.getProfilePicture());
         } else if (recipient instanceof Membership) {
             Membership membership = (Membership) recipient;
+
             if (StringUtils.isEmpty(recipient.getProfilePicture())) {
                 File groupAvatarFile = FileUtils.getAvatarForGroupId(getContext(), recipient.getSubId(), FileUtils.PHOTO);
 
@@ -131,12 +135,12 @@ public class AvatarView extends RoundedCornerLayout {
                             .crossFade()
                             .into(imgAvatar);
                 } else if (!groupAvatarFile.exists()) {
-//                    if (!groupAvatarFile.exists() && membership.getMembersPic() != null && membership.getMembersPic().size() > 0) {
-//                        createImageSubscription = ImageUtils.createGroupAvatar(getContext(), membership.getSubId(), membership.getMembersPic(), avatarSize)
-//                                .observeOn(AndroidSchedulers.mainThread())
-//                                .subscribeOn(Schedulers.io())
-//                                .subscribe(bitmap -> imgAvatar.setImageBitmap(bitmap));
-//                    }
+                    if (!groupAvatarFile.exists() && membership.getMembersPic() != null && membership.getMembersPic().size() > 0) {
+                        createImageSubscription = ImageUtils.createGroupAvatar(getContext(), membership.getSubId(), membership.getMembersPic(), avatarSize)
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribeOn(Schedulers.io())
+                                .subscribe(bitmap -> imgAvatar.setImageBitmap(bitmap));
+                    }
 
                     loadPlaceholder();
                 }

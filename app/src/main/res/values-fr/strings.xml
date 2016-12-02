@@ -86,7 +86,7 @@
 	<string name="permission_popup_location_home_points">Autoriser la location</string>
 	<string name="permission_popup_location_home_no">Ne pas activer</string>
 	<string name="permission_popup_location_home_yes">Activer !</string>
-	<string name="permission_screen_push_title">Notifications push</string>
+	<string name="permission_screen_push_title">Activer les Notifications</string>
 	<string name="permission_screen_push_points">Activer les notifications</string>
 	<string name="permission_screen_push_description">Ne manquez pas les\nmessages de vos amis !</string>
 	<string name="permission_screen_push_action">Activer!</string>
@@ -94,7 +94,7 @@
 	<string name="permission_screen_push_next_popup_description">Si vous n\'activez pas les notifications, vous manquerez les messages de vos amis.</string>
 	<string name="permission_screen_push_next_popup_cancel">Rester seul</string>
 	<string name="permission_screen_push_next_popup_authorize">Activer !</string>
-	<string name="permission_screen_camera_mic_title">Camera &amp; Micro</string>
+	<string name="permission_screen_camera_mic_title">Activer la Caméra</string>
 	<string name="permission_screen_camera_mic_points">Activer la caméra et le micro</string>
 	<string name="permission_screen_camera_mic_description">Offrez-vous la possibilité\nd\'envoyer des messages</string>
 	<string name="permission_screen_camera_mic_action">Activer !</string>
@@ -106,7 +106,7 @@
 	<string name="permission_screen_camera_mic_next_popup_description">Si vous n\'activez pas la caméra et le micro, vous ne pourrez pas envoyer de messages.</string>
 	<string name="permission_screen_camera_mic_next_popup_cancel">Rester bloqué</string>
 	<string name="permission_screen_camera_mic_next_popup_authorize">Activer !</string>
-	<string name="permission_screen_location_title">Géolocalisation</string>
+	<string name="permission_screen_location_title">Activer les Lieux</string>
 	<string name="permission_screen_location_points">Activer Position</string>
 	<string name="permission_screen_location_description">Météo, itinéraires, et\ndistances sur chaque message.</string>
 	<string name="permission_screen_location_action">Wow, activer !</string>
@@ -129,10 +129,10 @@
 	<string name="permission_global_popup_message">Occupons-nous des permissions pour que vous ne manquiez rien de l\'expérience de messagerie vidéo la plus incroyable.</string>
 	<string name="permission_global_popup_cancel">Rester nul</string>
 	<string name="permission_global_popup_confirm">C\'est parti !</string>
-	<string name="permission_facebook_popup_title">Facebook</string>
-	<string name="permission_facebook_popup_message">Retrouve tes amis Facebook!</string>
-	<string name="permission_facebook_popup_ok">Bien sûr!</string>
-	<string name="permission_facebook_popup_ko">Plus tard</string>
+	<string name="permission_facebook_popup_title">Amis facebook</string>
+	<string name="permission_facebook_popup_message">Vos amis Facebook seront synchronisé avec Tribe pour que vous puissiez retrouver facilement les personnes que vous connaissez déjà.</string>
+	<string name="permission_facebook_popup_ok">Parfait !</string>
+	<string name="permission_facebook_popup_ko">Pas d\'amis</string>
 	
 	<!-- Rating -->
 	<string name="rating_title">Envoyez-nous 5 étoiles\nen 1 minute !</string>
@@ -426,7 +426,7 @@
 	<string name="onboarding_user_facebook_button_subtitle">Recommandé, c\'est plus simple et rapide !</string>
 	<string name="onboarding_queue_title">Retrouver vos amis</string>
 	<string name="onboarding_queue_description">Découvrez vos amis\ndéjà connectés !</string>
-	<string name="onboarding_queue_disclaimer">Nous envoyons vos contacts au serveur pour vous connecter\nà vos amis. Voir nos Conditions pour plus d\'informations.</string>
+	<string name="onboarding_queue_disclaimer">We send your contacts to the server to connect you\nwith friends. Check out our Terms &amp; Privacy for details.</string>
 	<string name="onboarding_queue_button_title">Vérifier mes amis</string>
 	<string name="onboarding_queue_loading_title">Retrouver vos amis</string>
 	<string name="onboarding_queue_loading_description">Connexion avec vos amis...</string>
@@ -460,7 +460,7 @@
 	<string name="onboarding_friends_to_invite_popup_message">Commencez avec vos amis, équipes, camarades, collocataires, collègues et relations longue distance.</string>
 	<string name="onboarding_friends_to_invite_popup_cancel">Jamais</string>
 	<string name="onboarding_friends_to_invite_popup_confirm">Génial !</string>
-	<string name="onboarding_friends_to_invite_disclaimer">En continuant, je certifie avoir l\'autorisation\nd\'inviter mes contacts. Voir nos Conditions</string>
+	<string name="onboarding_friends_to_invite_disclaimer">By continuing, I agree that I have permission to\ninvite my contacts. See Terms &amp; Privacy Policy</string>
 	
 	<!-- Legal -->
 	<string name="legal_terms">Conditions d\'Utilisation</string>
@@ -483,6 +483,12 @@
 	<!-- Top Bar -->
 	<string name="topbar_create_group">Groupe</string>
 	<string name="topbar_invite_friend">Invites</string>
+	<string name="topbar_new_friend">Ami</string>
+	<string name="topbar_invite_friend_toast">Quels amis souhaitez-vous inviter à discuter aujourd\'hui ? &#127881;</string>
+	<string name="topbar_invite_search_action">Trouver un ami déjà présent sur Tribe</string>
+	<string name="topbar_invite_sms_action_ios">Inviter un ami avec iMessage</string>
+	<string name="topbar_invite_sms_action_android">Inviter un ami avec Hangouts</string>
+	<string name="topbar_invite_messenger_action">Inviter un ami avec Messenger</string>
 	
 	<!-- Ear Mode -->
 	<string name="earmode_title">Mode oreille.</string>
@@ -550,7 +556,8 @@
 	<string name="share_add_friends_addressbook_suggestions">I was able to get access to Tribe. Just noticed that you already have %1$d friends on this app. I can get you in: %2$s #JoinTheTribe</string>
 	<string name="share_group_public_link">Here is your invite to join the %1$s group on Tribe. %2$s #JoinTheTribe</string>
 	<string name="share_group_private_link">Here is your invite to join the %1$s group on Tribe. Join quickly because this invite will expire in %2$s ! %3$s #JoinTheTribe</string>
-	<string name="share_add_friends_handle">Voici une invitation pour me rejoindre sur Tribe. %1$s :clap:</string>
+	<string name="share_add_friends_handle">Regarde ça :point_right: http://get.tribe.pm/invitation une nouvelle app cool !</string>
+	<string name="share_messenger_url">http://get.tribe.pm/invitation</string>
 	<string name="share_score">I have %1$s points on Tribe %2$s. Try to beat me on http://tribe.pm #JoinTheTribe</string>
 	<string name="share_onboarding">I just discovered Tribe, but I can’t enter alone. Come now so we can get access together. Waiting for you. Go on %1$s #JoinTheTribe</string>
 	<string name="share_copied_redirecting">:paperclip: Ajouté au presse-papier. Préparez-vous à coller.</string>
@@ -672,12 +679,12 @@
 	<string name="search_usernames">Résultat</string>
 	<string name="search_searching">Recherche en cours</string>
 	<string name="search_add_friends">Ils sont déjà connectés sur Tribe</string>
-	<string name="search_invite_friends">Sélectionnez vos amis les plus proches</string>
-	<string name="search_no_friends_to_add">Aucun ami déjà sur Tribe</string>
-	<string name="search_no_friends_to_invite">Aucun ami à inviter sur Tribe</string>
-	<string name="search_add_facebook_title">Load friends from facebook</string>
+	<string name="search_invite_friends">Ils sont en train de manquer leurs amis</string>
+	<string name="search_no_friends_to_add">Aucun ami actuellement connectés</string>
+	<string name="search_no_friends_to_invite">Aucun ami actuellement connectés</string>
+	<string name="search_add_facebook_title">Afficher vos amis Facebook</string>
 	<string name="search_add_facebook_subtitle">Don’t miss people you talk to often.</string>
-	<string name="search_add_addressbook_title">Load friends from address book</string>
+	<string name="search_add_addressbook_title">Afficher votre carnet d\'adresses</string>
 	<string name="search_add_addressbook_subtitle">Don’t miss people you talk to often.</string>
 	
 	<!-- Spring Cleaning -->

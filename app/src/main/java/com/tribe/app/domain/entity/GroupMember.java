@@ -35,6 +35,18 @@ public class GroupMember implements Serializable {
         return result;
     }
 
+    public static int nullSafeComparator(final GroupMember one, final GroupMember two) {
+        if (one.getUser().getCreatedAt() == null ^ two.getUser().getCreatedAt() == null) {
+            return (one.getUser().getCreatedAt() == null) ? 1 : -1;
+        }
+
+        if (one.getUser().getUpdatedAt() == null && two.getUser().getUpdatedAt() == null) {
+            return 0;
+        }
+
+        return two.getUser().getUpdatedAt().compareTo(one.getUser().getUpdatedAt());
+    }
+
     public boolean isMember() {
         return member;
     }

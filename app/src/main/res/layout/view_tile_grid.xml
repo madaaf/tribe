@@ -9,12 +9,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/Body.Two.White"
-        android:layout_gravity="top|left"
-        android:layout_marginTop="15dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="35dp"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="@dimen/horizontal_margin_small"
+        android:layout_marginRight="@dimen/horizontal_margin_small"
+        android:background="@drawable/selectable_button_all_rounded"
+        android:clickable="true"
         android:singleLine="true"
-        android:drawablePadding="5dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:paddingLeft="7.5dp"
+        android:paddingRight="7.5dp"
+        android:drawablePadding="7.5dp"
         />
 
     <ImageView
@@ -24,7 +30,7 @@
         android:src="@drawable/picto_text"
         android:scaleType="centerInside"
         android:layout_gravity="bottom|right"
-        android:background="@drawable/selectable_button_text_mode"
+        android:background="@drawable/selectable_button_oval"
         android:clickable="true"
         />
 
@@ -39,16 +45,6 @@
         android:visibility="gone"
         />
 
-    <ImageView
-        android:id="@+id/btnMore"
-        android:layout_width="@dimen/button_size"
-        android:layout_height="@dimen/button_size"
-        android:src="@drawable/picto_more"
-        android:scaleType="centerInside"
-        android:layout_gravity="top|right"
-        android:background="@drawable/selectable_button_oval"
-        />
-
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtStatus"
         android:layout_width="wrap_content"
@@ -61,6 +57,7 @@
         android:drawableLeft="@drawable/picto_to_send"
         android:drawablePadding="8dp"
         android:text="@string/grid_friendship_status_default"
+        android:visibility="gone"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -94,7 +91,7 @@
         android:layout_width="@dimen/avatar_size_with_shadow"
         android:layout_gravity="center"
         android:background="@drawable/shadow_circle"
-        />
+    />
 
     <com.tribe.app.presentation.view.widget.AvatarView
         android:id="@+id/avatar"

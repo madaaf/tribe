@@ -106,7 +106,7 @@
 	<string name="permission_screen_camera_mic_next_popup_description">If you don\'t enable the camera and mic, you won\'t be able to send messages.</string>
 	<string name="permission_screen_camera_mic_next_popup_cancel">Stay blocked</string>
 	<string name="permission_screen_camera_mic_next_popup_authorize">Turn on!</string>
-	<string name="permission_screen_location_title">Enable Location services</string>
+	<string name="permission_screen_location_title">Enable Places</string>
 	<string name="permission_screen_location_points">Enabling Location services</string>
 	<string name="permission_screen_location_description">Get weather, Uber ETAs, and more\nlocation-based features in your messages</string>
 	<string name="permission_screen_location_action">Wow, turn on!</string>
@@ -129,10 +129,10 @@
 	<string name="permission_global_popup_message">Let’s take care of permissions so you don’t miss anything from the most incredible video messenger.</string>
 	<string name="permission_global_popup_cancel">Stay incomplete</string>
 	<string name="permission_global_popup_confirm">LET\'S GO!</string>
-	<string name="permission_facebook_popup_title">Facebook</string>
-	<string name="permission_facebook_popup_message">Find friends on Facebook !</string>
-	<string name="permission_facebook_popup_ok">Sure!</string>
-	<string name="permission_facebook_popup_ko">Later</string>
+	<string name="permission_facebook_popup_title">Facebook friends</string>
+	<string name="permission_facebook_popup_message">Your Facebook friends will be countinuously synced so you can see who you already know on Tribe.</string>
+	<string name="permission_facebook_popup_ok">Perfect!</string>
+	<string name="permission_facebook_popup_ko">No friends</string>
 	
 	<!-- Rating -->
 	<string name="rating_title">Rate us 5 starsif\nyou\'re loving Tribe!</string>
@@ -457,7 +457,7 @@
 	<string name="onboarding_friends_to_invite_title">Send invites</string>
 	<string name="onboarding_friends_to_invite_shortcut_title">Your friends are missing out!</string>
 	<string name="onboarding_friends_to_invite_popup_title">Start a revolutionary group messaging experience with your best friends!</string>
-	<string name="onboarding_friends_to_invite_popup_message">Try friends, teammates, classmates, roommates, work teams and long distance relationships.</string>
+	<string name="onboarding_friends_to_invite_popup_message">Try with friends, teammates, classmates, roommates, work teams and long distance relationships.</string>
 	<string name="onboarding_friends_to_invite_popup_cancel">Never</string>
 	<string name="onboarding_friends_to_invite_popup_confirm">Exciting!</string>
 	<string name="onboarding_friends_to_invite_disclaimer">By continuing, I agree that I have permission to\ninvite my contacts. See Terms &amp; Privacy Policy</string>
@@ -483,6 +483,12 @@
 	<!-- Top Bar -->
 	<string name="topbar_create_group">Group</string>
 	<string name="topbar_invite_friend">Invites</string>
+	<string name="topbar_new_friend">Friend</string>
+	<string name="topbar_invite_friend_toast">Which friend would you like to invite to chat today? &#127881;</string>
+	<string name="topbar_invite_search_action">Find a friend already on Tribe</string>
+	<string name="topbar_invite_sms_action_ios">Invite a friend on iMessage</string>
+	<string name="topbar_invite_sms_action_android">Invite a friend on Hangouts</string>
+	<string name="topbar_invite_messenger_action">Invite a friend on Messenger</string>
 	
 	<!-- Ear Mode -->
 	<string name="earmode_title">“Ear” mode.</string>
@@ -550,7 +556,8 @@
 	<string name="share_add_friends_addressbook_suggestions">I was able to get access to Tribe. Just noticed that you already have %1$d friends on this app. I can get you in: %2$s #JoinTheTribe</string>
 	<string name="share_group_public_link">Here is your invite to join the %1$s group on Tribe. %2$s #JoinTheTribe</string>
 	<string name="share_group_private_link">Here is your invite to join the %1$s group on Tribe. Join quickly because this invite will expire in %2$s ! %3$s #JoinTheTribe</string>
-	<string name="share_add_friends_handle">Here\'s the invitation to join my Tribe! %1$s :clap:</string>
+	<string name="share_add_friends_handle">Get on this so we can chat http://get.tribe.pm/start1 :joy:</string>
+	<string name="share_messenger_url">http://get.tribe.pm/start1</string>
 	<string name="share_score">I have %1$s points on Tribe %2$s. Try to beat me on http://tribe.pm #JoinTheTribe</string>
 	<string name="share_onboarding">I just discovered Tribe, but I can’t enter alone. Come now so we can get access together. Waiting for you. Go on %1$s #JoinTheTribe</string>
 	<string name="share_copied_redirecting">:paperclip: Copied to the clipboard. Prepare to paste.</string>
@@ -672,9 +679,9 @@
 	<string name="search_usernames">Result</string>
 	<string name="search_searching">Searching</string>
 	<string name="search_add_friends">They are already connected on Tribe</string>
-	<string name="search_invite_friends">Handpick your most wanted friends</string>
+	<string name="search_invite_friends">Your friends are missing out!</string>
 	<string name="search_no_friends_to_add">No friends connected on Tribe</string>
-	<string name="search_no_friends_to_invite">No friends to invite on Tribe</string>
+	<string name="search_no_friends_to_invite">No friends connected on Tribe</string>
 	<string name="search_add_facebook_title">Load friends from facebook</string>
 	<string name="search_add_facebook_subtitle">Don’t miss people you talk to often.</string>
 	<string name="search_add_addressbook_title">Load friends from address book</string>

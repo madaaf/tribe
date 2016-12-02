@@ -55,18 +55,18 @@ public class MembersAdapter extends RecyclerView.Adapter {
 
     @Override
     public long getItemId(int position) {
-        Object obj = getItemAtPosition(position);
-        return obj.hashCode();
+        GroupMember groupMember = getItemAtPosition(position);
+        return groupMember.hashCode();
     }
 
     public void releaseSubscriptions() {
         delegatesManager.releaseSubscriptions();
     }
 
-    public void setItems(List<GroupMember> items) {
+    public void setItems(List<GroupMember> items, boolean notify) {
         this.items.clear();
         this.items.addAll(items);
-        this.notifyDataSetChanged();
+        if (notify) this.notifyDataSetChanged();
     }
 
     public GroupMember getItemAtPosition(int position) {
@@ -99,7 +99,12 @@ public class MembersAdapter extends RecyclerView.Adapter {
 
     public void add(GroupMember groupMember) {
         items.add(groupMember);
-        notifyItemInserted(items.size() - 1);
+        int position = items.size() - 1;
+        notifyItemInserted(position);
+    }
+
+    public List<GroupMember> getItems() {
+        return items;
     }
 
     public Observable<Void> onClick() {

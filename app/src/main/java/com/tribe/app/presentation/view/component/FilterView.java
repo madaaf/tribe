@@ -14,7 +14,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.FilterViewAdapter;
 import com.tribe.app.presentation.view.adapter.manager.FilterViewLayoutManager;
-import com.tribe.app.presentation.view.decorator.GridDividerTopAllItemDecoration;
+import com.tribe.app.presentation.view.adapter.decorator.GridDividerTopAllItemDecoration;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 import java.util.ArrayList;

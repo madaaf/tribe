@@ -332,4 +332,10 @@ public class CloudUserDataRepository implements UserRepository {
     public Observable<Void> updateMessagesReceivedToNotSeen() {
         return null;
     }
+
+    @Override
+    public Observable<Void> sendOnlineNotification() {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.sendOnlineNotification();
+    }
 }

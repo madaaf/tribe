@@ -17,7 +17,7 @@ import com.tribe.app.presentation.mvp.presenter.ScorePresenter;
 import com.tribe.app.presentation.mvp.view.ScoreView;
 import com.tribe.app.presentation.view.adapter.LevelAdapter;
 import com.tribe.app.presentation.view.adapter.manager.LevelLayoutManager;
-import com.tribe.app.presentation.view.decorator.GridDividerTopItemDecoration;
+import com.tribe.app.presentation.view.adapter.decorator.GridDividerTopItemDecoration;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;

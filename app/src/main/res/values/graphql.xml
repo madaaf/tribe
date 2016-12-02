@@ -18,16 +18,12 @@
                 memberships %2$s {
                     ...MembershipInfo
                 }
-
-                groups %3$s {
-                    ...GroupInfo
-                }
             }
         }
 
+        %3$s
         %4$s
         %5$s
-        %6$s
     </string>
 
     <string name="user.infos.list" translatable="false">
@@ -651,6 +647,12 @@
     <string name="notify.facebook" translatable="false">
         mutation {
             runFacebookInvites(appId : \"%1$s\", accessToken : \"%2$s\")
+        }
+    </string>
+
+    <string name="online.notification" translatable="false">
+        mutation {
+            runOnlinePush
         }
     </string>
 </resources>

@@ -84,12 +84,11 @@
         android:drawableLeft="@drawable/picto_add_group"
         android:drawablePadding="7.5dp"
         android:padding="7.5dp"
-        android:background="@drawable/bg_top_bar_rounded"
+        android:background="@drawable/selectable_button_all_rounded"
         android:text="@string/topbar_create_group"
         android:singleLine="true"
         style="@style/Body.Two.White"
         android:clickable="true"
-        android:foreground="@drawable/selectable_button_oval_light"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -101,12 +100,11 @@
         android:drawableLeft="@drawable/picto_invites"
         android:drawablePadding="7.5dp"
         android:padding="7.5dp"
-        android:background="@drawable/bg_top_bar_rounded"
+        android:background="@drawable/selectable_button_all_rounded"
         android:text="@string/topbar_invite_friend"
         android:singleLine="true"
         style="@style/Body.Two.White"
         android:clickable="true"
-        android:foreground="@drawable/selectable_button_oval_light"
         />
 
 </FrameLayout>

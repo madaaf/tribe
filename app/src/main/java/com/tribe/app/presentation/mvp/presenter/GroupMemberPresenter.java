@@ -1,7 +1,5 @@
 package com.tribe.app.presentation.mvp.presenter;
 
-import android.os.Parcelable;
-
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.AddAdminsToGroup;
@@ -110,6 +108,7 @@ public class GroupMemberPresenter implements Presenter {
     }
 
     private final class RemoveMemberFromGroupSubscriber extends DefaultSubscriber<Void> {
+
         @Override
         public void onCompleted() {
 
@@ -127,10 +126,9 @@ public class GroupMemberPresenter implements Presenter {
     }
 
     private final class RemoveFriendshipSubscriber extends DefaultSubscriber<Void> {
-        @Override
-        public void onCompleted() {
 
-        }
+        @Override
+        public void onCompleted() {}
 
         @Override
         public void onError(Throwable e) {
@@ -144,10 +142,9 @@ public class GroupMemberPresenter implements Presenter {
     }
 
     private final class CreateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
-        @Override
-        public void onCompleted() {
 
-        }
+        @Override
+        public void onCompleted() {}
 
         @Override
         public void onError(Throwable e) {
@@ -161,10 +158,9 @@ public class GroupMemberPresenter implements Presenter {
     }
 
     private final class AddAdminsToGroupSubscriber extends DefaultSubscriber<Void> {
-        @Override
-        public void onCompleted() {
 
-        }
+        @Override
+        public void onCompleted() {}
 
         @Override
         public void onError(Throwable e) {
@@ -178,10 +174,9 @@ public class GroupMemberPresenter implements Presenter {
     }
 
     private final class RemoveAdminsFromGroupSubscriber extends DefaultSubscriber<Void> {
-        @Override
-        public void onCompleted() {
 
-        }
+        @Override
+        public void onCompleted() {}
 
         @Override
         public void onError(Throwable e) {

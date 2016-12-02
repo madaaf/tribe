@@ -182,4 +182,6 @@ public interface UserRepository {
     Observable<Recipient> getRecipientInfos(String recipientId, boolean isToGroup);
 
     Observable<Void> updateMessagesReceivedToNotSeen();
+
+    Observable<Void> sendOnlineNotification();
 }

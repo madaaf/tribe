@@ -23,9 +23,9 @@ public class UserRealmDataMapper {
     FriendshipRealmDataMapper friendshipRealmDataMapper;
 
     @Inject
-    public UserRealmDataMapper(LocationRealmDataMapper locationRealmDataMapper) {
+    public UserRealmDataMapper(LocationRealmDataMapper locationRealmDataMapper, GroupMemberRealmDataMapper groupMemberRealmDataMapper) {
         this.locationRealmDataMapper = locationRealmDataMapper;
-        this.membershipRealmDataMapper = new MembershipRealmDataMapper(new GroupRealmDataMapper(this));
+        this.membershipRealmDataMapper = new MembershipRealmDataMapper(new GroupRealmDataMapper(this, groupMemberRealmDataMapper));
         this.friendshipRealmDataMapper = new FriendshipRealmDataMapper(this);
     }
 

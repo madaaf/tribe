@@ -82,6 +82,14 @@ public class FriendMemberAdapterDelegate extends RxAdapterDelegate<List<GroupMem
             vh.txtMember.setVisibility(View.GONE);
             vh.txtBubble.setVisibility(View.GONE);
 
+            if (groupMember.isMember()) {
+                vh.viewAdd.setScaleX(1);
+                vh.viewAdd.setScaleY(1);
+            } else {
+                vh.viewAdd.setScaleX(0);
+                vh.viewAdd.setScaleY(0);
+            }
+
             vh.itemView.setOnClickListener(v -> {
                 if (groupMember.isMember()) {
                     groupMember.setMember(false);

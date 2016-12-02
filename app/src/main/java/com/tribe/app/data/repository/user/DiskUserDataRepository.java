@@ -416,4 +416,9 @@ public class DiskUserDataRepository implements UserRepository {
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
         return userDataStore.updateMessagesReceivedToNotSeen();
     }
+
+    @Override
+    public Observable<Void> sendOnlineNotification() {
+        return null;
+    }
 }

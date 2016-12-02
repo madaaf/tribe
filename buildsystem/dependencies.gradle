@@ -6,7 +6,7 @@ allprojects {
 
 ext {
     //Android
-    androidBuildToolsVersion = "25.0.0"
+    androidBuildToolsVersion = "25.0.1"
     androidMinSdkVersion = 18
     androidTargetSdkVersion = 24
     androidCompileSdkVersion = 24
@@ -14,16 +14,16 @@ ext {
     //Libraries
     daggerVersion = '2.2'
     butterKnifeVersion = '8.0.1'
-    recyclerViewVersion = '24.2.1'
-    appCompatVersion = '24.2.1'
-    designSupportVersion = '24.2.1'
-    cardDesignVersion = '24.2.1'
+    recyclerViewVersion = '25.0.1'
+    appCompatVersion = '25.0.1'
+    designSupportVersion = '25.0.1'
+    cardDesignVersion = '25.0.1'
     rxJavaVersion = '1.2.1'
     rxAndroidVersion = '1.2.1'
     javaxAnnotationVersion = '1.0'
     gsonVersion = '2.6.2'
     retrofitVersion = '2.0.2'
-    androidAnnotationsVersion = '25.0.0'
+    androidAnnotationsVersion = '25.0.1'
     okHttpVersion = '3.2.0'
     priorityJobQueueVersion = '2.0.0'
     pahoMQTT3Version = '1.0.2'

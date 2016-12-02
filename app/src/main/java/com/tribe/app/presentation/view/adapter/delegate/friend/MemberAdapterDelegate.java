@@ -61,6 +61,8 @@ public class MemberAdapterDelegate extends RxAdapterDelegate<List<GroupMember>> 
         MemberViewHolder vh = (MemberViewHolder) holder;
         GroupMember groupMember = items.get(position);
 
+        if (!groupMember.isOgMember()) vh.viewRing.setVisibility(View.VISIBLE);
+
         if (!StringUtils.isEmpty(groupMember.getUser().getProfilePicture())) {
             Glide.with(context).load(groupMember.getUser().getProfilePicture())
                     .thumbnail(0.25f)
@@ -75,6 +77,9 @@ public class MemberAdapterDelegate extends RxAdapterDelegate<List<GroupMember>> 
 
         @BindView(R.id.imgAvatar)
         ImageView imgAvatar;
+
+        @BindView(R.id.viewRing)
+        View viewRing;
 
         public MemberViewHolder(View itemView) {
             super(itemView);

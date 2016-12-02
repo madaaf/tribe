@@ -55,6 +55,7 @@ import com.tribe.app.presentation.internal.di.scope.HasRatedApp;
 import com.tribe.app.presentation.internal.di.scope.HasReceivedPointsForCameraPermission;
 import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
+import com.tribe.app.presentation.internal.di.scope.LastOnlineNotification;
 import com.tribe.app.presentation.internal.di.scope.LastSync;
 import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
 import com.tribe.app.presentation.internal.di.scope.LastVersionCode;
@@ -352,6 +353,9 @@ public interface ApplicationComponent {
 
     @DebugMode
     Preference<Boolean> debugMode();
+
+    @LastOnlineNotification
+    Preference<Long> lastOnlineNotification();
 
     SoundManager soundManager();
 

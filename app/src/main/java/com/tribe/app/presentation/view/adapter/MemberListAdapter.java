@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.domain.entity.GroupMember;
@@ -9,6 +10,8 @@ import com.tribe.app.presentation.view.adapter.delegate.friend.MemberListAdapter
 
 import java.util.ArrayList;
 import java.util.List;
+
+import rx.Observable;
 
 /**
  * Created by tiago on 11/29/16.
@@ -20,10 +23,10 @@ public class MemberListAdapter extends RecyclerView.Adapter {
 
     private List<GroupMember> items;
 
-    public MemberListAdapter(Context context) {
+    public MemberListAdapter(Context context, boolean currentUserAdmin) {
         delegatesManager = new RxAdapterDelegatesManager<>();
 
-        memberListAdapterDelegate = new MemberListAdapterDelegate(context);
+        memberListAdapterDelegate = new MemberListAdapterDelegate(context, currentUserAdmin);
         delegatesManager.addDelegate(memberListAdapterDelegate);
 
         items = new ArrayList<>();
@@ -53,8 +56,8 @@ public class MemberListAdapter extends RecyclerView.Adapter {
 
     @Override
     public long getItemId(int position) {
-        Object obj = getItemAtPosition(position);
-        return obj.hashCode();
+        GroupMember recipient = getItemAtPosition(position);
+        return recipient.hashCode();
     }
 
     public void releaseSubscriptions() {
@@ -74,4 +77,16 @@ public class MemberListAdapter extends RecyclerView.Adapter {
             return null;
         }
     }
+
+    public List<GroupMember> getItems() {
+        return items;
+    }
+
+    // OBSERVABLES
+
+    public Observable<View> clickAdd() {
+        return memberListAdapterDelegate.clickAdd();
+    }
+
+    public Observable<View> longClick() { return memberListAdapterDelegate.onLongClick(); }
 }

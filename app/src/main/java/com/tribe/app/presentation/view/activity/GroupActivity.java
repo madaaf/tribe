@@ -18,6 +18,7 @@ import com.solera.defrag.TraversingOperation;
 import com.solera.defrag.TraversingState;
 import com.solera.defrag.ViewStack;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.GroupMember;
@@ -106,6 +107,7 @@ public class GroupActivity extends BaseActivity implements GroupView {
     private Membership membership;
     private GroupEntity groupEntity;
     private List<GroupMember> newMembers;
+    private TextViewFont currentTitle;
 
     // OBSERVABLES
     private Unbinder unbinder;
@@ -166,7 +168,7 @@ public class GroupActivity extends BaseActivity implements GroupView {
                 if (viewStack.getTopView() instanceof UpdateGroupView) {
                     groupPresenter.updateGroup(membership.getSubId(), viewUpdateGroup.getGroupEntity());
                 } else if (viewStack.getTopView() instanceof AddMembersGroupView) {
-                    groupPresenter.updateGroup(membership.getSubId(), viewUpdateGroup.getGroupEntity());
+                    groupPresenter.addMembersToGroup(membership.getSubId(), newMembers);
                 }
             }
         });
@@ -219,8 +221,6 @@ public class GroupActivity extends BaseActivity implements GroupView {
 
         if (!viewStack.pop()) {
             super.onBackPressed();
-        } else {
-            txtAction.setVisibility(View.GONE);
         }
     }
 
@@ -318,50 +318,97 @@ public class GroupActivity extends BaseActivity implements GroupView {
 
     private void setupSettingsView() {
         viewSettingsGroup = (SettingsGroupView) viewStack.pushWithParameter(R.layout.view_settings_group, membership);
-        viewSettingsGroup.onEditGroup()
+        subscriptions.add(viewSettingsGroup.onEditGroup()
                 .subscribe(aVoid -> {
                     setupUpdateView();
-                });
+                })
+        );
 
-        viewSettingsGroup.onLeaveGroup()
+        subscriptions.add(viewSettingsGroup.onLeaveGroup()
                 .subscribe(aVoid -> {
                     groupPresenter.leaveGroup(membershipId);
-                });
+                })
+        );
 
-        viewSettingsGroup.onNotificationsChange()
+        subscriptions.add(viewSettingsGroup.onNotificationsChange()
                 .subscribe(aBoolean -> {
                     groupPresenter.updateMembership(membershipId, !aBoolean);
-                });
+                })
+        );
     }
 
     private void setupUpdateView() {
         viewUpdateGroup = (UpdateGroupView) viewStack.pushWithParameter(R.layout.view_update_group, membership);
-        txtAction.setVisibility(View.VISIBLE);
-        txtAction.setText(getString(R.string.action_save));
     }
 
     private void setupMemberListGroupView() {
         viewMembersGroup = (MembersGroupView) viewStack.pushWithParameter(R.layout.view_members_group, membership);
+        subscriptions.add(viewMembersGroup.onClickAddFriend()
+                .subscribe(user -> groupPresenter.createFriendship(user.getId()))
+        );
+
+        subscriptions.add(viewMembersGroup.onClickAddAdmin()
+                .map(groupMember -> {
+                    membership.getGroup().getAdmins().add(groupMember.getUser());
+                    updateGroup(membership.getGroup(), true);
+                    return groupMember.getUser();
+                })
+                .subscribe(user -> groupPresenter.addAdminsToGroup(membership.getSubId(), user))
+        );
+
+        subscriptions.add(viewMembersGroup.onClickRemoveAdmin()
+                .map(groupMember -> {
+                    membership.getGroup().getAdmins().remove(groupMember.getUser());
+                    updateGroup(membership.getGroup(), true);
+                    return groupMember.getUser();
+                })
+                .subscribe(user -> groupPresenter.removeAdminsFromGroup(membership.getSubId(), user))
+        );
+
+        subscriptions.add(viewMembersGroup.onClickRemoveFromGroup()
+                .map(groupMember -> {
+                    membership.getGroup().getAdmins().remove(groupMember.getUser());
+                    membership.getGroup().getMembers().remove(groupMember.getUser());
+                    if (viewStack.getTopView() instanceof MembersGroupView) currentTitle.setText(getTitleForMembers());
+                    updateGroup(membership.getGroup(), true);
+                    return groupMember.getUser();
+                })
+                .subscribe(user -> groupPresenter.removeMembersFromGroup(membership.getSubId(), user))
+        );
     }
 
     private void computeTitle(boolean forward, View to) {
         if (to instanceof AddMembersGroupView) {
-            setupTitle(groupEntity == null ? membership.getDisplayName() : groupEntity.getName(), forward);
+            setupTitle(groupEntity == null ? membership.getDisplayName() : getString(R.string.group_add_members_title), forward);
+            if (groupEntity == null || newMembers.size() > 0) {
+                txtAction.setVisibility(View.VISIBLE);
+                if (newMembers.size() > 0) txtAction.setText(getString(R.string.action_add, newMembers.size()));
+            }
         } else if (to instanceof CreateGroupView) {
             setupTitle(getString(R.string.group_identification_title), forward);
+            txtAction.setVisibility(View.GONE);
+            newMembers.clear();
         } else if (to instanceof SettingsGroupView) {
             setupTitle(getString(R.string.group_settings_title), forward);
+            txtAction.setVisibility(View.GONE);
         } else if (to instanceof UpdateGroupView) {
             setupTitle(getString(R.string.group_name_title), forward);
+            txtAction.setVisibility(View.VISIBLE);
+            txtAction.setText(getString(R.string.action_save));
+        } else if (to instanceof MembersGroupView) {
+            txtAction.setVisibility(View.GONE);
+            setupTitle(getTitleForMembers(), forward);
         }
     }
 
     private void setupTitle(String title, boolean forward) {
         if (txtTitle.getTranslationX() == 0) {
+            currentTitle = txtTitleTwo;
             txtTitleTwo.setText(title);
             hideTitle(txtTitle, forward);
             showTitle(txtTitleTwo, forward);
         } else {
+            currentTitle = txtTitle;
             txtTitle.setText(title);
             hideTitle(txtTitleTwo, forward);
             showTitle(txtTitle, forward);
@@ -406,6 +453,16 @@ public class GroupActivity extends BaseActivity implements GroupView {
             membership.getGroup().setName(group.getName());
             membership.getGroup().setPicture(group.getPicture());
         }
+
+        if (viewSettingsGroup != null) viewSettingsGroup.updateGroup(group, full);
+        if (viewAddMembersGroup != null) viewAddMembersGroup.updateGroup(group, full);
+        if (viewMembersGroup != null) viewMembersGroup.updateGroup(group, full);
+    }
+
+    private String getTitleForMembers() {
+        return membership.getGroup().getMembers().size() + " " +
+                (membership.getGroup().getMembers().size() > 1 ? getResources().getString(R.string.group_members) :
+                        getResources().getString(R.string.group_member));
     }
 
     @Override
@@ -449,8 +506,6 @@ public class GroupActivity extends BaseActivity implements GroupView {
     public void onGroupUpdatedSuccess(Group group) {
         txtAction.setVisibility(View.GONE);
         updateGroup(group, false);
-        viewSettingsGroup.updateGroup(group, false);
-        viewAddMembersGroup.updateGroup(membership.getGroup(), false);
 
         if (viewStack.getTopView() instanceof UpdateGroupView) viewStack.pop();
     }
@@ -462,7 +517,7 @@ public class GroupActivity extends BaseActivity implements GroupView {
 
     @Override
     public void onMemberAddedSuccess() {
-
+        finish();
     }
 
     @Override
@@ -472,6 +527,48 @@ public class GroupActivity extends BaseActivity implements GroupView {
 
     @Override
     public void onLeaveGroupError() {
+
+    }
+
+    @Override
+    public void onUserAddSuccess(Friendship friendship) {
+        if (viewStack.getTopView() instanceof MembersGroupView) {
+
+        }
+    }
+
+    @Override
+    public void onUserAddError() {
+
+    }
+
+    @Override
+    public void onMemberRemoveError() {
+
+    }
+
+    @Override
+    public void onMemberRemoveSuccess() {
+
+    }
+
+    @Override
+    public void onAddAdminError() {
+
+    }
+
+    @Override
+    public void onAddAdminSuccess() {
+
+    }
+
+    @Override
+    public void onRemoveAdminError() {
+
+    }
+
+    @Override
+    public void onRemoveAdminSuccess() {
 
     }
 

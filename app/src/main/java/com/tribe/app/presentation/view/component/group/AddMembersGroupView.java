@@ -5,6 +5,7 @@ import android.graphics.Rect;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -22,10 +23,11 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.FriendMembersAdapter;
 import com.tribe.app.presentation.view.adapter.MembersAdapter;
+import com.tribe.app.presentation.view.adapter.decorator.DividerFirstLastItemDecoration;
+import com.tribe.app.presentation.view.adapter.diff.GroupMemberDiffCallback;
 import com.tribe.app.presentation.view.adapter.manager.FriendMembersLayoutManager;
 import com.tribe.app.presentation.view.adapter.manager.MembersLayoutManager;
 import com.tribe.app.presentation.view.component.ActionView;
-import com.tribe.app.presentation.view.decorator.DividerFirstLastItemDecoration;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
 import com.tribe.app.presentation.view.widget.EditTextFont;
@@ -52,6 +54,7 @@ public class AddMembersGroupView extends FrameLayout {
 
     private int DURATION_FADE = 150;
     private int RECYCLER_VIEW_ANIMATIONS_DURATION = 200;
+    private int RECYCLER_VIEW_ANIMATIONS_DURATION_LONG = 300;
 
     @Inject
     User user;
@@ -177,11 +180,10 @@ public class AddMembersGroupView extends FrameLayout {
         recyclerView.setItemAnimator(null);
 
         adapter = new FriendMembersAdapter(getContext());
-        List<GroupMember> userListTemp = new ArrayList<>(user.getUserList());
+
+        setupFriendList();
 
         if (membership != null) {
-            membership.getGroup().computeGroupMembers(userListTemp);
-
             subscriptions.add(
                     viewActionSettings.onClick()
                             .subscribe(clickSettings)
@@ -195,8 +197,6 @@ public class AddMembersGroupView extends FrameLayout {
             layoutMembers.setOnClickListener(v -> clickMembers.onNext(null));
         }
 
-        List<GroupMember> userList = new ArrayList<>(userListTemp);
-        adapter.setItems(userList);
         recyclerView.setAdapter(adapter);
         recyclerView.addItemDecoration(new DividerFirstLastItemDecoration(screenUtils.dpToPx(2.5f), screenUtils.dpToPx(10)));
         recyclerView.getRecycledViewPool().setMaxRecycledViews(0, 50);
@@ -233,11 +233,24 @@ public class AddMembersGroupView extends FrameLayout {
         refactorMembers();
     }
 
+    private void setupFriendList() {
+        List<GroupMember> userListTemp = new ArrayList<>(user.getUserList());
+        if (membership != null) membership.getGroup().computeGroupMembers(userListTemp);
+        adapter.setItems(userListTemp);
+    }
+
     public void updateGroup(Group group, boolean full) {
         if (full) {
             membership.setGroup(group);
-            membersAdapter.setItems(membership.getGroup().getGroupMembers());
+            DiffUtil.DiffResult result = DiffUtil.calculateDiff(
+                    new GroupMemberDiffCallback(
+                            membersAdapter.getItems(),
+                            membership.getGroup().getGroupMembers()
+                    ));
+            membersAdapter.setItems(membership.getGroup().getGroupMembers(), false);
+            result.dispatchUpdatesTo(membersAdapter);
             refactorMembers();
+            setupFriendList();
         } else {
             membership.getGroup().setPicture(group.getPicture());
             membership.getGroup().setName(group.getName());
@@ -272,8 +285,8 @@ public class AddMembersGroupView extends FrameLayout {
     private void setupMembers() {
         layoutMembersManager = new MembersLayoutManager(getContext());
         recyclerViewGroupMembers.setLayoutManager(layoutMembersManager);
-        recyclerViewGroupMembers.setItemAnimator(new ScaleInAnimator(new OvershootInterpolator(1f)));
-        recyclerViewGroupMembers.getItemAnimator().setAddDuration(RECYCLER_VIEW_ANIMATIONS_DURATION);
+        recyclerViewGroupMembers.setItemAnimator(new ScaleInAnimator(new OvershootInterpolator(1.5f)));
+        recyclerViewGroupMembers.getItemAnimator().setAddDuration(RECYCLER_VIEW_ANIMATIONS_DURATION_LONG);
         recyclerViewGroupMembers.getItemAnimator().setRemoveDuration(RECYCLER_VIEW_ANIMATIONS_DURATION);
         recyclerViewGroupMembers.getItemAnimator().setMoveDuration(RECYCLER_VIEW_ANIMATIONS_DURATION);
         recyclerViewGroupMembers.getItemAnimator().setChangeDuration(RECYCLER_VIEW_ANIMATIONS_DURATION);
@@ -283,11 +296,12 @@ public class AddMembersGroupView extends FrameLayout {
         if (groupEntity != null)
             membersAdapter.add(new GroupMember(user));
         else
-            membersAdapter.setItems(membership.getGroup().getGroupMembers());
+            membersAdapter.setItems(membership.getGroup().getGroupMembers(), true);
 
         recyclerViewGroupMembers.setAdapter(membersAdapter);
         recyclerViewGroupMembers.getRecycledViewPool().setMaxRecycledViews(0, 50);
         recyclerViewGroupMembers.setHasFixedSize(true);
+        //recyclerViewGroupMembers.addItemDecoration(new MemberListLastItemDecoration(getContext().getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small)));
 
         subscriptions.add(
                 membersAdapter.onClick()
@@ -308,7 +322,6 @@ public class AddMembersGroupView extends FrameLayout {
     }
 
     // OBSERVABLES
-
     public Observable<List<GroupMember>> onMembersChanged() {
         return membersChanged;
     }

@@ -31,7 +31,7 @@ public interface UserCache {
     FriendshipRealm friendshipForUserId(String userId);
     void removeFriendship(String friendshipId);
     void insertGroup(GroupRealm groupRealm);
-    void updateGroup(GroupRealm groupRealm);
+    void updateGroup(GroupRealm groupRealm, boolean isFull);
     void addMembersToGroup(String groupId, List<String> memberIds);
     void removeMembersFromGroup(String groupId, List<String> memberIds);
     void addAdminsToGroup(String groupId, List<String> memberIds);

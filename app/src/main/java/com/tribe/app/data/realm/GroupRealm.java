@@ -8,7 +8,6 @@ import java.util.List;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
-import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -30,19 +29,12 @@ public class GroupRealm extends RealmObject {
     private Date created_at;
     private Date updated_at;
 
-    @Ignore
-    private RealmList<UserRealm> members;
-    private RealmList<GroupMemberRealm> memberIdList;
-
-    @Ignore
-    private RealmList<UserRealm> admins;
-    private RealmList<GroupMemberRealm> adminIdList;
+    private RealmList<GroupMemberRealm> members;
+    private RealmList<GroupMemberRealm> admins;
 
     public GroupRealm() {
         this.members = new RealmList<>();
-        this.memberIdList = new RealmList<>();
         this.admins = new RealmList<>();
-        this.adminIdList = new RealmList<>();
     }
 
     public String getId() {
@@ -93,19 +85,19 @@ public class GroupRealm extends RealmObject {
         this.updated_at = updated_at;
     }
 
-    public RealmList<UserRealm> getMembers() {
+    public RealmList<GroupMemberRealm> getMembers() {
         return members;
     }
 
-    public void setMembers(RealmList<UserRealm> members) {
+    public void setMembers(RealmList<GroupMemberRealm> members) {
         this.members = members;
     }
 
-    public RealmList<UserRealm> getAdmins() {
+    public RealmList<GroupMemberRealm> getAdmins() {
         return admins;
     }
 
-    public void setAdmins(RealmList<UserRealm> admins) {
+    public void setAdmins(RealmList<GroupMemberRealm> admins) {
         this.admins = admins;
     }
 
@@ -113,10 +105,10 @@ public class GroupRealm extends RealmObject {
         List<String> pics = new ArrayList<>();
 
         if (members != null) {
-            List<UserRealm> subMembers = members.subList(Math.max(members.size() - 4, 0), members.size());
+            List<GroupMemberRealm> subMembers = members.subList(Math.max(members.size() - 4, 0), members.size());
 
             if (subMembers != null) {
-                for (UserRealm user : subMembers) {
+                for (GroupMemberRealm user : subMembers) {
                     String url = user.getProfilePicture();
                     if (!StringUtils.isEmpty(url))
                         pics.add(url);
@@ -125,21 +117,5 @@ public class GroupRealm extends RealmObject {
         }
 
         return pics;
-    }
-
-    public void setMemberIdList(RealmList<GroupMemberRealm> memberIdList) {
-        this.memberIdList = memberIdList;
-    }
-
-    public void setAdminIdList(RealmList<GroupMemberRealm> adminIdList) {
-        this.adminIdList = adminIdList;
-    }
-
-    public RealmList<GroupMemberRealm> getMemberIdList() {
-        return memberIdList;
-    }
-
-    public RealmList<GroupMemberRealm> getAdminIdList() {
-        return adminIdList;
     }
 }

@@ -39,6 +39,7 @@ import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.NotifyFBFriends;
 import com.tribe.app.domain.interactor.user.RemoveFriendship;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
+import com.tribe.app.domain.interactor.user.SendOnlineNotification;
 import com.tribe.app.domain.interactor.user.SendToken;
 import com.tribe.app.domain.interactor.user.SynchroContactList;
 import com.tribe.app.domain.interactor.user.UpdateGroup;
@@ -261,9 +262,8 @@ public class UserModule {
 
     @Provides
     @PerActivity
-    @Named("createFriendship")
-    CreateFriendship provideCreateFriendship(CreateFriendship createFriendship) {
-        return createFriendship;
+    CreateFriendship provideCreateFriendship(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+        return new CreateFriendship(userRepository, threadExecutor, postExecutionThread);
     }
 
     @Provides
@@ -309,5 +309,11 @@ public class UserModule {
     @Named("diskUpdateMessagesReceivedToNotSeen")
     UseCaseDisk provideUpdateTribesReceivedToNotSeen(DiskUpdateMessagesReceivedToNotSeen diskUpdateMessagesReceivedToNotSeen) {
         return diskUpdateMessagesReceivedToNotSeen;
+    }
+
+    @Provides
+    @PerActivity
+    SendOnlineNotification provideSendOnlineNotification(CloudUserDataRepository cloudUserDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+        return new SendOnlineNotification(cloudUserDataRepository, threadExecutor, postExecutionThread);
     }
 }

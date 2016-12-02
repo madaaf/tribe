@@ -29,4 +29,5 @@ public class PreferencesConstants {
     public static String HAS_RATED_APP = "HAS_RATED_APP";
     public static String TUTORIAL_STATE = "TUTORIAL_STATE";
     public static String DEBUG_MODE = "DEBUG_MODE";
+    public static String LAST_ONLINE_NOTIFICATION = "LAST_ONLINE_NOTIFICATION";
 }

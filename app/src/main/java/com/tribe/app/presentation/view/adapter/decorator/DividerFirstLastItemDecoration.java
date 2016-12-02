@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.decorator;
+package com.tribe.app.presentation.view.adapter.decorator;
 
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -41,6 +41,10 @@ public class DividerFirstLastItemDecoration extends RecyclerView.ItemDecoration 
         final int itemCount = state.getItemCount();
 
         boolean childIsInFirstRow = itemPosition == 0;
+
+        outRect.top = 0;
+        outRect.bottom = 0;
+
         if (childIsInFirstRow) {
             outRect.top = marginTop;
         }
