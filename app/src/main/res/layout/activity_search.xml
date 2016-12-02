@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.view.activity.SearchUserActivity"
+    android:background="@drawable/shape_rect_white_rounded_top"
+    >
+
+    <LinearLayout
+        android:id="@+id/layoutDummy"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clickable="true"
+        android:focusableInTouchMode="true"
+        android:focusable="true">
+        <requestFocus/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/top_bar_height_small">
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:id="@+id/txtTitle"
+                style="@style/Title.2.Black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/search_title"
+                android:gravity="center"
+                />
+
+            <ImageView
+                android:id="@+id/imgBack"
+                android:layout_width="@dimen/nav_icon_size"
+                android:layout_height="@dimen/nav_icon_size"
+                android:layout_gravity="left|center_vertical"
+                android:src="@drawable/picto_back"
+                android:scaleType="centerInside"
+                android:background="@drawable/selectable_button_oval"
+                android:clickable="true"
+                />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/top_bar_height"
+            android:background="@android:color/white"
+            >
+
+            <ImageView
+                android:id="@+id/imgSearch"
+                android:layout_width="@dimen/icons_end"
+                android:layout_height="@dimen/icons_end"
+                android:layout_gravity="center_vertical"
+                android:scaleType="centerInside"
+                android:src="@drawable/picto_search_icon"
+                />
+
+            <com.tribe.app.presentation.view.widget.EditTextFont
+                android:id="@+id/editTextSearchContact"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/icons_end"
+                android:layout_marginStart="@dimen/icons_end"
+                android:layout_marginEnd="@dimen/horizontal_margin_small"
+                android:layout_gravity="center_vertical"
+                android:hint="@string/contacts_search_placeholder"
+                android:backgroundTint="@android:color/black"
+                android:background="@null"
+                android:singleLine="true"
+                android:gravity="center_vertical"
+                android:imeOptions="actionDone"
+                style="@style/Text.Input.Search"
+                />
+
+        </FrameLayout>
+
+        <include layout="@layout/view_separator" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerViewContacts"
+            android:scrollbars="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_marginTop="@dimen/top_bar_height_small"
+        android:background="@drawable/shadow_bottom"
+        />
+</FrameLayout>

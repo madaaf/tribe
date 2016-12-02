@@ -28,6 +28,7 @@ import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.PointsActivity;
 import com.tribe.app.presentation.view.activity.ScoreActivity;
+import com.tribe.app.presentation.view.activity.SearchUserActivity;
 import com.tribe.app.presentation.view.activity.SettingActivity;
 import com.tribe.app.presentation.view.activity.TribeActivity;
 
@@ -175,8 +176,8 @@ public class Navigator {
     public void navigateToSettings(Activity activity, int result) {
         if (activity != null) {
             Intent intent = SettingActivity.getCallingIntent(activity);
-            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
             activity.startActivityForResult(intent, result);
+            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
         }
     }
 
@@ -200,8 +201,8 @@ public class Navigator {
     public void navigateToDebugMode(Activity activity) {
         if (activity != null) {
             Intent intent = DebugActivity.getCallingIntent(activity);
-            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
             activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
         }
     }
 
@@ -213,8 +214,8 @@ public class Navigator {
     public void navigateToCreateGroup(Activity activity) {
         if (activity != null) {
             Intent intent = GroupActivity.getCallingIntent(activity, null);
-            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
             activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
         }
     }
 
@@ -227,8 +228,21 @@ public class Navigator {
     public void navigateToGroupDetails(Activity activity, Membership membership) {
         if (activity != null) {
             Intent intent = GroupActivity.getCallingIntent(activity, membership);
-            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
             activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+        }
+    }
+
+    /**
+     * Goes to the search screen.
+     *
+     * @param activity activity needed to open the destiny activity.
+     */
+    public void navigateToSearchUser(Activity activity) {
+        if (activity != null) {
+            Intent intent = SearchUserActivity.getCallingIntent(activity);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
         }
     }
 

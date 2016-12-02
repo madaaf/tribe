@@ -192,9 +192,11 @@ public class ContactCacheImpl implements ContactCache {
     @Override
     public Observable<SearchResultRealm> findContactByUsername(String value) {
         return realm.where(SearchResultRealm.class)
-                .findFirst()
+                .findAll()
                 .asObservable()
-                .map(o -> (SearchResultRealm) realm.copyFromRealm(o))
+                .filter(searchResultRealmList -> searchResultRealmList.isLoaded() && searchResultRealmList.size() > 0)
+                .map(searchResultRealmList -> searchResultRealmList.get(0))
+                .map(o -> realm.copyFromRealm(o))
                 .unsubscribeOn(AndroidSchedulers.mainThread());
     }
 

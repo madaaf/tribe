@@ -6,18 +6,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.ButtonPoints;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ButtonPointsAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactsGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactsHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SeparatorAdapterDelegate;
-import com.tribe.app.presentation.view.utils.ScoreUtils;
-import com.tribe.app.presentation.view.widget.ButtonPointsView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +26,7 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by tiago on 18/05/2016.
  */
-public class ContactsGridAdapter extends RecyclerView.Adapter {
+public class ContactAdapter extends RecyclerView.Adapter {
 
     // DELEGATES
     protected RxAdapterDelegatesManager delegatesManager;
@@ -46,7 +42,7 @@ public class ContactsGridAdapter extends RecyclerView.Adapter {
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
     @Inject
-    public ContactsGridAdapter(Context context, User currentUser) {
+    public ContactAdapter(Context context, User currentUser) {
         items = new ArrayList<>();
 
         this.currentUser = currentUser;
@@ -98,35 +94,6 @@ public class ContactsGridAdapter extends RecyclerView.Adapter {
         return items.size();
     }
 
-    public void setItems(List<Contact> items) {
-        this.items.clear();
-
-        ButtonPoints shareProfile = new ButtonPoints(ButtonPointsView.PROFILE, R.string.contacts_share_profile_button,
-                R.string.contacts_share_profile_description, ScoreUtils.Point.SHARE_PROFILE.getPoints());
-        shareProfile.setUrlImg(currentUser.getProfilePicture());
-
-        ButtonPoints fb = null;
-
-        if (!FacebookUtils.isLoggedIn()) {
-            fb = new ButtonPoints(ButtonPointsView.FB_SYNC, R.string.contacts_section_facebook_sync_title,
-                    R.string.contacts_section_facebook_sync_description, ScoreUtils.Point.INVITE_FACEBOOK.getPoints());
-        } else {
-            fb = new ButtonPoints(ButtonPointsView.FB_DISABLED, R.string.contacts_section_facebook_invite_title,
-                    R.string.contacts_section_facebook_sync_description, ScoreUtils.Point.INVITE_FACEBOOK.getPoints());
-        }
-
-        fb.setDrawable(R.drawable.picto_facebook_logo);
-
-        this.items.add(shareProfile);
-        this.items.add(new String());
-        this.items.add(fb);
-        this.items.add(new String());
-        this.items.add(R.string.contacts_section_addressbook_title);
-        this.items.addAll(items);
-
-        this.notifyDataSetChanged();
-    }
-
     public Object getItemAtPosition(int position) {
         if (items.size() > 0 && position < items.size()) {
             return items.get(position);
@@ -139,15 +106,9 @@ public class ContactsGridAdapter extends RecyclerView.Adapter {
         return items;
     }
 
-    public void startAnimateFB() {
-        ButtonPoints points = (ButtonPoints) this.items.get(2);
-        points.setAnimate(true);
-        notifyItemChanged(2);
-    }
-
     public void updateSearch(SearchResult searchResult, List<Contact> contactList) {
         this.items.clear();
-        this.items.add(R.string.contacts_section_search_usernames);
+        this.items.add(R.string.search_usernames);
         this.items.add(searchResult);
         this.items.add(new String());
         if (contactList != null && contactList.size() > 0) {
@@ -158,27 +119,7 @@ public class ContactsGridAdapter extends RecyclerView.Adapter {
     }
 
     // OBSERVABLES
-    public Observable<View> onButtonPointsClick() {
-        return buttonPointsAdapterDelegate.onClick();
-    }
-
-    public Observable<View> onButtonPointsFBSyncDone() {
-        return buttonPointsAdapterDelegate.onFBSyncDone();
-    }
-
-    public Observable<View> onButtonPointsNotifyDone() {
-        return buttonPointsAdapterDelegate.onNotifyDone();
-    }
-
     public Observable<View> onClickAdd() {
         return searchResultGridAdapterDelegate.clickAdd();
-    }
-
-    public Observable<View> onClickRemove() {
-        return searchResultGridAdapterDelegate.clickRemove();
-    }
-
-    public Observable<View> onClickInvite() {
-        return contactsGridAdapterDelegate.onClickInvite();
     }
 }

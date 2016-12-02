@@ -298,7 +298,7 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
         );
 
         subscriptions.add(viewTribePager.onRecordStart()
-                .doOnNext(view -> soundManager.playSound(SoundManager.START_RECORD, SoundManager.SOUND_MAX))
+                .doOnNext(view -> soundManager.playSound(SoundManager.START_RECORD, SoundManager.SOUND_LOW))
                 .delay(300, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(view -> {
@@ -321,7 +321,7 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
         subscriptions.add(
                 viewTribePager.onRecordEnd()
                 .doOnNext(v -> {
-                    soundManager.playSound(SoundManager.END_RECORD, SoundManager.SOUND_MAX);
+                    soundManager.playSound(SoundManager.END_RECORD, SoundManager.SOUND_LOW);
                     cleanUpTutorial();
                     isRecording = false;
                     viewTribePager.stopRecording();
@@ -591,14 +591,15 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
     }
 
     private void tapToCancel() {
-        soundManager.playSound(SoundManager.TAP_TO_CANCEL, SoundManager.SOUND_MAX);
+        soundManager.playSound(SoundManager.TAP_TO_CANCEL, SoundManager.SOUND_LOW
+        );
         FileUtils.delete(context(), currentTribe.getLocalId(), FileUtils.VIDEO);
         tribePresenter.deleteTribe(currentTribe);
         currentTribe = null;
     }
 
     private void onNotCancel() {
-        soundManager.playSound(SoundManager.SENT, SoundManager.SOUND_MAX);
+        soundManager.playSound(SoundManager.SENT, SoundManager.SOUND_LOW);
         tribePresenter.sendTribe(currentTribe);
         currentTribe = null;
     }

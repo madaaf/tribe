@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.appboy.Appboy;
 import com.tribe.app.domain.entity.User;
@@ -80,5 +81,14 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public TagManager getTagManager() {
         return tagManager;
+    }
+
+    /**
+     * Shows a {@link android.widget.Toast} message.
+     *
+     * @param message An string representing a message to be shown.
+     */
+    protected void showToastMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }

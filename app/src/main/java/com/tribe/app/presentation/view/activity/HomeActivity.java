@@ -399,7 +399,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                             && recipient.getReceivedTribes().size() > 0
                             && recipient.hasLoadedOrErrorTribes();
 
-                    if (filter) soundManager.playSound(SoundManager.OPEN_TRIBE, SoundManager.SOUND_MAX);
+                    if (filter) soundManager.playSound(SoundManager.OPEN_TRIBE, SoundManager.SOUND_LOW);
 
                     return filter;
                 })
@@ -439,7 +439,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         subscriptions.add(homeGridAdapter.onRecordStart()
                 .doOnNext(view -> {
                     isRecording = true;
-                    soundManager.playSound(SoundManager.START_RECORD, SoundManager.SOUND_MAX);
+                    soundManager.playSound(SoundManager.START_RECORD, SoundManager.SOUND_LOW);
                 })
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .delay(300, TimeUnit.MILLISECONDS)
@@ -463,7 +463,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 })
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .subscribe(recipient -> {
-                    soundManager.playSound(SoundManager.END_RECORD, SoundManager.SOUND_MAX);
+                    soundManager.playSound(SoundManager.END_RECORD, SoundManager.SOUND_LOW);
                     TileView tileView = (TileView) layoutManager.findViewByPosition(recipient.getPosition());
 
                     if ((System.currentTimeMillis() - timeRecording) > TIME_MIN_RECORDING) {
@@ -479,7 +479,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .subscribe(recipient -> {
                     isRecording = false;
-                    soundManager.playSound(SoundManager.TAP_TO_CANCEL, SoundManager.SOUND_MAX);
+                    soundManager.playSound(SoundManager.TAP_TO_CANCEL, SoundManager.SOUND_LOW);
                     cleanupCurrentTribe(recipient);
                 }));
 
@@ -487,7 +487,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .filter(recipient -> {
                     isRecording = false;
-                    soundManager.playSound(SoundManager.SENT, SoundManager.SOUND_MAX);
+                    soundManager.playSound(SoundManager.SENT, SoundManager.SOUND_LOW);
                     TribeMessage tr = recipient.getTribe();
 
                     if (tr == null || tr.getTo() == null) {
@@ -531,7 +531,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         springGrid = springSystem.createSpring();
         springGrid.setSpringConfig(FILTER_VIEW_NO_BOUNCE_SPRING_CONFIG);
         springGrid.addListener(springGridListener);
-        springGrid.setEndValue(1f);
+        springGrid.setEndValue(1f).setAtRest();
 
         subscriptions.add(viewFilter.onCloseClick().subscribe(aVoid -> {
             hideFilterView();
@@ -575,6 +575,16 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                     if (canEndRefresh) topBarContainer.setRefreshing(false);
 
                     canEndRefresh = true;
+                }));
+
+        subscriptions.add(topBarContainer.onClickSettings()
+                .subscribe(aVoid -> {
+                    navigateToSettings();
+                }));
+
+        subscriptions.add(topBarContainer.onClickSearch()
+                .subscribe(aVoid -> {
+                    navigateToSearch();
                 }));
 
         subscriptions.add(topBarContainer.onClickInvites()
@@ -940,7 +950,11 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     }
 
     private void navigateToSettings() {
-        HomeActivity.this.navigator.navigateToSettings(HomeActivity.this, SETTINGS_RESULT);
+        navigator.navigateToSettings(HomeActivity.this, SETTINGS_RESULT);
+    }
+
+    private void navigateToSearch() {
+        navigator.navigateToSearchUser(HomeActivity.this);
     }
 
     private void navigateToTribes(Recipient recipient) {

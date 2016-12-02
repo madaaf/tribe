@@ -4,6 +4,7 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.internal.di.modules.UserModule;
 import com.tribe.app.presentation.internal.di.scope.PerActivity;
 import com.tribe.app.presentation.mvp.presenter.GroupPresenter;
+import com.tribe.app.presentation.mvp.presenter.SearchPresenter;
 import com.tribe.app.presentation.mvp.presenter.SettingPresenter;
 import com.tribe.app.presentation.utils.facebook.FacebookHiddenActivity;
 import com.tribe.app.presentation.utils.mediapicker.MediaHiddenActivity;
@@ -15,6 +16,7 @@ import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.activity.PointsActivity;
 import com.tribe.app.presentation.view.activity.ScoreActivity;
+import com.tribe.app.presentation.view.activity.SearchUserActivity;
 import com.tribe.app.presentation.view.activity.SettingActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.component.SearchFriendsView;
@@ -63,4 +65,6 @@ public interface UserComponent extends ActivityComponent {
     void inject(ShareDialogProfileFragment shareDialogProfileFragment);
     void inject(BaseActionActivity baseActionActivity);
     void inject(GroupActivity groupActivity);
+    void inject(SearchUserActivity searchUserActivity);
+    void inject(SearchPresenter searchPresenter);
 }

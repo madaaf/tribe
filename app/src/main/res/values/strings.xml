@@ -401,8 +401,8 @@
 	<string name="settings_remove_title">Delete account</string>
 	<string name="settings_remove_subtitle">Say goodbye to your\nfriendships, points and more.</string>
 	<string name="settings_version">Version %1$s (%2$s) handcrafted in San Francisco, CA</string>
-	<string name="settings_intro_video_title">Introduction video</string>
-	<string name="settings_intro_video_subtitle">Replay our nice video</string>
+	<string name="settings_intro_video_title">Demo video</string>
+	<string name="settings_intro_video_subtitle">See how the app works in 30”!</string>
 	
 	<!-- HiddenBlocked -->
 	<string name="hiddenblocked_title">%1$d blocked or hidden</string>
@@ -484,11 +484,11 @@
 	<string name="topbar_create_group">Group</string>
 	<string name="topbar_invite_friend">Invites</string>
 	<string name="topbar_new_friend">Friend</string>
-	<string name="topbar_invite_friend_toast">Which friend would you like to invite to chat today? &#127881;</string>
-	<string name="topbar_invite_search_action">Find a friend already on Tribe</string>
-	<string name="topbar_invite_sms_action_ios">Invite a friend on iMessage</string>
-	<string name="topbar_invite_sms_action_android">Invite a friend on Hangouts</string>
-	<string name="topbar_invite_messenger_action">Invite a friend on Messenger</string>
+	<string name="topbar_invite_friend_toast">Which friend would you like to invite to chat today? :tada:</string>
+	<string name="topbar_invite_search_action">:mag: Find friends already on Tribe</string>
+	<string name="topbar_invite_sms_action_ios">Invite friends on iMessage</string>
+	<string name="topbar_invite_sms_action_android">Invite friends on Hangouts</string>
+	<string name="topbar_invite_messenger_action">Invite friends on Messenger</string>
 	
 	<!-- Ear Mode -->
 	<string name="earmode_title">“Ear” mode.</string>
