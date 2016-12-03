@@ -400,8 +400,9 @@ public class NetModule {
     }
 
     private void appendUserAgent(Context context, Request.Builder requestBuilder) {
+        String agent = FirebaseRemoteConfig.getInstance() != null ? FirebaseRemoteConfig.getInstance().getString(Constants.FIREBASE_AGENT_VERSION) : "";
         requestBuilder.header("User-Agent", context.getPackageName() + "/"
                 + DeviceUtils.getVersionCode(context) + " android/" + Build.VERSION.RELEASE + " okhttp/3.2"
-                + " Agent/" + FirebaseRemoteConfig.getInstance().getString(Constants.FIREBASE_AGENT_VERSION));
+                + " Agent/" + agent);
     }
 }
