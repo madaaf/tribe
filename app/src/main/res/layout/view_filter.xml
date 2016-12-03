@@ -45,7 +45,7 @@
         android:background="@null"
         />
 
-    <View
+    <!--<View
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_size"
         android:background="@color/grey.light"
@@ -75,7 +75,7 @@
             android:src="@drawable/picto_clean_grid"
             android:scaleType="centerInside"
             />
-    </LinearLayout>
+    </LinearLayout>-->
 
     <View
         android:layout_width="match_parent"

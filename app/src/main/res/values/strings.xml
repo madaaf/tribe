@@ -486,9 +486,10 @@
 	<string name="topbar_new_friend">Friend</string>
 	<string name="topbar_invite_friend_toast">Which friend would you like to invite to chat today? :tada:</string>
 	<string name="topbar_invite_search_action">:mag: Find friends already on Tribe</string>
-	<string name="topbar_invite_sms_action_ios">Invite friends on iMessage</string>
-	<string name="topbar_invite_sms_action_android">Invite friends on Hangouts</string>
-	<string name="topbar_invite_messenger_action">Invite friends on Messenger</string>
+	<string name="topbar_invite_sms_action_ios">:link: Invite friends on iMessage</string>
+	<string name="topbar_invite_sms_action_android">:link: Invite friends on Hangouts</string>
+	<string name="topbar_invite_messenger_action">:link: Invite friends on Messenger</string>
+	<string name="topbar_invite_whatsapp_action">:link: Invite friends on WhatsApp</string>
 	
 	<!-- Ear Mode -->
 	<string name="earmode_title">“Ear” mode.</string>

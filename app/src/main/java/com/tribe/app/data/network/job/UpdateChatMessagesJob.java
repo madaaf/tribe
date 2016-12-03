@@ -43,8 +43,6 @@ public class UpdateChatMessagesJob extends BaseJob {
 
     @Override
     protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
-        //System.out.println("Cancel Reason : " + cancelReason);
-        //throwable.printStackTrace();
     }
 
     @Override

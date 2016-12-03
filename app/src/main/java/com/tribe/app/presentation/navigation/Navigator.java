@@ -151,7 +151,7 @@ public class Navigator {
         if (activity != null) {
             Intent intent = ScoreActivity.getCallingIntent(activity);
             activity.startActivity(intent);
-            activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
         }
     }
 
@@ -238,9 +238,9 @@ public class Navigator {
      *
      * @param activity activity needed to open the destiny activity.
      */
-    public void navigateToSearchUser(Activity activity) {
+    public void navigateToSearchUser(Activity activity, String username) {
         if (activity != null) {
-            Intent intent = SearchUserActivity.getCallingIntent(activity);
+            Intent intent = SearchUserActivity.getCallingIntent(activity, username);
             activity.startActivity(intent);
             activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
         }
@@ -357,7 +357,7 @@ public class Navigator {
     public void shareHandle(String handle, Activity activity) {
         Intent sendIntent = new Intent(Intent.ACTION_VIEW);
         sendIntent.setData(Uri.parse("sms:"));
-        sendIntent.putExtra("sms_body", EmojiParser.demojizedText(activity.getString(R.string.share_add_friends_handle, "@" + handle, BuildConfig.TRIBE_URL + "/@" + handle)));
+        sendIntent.putExtra("sms_body", EmojiParser.demojizedText(activity.getString(R.string.share_add_friends_handle)));
         activity.startActivity(sendIntent);
         activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }
@@ -426,7 +426,7 @@ public class Navigator {
         if (file != null) {
             Intent share = new Intent(Intent.ACTION_SEND);
             share.setType("image/jpeg");
-            share.putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_add_friends_handle, "@" + handle, BuildConfig.TRIBE_URL + "/@" + handle));
+            share.putExtra(Intent.EXTRA_TEXT, EmojiParser.demojizedText(context.getString(R.string.share_add_friends_handle)));
 
             Uri uri = Uri.fromFile(file);
             share.putExtra(Intent.EXTRA_STREAM, uri);

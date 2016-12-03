@@ -179,7 +179,6 @@ public class TopBarView extends FrameLayout {
                         imgAvatar.onTouchEvent(event);
                         imgAvatar.performClick();
                     } else if (isAClickInView(imgSearch, (int) startX, (int) startY)) {
-                        System.out.println("IMG SEARCH : ACTION_UP");
                         imgSearch.onTouchEvent(event);
                         imgSearch.performClick();
                     } else if (isAClickInView(syncLayout, (int) startX, (int) startY)) {
@@ -219,7 +218,6 @@ public class TopBarView extends FrameLayout {
 
     @OnClick(R.id.imgSearch)
     void launchSearch() {
-        System.out.println("IMG SEARCH : CLICK");
         clickSearch.onNext(null);
     }
 

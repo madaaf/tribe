@@ -247,7 +247,8 @@ public class User implements Serializable {
 
         for (Friendship friendship : friendships) {
             if (!friendship.getSubId().equals(Constants.SUPPORT_ID)
-                    && !friendship.getSubId().equals(Recipient.ID_EMPTY)) {
+                    && !friendship.getSubId().equals(Recipient.ID_EMPTY)
+                    && !friendship.getSubId().equals(this.id)) {
                 userList.add(new GroupMember(friendship.getFriend()));
             }
         }

@@ -170,11 +170,13 @@ public class FilterView extends LinearLayout {
     }
 
     public void clean() {
-        recyclerViewFilter.setAdapter(null);
-        recyclerViewFilter.setLayoutManager(null);
-        recyclerViewFilter.setAdapter(filterViewAdapter);
-        recyclerViewFilter.setLayoutManager(filterViewLayoutManager);
-        filterViewAdapter.notifyDataSetChanged();
+        if (recyclerViewFilter != null) {
+            recyclerViewFilter.setAdapter(null);
+            recyclerViewFilter.setLayoutManager(null);
+            recyclerViewFilter.setAdapter(filterViewAdapter);
+            recyclerViewFilter.setLayoutManager(filterViewLayoutManager);
+            filterViewAdapter.notifyDataSetChanged();
+        }
     }
 
     @OnClick(R.id.btnClose)

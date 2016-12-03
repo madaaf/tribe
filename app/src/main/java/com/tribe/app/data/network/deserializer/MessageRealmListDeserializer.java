@@ -190,8 +190,10 @@ public class MessageRealmListDeserializer {
             WeatherRealm weatherRealm = new WeatherRealm();
             JsonElement icon = weather.get("icon");
             weatherRealm.setIcon((icon != null && !(icon instanceof JsonNull)) ? icon.getAsString() : "");
-            weatherRealm.setTempC(weather.get("temp_c").getAsInt());
-            weatherRealm.setTempF(weather.get("temp_f").getAsInt());
+            JsonElement temp_c = weather.get("temp_c");
+            weatherRealm.setTempC((temp_c != null && !(temp_c instanceof JsonNull)) ? weather.get("temp_c").getAsInt() : 0);
+            JsonElement temp_f = weather.get("temp_f");
+            weatherRealm.setTempF((temp_f != null && !(temp_f instanceof JsonNull)) ? weather.get("temp_f").getAsInt() : 0);
             tribeRealm.setWeatherRealm(weatherRealm);
         }
 

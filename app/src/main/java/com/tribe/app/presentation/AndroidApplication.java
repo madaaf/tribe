@@ -16,6 +16,7 @@ import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 
+import io.branch.referral.Branch;
 import io.fabric.sdk.android.Fabric;
 import io.realm.FieldAttribute;
 import io.realm.Realm;
@@ -39,6 +40,7 @@ public class AndroidApplication extends Application {
         this.initializeRealm();
         this.initializeStetho();
         this.initializeFacebook();
+        this.initializeBranch();
     }
 
     @Override
@@ -116,6 +118,10 @@ public class AndroidApplication extends Application {
     private void initializeFacebook() {
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
+    }
+
+    private void initializeBranch() {
+        Branch.getAutoInstance(this);
     }
 
     public void logoutUser() {

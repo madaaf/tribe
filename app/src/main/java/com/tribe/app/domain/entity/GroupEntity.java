@@ -12,6 +12,7 @@ public class GroupEntity implements Serializable {
     private String name;
     private String imgPath;
     private List<String> membersId;
+    private boolean custom = false;
 
     public GroupEntity(String name, String imgPath) {
         this.name = name;
@@ -42,5 +43,13 @@ public class GroupEntity implements Serializable {
 
     public List<String> getMembersId() {
         return membersId;
+    }
+
+    public boolean isCustom() {
+        return custom;
+    }
+
+    public void setCustom(boolean custom) {
+        this.custom = custom;
     }
 }

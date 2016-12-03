@@ -6,10 +6,10 @@
     </entry>
     <entry>
         <key>disable_online_notifications</key>
-        <value>0</value>
+        <value>1</value>
     </entry>
     <entry>
         <key>delay_online_notifications</key>
-        <value>60</value>
+        <value>180</value>
     </entry>
 </defaultsMap>

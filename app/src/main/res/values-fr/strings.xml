@@ -486,9 +486,10 @@
 	<string name="topbar_new_friend">Ami</string>
 	<string name="topbar_invite_friend_toast">Quels amis souhaitez-vous inviter à discuter aujourd\'hui ? :tada:</string>
 	<string name="topbar_invite_search_action">:mag: Trouver des amis sur Tribe</string>
-	<string name="topbar_invite_sms_action_ios">Inviter des amis via iMessage</string>
-	<string name="topbar_invite_sms_action_android">Inviter des amis via Hangouts</string>
-	<string name="topbar_invite_messenger_action">Inviter des amis via Messenger</string>
+	<string name="topbar_invite_sms_action_ios">:link: Inviter des amis via iMessage</string>
+	<string name="topbar_invite_sms_action_android">:link: Inviter des amis via Hangouts</string>
+	<string name="topbar_invite_messenger_action">:link: Inviter des amis via Messenger</string>
+	<string name="topbar_invite_whatsapp_action">:link: Inviter des amis via WhatsApp</string>
 	
 	<!-- Ear Mode -->
 	<string name="earmode_title">Mode oreille.</string>

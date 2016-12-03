@@ -10,5 +10,6 @@ public interface IntroView extends LoadDataView {
     void goToHome();
     void goToConnected(User user);
     void loginError(ErrorLogin errorLogin);
+    void pinError(ErrorLogin errorLogin);
 }
 

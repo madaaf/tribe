@@ -20,7 +20,6 @@ public class TribeFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        System.out.println("HEY BACKGROUND");
         ((AndroidApplication) getApplication()).getApplicationComponent().jobManager().addJobInBackground(new UpdateMessagesJob());
     }
 }

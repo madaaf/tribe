@@ -209,6 +209,10 @@ public class CloudUserDataStore implements UserDataStore {
         TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
         String operatorName = telephonyManager.getNetworkOperatorName();
 
+        if (!StringUtils.isEmpty(operatorName)) {
+            operatorName = operatorName.replaceAll("[^a-zA-Z0-9]+", "");
+        }
+
         String base = context.getString(R.string.install_base,
                 accessToken.getUserId(),
                 token,
@@ -567,9 +571,6 @@ public class CloudUserDataStore implements UserDataStore {
                         if (createFriendshipEntity != null && createFriendshipEntity.getNewFriendshipList() != null
                                 && createFriendshipEntity.getNewFriendshipList().size() > 0) {
                             UserRealm currentUser = userCache.userInfosNoObs(accessToken.getUserId());
-
-                            System.out.println("FRIENDSHIPS CREATE FRIENDSHIPS SIZE : " + currentUser.getFriendships().size());
-                            System.out.println("MEMBERSHIPS CREATE FRIENDSHIPS SIZE : " + currentUser.getMemberships().size());
                             currentUser.getFriendships().addAll(createFriendshipEntity.getNewFriendshipList());
                             userCache.put(currentUser);
                         }

@@ -88,7 +88,7 @@ public class MembersGroupView extends FrameLayout {
         if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     }
 
-    public void updateGroup(Group group, boolean full) {
+    public void updateGroup(Group group) {
         membership.setGroup(group);
         List<GroupMember> memberList = new ArrayList<>(membership.getGroup().getGroupMembers());
         user.computeFriends(memberList);

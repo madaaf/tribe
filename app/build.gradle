@@ -96,6 +96,7 @@ android {
             applicationIdSuffix = ".debug"
             resValue "string", "app_name", "Tribe DEBUG"
             resValue "string", "tribe_url_filter", "\"${tribe_url_filter_debug}\""
+            resValue "string", "branch_io", "\"${branch_io_debug}\""
 
             buildConfigField "String", "TRIBE_PUBLIC_KEY", "\"${tribe_public_key_debug}\""
             buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key_debug}\""
@@ -112,6 +113,7 @@ android {
             applicationIdSuffix = ".Tribe2"
             resValue "string", "app_name", "Tribe2"
             resValue "string", "tribe_url_filter", "\"${tribe_url_filter_tribe2}\""
+            resValue "string", "branch_io", "\"${branch_io_prod}\""
 
             buildConfigField "String", "TRIBE_PUBLIC_KEY", "\"${tribe_public_key_tribe2}\""
             buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key_tribe2}\""
@@ -127,6 +129,7 @@ android {
             signingConfig signingConfigs.release
             resValue "string", "app_name", "Tribe"
             resValue "string", "tribe_url_filter", "\"${tribe_url_filter}\""
+            resValue "string", "branch_io", "\"${branch_io_prod}\""
 
             buildConfigField "String", "TRIBE_PUBLIC_KEY", "\"${tribe_public_key}\""
             buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key}\""
@@ -193,6 +196,7 @@ dependencies {
     compile presentationDependencies.appBoy
     compile presentationDependencies.recyclerViewAnimators
     compile presentationDependencies.firebaseRemote
+    compile presentationDependencies.branchIo
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker

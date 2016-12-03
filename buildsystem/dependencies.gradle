@@ -55,6 +55,7 @@ ext {
     firebaseCrashReportingVersion = '9.4.0'
     firebaseInvitesVersion = '9.4.0'
     recyclerViewAnimatorsVersion = '2.2.4'
+    branchIoVersion = '2.5.2'
 
     //Testing
     robolectricVersion = '3.0'
@@ -114,7 +115,8 @@ ext {
             firebaseInvites         : "com.google.firebase:firebase-invites:${firebaseInvitesVersion}",
             appBoy                  : "com.appboy:android-sdk-ui:${appBoyVersion}",
             firebaseRemote          : "com.google.firebase:firebase-config:${firebaseRemoteVersion}",
-            recyclerViewAnimators   : "jp.wasabeef:recyclerview-animators:${recyclerViewAnimatorsVersion}"
+            recyclerViewAnimators   : "jp.wasabeef:recyclerview-animators:${recyclerViewAnimatorsVersion}",
+            branchIo                : "io.branch.sdk.android:library:${branchIoVersion}"
     ]
 
     presentationTestDependencies = [

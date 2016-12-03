@@ -193,6 +193,7 @@ public class IntroPresenter implements Presenter {
                             loginError(errorLogin);
                             goToConnected(null);
                         } else if (errorLogin != null && !errorLogin.isVerified()) {
+                            introView.pinError(errorLogin);
                             introView.showError(introView.context().getString(R.string.onboarding_error_wrong_pin));
                         }
                     } catch (IOException e1) {

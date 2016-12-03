@@ -293,10 +293,14 @@ public class AddMembersGroupView extends FrameLayout {
 
         membersAdapter = new MembersAdapter(getContext());
 
-        if (groupEntity != null)
-            membersAdapter.add(new GroupMember(user));
-        else
+        if (groupEntity != null) {
+            GroupMember groupMember = new GroupMember(user);
+            groupMember.setOgMember(true);
+            groupMember.setMember(true);
+            membersAdapter.add(groupMember);
+        } else {
             membersAdapter.setItems(membership.getGroup().getGroupMembers(), true);
+        }
 
         recyclerViewGroupMembers.setAdapter(membersAdapter);
         recyclerViewGroupMembers.getRecycledViewPool().setMaxRecycledViews(0, 50);

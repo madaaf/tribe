@@ -11,7 +11,7 @@ import java.util.List;
 public class ListUtils {
 
     public static void addEmptyItems(ScreenUtils screenUtils, List<Recipient> items) {
-        double minItems = Math.ceil(((float) screenUtils.getHeightPx() / (screenUtils.getWidthPx() >> 1)) * 2);
+        double minItems = Math.ceil((float) screenUtils.getHeightPx() / (screenUtils.getWidthPx() >> 1)) * 2;
         if (minItems % 2 == 0) minItems++;
 
         if (items.size() < minItems) {

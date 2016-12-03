@@ -109,6 +109,7 @@
             <enum name="sharing" value="2" />
             <enum name="toggle" value="3" />
             <enum name="critical" value="4" />
+            <enum name="points" value="5" />
         </attr>
     </declare-styleable>
 </resources>

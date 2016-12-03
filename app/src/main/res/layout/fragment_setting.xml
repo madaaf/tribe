@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/scrollSetting"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -22,6 +23,33 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/shape_white_rect_grey_border"
                 android:paddingTop="@dimen/section_button_vertical_padding" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@color/grey.background.profile_info" />
+
+            <com.tribe.app.presentation.view.component.ActionView
+                android:id="@+id/viewActionShareProfile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shape_white_rect_grey_border"
+                app:actionType="sharing"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@color/grey.background.profile_info" />
+
+            <com.tribe.app.presentation.view.component.ActionView
+                android:id="@+id/viewActionPoints"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shape_white_rect_grey_border"
+                app:actionBody="@string/settings_score_subtitle"
+                app:actionType="points"
+                />
 
             <View
                 android:layout_width="match_parent"

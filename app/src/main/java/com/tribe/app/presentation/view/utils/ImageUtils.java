@@ -146,12 +146,14 @@ public class ImageUtils {
                     List<Pair<Integer, Bitmap>> bitmapList = new ArrayList<>();
 
                     for (Pair<Integer, File> pair : filesPair) {
-                        int finalSize = urls.size() > 3 ? (halfSize) : (pair.first == 0 ? avatarSize : halfSize);
+                        if (pair.first != null && pair.second != null) {
+                            int finalSize = urls.size() > 3 ? (halfSize) : (pair.first == 0 ? avatarSize : halfSize);
 
-                        BitmapFactory.Options opt = new BitmapFactory.Options();
-                        opt.inMutable = true;
-                        Bitmap temp = BitmapFactoryUtils.decodeFile(pair.second.getAbsolutePath());
-                        bitmapList.add(Pair.create(pair.first, BitmapFactoryUtils.scale(temp, finalSize, true)));
+                            BitmapFactory.Options opt = new BitmapFactory.Options();
+                            opt.inMutable = true;
+                            Bitmap temp = BitmapFactoryUtils.decodeFile(pair.second.getAbsolutePath());
+                            bitmapList.add(Pair.create(pair.first, BitmapFactoryUtils.scale(temp, finalSize, true)));
+                        }
                     }
 
                     return bitmapList;

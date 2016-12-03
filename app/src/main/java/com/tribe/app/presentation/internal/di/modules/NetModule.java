@@ -7,6 +7,7 @@ import android.os.ConditionVariable;
 import android.util.Base64;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -59,6 +60,7 @@ import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 
 import java.io.File;
@@ -399,6 +401,7 @@ public class NetModule {
 
     private void appendUserAgent(Context context, Request.Builder requestBuilder) {
         requestBuilder.header("User-Agent", context.getPackageName() + "/"
-                + DeviceUtils.getVersionCode(context) + " android/" + Build.VERSION.RELEASE + " okhttp/3.2");
+                + DeviceUtils.getVersionCode(context) + " android/" + Build.VERSION.RELEASE + " okhttp/3.2"
+                + " Agent/" + FirebaseRemoteConfig.getInstance().getString(Constants.FIREBASE_AGENT_VERSION));
     }
 }

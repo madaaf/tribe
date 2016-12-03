@@ -23,10 +23,12 @@ import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.domain.entity.Membership;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.GroupPresenter;
 import com.tribe.app.presentation.mvp.view.GroupView;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.component.group.AddMembersGroupView;
 import com.tribe.app.presentation.view.component.group.CreateGroupView;
 import com.tribe.app.presentation.view.component.group.MembersGroupView;
@@ -67,6 +69,9 @@ public class GroupActivity extends BaseActivity implements GroupView {
     }
 
     private static final int DURATION = 200;
+
+    @Inject
+    User user;
 
     @Inject
     ScreenUtils screenUtils;
@@ -149,6 +154,8 @@ public class GroupActivity extends BaseActivity implements GroupView {
             groupPicture = getIntent().getStringExtra(GROUP_PICTURE);
             txtTitle.setText(groupName);
         } else {
+            tagManager.trackEvent(TagManagerConstants.KPI_GROUP_CREATION_STARTED);
+
             txtAction.setText(R.string.action_create);
             txtAction.setVisibility(View.GONE);
             txtTitle.setText(R.string.group_identification_title);
@@ -162,12 +169,18 @@ public class GroupActivity extends BaseActivity implements GroupView {
                     membersId.add(groupMember.getUser().getId());
                 }
 
+                Bundle bundle = new Bundle();
+                bundle.putString(TagManagerConstants.TEMPLATE, groupEntity.isCustom() ? groupEntity.getName() : TagManagerConstants.TEMPLATE_CUSTOM);
+                tagManager.trackEvent(TagManagerConstants.KPI_GROUP_CREATED, bundle);
+                tagManager.increment(TagManagerConstants.COUNT_GROUPS_CREATED);
+
                 groupEntity.setMembersId(membersId);
                 groupPresenter.createGroup(groupEntity);
             } else {
                 if (viewStack.getTopView() instanceof UpdateGroupView) {
                     groupPresenter.updateGroup(membership.getSubId(), viewUpdateGroup.getGroupEntity());
                 } else if (viewStack.getTopView() instanceof AddMembersGroupView) {
+                    tagManager.trackEvent(TagManagerConstants.KPI_GROUP_MEMBERS_ADDED);
                     groupPresenter.addMembersToGroup(membership.getSubId(), newMembers);
                 }
             }
@@ -310,6 +323,7 @@ public class GroupActivity extends BaseActivity implements GroupView {
 
             subscriptions.add(viewAddMembersGroup.onClickShareLink()
                     .subscribe(aVoid -> {
+                        tagManager.trackEvent(TagManagerConstants.KPI_GROUP_LINK_SHARED);
                         navigator.shareGenericText(membership.getGroup().getGroupLink(), this);
                     })
             );
@@ -344,7 +358,9 @@ public class GroupActivity extends BaseActivity implements GroupView {
     private void setupMemberListGroupView() {
         viewMembersGroup = (MembersGroupView) viewStack.pushWithParameter(R.layout.view_members_group, membership);
         subscriptions.add(viewMembersGroup.onClickAddFriend()
-                .subscribe(user -> groupPresenter.createFriendship(user.getId()))
+                .subscribe(user -> {
+                    groupPresenter.createFriendship(user.getId());
+                })
         );
 
         subscriptions.add(viewMembersGroup.onClickAddAdmin()
@@ -456,7 +472,7 @@ public class GroupActivity extends BaseActivity implements GroupView {
 
         if (viewSettingsGroup != null) viewSettingsGroup.updateGroup(group, full);
         if (viewAddMembersGroup != null) viewAddMembersGroup.updateGroup(group, full);
-        if (viewMembersGroup != null) viewMembersGroup.updateGroup(group, full);
+        if (viewMembersGroup != null) viewMembersGroup.updateGroup(group);
     }
 
     private String getTitleForMembers() {
@@ -532,8 +548,10 @@ public class GroupActivity extends BaseActivity implements GroupView {
 
     @Override
     public void onUserAddSuccess(Friendship friendship) {
-        if (viewStack.getTopView() instanceof MembersGroupView) {
+        user.getFriendships().add(friendship);
 
+        if (viewStack.getTopView() instanceof MembersGroupView) {
+            viewMembersGroup.updateGroup(membership.getGroup());
         }
     }
 

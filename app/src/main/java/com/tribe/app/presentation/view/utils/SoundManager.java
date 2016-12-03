@@ -76,7 +76,6 @@ public class SoundManager {
     public void addSound(int index, int soundID) {
         availaibleSounds.add(index);
         soundPool.setOnLoadCompleteListener((soundPool1, sampleId, status) -> {
-            //System.out.println("SAMPLE ID : " + sampleId + " / STATUS : " + status);
         });
         soundPoolMap.put(index, soundPool.load(context, soundID, 1));
     }

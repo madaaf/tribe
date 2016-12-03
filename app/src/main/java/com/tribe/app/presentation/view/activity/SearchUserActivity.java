@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
@@ -39,8 +38,12 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class SearchUserActivity extends BaseActivity implements SearchView {
 
-    public static Intent getCallingIntent(Context context) {
-        return new Intent(context, SearchUserActivity.class);
+    private static final String USERNAME = "USERNAME";
+
+    public static Intent getCallingIntent(Context context, String username) {
+        Intent intent = new Intent(context, SearchUserActivity.class);
+        if (!StringUtils.isEmpty(username)) intent.putExtra(USERNAME, username);
+        return intent;
     }
 
     @Inject
@@ -61,9 +64,6 @@ public class SearchUserActivity extends BaseActivity implements SearchView {
     @BindView(R.id.editTextSearchContact)
     EditTextFont editTextSearchContact;
 
-    @BindView(R.id.layoutDummy)
-    ViewGroup layoutDummy;
-
     // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
@@ -73,6 +73,7 @@ public class SearchUserActivity extends BaseActivity implements SearchView {
     private ContactsLayoutManager layoutManager;
     private List<Contact> searchContactList;
     private SearchResult searchResult;
+    private String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +83,7 @@ public class SearchUserActivity extends BaseActivity implements SearchView {
         initUI();
         initPresenter();
         initRecyclerView();
+        initParams(getIntent());
     }
 
     @Override
@@ -147,6 +149,13 @@ public class SearchUserActivity extends BaseActivity implements SearchView {
                             searchPresenter.createFriendship(searchResult.getId());
                     }
                 }));
+    }
+
+    private void initParams(Intent intent) {
+        if (intent != null && intent.hasExtra(USERNAME)) {
+            username = intent.getStringExtra(USERNAME);
+            editTextSearchContact.setText(username);
+        }
     }
 
     private void updateSearch() {

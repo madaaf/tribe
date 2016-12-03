@@ -47,11 +47,13 @@ public class AnalyticsManager implements TagManager {
 
     private AmplitudeTagManager amplitude;
     private AppboyTagManager appboy;
+    private BranchTagManager branch;
 
     @Inject
     public AnalyticsManager(Context context, @Named("userThreadSafe") User user) {
         this.amplitude = new AmplitudeTagManager(context, user);
         this.appboy = new AppboyTagManager(context);
+        this.branch = new BranchTagManager(context);
 
         ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
 
@@ -95,57 +97,67 @@ public class AnalyticsManager implements TagManager {
     public void setUserId(String userId) {
         appboy.setUserId(userId);
         amplitude.setUserId(userId);
+        branch.setUserId(userId);
     }
 
     @Override
     public void onStart(Activity activity) {
         appboy.onStart(activity);
+        branch.onStart(activity);
     }
 
     @Override
     public void onStop(Activity activity) {
         appboy.onStop(activity);
+        branch.onStop(activity);
     }
 
     @Override
     public void trackInstall() {
         amplitude.trackInstall();
         appboy.trackInstall();
+        branch.trackInstall();
     }
 
     @Override
     public void trackEvent(String event) {
         amplitude.trackEvent(event);
         appboy.trackEvent(event);
+        branch.trackEvent(event);
     }
 
     @Override
     public void trackEvent(String event, Bundle properties) {
         amplitude.trackEvent(event, properties);
-        appboy.trackEvent(event);
+        appboy.trackEvent(event, properties);
+        branch.trackEvent(event, properties);
     }
 
     @Override
     public void setProperty(Bundle properties) {
         amplitude.setProperty(properties);
         appboy.setProperty(properties);
+        branch.setProperty(properties);
     }
 
     @Override
     public void setPropertyOnce(Bundle properties) {
         amplitude.setPropertyOnce(properties);
         appboy.setPropertyOnce(properties);
+        branch.setPropertyOnce(properties);
     }
 
     @Override
     public void increment(String properties) {
         amplitude.increment(properties);
         appboy.increment(properties);
+        branch.increment(properties);
     }
 
     @Override
     public void clear() {
         amplitude.clear();
         appboy.clear();
+        branch.clear();
     }
 }

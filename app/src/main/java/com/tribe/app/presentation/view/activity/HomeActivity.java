@@ -273,6 +273,18 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     }
 
     @Override
+    protected void onPostResume() {
+        super.onPostResume();
+
+        firebaseRemoteConfig.fetch(BuildConfig.DEBUG ? 1 : 3600)
+            .addOnSuccessListener(aVoid -> {
+                firebaseRemoteConfig.activateFetched();
+                sendOnlineNotification();
+            })
+            .addOnFailureListener(exception -> Log.d("Tribe", "Fetch failed"));
+    }
+
+    @Override
     protected void onPause() {
         cameraWrapper.onPause();
         this.homeGridPresenter.onPause();
@@ -286,6 +298,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         stopService(i);
 
         recyclerViewFriends.setAdapter(null);
+        springFilterView.removeAllListeners();
+        springGrid.removeAllListeners();
+        springSystem.removeAllListeners();
 
         if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
 
@@ -427,7 +442,12 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         subscriptions.add(homeGridAdapter.onClickMore()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .subscribe(recipient -> {
-                    setupBottomSheetMore(recipient);
+                    if (recipient instanceof Membership && (recipient.getReceivedTribes() == null || recipient.getReceivedTribes().size() == 0)) {
+                        Membership membership = (Membership) recipient;
+                        navigator.navigateToGroupDetails(this, membership);
+                    } else {
+                        setupBottomSheetMore(recipient);
+                    }
                 }));
 
         subscriptions.add(homeGridAdapter.onClickErrorTribes()
@@ -531,7 +551,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         springGrid = springSystem.createSpring();
         springGrid.setSpringConfig(FILTER_VIEW_NO_BOUNCE_SPRING_CONFIG);
         springGrid.addListener(springGridListener);
-        springGrid.setEndValue(1f).setAtRest();
+        springGrid.setCurrentValue(1f).setAtRest();
 
         subscriptions.add(viewFilter.onCloseClick().subscribe(aVoid -> {
             hideFilterView();
@@ -584,7 +604,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
         subscriptions.add(topBarContainer.onClickSearch()
                 .subscribe(aVoid -> {
-                    navigateToSearch();
+                    navigateToSearch(null);
                 }));
 
         subscriptions.add(topBarContainer.onClickInvites()
@@ -605,14 +625,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 .setDeveloperModeEnabled(BuildConfig.DEBUG).build();
         firebaseRemoteConfig.setConfigSettings(configSettings);
         firebaseRemoteConfig.setDefaults(R.xml.firebase_default_config);
-
-        firebaseRemoteConfig.fetch().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                firebaseRemoteConfig.activateFetched();
-            }
-        });
-
-        sendOnlineNotification();
     }
 
     @Override
@@ -622,7 +634,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
             if (uri != null && !StringUtils.isEmpty(uri.getPath())) {
                 if (uri.getPath().startsWith("/u/")) {
-                    // TODO USER INVITE
+                    navigateToSearch(StringUtils.getLastBitFromUrl(url));
                 } else if (uri.getPath().startsWith("/g/")) {
                     homeGridPresenter.createMembership(StringUtils.getLastBitFromUrl(url));
                 }
@@ -655,7 +667,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                         Observable.timer(500, TimeUnit.MILLISECONDS)
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(aLong -> {
-                                    View view = layoutManager.findViewByPosition(1);
+                                    View view = layoutManager.findViewByPosition(0);
                                     if (view != null && view instanceof SquareFrameLayout) {
                                         TileView tileView = (TileView) view.findViewById(R.id.viewTile);
                                         if (tileView != null && tileView.getType() == TileView.TYPE_SUPPORT) {
@@ -720,7 +732,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @Override
     public void onMembershipCreated(Membership membership) {
-        // TODO RELOAD GRID
+
     }
 
     private void initRegistrationToken() {
@@ -953,8 +965,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         navigator.navigateToSettings(HomeActivity.this, SETTINGS_RESULT);
     }
 
-    private void navigateToSearch() {
-        navigator.navigateToSearchUser(HomeActivity.this);
+    private void navigateToSearch(String username) {
+        navigator.navigateToSearchUser(HomeActivity.this, username);
     }
 
     private void navigateToTribes(Recipient recipient) {
@@ -1084,6 +1096,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     private void sendOnlineNotification() {
         boolean canSendOnlineNotification = !firebaseRemoteConfig.getBoolean(Constants.FIREBASE_DISABLE_ONLINE_NOTIFICATIONS);
+
         int onlineNotificationIntervalMs = Integer.valueOf(firebaseRemoteConfig.getString(Constants.FIREBASE_DELAY_ONLINE_NOTIFICATIONS)) * 60 * 1000;
 
         if (canSendOnlineNotification && (System.currentTimeMillis() - lastOnlineNotification.get()) > onlineNotificationIntervalMs) {

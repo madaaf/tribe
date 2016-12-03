@@ -137,6 +137,10 @@ public class SettingPresenter extends UpdateUserPresenter {
         return settingView;
     }
 
+    public void updateScoreShare() {
+        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.SHARE_PROFILE, 1));
+    }
+
     private final class RemoveInstallSubscriber extends DefaultSubscriber<User> {
 
         @Override

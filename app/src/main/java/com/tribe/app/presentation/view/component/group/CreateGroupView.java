@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.component.group;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +20,8 @@ import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
@@ -45,6 +48,9 @@ import rx.subscriptions.CompositeSubscription;
 public class CreateGroupView extends FrameLayout {
 
     private int DURATION_FADE = 150;
+
+    @Inject
+    TagManager tagManager;
 
     @Inject
     RxImagePicker rxImagePicker;
@@ -100,13 +106,24 @@ public class CreateGroupView extends FrameLayout {
 
     @OnClick(R.id.btnGo)
     void clickGo() {
-        createNewGroup.onNext(new GroupEntity(editGroupName.getText().toString(), imgUri));
+        Bundle bundle = new Bundle();
+        bundle.putString(TagManagerConstants.TEMPLATE, TagManagerConstants.TEMPLATE_CUSTOM);
+        tagManager.trackEvent(TagManagerConstants.KPI_GROUP_TEMPLATE_SELECTED, bundle);
+
+        GroupEntity groupEntity = new GroupEntity(editGroupName.getText().toString(), imgUri);
+        groupEntity.setCustom(true);
+        createNewGroup.onNext(groupEntity);
     }
 
     @OnClick({ R.id.viewSuggestionBFF, R.id.viewSuggestionTeam, R.id.viewSuggestionClass, R.id.viewSuggestionRoomies,
             R.id.viewSuggestionWork, R.id.viewSuggestionFamily })
     void clickSuggestion(View v) {
         GroupSuggestionView groupSuggestionView = (GroupSuggestionView) v;
+
+        Bundle bundle = new Bundle();
+        bundle.putString(TagManagerConstants.TEMPLATE, groupSuggestionView.getLabel());
+        tagManager.trackEvent(TagManagerConstants.KPI_GROUP_TEMPLATE_SELECTED, bundle);
+
         GroupEntity groupEntity = new GroupEntity(groupSuggestionView.getLabel(), FileUtils.getUriToDrawable(getContext(), groupSuggestionView.getDrawableId()).toString());
         createNewGroup.onNext(groupEntity);
     }

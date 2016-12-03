@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.data.realm.AccessToken;
@@ -14,6 +15,8 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 
 import javax.inject.Inject;
+
+import io.branch.referral.Branch;
 
 public class LauncherActivity extends BaseActivity {
 
@@ -39,6 +42,15 @@ public class LauncherActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         getWindow().setBackgroundDrawable(null);
 
+        Branch branch = Branch.getInstance();
+
+        branch.initSession((referringParams, error) -> {
+            if (error != null) {
+                System.out.println("HEY ERROR");
+                Log.i("Tribe", error.getMessage());
+            }
+        }, this.getIntent().getData(), this);
+
         this.getApplicationComponent().inject(this);
 
         Uri deepLink = getIntent().getData();
@@ -56,6 +68,11 @@ public class LauncherActivity extends BaseActivity {
         }
 
         finish();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        setIntent(intent);
     }
 
     @Override
