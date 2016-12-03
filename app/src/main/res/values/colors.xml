@@ -12,6 +12,7 @@
     <color name="black.tribe.viewer">#1F2327</color>
 
     <!-- WHITES -->
+    <color name="white.opacity.15">#26FFFFFF</color>
     <color name="white.opacity.20">#33FFFFFF</color>
     <color name="white.opacity.40">#66FFFFFF</color>
     <color name="white.opacity.50">#80FFFFFF</color>
@@ -49,6 +50,7 @@
     <color name="grey.group">#747474</color>
     <color name="grey.suggestion">#DCE3EB</color>
     <color name="grey.authentication">#393939</color>
+    <color name="grey.light.mask">#33F7F7F7</color>
 
     <!-- BLUE -->
     <color name="blue.text">#02ADF2</color>

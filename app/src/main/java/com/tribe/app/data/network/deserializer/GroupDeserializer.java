@@ -9,8 +9,8 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
+import com.tribe.app.data.realm.GroupMemberRealm;
 import com.tribe.app.data.realm.GroupRealm;
-import com.tribe.app.data.realm.UserRealm;
 
 import java.lang.reflect.Type;
 
@@ -22,34 +22,41 @@ import io.realm.RealmList;
 public class GroupDeserializer implements JsonDeserializer<GroupRealm> {
     @Override
     public GroupRealm deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        JsonObject data = json.getAsJsonObject().getAsJsonObject("data");
+        JsonObject group = null;
+        JsonArray groupsArray = data.getAsJsonArray("groups");
+        if (groupsArray != null && groupsArray.get(0) != null && !(groupsArray.get(0) instanceof JsonNull)) {
+            group = data.getAsJsonArray("groups").get(0).getAsJsonObject();
+        }
 
+        if (group == null) group = data.getAsJsonObject("createGroup");
+        if (group == null) group = data.getAsJsonObject("updateGroup");
+
+        return parseGroup(group);
+    }
+
+    public GroupRealm parseGroup(JsonObject group) {
         GroupRealm groupRealm = new GroupRealm();
 
-        JsonObject data = json.getAsJsonObject().getAsJsonObject("data");
-        JsonObject group;
-
-        try {
-            group = data.getAsJsonArray("groups").get(0).getAsJsonObject();
-            JsonArray members = group.getAsJsonArray("members");
-            if (members != null) {
-                for (int i = 0; i < members.size(); i++) {
-                    if (members.get(i).isJsonNull()) {
-                        members.remove(i);
-                    }
+        JsonArray members = group.getAsJsonArray("members");
+        if (members != null) {
+            for (int i = 0; i < members.size(); i++) {
+                if (members.get(i).isJsonNull()) {
+                    members.remove(i);
                 }
             }
+        }
 
-            JsonArray admins = group.getAsJsonArray("admins");
+        JsonArray admins = group.getAsJsonArray("admins");
 
-            if (admins != null && members != null && members.size() > 0) {
-                RealmList<UserRealm> users = new GsonBuilder().create().fromJson(members, new TypeToken<RealmList<UserRealm>>() {}.getType());
-                RealmList<UserRealm> adminsList = new GsonBuilder().create().fromJson(admins, new TypeToken<RealmList<UserRealm>>() {}.getType());
-                groupRealm.setMembers(users);
-                groupRealm.setAdmins(adminsList);
-            }
-        } catch (NullPointerException e) {
-            group = data.getAsJsonObject("updateGroup");
-            if (group == null) group = data.getAsJsonObject("createGroup");
+        if (members != null && members.size() > 0) {
+            RealmList<GroupMemberRealm> memberRealmList = new GsonBuilder().create().fromJson(members, new TypeToken<RealmList<GroupMemberRealm>>() {}.getType());
+            groupRealm.setMembers(memberRealmList);
+        }
+
+        if (admins != null && admins.size() > 0) {
+            RealmList<GroupMemberRealm> adminsList = new GsonBuilder().create().fromJson(admins, new TypeToken<RealmList<GroupMemberRealm>>() {}.getType());
+            groupRealm.setAdmins(adminsList);
         }
 
         JsonElement groupLink = group.get("link");
@@ -57,7 +64,6 @@ public class GroupDeserializer implements JsonDeserializer<GroupRealm> {
         groupRealm.setId(group.get("id").getAsString());
         groupRealm.setName(group.get("name").getAsString());
         groupRealm.setPicture(group.get("picture") != null && !group.get("picture").isJsonNull() ? group.get("picture").getAsString() : null);
-        groupRealm.setPrivateGroup(group.get("type").getAsString().equals("PRIVATE"));
 
         return groupRealm;
     }

@@ -9,6 +9,7 @@ import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.MessageRecipientRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.data.realm.helpers.ChangeHelper;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
@@ -27,6 +28,7 @@ import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by tiago on 06/05/2016.
@@ -35,10 +37,6 @@ public class ChatCacheImpl implements ChatCache {
 
     private Context context;
     private Realm realm;
-    private RealmResults<ChatRealm> messagesNotSeen;
-    private RealmResults<ChatRealm> messages;
-    private RealmResults<ChatRealm> messagesError;
-    private RealmResults<ChatRealm> messagesReceived;
     private AccessToken accessToken;
 
     @Inject
@@ -65,58 +63,50 @@ public class ChatCacheImpl implements ChatCache {
 
     @Override
     public Observable<List<ChatRealm>> messages() {
-        return Observable.create((Observable.OnSubscribe<List<ChatRealm>>) subscriber -> {
-
-        });
+        return null;
     }
+
+    private ChangeHelper<RealmResults<ChatRealm>> changeSetMessages = new ChangeHelper<>();
 
     @Override
     public Observable<List<ChatRealm>> messages(String recipientId) {
-        return Observable.create(new Observable.OnSubscribe<List<ChatRealm>>() {
-            @Override
-            public void call(final Subscriber<? super List<ChatRealm>> subscriber) {
-                if (recipientId == null) {
-                    Realm obsRealm = Realm.getDefaultInstance();
-                    messagesNotSeen = realm.where(ChatRealm.class)
-                            .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_NOT_SEEN)
-                            .notEqualTo("from.id", accessToken.getUserId())
-                            .findAllSorted("created_at", Sort.DESCENDING);
-                    subscriber.onNext(obsRealm.copyFromRealm(messagesNotSeen));
-                    messagesNotSeen.removeChangeListeners();
-                    messagesNotSeen.addChangeListener(messagesUpdated -> subscriber.onNext(realm.copyFromRealm(messagesUpdated)));
-                    subscriber.onNext(realm.copyFromRealm(messagesNotSeen));
-                } else {
-                    try {
-                        messages =
-                                realm.where(ChatRealm.class)
-                                        .beginGroup()
-                                        .beginGroup()
-                                        .beginGroup()
-                                        .equalTo("from.id", recipientId)
-                                        .isNull("friendshipRealm")
-                                        .isNull("membershipRealm")
-                                        .endGroup()
-                                        .or()
-                                        .beginGroup()
-                                        .equalTo("friendshipRealm.friend.id", recipientId)
-                                        .isNull("membershipRealm")
-                                        .endGroup()
-                                        .endGroup()
-                                        .endGroup()
-                                        .or()
-                                        .beginGroup()
-                                        .equalTo("membershipRealm.group.id", recipientId)
-                                        .endGroup()
-                                        .findAllSorted("created_at", Sort.ASCENDING);
-                        messages.removeChangeListeners();
-                        messages.addChangeListener(messagesUpdated -> subscriber.onNext(realm.copyFromRealm(messagesUpdated)));
-                        subscriber.onNext(realm.copyFromRealm(messages));
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            }
-        });
+        changeSetMessages.clear();
+        RealmResults<ChatRealm> messagesNotSeen;
+
+        if (recipientId == null) {
+            messagesNotSeen = realm.where(ChatRealm.class)
+                    .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_NOT_SEEN)
+                    .notEqualTo("from.id", accessToken.getUserId())
+                    .findAllSorted("created_at", Sort.DESCENDING);
+        } else {
+            messagesNotSeen = realm.where(ChatRealm.class)
+                    .beginGroup()
+                    .beginGroup()
+                    .beginGroup()
+                    .equalTo("from.id", recipientId)
+                    .isNull("friendshipRealm")
+                    .isNull("membershipRealm")
+                    .endGroup()
+                    .or()
+                    .beginGroup()
+                    .equalTo("friendshipRealm.friend.id", recipientId)
+                    .isNull("membershipRealm")
+                    .endGroup()
+                    .endGroup()
+                    .endGroup()
+                    .or()
+                    .beginGroup()
+                    .equalTo("membershipRealm.group.id", recipientId)
+                    .endGroup()
+                    .findAllSorted("created_at", Sort.ASCENDING);
+        }
+
+        return messagesNotSeen
+                .asObservable()
+                .filter(chatRealms -> chatRealms.isLoaded())
+                .filter(chatRealms -> changeSetMessages.filter(chatRealms))
+                .map(chatRealms -> realm.copyFromRealm(chatRealms))
+                .unsubscribeOn(AndroidSchedulers.mainThread());
     }
 
     @Override
@@ -644,34 +634,38 @@ public class ChatCacheImpl implements ChatCache {
         return result;
     }
 
+    private ChangeHelper<RealmResults<ChatRealm>> changeSetError = new ChangeHelper<>();
+
     @Override
     public Observable<List<ChatRealm>> messagesError(String recipientId) {
-        return Observable.create((Observable.OnSubscribe<List<ChatRealm>>) subscriber -> {
-            messagesError = realm.where(ChatRealm.class)
-                    .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_ERROR)
-                    .beginGroup()
-                    .beginGroup()
-                    .beginGroup()
-                    .beginGroup()
-                    .equalTo("from.id", recipientId)
-                    .isNull("friendshipRealm")
-                    .isNull("membershipRealm")
-                    .endGroup()
-                    .or()
-                    .beginGroup()
-                    .equalTo("friendshipRealm.friend.id", recipientId)
-                    .isNull("membershipRealm")
-                    .endGroup()
-                    .endGroup()
-                    .endGroup()
-                    .or()
-                    .equalTo("membershipRealm.group.id", recipientId)
-                    .endGroup()
-                    .findAllSorted("created_at", Sort.ASCENDING);
+        changeSetError.clear();
 
-            messagesError.addChangeListener(element -> subscriber.onNext(realm.copyFromRealm(messagesError)));
-            subscriber.onNext(realm.copyFromRealm(messagesError));
-        });
+        return realm.where(ChatRealm.class)
+                .equalTo("messageSendingStatus", MessageSendingStatus.STATUS_ERROR)
+                .beginGroup()
+                .beginGroup()
+                .beginGroup()
+                .beginGroup()
+                .equalTo("from.id", recipientId)
+                .isNull("friendshipRealm")
+                .isNull("membershipRealm")
+                .endGroup()
+                .or()
+                .beginGroup()
+                .equalTo("friendshipRealm.friend.id", recipientId)
+                .isNull("membershipRealm")
+                .endGroup()
+                .endGroup()
+                .endGroup()
+                .or()
+                .equalTo("membershipRealm.group.id", recipientId)
+                .endGroup()
+                .findAllSorted("created_at", Sort.ASCENDING)
+                .asObservable()
+                .filter(chatRealms -> chatRealms.isLoaded())
+                .filter(chatRealms -> changeSetError.filter(chatRealms))
+                .map(tribeRealms -> realm.copyFromRealm(tribeRealms))
+                .unsubscribeOn(AndroidSchedulers.mainThread());
     }
 
     @Override
@@ -743,25 +737,21 @@ public class ChatCacheImpl implements ChatCache {
         return result;
     }
 
+    private ChangeHelper<RealmResults<ChatRealm>> changeSetReceived = new ChangeHelper<>();
+
     @Override
     public Observable<List<ChatRealm>> messagesReceived(String friendshipId) {
-        return Observable.create(new Observable.OnSubscribe<List<ChatRealm>>() {
-            @Override
-            public void call(final Subscriber<? super List<ChatRealm>> subscriber) {
-                if (friendshipId == null) {
-                    messagesReceived = realm.where(ChatRealm.class)
-                            .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_RECEIVED)
-                            .notEqualTo("from.id", accessToken.getUserId())
-                            .findAllSorted("recorded_at", Sort.DESCENDING);
-                }
+        changeSetReceived.clear();
 
-                messagesReceived.removeChangeListeners();
-                messagesReceived.addChangeListener(messagesUpdated -> {
-                    subscriber.onNext(realm.copyFromRealm(messagesUpdated));
-                });
-                subscriber.onNext(realm.copyFromRealm(messagesReceived));
-            }
-        });
+        return realm.where(ChatRealm.class)
+                .equalTo("messageReceivingStatus", MessageReceivingStatus.STATUS_RECEIVED)
+                .notEqualTo("from.id", accessToken.getUserId())
+                .findAllSorted("recorded_at", Sort.DESCENDING)
+                .asObservable()
+                .filter(chatRealms -> chatRealms.isLoaded())
+                .filter(chatRealms -> changeSetReceived.filter(chatRealms))
+                .map(chatRealms -> realm.copyFromRealm(chatRealms))
+                .unsubscribeOn(AndroidSchedulers.mainThread());
     }
 
     @Override

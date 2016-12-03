@@ -6,24 +6,24 @@ allprojects {
 
 ext {
     //Android
-    androidBuildToolsVersion = "25.0.0"
+    androidBuildToolsVersion = "25.0.1"
     androidMinSdkVersion = 18
-    androidTargetSdkVersion = 23
-    androidCompileSdkVersion = 23
+    androidTargetSdkVersion = 24
+    androidCompileSdkVersion = 24
 
     //Libraries
     daggerVersion = '2.2'
     butterKnifeVersion = '8.0.1'
-    recyclerViewVersion = '25.0.0'
-    appCompatVersion = '25.0.0'
-    designSupportVersion = '25.0.0'
-    cardDesignVersion = '25.0.0'
+    recyclerViewVersion = '25.0.1'
+    appCompatVersion = '25.0.1'
+    designSupportVersion = '25.0.1'
+    cardDesignVersion = '25.0.1'
     rxJavaVersion = '1.2.1'
     rxAndroidVersion = '1.2.1'
     javaxAnnotationVersion = '1.0'
     gsonVersion = '2.6.2'
     retrofitVersion = '2.0.2'
-    androidAnnotationsVersion = '25.0.0'
+    androidAnnotationsVersion = '25.0.1'
     okHttpVersion = '3.2.0'
     priorityJobQueueVersion = '2.0.0'
     pahoMQTT3Version = '1.0.2'
@@ -54,6 +54,8 @@ ext {
     firebaseMessagingVersion = '9.4.0'
     firebaseCrashReportingVersion = '9.4.0'
     firebaseInvitesVersion = '9.4.0'
+    recyclerViewAnimatorsVersion = '2.2.4'
+    branchIoVersion = '2.5.2'
 
     //Testing
     robolectricVersion = '3.0'
@@ -112,7 +114,9 @@ ext {
             imageCropper            : "com.theartofdev.edmodo:android-image-cropper:${imageCropperVersion}",
             firebaseInvites         : "com.google.firebase:firebase-invites:${firebaseInvitesVersion}",
             appBoy                  : "com.appboy:android-sdk-ui:${appBoyVersion}",
-            firebaseRemote          : "com.google.firebase:firebase-config:${firebaseRemoteVersion}"
+            firebaseRemote          : "com.google.firebase:firebase-config:${firebaseRemoteVersion}",
+            recyclerViewAnimators   : "jp.wasabeef:recyclerview-animators:${recyclerViewAnimatorsVersion}",
+            branchIo                : "io.branch.sdk.android:library:${branchIoVersion}"
     ]
 
     presentationTestDependencies = [

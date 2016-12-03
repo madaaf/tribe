@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutContent"
+    android:layout_width="55dp"
+    android:layout_height="@dimen/group_members_height"
+    android:background="@null"
+    android:orientation="horizontal"
+    >
+
+    <ImageView
+        android:id="@+id/imgAvatar"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_gravity="center_vertical|right"
+        android:background="@drawable/shape_oval_grey_lighter"
+        android:scaleType="centerCrop"
+        />
+
+    <View
+        android:id="@+id/viewRing"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_gravity="center_vertical|right"
+        android:background="@drawable/shape_oval_purple_ring"
+        android:visibility="gone"
+        />
+</FrameLayout>

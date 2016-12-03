@@ -1,5 +1,6 @@
 package com.tribe.app.data.network.job;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
@@ -14,6 +15,7 @@ import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.text.DeleteChat;
 import com.tribe.app.domain.interactor.text.SendChat;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 
@@ -103,6 +105,10 @@ public class SendChatJob extends BaseJob {
         public void onNext(ChatMessage chatMessage) {
             jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.SEND_RECEIVE_CHAT, 1));
             setStatus(MessageSendingStatus.STATUS_SENT);
+            Bundle bundle = new Bundle();
+            bundle.putString(TagManagerConstants.TYPE, chatMessage.isToGroup() ? TagManagerConstants.TYPE_TRIBE_GROUP : TagManagerConstants.TYPE_TRIBE_USER);
+            tagManager.trackEvent(TagManagerConstants.KPI_CHAT_SENT, bundle);
+            tagManager.increment(TagManagerConstants.COUNT_CHAT_SENT);
         }
     }
 }

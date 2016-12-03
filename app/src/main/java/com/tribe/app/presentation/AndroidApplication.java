@@ -10,15 +10,24 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.stetho.Stetho;
 import com.tribe.app.BuildConfig;
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerApplicationComponent;
 import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 
+import java.util.Date;
+import java.util.List;
+
+import io.branch.referral.Branch;
 import io.fabric.sdk.android.Fabric;
+import io.realm.DynamicRealmObject;
+import io.realm.FieldAttribute;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmObjectSchema;
+import io.realm.RealmSchema;
 
 /**
  * Android Main Application
@@ -36,6 +45,7 @@ public class AndroidApplication extends Application {
         this.initializeRealm();
         this.initializeStetho();
         this.initializeFacebook();
+        this.initializeBranch();
     }
 
     @Override
@@ -81,8 +91,71 @@ public class AndroidApplication extends Application {
         Realm.init(this);
         RealmConfiguration realmConfiguration = new RealmConfiguration
                 .Builder()
+                .schemaVersion(1)
                 .migration((realm, oldVersion, newVersion) -> {
+                    RealmSchema schema = realm.getSchema();
 
+                    if (oldVersion == 0) {
+                        RealmObjectSchema groupMemberSchema = schema.create("GroupMemberRealm")
+                                .addField("id", String.class, FieldAttribute.PRIMARY_KEY)
+                                .addField("created_at", Date.class)
+                                .addField("updated_at", Date.class)
+                                .addField("display_name", String.class)
+                                .addField("username", String.class)
+                                .addField("picture", String.class)
+                                .addField("score", int.class)
+                                .addField("invisible_mode", boolean.class);
+
+                        RealmObjectSchema groupSchema = schema.get("GroupRealm");
+
+                        if (groupSchema.hasField("privateGroup")) groupSchema.removeField("privateGroup");
+
+                        groupSchema.addRealmListField("members_tmp", groupMemberSchema)
+                                .transform(obj -> {
+                                    List<UserRealm> members = obj.get("members");
+
+                                    if (members != null) {
+                                        for (UserRealm userRealm : members) {
+                                            DynamicRealmObject groupMember = realm.createObject("GroupMemberRealm");
+                                            groupMember.setString("id", userRealm.getId());
+                                            groupMember.setDate("created_at", userRealm.getCreatedAt());
+                                            groupMember.setDate("updated_at", userRealm.getUpdatedAt());
+                                            groupMember.setString("display_name", userRealm.getDisplayName());
+                                            groupMember.setString("username", userRealm.getUsername());
+                                            groupMember.setString("picture", userRealm.getProfilePicture());
+                                            groupMember.setInt("score", userRealm.getScore());
+                                            groupMember.setBoolean("invisble_mode", userRealm.isInvisibleMode());
+                                            obj.getList("members_tmp").add(groupMember);
+                                        }
+                                    }
+                                })
+                                .removeField("members")
+                                .renameField("members_tmp", "members");
+
+                        groupSchema.addRealmListField("admins_tmp", groupMemberSchema)
+                                .transform(obj -> {
+                                    List<UserRealm> admins = obj.get("admins");
+
+                                    if (admins != null) {
+                                        for (UserRealm userRealm : admins) {
+                                            DynamicRealmObject groupMember = realm.createObject("GroupMemberRealm");
+                                            groupMember.setString("id", userRealm.getId());
+                                            groupMember.setDate("created_at", userRealm.getCreatedAt());
+                                            groupMember.setDate("updated_at", userRealm.getUpdatedAt());
+                                            groupMember.setString("display_name", userRealm.getDisplayName());
+                                            groupMember.setString("username", userRealm.getUsername());
+                                            groupMember.setString("picture", userRealm.getProfilePicture());
+                                            groupMember.setInt("score", userRealm.getScore());
+                                            groupMember.setBoolean("invisble_mode", userRealm.isInvisibleMode());
+                                            obj.getList("admins_tmp").add(groupMember);
+                                        }
+                                    }
+                                })
+                                .removeField("admins")
+                                .renameField("admins_tmp", "admins");
+
+                        oldVersion++;
+                    }
                 })
                 .build();
         Realm.setDefaultConfiguration(realmConfiguration);
@@ -91,6 +164,10 @@ public class AndroidApplication extends Application {
     private void initializeFacebook() {
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
+    }
+
+    private void initializeBranch() {
+        Branch.getAutoInstance(this);
     }
 
     public void logoutUser() {

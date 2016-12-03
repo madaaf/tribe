@@ -20,11 +20,18 @@ import rx.android.schedulers.AndroidSchedulers;
 @Singleton
 public class SoundManager {
 
+    public static final float SOUND_MAX = 1f;
+    public static final float SOUND_MID = 0.5f;
+    public static final float SOUND_LOW = 0.1f;
+
     public static final int TAP_TO_CANCEL = 1;
     public static final int START_RECORD = 2;
     public static final int END_RECORD = 3;
     public static final int OPEN_TRIBE = 4;
     public static final int SENT = 5;
+    public static final int START_REFRESH = 6;
+    public static final int END_REFRESH = 7;
+    public static final int ERROR_REFRESH = 8;
 
     // VARIABLES
     private Context context;
@@ -61,20 +68,23 @@ public class SoundManager {
         addSound(OPEN_TRIBE, R.raw.open_tribe);
         addSound(END_RECORD, R.raw.end_record);
         addSound(START_RECORD, R.raw.start_record);
+        addSound(START_REFRESH, R.raw.start_refreshing);
+        addSound(END_REFRESH, R.raw.end_refreshing);
+        addSound(ERROR_REFRESH, R.raw.refreshing_error);
     }
 
     public void addSound(int index, int soundID) {
         availaibleSounds.add(index);
         soundPool.setOnLoadCompleteListener((soundPool1, sampleId, status) -> {
-            //System.out.println("SAMPLE ID : " + sampleId + " / STATUS : " + status);
         });
         soundPoolMap.put(index, soundPool.load(context, soundID, 1));
     }
 
-    public void playSound(int index) {
+    public void playSound(int index, float volumeRate) {
         if (availaibleSounds.contains(index)) {
             int streamVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-            int soundId = soundPool.play(soundPoolMap.get(index), streamVolume, streamVolume, 1, 0, 1f);
+            float finalVol = volumeRate < streamVolume ? volumeRate : streamVolume;
+            int soundId = soundPool.play(soundPoolMap.get(index), finalVol, finalVol, 1, 0, 1f);
 
             killSoundQueue.add(soundId);
 

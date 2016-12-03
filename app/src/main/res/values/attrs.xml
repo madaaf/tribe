@@ -6,6 +6,10 @@
 
     <declare-styleable name="AvatarView">
         <attr name="border" format="boolean"></attr>
+        <attr name="avatarType" format="enum">
+            <enum name="group" value="0" />
+            <enum name="single" value="1" />
+        </attr>
     </declare-styleable>
 
     <declare-styleable name="RoundedCornerLayout">
@@ -80,18 +84,32 @@
         </attr>
     </declare-styleable>
 
-    <declare-styleable name="Pulsator4Droid">
-        <attr name="pulse_count" format="integer"/>
-        <attr name="pulse_duration" format="integer"/>
-        <attr name="pulse_color" format="color"/>
-        <attr name="pulse_repeat" format="integer"/>
-        <attr name="pulse_maxScale" format="float"/>
-        <attr name="pulse_startFromScratch" format="boolean"/>
-        <attr name="pulse_interpolator" format="enum">
-            <enum name="Linear" value="0"/>
-            <enum name="Accelerate" value="1"/>
-            <enum name="Decelerate" value="2"/>
-            <enum name="AccelerateDecelerate" value="3"/>
+    <declare-styleable name="TextViewAnimatedDots">
+        <attr name="textStyle" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="GroupSuggestionView">
+        <attr name="groupDrawable" format="integer" />
+        <attr name="groupType" format="enum">
+            <enum name="bestfriends" value="0" />
+            <enum name="teammates" value="1" />
+            <enum name="classmates" value="2" />
+            <enum name="roomies" value="3" />
+            <enum name="workteam" value="4" />
+            <enum name="family" value="5" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="ActionView">
+        <attr name="actionTitle" format="string" />
+        <attr name="actionBody" format="string" />
+        <attr name="actionType" format="enum">
+            <enum name="hierarchy" value="0" />
+            <enum name="hierarchy_with_image" value="1" />
+            <enum name="sharing" value="2" />
+            <enum name="toggle" value="3" />
+            <enum name="critical" value="4" />
+            <enum name="points" value="5" />
         </attr>
     </declare-styleable>
 </resources>

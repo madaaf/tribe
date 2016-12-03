@@ -450,6 +450,13 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
         }
     }
 
+    @Override
+    public void pinError(ErrorLogin errorLogin) {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(TagManagerConstants.TYPE_ERROR_TECHNICAL, true);
+        tagManager.trackEvent(TagManagerConstants.ONBOARDING_PIN_ERROR, bundle);
+    }
+
     /**
      * Manage view pager transition methods
      */

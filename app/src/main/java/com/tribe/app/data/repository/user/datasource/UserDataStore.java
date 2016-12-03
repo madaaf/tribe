@@ -15,6 +15,7 @@ import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.User;
 
 import java.util.List;
@@ -141,9 +142,13 @@ public interface UserDataStore {
 
     Observable<GroupRealm> getGroupInfos(String groupId);
 
-    Observable<MembershipRealm> createGroup(String groupName, List<String> memberIds, Boolean isPrivate, String pictureUri);
+    Observable<MembershipRealm> getMembershipInfos(String membershipId);
 
-    Observable<GroupRealm> updateGroup(String groupId, String groupName, String pictureUri);
+    Observable<MembershipRealm> createGroup(GroupEntity groupEntity);
+
+    Observable<GroupRealm> updateGroup(String groupId, List<Pair<String, String>> values);
+
+    Observable<MembershipRealm> updateMembership(String membershipId, List<Pair<String, String>> values);
 
     Observable<Void> addMembersToGroup(String groupId, List<String> memberIds);
 
@@ -172,4 +177,6 @@ public interface UserDataStore {
     Observable<RecipientRealmInterface> getRecipientInfos(String recipientId, boolean isToGroup);
 
     Observable<Void> updateMessagesReceivedToNotSeen();
+
+    Observable<Void> sendOnlineNotification();
 }

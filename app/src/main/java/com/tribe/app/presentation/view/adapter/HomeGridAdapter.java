@@ -5,18 +5,18 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyHeaderGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.GroupGridAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.SupportGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.filter.RecipientFilter;
 import com.tribe.app.presentation.view.adapter.interfaces.RecyclerViewItemEnabler;
-import com.tribe.app.presentation.view.component.PullToSearchView;
 import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
@@ -33,10 +33,11 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerViewItemEnabler {
 
+    public static final int EMPTY_HEADER_VIEW_TYPE = 99;
+
     private ScreenUtils screenUtils;
 
     protected RxAdapterDelegatesManager delegatesManager;
-    private MeGridAdapterDelegate meGridAdapterDelegate;
     private UserGridAdapterDelegate userGridAdapterDelegate;
     private GroupGridAdapterDelegate groupGridAdapterDelegate;
     private SupportGridAdapterDelegate supportGridAdapterDelegate;
@@ -56,9 +57,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
         screenUtils = ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().screenUtils();
         delegatesManager = new RxAdapterDelegatesManager<>();
         delegatesManager.addDelegate(new EmptyGridAdapterDelegate(context));
-
-        meGridAdapterDelegate = new MeGridAdapterDelegate(context);
-        delegatesManager.addDelegate(meGridAdapterDelegate);
+        delegatesManager.addDelegate(EMPTY_HEADER_VIEW_TYPE, new EmptyHeaderGridAdapterDelegate(context));
 
         userGridAdapterDelegate = new UserGridAdapterDelegate(context);
         delegatesManager.addDelegate(userGridAdapterDelegate);
@@ -156,16 +155,9 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
                 supportGridAdapterDelegate.onClickErrorTribes());
     }
 
-    public Observable<View> onClickOpenPoints() {
-        return meGridAdapterDelegate.clickOpenPoints();
-    }
-
-    public Observable<View> onClickOpenSettings() {
-        return meGridAdapterDelegate.clickOpenSettings();
-    }
-
     public void setItems(List<Recipient> items) {
         this.items.clear();
+        this.items.add(new Friendship(Recipient.ID_HEADER));
         this.items.addAll(items);
 
         ListUtils.addEmptyItems(screenUtils, this.items);
@@ -206,7 +198,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
     }
 
     public void filterList(String text) {
-        if (!StringUtils.isEmpty(text) && !text.equals(PullToSearchView.HOME)) {
+        if (!StringUtils.isEmpty(text)) {
             hasFilter = true;
             filter.filter(text);
         } else {

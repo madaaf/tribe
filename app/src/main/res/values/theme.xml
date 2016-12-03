@@ -45,4 +45,13 @@
         <item name="actionMenuTextColor">@android:color/black</item>
         <item name="android:textColorPrimary">@android:color/black</item>
     </style>
+
+    <style name="GetNotifiedAnimation" parent="@android:style/Animation.Activity">
+        <item name="android:windowEnterAnimation">@anim/base_dialog_fragment_enter_animation</item>
+        <item name="android:windowExitAnimation">@anim/base_dialog_fragment_exit_animation</item>
+    </style>
+
+    <style name="FilterViewAnimation">
+        <item name="android:windowEnterAnimation">@anim/filter_view_enter_animation</item>
+    </style>
 </resources>

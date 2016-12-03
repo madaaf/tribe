@@ -62,6 +62,7 @@ import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
+import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -285,6 +286,12 @@ public class ApplicationModule {
     @Singleton
     PaletteGrid providePaletteGrid(Context context, @Theme Preference<Integer> theme) {
         return new PaletteGrid(context, theme);
+    }
+
+    @Provides
+    @Singleton
+    ImageUtils provideImageUtils(Context context, ScreenUtils screenUtils) {
+        return new ImageUtils(context, screenUtils);
     }
 
     @Provides

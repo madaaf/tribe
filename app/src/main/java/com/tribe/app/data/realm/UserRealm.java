@@ -45,6 +45,11 @@ public class UserRealm extends RealmObject {
     @Ignore
     private RealmList<GroupRealm> groups;
 
+    public UserRealm() {
+        memberships = new RealmList<>();
+        groups = new RealmList<>();
+    }
+
     public String getId() {
         return id;
     }

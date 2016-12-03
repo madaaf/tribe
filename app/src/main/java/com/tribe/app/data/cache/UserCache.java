@@ -31,7 +31,7 @@ public interface UserCache {
     FriendshipRealm friendshipForUserId(String userId);
     void removeFriendship(String friendshipId);
     void insertGroup(GroupRealm groupRealm);
-    void updateGroup(String groupId, String groupName, String pictureUri);
+    void updateGroup(GroupRealm groupRealm, boolean isFull);
     void addMembersToGroup(String groupId, List<String> memberIds);
     void removeMembersFromGroup(String groupId, List<String> memberIds);
     void addAdminsToGroup(String groupId, List<String> memberIds);
@@ -39,9 +39,10 @@ public interface UserCache {
     void removeGroup(String groupId);
     void removeGroupFromMembership(String membershipId);
     void insertMembership(String userId, MembershipRealm membershipRealm);
-    void updateMembershipLink(String userId, String membershipId, MembershipRealm membershipRealm);
+    void updateMembership(MembershipRealm membershipRealm);
     void updateScore(String userId, ScoreUtils.Point point);
     void updateScore(String userId, int score);
     Observable<FriendshipRealm> updateFriendship(String friendshipId, @FriendshipRealm.FriendshipStatus String status);
     FriendshipRealm updateFriendshipNoObs(String friendshipId, @FriendshipRealm.FriendshipStatus String moreType);
+    MembershipRealm membershipInfos(String membershipId);
 }

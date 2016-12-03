@@ -27,16 +27,15 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
- * CodeView.java
  * Created by tiago on 10/26/2016.
  */
 public class RatingView extends FrameLayout {
 
-    public static final float OVERSHOOT_TENSION_LIGHT = 0.7f;
-    public static final int DURATION = 600;
-    public static final int DURATION_SMALL = 300;
-    public static final int START_DELAY_BIG = 1500;
-    public static final int START_DELAY_SMALL = 800;
+    private static final float OVERSHOOT_TENSION_LIGHT = 0.7f;
+    private static final int DURATION = 600;
+    private static final int DURATION_SMALL = 300;
+    private static final int START_DELAY_BIG = 1500;
+    private static final int START_DELAY_SMALL = 800;
 
     @Inject
     ScreenUtils screenUtils;

@@ -5,6 +5,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,6 +38,7 @@ import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
+import com.tribe.app.presentation.view.utils.LowPassFilter;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
@@ -55,7 +61,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
-public class TribeActivity extends BaseActivity implements TribeView {
+public class TribeActivity extends BaseActivity implements TribeView, SensorEventListener {
 
     public static final String[] PERMISSIONS_LOCATION = new String[]{ Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION };
     public static final String RECIPIENT = "RECIPIENT";
@@ -94,6 +100,9 @@ public class TribeActivity extends BaseActivity implements TribeView {
     @BindView(R.id.viewTribePager)
     TribePagerView viewTribePager;
 
+    @BindView(R.id.earModeView)
+    View earModeView;
+
     // VARIABLES
     private Recipient recipient;
     private int position;
@@ -102,8 +111,27 @@ public class TribeActivity extends BaseActivity implements TribeView {
     private BottomSheetDialog dialogMore;
     private LabelSheetAdapter moreTypeAdapter;
     private boolean isRecording = false;
+    private AudioManager audioManager;
     private Tutorial tutorial;
     private boolean isReplyMode;
+
+    // SENSORS
+    private SensorManager sensorManager;
+    private Sensor proximity;
+    private Sensor magnetic;
+    private Sensor accelerometer;
+    private float[] lastMagFields = new float[3];
+    private float[] lastAccels = new float[3];
+    private float[] rotationMatrix = new float[16];
+    private float[] orientation = new float[4];
+    private boolean isNear;
+    private boolean earMode = false;
+    private float pitch = 0.f;
+    private float yaw = 0.f;
+    private float roll = 0.f;
+    private LowPassFilter filterYaw = new LowPassFilter(0.03f);
+    private LowPassFilter filterPitch = new LowPassFilter(0.03f);
+    private LowPassFilter filterRoll = new LowPassFilter(0.03f);
 
     // BINDERS / SUBSCRIPTIONS
     private Unbinder unbinder;
@@ -119,6 +147,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
         initTribePagerView();
         initSubscriptions();
         initPresenter();
+        initProximitySensor();
     }
 
     @Override
@@ -132,6 +161,11 @@ public class TribeActivity extends BaseActivity implements TribeView {
 
         viewTribePager.onResume();
         tribePresenter.onResume();
+
+        sensorManager.registerListener(this, proximity, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, magnetic, SensorManager.SENSOR_DELAY_GAME);
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        audioManager.setMode(AudioManager.MODE_IN_CALL);
     }
 
     @Override
@@ -139,6 +173,10 @@ public class TribeActivity extends BaseActivity implements TribeView {
         cleanUpTutorial();
         viewTribePager.onPause();
         tribePresenter.onPause();
+
+        sensorManager.unregisterListener(this);
+        audioManager.setMode(AudioManager.MODE_NORMAL);
+
         super.onPause();
     }
 
@@ -172,6 +210,14 @@ public class TribeActivity extends BaseActivity implements TribeView {
         tagManager.trackEvent(TagManagerConstants.KPI_TRIBES_OPENED, bundle);
     }
 
+    private void initProximitySensor() {
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        proximity = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        magnetic = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+    }
+
     private void initUi() {
         getWindow().setBackgroundDrawable(null);
         setContentView(R.layout.activity_tribe);
@@ -179,7 +225,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
     }
 
     private void initTribePagerView() {
-        int color = PaletteGrid.get(position - 1);
+        int color = PaletteGrid.get(position);
         viewTribePager.setBackgroundColor(color);
         viewTribePager.initWithInfo(recipient);
     }
@@ -252,7 +298,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
         );
 
         subscriptions.add(viewTribePager.onRecordStart()
-                .doOnNext(view -> soundManager.playSound(SoundManager.START_RECORD))
+                .doOnNext(view -> soundManager.playSound(SoundManager.START_RECORD, SoundManager.SOUND_LOW))
                 .delay(300, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(view -> {
@@ -275,7 +321,7 @@ public class TribeActivity extends BaseActivity implements TribeView {
         subscriptions.add(
                 viewTribePager.onRecordEnd()
                 .doOnNext(v -> {
-                    soundManager.playSound(SoundManager.END_RECORD);
+                    soundManager.playSound(SoundManager.END_RECORD, SoundManager.SOUND_LOW);
                     cleanUpTutorial();
                     isRecording = false;
                     viewTribePager.stopRecording();
@@ -545,14 +591,15 @@ public class TribeActivity extends BaseActivity implements TribeView {
     }
 
     private void tapToCancel() {
-        soundManager.playSound(SoundManager.TAP_TO_CANCEL);
+        soundManager.playSound(SoundManager.TAP_TO_CANCEL, SoundManager.SOUND_LOW
+        );
         FileUtils.delete(context(), currentTribe.getLocalId(), FileUtils.VIDEO);
         tribePresenter.deleteTribe(currentTribe);
         currentTribe = null;
     }
 
     private void onNotCancel() {
-        soundManager.playSound(SoundManager.SENT);
+        soundManager.playSound(SoundManager.SENT, SoundManager.SOUND_LOW);
         tribePresenter.sendTribe(currentTribe);
         currentTribe = null;
     }
@@ -562,5 +609,62 @@ public class TribeActivity extends BaseActivity implements TribeView {
         tribePresenter.markTribeListAsRead(recipient, viewTribePager.getTribeListSeens());
 
         super.onBackPressed();
+    }
+
+    // SENSOR MANAGER
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        switch (sensorEvent.sensor.getType()) {
+            case Sensor.TYPE_PROXIMITY:
+                if (sensorEvent.values.length > 0) {
+                    // From Android doc : Note: Some proximity sensors only support a binary near or far measurement.
+                    // In this case, the sensor should report its maximum range value in the far state and a lesser value in the near state.
+                    isNear = sensorEvent.values[0] < sensorEvent.sensor.getMaximumRange();
+                }
+                break;
+            case Sensor.TYPE_ACCELEROMETER:
+                System.arraycopy(sensorEvent.values, 0, lastAccels, 0, 3);
+                break;
+            case Sensor.TYPE_MAGNETIC_FIELD:
+                System.arraycopy(sensorEvent.values, 0, lastMagFields, 0, 3);
+                break;
+            default:
+                return;
+        }
+
+        if (SensorManager.getRotationMatrix(rotationMatrix, null, lastAccels, lastMagFields)) {
+            SensorManager.getOrientation(rotationMatrix, orientation);
+
+            float yaw = (float) (Math.toDegrees(orientation[0]));
+            float pitch = (float) Math.toDegrees(orientation[1]);
+            float roll = (float) Math.toDegrees(orientation[2]);
+
+            yaw = filterYaw.lowPass(yaw);
+            pitch = filterPitch.lowPass(pitch);
+            roll = filterRoll.lowPass(roll);
+
+            if (Math.abs(pitch) > 15 && Math.abs(pitch) < 50
+                    && isNear
+                    && Math.abs(roll) > 80 && Math.abs(roll) < 130
+                    && !earMode) {
+                earMode = true;
+                viewTribePager.changeAudioStreamType(AudioManager.STREAM_VOICE_CALL);
+                audioManager.setSpeakerphoneOn(false);
+                earModeView.setVisibility(View.VISIBLE);
+            } else if ((Math.abs(pitch) < 15 || Math.abs(pitch) > 50
+                    || !isNear
+                    || Math.abs(roll) < 80 || Math.abs(roll) > 130)
+                    && earMode) {
+                earMode = false;
+                viewTribePager.changeAudioStreamType(AudioManager.STREAM_MUSIC);
+                audioManager.setSpeakerphoneOn(true);
+                earModeView.setVisibility(View.GONE);
+            }
+        }
     }
 }

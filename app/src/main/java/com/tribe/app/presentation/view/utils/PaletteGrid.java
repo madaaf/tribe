@@ -28,7 +28,6 @@ public class PaletteGrid {
 
     @Inject
     public PaletteGrid(Context context, @Theme Preference<Integer> theme) {
-
         this.theme = theme;
 
         paletteOne = new Integer[] {

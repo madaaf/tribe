@@ -18,16 +18,12 @@
                 memberships %2$s {
                     ...MembershipInfo
                 }
-
-                groups %3$s {
-                    ...GroupInfo
-                }
             }
         }
 
+        %3$s
         %4$s
         %5$s
-        %6$s
     </string>
 
     <string name="user.infos.list" translatable="false">
@@ -412,10 +408,25 @@
         fragment GroupInfo on Group {
             id
             name
-            type
             picture
             link
             created_at
+        }
+    </string>
+
+    <string name="groupfragment.info.members" translatable="false">
+        fragment GroupInfo on Group {
+            id
+            name
+            picture
+            link
+            created_at
+            members {
+                ...UserInfos
+            }
+            admins {
+                ...UserInfos
+            }
         }
     </string>
 
@@ -434,6 +445,18 @@
         }
     </string>
 
+    <string name="membershipfragment.info.light" translatable="false">
+        fragment MembershipInfo on Membership {
+            id
+            mute
+            is_admin
+            link
+            link_expires_at
+            created_at
+            updated_at
+        }
+    </string>
+
     <string name="get.group.infos" translatable="false">
         {
             groups (ids : [\"%1$s\"]) {
@@ -442,6 +465,7 @@
         }
 
         %2$s
+        %3$s
     </string>
 
     <string name="get.group.members" translatable="false">
@@ -482,12 +506,35 @@
 
     <string name="update.group" translatable="false">
         mutation {
-            updateGroup(id : \"%1$s\", group: {
-                name : \"%2$s\"
-            }) {
+            updateGroup(id : \"%1$s\",
+                group : { %2$s }
+            ) {
                 ...GroupInfo
             }
         }
+
+        %3$s
+    </string>
+
+    <string name="membership.infos" translatable="false">
+        {
+            memberships (ids : [\"%1$s\"]) {
+                ...GroupInfo
+            }
+        }
+
+        %2$s
+    </string>
+
+    <string name="update.membership" translatable="false">
+        mutation {
+            updateMembership(membershipId : \"%1$s\",
+                membership : { %2$s }
+            ) {
+                ...MembershipInfo
+            }
+        }
+
         %3$s
     </string>
 
@@ -544,6 +591,7 @@
 
         %2$s
         %3$s
+        %4$s
     </string>
     
     <string name="generate.private.link" translatable="false">
@@ -599,6 +647,12 @@
     <string name="notify.facebook" translatable="false">
         mutation {
             runFacebookInvites(appId : \"%1$s\", accessToken : \"%2$s\")
+        }
+    </string>
+
+    <string name="online.notification" translatable="false">
+        mutation {
+            runOnlinePush
         }
     </string>
 </resources>

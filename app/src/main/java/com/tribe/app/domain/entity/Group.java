@@ -1,6 +1,9 @@
 package com.tribe.app.domain.entity;
 
+import com.tribe.app.presentation.utils.StringUtils;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,7 +19,6 @@ public class Group implements Serializable {
     private String picture;
     private String name;
     private String groupLink;
-    private boolean privateGroup;
     private List<User> members;
     private List<User> admins;
 
@@ -52,14 +54,6 @@ public class Group implements Serializable {
         this.groupLink = groupLink;
     }
 
-    public boolean isPrivateGroup() {
-        return privateGroup;
-    }
-
-    public void setPrivateGroup(boolean privateGroup) {
-        this.privateGroup = privateGroup;
-    }
-
     public List<User> getMembers() {
         return members;
     }
@@ -74,5 +68,80 @@ public class Group implements Serializable {
 
     public void setAdmins(List<User> admins) {
         this.admins = admins;
+    }
+
+    public List<String> getMembersPics() {
+        List<String> pics = new ArrayList<>();
+
+        if (members != null) {
+            List<User> subMembers = members.subList(Math.max(members.size() - 4, 0), members.size());
+
+            if (subMembers != null) {
+                for (User user : subMembers) {
+                    String url = user.getProfilePicture();
+                    if (!StringUtils.isEmpty(url))
+                        pics.add(url);
+                }
+            }
+        }
+
+        return pics;
+    }
+
+    public void computeGroupMembers(List<GroupMember> groupMemberList) {
+        if (groupMemberList != null) {
+            for (GroupMember groupMember : groupMemberList) {
+                if (members != null) {
+                    for (User member : members) {
+                        if (groupMember.getUser().getId().equals(member.getId())) {
+                            groupMember.setMember(true);
+                            groupMember.setOgMember(true);
+                            break;
+                        }
+                    }
+                }
+
+                if (admins != null) {
+                    for (User admin : admins) {
+                        if (groupMember.getUser().getId().equals(admin.getId())) {
+                            groupMember.setMember(true);
+                            groupMember.setOgMember(true);
+                            groupMember.setAdmin(true);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public List<GroupMember> getGroupMembers() {
+        List<GroupMember> groupMemberList = new ArrayList<>();
+
+        for (User member : members) {
+            GroupMember groupMember = new GroupMember(member);
+            groupMember.setMember(true);
+            groupMember.setOgMember(true);
+
+            for (User admin : admins) {
+                if (member.equals(admin)) groupMember.setAdmin(true);
+            }
+
+            groupMemberList.add(groupMember);
+        }
+
+        //Collections.sort(groupMemberList, (o1, o2) -> GroupMember.nullSafeComparator(o1, o2));
+
+        return groupMemberList;
+    }
+
+    public boolean isUserAdmin(User user) {
+        for (User admin : admins) {
+            if (admin.equals(user)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

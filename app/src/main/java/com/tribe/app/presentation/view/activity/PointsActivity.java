@@ -9,6 +9,7 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.PointsPresenter;
 import com.tribe.app.presentation.mvp.view.PointsView;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.adapter.manager.PointsLayoutManager;
 import com.tribe.app.presentation.view.adapter.pager.PointsAdapter;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
@@ -87,6 +88,7 @@ public class PointsActivity extends BaseActivity implements PointsView {
         setContentView(R.layout.activity_points);
         unbinder = ButterKnife.bind(this);
 
+        tagManager.trackEvent(TagManagerConstants.SCORE_CHECK_RULES);
     }
 
     private void initRecyclerView() {

@@ -53,6 +53,7 @@ public class MediaVideoEncoder extends MediaEncoder {
             format.setInteger(MediaFormat.KEY_BIT_RATE, BITRATE);
             format.setInteger(MediaFormat.KEY_FRAME_RATE, FRAME_RATE);
             format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, FRAME_INTERVAL);
+            format.setInteger(MediaFormat.KEY_DURATION, timeRecord);
 
             final MediaCodecInfo videoCodecInfo = selectVideoCodec(MIME_TYPE);
 

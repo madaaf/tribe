@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.ConditionVariable;
 import android.util.Base64;
 
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -58,6 +59,7 @@ import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 
 import java.io.File;
@@ -114,6 +116,9 @@ public class NetModule {
                      TribeCache tribeCache,
                      ChatCache chatCache,
                      AccessToken accessToken) {
+
+        GroupDeserializer groupDeserializer = new GroupDeserializer();
+
         return new GsonBuilder()
                 .setExclusionStrategies(new ExclusionStrategy() {
                     @Override
@@ -126,10 +131,10 @@ public class NetModule {
                         return false;
                     }
                 })
-                .registerTypeAdapter(new TypeToken<UserRealm>() {}.getType(), new TribeUserDeserializer(utcSimpleDate))
+                .registerTypeAdapter(new TypeToken<UserRealm>() {}.getType(), new TribeUserDeserializer(groupDeserializer, utcSimpleDate))
                 .registerTypeAdapter(AccessToken.class, new TribeAccessTokenDeserializer())
                 .registerTypeAdapter(TribeRealm.class, new NewTribeDeserializer<>())
-                .registerTypeAdapter(GroupRealm.class, new GroupDeserializer())
+                .registerTypeAdapter(GroupRealm.class, groupDeserializer)
                 .registerTypeAdapter(ChatRealm.class, new NewMessageDeserializer<>())
                 .registerTypeAdapter(new TypeToken<List<MessageRealmInterface>>(){}.getType(), new UserMessageListDeserializer<>(utcSimpleDate, userCache, tribeCache, chatCache, accessToken))
                 .registerTypeAdapter(Installation.class, new NewInstallDeserializer<>())
@@ -300,9 +305,9 @@ public class NetModule {
 
 //        if (BuildConfig.DEBUG) {
 //            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-//            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+//            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 //            httpClientBuilder.addInterceptor(loggingInterceptor);
-//            //httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+//            httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
 //        }
 
         return new Retrofit.Builder()
@@ -346,8 +351,8 @@ public class NetModule {
         OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
         httpClientBuilder
-                .connectTimeout(5, TimeUnit.MINUTES)
-                .readTimeout(5, TimeUnit.MINUTES);
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS);
 
         httpClientBuilder.addInterceptor(chain -> {
             Request original = chain.request();
@@ -368,7 +373,7 @@ public class NetModule {
 
 //        if (BuildConfig.DEBUG) {
 //            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-//            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+//            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 //            httpClientBuilder.addInterceptor(loggingInterceptor);
 //            httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
 //        }
@@ -393,7 +398,9 @@ public class NetModule {
     }
 
     private void appendUserAgent(Context context, Request.Builder requestBuilder) {
+        String agent = FirebaseRemoteConfig.getInstance() != null ? FirebaseRemoteConfig.getInstance().getString(Constants.FIREBASE_AGENT_VERSION) : "";
         requestBuilder.header("User-Agent", context.getPackageName() + "/"
-                + DeviceUtils.getVersionCode(context) + " android/" + Build.VERSION.RELEASE + " okhttp/3.2");
+                + DeviceUtils.getVersionCode(context) + " android/" + Build.VERSION.RELEASE + " okhttp/3.2"
+                + " Agent/" + agent);
     }
 }

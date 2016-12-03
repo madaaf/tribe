@@ -54,8 +54,7 @@ public class AmplitudeTagManager implements TagManager {
 
     @Override
     public void trackInstall() {
-        Identify identify = new Identify().setOnce(TagManagerConstants.ONBOARDING_APP_INSTALL, true);
-        amplitude.identify(identify);
+
     }
 
     @Override

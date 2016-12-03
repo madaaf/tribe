@@ -16,6 +16,7 @@ import java.util.List;
 public abstract class Recipient implements Serializable {
 
     public static final String ID_EMPTY = "EMPTY";
+    public static final String ID_HEADER = "HEADER";
 
     protected Date created_at;
     protected Date updated_at;

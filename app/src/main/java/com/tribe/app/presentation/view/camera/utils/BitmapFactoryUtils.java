@@ -90,12 +90,25 @@ public class BitmapFactoryUtils {
         return decodeFile(pathName, 1, 0, 2);
     }
 
+    public static Bitmap scale(Bitmap realImage, float maxImageSize,
+                                   boolean filter) {
+        float ratio = Math.max(
+                (float) maxImageSize / realImage.getWidth(),
+                (float) maxImageSize / realImage.getHeight());
+        int width = Math.round((float) ratio * realImage.getWidth());
+        int height = Math.round((float) ratio * realImage.getHeight());
+
+        Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width, height, filter);
+        return newBitmap;
+    }
+
     public static Bitmap decodeFile(final String pathName, final int startInSampleSize, final int add, final int multi) {
         final BitmapFactory.Options opts = new BitmapFactory.Options();
         int inSampleSize = startInSampleSize;
         while (true) {
             opts.inSampleSize = inSampleSize;
             opts.inDither = true;
+            opts.inMutable = true;
             try {
                 return BitmapFactory.decodeFile(pathName, opts);
             } catch (final OutOfMemoryError e) {

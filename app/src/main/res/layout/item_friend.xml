@@ -103,5 +103,4 @@
             android:visibility="gone"
             />
     </FrameLayout>
-
 </FrameLayout>

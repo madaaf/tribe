@@ -21,6 +21,7 @@ import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 
 import java.util.ArrayList;
@@ -155,12 +156,22 @@ public class DiskUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<MembershipRealm> createGroup(String groupName, List<String> memberIds, Boolean isPrivate, String pictureUri) {
+    public Observable<MembershipRealm> getMembershipInfos(String membershipId) {
+        return Observable.just(userCache.membershipInfos(membershipId));
+    }
+
+    @Override
+    public Observable<MembershipRealm> createGroup(GroupEntity groupEntity) {
         return null;
     }
 
     @Override
-    public Observable<GroupRealm> updateGroup(String groupId, String groupName, String pictureUri) {
+    public Observable<GroupRealm> updateGroup(String groupId, List<Pair<String, String>> values) {
+        return null;
+    }
+
+    @Override
+    public Observable<MembershipRealm> updateMembership(String membershipId, List<Pair<String, String>> values) {
         return null;
     }
 
@@ -272,5 +283,10 @@ public class DiskUserDataStore implements UserDataStore {
         chatCache.update(chatUpdates);
 
         return Observable.just(null);
+    }
+
+    @Override
+    public Observable<Void> sendOnlineNotification() {
+        return null;
     }
 }

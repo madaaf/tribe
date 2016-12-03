@@ -2,64 +2,77 @@ package com.tribe.app.presentation.view.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
+import android.support.design.widget.BottomSheetDialog;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.f2prateek.rx.preferences.Preference;
-import com.github.rahatarmanahmed.cpv.CircularProgressView;
+import com.facebook.rebound.SimpleSpringListener;
+import com.facebook.rebound.Spring;
+import com.facebook.rebound.SpringConfig;
+import com.facebook.rebound.SpringSystem;
+import com.facebook.rebound.SpringUtil;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.tbruyelle.rxpermissions.RxPermissions;
+import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.network.DownloadTribeService;
+import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
+import com.tribe.app.domain.entity.MoreType;
+import com.tribe.app.domain.entity.PendingType;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
+import com.tribe.app.presentation.internal.di.scope.HasRatedApp;
 import com.tribe.app.presentation.internal.di.scope.HasReceivedPointsForCameraPermission;
+import com.tribe.app.presentation.internal.di.scope.LastOnlineNotification;
+import com.tribe.app.presentation.internal.di.scope.TribeSentCount;
 import com.tribe.app.presentation.internal.di.scope.WasAskedForCameraPermission;
-import com.tribe.app.presentation.mvp.presenter.HomePresenter;
-import com.tribe.app.presentation.mvp.view.HomeView;
+import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
+import com.tribe.app.presentation.mvp.view.HomeGridView;
 import com.tribe.app.presentation.utils.DeepLinkUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
-import com.tribe.app.presentation.view.fragment.ContactsGridFragment;
-import com.tribe.app.presentation.view.fragment.GroupsGridFragment;
-import com.tribe.app.presentation.view.fragment.HomeGridFragment;
-import com.tribe.app.presentation.view.tutorial.Overlay;
+import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
+import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
+import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
+import com.tribe.app.presentation.view.component.FilterView;
+import com.tribe.app.presentation.view.component.TileView;
+import com.tribe.app.presentation.view.component.TopBarContainer;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
-import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.Constants;
+import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
-import com.tribe.app.presentation.view.widget.CustomViewPager;
-import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.SquareFrameLayout;
 
-import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -70,32 +83,43 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-public class HomeActivity extends BaseActivity implements HasComponent<UserComponent>, HomeView, GoogleApiClient.OnConnectionFailedListener {
+public class HomeActivity extends BaseActivity implements HasComponent<UserComponent>, HomeGridView, GoogleApiClient.OnConnectionFailedListener {
+
+    private static final SpringConfig FILTER_VIEW_BOUNCE_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(1f, 2.5f);
+    private static final SpringConfig FILTER_VIEW_NO_BOUNCE_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(1f, 2.5f);
+
+    private static final int TIME_MIN_RECORDING = 1500; // IN MS
+    private static final float OVERSHOOT_TENSION_LIGHT = 1.25f;
+    private static final int DURATION = 600;
+    private static final int DURATION_FAST = 300;
 
     public static final int SETTINGS_RESULT = 101, TRIBES_RESULT = 104;
-
-    private static final int DURATION = 500;
-    private static final int DURATION_SMALL = 300;
-    private static final float OVERSHOOT = 1f;
-
-    public static final int CONTACTS_FRAGMENT_PAGE = 0;
-    public static final int GRID_FRAGMENT_PAGE = 1;
-    public static final int GROUPS_FRAGMENT_PAGE = 2;
 
     public static Intent getCallingIntent(Context context) {
         return new Intent(context, HomeActivity.class);
     }
 
     @Inject
-    HomePresenter homePresenter;
+    HomeGridPresenter homeGridPresenter;
+
+    @Inject
+    HomeGridAdapter homeGridAdapter;
 
     @Inject
     ScreenUtils screenUtils;
 
     @Inject
+    PaletteGrid paletteGrid;
+
+    @Inject
     TutorialManager tutorialManager;
+
+    @Inject
+    @TribeSentCount
+    Preference<Integer> tribeSentCount;
 
     @Inject
     @HasReceivedPointsForCameraPermission
@@ -105,85 +129,95 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @WasAskedForCameraPermission
     Preference<Boolean> wasAskedForCameraPermission;
 
+    @Inject
+    @HasRatedApp
+    Preference<Boolean> hasRatedApp;
+
+    @Inject
+    @LastOnlineNotification
+    Preference<Long> lastOnlineNotification;
+
+    @Inject
+    SoundManager soundManager;
+
+    @BindView(R.id.recyclerViewFriends)
+    RecyclerView recyclerViewFriends;
+
     @BindView(android.R.id.content)
     ViewGroup rootView;
 
-    @BindView(R.id.viewPager)
-    CustomViewPager viewPager;
-
-    @BindView(R.id.layoutNavMaster)
-    View layoutNavMaster;
-
-    @BindView(R.id.imgNavGrid)
-    ImageView imgNavGrid;
-
-    @BindView(R.id.imgNavFriends)
-    ImageView imgNavFriends;
-
-    @BindView(R.id.imgNavGroups)
-    ImageView imgNavGroups;
-
-    @BindView(R.id.layoutNavGrid)
-    ViewGroup layoutNavGrid;
-
-    @BindView(R.id.layoutNavGridMain)
-    ViewGroup layoutNavGridMain;
-
-    @BindView(R.id.layoutNavNewMessages)
-    ViewGroup layoutNavNewMessages;
-
-    @BindView(R.id.txtNewMessages)
-    TextViewFont txtNewMessages;
-
-    @BindView(R.id.progressBarNewMessages)
-    CircularProgressView progressBarNewMessages;
-
-    @BindView(R.id.progressBarReload)
-    CircularProgressView progressBarReload;
-
-    @BindView(R.id.layoutNavPending)
-    ViewGroup layoutNavPending;
-
-    @BindView(R.id.txtPending)
-    TextViewFont txtPending;
-
-    @BindView(R.id.progressBar)
-    CircularProgressView progressBar;
-
     @BindView(R.id.cameraWrapper)
     CameraWrapper cameraWrapper;
+
+    @BindView(R.id.viewFilter)
+    FilterView viewFilter;
+
+    @BindView(R.id.viewBG)
+    View viewBG;
+
+    @BindView(R.id.imgFilter)
+    View imgFilter;
+
+    @BindView(R.id.imgFilterSelected)
+    View imgFilterSelected;
+
+    @BindView(R.id.imgBackToTop)
+    View imgBackToTop;
+
+    @BindView(R.id.topBarContainer)
+    TopBarContainer topBarContainer;
 
     // OBSERVABLES
     private UserComponent userComponent;
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
     // VARIABLES
-    private HomeViewPagerAdapter homeViewPagerAdapter;
-    private Context context;
-    private int previousViewPagerState;
-    private int viewPagerAnimDuration = AnimationUtils.ANIMATION_DURATION_EXTRA_SHORT;
-    private List<Message> newMessages;
-    private int pendingTribeCount;
+    private HomeLayoutManager layoutManager;
+    private BottomSheetDialog dialogMore;
+    private RecyclerView recyclerViewMore;
+    private LabelSheetAdapter moreSheetAdapter;
     private boolean isRecording;
-    private boolean navVisible = true;
-    private boolean layoutNavPendingVisible = false;
+    private long timeRecording;
     private Tutorial tutorial;
+    private List<TribeMessage> pendingTribes;
+    private BottomSheetDialog bottomSheetPendingTribeDialog;
+    private RecyclerView recyclerViewPending;
+    private LabelSheetAdapter labelSheetAdapter;
+    private boolean isFilterMode = false;
+    private boolean hasFilter = false;
+    private boolean isAnimatingNavigation = false;
+    private boolean canEndRefresh = false;
+    private List<Recipient> latestRecipientList;
+    private boolean shouldOverridePendingTransactions = false;
+    private FirebaseRemoteConfig firebaseRemoteConfig;
+
+    // SPRINGS
+    private SpringSystem springSystem = null;
+    private Spring springFilterView;
+    private FilterSpringListener springFilterListener;
+    private Spring springGrid;
+    private GridSpringListener springGridListener;
 
     // DIMEN
-    private int sizeNavMax, sizeNavSmall, marginHorizontalSmall, translationBackToTop;
-    private int tapToRefreshTutorialSize;
+    private int marginHorizontalSmall, translationBackToTop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().setBackgroundDrawableResource(android.R.color.black);
+
         super.onCreate(savedInstanceState);
 
         initDependencyInjector();
+        init();
         initUi();
         initDimensions();
-        initViewPager();
         initCamera();
         initPresenter();
         initRegistrationToken();
+        initFilterView();
+        initRecyclerView();
+        initPullToRefresh();
+        initRemoteConfig();
         manageDeepLink(getIntent());
 
         subscriptions.add(
@@ -216,6 +250,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     protected void onResume() {
         super.onResume();
 
+        loadData();
+
         subscriptions.add(Observable.
                 from(PermissionUtils.PERMISSIONS_CAMERA)
                 .map(permission -> RxPermissions.getInstance(HomeActivity.this).isGranted(permission))
@@ -230,58 +266,60 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                     handleCameraPermissions(areAllGranted, false);
                 }));
 
-        if (tutorialManager.shouldDisplay(TutorialManager.REFRESH)) {
-            subscriptions.add(
-                    Observable.timer(1000, TimeUnit.MILLISECONDS)
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(aLong -> {
-                                layoutNavGridMain.setDrawingCacheEnabled(true);
-                                layoutNavGridMain.buildDrawingCache();
-                                Bitmap bitmapForTutorialOverlay = Bitmap.createBitmap(layoutNavGridMain.getDrawingCache(true));
-                                layoutNavGridMain.setDrawingCacheEnabled(false);
-
-                                tutorial = tutorialManager.showRefresh(
-                                        this,
-                                        imgNavGrid,
-                                        Overlay.NOT_SET,
-                                        bitmapForTutorialOverlay,
-                                        sizeNavMax,
-                                        v -> cleanTutorial()
-                                );
-                            }));
+        if (shouldOverridePendingTransactions) {
+            overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
+            shouldOverridePendingTransactions = false;
         }
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+
+        firebaseRemoteConfig.fetch(BuildConfig.DEBUG ? 1 : 3600)
+            .addOnSuccessListener(aVoid -> {
+                firebaseRemoteConfig.activateFetched();
+                sendOnlineNotification();
+            })
+            .addOnFailureListener(exception -> Log.d("Tribe", "Fetch failed"));
     }
 
     @Override
     protected void onPause() {
         cameraWrapper.onPause();
+        this.homeGridPresenter.onPause();
         cleanTutorial();
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
-        Intent i = new Intent(context, DownloadTribeService.class);
-        context.stopService(i);
+        Intent i = new Intent(this, DownloadTribeService.class);
+        stopService(i);
+
+        recyclerViewFriends.setAdapter(null);
+        springFilterView.removeAllListeners();
+        springGrid.removeAllListeners();
+        springSystem.removeAllListeners();
 
         if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
-        homePresenter.onDestroy();
 
         super.onDestroy();
     }
 
+    private void init() {
+        pendingTribes = new ArrayList<>();
+        latestRecipientList = new ArrayList<>();
+    }
+
     private void initUi() {
-        context = this;
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
     }
 
     private void initDimensions() {
-        sizeNavMax = getResources().getDimensionPixelSize(R.dimen.nav_size_max);
-        sizeNavSmall = getResources().getDimensionPixelSize(R.dimen.nav_size_small);
         marginHorizontalSmall = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
         translationBackToTop = getResources().getDimensionPixelSize(R.dimen.transition_grid_back_to_top);
-        tapToRefreshTutorialSize = 10;
     }
 
     private void initCamera() {
@@ -289,21 +327,15 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
         cameraWrapper.initDimens(
                 screenUtils.getHeightPx()
-                        - getResources().getDimensionPixelSize(R.dimen.nav_layout_height)
+                        - marginBounds
                         - cameraWrapper.getHeightFromRatio(),
                 marginBounds,
-                getResources().getDimensionPixelSize(R.dimen.nav_layout_height),
                 marginBounds,
                 marginBounds,
-                getResources().getDimensionPixelSize(R.dimen.nav_layout_height),
+                marginBounds,
+                marginBounds,
                 true
         );
-
-        subscriptions.add(cameraWrapper.tribeMode().delay(750, TimeUnit.MILLISECONDS).subscribe(mode -> {
-            if (homeViewPagerAdapter.getHomeGridFragment() != null) {
-                homeViewPagerAdapter.getHomeGridFragment().setTribeMode(mode);
-            }
-        }));
 
         subscriptions.add(cameraWrapper.cameraPermissions().subscribe(aVoid -> {
             RxPermissions.getInstance(this)
@@ -320,7 +352,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         if (isGranted) {
             if (!hasReceivedPointsForCameraPermission.get()) {
                 hasReceivedPointsForCameraPermission.set(true);
-                homePresenter.updateScoreCamera();
+                homeGridPresenter.updateScoreCamera();
             }
 
             cameraWrapper.onResume(shouldAnimate);
@@ -333,39 +365,205 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         tagManager.setProperty(bundle);
     }
 
-    private void initViewPager() {
-        homeViewPagerAdapter = new HomeViewPagerAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(homeViewPagerAdapter);
-        viewPager.setOffscreenPageLimit(3);
-        viewPager.setScrollDurationFactor(1f);
-        viewPager.setCurrentItem(1);
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    private void initRecyclerView() {
+        this.layoutManager = new HomeLayoutManager(context());
+        this.recyclerViewFriends.setLayoutManager(layoutManager);
+        this.recyclerViewFriends.setItemAnimator(null);
+        homeGridAdapter.setItems(new ArrayList<>());
+        this.recyclerViewFriends.setAdapter(homeGridAdapter);
 
-            }
+        // TODO HACK FIND ANOTHER WAY OF OPTIMIZING THE VIEW?
+        this.recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(0, 50);
+        this.recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(1, 50);
+        this.recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(2, 50);
+        this.recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(3, 50);
 
+        this.layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
-            public void onPageSelected(int position) {
-                if (viewPager.getCurrentItem() == GRID_FRAGMENT_PAGE) {
-                    //reloadGrid();
-                    if (!navVisible) enableNavigation();
-                    screenUtils.hideKeyboard((Activity) context);
-                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                if (state == ViewPager.SCROLL_STATE_DRAGGING) {
-                    if (viewPager.getCurrentItem() == CONTACTS_FRAGMENT_PAGE) {
-                        ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
-                                .hideSoftInputFromWindow(viewPager.getWindowToken(), 0);
-                        homeViewPagerAdapter.getContactsGridFragment().closeSearch();
-                    }
+            public int getSpanSize(int position) {
+                switch(homeGridAdapter.getItemViewType(position)) {
+                    case HomeGridAdapter.EMPTY_HEADER_VIEW_TYPE:
+                        return layoutManager.getSpanCount();
+                    default:
+                        return 1;
                 }
             }
         });
-        viewPager.setPageTransformer(false, new HomePageTransformer());
+
+        recyclerViewFriends.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                float percent = recyclerView.computeVerticalScrollOffset() / translationBackToTop;
+
+                if (!hasFilter && percent >= 1 && !isAnimatingNavigation && imgFilter.getTranslationY() == 0) {
+                    isAnimatingNavigation = true;
+                    showView(imgBackToTop, DURATION_FAST);
+                    hideView(imgFilter, DURATION_FAST);
+                } else if (!hasFilter && percent < 1 && !isAnimatingNavigation && imgFilter.getTranslationY() == translationBackToTop) {
+                    isAnimatingNavigation = true;
+                    hideView(imgBackToTop, DURATION_FAST);
+                    showView(imgFilter, DURATION_FAST);
+                }
+            }
+        });
+
+        subscriptions.add(homeGridAdapter.onOpenTribes()
+                .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
+                .filter(recipient -> {
+                    boolean filter = recipient.getReceivedTribes() != null
+                            && recipient.getReceivedTribes().size() > 0
+                            && recipient.hasLoadedOrErrorTribes();
+
+                    if (filter) soundManager.playSound(SoundManager.OPEN_TRIBE, SoundManager.SOUND_LOW);
+
+                    return filter;
+                })
+                .doOnError(throwable -> throwable.printStackTrace())
+                .subscribe(recipient -> {
+                    if (tutorial == null) navigateToTribes(recipient);
+                    else {
+                        tutorial.cleanUp();
+                        tutorial = null;
+
+                        subscriptions.add(
+                                Observable
+                                        .timer(300, TimeUnit.MILLISECONDS)
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(aLong -> navigateToTribes(recipient)));
+                    }
+                }));
+
+        subscriptions.add(homeGridAdapter.onClickChat()
+                .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
+                .subscribe(recipient -> {
+                    navigateToChat(recipient);
+                }));
+
+        subscriptions.add(homeGridAdapter.onClickMore()
+                .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
+                .subscribe(recipient -> {
+                    if (recipient instanceof Membership && (recipient.getReceivedTribes() == null || recipient.getReceivedTribes().size() == 0)) {
+                        Membership membership = (Membership) recipient;
+                        navigator.navigateToGroupDetails(this, membership);
+                    } else {
+                        setupBottomSheetMore(recipient);
+                    }
+                }));
+
+        subscriptions.add(homeGridAdapter.onClickErrorTribes()
+                .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
+                .subscribe(recipient -> {
+                    setupBottomSheetPendingTribes(recipient);
+                }));
+
+        subscriptions.add(homeGridAdapter.onRecordStart()
+                .doOnNext(view -> {
+                    isRecording = true;
+                    soundManager.playSound(SoundManager.START_RECORD, SoundManager.SOUND_LOW);
+                })
+                .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
+                .delay(300, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(recipient -> {
+                    timeRecording = System.currentTimeMillis();
+                    TribeMessage currentTribe = homeGridPresenter.createTribe(getCurrentUser(), recipient, cameraWrapper.getTribeMode());
+                    homeGridAdapter.updateItemWithTribe(recipient.getPosition(), currentTribe);
+                    recyclerViewFriends.postDelayed(() -> homeGridAdapter.notifyItemChanged(recipient.getPosition()), 300);
+                    recyclerViewFriends.requestDisallowInterceptTouchEvent(true);
+                    isRecording = true;
+                    cameraWrapper.onStartRecord(currentTribe.getLocalId());
+                }));
+
+        subscriptions.add(homeGridAdapter.onRecordEnd()
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(view -> {
+                    isRecording = false;
+                    cameraWrapper.onEndRecord();
+                })
+                .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
+                .subscribe(recipient -> {
+                    soundManager.playSound(SoundManager.END_RECORD, SoundManager.SOUND_LOW);
+                    TileView tileView = (TileView) layoutManager.findViewByPosition(recipient.getPosition());
+
+                    if ((System.currentTimeMillis() - timeRecording) > TIME_MIN_RECORDING) {
+                        tileView.showTapToCancel(recipient.getTribe(), cameraWrapper.getTribeMode());
+                        recyclerViewFriends.requestDisallowInterceptTouchEvent(false);
+                    } else {
+                        cleanupCurrentTribe(recipient);
+                        tileView.resetViewAfterTapToCancel(false);
+                    }
+                }));
+
+        subscriptions.add(homeGridAdapter.onClickTapToCancel()
+                .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
+                .subscribe(recipient -> {
+                    isRecording = false;
+                    soundManager.playSound(SoundManager.TAP_TO_CANCEL, SoundManager.SOUND_LOW);
+                    cleanupCurrentTribe(recipient);
+                }));
+
+        subscriptions.add(homeGridAdapter.onNotCancel()
+                .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
+                .filter(recipient -> {
+                    isRecording = false;
+                    soundManager.playSound(SoundManager.SENT, SoundManager.SOUND_LOW);
+                    TribeMessage tr = recipient.getTribe();
+
+                    if (tr == null || tr.getTo() == null) {
+                        cleanupCurrentTribe(recipient);
+                        return false;
+                    }
+
+                    return true;
+                })
+                .map(recipient -> {
+                    TribeMessage tr = recipient.getTribe();
+
+                    homeGridPresenter.sendTribe(recipient.getTribe());
+                    homeGridAdapter.updateItemWithTribe(recipient.getPosition(), null);
+                    return tr.getLocalId();
+                })
+                .delay(500, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(s -> {
+                    int tribeSent = tribeSentCount.get();
+                    tribeSentCount.set(++tribeSent);
+
+                    if (tribeSentCount.get() >= Constants.RATING_COUNT && tribeSentCount.get() % Constants.RATING_COUNT == 0 && !hasRatedApp.get())
+                        navigator.computeActions(this, false, BaseActionActivity.ACTION_RATING);
+                })
+                .delay(1500, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> homeGridPresenter.confirmTribe(s)));
+    }
+
+    private void initFilterView() {
+        springSystem = SpringSystem.create();
+
+        springFilterListener = new FilterSpringListener();
+        springFilterView = springSystem.createSpring();
+        springFilterView.setSpringConfig(FILTER_VIEW_BOUNCE_SPRING_CONFIG);
+        springFilterView.addListener(springFilterListener);
+        springFilterView.setCurrentValue(screenUtils.getHeightPx(), true);
+
+        springGridListener = new GridSpringListener();
+        springGrid = springSystem.createSpring();
+        springGrid.setSpringConfig(FILTER_VIEW_NO_BOUNCE_SPRING_CONFIG);
+        springGrid.addListener(springGridListener);
+        springGrid.setCurrentValue(1f).setAtRest();
+
+        subscriptions.add(viewFilter.onCloseClick().subscribe(aVoid -> {
+            hideFilterView();
+        }));
+
+        subscriptions.add(viewFilter.onLetterSelected().subscribe(s -> {
+            hasFilter = true;
+            hideView(imgFilter, DURATION);
+            showView(imgFilterSelected, DURATION);
+            homeGridAdapter.filterList(s);
+            hideFilterView();
+        }));
     }
 
     private void initDependencyInjector() {
@@ -381,104 +579,52 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     }
 
     private void initPresenter() {
-        this.homePresenter.attachView(this);
+        this.homeGridPresenter.attachView(this);
     }
 
-    @Override
-    public void initOpenTribes(Observable<Recipient> observable) {
-        subscriptions.add(observable
-                .subscribe(friend -> {
-            HomeActivity.this.navigator.navigateToTribe(HomeActivity.this, friend.getPosition(), friend, TRIBES_RESULT);
-        }));
+    private void initPullToRefresh() {
+        subscriptions.add(topBarContainer.onRefresh()
+                .filter(b -> b)
+                .doOnNext(b -> {
+                    canEndRefresh = false;
+                    homeGridPresenter.reload();
+                })
+                .delay(TopBarContainer.MIN_LENGTH, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(refresh -> {
+                    if (canEndRefresh) topBarContainer.setRefreshing(false);
+
+                    canEndRefresh = true;
+                }));
+
+        subscriptions.add(topBarContainer.onClickSettings()
+                .subscribe(aVoid -> {
+                    navigateToSettings();
+                }));
+
+        subscriptions.add(topBarContainer.onClickSearch()
+                .subscribe(aVoid -> {
+                    navigateToSearch(null);
+                }));
+
+        subscriptions.add(topBarContainer.onClickInvites()
+                .subscribe(aVoid -> {
+                    navigateToInvites();
+                }));
+
+        subscriptions.add(topBarContainer.onClickGroups()
+                .subscribe(aVoid -> {
+                    navigateToCreateGroup();
+                })
+        );
     }
 
-    @Override
-    public void initClicksOnChat(Observable<Recipient> observable) {
-        subscriptions.add(observable.subscribe(friend -> {
-            HomeActivity.this.navigator.navigateToChat(HomeActivity.this, friend.getSubId(), friend instanceof Membership);
-        }));
-    }
-
-    @Override
-    public void initOnRecordStart(Observable<String> observable) {
-        subscriptions.add(observable.subscribe(id -> {
-            isRecording = true;
-            viewPager.setSwipeable(false);
-            cameraWrapper.onStartRecord(id);
-        }));
-    }
-
-    @Override
-    public void initOnRecordEnd(Observable<Recipient> observable) {
-        subscriptions.add(observable.subscribe(friend -> {
-            isRecording = false;
-            viewPager.setSwipeable(true);
-            cameraWrapper.onEndRecord();
-        }));
-    }
-
-    @Override
-    public void initScrollOnGrid(Observable<Integer> observable) {
-        subscriptions.add(observable.subscribe(dy -> {
-
-        }));
-    }
-
-    @Override
-    public void initNewMessages(Observable<List<Message>> observable) {
-        subscriptions.add(observable.subscribe(newMessages -> {
-            boolean shouldUpdateNewMessages = !newMessages.equals(this.newMessages);
-
-            if (shouldUpdateNewMessages) {
-                this.newMessages = newMessages;
-
-                if (newMessages.size() > 0) {
-                    txtNewMessages.setText("" + newMessages.size());
-                    showLayoutNewTribes();
-                } else {
-                    txtNewMessages.setText("");
-                    hideLayoutNewMessages();
-                }
-            }
-        }));
-    }
-
-    @Override
-    public void initPendingTribes(Observable<Integer> observable) {
-        subscriptions.add(observable.subscribe(tribesPending -> {
-            pendingTribeCount = tribesPending;
-            updatePendingTribeCount();
-        }));
-    }
-
-    @Override
-    public void initPendingTribeItemSelected(Observable<List<TribeMessage>> observable) {
-        subscriptions.add(observable.subscribe(tribeList -> {
-            pendingTribeCount -= tribeList.size();
-            updatePendingTribeCount();
-        }));
-    }
-
-    @Override
-    public void initClickOnPoints(Observable<View> observable) {
-        subscriptions.add(observable.subscribe(view -> {
-            HomeActivity.this.navigator.navigateToScorePoints(HomeActivity.this);
-        }));
-    }
-
-    @Override
-    public void initClickOnSettings(Observable<View> observable) {
-        subscriptions.add(observable.subscribe(view -> {
-            HomeActivity.this.navigator.navigateToSettings(HomeActivity.this, SETTINGS_RESULT);
-        }));
-    }
-
-    @Override
-    public void initPullToSearchActive(Observable<Boolean> observable) {
-        subscriptions.add(observable.subscribe(active -> {
-            animateViewsOnPTSOpen(active);
-            viewPager.setSwipeable(!active);
-        }));
+    private void initRemoteConfig() {
+        firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                .setDeveloperModeEnabled(BuildConfig.DEBUG).build();
+        firebaseRemoteConfig.setConfigSettings(configSettings);
+        firebaseRemoteConfig.setDefaults(R.xml.firebase_default_config);
     }
 
     @Override
@@ -487,33 +633,117 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             Uri uri = Uri.parse(url);
 
             if (uri != null && !StringUtils.isEmpty(uri.getPath())) {
-                if (uri.getPath().startsWith("/u/") && homeViewPagerAdapter.getContactsGridFragment() != null) {
-                    viewPager.setCurrentItem(CONTACTS_FRAGMENT_PAGE, true);
-                    homeViewPagerAdapter.getContactsGridFragment().search(StringUtils.getLastBitFromUrl(url));
+                if (uri.getPath().startsWith("/u/")) {
+                    navigateToSearch(StringUtils.getLastBitFromUrl(url));
                 } else if (uri.getPath().startsWith("/g/")) {
-                    homePresenter.createMembership(StringUtils.getLastBitFromUrl(url));
+                    homeGridPresenter.createMembership(StringUtils.getLastBitFromUrl(url));
                 }
             }
         }
     }
 
     @Override
-    public void onMembershipCreated(Membership membership) {
-        if (homeViewPagerAdapter.getHomeGridFragment() != null) {
-            homeViewPagerAdapter.getHomeGridFragment().reloadGrid();
+    public void renderRecipientList(List<Recipient> recipientList) {
+        if (recipientList != null && !isRecording && tutorial == null) {
+            Bundle bundle = new Bundle();
+            bundle.putInt(TagManagerConstants.COUNT_FRIENDS, getCurrentUser().getFriendships().size());
+            bundle.putInt(TagManagerConstants.COUNT_GROUPS, getCurrentUser().getFriendships().size());
+            tagManager.setProperty(bundle);
+
+            homeGridAdapter.setItems(recipientList);
+            viewFilter.updateFilterList(recipientList);
+
+            if (tutorialManager.shouldDisplay(TutorialManager.MESSAGES_SUPPORT) && !topBarContainer.isRefreshing()) {
+                computeSupportTutorial(recipientList);
+            }
         }
+    }
+
+    private void computeSupportTutorial(List<Recipient> recipientList) {
+        for (Recipient recipient : recipientList) {
+            if (Constants.SUPPORT_ID.equals(recipient.getSubId()) && recipient.getReceivedTribes() != null
+                    && recipient.getReceivedTribes().size() == 2 && recipient.hasLoadedOrErrorTribes()) {
+                subscriptions.add(
+                        Observable.timer(500, TimeUnit.MILLISECONDS)
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(aLong -> {
+                                    View view = layoutManager.findViewByPosition(0);
+                                    if (view != null && view instanceof SquareFrameLayout) {
+                                        TileView tileView = (TileView) view.findViewById(R.id.viewTile);
+                                        if (tileView != null && tileView.getType() == TileView.TYPE_SUPPORT) {
+                                            tileView.layoutNbTribes.setDrawingCacheEnabled(true);
+                                            tileView.layoutNbTribes.buildDrawingCache();
+                                            Bitmap bitmapForTutorialOverlay = Bitmap.createBitmap(tileView.layoutNbTribes.getDrawingCache(true));
+                                            tileView.layoutNbTribes.setDrawingCacheEnabled(false);
+
+                                            tutorial = tutorialManager.showMessagesSupport(
+                                                    this,
+                                                    tileView.avatar,
+                                                    (tileView.avatar.getWidth() >> 1) + screenUtils.dpToPx(10),
+                                                    -screenUtils.dpToPx(15),
+                                                    (tileView.avatar.getWidth() >> 1) - screenUtils.dpToPx(1),
+                                                    screenUtils.dpToPx(20f),
+                                                    bitmapForTutorialOverlay,
+                                                    tileView.layoutNbTribes.getWidth()
+                                            );
+                                        }
+                                    }
+                                }));
+
+            }
+        }
+    }
+
+    @Override
+    public void updateReceivedMessages(List<Message> messageList) {
+        topBarContainer.showNewMessages(messageList);
+    }
+
+    @Override
+    public void updatePendingTribes(List<TribeMessage> pendingTribes) {
+        this.pendingTribes.clear();
+        this.pendingTribes.addAll(pendingTribes);
+    }
+
+    @Override
+    public void showPendingTribesMenu() {
+
+    }
+
+    @Override
+    public void scrollToTop() {
+
+    }
+
+    @Override
+    public int getNbItems() {
+        return 0;
+    }
+
+    @Override
+    public void refreshGrid() {
+
+    }
+
+    @Override
+    public void onFriendshipUpdated(Friendship friendship) {
+
+    }
+
+    @Override
+    public void onMembershipCreated(Membership membership) {
+
     }
 
     private void initRegistrationToken() {
         String token = FirebaseInstanceId.getInstance().getToken();
-
-        if (token != null) homePresenter.sendToken(token);
+        if (token != null) homeGridPresenter.sendToken(token);
     }
 
     private void manageDeepLink(Intent intent) {
         if (intent != null) {
             if (intent.getData() != null) {
-                homePresenter.getHeadDeepLink(intent.getDataString());
+                homeGridPresenter.getHeadDeepLink(intent.getDataString());
             } else if (!StringUtils.isEmpty(intent.getAction()) && intent.getAction().equals(DeepLinkUtils.MESSAGE_ACTION)) {
                 String recipientId = intent.getStringExtra("t_from");
                 boolean isToGroup = Boolean.valueOf(intent.getStringExtra("to_group"));
@@ -522,173 +752,18 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         }
     }
 
-    private void updatePendingTribeCount() {
-        if (pendingTribeCount > 0) {
-            txtPending.setText("" + pendingTribeCount);
-            showLayoutPending();
-        } else {
-            txtPending.setText("");
-            hideLayoutPending();
-        }
-    }
-
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        // This is important : Hack to open a dummy activity for 200-500ms (cannot be noticed by user as it is for 500ms
-        // and transparent floating activity and auto finishes)
-        startActivity(new Intent(this, DummyActivity.class));
-        finish();
-    }
-
-    public void goToHome() {
-        viewPager.setCurrentItem(GRID_FRAGMENT_PAGE, true);
-    }
-
-    @OnClick(R.id.imgNavGroups)
-    public void goToGroups() {
-        animateToGroups();
-        if (!isRecording) viewPager.setCurrentItem(GROUPS_FRAGMENT_PAGE, true);
-    }
-
-    @OnClick(R.id.imgNavFriends)
-    public void goToFriends() {
-        animateToContacts();
-        if (!isRecording) viewPager.setCurrentItem(CONTACTS_FRAGMENT_PAGE, true);
-    }
-
-    @OnClick(R.id.layoutNavPending)
-    public void sendPendingMessages() {
-        if (!isRecording) homeViewPagerAdapter.getHomeGridFragment().showPendingTribesMenu();
-    }
-
-    @OnClick(R.id.layoutNavNewMessages)
-    public void updateGrid() {
-        if (!isRecording) {
-            homeViewPagerAdapter.getHomeGridFragment().updateNewTribes();
-            homeViewPagerAdapter.getHomeGridFragment().scrollToTop();
-
-            AnimationUtils.replaceView(this, txtNewMessages, progressBarNewMessages, new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    txtNewMessages.animate().setListener(null).start();
-                    progressBarNewMessages.animate().setListener(null).start();
-                    hideLayoutNewMessages();
-                }
-            });
-        }
-    }
-
-    @OnClick(R.id.layoutNavGridMain)
-    public void reloadGrid() {
-        animateToGrid();
-
-        if (tutorial != null) {
-            cleanTutorial();
-            subscriptions.add(
-                    Observable
-                            .timer(300, TimeUnit.MILLISECONDS)
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(aLong -> doReload())
-            );
+        if (!isFilterMode) {
+            super.onBackPressed();
+            // This is important : Hack to open a dummy activity for 200-500ms (cannot be noticed by user as it is for 500ms
+            // and transparent floating activity and auto finishes)
+            startActivity(new Intent(this, DummyActivity.class));
+            finish();
         } else {
-            doReload();
+            hideFilterView();
         }
     }
-
-    private void doReload() {
-        if (!isRecording) {
-            if (viewPager.getCurrentItem() == GRID_FRAGMENT_PAGE) {
-                homePresenter.reloadData();
-                homeViewPagerAdapter.getHomeGridFragment().scrollToTop();
-            } else {
-                viewPager.setCurrentItem(GRID_FRAGMENT_PAGE, true);
-            }
-        }
-    }
-
-    private void animateToContacts() {
-        imgNavGroups.animate()
-                .setDuration(viewPagerAnimDuration)
-                .x(screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small))
-                .start();
-        int navGridPosition;
-        int navFriendsPosition;
-        if (layoutNavPendingVisible) {
-            layoutNavPending.animate()
-                    .setDuration(viewPagerAnimDuration)
-                    .x(screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 2)
-                    .start();
-            navGridPosition = screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 3;
-            navFriendsPosition = screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 3 - getResources().getDimensionPixelSize(R.dimen.nav_size_max);
-        } else {
-            navGridPosition = screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 2;
-            navFriendsPosition = screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 2 - getResources().getDimensionPixelSize(R.dimen.nav_size_max);
-        }
-        layoutNavGrid.animate()
-                .setDuration(viewPagerAnimDuration)
-                .x(navGridPosition)
-                .start();
-        imgNavFriends.animate()
-                .setDuration(viewPagerAnimDuration)
-                .x(navFriendsPosition)
-                .start();
-        AnimationUtils.animateSizeFrameLayout(imgNavGroups, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
-        AnimationUtils.animateSizeFrameLayout(layoutNavGrid, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
-        AnimationUtils.animateSizeFrameLayout(imgNavFriends, getResources().getDimensionPixelSize(R.dimen.nav_size_max), viewPagerAnimDuration);
-    }
-
-    private void animateToGrid() {
-        imgNavFriends.animate()
-                .setDuration(viewPagerAnimDuration)
-                .x(getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small))
-                .start();
-        layoutNavGrid.animate()
-                .setDuration(viewPagerAnimDuration)
-                .x(screenUtils.getWidthPx() / 2 - layoutNavGrid.getWidth() / 2)
-                .start();
-        imgNavGroups.animate()
-                .setDuration(viewPagerAnimDuration)
-                .x(screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small))
-                .start();
-        if (layoutNavPendingVisible) {
-            layoutNavPending.animate()
-                    .setDuration(viewPagerAnimDuration)
-                    .x(screenUtils.getWidthPx() - getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) - getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 2)
-                    .start();
-        }
-        AnimationUtils.animateSizeFrameLayout(imgNavGroups, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
-        AnimationUtils.animateSizeFrameLayout(layoutNavGrid, getResources().getDimensionPixelSize(R.dimen.nav_size_max), viewPagerAnimDuration);
-        AnimationUtils.animateSizeFrameLayout(imgNavFriends, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
-    }
-    private void animateToGroups() {
-        imgNavFriends.animate()
-                .setDuration(viewPagerAnimDuration)
-                .x(getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small))
-                .start();
-        layoutNavGrid.animate()
-                .setDuration(viewPagerAnimDuration)
-                .x(getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) + getResources().getDimensionPixelSize(R.dimen.nav_size_small))
-                .start();
-        int navGroupsPosition;
-        if (layoutNavPendingVisible) {
-            layoutNavPending.animate()
-                    .setDuration(viewPagerAnimDuration)
-                    .x(getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) + getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 2)
-                    .start();
-            navGroupsPosition = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) + getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 3;
-        } else {
-            navGroupsPosition = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small) + getResources().getDimensionPixelSize(R.dimen.nav_size_small) * 2;
-        }
-        imgNavGroups.animate()
-                .setDuration(viewPagerAnimDuration)
-                .x(navGroupsPosition)
-                .start();
-        AnimationUtils.animateSizeFrameLayout(imgNavFriends, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
-        AnimationUtils.animateSizeFrameLayout(layoutNavGrid, getResources().getDimensionPixelSize(R.dimen.nav_size_small), viewPagerAnimDuration);
-        AnimationUtils.animateSizeFrameLayout(imgNavGroups, getResources().getDimensionPixelSize(R.dimen.nav_size_max), viewPagerAnimDuration);
-    }
-
 
     @Override
     public UserComponent getComponent() {
@@ -697,15 +772,13 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @Override
     public void showLoading() {
-        imgNavGrid.setVisibility(View.GONE);
-        progressBarReload.setVisibility(View.VISIBLE);
+
     }
 
     @Override
     public void hideLoading() {
-        homeViewPagerAdapter.getHomeGridFragment().reloadGrid();
-        imgNavGrid.setVisibility(View.VISIBLE);
-        progressBarReload.setVisibility(View.GONE);
+        if (topBarContainer.isRefreshing() && canEndRefresh) topBarContainer.setRefreshing(false);
+        canEndRefresh = true;
     }
 
     @Override
@@ -720,12 +793,12 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @Override
     public void showError(String message) {
-
+        topBarContainer.showError();
     }
 
     @Override
     public Context context() {
-        return null;
+        return this;
     }
 
     @Override
@@ -735,202 +808,300 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 Toast.LENGTH_SHORT).show();
     }
 
-    public class HomeViewPagerAdapter extends FragmentStatePagerAdapter {
-
-        public String[] pagers = new String[]{"Discover", "Home", "Media"};
-        private WeakReference<HomeGridFragment> homeGridFragment;
-        private WeakReference<ContactsGridFragment> contactsGridFragment;
-        private WeakReference<GroupsGridFragment> groupsGridFragment;
-
-        public HomeViewPagerAdapter(FragmentManager fragmentManager) {
-            super(fragmentManager);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            if (position == 0) return new ContactsGridFragment();
-            else if (position == 1) return new HomeGridFragment();
-            else return new GroupsGridFragment();
-        }
-
-        @Override
-        public int getCount() {
-            return pagers.length;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return pagers[position];
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
-            // Save the appropriate reference depending on position
-            switch (position) {
-                case 0:
-                    contactsGridFragment = new WeakReference<>((ContactsGridFragment) createdFragment);
-                    break;
-                case 1:
-                    homeGridFragment = new WeakReference<>((HomeGridFragment) createdFragment);
-                    break;
-                case 2:
-                    groupsGridFragment = new WeakReference<>((GroupsGridFragment) createdFragment);
-                    break;
-            }
-
-            return createdFragment;
-        }
-
-        public HomeGridFragment getHomeGridFragment() {
-            if (homeGridFragment != null && homeGridFragment.get() != null)
-                return homeGridFragment.get();
-
-            return null;
-        }
-
-        public ContactsGridFragment getContactsGridFragment() {
-            return contactsGridFragment.get();
-        }
-
-        @Override
-        public Parcelable saveState() {
-            return null;
+    private void cleanTutorial() {
+        if (tutorial != null) {
+            tutorial.cleanUp();
+            tutorial = null;
         }
     }
 
-    public class HomePageTransformer implements ViewPager.PageTransformer {
-
-        @Override
-        public void transformPage(View page, float position) {
-            int pagePosition = (int) page.getTag();
-            int pageWidth = page.getWidth();
-            int marginLayoutNavPending = ((FrameLayout.LayoutParams) layoutNavPending.getLayoutParams()).rightMargin;
-
-            int widthPending = layoutNavPending.getTranslationY() == 0 ? layoutNavPending.getWidth() : 0;
-            if (pagePosition == 1 && position > 0) {
-                cameraWrapper.setTranslationX(pageWidth * position);
-
-                float sizeLayoutNavPending = sizeNavSmall;
-                float translationLayoutNavPending = 0;
-                layoutNav(layoutNavPending, sizeLayoutNavPending, translationLayoutNavPending);
-
-                float sizeImgNavGrid = sizeNavMax - ((sizeNavMax - sizeNavSmall) * position);
-                float translationImgNavGrid = ((pageWidth >> 1) - (layoutNavGrid.getWidth() / 2) - marginHorizontalSmall - widthPending - imgNavGroups.getWidth()) * position;
-                layoutNav(layoutNavGrid, sizeImgNavGrid, translationImgNavGrid);
-
-                float sizeImgNavFriends = sizeNavSmall + ((sizeNavMax - sizeNavSmall) * position);
-                float translationImgNavFriends = (pageWidth - imgNavFriends.getWidth() - widthPending - layoutNavGrid.getWidth() - imgNavGroups.getWidth() - 2 * marginHorizontalSmall) * position;
-                layoutNav(imgNavFriends, sizeImgNavFriends, translationImgNavFriends);
-            } else if (pagePosition == 1 && position < 0) {
-                cameraWrapper.setTranslationX(pageWidth * position);
-
-                float sizeImgNavGrid = sizeNavMax - ((sizeNavMax - sizeNavSmall) * -position);
-                float translationImgNavGrid = ((pageWidth >> 1) - (layoutNavGrid.getWidth() / 2) - marginHorizontalSmall - imgNavFriends.getWidth()) * position;
-                layoutNav(layoutNavGrid, sizeImgNavGrid, translationImgNavGrid);
-
-                float sizeLayoutNavPending = sizeNavSmall;
-                float translationLayoutNavPending = (pageWidth - widthPending - marginLayoutNavPending - imgNavFriends.getWidth() - layoutNavGrid.getWidth() - marginHorizontalSmall) * position;
-                layoutNav(layoutNavPending, sizeLayoutNavPending, translationLayoutNavPending);
-
-                float sizeImgNavGroups = sizeNavSmall + ((sizeNavMax - sizeNavSmall) * -position);
-                float translationImgNavGroups = (pageWidth - imgNavFriends.getWidth() - widthPending - layoutNavGrid.getWidth() - imgNavGroups.getWidth() - 2 * marginHorizontalSmall) * position;
-                layoutNav(imgNavGroups, sizeImgNavGroups, translationImgNavGroups);
-            }
-        }
-
-        public void layoutNav(View v, float size, float translationX) {
-            v.setTranslationX(translationX);
-            ViewGroup.LayoutParams params = v.getLayoutParams();
-            params.width = (int) size;
-            params.height = (int) size;
-            v.setLayoutParams(params);
-            v.invalidate();
-        }
+    private void cleanupCurrentTribe(Recipient recipient) {
+        homeGridPresenter.deleteTribe(recipient.getTribe());
+        homeGridAdapter.updateItemWithTribe(recipient.getPosition(), null);
+        homeGridAdapter.notifyItemChanged(recipient.getPosition());
     }
 
-    //////////////////
-    //  ANIMATIONS  //
-    //////////////////
-
-    private void hideLayoutPending() {
-        layoutNavPendingVisible = false;
-        if (layoutNavPending.getTranslationY() == 0) {
-            layoutNavPending.animate().translationY(translationBackToTop).setDuration(DURATION).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
+    private void setupBottomSheetMore(Recipient recipient) {
+        if (dismissDialogSheetMore()) {
+            return;
         }
+
+        List<LabelType> moreTypes = new ArrayList<>();
+        moreTypes.add(new MoreType(getString(R.string.grid_menu_friendship_clear_tribes), MoreType.CLEAR_MESSAGES));
+
+        if (recipient instanceof Friendship) {
+            moreTypes.add(new MoreType(getString(R.string.grid_menu_friendship_hide, recipient.getDisplayName()), MoreType.HIDE));
+            moreTypes.add(new MoreType(getString(R.string.grid_menu_friendship_block, recipient.getDisplayName()), MoreType.BLOCK_HIDE));
+        } else if (recipient instanceof Membership) {
+            moreTypes.add(new MoreType(getString(R.string.grid_menu_group_infos), MoreType.GROUP_INFO));
+        }
+
+        prepareBottomSheetMore(recipient, moreTypes);
     }
 
-    private void showLayoutPending() {
-        layoutNavPendingVisible = true;
-        if (layoutNavPending.getTranslationY() > 0) {
-            layoutNavPending.animate().translationY(0).setDuration(DURATION).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
+    private boolean dismissDialogSheetMore() {
+        if (dialogMore != null && dialogMore.isShowing()) {
+            dialogMore.dismiss();
+            return true;
         }
+
+        return false;
     }
 
-    private void hideLayoutNewMessages() {
-        if (layoutNavNewMessages.getTranslationY() == 0) {
-            layoutNavNewMessages.animate().translationY(translationBackToTop).setDuration(DURATION).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    AnimationUtils.replaceView(HomeActivity.this, progressBarNewMessages, txtNewMessages, null);
-                    layoutNavNewMessages.animate().setListener(null).start();
-                }
-            });
-            layoutNavGridMain.animate().translationY(0).setDuration(DURATION).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
-        }
+    private void prepareBottomSheetMore(Recipient recipient, List<LabelType> items) {
+        View view = getLayoutInflater().inflate(R.layout.bottom_sheet_more, null);
+        recyclerViewMore = (RecyclerView) view.findViewById(R.id.recyclerViewMore);
+        recyclerViewMore.setHasFixedSize(true);
+        recyclerViewMore.setLayoutManager(new LinearLayoutManager(this));
+        moreSheetAdapter = new LabelSheetAdapter(context(), items);
+        moreSheetAdapter.setHasStableIds(true);
+        recyclerViewMore.setAdapter(moreSheetAdapter);
+        subscriptions.add(moreSheetAdapter.clickLabelItem()
+                .map(labelView -> moreSheetAdapter.getItemAtPosition((Integer) labelView.getTag(R.id.tag_position)))
+                .subscribe(labelType -> {
+                    MoreType moreType = (MoreType) labelType;
+                    if (moreType.getMoreType().equals(MoreType.CLEAR_MESSAGES)) {
+                        homeGridPresenter.markTribeListAsRead(recipient, recipient.getReceivedTribes());
+                    } else if (moreType.getMoreType().equals(MoreType.HIDE) || moreType.getMoreType().equals(MoreType.BLOCK_HIDE)) {
+                        tagManager.trackEvent(TagManagerConstants.USER_TILE_HIDDEN);
+                        homeGridPresenter.updateFriendship((Friendship) recipient, moreType.getMoreType().equals(MoreType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED : FriendshipRealm.HIDDEN);
+                    } else if (moreType.getMoreType().equals(MoreType.GROUP_INFO)) {
+                        Membership membership = (Membership) recipient;
+                        navigator.navigateToGroupDetails(this, membership);
+                    } else if (moreType.getMoreType().equals(MoreType.GROUP_LEAVE)) {
+                        homeGridPresenter.leaveGroup(recipient.getId());
+                    }
+
+                    dismissDialogSheetMore();
+                }));
+
+        dialogMore = new BottomSheetDialog(this);
+        dialogMore.setContentView(view);
+        dialogMore.show();
+        dialogMore.setOnDismissListener(dialog -> {
+            moreSheetAdapter.releaseSubscriptions();
+            dialogMore = null;
+        });
     }
 
-    private void showLayoutNewTribes() {
-        if (layoutNavNewMessages.getTranslationY() > 0) {
-            layoutNavNewMessages.setTranslationY(translationBackToTop);
-            layoutNavGridMain.animate().translationY(translationBackToTop).setDuration(DURATION).start();
-            layoutNavNewMessages.animate().translationY(0).setDuration(DURATION).setInterpolator(new OvershootInterpolator(OVERSHOOT)).start();
+    private void setupBottomSheetPendingTribes(Recipient ... recipientList) {
+        if (dismissDialogSheetPendingTribes()) {
+            return;
         }
+
+        List<LabelType> pendingTypes = new ArrayList<>();
+
+        for (Recipient recipient : recipientList) {
+            if (recipient.getErrorTribes() != null && recipient.getErrorTribes().size() > 0)
+                pendingTypes.addAll(recipient.createPendingTribeItems(this, recipientList.length > 1));
+        }
+
+        pendingTypes.add(new PendingType(new ArrayList<>(pendingTribes),
+                getString(R.string.grid_unsent_tribes_action_resend_all),
+                PendingType.RESEND));
+
+        pendingTypes.add(new PendingType(new ArrayList<>(pendingTribes),
+                getString(R.string.grid_unsent_tribes_action_delete_all),
+                PendingType.DELETE));
+
+        prepareBottomSheetPendingWithList(pendingTypes, recipientList.length > 1);
     }
 
-    private void animateViewsOnPTSOpen(boolean active) {
-        if (active) {
-            disableNavigation();
-            cameraWrapper.hideCamera();
-        } else {
-            enableNavigation();
-            cameraWrapper.showCamera();
-        }
+    private void prepareBottomSheetPendingWithList(List<LabelType> items, boolean isGlobal) {
+        View view = getLayoutInflater().inflate(R.layout.bottom_sheet_user_pending, null);
+        recyclerViewPending = (RecyclerView) view.findViewById(R.id.recyclerViewPending);
+        recyclerViewPending.setHasFixedSize(true);
+        recyclerViewPending.setLayoutManager(new LinearLayoutManager(this));
+        labelSheetAdapter = new LabelSheetAdapter(context(), items);
+        labelSheetAdapter.setHasStableIds(true);
+        recyclerViewPending.setAdapter(labelSheetAdapter);
+        subscriptions.add(labelSheetAdapter.clickLabelItem()
+                .map(pendingTribeView -> labelSheetAdapter.getItemAtPosition((Integer) pendingTribeView.getTag(R.id.tag_position)))
+                .subscribe(labelType -> {
+                    PendingType pendingType = (PendingType) labelType;
+
+                    List<TribeMessage> messages = new ArrayList<>();
+                    for (Message message : pendingType.getPending()) {
+                        messages.add((TribeMessage) message);
+                    }
+
+                    if (pendingType.getPendingType().equals(PendingType.DELETE)) {
+                        homeGridPresenter.deleteTribe(pendingType.getPending().toArray(new TribeMessage[pendingType.getPending().size()]));
+                    } else {
+                        homeGridPresenter.sendTribe(pendingType.getPending().toArray(new TribeMessage[pendingType.getPending().size()]));
+                    }
+
+                    dismissDialogSheetPendingTribes();
+                }));
+
+        bottomSheetPendingTribeDialog = new BottomSheetDialog(this);
+        bottomSheetPendingTribeDialog.setContentView(view);
+        bottomSheetPendingTribeDialog.show();
+        bottomSheetPendingTribeDialog.setOnDismissListener(dialog -> {
+            labelSheetAdapter.releaseSubscriptions();
+            bottomSheetPendingTribeDialog = null;
+        });
     }
 
-    private void slideDownNav(View view) {
+    private boolean dismissDialogSheetPendingTribes() {
+        if (bottomSheetPendingTribeDialog != null && bottomSheetPendingTribeDialog.isShowing()) {
+            bottomSheetPendingTribeDialog.dismiss();
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Loads all friends / tribes.
+     */
+    private void loadData() {
+        subscriptions.add(Observable.timer(100, TimeUnit.MILLISECONDS).onBackpressureDrop().observeOn(AndroidSchedulers.mainThread()).subscribe(t ->  {
+            this.homeGridPresenter.onCreate();
+        }));
+    }
+
+    private void navigateToSettings() {
+        navigator.navigateToSettings(HomeActivity.this, SETTINGS_RESULT);
+    }
+
+    private void navigateToSearch(String username) {
+        navigator.navigateToSearchUser(HomeActivity.this, username);
+    }
+
+    private void navigateToTribes(Recipient recipient) {
+        HomeActivity.this.navigator.navigateToTribe(HomeActivity.this, recipient.getPosition(), recipient, TRIBES_RESULT);
+    }
+
+    private void navigateToChat(Recipient recipient) {
+        HomeActivity.this.navigator.navigateToChat(HomeActivity.this, recipient.getSubId(), recipient instanceof Membership);
+    }
+
+    private void navigateToInvites() {
+        shouldOverridePendingTransactions = true;
+        HomeActivity.this.navigator.shareHandle(getCurrentUser().getUsername(), this);
+    }
+
+    private void navigateToCreateGroup() {
+        HomeActivity.this.navigator.navigateToCreateGroup(this);
+    }
+
+    @Override
+    public void setCurrentTribe(TribeMessage tribe) {
+
+    }
+
+    @OnClick(R.id.imgFilter)
+    void openFilterView() {
+        if (!isRecording) showFilterView();
+    }
+
+    @OnClick(R.id.imgFilterSelected)
+    void clearFilter() {
+        hasFilter = false;
+        hideView(imgFilterSelected, DURATION);
+        showView(imgFilter, DURATION);
+        homeGridAdapter.filterList(null);
+    }
+
+    @OnClick(R.id.viewBG)
+    void closeFilterView() {
+        hideFilterView();
+    }
+
+    @OnClick(R.id.imgBackToTop)
+    void backToTop() {
+        if (homeGridAdapter != null && layoutManager.findFirstVisibleItemPosition() > 15)
+            this.recyclerViewFriends.scrollToPosition(10);
+
+        this.recyclerViewFriends.postDelayed(() -> recyclerViewFriends.smoothScrollToPosition(0), 100);
+    }
+
+    private void hideFilterView() {
+        isFilterMode = false;
+        springFilterView.setSpringConfig(FILTER_VIEW_NO_BOUNCE_SPRING_CONFIG);
+        springFilterView.setEndValue(screenUtils.getHeightPx());
+        springGrid.setEndValue(1f);
+        recyclerViewFriends.requestDisallowInterceptTouchEvent(false);
+        homeGridAdapter.setAllItemsEnabled(true);
+    }
+
+    private void showFilterView() {
+        isFilterMode = true;
+        viewBG.setVisibility(View.VISIBLE);
+        springFilterView.setSpringConfig(FILTER_VIEW_BOUNCE_SPRING_CONFIG);
+        springFilterView.setEndValue(marginHorizontalSmall);
+        springGrid.setEndValue(0.925f);
+        recyclerViewFriends.requestDisallowInterceptTouchEvent(true);
+        homeGridAdapter.setAllItemsEnabled(false);
+    }
+
+    private void hideView(View view, int duration) {
+        view.clearAnimation();
         view.animate()
-                .setDuration(DURATION_SMALL)
+                .setDuration(duration)
                 .translationY(translationBackToTop)
                 .setInterpolator(new DecelerateInterpolator())
                 .start();
     }
 
-    private void slideUpNav(View view) {
+    private void showView(View view, int duration) {
+        view.clearAnimation();
         view.animate()
-                .setDuration(DURATION_SMALL)
+                .setDuration(duration)
                 .translationY(0)
-                .setInterpolator(new DecelerateInterpolator())
+                .setInterpolator(new OvershootInterpolator(OVERSHOOT_TENSION_LIGHT))
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        view.animate().setListener(null).start();
+                        isAnimatingNavigation = false;
+                    }
+                })
                 .start();
     }
 
-    public void disableNavigation() {
-        slideDownNav(layoutNavMaster);
-        viewPager.setSwipeable(false);
-        navVisible = false;
+    private class FilterSpringListener extends SimpleSpringListener {
+        @Override
+        public void onSpringUpdate(Spring spring) {
+            int value = (int) spring.getCurrentValue();
+            viewFilter.setTranslationY(value);
+            float alpha = 1 - ((float) SpringUtil.mapValueFromRangeToRange(value, marginHorizontalSmall, screenUtils.getHeightPx(), 0, 1));
+            viewBG.setAlpha(alpha);
+
+            if (spring.getEndValue() == screenUtils.getHeightPx() && spring.getEndValue() - value > marginHorizontalSmall * 2) {
+                viewBG.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void onSpringAtRest(Spring spring) {
+            if (spring.getEndValue() == screenUtils.getHeightPx())
+                viewFilter.clean();
+        }
     }
 
-    public void enableNavigation() {
-        animateToGrid();
-        slideUpNav(layoutNavMaster);
-        viewPager.setSwipeable(true);
-        navVisible = true;
+    private class GridSpringListener extends SimpleSpringListener {
+        @Override
+        public void onSpringUpdate(Spring spring) {
+            float value = (float) spring.getCurrentValue();
+            scale(value);
+        }
     }
 
-    private void cleanTutorial() {
-        if (tutorial != null) {
-            tutorial.cleanUp();
-            tutorial = null;
+    private void scale(float value) {
+        recyclerViewFriends.setScaleX(value);
+        recyclerViewFriends.setScaleY(value);
+    }
+
+    private void sendOnlineNotification() {
+        boolean canSendOnlineNotification = !firebaseRemoteConfig.getBoolean(Constants.FIREBASE_DISABLE_ONLINE_NOTIFICATIONS);
+
+        int onlineNotificationIntervalMs = Integer.valueOf(firebaseRemoteConfig.getString(Constants.FIREBASE_DELAY_ONLINE_NOTIFICATIONS)) * 60 * 1000;
+
+        if (canSendOnlineNotification && (System.currentTimeMillis() - lastOnlineNotification.get()) > onlineNotificationIntervalMs) {
+            homeGridPresenter.sendOnlineNotification();
+            lastOnlineNotification.set(System.currentTimeMillis());
         }
     }
 }

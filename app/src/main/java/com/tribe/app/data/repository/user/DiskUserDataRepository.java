@@ -10,6 +10,7 @@ import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.mapper.ChatRealmDataMapper;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
+import com.tribe.app.data.realm.mapper.MembershipRealmDataMapper;
 import com.tribe.app.data.realm.mapper.SearchResultRealmDataMapper;
 import com.tribe.app.data.realm.mapper.TribeRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
@@ -25,6 +26,7 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
+import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
@@ -32,7 +34,7 @@ import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.component.PullToSearchView;
+import com.tribe.app.presentation.view.component.FilterView;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
 import java.util.ArrayList;
@@ -60,6 +62,7 @@ public class DiskUserDataRepository implements UserRepository {
     private final ChatRealmDataMapper chatRealmDataMapper;
     private final ContactRealmDataMapper contactRealmDataMapper;
     private final SearchResultRealmDataMapper searchResultRealmDataMapper;
+    private final MembershipRealmDataMapper membershipRealmDataMapper;
 
     /**
      * Constructs a {@link UserRepository}.
@@ -74,7 +77,8 @@ public class DiskUserDataRepository implements UserRepository {
                                   TribeRealmDataMapper tribeRealmDataMapper,
                                   ChatDataStoreFactory chatDataStoreFactory,
                                   ChatRealmDataMapper chatRealmDataMapper,
-                                  ContactRealmDataMapper contactRealmDataMapper) {
+                                  ContactRealmDataMapper contactRealmDataMapper,
+                                  MembershipRealmDataMapper membershipRealmDataMapper) {
         this.userDataStoreFactory = dataStoreFactory;
         this.userRealmDataMapper = realmDataMapper;
         this.tribeDataStoreFactory = tribeDataStoreFactory;
@@ -83,6 +87,7 @@ public class DiskUserDataRepository implements UserRepository {
         this.chatRealmDataMapper = chatRealmDataMapper;
         this.contactRealmDataMapper = contactRealmDataMapper;
         this.searchResultRealmDataMapper = new SearchResultRealmDataMapper(userRealmDataMapper.getFriendshipRealmDataMapper());
+        this.membershipRealmDataMapper = membershipRealmDataMapper;
     }
 
     @Override
@@ -159,19 +164,15 @@ public class DiskUserDataRepository implements UserRepository {
                         recipient.setReceivedMessages(receivedChatMessage);
                     }
 
-                    Friendship friendship = new Friendship(user.getId());
-                    friendship.setFriend(user);
-                    result.add(0, friendship);
-
                     return user;
                 }
         ).map(user -> {
-            if (!StringUtils.isEmpty(filterRecipient) && !filterRecipient.equals(PullToSearchView.HOME)) {
+            if (!StringUtils.isEmpty(filterRecipient)) {
                 List<Friendship> filteredFriendshipList = new ArrayList<>();
                 List<Membership> filteredMembershipList = new ArrayList<>();
 
                 for (Friendship friendship : user.getFriendships()) {
-                    if (PullToSearchView.shouldFilter(filterRecipient, friendship)) {
+                    if (FilterView.shouldFilter(filterRecipient, friendship)) {
                         filteredFriendshipList.add(friendship);
                     }
                 }
@@ -179,7 +180,7 @@ public class DiskUserDataRepository implements UserRepository {
                 user.setFriendships(filteredFriendshipList);
 
                 for (Membership membership : user.getMembershipList()) {
-                    if (PullToSearchView.shouldFilter(filterRecipient, membership)) {
+                    if (FilterView.shouldFilter(filterRecipient, membership)) {
                         filteredMembershipList.add(membership);
                     }
                 }
@@ -234,13 +235,13 @@ public class DiskUserDataRepository implements UserRepository {
     @Override
     public Observable<List<Contact>> contacts() {
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-        return userDataStore.contacts().map(collection -> contactRealmDataMapper.transform(new ArrayList<>(collection)));
+        return userDataStore.contacts().map(collection -> contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection)));
     }
 
     @Override
     public Observable<List<Contact>> contactsFB() {
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-        return userDataStore.contactsFB().map(collection -> contactRealmDataMapper.transform(new ArrayList<>(collection)));
+        return userDataStore.contactsFB().map(collection -> contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection)));
     }
 
     @Override
@@ -291,12 +292,23 @@ public class DiskUserDataRepository implements UserRepository {
         return null;
     }
 
-    public Observable<Membership> createGroup(String groupName, List<String> memberIds, boolean isPrivate, String pictureUri) {
+    @Override
+    public Observable<Membership> getMembershipInfos(String membershipId) {
+        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+        return userDataStore.getMembershipInfos(membershipId).map(membershipRealm -> membershipRealmDataMapper.transform(membershipRealm));
+    }
+
+    public Observable<Membership> createGroup(GroupEntity groupEntity) {
         return null;
     }
 
     @Override
-    public Observable<Group> updateGroup(String groupId, String groupName, String pictureUri) {
+    public Observable<Group> updateGroup(String groupId, List<Pair<String, String>> values) {
+        return null;
+    }
+
+    @Override
+    public Observable<Membership> updateMembership(String membershipId, List<Pair<String, String>> values) {
         return null;
     }
 
@@ -403,5 +415,10 @@ public class DiskUserDataRepository implements UserRepository {
     public Observable<Void> updateMessagesReceivedToNotSeen() {
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
         return userDataStore.updateMessagesReceivedToNotSeen();
+    }
+
+    @Override
+    public Observable<Void> sendOnlineNotification() {
+        return null;
     }
 }

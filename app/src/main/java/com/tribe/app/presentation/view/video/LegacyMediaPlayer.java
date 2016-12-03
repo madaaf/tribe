@@ -46,6 +46,7 @@ LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.OnVideoSizeCha
         this.autoStart = builder.isAutoStart();
         this.changeSpeed = builder.isChangeSpeed();
         this.isLocal = builder.isLocal();
+        this.audioStreamType = builder.getAudioStreamType();
 
         ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
 
@@ -106,34 +107,41 @@ LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.OnVideoSizeCha
 
     @Override
     public void setSurface(SurfaceTexture surfaceTexture) {
-        mediaPlayer.setSurface(new Surface(surfaceTexture));
+        if (surfaceTexture == null) {
+            mediaPlayer.setDisplay(null);
+            mediaPlayer.setSurface(null);
+        } else {
+            mediaPlayer.setSurface(new Surface(surfaceTexture));
 
-        try {
-            if (!isLocal) {
-                RandomAccessFile raf = new RandomAccessFile(media, "r");
-                mediaPlayer.setDataSource(raf.getFD(), 0, raf.length());
-            } else if (!StringUtils.isEmpty(media) && media.contains("asset")) { // TODO BETTER
-                AssetFileDescriptor afd = context.getAssets().openFd("video/onboarding_video.mp4");
-                mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-                afd.close();
-            }
-
-            mediaPlayer.prepareAsync();
-        } catch (IllegalStateException ex) {
-            ex.printStackTrace();
             try {
-                mediaPlayer.reset();
-                RandomAccessFile raf = new RandomAccessFile(media, "r");
-                mediaPlayer.setDataSource(raf.getFD());
+                if (!isLocal) {
+                    RandomAccessFile raf = new RandomAccessFile(media, "r");
+                    mediaPlayer.setDataSource(raf.getFD(), 0, raf.length());
+                    mediaPlayer.setAudioStreamType(getAudioStreamType());
+                } else if (!StringUtils.isEmpty(media) && media.contains("asset")) { // TODO BETTER
+                    AssetFileDescriptor afd = context.getAssets().openFd("video/onboarding_video.mp4");
+                    mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+                    afd.close();
+                }
+
                 mediaPlayer.prepareAsync();
+            } catch (IllegalStateException ex) {
+                ex.printStackTrace();
+                try {
+                    mediaPlayer.reset();
+                    RandomAccessFile raf = new RandomAccessFile(media, "r");
+                    mediaPlayer.setDataSource(raf.getFD());
+                    mediaPlayer.setAudioStreamType(getAudioStreamType());
+                    mediaPlayer.prepareAsync();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } catch (FileNotFoundException e) {
+                onErrorPlayer.onNext(FILE_NOT_FOUND_ERROR);
+                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } catch (FileNotFoundException e) {
-            onErrorPlayer.onNext(FILE_NOT_FOUND_ERROR);
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.data.realm.GroupMemberRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.LocationRealm;
@@ -19,7 +20,6 @@ import javax.inject.Inject;
 import io.realm.Realm;
 import io.realm.RealmList;
 import rx.Observable;
-import rx.Subscriber;
 
 /**
  * Created by tiago on 06/05/2016.
@@ -53,87 +53,7 @@ public class UserCacheImpl implements UserCache {
             UserRealm userDB = obsRealm.where(UserRealm.class).equalTo("id", userRealm.getId()).findFirst();
 
             if (userDB != null) {
-                if (userRealm.getMemberships() != null) {
-                    for (MembershipRealm membershipRealm : userRealm.getMemberships()) {
-                        MembershipRealm membershipDB = obsRealm.where(MembershipRealm.class).equalTo("id", membershipRealm.getId()).findFirst();
-
-                        if (membershipDB != null) {
-                            membershipDB.getGroup().setName(membershipRealm.getGroup().getName());
-                            membershipDB.getGroup().setPicture(membershipRealm.getGroup().getPicture());
-                            membershipDB.setMute(membershipRealm.isMute());
-
-                            RealmList<UserRealm> membersEnd = new RealmList<>();
-
-                            if (membershipRealm.getGroup().getMembers() != null) {
-                                for (UserRealm member : membershipRealm.getGroup().getMembers()) {
-                                    UserRealm memberDB = obsRealm.where(UserRealm.class).equalTo("id", member.getId()).findFirst();
-
-                                    if (memberDB == null) {
-                                        memberDB = obsRealm.copyToRealmOrUpdate(member);
-                                    }
-
-                                    membersEnd.add(memberDB);
-                                }
-                            }
-
-                            membershipDB.getGroup().setMembers(membersEnd);
-                        } else {
-                            membershipRealm.setUpdatedAt(new Date());
-                            MembershipRealm addedMembership = obsRealm.copyToRealmOrUpdate(membershipRealm);
-                            userDB.getMemberships().add(addedMembership);
-                        }
-
-                        boolean found = false;
-                        for (MembershipRealm membershipRealmDB : userDB.getMemberships()) {
-                            if (membershipRealmDB.getId().equals(membershipRealm.getId()))
-                                found = true;
-                        }
-
-                        if (!found) {
-                            userDB.getMemberships().add(membershipRealm);
-                        }
-                    }
-                }
-
-                if (userRealm.getGroups() != null) {
-                    for (GroupRealm groupRealm : userRealm.getGroups()) {
-                        GroupRealm groupRealmDB = obsRealm.where(GroupRealm.class).equalTo("id", groupRealm.getId()).findFirst();
-
-                        if (groupRealmDB != null) {
-                            groupRealmDB.setName(groupRealm.getName());
-                            groupRealmDB.setPicture(groupRealm.getPicture());
-                        }
-                    }
-                }
-
-                if (userRealm.getFriendships() != null) {
-                    for (FriendshipRealm friendshipRealm : userRealm.getFriendships()) {
-                        FriendshipRealm friendshipDB = obsRealm.where(FriendshipRealm.class).equalTo("id", friendshipRealm.getId()).findFirst();
-
-                        if (friendshipDB != null) {
-                            friendshipDB.getFriend().setProfilePicture(friendshipRealm.getFriend().getProfilePicture());
-                            friendshipDB.getFriend().setDisplayName(friendshipRealm.getFriend().getDisplayName());
-                            friendshipDB.getFriend().setScore(friendshipRealm.getFriend().getScore());
-                            friendshipDB.getFriend().setUsername(friendshipRealm.getFriend().getUsername());
-                            friendshipDB.getFriend().setPhone(friendshipRealm.getFriend().getPhone());
-                            friendshipDB.getFriend().setFbid(friendshipRealm.getFriend().getFbid());
-                        } else {
-                            friendshipRealm.getFriend().setUpdatedAt(new Date());
-                            FriendshipRealm addedFriendship = obsRealm.copyToRealmOrUpdate(friendshipRealm);
-                            userDB.getFriendships().add(addedFriendship);
-                        }
-
-                        boolean found = false;
-                        for (FriendshipRealm friendshipRealmDB : userDB.getFriendships()) {
-                            if (friendshipRealmDB.getId().equals(friendshipRealm.getId()))
-                                found = true;
-                        }
-
-                        if (!found) {
-                            userDB.getFriendships().add(friendshipRealm);
-                        }
-                    }
-                }
+                updateFriendships(obsRealm, userRealm, userDB);
 
                 userDB.setUsername(userRealm.getUsername());
                 userDB.setScore(userRealm.getScore());
@@ -151,7 +71,9 @@ public class UserCacheImpl implements UserCache {
                     userDB.setLocation(null);
                 }
             } else {
-                obsRealm.copyToRealmOrUpdate(userRealm);
+                obsRealm.insertOrUpdate(userRealm);
+                userDB = obsRealm.where(UserRealm.class).equalTo("id", userRealm.getId()).findFirst();
+                updateFriendships(obsRealm, userRealm, userDB);
             }
 
             obsRealm.commitTransaction();
@@ -160,6 +82,61 @@ public class UserCacheImpl implements UserCache {
             ex.printStackTrace();
         } finally {
             obsRealm.close();
+        }
+    }
+
+    private void updateFriendships(Realm obsRealm, UserRealm userRealm, UserRealm userDB) {
+        if (userRealm.getMemberships() != null) {
+            for (MembershipRealm membershipRealm : userRealm.getMemberships()) {
+                membershipRealm.setUpdatedAt(new Date());
+                MembershipRealm membershipDB = obsRealm.where(MembershipRealm.class).equalTo("id", membershipRealm.getId()).findFirst();
+
+                obsRealm.insertOrUpdate(membershipRealm);
+
+                if (membershipDB == null) {
+                    membershipDB = obsRealm.where(MembershipRealm.class).equalTo("id", membershipRealm.getId()).findFirst();
+                    userDB.getMemberships().add(membershipDB);
+                }
+
+                boolean found = false;
+                for (MembershipRealm membershipRealmDB : userDB.getMemberships()) {
+                    if (membershipRealmDB.getId().equals(membershipRealm.getId()))
+                        found = true;
+                }
+
+                if (!found) {
+                    userDB.getMemberships().add(membershipDB);
+                }
+            }
+        }
+
+        if (userRealm.getFriendships() != null) {
+            for (FriendshipRealm friendshipRealm : userRealm.getFriendships()) {
+                FriendshipRealm friendshipDB = obsRealm.where(FriendshipRealm.class).equalTo("id", friendshipRealm.getId()).findFirst();
+
+                if (friendshipDB != null) {
+                    friendshipDB.getFriend().setProfilePicture(friendshipRealm.getFriend().getProfilePicture());
+                    friendshipDB.getFriend().setDisplayName(friendshipRealm.getFriend().getDisplayName());
+                    friendshipDB.getFriend().setScore(friendshipRealm.getFriend().getScore());
+                    friendshipDB.getFriend().setUsername(friendshipRealm.getFriend().getUsername());
+                    friendshipDB.getFriend().setPhone(friendshipRealm.getFriend().getPhone());
+                    friendshipDB.getFriend().setFbid(friendshipRealm.getFriend().getFbid());
+                } else {
+                    friendshipRealm.getFriend().setUpdatedAt(new Date());
+                    FriendshipRealm addedFriendship = obsRealm.copyToRealmOrUpdate(friendshipRealm);
+                    userDB.getFriendships().add(addedFriendship);
+                }
+
+                boolean found = false;
+                for (FriendshipRealm friendshipRealmDB : userDB.getFriendships()) {
+                    if (friendshipRealmDB.getId().equals(friendshipRealm.getId()))
+                        found = true;
+                }
+
+                if (!found) {
+                    userDB.getFriendships().add(friendshipRealm);
+                }
+            }
         }
     }
 
@@ -196,17 +173,9 @@ public class UserCacheImpl implements UserCache {
     // ALWAYS CALLED ON MAIN THREAD
     @Override
     public Observable<UserRealm> userInfos(String userId) {
-        return Observable.create(new Observable.OnSubscribe<UserRealm>() {
-            @Override
-            public void call(final Subscriber<? super UserRealm> subscriber) {
-                results = realm.where(UserRealm.class).equalTo("id", userId).findFirst();
-
-                if (results != null)
-                    subscriber.onNext(realm.copyFromRealm(results));
-
-                subscriber.onCompleted();
-            }
-        });
+        return Observable.just(userId)
+                .map(id -> realm.where(UserRealm.class).equalTo("id", id).findFirst())
+                .map(o -> realm.copyFromRealm(o));
     }
 
     @Override
@@ -269,18 +238,20 @@ public class UserCacheImpl implements UserCache {
     }
 
     @Override
-    public void updateGroup(String groupId, String groupName, String pictureUri) {
+    public void updateGroup(GroupRealm groupRealm, boolean isFull) {
         Realm realm = Realm.getDefaultInstance();
 
         try {
-            realm.beginTransaction();
-            GroupRealm groupRealm = realm.where(GroupRealm.class).equalTo("id", groupId).findFirst();
-            if (groupName != null) groupRealm.setName(groupName);
-            if (pictureUri != null) groupRealm.setPicture(pictureUri);
-            realm.commitTransaction();
-        }  catch (IllegalStateException ex) {
-            ex.printStackTrace();
-            if (realm.isInTransaction()) realm.cancelTransaction();
+            realm.executeTransaction(realm1 -> {
+                if (isFull) {
+                    realm1.insertOrUpdate(groupRealm);
+                } else {
+                    GroupRealm groupRealmDB = realm1.where(GroupRealm.class).equalTo("id", groupRealm.getId()).findFirst();
+                    groupRealmDB.setName(groupRealm.getName());
+                    groupRealmDB.setPicture(groupRealm.getPicture());
+                    groupRealmDB.setLink(groupRealm.getLink());
+                }
+            });
         } finally {
             realm.close();
         }
@@ -291,23 +262,14 @@ public class UserCacheImpl implements UserCache {
         Realm realm = Realm.getDefaultInstance();
 
         try {
-            realm.beginTransaction();
+            realm.executeTransaction(realm1 -> {
+                GroupRealm groupRealm = realm.where(GroupRealm.class).equalTo("id", groupId).findFirst();
 
-            RealmList<UserRealm> usersToAdd = new RealmList<>();
-
-            for (String memberId : memberIds) {
-                usersToAdd.add(realm.where(UserRealm.class).equalTo("id", memberId).findFirst());
-            }
-
-            GroupRealm groupRealm = realm.where(GroupRealm.class).equalTo("id", groupId).findFirst();
-            for (UserRealm user : usersToAdd) {
-                groupRealm.getMembers().add(user);
-            }
-
-            realm.commitTransaction();
-        } catch (IllegalStateException ex) {
-            ex.printStackTrace();
-            if (realm.isInTransaction()) realm.cancelTransaction();
+                for (String memberId : memberIds) {
+                    UserRealm userRealm = realm.where(UserRealm.class).equalTo("id", memberId).findFirst();
+                    groupRealm.getMembers().add(new GroupMemberRealm(userRealm));
+                }
+            });
         } finally {
             realm.close();
         }
@@ -353,7 +315,7 @@ public class UserCacheImpl implements UserCache {
 
             GroupRealm groupRealm = realm.where(GroupRealm.class).equalTo("id", groupId).findFirst();
             for (UserRealm user : usersToAdd) {
-                groupRealm.getAdmins().add(user);
+                groupRealm.getAdmins().add(new GroupMemberRealm(user));
             }
 
             realm.commitTransaction();
@@ -428,13 +390,13 @@ public class UserCacheImpl implements UserCache {
         Realm realm = Realm.getDefaultInstance();
         try {
             realm.beginTransaction();
+
             MembershipRealm membershipRealmDB = realm.copyToRealmOrUpdate(membershipRealm);
             UserRealm user = realm.where(UserRealm.class).equalTo("id", userId).findFirst();
 
             boolean found = false;
 
             if (user.getMemberships() != null) {
-
                 for (MembershipRealm dbMembership : user.getMemberships()) {
                     if (dbMembership.getGroup().getId().equals(membershipRealm.getGroup().getId())) {
                         found = true;
@@ -454,25 +416,16 @@ public class UserCacheImpl implements UserCache {
     }
 
     @Override
-    public void updateMembershipLink(String userId, String membershipId, MembershipRealm membershipRealm) {
-        Realm realm = Realm.getDefaultInstance();
+    public void updateMembership(MembershipRealm membershipRealm) {
+       Realm realm = Realm.getDefaultInstance();
+
         try {
-            realm.beginTransaction();
-            MembershipRealm membershipRealmDb = realm.where(UserRealm.class).equalTo("id", userId).findFirst()
-                    .getMemberships().where().equalTo("id", membershipId).findFirst();
-            String privateLink = membershipRealm.getLink();
-            String publicLink = membershipRealm.getGroup().getLink();
-            Date privateLinkExpiration = membershipRealm.getLink_expires_at();
-            if (privateLink != null) membershipRealmDb.setLink(privateLink);
-            if (publicLink != null) membershipRealmDb.getGroup().setLink(publicLink);
-            if (privateLinkExpiration != null)
-                membershipRealmDb.setLink_expires_at(privateLinkExpiration);
-            realm.commitTransaction();
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-            if (realm != null) realm.cancelTransaction();
+            realm.executeTransaction(realm1 -> {
+                MembershipRealm membershipRealmDB = realm1.where(MembershipRealm.class).equalTo("id", membershipRealm.getId()).findFirst();
+                membershipRealmDB.setMute(membershipRealm.isMute());
+            });
         } finally {
-            if (realm != null) realm.close();
+            realm.close();
         }
     }
 
@@ -565,5 +518,14 @@ public class UserCacheImpl implements UserCache {
         }
 
         return null;
+    }
+
+    @Override
+    public MembershipRealm membershipInfos(String membershipId) {
+        Realm obsRealm = Realm.getDefaultInstance();
+        MembershipRealm membershipRealm = obsRealm.where(MembershipRealm.class).equalTo("id", membershipId).findFirst();
+        final MembershipRealm result = membershipRealm == null ? null : obsRealm.copyFromRealm(membershipRealm);
+        obsRealm.close();
+        return result;
     }
 }

@@ -55,11 +55,11 @@ import com.tribe.app.presentation.internal.di.scope.HasRatedApp;
 import com.tribe.app.presentation.internal.di.scope.HasReceivedPointsForCameraPermission;
 import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
+import com.tribe.app.presentation.internal.di.scope.LastOnlineNotification;
 import com.tribe.app.presentation.internal.di.scope.LastSync;
 import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
 import com.tribe.app.presentation.internal.di.scope.LastVersionCode;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
-import com.tribe.app.presentation.internal.di.scope.LocationPopup;
 import com.tribe.app.presentation.internal.di.scope.Memories;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
 import com.tribe.app.presentation.internal.di.scope.Preload;
@@ -82,6 +82,7 @@ import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.friend.MemberListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.text.PhotoMessageAdapterDelegate;
@@ -89,16 +90,26 @@ import com.tribe.app.presentation.view.adapter.delegate.text.TutorialMessageAdap
 import com.tribe.app.presentation.view.adapter.delegate.text.VideoMessageAdapterDelegate;
 import com.tribe.app.presentation.view.camera.view.GlPreview;
 import com.tribe.app.presentation.view.camera.view.HistogramVisualizerView;
-import com.tribe.app.presentation.view.component.PullToSearchContainer;
-import com.tribe.app.presentation.view.component.PullToSearchView;
+import com.tribe.app.presentation.view.component.ActionView;
+import com.tribe.app.presentation.view.component.FilterView;
 import com.tribe.app.presentation.view.component.RatingView;
 import com.tribe.app.presentation.view.component.SettingItemView;
+import com.tribe.app.presentation.view.component.TileView;
+import com.tribe.app.presentation.view.component.TopBarContainer;
+import com.tribe.app.presentation.view.component.TopBarView;
 import com.tribe.app.presentation.view.component.TribeComponentView;
 import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.component.VisualizerView;
+import com.tribe.app.presentation.view.component.group.AddMembersGroupView;
+import com.tribe.app.presentation.view.component.group.CreateGroupView;
+import com.tribe.app.presentation.view.component.group.GroupSuggestionView;
+import com.tribe.app.presentation.view.component.group.MembersGroupView;
+import com.tribe.app.presentation.view.component.group.SettingsGroupView;
+import com.tribe.app.presentation.view.component.group.UpdateGroupView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
+import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -112,6 +123,7 @@ import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.LabelButton;
 import com.tribe.app.presentation.view.widget.PathView;
 import com.tribe.app.presentation.view.widget.PlayerView;
+import com.tribe.app.presentation.view.widget.TextViewAnimatedDots;
 import com.tribe.app.presentation.view.widget.TribeVideoView;
 
 import java.text.DateFormat;
@@ -161,13 +173,24 @@ public interface ApplicationComponent {
     void inject(TribeVideoView tribeVideoView);
     void inject(ButtonPointsView buttonPointsView);
     void inject(SearchResultGridAdapterDelegate searchResultGridAdapterDelegate);
-    void inject(PullToSearchContainer pullToSearchContainer);
-    void inject(PullToSearchView pullToSearchView);
+    void inject(TopBarContainer topBarContainer);
+    void inject(TopBarView topBarView);
+    void inject(FilterView filterView);
     void inject(SettingItemView settingItemView);
     void inject(ButtonCardView buttonCardView);
     void inject(GlPreview glPreview);
     void inject(VisualizerView visualizerView);
     void inject(RatingView ratingView);
+    void inject(TextViewAnimatedDots textViewAnimatedDots);
+    void inject(TileView tileView);
+    void inject(CreateGroupView tileView);
+    void inject(GroupSuggestionView groupSuggestionView);
+    void inject(AddMembersGroupView addMembersGroupView);
+    void inject(ActionView actionView);
+    void inject(SettingsGroupView settingsGroupView);
+    void inject(UpdateGroupView updateGroupView);
+    void inject(MembersGroupView membersGroupView);
+    void inject(MemberListAdapterDelegate memberListAdapterDelegate);
 
     // JOBS
     void inject(BaseJob baseJob);
@@ -247,6 +270,8 @@ public interface ApplicationComponent {
 
     PaletteGrid paletteGrid();
 
+    ImageUtils imageUtils();
+
     @SpeedPlayback
     Preference<Float> speedPlayblack();
 
@@ -298,9 +323,6 @@ public interface ApplicationComponent {
 
     ReactiveLocationProvider reactiveLocationProvider();
 
-    @LocationPopup
-    Preference<Boolean> locationPopup();
-
     @ShareProfile
     Preference<Boolean> shareProfile();
 
@@ -327,6 +349,9 @@ public interface ApplicationComponent {
 
     @DebugMode
     Preference<Boolean> debugMode();
+
+    @LastOnlineNotification
+    Preference<Long> lastOnlineNotification();
 
     SoundManager soundManager();
 

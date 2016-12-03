@@ -6,14 +6,15 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -21,17 +22,17 @@ import com.tribe.app.presentation.view.activity.BaseActionActivity;
 import com.tribe.app.presentation.view.activity.ChatActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
-import com.tribe.app.presentation.view.activity.GroupInfoActivity;
+import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.PointsActivity;
 import com.tribe.app.presentation.view.activity.ScoreActivity;
+import com.tribe.app.presentation.view.activity.SearchUserActivity;
 import com.tribe.app.presentation.view.activity.SettingActivity;
 import com.tribe.app.presentation.view.activity.TribeActivity;
 
 import java.io.File;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -150,7 +151,7 @@ public class Navigator {
         if (activity != null) {
             Intent intent = ScoreActivity.getCallingIntent(activity);
             activity.startActivity(intent);
-            activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
         }
     }
 
@@ -175,24 +176,7 @@ public class Navigator {
     public void navigateToSettings(Activity activity, int result) {
         if (activity != null) {
             Intent intent = SettingActivity.getCallingIntent(activity);
-            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
             activity.startActivityForResult(intent, result);
-        }
-    }
-
-    public void navigateToGroupInfo(Activity activity, String membershipId, boolean isCurrentUserAdmin, String groupId, String groupName, String groupPicture, String privateGroupLink, Date privateGroupLinkExpiresAt) {
-        if (activity != null) {
-            Intent intent = GroupInfoActivity.getCallingIntent(activity);
-            Bundle bundle = new Bundle();
-            bundle.putString("membershipId", membershipId);
-            bundle.putBoolean("isCurrentUserAdmin", isCurrentUserAdmin);
-            bundle.putString("groupId", groupId);
-            bundle.putString("groupName", groupName);
-            bundle.putString("groupPicture", groupPicture);
-            bundle.putString("privateGroupLink", privateGroupLink);
-            bundle.putLong("privateGroupLinkExpiresAt", privateGroupLinkExpiresAt.getTime());
-            intent.putExtras(bundle);
-            activity.startActivity(intent);
             activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
         }
     }
@@ -217,8 +201,48 @@ public class Navigator {
     public void navigateToDebugMode(Activity activity) {
         if (activity != null) {
             Intent intent = DebugActivity.getCallingIntent(activity);
-            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
             activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+        }
+    }
+
+    /**
+     * Goes to the group screen.
+     *
+     * @param activity activity needed to open the destiny activity.
+     */
+    public void navigateToCreateGroup(Activity activity) {
+        if (activity != null) {
+            Intent intent = GroupActivity.getCallingIntent(activity, null);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+        }
+    }
+
+    /**
+     * Goes to the group screen.
+     *
+     * @param activity activity needed to open the destiny activity.
+     * @param membership membership to detail
+     */
+    public void navigateToGroupDetails(Activity activity, Membership membership) {
+        if (activity != null) {
+            Intent intent = GroupActivity.getCallingIntent(activity, membership);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+        }
+    }
+
+    /**
+     * Goes to the search screen.
+     *
+     * @param activity activity needed to open the destiny activity.
+     */
+    public void navigateToSearchUser(Activity activity, String username) {
+        if (activity != null) {
+            Intent intent = SearchUserActivity.getCallingIntent(activity, username);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
         }
     }
 
@@ -320,7 +344,7 @@ public class Navigator {
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, body);
-        context.startActivity(Intent.createChooser(sharingIntent, "Share via..."));
+        context.startActivity(sharingIntent);
     }
 
     public void sendText(String body, Context context) {
@@ -331,10 +355,11 @@ public class Navigator {
     }
 
     public void shareHandle(String handle, Activity activity) {
-        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
-        sharingIntent.setType("text/plain");
-        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, activity.getString(R.string.share_add_friends_handle, "@" + handle, BuildConfig.TRIBE_URL + "/@" + handle));
-        activity.startActivity(Intent.createChooser(sharingIntent, activity.getResources().getString(R.string.contacts_share_profile_button)));
+        Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+        sendIntent.setData(Uri.parse("sms:"));
+        sendIntent.putExtra("sms_body", EmojiParser.demojizedText(activity.getString(R.string.share_add_friends_handle)));
+        activity.startActivity(sendIntent);
+        activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }
 
     public void invite(String phone, int nbFriends, Activity activity) {
@@ -401,7 +426,7 @@ public class Navigator {
         if (file != null) {
             Intent share = new Intent(Intent.ACTION_SEND);
             share.setType("image/jpeg");
-            share.putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_add_friends_handle, "@" + handle, BuildConfig.TRIBE_URL + "/@" + handle));
+            share.putExtra(Intent.EXTRA_TEXT, EmojiParser.demojizedText(context.getString(R.string.share_add_friends_handle)));
 
             Uri uri = Uri.fromFile(file);
             share.putExtra(Intent.EXTRA_STREAM, uri);

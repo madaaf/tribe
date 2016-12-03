@@ -9,6 +9,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.reflect.TypeToken;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.MembershipRealm;
@@ -22,15 +23,20 @@ import io.realm.RealmList;
 
 public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
 
+    private GroupDeserializer groupDeserializer;
     private SimpleDateFormat simpleDateFormat;
 
-    public TribeUserDeserializer(SimpleDateFormat simpleDateFormat) {
+    public TribeUserDeserializer(GroupDeserializer groupDeserializer, SimpleDateFormat simpleDateFormat) {
+        this.groupDeserializer = groupDeserializer;
         this.simpleDateFormat = simpleDateFormat;
     }
 
     @Override
     public UserRealm deserialize(JsonElement je, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        Gson gson = new GsonBuilder().create();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(new TypeToken<RealmList<UserRealm>>(){}.getType(), new UserRealmListDeserializer())
+                .create();
+
         UserRealm userRealm = new UserRealm();
 
         JsonObject result = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("user");
@@ -82,7 +88,7 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
             if (resultsGroups != null) {
                 for (JsonElement obj : resultsGroups) {
                     if (!(obj instanceof JsonNull)) {
-                        GroupRealm groupRealm = gson.fromJson(obj, GroupRealm.class);
+                        GroupRealm groupRealm = groupDeserializer.parseGroup(obj.getAsJsonObject());
                         realmListGroups.add(groupRealm);
                     }
                 }

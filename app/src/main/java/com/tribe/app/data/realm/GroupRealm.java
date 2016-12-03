@@ -1,8 +1,10 @@
 package com.tribe.app.data.realm;
 
-import android.support.annotation.StringDef;
+import com.tribe.app.presentation.utils.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -13,11 +15,10 @@ import io.realm.annotations.PrimaryKey;
  */
 public class GroupRealm extends RealmObject {
 
-    @StringDef({PRIVATE, PUBLIC})
-    public @interface GroupType {}
-
-    public static final String PRIVATE = "PRIVATE";
     public static final String PUBLIC = "PUBLIC";
+
+    public static final String NAME = "name";
+    public static final String PICTURE = "picture";
 
     @PrimaryKey
     private String id;
@@ -25,11 +26,16 @@ public class GroupRealm extends RealmObject {
     private String name;
     private String picture;
     private String link;
-    private boolean privateGroup;
     private Date created_at;
     private Date updated_at;
-    private RealmList<UserRealm> members;
-    private RealmList<UserRealm> admins;
+
+    private RealmList<GroupMemberRealm> members;
+    private RealmList<GroupMemberRealm> admins;
+
+    public GroupRealm() {
+        this.members = new RealmList<>();
+        this.admins = new RealmList<>();
+    }
 
     public String getId() {
         return id;
@@ -63,14 +69,6 @@ public class GroupRealm extends RealmObject {
         this.link = groupLink;
     }
 
-    public boolean isPrivateGroup() {
-        return privateGroup;
-    }
-
-    public void setPrivateGroup(boolean privateGroup) {
-        this.privateGroup = privateGroup;
-    }
-
     public Date getCreatedAt() {
         return created_at;
     }
@@ -87,19 +85,37 @@ public class GroupRealm extends RealmObject {
         this.updated_at = updated_at;
     }
 
-    public RealmList<UserRealm> getMembers() {
+    public RealmList<GroupMemberRealm> getMembers() {
         return members;
     }
 
-    public void setMembers(RealmList<UserRealm> members) {
+    public void setMembers(RealmList<GroupMemberRealm> members) {
         this.members = members;
     }
 
-    public RealmList<UserRealm> getAdmins() {
+    public RealmList<GroupMemberRealm> getAdmins() {
         return admins;
     }
 
-    public void setAdmins(RealmList<UserRealm> admins) {
+    public void setAdmins(RealmList<GroupMemberRealm> admins) {
         this.admins = admins;
+    }
+
+    public List<String> getMembersPics() {
+        List<String> pics = new ArrayList<>();
+
+        if (members != null) {
+            List<GroupMemberRealm> subMembers = members.subList(Math.max(members.size() - 4, 0), members.size());
+
+            if (subMembers != null) {
+                for (GroupMemberRealm user : subMembers) {
+                    String url = user.getProfilePicture();
+                    if (!StringUtils.isEmpty(url))
+                        pics.add(url);
+                }
+            }
+        }
+
+        return pics;
     }
 }

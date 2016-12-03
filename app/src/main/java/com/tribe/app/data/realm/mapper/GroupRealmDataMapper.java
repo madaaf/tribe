@@ -20,10 +20,12 @@ import io.realm.RealmList;
 public class GroupRealmDataMapper {
 
     UserRealmDataMapper userRealmDataMapper;
+    GroupMemberRealmDataMapper groupMemberRealmDataMapper;
 
     @Inject
-    public GroupRealmDataMapper(UserRealmDataMapper userRealmDataMapper) {
+    public GroupRealmDataMapper(UserRealmDataMapper userRealmDataMapper, GroupMemberRealmDataMapper groupRealmDataMapper) {
         this.userRealmDataMapper = userRealmDataMapper;
+        this.groupMemberRealmDataMapper = groupRealmDataMapper;
     }
 
     /**
@@ -39,9 +41,8 @@ public class GroupRealmDataMapper {
             group.setName(groupRealm.getName());
             group.setPicture(groupRealm.getPicture());
             group.setGroupLink(groupRealm.getLink());
-            group.setMembers(userRealmDataMapper.transform(groupRealm.getMembers()));
-            group.setAdmins(userRealmDataMapper.transform(groupRealm.getAdmins()));
-            group.setPrivateGroup(groupRealm.isPrivateGroup());
+            group.setMembers(groupMemberRealmDataMapper.transform(groupRealm.getMembers()));
+            group.setAdmins(groupMemberRealmDataMapper.transform(groupRealm.getAdmins()));
         }
 
         return group;
@@ -80,9 +81,8 @@ public class GroupRealmDataMapper {
             groupRealm.setId(group.getId());
             groupRealm.setPicture(group.getPicture());
             groupRealm.setName(group.getName());
-            groupRealm.setMembers(userRealmDataMapper.transformList(group.getMembers()));
-            groupRealm.setAdmins(userRealmDataMapper.transformList(group.getAdmins()));
-            groupRealm.setPrivateGroup(group.isPrivateGroup());
+            groupRealm.setMembers(groupMemberRealmDataMapper.transformList(group.getMembers()));
+            groupRealm.setAdmins(groupMemberRealmDataMapper.transformList(group.getAdmins()));
         }
 
         return groupRealm;

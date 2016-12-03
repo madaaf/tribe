@@ -35,6 +35,7 @@ import com.tribe.app.presentation.mvp.view.MessageView;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.adapter.MessageAdapter;
 import com.tribe.app.presentation.view.adapter.manager.MessageLayoutManager;
@@ -337,12 +338,16 @@ public class ChatActivity extends BaseActivity implements MessageView {
     }
 
     private void initParams() {
+        Bundle bundle = new Bundle();
+        bundle.putString(TagManagerConstants.TYPE, isToGroup ? TagManagerConstants.TYPE_TRIBE_GROUP : TagManagerConstants.TYPE_TRIBE_USER);
+        tagManager.trackEvent(TagManagerConstants.KPI_CHAT_OPENED, bundle);
+
         if (getIntent() != null && getIntent().hasExtra(RECIPIENT_ID)) {
             recipientId = getIntent().getStringExtra(RECIPIENT_ID);
             isToGroup = getIntent().getBooleanExtra(IS_TO_GROUP, false);
-        }
-        else
+        } else {
             finish();
+        }
     }
 
     private void initSubscriptions() {

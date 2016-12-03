@@ -26,6 +26,7 @@ import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
 import com.tribe.app.domain.interactor.user.DoRegister;
 import com.tribe.app.domain.interactor.user.FindByUsername;
 import com.tribe.app.domain.interactor.user.GetBlockedFriendshipList;
+import com.tribe.app.domain.interactor.user.GetCloudMessageList;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetDiskContactList;
 import com.tribe.app.domain.interactor.user.GetDiskFBContactList;
@@ -38,9 +39,11 @@ import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.NotifyFBFriends;
 import com.tribe.app.domain.interactor.user.RemoveFriendship;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
+import com.tribe.app.domain.interactor.user.SendOnlineNotification;
 import com.tribe.app.domain.interactor.user.SendToken;
 import com.tribe.app.domain.interactor.user.SynchroContactList;
 import com.tribe.app.domain.interactor.user.UpdateGroup;
+import com.tribe.app.domain.interactor.user.UpdateMembership;
 import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.presentation.internal.di.scope.PerActivity;
 
@@ -102,6 +105,12 @@ public class UserModule {
 
     @Provides
     @PerActivity
+    UseCase provideUpdateMembership(UpdateMembership updateMembership) {
+        return updateMembership;
+    }
+
+    @Provides
+    @PerActivity
     UseCase provideAddMembersToGroup(AddMembersToGroup addMembersToGroup) {
         return addMembersToGroup;
     }
@@ -111,6 +120,13 @@ public class UserModule {
     @Named("cloudUserInfos")
     UseCase provideCloudGetUserInfos(GetCloudUserInfos getCloudUserInfos) {
         return getCloudUserInfos;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("cloudGetMessages")
+    UseCase provideCloudGetMessageList(GetCloudMessageList getCloudMessageList) {
+        return getCloudMessageList;
     }
 
     @Provides
@@ -246,9 +262,8 @@ public class UserModule {
 
     @Provides
     @PerActivity
-    @Named("createFriendship")
-    CreateFriendship provideCreateFriendship(CreateFriendship createFriendship) {
-        return createFriendship;
+    CreateFriendship provideCreateFriendship(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+        return new CreateFriendship(userRepository, threadExecutor, postExecutionThread);
     }
 
     @Provides
@@ -294,5 +309,11 @@ public class UserModule {
     @Named("diskUpdateMessagesReceivedToNotSeen")
     UseCaseDisk provideUpdateTribesReceivedToNotSeen(DiskUpdateMessagesReceivedToNotSeen diskUpdateMessagesReceivedToNotSeen) {
         return diskUpdateMessagesReceivedToNotSeen;
+    }
+
+    @Provides
+    @PerActivity
+    SendOnlineNotification provideSendOnlineNotification(CloudUserDataRepository cloudUserDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+        return new SendOnlineNotification(cloudUserDataRepository, threadExecutor, postExecutionThread);
     }
 }

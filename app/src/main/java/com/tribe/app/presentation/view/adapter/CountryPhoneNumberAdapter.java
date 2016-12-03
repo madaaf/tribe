@@ -19,7 +19,6 @@ import rx.Observable;
  * Created by tiago on 18/05/2016.
  */
 
-// TODO: add ripples
 public class CountryPhoneNumberAdapter extends RecyclerView.Adapter {
 
     private RxAdapterDelegatesManager<List<Country>> delegatesManager;

@@ -15,11 +15,11 @@ import com.tribe.app.presentation.internal.di.scope.HasReceivedPointsForCameraPe
 import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
 import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
 import com.tribe.app.presentation.internal.di.scope.LastNotifyRequest;
+import com.tribe.app.presentation.internal.di.scope.LastOnlineNotification;
 import com.tribe.app.presentation.internal.di.scope.LastSync;
 import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
 import com.tribe.app.presentation.internal.di.scope.LastVersionCode;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
-import com.tribe.app.presentation.internal.di.scope.LocationPopup;
 import com.tribe.app.presentation.internal.di.scope.Memories;
 import com.tribe.app.presentation.internal.di.scope.Preload;
 import com.tribe.app.presentation.internal.di.scope.ShareProfile;
@@ -94,7 +94,7 @@ public class DataModule {
     @Singleton
     @LocationContext
     Preference<Boolean> provideLocationContext(RxSharedPreferences prefs) {
-        return prefs.getBoolean(PreferencesConstants.LOCATION_CONTEXT, false);
+        return prefs.getBoolean(PreferencesConstants.LOCATION_CONTEXT, true);
     }
 
     @Provides
@@ -151,13 +151,6 @@ public class DataModule {
     @Filter
     Preference<Integer> provideFilter(RxSharedPreferences prefs) {
         return prefs.getInteger(PreferencesConstants.FILTER, 0);
-    }
-
-    @Provides
-    @Singleton
-    @LocationPopup
-    Preference<Boolean> provideLocationPopup(RxSharedPreferences prefs) {
-        return prefs.getBoolean(PreferencesConstants.LOCATION_POPUP, false);
     }
 
     @Provides
@@ -228,5 +221,12 @@ public class DataModule {
     @DebugMode
     Preference<Boolean> provideDebugMode(RxSharedPreferences prefs) {
         return prefs.getBoolean(PreferencesConstants.DEBUG_MODE, false);
+    }
+
+    @Provides
+    @Singleton
+    @LastOnlineNotification
+    Preference<Long> provideLastOnlineNotification(RxSharedPreferences prefs) {
+        return prefs.getLong(PreferencesConstants.LAST_ONLINE_NOTIFICATION, 0L);
     }
 }

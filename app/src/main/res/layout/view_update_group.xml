@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.tribe.app.presentation.view.component.group.UpdateGroupView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.view.activity.GroupActivity"
+    android:background="@color/grey.background.profile_info"
+    android:orientation="vertical"
+    >
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:focusableInTouchMode="true"
+        android:focusable="true">
+        <requestFocus/>
+    </LinearLayout>
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="63.5dp"
+        android:paddingLeft="@dimen/horizontal_margin_small"
+        android:background="@android:color/white">
+
+        <com.tribe.app.presentation.view.widget.AvatarView
+            android:id="@+id/avatarView"
+            android:layout_width="@dimen/avatar_size_small"
+            android:layout_height="@dimen/avatar_size_small"
+            android:layout_gravity="center_vertical"
+            android:background="@null"
+            />
+
+        <com.tribe.app.presentation.view.widget.EditTextFont
+            android:id="@+id/editGroupName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|center_vertical"
+            android:layout_marginStart="55dp"
+            android:layout_marginEnd="62.5dp"
+            android:background="@null"
+            android:gravity="left|center_vertical"
+            android:hint="@string/group_identification_custom_name_placeholder"
+            style="@style/Title.1.Black"
+            android:textColorHint="@color/black.opacity.40"
+            android:singleLine="true"
+            android:imeOptions="actionDone"
+            android:inputType="textCapWords|textNoSuggestions"
+            />
+    </FrameLayout>
+
+    <include layout="@layout/view_separator_simple" />
+
+</com.tribe.app.presentation.view.component.group.UpdateGroupView>

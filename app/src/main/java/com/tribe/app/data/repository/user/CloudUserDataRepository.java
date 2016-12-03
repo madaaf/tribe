@@ -21,6 +21,7 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
+import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
@@ -218,17 +219,31 @@ public class CloudUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<Membership> createGroup(String groupName, List<String> memberIds, boolean isPrivate, String pictureUri) {
+    public Observable<Membership> getMembershipInfos(String membershipId) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-        return cloudDataStore.createGroup(groupName, memberIds, isPrivate, pictureUri)
+        return cloudDataStore.getMembershipInfos(membershipId)
+                .map(this.membershipRealmDataMapper::transform);
+    }
+
+    @Override
+    public Observable<Membership> createGroup(GroupEntity groupEntity) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.createGroup(groupEntity)
                 .map((membershipRealm) -> this.membershipRealmDataMapper.transform(membershipRealm));
     }
 
     @Override
-    public Observable<Group> updateGroup(String groupId, String groupName, String pictureUri) {
+    public Observable<Group> updateGroup(String groupId, List<Pair<String, String>> values) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-        return  cloudDataStore.updateGroup(groupId, groupName, pictureUri)
+        return  cloudDataStore.updateGroup(groupId, values)
                 .map(this.groupRealmDataMapper::transform);
+    }
+
+    @Override
+    public Observable<Membership> updateMembership(String membershipId, List<Pair<String, String>> values) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return  cloudDataStore.updateMembership(membershipId, values)
+                .map(this.membershipRealmDataMapper::transform);
     }
 
     @Override
@@ -293,7 +308,7 @@ public class CloudUserDataRepository implements UserRepository {
     @Override
     public Observable<List<User>> updateUserListScore(Set<String> userIds) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-        return cloudDataStore.updateUserListScore(userIds).map(userRealmList -> this.userRealmDataMapper.transform(userRealmList));
+        return cloudDataStore.updateUserListScore(userIds).map(userRealmList -> this.userRealmDataMapper.transform(userRealmList, false));
     }
 
     @Override
@@ -316,5 +331,11 @@ public class CloudUserDataRepository implements UserRepository {
     @Override
     public Observable<Void> updateMessagesReceivedToNotSeen() {
         return null;
+    }
+
+    @Override
+    public Observable<Void> sendOnlineNotification() {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore.sendOnlineNotification();
     }
 }

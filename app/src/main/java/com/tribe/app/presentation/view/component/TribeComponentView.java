@@ -4,6 +4,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.SurfaceTexture;
+import android.media.AudioManager;
 import android.media.audiofx.Visualizer;
 import android.net.Uri;
 import android.text.format.DateUtils;
@@ -122,6 +123,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     private final PublishSubject<TribeComponentView> onFirstLoop = PublishSubject.create();
 
     // PLAYER
+    private int audioStreamType = AudioManager.STREAM_MUSIC;
     private boolean isFirstLoop = true;
     private boolean isPrepared = false;
     private TribeMediaPlayer mediaPlayer;
@@ -226,6 +228,7 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
                     .mute(false)
                     .canChangeSpeed(true)
                     .forceLegacy(true)
+                    .audioStreamType(audioStreamType)
                     .build();
 
             if (tribe.getType().equals(CameraWrapper.AUDIO) && visualizer == null) {
@@ -312,8 +315,10 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
 
         if (visualizerView != null) visualizerView.release();
 
-        if (mediaPlayer != null)
+        if (mediaPlayer != null) {
+            mediaPlayer.setSurface(null);
             mediaPlayer.release();
+        }
 
         mediaPlayer = null;
         isPrepared = false;
@@ -328,7 +333,6 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         if (mediaPlayer != null) {
             animateProgress();
             mediaPlayer.play();
-
         } else {
             preparePlayer(true);
         }
@@ -396,6 +400,12 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
         mediaPlayer.setPlaybackRate();
         lastPosition = mediaPlayer.getPosition();
         animateProgress();
+    }
+
+    public void changeAudioStreamType(int audioStreamType) {
+        this.audioStreamType = audioStreamType;
+        pausePlayer();
+        play();
     }
 
     public Observable<View> onClickEnableLocation() {

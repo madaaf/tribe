@@ -4,8 +4,11 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.AnyRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringDef;
 import android.util.Log;
 import android.widget.Toast;
@@ -32,7 +35,7 @@ import javax.inject.Singleton;
 public class FileUtils {
 
     @StringDef({VIDEO, PHOTO})
-    public @interface MessageType {}
+    public @interface Type {}
 
     public static final String VIDEO = "video";
     public static final String PHOTO = "photo";
@@ -40,17 +43,17 @@ public class FileUtils {
     private static String pathEnd = "/Tribe/Sent";
     private static String pathEndTemp = "/Tribe/Sent/Temp";
     private static String pathSave = "/Tribe";
-
+    private static String pathAvatarTemp = "/Tribe/Avatars/";
 
     @Inject
     public FileUtils() {
     }
 
-    public static String generateFile(Context context, String id, @MessageType String type) {
+    public static String generateFile(Context context, String id, @Type String type) {
         return getFile(context, id, type).getAbsolutePath();
     }
 
-    public static File getFile(Context context, String id, @MessageType String type) {
+    public static File getFile(Context context, String id, @Type String type) {
         File endDir = new File(context.getFilesDir() + pathEnd);
 
         if (!endDir.exists()) {
@@ -60,7 +63,7 @@ public class FileUtils {
         return generateOutputFile(endDir, id, type);
     }
 
-    public static File getFileTemp(Context context, String id, @MessageType String type) {
+    public static File getFileTemp(Context context, String id, @Type String type) {
         File endDir = new File(context.getFilesDir() + pathEndTemp);
 
         if (!endDir.exists()) {
@@ -70,20 +73,20 @@ public class FileUtils {
         return generateOutputFile(endDir, id, type);
     }
 
-    public static File generateOutputFile(File dir, String id, @MessageType String type) {
+    public static File generateOutputFile(File dir, String id, @Type String type) {
         return new File(dir, getTribeFilenameForId(id, type));
     }
 
-    public static String getPathForId(Context context, String id, @MessageType String type) {
+    public static String getPathForId(Context context, String id, @Type String type) {
         File endDir = new File(getCacheDir(context) + pathEnd);
         return generateOutputFile(endDir, id, type).getAbsolutePath();
     }
 
-    public static String getTribeFilenameForId(String id, @MessageType String type) {
+    public static String getTribeFilenameForId(String id, @Type String type) {
         return id + (type == PHOTO ? ".jpeg" : ".mp4");
     }
 
-    public static void delete(Context context, String id, @MessageType String type) {
+    public static void delete(Context context, String id, @Type String type) {
         File endDir = new File(getCacheDir(context) + pathEnd);
         generateOutputFile(endDir, id, type).delete();
     }
@@ -139,6 +142,8 @@ public class FileUtils {
         byte[] bitmapData = bos.toByteArray();
 
         try {
+            if (!file.exists()) file.createNewFile();
+
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(bitmapData);
             fos.close();
@@ -213,7 +218,31 @@ public class FileUtils {
         }
     }
 
+    public static File getAvatarForGroupId(Context context, String id, @Type String type) {
+        File endDir = new File(getCacheDir(context) + pathAvatarTemp);
+
+        if (!endDir.exists()) {
+            endDir.mkdirs();
+        }
+
+        return generateOutputFile(endDir, id, type);
+    }
+
     public static File getCacheDir(Context context) {
         return context.getFilesDir();
+    }
+
+    /**
+     * get uri to drawable or any other resource type if u wish
+     * @param context - context
+     * @param drawableId - drawable res id
+     * @return - uri
+     */
+    public static final Uri getUriToDrawable(@NonNull Context context, @AnyRes int drawableId) {
+        Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
+                "://" + context.getResources().getResourcePackageName(drawableId)
+                + '/' + context.getResources().getResourceTypeName(drawableId)
+                + '/' + context.getResources().getResourceEntryName(drawableId) );
+        return imageUri;
     }
 }

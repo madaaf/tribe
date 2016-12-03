@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutContent"
+    android:layout_width="match_parent"
+    android:layout_height="65dp"
+    android:clickable="true"
+    android:foreground="@drawable/selectable_button"
+    android:background="@null"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingLeft="@dimen/horizontal_margin_small"
+    android:paddingRight="@dimen/horizontal_margin_small"
+    >
+
+    <ImageView
+        android:id="@+id/imgAvatar"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_gravity="left|center_vertical"
+        android:background="@drawable/shape_oval_grey_lighter"
+        android:scaleType="centerCrop"
+        />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="55dp">
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            style="@style/Title.1.Black"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtUsername"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_below="@id/txtName"
+            android:singleLine="true"
+            style="@style/Body.One.Blue"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtBubble"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/txtUsername"
+            android:layout_below="@id/txtName"
+            android:layout_marginTop="6.5dp"
+            android:layout_marginLeft="2dp"
+            android:text="\u2022"
+            android:singleLine="true"
+            style="@style/Body.One.Black40"
+            android:visibility="gone"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtMember"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/txtBubble"
+            android:layout_below="@id/txtName"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="2dp"
+            android:text="@string/group_add_members_already_member"
+            android:singleLine="true"
+            style="@style/Body.One.Black40"
+            android:visibility="gone"
+            />
+    </RelativeLayout>
+    
+    <FrameLayout
+        android:id="@+id/btnAdd"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_gravity="center_vertical|right"
+        android:background="@drawable/shape_oval_grey"
+        android:padding="5dp"
+        >
+        <View
+            android:id="@+id/viewAdd"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_oval_purple_fill"
+            android:scaleY="0"
+            android:scaleX="0"
+            />
+
+        <View
+            android:id="@+id/viewMember"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_oval_black40"
+            />
+    </FrameLayout>
+</FrameLayout>

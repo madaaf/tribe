@@ -14,7 +14,6 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
-import com.tribe.app.data.network.Constant;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -23,8 +22,8 @@ import com.tribe.app.presentation.internal.di.scope.AudioDefault;
 import com.tribe.app.presentation.internal.di.scope.DebugMode;
 import com.tribe.app.presentation.internal.di.scope.LastSync;
 import com.tribe.app.presentation.internal.di.scope.LocationContext;
-import com.tribe.app.presentation.internal.di.scope.LocationPopup;
 import com.tribe.app.presentation.internal.di.scope.Preload;
+import com.tribe.app.presentation.internal.di.scope.ShareProfile;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
 import com.tribe.app.presentation.mvp.presenter.SettingPresenter;
 import com.tribe.app.presentation.mvp.view.SettingView;
@@ -32,11 +31,14 @@ import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.SettingActivity;
+import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.component.SettingFilterView;
 import com.tribe.app.presentation.view.component.SettingItemView;
 import com.tribe.app.presentation.view.component.SettingThemeView;
+import com.tribe.app.presentation.view.dialog_fragment.ShareDialogProfileFragment;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DialogFactory;
+import com.tribe.app.presentation.view.utils.ScoreUtils;
 import com.tribe.app.presentation.view.utils.Weather;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
@@ -56,6 +58,12 @@ public class SettingFragment extends BaseFragment implements SettingView {
 
     @BindView(R.id.settingsProfile)
     SettingItemView settingsProfile;
+
+    @BindView(R.id.viewActionShareProfile)
+    ActionView viewActionShareProfile;
+
+    @BindView(R.id.viewActionPoints)
+    ActionView viewActionPoints;
 
     @BindView(R.id.settingsFilter)
     SettingFilterView settingFilterView;
@@ -118,16 +126,16 @@ public class SettingFragment extends BaseFragment implements SettingView {
     AccessToken accessToken;
 
     @Inject
+    @ShareProfile
+    Preference<Boolean> shareProfile;
+
+    @Inject
     @WeatherUnits
     Preference<String> weatherUnits;
 
     @Inject
     @LocationContext
     Preference<Boolean> locationContext;
-
-    @Inject
-    @LocationPopup
-    Preference<Boolean> locationPopup;
 
     @Inject
     @AudioDefault
@@ -221,6 +229,20 @@ public class SettingFragment extends BaseFragment implements SettingView {
             ((SettingActivity) getActivity()).goToUpdateProfile();
         }));
 
+        subscriptions.add(viewActionPoints.onClick().subscribe(aVoid -> {
+            navigator.navigateToScorePoints(getActivity());
+        }));
+
+        subscriptions.add(viewActionShareProfile.onClick().subscribe(aVoid -> {
+            ShareDialogProfileFragment shareDialogProfileFragment = ShareDialogProfileFragment.newInstance();
+            shareDialogProfileFragment.show(getFragmentManager(), ShareDialogProfileFragment.class.getName());
+
+            if (!shareProfile.get()) {
+                shareProfile.set(true);
+                settingPresenter.updateScoreShare();
+            }
+        }));
+
         subscriptions.add(messageSettingMemories.checkedSwitch().subscribe(isChecked -> {
             Bundle bundle = new Bundle();
             bundle.putBoolean(TagManagerConstants.MEMORIES_ENABLED, isChecked);
@@ -234,7 +256,6 @@ public class SettingFragment extends BaseFragment implements SettingView {
                         .request(PermissionUtils.PERMISSIONS_LOCATION)
                         .subscribe(granted -> {
                             if (granted) {
-                                locationPopup.set(true);
                                 settingPresenter.updateScoreLocation();
                             } else {
                                 messageSettingContext.setCheckedSwitch(false);
@@ -348,6 +369,12 @@ public class SettingFragment extends BaseFragment implements SettingView {
     private void initUi() {
         user = getCurrentUser();
 
+        ScoreUtils.Level level = ScoreUtils.getLevelForScore(user.getScore());
+        viewActionPoints.setTitle(getString(level.getStringId()));
+
+        viewActionShareProfile.setTitle(getString(R.string.settings_profile_share_title, "@" + user.getUsername()));
+        viewActionShareProfile.setBody(getString(R.string.settings_profile_share_title, BuildConfig.TRIBE_URL + "/@" + user.getUsername()));
+
         settingsProfile.setPicture(user.getProfilePicture());
         settingsProfile.setTitleBodyViewType(getString(R.string.settings_profile_title),
                 getString(R.string.settings_profile_subtitle),
@@ -422,7 +449,7 @@ public class SettingFragment extends BaseFragment implements SettingView {
                 "Only for OGs",
                 SettingItemView.SIMPLE);
 
-        txtVersion.setText(getString(R.string.settings_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE));
+        txtVersion.setText(getString(R.string.settings_version, BuildConfig.VERSION_NAME, String.valueOf(BuildConfig.VERSION_CODE)));
 
         if (debugMode.get()) layoutDebugMode.setVisibility(View.VISIBLE);
     }

@@ -6,7 +6,9 @@
     android:layout_height="wrap_content"
     android:background="@null"
     android:gravity="center_vertical"
-    android:padding="@dimen/horizontal_margin_small"
+    android:paddingTop="@dimen/horizontal_margin_small"
+    android:paddingLeft="@dimen/horizontal_margin_small"
+    android:paddingRight="@dimen/horizontal_margin_small"
     >
 
     <com.tribe.app.presentation.view.widget.TextViewFont

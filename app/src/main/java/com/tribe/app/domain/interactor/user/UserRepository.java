@@ -15,6 +15,7 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
+import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
@@ -144,9 +145,13 @@ public interface UserRepository {
 
     Observable<Group> getGroupInfos(String groupId);
 
-    Observable<Membership> createGroup(String groupName, List<String> memberIds, boolean isPrivate, String pictureUri);
+    Observable<Membership> getMembershipInfos(String membershipId);
 
-    Observable<Group> updateGroup(String groupId, String groupName, String pictureUri);
+    Observable<Membership> createGroup(GroupEntity groupEntity);
+
+    Observable<Group> updateGroup(String groupId, List<Pair<String, String>> values);
+
+    Observable<Membership> updateMembership(String membershipId, List<Pair<String, String>> values);
 
     Observable<Void> addMembersToGroup(String groupId, List<String> memberIds);
 
@@ -177,4 +182,6 @@ public interface UserRepository {
     Observable<Recipient> getRecipientInfos(String recipientId, boolean isToGroup);
 
     Observable<Void> updateMessagesReceivedToNotSeen();
+
+    Observable<Void> sendOnlineNotification();
 }

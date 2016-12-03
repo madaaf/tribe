@@ -8,32 +8,34 @@ public class TagManagerConstants {
     /**
      * GENERAL
      */
-    public static final String ONBOARDING_APP_INSTALL = "Onboarding - App Install";
-    public static final String ONBOARDING_OPEN_APP = "Onboarding - Open App";
     public static final String ONBOARDING_START = "Onboarding - Start";
     public static final String ONBOARDING_SEND_PIN = "Onboarding - Send Pin";
     public static final String ONBOARDING_CONNECTION = "Onboarding - Connection";
     public static final String ONBOARDING_REGISTRATION = "Onboarding - Registration";
     public static final String ONBOARDING_REGISTRATION_FACEBOOK = "Onboarding - Registration Facebook Connect";
     public static final String ONBOARDING_CONTACTS_SYNC = "Onboarding - Contacts Sync";
-    public static final String ONBOARDING_GRID_VIEW = "Onboarding - Grid View";
     public static final String ONBOARDING_COMPLETED = "Onboarding - Completed";
     public static final String ONBOARDING_SMS_NOT_RECEIVED = "Onboarding - SMS Not Received";
     public static final String ONBOARDING_RESEND_PIN = "Onboarding - Resend Pin";
     public static final String ONBOARDING_PIN_ERROR = "Onboarding - Pin Error";
     public static final String ONBOARDING_INVITE = "Onboarding - Invite";
-    public static final String TUTORIAL_OPEN_FIRST_SUPPORT = "Tutorial - Open First Support Tribe";
-    public static final String TUTORIAL_DONE = "Tutorial - Done";
     public static final String KPI_TRIBES_OPENED = "KPI - Tribes Opened";
     public static final String KPI_TRIBES_SENT = "KPI - Tribes Sent";
-    public static final String KPI_INVITATIONS_SENT = "KPI - Invitations Sent";
+    public static final String KPI_CHAT_OPENED = "KPI - Chat Opened";
+    public static final String KPI_CHAT_SENT = "KPI - Chat Sent";
+    public static final String KPI_SMS_INVITATION_OPENED = "KPI - SMS Invitation Opened";
+    public static final String KPI_SMS_INVITATION_SENT = "KPI - SMS Invitation Sent";
+    public static final String KPI_GROUP_CREATION_STARTED = "KPI - Group Creation Started";
+    public static final String KPI_GROUP_TEMPLATE_SELECTED = "KPI - Group Template Selected";
     public static final String KPI_GROUP_CREATED = "KPI - Group Created";
     public static final String KPI_GROUP_LINK_SHARED = "KPI - Group Link Shared";
     public static final String KPI_GROUP_MEMBERS_ADDED = "KPI - Group Members Added";
     public static final String USER_SHARE_PROFILE = "User - Share Profile";
-    public static final String USER_FACEBOOK_INVITE = "User - Facebook Invite";
     public static final String USER_TILE_HIDDEN = "User - Tile Hidden";
     public static final String TOKEN_DISCONNECT = "Token - DisconnectUser";
+    public static final String SCORE_SHARE = "Score - Share";
+    public static final String SCORE_CHECK_RULES = "Score - Check Rules";
+    public static final String SCORE_OPEN_METADATA = "Score - Open Metadata";
 
     /**
      * ERRORS
@@ -46,6 +48,8 @@ public class TagManagerConstants {
      */
     public static final String ERROR = "Error";
     public static final String TYPE = "Type";
+    public static final String TEMPLATE = "Template";
+    public static final String TEMPLATE_CUSTOM = "Custom";
     public static final String ERROR_TYPE = "Error Type";
     public static final String TYPE_TRIBE_USER = "User";
     public static final String TYPE_TRIBE_GROUP = "Group";
@@ -66,6 +70,7 @@ public class TagManagerConstants {
      * USER PROPERTIES
      */
     public static final String COUNT_TRIBES_SENT = "Tribes Sent";
+    public static final String COUNT_CHAT_SENT = "Chat Sent";
     public static final String COUNT_FRIENDS = "Friends";
     public static final String COUNT_GROUPS = "Groups";
     public static final String COUNT_GROUPS_CREATED = "Groups Created";

@@ -72,6 +72,13 @@ public class ScreenUtils {
 		}
 	}
 
+	public void hideKeyboard(View view) {
+		if (view != null) {
+			InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+		}
+	}
+
 	public void setTopMargin(View view, int topMargin) {
 		FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) view.getLayoutParams();
 		layoutParams.topMargin = topMargin;

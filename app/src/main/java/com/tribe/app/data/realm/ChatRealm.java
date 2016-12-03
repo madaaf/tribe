@@ -2,6 +2,7 @@ package com.tribe.app.data.realm;
 
 import android.support.annotation.StringDef;
 
+import com.tribe.app.data.realm.helpers.Changeable;
 import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
@@ -16,7 +17,7 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by tiago on 29/06/2016.
  */
-public class ChatRealm extends RealmObject implements MessageRealmInterface {
+public class ChatRealm extends RealmObject implements MessageRealmInterface, Changeable {
 
     @StringDef({MESSAGE_SENDING_STATUS, MESSAGE_RECEIVING_STATUS, MESSAGE_DOWNLOADING_STATUS,
             PROGRESS, TOTAL_SIZE, FRIEND_ID_UPDATED_AT, GROUP_ID_UPDATED_AT})
@@ -192,5 +193,10 @@ public class ChatRealm extends RealmObject implements MessageRealmInterface {
 
     public void setTotalSize(long totalSize) {
         this.totalSize = totalSize;
+    }
+
+    @Override
+    public int getChangeHashCode() {
+        return (getId() + getMessageSendingStatus() + getMessageDownloadingStatus() + getMessageReceivingStatus() + getCreatedAt()).hashCode();
     }
 }

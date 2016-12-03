@@ -1,6 +1,7 @@
 package com.tribe.app.domain.entity;
 
 import java.util.Date;
+import java.util.List;
 
 public class Membership extends Recipient {
 
@@ -111,5 +112,9 @@ public class Membership extends Recipient {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updated_at = updatedAt;
+    }
+
+    public List<String> getMembersPic() {
+        return group.getMembersPics();
     }
 }

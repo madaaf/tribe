@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.PTSEntity;
+import com.tribe.app.domain.entity.FilterEntity;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import butterknife.ButterKnife;
 /**
  * Created by tiago on 18/05/2016.
  */
-public class IconAdapterDelegate extends RxAdapterDelegate<List<PTSEntity>> {
+public class IconAdapterDelegate extends RxAdapterDelegate<List<FilterEntity>> {
 
     // VARIABLES
     protected LayoutInflater layoutInflater;
@@ -34,8 +34,8 @@ public class IconAdapterDelegate extends RxAdapterDelegate<List<PTSEntity>> {
     }
 
     @Override
-    public boolean isForViewType(@NonNull List<PTSEntity> items, int position) {
-        return items.get(position).getType().equals(PTSEntity.ICON);
+    public boolean isForViewType(@NonNull List<FilterEntity> items, int position) {
+        return items.get(position).getType().equals(FilterEntity.ICON);
     }
 
     @NonNull
@@ -46,10 +46,10 @@ public class IconAdapterDelegate extends RxAdapterDelegate<List<PTSEntity>> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull List<PTSEntity> items, int position, @NonNull RecyclerView.ViewHolder holder) {
-        PTSEntity ptsEntity = items.get(position);
+    public void onBindViewHolder(@NonNull List<FilterEntity> items, int position, @NonNull RecyclerView.ViewHolder holder) {
+        FilterEntity filterEntity = items.get(position);
         IconViewHolder iconViewHolder = (IconViewHolder) holder;
-        iconViewHolder.imgIcon.setImageResource(ptsEntity.getDrawable());
+        iconViewHolder.imgIcon.setImageResource(filterEntity.getDrawable());
     }
 
     static class IconViewHolder extends RecyclerView.ViewHolder {

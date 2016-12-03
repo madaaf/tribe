@@ -2,9 +2,14 @@ package com.tribe.app.presentation.view.utils;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.support.design.widget.CoordinatorLayout;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +24,7 @@ import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.tribe.app.R;
 
@@ -126,6 +132,10 @@ public class AnimationUtils {
 
     public static void fadeOut(View v, long duration) {
         v.animate().alpha(0).setStartDelay(NO_START_DELAY).setInterpolator(new DecelerateInterpolator()).setDuration(duration).start();
+    }
+
+    public static void fadeOutIntermediate(View v, long duration) {
+        v.animate().alpha(0.5f).setStartDelay(NO_START_DELAY).setInterpolator(new DecelerateInterpolator()).setDuration(duration).start();
     }
 
     public static void fadeIn(View v, long duration) {
@@ -238,6 +248,17 @@ public class AnimationUtils {
         animator.start();
     }
 
+    public static void animateLeftMargin(View view, int margin, int duration) {
+        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        ValueAnimator animator = ValueAnimator.ofInt(lp.leftMargin, margin);
+        animator.setDuration(duration);
+        animator.addUpdateListener(animation -> {
+            lp.leftMargin = (Integer) animation.getAnimatedValue();
+            view.setLayoutParams(lp);
+        });
+        animator.start();
+    }
+
     public static void animateTopMargin(View view, int margin, int duration, Interpolator interpolator) {
         ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         ValueAnimator animator = ValueAnimator.ofInt(lp.topMargin, margin);
@@ -312,4 +333,72 @@ public class AnimationUtils {
                 });
     }
 
+    public static void animateTextColor(TextView txtView, int colorFrom, int colorTo, int duration) {
+        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+        colorAnimation.addUpdateListener(animator -> txtView.setTextColor((Integer) animator.getAnimatedValue()));
+        colorAnimation.setDuration(duration);
+        colorAnimation.setInterpolator(new DecelerateInterpolator());
+        colorAnimation.start();
+    }
+
+    public static void animateBGColor(View v, int colorFrom, int colorTo, int duration) {
+        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+        colorAnimation.addUpdateListener(animator -> setColorToBG(v, (Integer) animator.getAnimatedValue()));
+        colorAnimation.setDuration(duration);
+        colorAnimation.setInterpolator(new DecelerateInterpolator());
+        colorAnimation.start();
+    }
+
+    public static void animateBGColorLinear(View v, int colorFrom, int colorTo, float percent) {
+        if (percent <= 1 && percent >= 0) {
+            int color = interpolateColor(colorFrom, colorTo, percent);
+            setColorToBG(v, color);
+        }
+    }
+
+    private static float interpolate(float a, float b, float proportion) {
+        return (a + ((b - a) * proportion));
+    }
+
+    /**
+     * Returns an interpolated color, between <code>a</code> and <code>b</code>
+     * proportion = 0, results in color a
+     * proportion = 1, results in color b
+     */
+    private static int interpolateColor(int a, int b, float proportion) {
+
+        if (proportion > 1 || proportion < 0) {
+            throw new IllegalArgumentException("proportion must be [0 - 1]");
+        }
+        float[] hsva = new float[3];
+        float[] hsvb = new float[3];
+        float[] hsv_output = new float[3];
+
+        Color.colorToHSV(a, hsva);
+        Color.colorToHSV(b, hsvb);
+        for (int i = 0; i < 3; i++) {
+            hsv_output[i] = interpolate(hsva[i], hsvb[i], proportion);
+        }
+
+        int alpha_a = Color.alpha(a);
+        int alpha_b = Color.alpha(b);
+        float alpha_output = interpolate(alpha_a, alpha_b, proportion);
+
+        return Color.HSVToColor((int) alpha_output, hsv_output);
+    }
+
+    private static void setColorToBG(View v, int color) {
+        Drawable background = v.getBackground();
+
+        if (background instanceof ShapeDrawable) {
+            ShapeDrawable shapeDrawable = (ShapeDrawable) background;
+            shapeDrawable.getPaint().setColor(color);
+        } else if (background instanceof GradientDrawable) {
+            GradientDrawable gradientDrawable = (GradientDrawable) background;
+            gradientDrawable.setColor(color);
+        } else if (background instanceof ColorDrawable) {
+            ColorDrawable colorDrawable = (ColorDrawable) background;
+            colorDrawable.setColor(color);
+        }
+    }
 }
