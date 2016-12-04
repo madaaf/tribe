@@ -1100,7 +1100,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         int onlineNotificationIntervalMs = Integer.valueOf(firebaseRemoteConfig.getString(Constants.FIREBASE_DELAY_ONLINE_NOTIFICATIONS)) * 60 * 1000;
 
         if (canSendOnlineNotification && (System.currentTimeMillis() - lastOnlineNotification.get()) > onlineNotificationIntervalMs) {
-            homeGridPresenter.sendOnlineNotification();
+            //homeGridPresenter.sendOnlineNotification();
             lastOnlineNotification.set(System.currentTimeMillis());
         }
     }
