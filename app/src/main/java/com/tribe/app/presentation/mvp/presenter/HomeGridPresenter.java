@@ -20,7 +20,6 @@ import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
 import com.tribe.app.domain.interactor.tribe.ConfirmTribe;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
-import com.tribe.app.domain.interactor.tribe.DiskMarkTribeListAsRead;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.domain.interactor.user.CreateMembership;
 import com.tribe.app.domain.interactor.user.DiskUpdateFriendship;
@@ -51,7 +50,6 @@ public class HomeGridPresenter extends SendTribePresenter {
     private GetDiskUserInfos diskUserInfosUsecase;
     private UseCaseDisk diskGetMessageReceivedListUsecase;
     private UseCaseDisk diskGetPendingTribeListUsecase;
-    private DiskMarkTribeListAsRead diskMarkTribeListAsRead;
     private DiskUpdateFriendship diskUpdateFriendship;
     private LeaveGroup leaveGroup;
     private RemoveGroup removeGroup;
@@ -82,7 +80,6 @@ public class HomeGridPresenter extends SendTribePresenter {
                              @Named("diskConfirmTribe") ConfirmTribe confirmTribe,
                              @Named("diskGetReceivedMessages") UseCaseDisk diskGetReceivedMessageList,
                              @Named("diskGetPendingTribes") UseCaseDisk diskGetPendingTribeList,
-                             @Named("diskMarkTribeListAsRead") DiskMarkTribeListAsRead diskMarkTribeListAsRead,
                              LeaveGroup leaveGroup,
                              RemoveGroup removeGroup,
                              DiskUpdateFriendship diskUpdateFriendship,
@@ -98,7 +95,6 @@ public class HomeGridPresenter extends SendTribePresenter {
         this.diskUserInfosUsecase = diskUserInfos;
         this.diskGetMessageReceivedListUsecase = diskGetReceivedMessageList;
         this.diskGetPendingTribeListUsecase = diskGetPendingTribeList;
-        this.diskMarkTribeListAsRead = diskMarkTribeListAsRead;
         this.leaveGroup = leaveGroup;
         this.removeGroup = removeGroup;
         this.diskUpdateFriendship = diskUpdateFriendship;
@@ -144,7 +140,6 @@ public class HomeGridPresenter extends SendTribePresenter {
         diskSaveTribeUsecase.unsubscribe();
         diskGetMessageReceivedListUsecase.unsubscribe();
         diskGetPendingTribeListUsecase.unsubscribe();
-        diskMarkTribeListAsRead.unsubscribe();
         leaveGroup.unsubscribe();
         removeGroup.unsubscribe();
         diskUpdateTribesReceivedToNotSeen.unsubscribe();

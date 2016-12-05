@@ -43,6 +43,7 @@ public abstract class SendTribePresenter implements Presenter {
     public void onPause() {
         diskDeleteTribeUsecase.unsubscribe();
         diskSaveTribeUsecase.unsubscribe();
+        diskConfirmTribeUsecase.unsubscribe();
     }
 
     @Override

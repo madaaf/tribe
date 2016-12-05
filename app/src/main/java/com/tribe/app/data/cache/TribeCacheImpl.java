@@ -104,14 +104,20 @@ public class TribeCacheImpl implements TribeCache {
     public TribeRealm insert(TribeRealm tribeRealm) {
         tribeRealm.setUpdatedAt(new Date());
 
-        realm.executeTransactionAsync(realm1 -> {
-            TribeRealm obj = realm1.where(TribeRealm.class).equalTo("localId", tribeRealm.getLocalId()).findFirst();
-            if (obj == null) {
-                realm1.insertOrUpdate(tribeRealm);
-            }
+        Realm otherRealm = Realm.getDefaultInstance();
 
-            deletePreviousSentTribe(realm1, tribeRealm);
-        });
+        try {
+            otherRealm.executeTransactionAsync(realm1 -> {
+                TribeRealm obj = realm1.where(TribeRealm.class).equalTo("localId", tribeRealm.getLocalId()).findFirst();
+                if (obj == null) {
+                    realm1.insertOrUpdate(tribeRealm);
+                }
+
+                deletePreviousSentTribe(realm1, tribeRealm);
+            });
+        } catch (Exception ex) {
+            if (otherRealm != null) otherRealm.close();
+        }
 
         return tribeRealm;
     }
@@ -268,10 +274,16 @@ public class TribeCacheImpl implements TribeCache {
 
     @Override
     public void delete(TribeRealm tribeRealm) {
-        realm.executeTransactionAsync(realm1 -> {
-            final TribeRealm result = realm1.where(TribeRealm.class).equalTo("localId", tribeRealm.getLocalId()).findFirst();
-            result.deleteFromRealm();
-        });
+        Realm otherRealm = Realm.getDefaultInstance();
+
+        try {
+            otherRealm.executeTransactionAsync(realm1 -> {
+                final TribeRealm result = realm1.where(TribeRealm.class).equalTo("localId", tribeRealm.getLocalId()).findFirst();
+                result.deleteFromRealm();
+            });
+        } finally {
+            otherRealm.close();
+        }
     }
 
     private ChangeHelper<RealmResults<TribeRealm>> changeSetNotSeen = new ChangeHelper<>();
@@ -315,12 +327,6 @@ public class TribeCacheImpl implements TribeCache {
                 .asObservable()
                 .filter(tribeRealms -> tribeRealms.isLoaded())
                 .filter(tribeRealms -> changeSetNotSeen.filter(tribeRealms))
-//                .flatMap(new Func1<List<TribeRealm>, Observable<DiffUtil.DiffResult>>() {
-//                    @Override
-//                    public Observable<DiffUtil.DiffResult> call(List<TribeRealm> products) {
-//                        return Observable.just(DiffUtil.calculateDiff(new ProductListDiffCallback(oldData, products)));
-//                    }
-//                })
                 .map(tribeRealms -> realm.copyFromRealm(tribeRealms))
                 .unsubscribeOn(AndroidSchedulers.mainThread());
     }
@@ -649,7 +655,16 @@ public class TribeCacheImpl implements TribeCache {
 
     @Override
     public TribeRealm get(String tribeId) {
-        TribeRealm tribeRealm = realm.where(TribeRealm.class).equalTo("localId", tribeId).findFirst();
-        return realm.copyFromRealm(tribeRealm);
+        Realm otherRealm = Realm.getDefaultInstance();
+
+        try {
+            TribeRealm tribeRealm = otherRealm.where(TribeRealm.class).equalTo("localId", tribeId).findFirst();
+            if (tribeRealm != null && tribeRealm.isValid() && tribeRealm.isLoaded())
+                return otherRealm.copyFromRealm(tribeRealm);
+            else
+                return null;
+        } finally {
+            if (otherRealm !=null) otherRealm.close();
+        }
     }
 }
