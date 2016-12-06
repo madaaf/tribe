@@ -16,8 +16,8 @@ import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetRequestCode;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
-import com.tribe.app.presentation.mvp.view.IntroView;
-import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.mvp.view.IntroMVPView;
+import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 
@@ -38,7 +38,7 @@ public class IntroPresenter implements Presenter {
     private boolean isActive1 = false;
     private boolean isActive2 = false;
 
-    private IntroView introView;
+    private IntroMVPView introView;
 
     @Inject
     public IntroPresenter(GetRequestCode cloudGetRequestCodeUseCase,
@@ -50,39 +50,14 @@ public class IntroPresenter implements Presenter {
     }
 
     @Override
-    public void onCreate() {
-        // Unused
-    }
-
-    @Override
-    public void onStart() {
-        // Unused
-    }
-
-    @Override
-    public void onResume() {
-        // Unused
-    }
-
-    @Override
-    public void onStop() {
-        // Unused
-    }
-
-    @Override
-    public void onPause() {
-        // Unused
-    }
-
-    @Override
-    public void onDestroy() {
+    public void onViewDetached() {
         cloudGetRequestCodeUseCase.unsubscribe();
         cloudLoginUseCase.unsubscribe();
     }
 
     @Override
-    public void attachView(View v) {
-        introView = (IntroView) v;
+    public void onViewAttached(MVPView v) {
+        introView = (IntroMVPView) v;
     }
 
     public void requestCode(String phoneNumber) {

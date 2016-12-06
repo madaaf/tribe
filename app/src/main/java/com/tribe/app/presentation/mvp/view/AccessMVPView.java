@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by tiago on 12/09/2016.
  */
-public interface AccessView extends View {
+public interface AccessMVPView extends MVPView {
 
     void renderFriendList(List<User> userRealm);
     void groupInfosFailed();

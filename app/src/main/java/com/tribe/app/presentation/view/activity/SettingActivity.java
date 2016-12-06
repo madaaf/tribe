@@ -12,8 +12,8 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
-import com.tribe.app.presentation.mvp.presenter.SettingPresenter;
-import com.tribe.app.presentation.mvp.view.SettingView;
+import com.tribe.app.presentation.mvp.presenter.SettingsPresenter;
+import com.tribe.app.presentation.mvp.view.SettingMVPView;
 import com.tribe.app.presentation.view.fragment.SettingBlockFragment;
 import com.tribe.app.presentation.view.fragment.SettingFragment;
 import com.tribe.app.presentation.view.fragment.SettingUpdateProfileFragment;
@@ -31,7 +31,7 @@ import rx.subscriptions.CompositeSubscription;
  * SettingActivity.java
  * Created by horatiothomas on 8/26/16.
  */
-public class SettingActivity extends BaseActivity implements SettingView {
+public class SettingActivity extends BaseActivity implements SettingMVPView {
 
     private static final String SETTING_FRAGMENT = "settingFragment";
     private static final String SETTING_PROFILE_FRAGMENT = "settingUpdateProfileFragment";
@@ -63,7 +63,7 @@ public class SettingActivity extends BaseActivity implements SettingView {
     private int shortDuration = 150;
 
     @Inject
-    SettingPresenter settingPresenter;
+    SettingsPresenter settingsPresenter;
 
     @Inject
     ScreenUtils screenUtils;
@@ -94,9 +94,14 @@ public class SettingActivity extends BaseActivity implements SettingView {
     }
 
     @Override
+    protected void onStop() {
+        settingsPresenter.onViewDetached();
+        super.onStop();
+    }
+
+    @Override
     protected void onDestroy() {
         if (unbinder != null) unbinder.unbind();
-        if (settingPresenter != null) settingPresenter.onDestroy();
         super.onDestroy();
     }
 
@@ -140,7 +145,7 @@ public class SettingActivity extends BaseActivity implements SettingView {
             }
 
             if (fr instanceof SettingUpdateProfileFragment) {
-                settingPresenter.updateUser(
+                settingsPresenter.updateUser(
                         settingUpdateProfileFragment.getUsername(),
                         settingUpdateProfileFragment.getDisplayName(),
                         settingUpdateProfileFragment.getImgUri(),
@@ -203,7 +208,7 @@ public class SettingActivity extends BaseActivity implements SettingView {
         updateAnim();
 
         subscriptions.add(settingUpdateProfileFragment.onUsernameSearch().subscribe(s -> {
-            settingPresenter.lookupUsername(s);
+            settingsPresenter.lookupUsername(s);
         }));
     }
 
@@ -249,16 +254,6 @@ public class SettingActivity extends BaseActivity implements SettingView {
     }
 
     @Override
-    public void showRetry() {
-
-    }
-
-    @Override
-    public void hideRetry() {
-
-    }
-
-    @Override
     public void showError(String message) {
 
     }
@@ -291,7 +286,7 @@ public class SettingActivity extends BaseActivity implements SettingView {
     }
 
     private void initPresenter() {
-        settingPresenter.attachView(this);
+        settingsPresenter.onViewAttached(this);
     }
 
     /**

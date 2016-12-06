@@ -25,8 +25,8 @@ import com.tribe.app.presentation.internal.di.scope.LocationContext;
 import com.tribe.app.presentation.internal.di.scope.Preload;
 import com.tribe.app.presentation.internal.di.scope.ShareProfile;
 import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
-import com.tribe.app.presentation.mvp.presenter.SettingPresenter;
-import com.tribe.app.presentation.mvp.view.SettingView;
+import com.tribe.app.presentation.mvp.presenter.SettingsPresenter;
+import com.tribe.app.presentation.mvp.view.SettingMVPView;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
@@ -54,7 +54,7 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by horatiothomas on 9/6/16.
  */
-public class SettingFragment extends BaseFragment implements SettingView {
+public class SettingFragment extends BaseFragment implements SettingMVPView {
 
     @BindView(R.id.settingsProfile)
     SettingItemView settingsProfile;
@@ -158,7 +158,7 @@ public class SettingFragment extends BaseFragment implements SettingView {
     Preference<Boolean> debugMode;
 
     @Inject
-    SettingPresenter settingPresenter;
+    SettingsPresenter settingsPresenter;
 
     // VARIABLES
     private User user;
@@ -191,7 +191,7 @@ public class SettingFragment extends BaseFragment implements SettingView {
         initSettings();
         loadContacts();
 
-        settingPresenter.attachView(this);
+        settingsPresenter.onViewAttached(this);
 
         return fragmentView;
     }
@@ -209,16 +209,18 @@ public class SettingFragment extends BaseFragment implements SettingView {
     }
 
     @Override
+    public void onStop() {
+        settingsPresenter.onViewDetached();
+        super.onStop();
+    }
+
+    @Override
     public void onDestroy() {
         unbinder.unbind();
 
         if (subscriptions.hasSubscriptions()) {
             subscriptions.unsubscribe();
             subscriptions.clear();
-        }
-
-        if (settingPresenter != null) {
-            settingPresenter.onDestroy();
         }
 
         super.onDestroy();
@@ -239,7 +241,7 @@ public class SettingFragment extends BaseFragment implements SettingView {
 
             if (!shareProfile.get()) {
                 shareProfile.set(true);
-                settingPresenter.updateScoreShare();
+                settingsPresenter.updateScoreShare();
             }
         }));
 
@@ -247,7 +249,7 @@ public class SettingFragment extends BaseFragment implements SettingView {
             Bundle bundle = new Bundle();
             bundle.putBoolean(TagManagerConstants.MEMORIES_ENABLED, isChecked);
             tagManager.setProperty(bundle);
-            settingPresenter.updateUserTribeSave(isChecked);
+            settingsPresenter.updateUserTribeSave(isChecked);
         }));
 
         subscriptions.add(messageSettingContext.checkedSwitch().subscribe(isChecked -> {
@@ -256,7 +258,7 @@ public class SettingFragment extends BaseFragment implements SettingView {
                         .request(PermissionUtils.PERMISSIONS_LOCATION)
                         .subscribe(granted -> {
                             if (granted) {
-                                settingPresenter.updateScoreLocation();
+                                settingsPresenter.updateScoreLocation();
                             } else {
                                 messageSettingContext.setCheckedSwitch(false);
                             }
@@ -290,13 +292,13 @@ public class SettingFragment extends BaseFragment implements SettingView {
 
         subscriptions.add(settingsFacebook.checkedSwitch().subscribe(isChecked -> {
             if (isChecked)
-                settingPresenter.loginFacebook();
+                settingsPresenter.loginFacebook();
             else {
-                settingPresenter.deleteFBContacts();
+                settingsPresenter.deleteFBContacts();
                 Bundle bundle = new Bundle();
                 bundle.putBoolean(TagManagerConstants.FACEBOOK_CONNECTED, false);
                 tagManager.setProperty(bundle);
-                settingPresenter.updateUserFacebook(null);
+                settingsPresenter.updateUserFacebook(null);
                 FacebookUtils.logout();
                 unsetFacebook();
             }
@@ -314,7 +316,7 @@ public class SettingFragment extends BaseFragment implements SettingView {
                             addressBook.set(true);
                             sync();
                         } else {
-                            settingPresenter.deleteABContacts();
+                            settingsPresenter.deleteABContacts();
                             addressBook.set(false);
                             unsetAddressBook();
                         }
@@ -325,7 +327,7 @@ public class SettingFragment extends BaseFragment implements SettingView {
             Bundle bundle = new Bundle();
             bundle.putBoolean(TagManagerConstants.INVISIBLE_MODE_ENABLED, isChecked);
             tagManager.setProperty(bundle);
-            settingPresenter.updateUserInvisibleMode(isChecked);
+            settingsPresenter.updateUserInvisibleMode(isChecked);
         }));
 
         subscriptions.add(RxView.clicks(settingsTweet).subscribe(aVoid -> {
@@ -334,7 +336,7 @@ public class SettingFragment extends BaseFragment implements SettingView {
 
         subscriptions.add(RxView.clicks(settingsRateApp).subscribe(aVoid -> {
             navigator.rateApp(getActivity());
-            settingPresenter.updateScoreRateApp();
+            settingsPresenter.updateScoreRateApp();
         }));
 
         subscriptions.add(RxView.clicks(settingsEmail).subscribe(aVoid -> {
@@ -354,7 +356,7 @@ public class SettingFragment extends BaseFragment implements SettingView {
                         ProgressDialog pd = new ProgressDialog(getContext());
                         pd.setTitle(R.string.settings_logout_wait);
                         pd.show();
-                        settingPresenter.logout();
+                        settingsPresenter.logout();
                     },
                     null)
 
@@ -481,12 +483,12 @@ public class SettingFragment extends BaseFragment implements SettingView {
         }
 
         lastSync.set(System.currentTimeMillis());
-        settingPresenter.lookupContacts();
+        settingsPresenter.lookupContacts();
     }
 
     private void loadContacts() {
-        this.settingPresenter.loadContactsFB();
-        this.settingPresenter.loadContactsAddressBook();
+        this.settingsPresenter.loadContactsFB();
+        this.settingsPresenter.loadContactsAddressBook();
     }
 
     private void unsetFacebook() {
@@ -549,7 +551,7 @@ public class SettingFragment extends BaseFragment implements SettingView {
         Bundle bundle = new Bundle();
         bundle.putBoolean(TagManagerConstants.FACEBOOK_CONNECTED, true);
         tagManager.setProperty(bundle);
-        settingPresenter.updateUserFacebook(com.facebook.AccessToken.getCurrentAccessToken().getUserId());
+        settingsPresenter.updateUserFacebook(com.facebook.AccessToken.getCurrentAccessToken().getUserId());
         sync();
     }
 
@@ -570,16 +572,6 @@ public class SettingFragment extends BaseFragment implements SettingView {
 
     @Override
     public void hideLoading() {
-
-    }
-
-    @Override
-    public void showRetry() {
-
-    }
-
-    @Override
-    public void hideRetry() {
 
     }
 

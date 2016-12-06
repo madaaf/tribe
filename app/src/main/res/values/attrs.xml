@@ -110,6 +110,7 @@
             <enum name="toggle" value="3" />
             <enum name="critical" value="4" />
             <enum name="points" value="5" />
+            <enum name="regular" value="6" />
         </attr>
     </declare-styleable>
 </resources>

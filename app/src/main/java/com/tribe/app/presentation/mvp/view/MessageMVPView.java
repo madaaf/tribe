@@ -7,7 +7,7 @@ import com.tribe.app.domain.entity.Recipient;
 
 import java.util.List;
 
-public interface MessageView extends LoadDataView {
+public interface MessageMVPView extends LoadDataMVPView {
 
     void renderMessageList(List<ChatMessage> chatMessageList);
     void renderMessage(ChatMessage chatMessage);

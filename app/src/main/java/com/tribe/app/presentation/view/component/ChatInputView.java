@@ -40,7 +40,7 @@ import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
- * View providing a text input field, a photo picker and a Send button.
+ * MVPView providing a text input field, a photo picker and a Send button.
  */
 public class ChatInputView extends FrameLayout {
 

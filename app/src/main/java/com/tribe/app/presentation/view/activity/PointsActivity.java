@@ -8,7 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.PointsPresenter;
-import com.tribe.app.presentation.mvp.view.PointsView;
+import com.tribe.app.presentation.mvp.view.PointsMVPView;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.adapter.manager.PointsLayoutManager;
 import com.tribe.app.presentation.view.adapter.pager.PointsAdapter;
@@ -24,7 +24,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import rx.subscriptions.CompositeSubscription;
 
-public class PointsActivity extends BaseActivity implements PointsView {
+public class PointsActivity extends BaseActivity implements PointsMVPView {
 
     public static Intent getCallingIntent(Context context) {
         Intent intent = new Intent(context, PointsActivity.class);
@@ -63,14 +63,13 @@ public class PointsActivity extends BaseActivity implements PointsView {
 
     @Override
     protected void onStop() {
-        pointsPresenter.onStop();
+        pointsPresenter.onViewDetached();
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
         if (unbinder != null) unbinder.unbind();
-        if (pointsPresenter != null) pointsPresenter.onDestroy();
         if (subscriptions != null && subscriptions.hasSubscriptions()) {
             subscriptions.unsubscribe();
             subscriptions.clear();
@@ -113,8 +112,7 @@ public class PointsActivity extends BaseActivity implements PointsView {
     }
 
     private void initPresenter() {
-        pointsPresenter.onStart();
-        pointsPresenter.attachView(this);
+        pointsPresenter.onViewAttached(this);
     }
 
     @OnClick(R.id.btnBack)

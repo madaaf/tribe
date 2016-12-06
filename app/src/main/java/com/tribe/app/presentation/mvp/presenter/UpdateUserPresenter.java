@@ -7,7 +7,7 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.UpdateUser;
-import com.tribe.app.presentation.mvp.view.UpdateUserView;
+import com.tribe.app.presentation.mvp.view.UpdateUserMVPView;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
@@ -37,7 +37,7 @@ public abstract class UpdateUserPresenter implements Presenter {
     }
 
     @Override
-    public void onDestroy() {
+    public void onViewDetached() {
         updateUser.unsubscribe();
         lookupUsername.unsubscribe();
     }
@@ -102,7 +102,7 @@ public abstract class UpdateUserPresenter implements Presenter {
         lookupUsername.execute(lookupUsernameSubscriber);
     }
 
-    protected abstract UpdateUserView getUpdateUserView();
+    protected abstract UpdateUserMVPView getUpdateUserView();
 
     protected final class UpdateUserSubscriber extends DefaultSubscriber<User> {
 

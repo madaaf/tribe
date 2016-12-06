@@ -14,7 +14,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.ScorePresenter;
-import com.tribe.app.presentation.mvp.view.ScoreView;
+import com.tribe.app.presentation.mvp.view.ScoreMVPView;
 import com.tribe.app.presentation.view.adapter.LevelAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.GridDividerTopItemDecoration;
 import com.tribe.app.presentation.view.adapter.manager.LevelLayoutManager;
@@ -33,7 +33,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import rx.subscriptions.CompositeSubscription;
 
-public class ScoreActivity extends BaseActivity implements ScoreView {
+public class ScoreActivity extends BaseActivity implements ScoreMVPView {
 
     public static Intent getCallingIntent(Context context) {
         Intent intent = new Intent(context, ScoreActivity.class);
@@ -107,7 +107,7 @@ public class ScoreActivity extends BaseActivity implements ScoreView {
 
     @Override
     protected void onStop() {
-        scorePresenter.onStop();
+        scorePresenter.onViewDetached();
         super.onStop();
     }
 
@@ -116,7 +116,6 @@ public class ScoreActivity extends BaseActivity implements ScoreView {
         animatorWidth.cancel();
 
         if (unbinder != null) unbinder.unbind();
-        if (scorePresenter != null) scorePresenter.onDestroy();
         if (subscriptions != null && subscriptions.hasSubscriptions()) {
             subscriptions.unsubscribe();
             subscriptions.clear();
@@ -183,11 +182,10 @@ public class ScoreActivity extends BaseActivity implements ScoreView {
     }
 
     private void initPresenter() {
-        scorePresenter.onStart();
-        scorePresenter.attachView(this);
+        scorePresenter.onViewAttached(this);
     }
 
-    @OnClick(R.id.btnClose)
+    @OnClick(R.id.btnBack)
     public void exit() {
         finish();
     }

@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by horatiothomas on 8/31/16.
  */
-public interface BlockView extends View {
+public interface BlockMVPView extends MVPView {
 
     void friendshipUpdated(Friendship friendship);
     void renderBlockedFriendshipList(List<Friendship>friendshipList);

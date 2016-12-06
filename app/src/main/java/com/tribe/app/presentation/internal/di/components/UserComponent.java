@@ -5,7 +5,7 @@ import com.tribe.app.presentation.internal.di.modules.UserModule;
 import com.tribe.app.presentation.internal.di.scope.PerActivity;
 import com.tribe.app.presentation.mvp.presenter.GroupPresenter;
 import com.tribe.app.presentation.mvp.presenter.SearchPresenter;
-import com.tribe.app.presentation.mvp.presenter.SettingPresenter;
+import com.tribe.app.presentation.mvp.presenter.SettingsPresenter;
 import com.tribe.app.presentation.utils.facebook.FacebookHiddenActivity;
 import com.tribe.app.presentation.utils.mediapicker.MediaHiddenActivity;
 import com.tribe.app.presentation.view.activity.BaseActionActivity;
@@ -18,6 +18,7 @@ import com.tribe.app.presentation.view.activity.PointsActivity;
 import com.tribe.app.presentation.view.activity.ScoreActivity;
 import com.tribe.app.presentation.view.activity.SearchUserActivity;
 import com.tribe.app.presentation.view.activity.SettingActivity;
+import com.tribe.app.presentation.view.activity.SettingsActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.component.SettingFilterView;
 import com.tribe.app.presentation.view.component.SettingItemView;
@@ -52,7 +53,7 @@ public interface UserComponent extends ActivityComponent {
     void inject(SettingActivity settingActivity);
     void inject(SettingItemView settingItemView);
     void inject(SettingFragment settingFragment);
-    void inject(SettingPresenter settingPresenter);
+    void inject(SettingsPresenter settingsPresenter);
     void inject(ProfileInfoView profileInfoView);
     void inject(SettingThemeView settingThemeView);
     void inject(SettingBlockFragment settingBlockFragment);
@@ -65,4 +66,5 @@ public interface UserComponent extends ActivityComponent {
     void inject(GroupActivity groupActivity);
     void inject(SearchUserActivity searchUserActivity);
     void inject(SearchPresenter searchPresenter);
+    void inject(SettingsActivity settingsActivity);
 }

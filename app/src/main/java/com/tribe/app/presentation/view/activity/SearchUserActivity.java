@@ -14,7 +14,7 @@ import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.SearchPresenter;
-import com.tribe.app.presentation.mvp.view.SearchView;
+import com.tribe.app.presentation.mvp.view.SearchMVPView;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.ContactAdapter;
 import com.tribe.app.presentation.view.adapter.manager.ContactsLayoutManager;
@@ -36,7 +36,7 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by tiago on 12/1/2016.
  */
-public class SearchUserActivity extends BaseActivity implements SearchView {
+public class SearchUserActivity extends BaseActivity implements SearchMVPView {
 
     private static final String USERNAME = "USERNAME";
 
@@ -87,10 +87,15 @@ public class SearchUserActivity extends BaseActivity implements SearchView {
     }
 
     @Override
+    protected void onStop() {
+        searchPresenter.onViewDetached();
+        super.onStop();
+    }
+
+    @Override
     protected void onDestroy() {
         recyclerViewContacts.setAdapter(null);
         subscriptions.unsubscribe();
-        searchPresenter.onDestroy();
 
         if (unbinder != null) unbinder.unbind();
 
@@ -121,8 +126,7 @@ public class SearchUserActivity extends BaseActivity implements SearchView {
     }
 
     private void initPresenter() {
-        searchPresenter.attachView(this);
-        searchPresenter.onCreate();
+        searchPresenter.onViewAttached(this);
     }
 
     private void initDependencyInjector() {
@@ -212,16 +216,6 @@ public class SearchUserActivity extends BaseActivity implements SearchView {
 
     @Override
     public void hideLoading() {
-
-    }
-
-    @Override
-    public void showRetry() {
-
-    }
-
-    @Override
-    public void hideRetry() {
 
     }
 

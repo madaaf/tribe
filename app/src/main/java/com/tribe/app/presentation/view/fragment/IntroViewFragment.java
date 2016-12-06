@@ -20,7 +20,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.IntroPresenter;
-import com.tribe.app.presentation.mvp.view.IntroView;
+import com.tribe.app.presentation.mvp.view.IntroMVPView;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.activity.IntroActivity;
@@ -54,7 +54,7 @@ import rx.subscriptions.CompositeSubscription;
  * the process of capturing the users phone number, sending, and validating their pin code.
  * Next fragment in onboarding view pager is ProfileInfoFragment.
  */
-public class IntroViewFragment extends BaseFragment implements IntroView {
+public class IntroViewFragment extends BaseFragment implements IntroMVPView {
 
     private static final String LOGIN_ENTITY = "LOGIN_ENTITY";
     private static final String PIN = "PIN";
@@ -196,7 +196,7 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
     }
 
     /**
-     * View Initialization methods
+     * MVPView Initialization methods
      */
 
     private void initUi(View view) {
@@ -267,11 +267,11 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
     }
 
     private void initPresenter() {
-        introPresenter.attachView(this);
+        introPresenter.onViewAttached(this);
     }
 
     /**
-     * Initialize View Pager Adapter
+     * Initialize MVPView Pager Adapter
      * Used for bottom bar navigation
      */
 
@@ -478,16 +478,6 @@ public class IntroViewFragment extends BaseFragment implements IntroView {
             viewPhoneNumber.progressViewVisible(false);
         }
         if (viewCode != null) viewCode.progressViewVisible(false);
-    }
-
-    @Override
-    public void showRetry() {
-
-    }
-
-    @Override
-    public void hideRetry() {
-
     }
 
     @Override

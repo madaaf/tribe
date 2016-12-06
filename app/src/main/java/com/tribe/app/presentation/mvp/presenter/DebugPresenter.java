@@ -2,15 +2,15 @@ package com.tribe.app.presentation.mvp.presenter;
 
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.DoBootstrapSupport;
-import com.tribe.app.presentation.mvp.view.DebugView;
-import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.mvp.view.DebugMVPView;
+import com.tribe.app.presentation.mvp.view.MVPView;
 
 import javax.inject.Inject;
 
 public class DebugPresenter implements Presenter {
 
     // VIEW ATTACHED
-    private DebugView debugView;
+    private DebugMVPView debugView;
 
     // USECASES
     private final DoBootstrapSupport bootstrapSupport;
@@ -24,36 +24,13 @@ public class DebugPresenter implements Presenter {
     }
 
     @Override
-    public void onCreate() {
-
-    }
-
-    @Override
-    public void onStart() {
-    }
-
-    @Override
-    public void onResume() {
-        // Unused
-    }
-
-    @Override
-    public void onStop() {
-
-    }
-
-    @Override
-    public void onPause() {
-    }
-
-    @Override
-    public void onDestroy() {
+    public void onViewDetached() {
         bootstrapSupport.unsubscribe();
     }
 
     @Override
-    public void attachView(View v) {
-        debugView = (DebugView) v;
+    public void onViewAttached(MVPView v) {
+        debugView = (DebugMVPView) v;
     }
 
     public void boostrapSupport() {

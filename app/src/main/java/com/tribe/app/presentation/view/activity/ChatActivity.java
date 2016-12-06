@@ -31,7 +31,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Section;
 import com.tribe.app.presentation.internal.di.components.DaggerChatComponent;
 import com.tribe.app.presentation.mvp.presenter.ChatPresenter;
-import com.tribe.app.presentation.mvp.view.MessageView;
+import com.tribe.app.presentation.mvp.view.MessageMVPView;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -66,7 +66,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-public class ChatActivity extends BaseActivity implements MessageView {
+public class ChatActivity extends BaseActivity implements MessageMVPView {
 
     // REQUEST CODES
     public static final int REQUEST_GALLERY = 100;
@@ -197,14 +197,13 @@ public class ChatActivity extends BaseActivity implements MessageView {
 
     @Override
     protected void onStop() {
-        chatPresenter.onStop();
+        chatPresenter.onViewDetached();
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
         if (unbinder != null) unbinder.unbind();
-        if (chatPresenter != null) chatPresenter.onDestroy();
         if (chatInputView != null) chatInputView.onDestroy();
         if (subscriptions != null && subscriptions.hasSubscriptions()) {
             subscriptions.unsubscribe();
@@ -393,8 +392,7 @@ public class ChatActivity extends BaseActivity implements MessageView {
     }
 
     private void initPresenter() {
-        chatPresenter.onStart();
-        chatPresenter.attachView(this);
+        chatPresenter.onViewAttached(this);
         chatPresenter.getRecipient(recipientId, isToGroup);
 
         if (RxPermissions.getInstance(this).isGranted(PermissionUtils.PERMISSION_READ_WRITE_EXTERNAL))
@@ -503,16 +501,6 @@ public class ChatActivity extends BaseActivity implements MessageView {
 
     @Override
     public void hideLoading() {
-
-    }
-
-    @Override
-    public void showRetry() {
-
-    }
-
-    @Override
-    public void hideRetry() {
 
     }
 

@@ -15,9 +15,9 @@ import com.tribe.app.domain.interactor.tribe.ConfirmTribe;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.GetReceivedDiskTribeList;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
-import com.tribe.app.presentation.mvp.view.SendTribeView;
-import com.tribe.app.presentation.mvp.view.TribeView;
-import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.mvp.view.MVPView;
+import com.tribe.app.presentation.mvp.view.SendTribeMVPView;
+import com.tribe.app.presentation.mvp.view.TribeMVPView;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 
 import java.util.List;
@@ -28,7 +28,7 @@ import javax.inject.Named;
 
 public class TribePresenter extends SendTribePresenter implements Presenter {
 
-    private TribeView tribeView;
+    private TribeMVPView tribeView;
 
     // OBSERVABLES
     private GetReceivedDiskTribeList diskGetReceivedTribeList;
@@ -45,43 +45,18 @@ public class TribePresenter extends SendTribePresenter implements Presenter {
     }
 
     @Override
-    public void onCreate() {
-        // Unused
-    }
-
-    @Override
-    public void onStart() {
-
-    }
-
-    @Override
-    public void onResume() {
-        // Unused
-    }
-
-    @Override
-    public void onStop() {
-
-    }
-
-    @Override
-    public void onPause() {
-        // Unused
-    }
-
-    @Override
-    public void onDestroy() {
+    public void onViewDetached() {
         diskGetReceivedTribeList.unsubscribe();
-        super.onDestroy();
+        super.onViewDetached();
     }
 
     @Override
-    public void attachView(View v) {
-        tribeView = (TribeView) v;
+    public void onViewAttached(MVPView v) {
+        tribeView = (TribeMVPView) v;
     }
 
     @Override
-    protected SendTribeView getView() {
+    protected SendTribeMVPView getView() {
         return tribeView;
     }
 

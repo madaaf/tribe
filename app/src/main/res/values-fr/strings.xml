@@ -133,6 +133,10 @@
 	<string name="permission_facebook_popup_message">Vos amis Facebook seront synchronisé avec Tribe pour que vous puissiez retrouver facilement les personnes que vous connaissez déjà.</string>
 	<string name="permission_facebook_popup_ok">Parfait !</string>
 	<string name="permission_facebook_popup_ko">Pas d\'amis</string>
+	<string name="permission_addressbook_popup_title">Amis</string>
+	<string name="permission_addressbook_popup_message">Vos amis seront synchronisé avec Tribe pour que vous puissiez retrouver facilement les personnes que vous connaissez déjà.</string>
+	<string name="permission_addressbook_popup_ok">Parfait !</string>
+	<string name="permission_addressbook_popup_ko">Pas d\'amis</string>
 	
 	<!-- Rating -->
 	<string name="rating_title">Envoyez-nous 5 étoiles\nen 1 minute !</string>
@@ -412,6 +416,7 @@
 	
 	<!-- Onboarding -->
 	<string name="onboarding_step_phone">Entrez votre numéro de téléphone pour démarrer.</string>
+	<string name="onboarding_phone_disclaimer">By registering, I agree to the Terms of Service &amp; Privacy Policy</string>
 	<string name="onboarding_step_code">Entrez le code de vérification envoyé par SMS.</string>
 	<string name="onboarding_phone_number">Numéro de téléphone</string>
 	<string name="onboarding_error_wrong_pin">:closed_lock_with_key: Mauvais code de vérification</string>

@@ -55,7 +55,7 @@ public class ImageUtils {
         // Determine how much to scale down the image
         int scaleFactor = Math.min(photoW / IMG_SIZE, photoH / IMG_SIZE);
 
-        // Decode the image file into a Bitmap sized to fill the View
+        // Decode the image file into a Bitmap sized to fill the MVPView
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
         bmOptions.inPurgeable = true;
@@ -67,7 +67,7 @@ public class ImageUtils {
     public static Bitmap loadFromInputStream(InputStream inputStream) {
         // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        // Decode the image file into a Bitmap sized to fill the View
+        // Decode the image file into a Bitmap sized to fill the MVPView
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = 2;
         bmOptions.inPurgeable = true;

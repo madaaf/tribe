@@ -30,9 +30,9 @@ import com.tribe.app.domain.interactor.user.LeaveGroup;
 import com.tribe.app.domain.interactor.user.RemoveGroup;
 import com.tribe.app.domain.interactor.user.SendOnlineNotification;
 import com.tribe.app.domain.interactor.user.SendToken;
-import com.tribe.app.presentation.mvp.view.HomeGridView;
-import com.tribe.app.presentation.mvp.view.SendTribeView;
-import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
+import com.tribe.app.presentation.mvp.view.MVPView;
+import com.tribe.app.presentation.mvp.view.SendTribeMVPView;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 
@@ -44,7 +44,7 @@ import javax.inject.Named;
 public class HomeGridPresenter extends SendTribePresenter {
 
     // VIEW ATTACHED
-    private HomeGridView homeGridView;
+    private HomeGridMVPView homeGridView;
 
     // USECASES
     private GetDiskUserInfos diskUserInfosUsecase;
@@ -108,19 +108,6 @@ public class HomeGridPresenter extends SendTribePresenter {
         this.sendOnlineNotification = sendOnlineNotification;
     }
 
-    @Override
-    public void onCreate() {
-        jobManager.addJobInBackground(new UpdateTribeDownloadedJob());
-        jobManager.addJobInBackground(new UpdateTribesErrorStatusJob());
-        onResume();
-    }
-
-    @Override
-    public void onStart() {
-
-    }
-
-    @Override
     public void onResume() {
         reload();
         loadTribeList();
@@ -128,13 +115,7 @@ public class HomeGridPresenter extends SendTribePresenter {
     }
 
     @Override
-    public void onStop() {
-        // Unused
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
+    public void onViewDetached() {
         sendTokenUseCase.unsubscribe();
         diskDeleteTribeUsecase.unsubscribe();
         diskSaveTribeUsecase.unsubscribe();
@@ -148,17 +129,14 @@ public class HomeGridPresenter extends SendTribePresenter {
         cloudGetMessages.unsubscribe();
         cloudUserInfos.unsubscribe();
         sendOnlineNotification.unsubscribe();
+        super.onViewDetached();
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        onPause();
-    }
-
-    @Override
-    public void attachView(View v) {
-        homeGridView = (HomeGridView) v;
+    public void onViewAttached(MVPView v) {
+        homeGridView = (HomeGridMVPView) v;
+        jobManager.addJobInBackground(new UpdateTribeDownloadedJob());
+        jobManager.addJobInBackground(new UpdateTribesErrorStatusJob());
     }
 
     public void reload() {
@@ -273,7 +251,7 @@ public class HomeGridPresenter extends SendTribePresenter {
     }
 
     @Override
-    protected SendTribeView getView() {
+    protected SendTribeMVPView getView() {
         return homeGridView;
     }
 

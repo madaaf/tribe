@@ -6,9 +6,9 @@ import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.GenericType;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.GroupMember;
+import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -124,11 +124,11 @@ public class MembersGroupView extends FrameLayout {
                         getContext(),
                         groupMember),
                         (groupMember, genericType) -> {
-                            if (genericType.getTypeDef().equals(GenericType.SET_AS_ADMIN)) {
+                            if (genericType.getTypeDef().equals(LabelType.SET_AS_ADMIN)) {
                                 clickAddAdmin.onNext(groupMember);
-                            } else if (genericType.getTypeDef().equals(GenericType.REMOVE_FROM_ADMIN)) {
+                            } else if (genericType.getTypeDef().equals(LabelType.REMOVE_FROM_ADMIN)) {
                                 clickRemoveAdmin.onNext(groupMember);
-                            } else if (genericType.getTypeDef().equals(GenericType.REMOVE_FROM_GROUP)) {
+                            } else if (genericType.getTypeDef().equals(LabelType.REMOVE_FROM_GROUP)) {
                                 clickRemoveFromGroup.onNext(groupMember);
                             }
 

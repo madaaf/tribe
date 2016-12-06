@@ -33,7 +33,7 @@ import rx.subscriptions.CompositeSubscription;
  * CodeView.java
  * Created by tiago on 10/06/2016.
  * Last Modified by Horatio.
- * Component used in View Pager in IntroViewFragment.java for a user to input their verification code.
+ * Component used in MVPView Pager in IntroViewFragment.java for a user to input their verification code.
  */
 public class CodeView extends FrameLayout {
 

@@ -11,10 +11,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.support.design.widget.BottomSheetDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 
 import com.f2prateek.rx.preferences.Preference;
@@ -23,21 +19,20 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Location;
 import com.tribe.app.domain.entity.Membership;
-import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerTribeComponent;
 import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
 import com.tribe.app.presentation.mvp.presenter.TribePresenter;
-import com.tribe.app.presentation.mvp.view.TribeView;
+import com.tribe.app.presentation.mvp.view.TribeMVPView;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
-import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.LowPassFilter;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -45,7 +40,6 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -61,7 +55,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
-public class TribeActivity extends BaseActivity implements TribeView, SensorEventListener {
+public class TribeActivity extends BaseActivity implements TribeMVPView, SensorEventListener {
 
     public static final String[] PERMISSIONS_LOCATION = new String[]{ Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION };
     public static final String RECIPIENT = "RECIPIENT";
@@ -108,8 +102,6 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
     private int position;
     private User currentUser;
     private TribeMessage currentTribe;
-    private BottomSheetDialog dialogMore;
-    private LabelSheetAdapter moreTypeAdapter;
     private boolean isRecording = false;
     private AudioManager audioManager;
     private Tutorial tutorial;
@@ -160,7 +152,6 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
         super.onResume();
 
         viewTribePager.onResume();
-        tribePresenter.onResume();
 
         sensorManager.registerListener(this, proximity, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, magnetic, SensorManager.SENSOR_DELAY_GAME);
@@ -172,7 +163,7 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
     protected void onPause() {
         cleanUpTutorial();
         viewTribePager.onPause();
-        tribePresenter.onPause();
+        tribePresenter.onViewDetached();
 
         sensorManager.unregisterListener(this);
         audioManager.setMode(AudioManager.MODE_NORMAL);
@@ -182,14 +173,11 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
 
     @Override
     protected void onStop() {
-        tribePresenter.onStop();
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
-        tribePresenter.onDestroy();
-
         if (unbinder != null) unbinder.unbind();
 
         if (subscriptions != null && subscriptions.hasSubscriptions()) {
@@ -391,9 +379,21 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
                             }));
                 }));
 
-        subscriptions.add(viewTribePager.onClickMore().subscribe(tribeMessage -> {
-            setupBottomSheetMore(tribeMessage);
-        }));
+        subscriptions.add(viewTribePager.onClickMore()
+                .flatMap(tribe -> DialogFactory.showBottomSheetForTribe(this, tribe, speedPlayback.get()),
+                        ((tribeMessage, labelType) -> {
+                            if (labelType.getTypeDef().equals(LabelType.TRIBE_SAVE)) {
+                                FileUtils.saveToMediaStore(this, FileUtils.getPathForId(this, tribeMessage.getId(), FileUtils.VIDEO));
+                                tribePresenter.markTribeAsSave(recipient, tribeMessage);
+                            } else if (labelType.getTypeDef().equals(LabelType.TRIBE_INCREASE_SPEED)
+                                    || labelType.getTypeDef().equals(LabelType.TRIBE_DECREASE_SPEED)) {
+                                viewTribePager.changeSpeed();
+                            }
+
+                            return null;
+                        }))
+                .subscribe()
+        );
 
         subscriptions.add(viewTribePager.onFirstLoop().subscribe(view -> {
             if (recipient.getReceivedTribes() != null && recipient.getReceivedTribes().size() > 1
@@ -459,8 +459,7 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
     }
 
     private void initPresenter() {
-        tribePresenter.onStart();
-        tribePresenter.attachView(this);
+        tribePresenter.onViewAttached(this);
         tribePresenter.loadTribes(recipient.getSubId());
 
         Set<String> userIds = new HashSet<>();
@@ -484,16 +483,6 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
 
     @Override
     public void hideLoading() {
-
-    }
-
-    @Override
-    public void showRetry() {
-
-    }
-
-    @Override
-    public void hideRetry() {
 
     }
 
@@ -522,65 +511,6 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
 
     private void updateCurrentView() {
         viewTribePager.updateCurrentView();
-    }
-
-    /**
-     * Bottom sheet set-up
-     */
-    private void prepareBottomSheetCamera(TribeMessage tribe, List<LabelType> items) {
-        View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_more, null);
-        RecyclerView recyclerViewMore = (RecyclerView) view.findViewById(R.id.recyclerViewMore);
-        recyclerViewMore.setHasFixedSize(true);
-        recyclerViewMore.setLayoutManager(new LinearLayoutManager(this));
-        moreTypeAdapter = new LabelSheetAdapter(this, items);
-        moreTypeAdapter.setHasStableIds(true);
-        recyclerViewMore.setAdapter(moreTypeAdapter);
-        subscriptions.add(moreTypeAdapter.clickLabelItem()
-                .map((View labelView) -> moreTypeAdapter.getItemAtPosition((Integer) labelView.getTag(R.id.tag_position)))
-                .subscribe(labelType -> {
-                    MoreType moreType = (MoreType) labelType;
-
-                    if (moreType.getMoreType().equals(MoreType.TRIBE_SAVE)) {
-                        FileUtils.saveToMediaStore(this, FileUtils.getPathForId(this, tribe.getId(), FileUtils.VIDEO));
-                        tribePresenter.markTribeAsSave(recipient, tribe);
-                    } else if (moreType.getMoreType().equals(MoreType.TRIBE_INCREASE_SPEED)
-                            || moreType.getMoreType().equals(MoreType.TRIBE_DECREASE_SPEED)) {
-                        viewTribePager.changeSpeed();
-                    }
-
-                    dismissDialogSheetMore();
-                }));
-
-        dialogMore = new BottomSheetDialog(this);
-        dialogMore.setContentView(view);
-        dialogMore.show();
-        dialogMore.setOnDismissListener(dialog -> {
-            moreTypeAdapter.releaseSubscriptions();
-            dialogMore = null;
-        });
-    }
-
-    private void setupBottomSheetMore(TribeMessage tribe) {
-        if (dismissDialogSheetMore()) {
-            return;
-        }
-
-        List<LabelType> moreType = new ArrayList<>();
-        if (tribe.isCanSave()) moreType.add(new MoreType(getString(R.string.tribe_more_save), MoreType.TRIBE_SAVE));
-        moreType.add(new MoreType(
-                speedPlayback.get().equals(TribePagerView.SPEED_NORMAL) ? getString(R.string.tribe_more_set_speed_2x) : getString(R.string.tribe_more_set_speed_1x),
-                speedPlayback.get().equals(TribePagerView.SPEED_NORMAL) ? MoreType.TRIBE_INCREASE_SPEED : MoreType.TRIBE_DECREASE_SPEED));
-
-        prepareBottomSheetCamera(tribe, moreType);
-    }
-
-    private boolean dismissDialogSheetMore() {
-        if (dialogMore != null && dialogMore.isShowing()) {
-            dialogMore.dismiss();
-            return true;
-        }
-
-        return false;
     }
 
     private void cleanUpTutorial() {

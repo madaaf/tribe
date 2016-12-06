@@ -1,13 +1,13 @@
 package com.tribe.app.presentation.mvp.presenter;
 
-import com.tribe.app.presentation.mvp.view.PointsView;
-import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.mvp.view.MVPView;
+import com.tribe.app.presentation.mvp.view.PointsMVPView;
 
 import javax.inject.Inject;
 
 public class PointsPresenter implements Presenter {
 
-    private PointsView pointsView;
+    private PointsMVPView pointsView;
 
     @Inject
     public PointsPresenter() {
@@ -15,34 +15,12 @@ public class PointsPresenter implements Presenter {
     }
 
     @Override
-    public void onCreate() {
-
+    public void onViewAttached(MVPView v) {
+        pointsView = (PointsMVPView) v;
     }
 
     @Override
-    public void onStart() {
-    }
+    public void onViewDetached() {
 
-    @Override
-    public void onResume() {
-        // Unused
-    }
-
-    @Override
-    public void onStop() {
-
-    }
-
-    @Override
-    public void onPause() {
-    }
-
-    @Override
-    public void onDestroy() {
-    }
-
-    @Override
-    public void attachView(View v) {
-        pointsView = (PointsView) v;
     }
 }

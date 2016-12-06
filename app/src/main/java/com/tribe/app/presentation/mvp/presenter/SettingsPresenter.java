@@ -13,9 +13,9 @@ import com.tribe.app.domain.interactor.common.UseCaseDisk;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
 import com.tribe.app.domain.interactor.user.UpdateUser;
-import com.tribe.app.presentation.mvp.view.SettingView;
-import com.tribe.app.presentation.mvp.view.UpdateUserView;
-import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.mvp.view.SettingMVPView;
+import com.tribe.app.presentation.mvp.view.UpdateUserMVPView;
+import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 
@@ -27,9 +27,9 @@ import javax.inject.Named;
 /**
  * Created by horatiothomas on 8/31/16.
  */
-public class SettingPresenter extends UpdateUserPresenter {
+public class SettingsPresenter extends UpdateUserPresenter {
 
-    private SettingView settingView;
+    private SettingMVPView settingView;
 
     private final RemoveInstall removeInstall;
     private final UseCase synchroContactList;
@@ -40,14 +40,14 @@ public class SettingPresenter extends UpdateUserPresenter {
     private LookupContactsSubscriber lookupContactsSubscriber;
 
     @Inject
-    SettingPresenter(UpdateUser updateUser,
-                     @Named("lookupByUsername") LookupUsername lookupUsername,
-                     RxFacebook rxFacebook,
-                     RemoveInstall removeInstall,
-                     @Named("synchroContactList") UseCase synchroContactList,
-                     JobManager jobManager,
-                     @Named("diskContactList") UseCaseDisk getDiskContactList,
-                     @Named("diskFBContactList") UseCaseDisk getDiskFBContactList) {
+    SettingsPresenter(UpdateUser updateUser,
+                      @Named("lookupByUsername") LookupUsername lookupUsername,
+                      RxFacebook rxFacebook,
+                      RemoveInstall removeInstall,
+                      @Named("synchroContactList") UseCase synchroContactList,
+                      JobManager jobManager,
+                      @Named("diskContactList") UseCaseDisk getDiskContactList,
+                      @Named("diskFBContactList") UseCaseDisk getDiskFBContactList) {
         super(updateUser, lookupUsername, rxFacebook);
         this.removeInstall = removeInstall;
         this.synchroContactList = synchroContactList;
@@ -57,27 +57,7 @@ public class SettingPresenter extends UpdateUserPresenter {
     }
 
     @Override
-    public void onStart() {
-
-    }
-
-    @Override
-    public void onResume() {
-
-    }
-
-    @Override
-    public void onStop() {
-
-    }
-
-    @Override
-    public void onPause() {
-
-    }
-
-    @Override
-    public void onDestroy() {
+    public void onViewDetached() {
         removeInstall.unsubscribe();
         synchroContactList.unsubscribe();
         getDiskContactList.unsubscribe();
@@ -85,13 +65,8 @@ public class SettingPresenter extends UpdateUserPresenter {
     }
 
     @Override
-    public void attachView(View v) {
-        settingView = (SettingView) v;
-    }
-
-    @Override
-    public void onCreate() {
-
+    public void onViewAttached(MVPView v) {
+        settingView = (SettingMVPView) v;
     }
 
     public void logout() {
@@ -133,7 +108,7 @@ public class SettingPresenter extends UpdateUserPresenter {
     }
 
     @Override
-    protected UpdateUserView getUpdateUserView() {
+    protected UpdateUserMVPView getUpdateUserView() {
         return settingView;
     }
 

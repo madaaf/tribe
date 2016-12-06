@@ -28,7 +28,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.internal.di.scope.AddressBook;
 import com.tribe.app.presentation.mvp.presenter.AccessPresenter;
-import com.tribe.app.presentation.mvp.view.AccessView;
+import com.tribe.app.presentation.mvp.view.AccessMVPView;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -65,7 +65,7 @@ import rx.subscriptions.CompositeSubscription;
  * Responsible for making sure user has enough friends on tribe before giving them access to the app.
  * A lot of fancy UI stuff going on here.
  */
-public class AccessFragment extends BaseFragment implements AccessView {
+public class AccessFragment extends BaseFragment implements AccessMVPView {
 
     private static final int DURATION = 300;
     private static final int DURATION_SMALL = 175;
@@ -136,7 +136,7 @@ public class AccessFragment extends BaseFragment implements AccessView {
     private int totalTimeSynchro;
 
     /**
-     * View Lifecycle
+     * MVPView Lifecycle
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -149,7 +149,7 @@ public class AccessFragment extends BaseFragment implements AccessView {
         initResources();
         initLockViewSize();
 
-        accessPresenter.attachView(this);
+        accessPresenter.onViewAttached(this);
 
         if (getUserVisibleHint() && getActivity() != null) {
             getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
@@ -492,7 +492,7 @@ public class AccessFragment extends BaseFragment implements AccessView {
     }
 
     /**
-     * AccessView methods
+     * AccessMVPView methods
      */
 
     @Override

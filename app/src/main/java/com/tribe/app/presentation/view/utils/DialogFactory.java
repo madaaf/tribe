@@ -14,10 +14,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.GenericType;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.domain.entity.LabelType;
+import com.tribe.app.domain.entity.Membership;
+import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
+import com.tribe.app.presentation.view.component.TribePagerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,24 +96,20 @@ public final class DialogFactory {
         });
     }
 
-    /**
-     * Bottom sheet set-up
-     */
-    public static Observable<GenericType> showBottomSheetForGroupMembers(Context context, GroupMember groupMember) {
-        return Observable.create((Subscriber<? super GenericType> subscriber) -> {
+    private static Observable<LabelType> createBottomSheet(Context context, List<LabelType> genericTypeList) {
+        return Observable.create((Subscriber<? super LabelType> subscriber) -> {
 
             View view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_base, null);
             RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewBottomSheet);
             recyclerView.setHasFixedSize(true);
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            LabelSheetAdapter labelSheetAdapter = new LabelSheetAdapter(context, generateLabelsForGroupMember(context, groupMember));
+            LabelSheetAdapter labelSheetAdapter = new LabelSheetAdapter(context, genericTypeList);
             labelSheetAdapter.setHasStableIds(true);
             recyclerView.setAdapter(labelSheetAdapter);
             Subscription clickSubscription = labelSheetAdapter.clickLabelItem()
                     .map((View labelView) -> labelSheetAdapter.getItemAtPosition((Integer) labelView.getTag(R.id.tag_position)))
                     .subscribe(labelType -> {
-                        GenericType genericType = (GenericType) labelType;
-                        subscriber.onNext(genericType);
+                        subscriber.onNext(labelType);
                         subscriber.onCompleted();
                     });
 
@@ -126,16 +126,76 @@ public final class DialogFactory {
         });
     }
 
+    public static Observable<LabelType> showBottomSheetForGroupMembers(Context context, GroupMember groupMember) {
+        return createBottomSheet(context, generateLabelsForGroupMember(context, groupMember));
+    }
+
     private static List<LabelType> generateLabelsForGroupMember(Context context, GroupMember groupMember) {
-        List<LabelType> genericTypes = new ArrayList<>();
+        List<LabelType> labelTypeList = new ArrayList<>();
 
         if (groupMember.isAdmin())
-            genericTypes.add(new GenericType(context.getString(R.string.group_members_action_remove_admin), GenericType.REMOVE_FROM_ADMIN));
+            labelTypeList.add(new LabelType(context.getString(R.string.group_members_action_remove_admin), LabelType.REMOVE_FROM_ADMIN));
         else
-            genericTypes.add(new GenericType(context.getString(R.string.group_members_action_add_admin), GenericType.SET_AS_ADMIN));
+            labelTypeList.add(new LabelType(context.getString(R.string.group_members_action_add_admin), LabelType.SET_AS_ADMIN));
 
-        genericTypes.add(new GenericType(context.getString(R.string.group_members_action_remove_member), GenericType.REMOVE_FROM_GROUP));
+        labelTypeList.add(new LabelType(context.getString(R.string.group_members_action_remove_member), LabelType.REMOVE_FROM_GROUP));
 
-        return genericTypes;
+        return labelTypeList;
+    }
+
+    public static Observable<LabelType> showBottomSheetForCamera(Context context) {
+        return createBottomSheet(context, generateLabelsForCamera(context));
+    }
+
+    private static List<LabelType> generateLabelsForCamera(Context context) {
+        List<LabelType> cameraTypeList = new ArrayList<>();
+        cameraTypeList.add(new LabelType(context.getString(R.string.image_picker_camera), LabelType.OPEN_CAMERA));
+        cameraTypeList.add(new LabelType(context.getString(R.string.image_picker_library), LabelType.OPEN_PHOTOS));
+        return cameraTypeList;
+    }
+
+    public static Observable<LabelType> showBottomSheetForTribe(Context context, TribeMessage tribe, Float speedPlayback) {
+        return createBottomSheet(context, generateLabelsForTribe(context, tribe, speedPlayback));
+    }
+
+    private static List<LabelType> generateLabelsForTribe(Context context, TribeMessage tribe, Float speedPlayback) {
+        List<LabelType> tribeTypeList = new ArrayList<>();
+        if (tribe.isCanSave()) tribeTypeList.add(new LabelType(context.getString(R.string.tribe_more_save), LabelType.TRIBE_SAVE));
+        tribeTypeList.add(new LabelType(
+                speedPlayback.equals(TribePagerView.SPEED_NORMAL)
+                        ? context.getString(R.string.tribe_more_set_speed_2x) : context.getString(R.string.tribe_more_set_speed_1x),
+                speedPlayback.equals(TribePagerView.SPEED_NORMAL) ? LabelType.TRIBE_INCREASE_SPEED : LabelType.TRIBE_DECREASE_SPEED));
+        return tribeTypeList;
+    }
+
+    public static Observable<LabelType> showBottomSheetForRecipient(Context context, Recipient recipient) {
+        return createBottomSheet(context, generateLabelsForRecipient(context, recipient));
+    }
+
+    private static List<LabelType> generateLabelsForRecipient(Context context, Recipient recipient) {
+        List<LabelType> moreTypeList = new ArrayList<>();
+        moreTypeList.add(new LabelType(context.getString(R.string.grid_menu_friendship_clear_tribes), LabelType.CLEAR_MESSAGES));
+
+        if (recipient instanceof Friendship) {
+            moreTypeList.add(new LabelType(context.getString(R.string.grid_menu_friendship_hide, recipient.getDisplayName()), LabelType.HIDE));
+            moreTypeList.add(new LabelType(context.getString(R.string.grid_menu_friendship_block, recipient.getDisplayName()), LabelType.BLOCK_HIDE));
+        } else if (recipient instanceof Membership) {
+            moreTypeList.add(new LabelType(context.getString(R.string.grid_menu_group_infos), LabelType.GROUP_INFO));
+        }
+
+        return moreTypeList;
+    }
+
+    public static Observable<LabelType> showBottomSheetForPending(Context context, Recipient recipient) {
+        return createBottomSheet(context, generateLabelsForRecipient(context, recipient));
+    }
+
+    private static List<LabelType> generateLabelsForPending(Context context, Recipient recipient) {
+        List<LabelType> pendingTypes = new ArrayList<>();
+
+        if (recipient.getErrorTribes() != null && recipient.getErrorTribes().size() > 0)
+            pendingTypes.addAll(recipient.createPendingTribeItems(context, false));
+
+        return pendingTypes;
     }
 }

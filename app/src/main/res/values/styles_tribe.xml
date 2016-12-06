@@ -108,6 +108,10 @@
         <item name="android:textColor">@android:color/black</item>
     </style>
 
+    <style name="Title.2.Blue" parent="@style/Title.2">
+        <item name="android:textColor">@color/blue.text</item>
+    </style>
+
     <style name="Title.2.Points" parent="@style/Title.2">
         <item name="android:textColor">@color/yellow</item>
     </style>

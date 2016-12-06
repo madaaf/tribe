@@ -4,10 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -15,9 +12,8 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.CameraType;
-import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.GroupEntity;
+import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
@@ -27,10 +23,8 @@ import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.widget.EditTextFont;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -101,7 +95,21 @@ public class CreateGroupView extends FrameLayout {
 
     @OnClick(R.id.imgAvatar)
     void clickAvatar() {
-        setupBottomSheetCamera();
+        subscriptions.add(DialogFactory.showBottomSheetForCamera(getContext())
+                .subscribe(labelType -> {
+                    if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
+                        subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA)
+                                .subscribe(uri -> {
+                                    loadUri(uri);
+                                }));
+                    } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
+                        subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY)
+                                .subscribe(uri -> {
+                                    loadUri(uri);
+                                }));
+                    }
+                })
+        );
     }
 
     @OnClick(R.id.btnGo)
@@ -157,70 +165,9 @@ public class CreateGroupView extends FrameLayout {
                 .into(imgAvatar);
     }
 
-    /**
-     * Bottom sheet set-up
-     */
-    private void prepareBottomSheetCamera(List<LabelType> items) {
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.bottom_sheet_camera_type, null);
-        RecyclerView recyclerViewCameraType = (RecyclerView) view.findViewById(R.id.recyclerViewCameraType);
-        recyclerViewCameraType.setHasFixedSize(true);
-        recyclerViewCameraType.setLayoutManager(new LinearLayoutManager(getContext()));
-        cameraTypeAdapter = new LabelSheetAdapter(getContext(), items);
-        cameraTypeAdapter.setHasStableIds(true);
-        recyclerViewCameraType.setAdapter(cameraTypeAdapter);
-        subscriptions.add(cameraTypeAdapter.clickLabelItem()
-                .map((View labelView) -> cameraTypeAdapter.getItemAtPosition((Integer) labelView.getTag(R.id.tag_position)))
-                .subscribe(labelType -> {
-                    CameraType cameraType = (CameraType) labelType;
-
-                    if (cameraType.getCameraTypeDef().equals(CameraType.OPEN_CAMERA)) {
-                        subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA)
-                                .subscribe(uri -> {
-                                    loadUri(uri);
-                                }));
-                    } else if (cameraType.getCameraTypeDef().equals(CameraType.OPEN_PHOTOS)) {
-                        subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY)
-                                .subscribe(uri -> {
-                                    loadUri(uri);
-                                }));
-                    }
-
-                    dismissDialogSheetCamera();
-                }));
-
-        dialogCamera = new BottomSheetDialog(getContext());
-        dialogCamera.setContentView(view);
-        dialogCamera.show();
-        dialogCamera.setOnDismissListener(dialog -> {
-            cameraTypeAdapter.releaseSubscriptions();
-            dialogCamera = null;
-        });
-    }
-
     public void loadUri(Uri uri) {
         imgUri = uri.toString();
         loadAvatar(uri.toString());
-    }
-
-    private void setupBottomSheetCamera() {
-        if (dismissDialogSheetCamera()) {
-            return;
-        }
-
-        List<LabelType> cameraTypes = new ArrayList<>();
-        cameraTypes.add(new CameraType(getContext().getString(R.string.image_picker_camera), CameraType.OPEN_CAMERA));
-        cameraTypes.add(new CameraType(getContext().getString(R.string.image_picker_library), CameraType.OPEN_PHOTOS));
-
-        prepareBottomSheetCamera(cameraTypes);
-    }
-
-    private boolean dismissDialogSheetCamera() {
-        if (dialogCamera != null && dialogCamera.isShowing()) {
-            dialogCamera.dismiss();
-            return true;
-        }
-
-        return false;
     }
 
     /**

@@ -106,6 +106,8 @@ import com.tribe.app.presentation.view.component.group.GroupSuggestionView;
 import com.tribe.app.presentation.view.component.group.MembersGroupView;
 import com.tribe.app.presentation.view.component.group.SettingsGroupView;
 import com.tribe.app.presentation.view.component.group.UpdateGroupView;
+import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
+import com.tribe.app.presentation.view.component.settings.SettingsView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
@@ -217,6 +219,10 @@ public interface ApplicationComponent {
     void inject(UpdateTribeToDownloadJob updateTribeToDownloadJob);
     void inject(DeleteContactsABJob deleteContactsABJob);
     void inject(DeleteContactsFBJob deleteContactsFBJob);
+
+    // VIEW
+    void inject(SettingsView settingsView);
+    void inject(SettingsProfileView settingsProfileView);
 
     // SERVICES
     void inject(DownloadTribeService downloadTribeService);

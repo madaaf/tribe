@@ -29,7 +29,7 @@ import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.PointsActivity;
 import com.tribe.app.presentation.view.activity.ScoreActivity;
 import com.tribe.app.presentation.view.activity.SearchUserActivity;
-import com.tribe.app.presentation.view.activity.SettingActivity;
+import com.tribe.app.presentation.view.activity.SettingsActivity;
 import com.tribe.app.presentation.view.activity.TribeActivity;
 
 import java.io.File;
@@ -175,7 +175,7 @@ public class Navigator {
      */
     public void navigateToSettings(Activity activity, int result) {
         if (activity != null) {
-            Intent intent = SettingActivity.getCallingIntent(activity);
+            Intent intent = SettingsActivity.getCallingIntent(activity);
             activity.startActivityForResult(intent, result);
             activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
         }

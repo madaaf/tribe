@@ -6,9 +6,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
-import android.support.design.widget.BottomSheetDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.InputFilter;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -31,9 +28,9 @@ import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.CameraType;
 import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.domain.entity.LabelType;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -42,9 +39,9 @@ import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
-import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
@@ -52,7 +49,6 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -72,6 +68,15 @@ import rx.subscriptions.CompositeSubscription;
 public class ProfileInfoView extends LinearLayout {
 
     private static final int DURATION = 100;
+
+    @Inject
+    RxImagePicker rxImagePicker;
+
+    @Inject
+    ScreenUtils screenUtils;
+
+    @Inject
+    User user;
 
     @BindView(R.id.imgAvatar)
     ImageView imgAvatar;
@@ -94,12 +99,6 @@ public class ProfileInfoView extends LinearLayout {
     @BindView(R.id.circularProgressUsername)
     CircularProgressView circularProgressUsername;
 
-    @Inject
-    RxImagePicker rxImagePicker;
-
-    @Inject
-    ScreenUtils screenUtils;
-
     // VARIABLES
     private String usernameInit;
     private String displayNameInit;
@@ -107,8 +106,6 @@ public class ProfileInfoView extends LinearLayout {
             displayNameSelected = false, displayNameChanged = false;
     private int avatarSize;
     private String imgUri;
-    private BottomSheetDialog dialogCamera;
-    private LabelSheetAdapter cameraTypeAdapter;
 
     // OBSERVABLES
     Unbinder unbinder;
@@ -204,6 +201,10 @@ public class ProfileInfoView extends LinearLayout {
     private void initUi() {
         setOrientation(VERTICAL);
 
+        loadAvatar(user.getProfilePicture());
+        setEditDisplayName(user.getDisplayName());
+        setEditUsername(user.getUsername());
+
         ArrayList<InputFilter> inputFilters = new ArrayList<InputFilter>(Arrays.asList(editUsername.getFilters()));
         inputFilters.add(0, filterAlphanumeric);
         inputFilters.add(1, filterSpace);
@@ -211,11 +212,8 @@ public class ProfileInfoView extends LinearLayout {
         InputFilter[] newInputFilters = inputFilters.toArray(new InputFilter[inputFilters.size()]);
         editUsername.setFilters(newInputFilters);
 
-        editUsername.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) editUsername.setSelection(editUsername.getText().length());
-            }
+        editUsername.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) editUsername.setSelection(editUsername.getText().length());
         });
 
         subscriptions.add(
@@ -266,7 +264,23 @@ public class ProfileInfoView extends LinearLayout {
 
         subscriptions.add(
                 RxView.clicks(imgAvatar)
-                        .subscribe(aVoid -> setupBottomSheetCamera())
+                        .flatMap(aVoid -> DialogFactory.showBottomSheetForCamera(getContext()),
+                                ((aVoid, labelType) -> {
+                                    if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
+                                        subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA)
+                                                .subscribe(uri -> {
+                                                    loadUri(uri);
+                                                }));
+                                    } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
+                                        subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY)
+                                                .subscribe(uri -> {
+                                                    loadUri(uri);
+                                                }));
+                                    }
+
+                                    return null;
+                                }))
+                        .subscribe()
         );
     }
 
@@ -461,71 +475,10 @@ public class ProfileInfoView extends LinearLayout {
         return null; // keep original
     };
 
-    /**
-     * Bottom sheet set-up
-     */
-    private void prepareBottomSheetCamera(List<LabelType> items) {
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.bottom_sheet_camera_type, null);
-        RecyclerView recyclerViewCameraType = (RecyclerView) view.findViewById(R.id.recyclerViewCameraType);
-        recyclerViewCameraType.setHasFixedSize(true);
-        recyclerViewCameraType.setLayoutManager(new LinearLayoutManager(getContext()));
-        cameraTypeAdapter = new LabelSheetAdapter(getContext(), items);
-        cameraTypeAdapter.setHasStableIds(true);
-        recyclerViewCameraType.setAdapter(cameraTypeAdapter);
-        subscriptions.add(cameraTypeAdapter.clickLabelItem()
-                .map((View labelView) -> cameraTypeAdapter.getItemAtPosition((Integer) labelView.getTag(R.id.tag_position)))
-                .subscribe(labelType -> {
-                    CameraType cameraType = (CameraType) labelType;
-
-                    if (cameraType.getCameraTypeDef().equals(CameraType.OPEN_CAMERA)) {
-                        subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA)
-                                .subscribe(uri -> {
-                                    loadUri(uri);
-                                }));
-                    } else if (cameraType.getCameraTypeDef().equals(CameraType.OPEN_PHOTOS)) {
-                        subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY)
-                                .subscribe(uri -> {
-                                    loadUri(uri);
-                                }));
-                    }
-
-                    dismissDialogSheetCamera();
-                }));
-
-        dialogCamera = new BottomSheetDialog(getContext());
-        dialogCamera.setContentView(view);
-        dialogCamera.show();
-        dialogCamera.setOnDismissListener(dialog -> {
-            cameraTypeAdapter.releaseSubscriptions();
-            dialogCamera = null;
-        });
-    }
-
     public void loadUri(Uri uri) {
         imgUri = uri.toString();
         avatarSelected = true;
         loadAvatar(uri.toString());
-    }
-
-    private void setupBottomSheetCamera() {
-        if (dismissDialogSheetCamera()) {
-            return;
-        }
-
-        List<LabelType> cameraTypes = new ArrayList<>();
-        cameraTypes.add(new CameraType(getContext().getString(R.string.image_picker_camera), CameraType.OPEN_CAMERA));
-        cameraTypes.add(new CameraType(getContext().getString(R.string.image_picker_library), CameraType.OPEN_PHOTOS));
-
-        prepareBottomSheetCamera(cameraTypes);
-    }
-
-    private boolean dismissDialogSheetCamera() {
-        if (dialogCamera != null && dialogCamera.isShowing()) {
-            dialogCamera.dismiss();
-            return true;
-        }
-
-        return false;
     }
 
     /**

@@ -5,7 +5,7 @@ import com.tribe.app.domain.entity.User;
 /**
  * Created by horatiothomas on 8/31/16.
  */
-public interface UpdateUserView extends LoadDataView {
+public interface UpdateUserMVPView extends LoadDataMVPView {
 
     void successUpdateUser(User user);
     void successFacebookLogin();

@@ -44,7 +44,7 @@
 
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtAction"
-            style="@style/Title.2.Purple"
+            style="@style/Title.2.Blue"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="right|center_vertical"

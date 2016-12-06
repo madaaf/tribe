@@ -8,8 +8,8 @@ import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.DiskSearchResults;
 import com.tribe.app.domain.interactor.user.FindByUsername;
-import com.tribe.app.presentation.mvp.view.SearchView;
-import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.mvp.view.MVPView;
+import com.tribe.app.presentation.mvp.view.SearchMVPView;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 
 import javax.inject.Inject;
@@ -18,7 +18,7 @@ import javax.inject.Named;
 public class SearchPresenter implements Presenter {
 
     // VIEW ATTACHED
-    private SearchView searchView;
+    private SearchMVPView searchView;
 
     // USECASES
     private JobManager jobManager;
@@ -43,39 +43,16 @@ public class SearchPresenter implements Presenter {
     }
 
     @Override
-    public void onCreate() {
-        initSearchResult();
-    }
-
-    @Override
-    public void onStart() {
-        // Unused
-    }
-
-    @Override
-    public void onResume() {
-        // Unused
-    }
-
-    @Override
-    public void onStop() {
-        // Unused
-    }
-
-    @Override
-    public void onPause() {
-    }
-
-    @Override
-    public void onDestroy() {
+    public void onViewDetached() {
         findByUsername.unsubscribe();
         searchResults.unsubscribe();
         createFriendship.unsubscribe();
     }
 
     @Override
-    public void attachView(View v) {
-        searchView = (SearchView) v;
+    public void onViewAttached(MVPView v) {
+        searchView = (SearchMVPView) v;
+        initSearchResult();
     }
 
     public void findByUsername(String username) {

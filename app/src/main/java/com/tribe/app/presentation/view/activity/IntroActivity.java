@@ -172,7 +172,7 @@ public class IntroActivity extends BaseActivity {
     }
 
     /**
-     * View Initialization methods
+     * MVPView Initialization methods
      */
 
     private void initUi() {

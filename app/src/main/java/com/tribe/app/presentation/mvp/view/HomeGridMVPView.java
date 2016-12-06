@@ -8,7 +8,7 @@ import com.tribe.app.domain.entity.TribeMessage;
 
 import java.util.List;
 
-public interface HomeGridView extends SendTribeView {
+public interface HomeGridMVPView extends SendTribeMVPView {
 
     void onMembershipCreated(Membership membership);
     void onDeepLink(String url);

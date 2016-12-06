@@ -6,7 +6,7 @@ import com.tribe.app.domain.entity.SearchResult;
 /**
  * Created by tiago on 12/02/2016.
  */
-public interface SearchView extends LoadDataView {
+public interface SearchMVPView extends LoadDataMVPView {
 
     void renderSearchResult(SearchResult searchResult);
     void onAddSuccess(Friendship friendship);

@@ -7,7 +7,7 @@ import com.tribe.app.domain.entity.Membership;
 /**
  * Created by tiago on 23/11/16.
  */
-public interface GroupView extends View {
+public interface GroupMVPView extends MVPView {
 
     void onGroupInfosSuccess(Group group);
     void onGroupInfosFailed();

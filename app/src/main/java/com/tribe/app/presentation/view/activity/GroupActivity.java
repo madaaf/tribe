@@ -26,7 +26,7 @@ import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.GroupPresenter;
-import com.tribe.app.presentation.mvp.view.GroupView;
+import com.tribe.app.presentation.mvp.view.GroupMVPView;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.component.group.AddMembersGroupView;
@@ -50,7 +50,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import rx.subscriptions.CompositeSubscription;
 
-public class GroupActivity extends BaseActivity implements GroupView {
+public class GroupActivity extends BaseActivity implements GroupMVPView {
 
     public static final String MEMBERSHIP_ID = "MEMBERSHIP_ID";
     public static final String GROUP_NAME = "GROUP_NAME";
@@ -132,13 +132,18 @@ public class GroupActivity extends BaseActivity implements GroupView {
     }
 
     @Override
+    protected void onStop() {
+        groupPresenter.onViewDetached();
+        super.onStop();
+    }
+
+    @Override
     protected void onDestroy() {
         if (viewCreateGroup != null) viewCreateGroup.onDestroy();
         if (viewAddMembersGroup != null) viewAddMembersGroup.onDestroy();
         if (viewSettingsGroup != null) viewSettingsGroup.onDestroy();
         if (viewUpdateGroup != null) viewUpdateGroup.onDestroy();
         if (viewMembersGroup != null) viewMembersGroup.onDestroy();
-        groupPresenter.onDestroy();
         if (unbinder != null) unbinder.unbind();
         if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
         if (settingsSubscriptions.hasSubscriptions()) settingsSubscriptions.unsubscribe();
@@ -193,7 +198,7 @@ public class GroupActivity extends BaseActivity implements GroupView {
 
         if (savedInstanceState == null) {
             if (membershipId == null) {
-                viewCreateGroup = (CreateGroupView) viewStack.push(R.layout.view_create_group);
+                viewCreateGroup = (CreateGroupView) viewStack.push(R.layout.view_group_create);
                 subscriptions.add(
                         viewCreateGroup.onCreateNewGroup()
                                 .subscribe(newGroup -> {
@@ -206,7 +211,7 @@ public class GroupActivity extends BaseActivity implements GroupView {
     }
 
     private void initPresenter() {
-        groupPresenter.attachView(this);
+        groupPresenter.onViewAttached(this);
 
         if (!StringUtils.isEmpty(membershipId)) {
             groupPresenter.membershipInfos(membershipId);
@@ -287,7 +292,7 @@ public class GroupActivity extends BaseActivity implements GroupView {
     }
 
     private void setupAddMembersView(Serializable param) {
-        viewAddMembersGroup = (AddMembersGroupView) viewStack.pushWithParameter(R.layout.view_add_members_group, param);
+        viewAddMembersGroup = (AddMembersGroupView) viewStack.pushWithParameter(R.layout.view_group_add_members, param);
         subscriptions.add(
                 viewAddMembersGroup.onMembersChanged()
                         .subscribe(addedMembers -> {
@@ -331,7 +336,7 @@ public class GroupActivity extends BaseActivity implements GroupView {
     }
 
     private void setupSettingsView() {
-        viewSettingsGroup = (SettingsGroupView) viewStack.pushWithParameter(R.layout.view_settings_group, membership);
+        viewSettingsGroup = (SettingsGroupView) viewStack.pushWithParameter(R.layout.view_group_settings, membership);
         subscriptions.add(viewSettingsGroup.onEditGroup()
                 .subscribe(aVoid -> {
                     setupUpdateView();
@@ -352,11 +357,11 @@ public class GroupActivity extends BaseActivity implements GroupView {
     }
 
     private void setupUpdateView() {
-        viewUpdateGroup = (UpdateGroupView) viewStack.pushWithParameter(R.layout.view_update_group, membership);
+        viewUpdateGroup = (UpdateGroupView) viewStack.pushWithParameter(R.layout.view_group_update, membership);
     }
 
     private void setupMemberListGroupView() {
-        viewMembersGroup = (MembersGroupView) viewStack.pushWithParameter(R.layout.view_members_group, membership);
+        viewMembersGroup = (MembersGroupView) viewStack.pushWithParameter(R.layout.view_group_members, membership);
         subscriptions.add(viewMembersGroup.onClickAddFriend()
                 .subscribe(user -> {
                     groupPresenter.createFriendship(user.getId());

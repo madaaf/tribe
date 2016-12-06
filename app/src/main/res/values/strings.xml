@@ -129,10 +129,14 @@
 	<string name="permission_global_popup_message">Let’s take care of permissions so you don’t miss anything from the most incredible video messenger.</string>
 	<string name="permission_global_popup_cancel">Stay incomplete</string>
 	<string name="permission_global_popup_confirm">LET\'S GO!</string>
-	<string name="permission_facebook_popup_title">Facebook friends</string>
+	<string name="permission_facebook_popup_title">Find friends from Facebook</string>
 	<string name="permission_facebook_popup_message">Your Facebook friends will be countinuously synced so you can see who you already know on Tribe.</string>
 	<string name="permission_facebook_popup_ok">Perfect!</string>
 	<string name="permission_facebook_popup_ko">No friends</string>
+	<string name="permission_addressbook_popup_title">Find friends from your Address Book</string>
+	<string name="permission_addressbook_popup_message">Your friends from your Address Book will be countinuously synced so you can see who you already know on Tribe.</string>
+	<string name="permission_addressbook_popup_ok">Perfect!</string>
+	<string name="permission_addressbook_popup_ko">No friends</string>
 	
 	<!-- Rating -->
 	<string name="rating_title">Rate us 5 starsif\nyou\'re loving Tribe!</string>
@@ -412,6 +416,7 @@
 	
 	<!-- Onboarding -->
 	<string name="onboarding_step_phone">Use your phone number to connect</string>
+	<string name="onboarding_phone_disclaimer">By registering, I agree to the Terms of Service &amp; Privacy Policy</string>
 	<string name="onboarding_step_code">We just texted a code for you to verify.</string>
 	<string name="onboarding_phone_number">Phone number</string>
 	<string name="onboarding_error_wrong_pin">:closed_lock_with_key: Wrong verification code</string>
@@ -477,7 +482,7 @@
 	<string name="pull_to_search_title">Filter your grid by letter</string>
 	
 	<!-- Grid Filter -->
-	<string name="grid_filter_title">Filter the grid by letters</string>
+	<string name="grid_filter_title">phone</string>
 	<string name="grid_manage_title">Manage friends</string>
 	
 	<!-- Top Bar -->

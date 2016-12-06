@@ -17,7 +17,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.BlockPresenter;
-import com.tribe.app.presentation.mvp.view.BlockView;
+import com.tribe.app.presentation.mvp.view.BlockMVPView;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.BlockedFriendAdapter;
 import com.tribe.app.presentation.view.widget.EditTextFont;
@@ -34,7 +34,7 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by horatiothomas on 9/6/16.
  */
-public class SettingBlockFragment extends BaseFragment implements BlockView {
+public class SettingBlockFragment extends BaseFragment implements BlockMVPView {
 
     public static SettingBlockFragment newInstance() {
 
@@ -78,7 +78,7 @@ public class SettingBlockFragment extends BaseFragment implements BlockView {
     @Override
     public void onDestroyView() {
         if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
-        this.blockPresenter.onDestroy();
+        this.blockPresenter.onViewDetached();
         this.friendAdapter.releaseSubscriptions();
         super.onDestroyView();
     }
@@ -86,8 +86,7 @@ public class SettingBlockFragment extends BaseFragment implements BlockView {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        this.blockPresenter.attachView(this);
-        this.blockPresenter.onCreate();
+        this.blockPresenter.onViewAttached(this);
     }
 
     private void initFriendshipList() {

@@ -3,9 +3,9 @@ package com.tribe.app.presentation.mvp.view;
 import android.content.Context;
 
 /**
- * Interface representing a View that will use to load data.
+ * Interface representing a MVPView that will use to load data.
  */
-public interface LoadDataView extends View {
+public interface LoadDataMVPView extends MVPView {
     /**
      * Show a view with a progress bar indicating a loading process.
      */
@@ -15,16 +15,6 @@ public interface LoadDataView extends View {
      * Hide a loading view.
      */
     void hideLoading();
-
-    /**
-     * Show a retry view in case of an error when retrieving data.
-     */
-    void showRetry();
-
-    /**
-     * Hide a retry view shown if there was an error when retrieving data.
-     */
-    void hideRetry();
 
     /**
      * Show an error message
