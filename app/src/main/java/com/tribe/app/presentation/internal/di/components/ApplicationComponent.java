@@ -46,30 +46,32 @@ import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
 import com.tribe.app.presentation.internal.di.modules.NetModule;
-import com.tribe.app.presentation.internal.di.scope.AddressBook;
-import com.tribe.app.presentation.internal.di.scope.AudioDefault;
-import com.tribe.app.presentation.internal.di.scope.DebugMode;
-import com.tribe.app.presentation.internal.di.scope.DistanceUnits;
-import com.tribe.app.presentation.internal.di.scope.Filter;
-import com.tribe.app.presentation.internal.di.scope.HasRatedApp;
-import com.tribe.app.presentation.internal.di.scope.HasReceivedPointsForCameraPermission;
-import com.tribe.app.presentation.internal.di.scope.InvisibleMode;
-import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
-import com.tribe.app.presentation.internal.di.scope.LastOnlineNotification;
-import com.tribe.app.presentation.internal.di.scope.LastSync;
-import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
-import com.tribe.app.presentation.internal.di.scope.LastVersionCode;
-import com.tribe.app.presentation.internal.di.scope.LocationContext;
-import com.tribe.app.presentation.internal.di.scope.Memories;
+import com.tribe.app.presentation.utils.preferences.AddressBook;
+import com.tribe.app.presentation.utils.preferences.AudioDefault;
+import com.tribe.app.presentation.utils.preferences.DebugMode;
+import com.tribe.app.presentation.utils.preferences.DistanceUnits;
+import com.tribe.app.presentation.utils.preferences.Filter;
+import com.tribe.app.presentation.utils.preferences.HasRatedApp;
+import com.tribe.app.presentation.utils.preferences.HasReceivedPointsForCameraPermission;
+import com.tribe.app.presentation.utils.preferences.InvisibleMode;
+import com.tribe.app.presentation.utils.preferences.LastMessageRequest;
+import com.tribe.app.presentation.utils.preferences.LastOnlineNotification;
+import com.tribe.app.presentation.utils.preferences.LastSync;
+import com.tribe.app.presentation.utils.preferences.LastUserRequest;
+import com.tribe.app.presentation.utils.preferences.LastVersionCode;
+import com.tribe.app.presentation.utils.preferences.LocationContext;
+import com.tribe.app.presentation.utils.preferences.Memories;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
-import com.tribe.app.presentation.internal.di.scope.Preload;
-import com.tribe.app.presentation.internal.di.scope.ShareProfile;
-import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
-import com.tribe.app.presentation.internal.di.scope.Theme;
-import com.tribe.app.presentation.internal.di.scope.TribeSentCount;
-import com.tribe.app.presentation.internal.di.scope.TutorialState;
-import com.tribe.app.presentation.internal.di.scope.WasAskedForCameraPermission;
-import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
+import com.tribe.app.presentation.utils.preferences.Preload;
+import com.tribe.app.presentation.utils.preferences.PushNotifications;
+import com.tribe.app.presentation.utils.preferences.ShareProfile;
+import com.tribe.app.presentation.utils.preferences.SpeedPlayback;
+import com.tribe.app.presentation.utils.preferences.Theme;
+import com.tribe.app.presentation.utils.preferences.TribeSentCount;
+import com.tribe.app.presentation.utils.preferences.TutorialState;
+import com.tribe.app.presentation.utils.preferences.UISounds;
+import com.tribe.app.presentation.utils.preferences.WasAskedForCameraPermission;
+import com.tribe.app.presentation.utils.preferences.WeatherUnits;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.TribeFirebaseInstanceIDService;
 import com.tribe.app.presentation.service.TribeFirebaseMessagingService;
@@ -106,8 +108,6 @@ import com.tribe.app.presentation.view.component.group.GroupSuggestionView;
 import com.tribe.app.presentation.view.component.group.MembersGroupView;
 import com.tribe.app.presentation.view.component.group.SettingsGroupView;
 import com.tribe.app.presentation.view.component.group.UpdateGroupView;
-import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
-import com.tribe.app.presentation.view.component.settings.SettingsView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
@@ -219,10 +219,6 @@ public interface ApplicationComponent {
     void inject(UpdateTribeToDownloadJob updateTribeToDownloadJob);
     void inject(DeleteContactsABJob deleteContactsABJob);
     void inject(DeleteContactsFBJob deleteContactsFBJob);
-
-    // VIEW
-    void inject(SettingsView settingsView);
-    void inject(SettingsProfileView settingsProfileView);
 
     // SERVICES
     void inject(DownloadTribeService downloadTribeService);
@@ -358,6 +354,12 @@ public interface ApplicationComponent {
 
     @LastOnlineNotification
     Preference<Long> lastOnlineNotification();
+
+    @UISounds
+    Preference<Boolean> uiSounds();
+
+    @PushNotifications
+    Preference<Boolean> pushNotifications();
 
     SoundManager soundManager();
 

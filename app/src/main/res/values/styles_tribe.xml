@@ -109,7 +109,7 @@
     </style>
 
     <style name="Title.2.Blue" parent="@style/Title.2">
-        <item name="android:textColor">@color/blue.text</item>
+        <item name="android:textColor">@drawable/color_blue_action_selector</item>
     </style>
 
     <style name="Title.2.Points" parent="@style/Title.2">

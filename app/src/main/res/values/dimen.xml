@@ -13,6 +13,7 @@
 
     <!-- PROGRESS BAR -->
     <dimen name="progress_bar_thickness">2dp</dimen>
+    <dimen name="progress_bar_thickness_small">0.5dp</dimen>
 
     <!-- MARGINS -->
     <dimen name="horizontal_margin">20dp</dimen>

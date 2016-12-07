@@ -30,7 +30,7 @@ import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.scope.FloatDef;
-import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
+import com.tribe.app.presentation.utils.preferences.SpeedPlayback;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.pager.TribePagerAdapter;
 import com.tribe.app.presentation.view.utils.AnimationUtils;

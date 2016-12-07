@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="112dp"
+    android:background="@null"
+   >
+    
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_theme_title"
+        style="@style/Title.1.Black"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="15dp"
+        />
+
+    <LinearLayout
+        android:id="@+id/layoutTheme"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:paddingBottom="@dimen/setting_theme_vertical_padding"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageTheme1"
+            android:layout_width="@dimen/setting_theme_size"
+            android:layout_height="@dimen/setting_theme_size"
+            android:src="@drawable/picto_theme_1"
+            android:clickable="true"
+            />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/imageTheme2"
+            android:layout_width="@dimen/setting_theme_size"
+            android:layout_height="@dimen/setting_theme_size"
+            android:src="@drawable/picto_theme_blue"
+            android:clickable="true"
+            />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/imageTheme3"
+            android:layout_width="@dimen/setting_theme_size"
+            android:layout_height="@dimen/setting_theme_size"
+            android:src="@drawable/picto_theme_red"
+            android:clickable="true"
+            />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/imageTheme4"
+            android:layout_width="@dimen/setting_theme_size"
+            android:layout_height="@dimen/setting_theme_size"
+            android:src="@drawable/picto_theme_violet"
+            android:clickable="true"
+            />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/imageTheme5"
+            android:layout_width="@dimen/setting_theme_size"
+            android:layout_height="@dimen/setting_theme_size"
+            android:src="@drawable/picto_theme_orange"
+            android:clickable="true"
+            />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/imageTheme6"
+            android:layout_width="@dimen/setting_theme_size"
+            android:layout_height="@dimen/setting_theme_size"
+            android:src="@drawable/picto_theme_black"
+            android:clickable="true"
+            />
+    </LinearLayout>
+    
+    <ImageView
+        android:id="@+id/imgThemeUnderline"
+        android:layout_width="@dimen/setting_theme_size"
+        android:layout_height="2.5dp"
+        android:layout_marginStart="15dp"
+        android:layout_gravity="bottom"
+        android:src="@drawable/picto_black_underline"
+        android:scaleType="centerCrop"/>
+
+</FrameLayout>

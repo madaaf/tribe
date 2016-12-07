@@ -26,7 +26,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.internal.di.scope.AddressBook;
+import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.mvp.presenter.AccessPresenter;
 import com.tribe.app.presentation.mvp.view.AccessMVPView;
 import com.tribe.app.presentation.utils.EmojiParser;

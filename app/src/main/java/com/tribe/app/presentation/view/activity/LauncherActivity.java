@@ -9,7 +9,7 @@ import android.util.Log;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.internal.di.scope.LastVersionCode;
+import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.DeviceUtils;

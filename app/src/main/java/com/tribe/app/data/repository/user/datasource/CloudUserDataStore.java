@@ -381,7 +381,7 @@ public class CloudUserDataStore implements UserDataStore {
         StringBuilder userInputBuilder = new StringBuilder();
 
         for (Pair<String, String> value : values) {
-            if (value.first.equals(UserRealm.TRIBE_SAVE) || value.first.equals(UserRealm.INVISIBLE_MODE)) {
+            if (value.first.equals(UserRealm.TRIBE_SAVE) || value.first.equals(UserRealm.INVISIBLE_MODE) || value.first.equals(UserRealm.PUSH_NOTIF)) {
                 userInputBuilder.append(value.first + ": " + Boolean.valueOf(value.second));
                 userInputBuilder.append(",");
             } else if (!value.first.equals(UserRealm.FBID) || (!StringUtils.isEmpty(value.second) && !value.second.equals("null"))) {
@@ -827,6 +827,7 @@ public class CloudUserDataStore implements UserDataStore {
             dbUser.setDisplayName(userRealm.getDisplayName());
             dbUser.setTribeSave(userRealm.isTribeSave());
             dbUser.setInvisibleMode(userRealm.isInvisibleMode());
+            dbUser.setPushNotif(userRealm.isPushNotif());
             userCache.put(dbUser);
         }
     };

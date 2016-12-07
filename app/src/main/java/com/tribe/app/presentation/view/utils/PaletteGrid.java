@@ -6,7 +6,7 @@ import android.support.v4.content.ContextCompat;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
-import com.tribe.app.presentation.internal.di.scope.Theme;
+import com.tribe.app.presentation.utils.preferences.Theme;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

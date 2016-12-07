@@ -4,18 +4,23 @@ import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.DeleteContactsABJob;
 import com.tribe.app.data.network.job.DeleteContactsFBJob;
 import com.tribe.app.data.network.job.RefreshHowManyFriendsJob;
+import com.tribe.app.data.network.job.UpdateFriendshipJob;
 import com.tribe.app.data.network.job.UpdateScoreJob;
+import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
+import com.tribe.app.domain.interactor.user.DiskUpdateFriendship;
+import com.tribe.app.domain.interactor.user.GetBlockedFriendshipList;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
 import com.tribe.app.domain.interactor.user.UpdateUser;
-import com.tribe.app.presentation.mvp.view.SettingMVPView;
-import com.tribe.app.presentation.mvp.view.UpdateUserMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
+import com.tribe.app.presentation.mvp.view.SettingsMVPView;
+import com.tribe.app.presentation.mvp.view.UpdateUserMVPView;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 
@@ -29,8 +34,10 @@ import javax.inject.Named;
  */
 public class SettingsPresenter extends UpdateUserPresenter {
 
-    private SettingMVPView settingView;
+    private SettingsMVPView settingsView;
 
+    private final DiskUpdateFriendship diskUpdateFriendship;
+    private final GetBlockedFriendshipList getBlockedFriendshipList;
     private final RemoveInstall removeInstall;
     private final UseCase synchroContactList;
     private UseCaseDisk getDiskContactList;
@@ -38,6 +45,7 @@ public class SettingsPresenter extends UpdateUserPresenter {
     private JobManager jobManager;
 
     private LookupContactsSubscriber lookupContactsSubscriber;
+    private GetBlockedFriendshipListSubscriber getBlockedFriendshipListSubscriber;
 
     @Inject
     SettingsPresenter(UpdateUser updateUser,
@@ -47,13 +55,17 @@ public class SettingsPresenter extends UpdateUserPresenter {
                       @Named("synchroContactList") UseCase synchroContactList,
                       JobManager jobManager,
                       @Named("diskContactList") UseCaseDisk getDiskContactList,
-                      @Named("diskFBContactList") UseCaseDisk getDiskFBContactList) {
+                      @Named("diskFBContactList") UseCaseDisk getDiskFBContactList,
+                      DiskUpdateFriendship diskUpdateFriendship,
+                      GetBlockedFriendshipList getBlockedFriendshipList) {
         super(updateUser, lookupUsername, rxFacebook);
         this.removeInstall = removeInstall;
         this.synchroContactList = synchroContactList;
         this.jobManager = jobManager;
         this.getDiskContactList = getDiskContactList;
         this.getDiskFBContactList = getDiskFBContactList;
+        this.diskUpdateFriendship = diskUpdateFriendship;
+        this.getBlockedFriendshipList = getBlockedFriendshipList;
     }
 
     @Override
@@ -62,11 +74,14 @@ public class SettingsPresenter extends UpdateUserPresenter {
         synchroContactList.unsubscribe();
         getDiskContactList.unsubscribe();
         getDiskFBContactList.unsubscribe();
+        diskUpdateFriendship.unsubscribe();
+        getBlockedFriendshipList.unsubscribe();
     }
 
     @Override
     public void onViewAttached(MVPView v) {
-        settingView = (SettingMVPView) v;
+        settingsView = (SettingsMVPView) v;
+        loadBlockedFriendshipList();
     }
 
     public void logout() {
@@ -104,12 +119,12 @@ public class SettingsPresenter extends UpdateUserPresenter {
     }
 
     public void goToLauncher() {
-        this.settingView.goToLauncher();
+        this.settingsView.goToLauncher();
     }
 
     @Override
     protected UpdateUserMVPView getUpdateUserView() {
-        return settingView;
+        return settingsView;
     }
 
     public void updateScoreShare() {
@@ -170,7 +185,7 @@ public class SettingsPresenter extends UpdateUserPresenter {
 //            }
 
             if (contactList != null) {
-                settingView.onAddressBookContactSync(contactList.size());
+                settingsView.onAddressBookContactSync(contactList.size());
             }
         }
     }
@@ -199,8 +214,49 @@ public class SettingsPresenter extends UpdateUserPresenter {
 //            }
 
             if (contactList != null) {
-                settingView.onFBContactsSync(contactList.size());
+                settingsView.onFBContactsSync(contactList.size());
             }
+        }
+    }
+
+    public void loadBlockedFriendshipList() {
+        if (getBlockedFriendshipListSubscriber != null) getBlockedFriendshipListSubscriber.unsubscribe();
+
+        getBlockedFriendshipListSubscriber = new GetBlockedFriendshipListSubscriber();
+        getBlockedFriendshipList.execute(getBlockedFriendshipListSubscriber);
+    }
+
+    private class GetBlockedFriendshipListSubscriber extends DefaultSubscriber<List<Friendship>> {
+
+        @Override
+        public void onCompleted() {}
+
+        @Override
+        public void onError(Throwable e) {}
+
+        @Override
+        public void onNext(List<Friendship> friendshipList) {
+            settingsView.renderBlockedFriendshipList(friendshipList);
+        }
+    }
+
+    public void updateFriendship(String friendshipId) {
+        diskUpdateFriendship.prepare(friendshipId, FriendshipRealm.DEFAULT);
+        diskUpdateFriendship.execute(new UpdateFriendshipSubscriber());
+        jobManager.addJobInBackground(new UpdateFriendshipJob(friendshipId, FriendshipRealm.DEFAULT));
+    }
+
+    private class UpdateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
+
+        @Override
+        public void onCompleted() {}
+
+        @Override
+        public void onError(Throwable e) {}
+
+        @Override
+        public void onNext(Friendship friendship) {
+            settingsView.friendshipUpdated(friendship);
         }
     }
 }

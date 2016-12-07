@@ -62,7 +62,7 @@
                 android:background="@drawable/shape_white_rect_grey_border"
                 android:orientation="vertical">
 
-                <com.tribe.app.presentation.view.component.SettingFilterView
+                <com.tribe.app.presentation.view.component.settings.SettingsFilterView
                     android:id="@+id/settingsFilter"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -80,7 +80,7 @@
                 android:background="@drawable/shape_white_rect_grey_border"
                 android:orientation="vertical">
 
-                <com.tribe.app.presentation.view.component.SettingThemeView
+                <com.tribe.app.presentation.view.component.settings.SettingsThemeView
                     android:id="@+id/settingsTheme"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -291,5 +291,4 @@
             />
 
     </LinearLayout>
-
 </ScrollView>

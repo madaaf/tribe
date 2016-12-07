@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.component.settings;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
@@ -8,9 +9,13 @@ import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import javax.inject.Inject;
 
@@ -43,11 +48,14 @@ public class SettingsView extends FrameLayout {
     @BindView(R.id.viewActionFilters)
     ActionView viewActionFilters;
 
-    @BindView(R.id.viewActionPermissions)
-    ActionView viewActionPermissions;
+    @BindView(R.id.viewActionParameters)
+    ActionView viewActionParameters;
 
-    @BindView(R.id.viewActionHideBlock)
-    ActionView viewActionHideBlock;
+    //@BindView(R.id.viewActionPermissions)
+    //ActionView viewActionPermissions;
+
+    //@BindView(R.id.viewActionHideBlock)
+    //ActionView viewActionHideBlock;
 
     @BindView(R.id.viewActionContact)
     ActionView viewActionContact;
@@ -64,6 +72,9 @@ public class SettingsView extends FrameLayout {
     @BindView(R.id.viewActionLogout)
     ActionView viewActionLogout;
 
+    @BindView(R.id.txtVersion)
+    TextViewFont txtVersion;
+
     // VARIABLES
 
     // OBSERVABLES
@@ -78,6 +89,7 @@ public class SettingsView extends FrameLayout {
         super.onFinishInflate();
         ButterKnife.bind(this);
 
+        initDependencyInjector();
         initSubscriptions();
         initUI();
     }
@@ -97,9 +109,7 @@ public class SettingsView extends FrameLayout {
     }
 
     private void initSubscriptions() {
-        ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
         subscriptions = new CompositeSubscription();
-
     }
 
     private void initUI() {
@@ -108,6 +118,23 @@ public class SettingsView extends FrameLayout {
 
         viewActionShareProfile.setTitle(getContext().getString(R.string.settings_profile_share_title, "@" + user.getUsername()));
         viewActionShareProfile.setBody(getContext().getString(R.string.settings_profile_share_title, BuildConfig.TRIBE_URL + "/@" + user.getUsername()));
+
+        txtVersion.setText(getContext().getString(R.string.settings_version, BuildConfig.VERSION_NAME, String.valueOf(BuildConfig.VERSION_CODE)));
+    }
+
+    protected ApplicationComponent getApplicationComponent() {
+        return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
+    }
+
+    protected ActivityModule getActivityModule() {
+        return new ActivityModule(((Activity) getContext()));
+    }
+
+    private void initDependencyInjector() {
+        DaggerUserComponent.builder()
+                .activityModule(getActivityModule())
+                .applicationComponent(getApplicationComponent())
+                .build().inject(this);
     }
 
     /**
@@ -128,5 +155,37 @@ public class SettingsView extends FrameLayout {
 
     public Observable<Void> onFiltersClick() {
         return viewActionFilters.onClick();
+    }
+
+    public Observable<Void> onParametersClick() {
+        return viewActionParameters.onClick();
+    }
+
+//    public Observable<Void> onPermissionsClick() {
+//        return viewActionPermissions.onClick();
+//    }
+
+//    public Observable<Void> onHideBlockClick() {
+//        return viewActionHideBlock.onClick();
+//    }
+
+    public Observable<Void> onContactClick() {
+        return viewActionContact.onClick();
+    }
+
+    public Observable<Void> onFollowClick() {
+        return viewActionFollow.onClick();
+    }
+
+    public Observable<Void> onBlockedHiddenClick() {
+        return viewActionBlockedHidden.onClick();
+    }
+
+    public Observable<Void> onRateClick() {
+        return viewActionRateUs.onClick();
+    }
+
+    public Observable<Void> onLogoutClick() {
+        return viewActionLogout.onClick();
     }
 }

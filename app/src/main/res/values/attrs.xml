@@ -38,6 +38,7 @@
     </declare-styleable>
 
     <declare-styleable name="CameraWrapper">
+        <attr name="cameraGradient" format="boolean" />
         <attr name="cameraType" format="enum">
             <enum name="recording" value="0" />
             <enum name="setting" value="1" />

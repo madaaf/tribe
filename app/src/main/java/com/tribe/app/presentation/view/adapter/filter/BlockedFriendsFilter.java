@@ -3,7 +3,6 @@ package com.tribe.app.presentation.view.adapter.filter;
 import android.widget.Filter;
 
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.BlockedFriendAdapter;
 
 import java.util.ArrayList;
@@ -18,6 +17,7 @@ public class BlockedFriendsFilter extends Filter {
     public BlockedFriendsFilter(List<Friendship> friendshipList, BlockedFriendAdapter adapter) {
         this.friendshipList = friendshipList;
         this.filteredFriendshipList = new ArrayList();
+        this.adapter = adapter;
     }
 
     @Override
@@ -27,9 +27,7 @@ public class BlockedFriendsFilter extends Filter {
 
         if (friendshipList != null && friendshipList.size() > 0) {
             for (final Friendship item : friendshipList) {
-                String firstCharacter = StringUtils.getFirstCharacter(item.getDisplayName());
-
-                if (!firstCharacter.isEmpty() && firstCharacter.equalsIgnoreCase(constraint.toString())) {
+                if (item.getFriend().getDisplayName().toLowerCase().startsWith(constraint.toString().toLowerCase())) {
                     filteredFriendshipList.add(item);
                 }
             }

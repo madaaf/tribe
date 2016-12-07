@@ -37,6 +37,9 @@ public class LabelType implements Serializable {
     public static final String TRIBE_INCREASE_SPEED = "tribeIncreaseSpeed";
     public static final String TRIBE_DECREASE_SPEED = "tribeDecreaseSpeed";
 
+    public static final String INSTAGRAM = "instagram";
+    public static final String TWITTER = "twitter";
+    public static final String SNAPCHAT = "snapchat";
 
     private @GenericTypeDef String typeDef;
     private String label;

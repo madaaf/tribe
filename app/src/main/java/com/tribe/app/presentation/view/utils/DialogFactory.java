@@ -187,7 +187,7 @@ public final class DialogFactory {
     }
 
     public static Observable<LabelType> showBottomSheetForPending(Context context, Recipient recipient) {
-        return createBottomSheet(context, generateLabelsForRecipient(context, recipient));
+        return createBottomSheet(context, generateLabelsForPending(context, recipient));
     }
 
     private static List<LabelType> generateLabelsForPending(Context context, Recipient recipient) {
@@ -197,5 +197,18 @@ public final class DialogFactory {
             pendingTypes.addAll(recipient.createPendingTribeItems(context, false));
 
         return pendingTypes;
+    }
+
+    public static Observable<LabelType> showBottomSheetForFollow(Context context) {
+        return createBottomSheet(context, generateLabelsForFollow(context));
+    }
+
+    private static List<LabelType> generateLabelsForFollow(Context context) {
+        List<LabelType> followTypes = new ArrayList<>();
+
+        followTypes.add(new LabelType(context.getString(R.string.settings_follow_twitter), LabelType.TWITTER));
+        followTypes.add(new LabelType(context.getString(R.string.settings_follow_instagram), LabelType.INSTAGRAM));
+        followTypes.add(new LabelType(context.getString(R.string.settings_follow_snapchat), LabelType.SNAPCHAT));
+        return followTypes;
     }
 }

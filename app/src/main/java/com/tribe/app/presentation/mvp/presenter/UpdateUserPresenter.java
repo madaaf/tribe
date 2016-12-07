@@ -53,6 +53,8 @@ public abstract class UpdateUserPresenter implements Presenter {
             values.add(new Pair<>(UserRealm.PROFILE_PICTURE, pictureUri));
         values.add(new Pair<>(UserRealm.FBID, fbid));
 
+        getUpdateUserView().showLoading();
+
         updateUserSubscriber = new UpdateUserSubscriber();
         updateUser.prepare(values);
         updateUser.execute(new UpdateUserSubscriber());
@@ -61,6 +63,13 @@ public abstract class UpdateUserPresenter implements Presenter {
     public void updateUserTribeSave(boolean tribeSave) {
         List<Pair<String, String>> values = new ArrayList<>();
         values.add(new Pair<>(UserRealm.TRIBE_SAVE, String.valueOf(tribeSave)));
+        updateUser.prepare(values);
+        updateUser.execute(new UpdateUserSubscriber());
+    }
+
+    public void updateUserNotifications(boolean notifications) {
+        List<Pair<String, String>> values = new ArrayList<>();
+        values.add(new Pair<>(UserRealm.PUSH_NOTIF, String.valueOf(notifications)));
         updateUser.prepare(values);
         updateUser.execute(new UpdateUserSubscriber());
     }
@@ -119,6 +128,7 @@ public abstract class UpdateUserPresenter implements Presenter {
 
         @Override
         public void onNext(User user) {
+            getUpdateUserView().hideLoading();
             getUpdateUserView().successUpdateUser(user);
         }
     }

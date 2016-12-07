@@ -363,13 +363,12 @@ public class HomeGridPresenter extends SendTribePresenter {
         public void onCompleted() {}
 
         @Override
-        public void onError(Throwable e) {
-
-        }
+        public void onError(Throwable e) {}
 
         @Override
         public void onNext(Friendship friendship) {
             homeGridView.onFriendshipUpdated(friendship);
+            loadFriendList(null);
         }
     }
 

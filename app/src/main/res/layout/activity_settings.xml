@@ -62,7 +62,7 @@
             android:visibility="gone"
             app:cpv_animAutostart="true"
             app:cpv_indeterminate="true"
-            app:cpv_color="@color/purple.group"
+            app:cpv_color="@color/blue.text"
             app:cpv_thickness="2dp"
             />
 

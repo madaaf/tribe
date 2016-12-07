@@ -11,18 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.BlockPresenter;
-import com.tribe.app.presentation.mvp.view.BlockMVPView;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.BlockedFriendAdapter;
 import com.tribe.app.presentation.view.widget.EditTextFont;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -34,7 +30,7 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by horatiothomas on 9/6/16.
  */
-public class SettingBlockFragment extends BaseFragment implements BlockMVPView {
+public class SettingBlockFragment extends BaseFragment {
 
     public static SettingBlockFragment newInstance() {
 
@@ -86,7 +82,7 @@ public class SettingBlockFragment extends BaseFragment implements BlockMVPView {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        this.blockPresenter.onViewAttached(this);
+        //this.blockPresenter.onViewAttached(this);
     }
 
     private void initFriendshipList() {
@@ -154,16 +150,5 @@ public class SettingBlockFragment extends BaseFragment implements BlockMVPView {
                 .activityModule(getActivityModule())
                 .applicationComponent(getApplicationComponent())
                 .build().inject(this);
-    }
-
-
-    @Override
-    public void friendshipUpdated(Friendship friendship) {
-        friendAdapter.updateFriendship(friendship);
-    }
-
-    @Override
-    public void renderBlockedFriendshipList(List<Friendship> friendshipList) {
-        friendAdapter.setItems(friendshipList);
     }
 }

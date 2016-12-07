@@ -10,15 +10,18 @@ import android.widget.ImageView;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.SettingsPresenter;
-import com.tribe.app.presentation.mvp.view.SettingMVPView;
+import com.tribe.app.presentation.mvp.view.SettingsMVPView;
 import com.tribe.app.presentation.view.fragment.SettingBlockFragment;
 import com.tribe.app.presentation.view.fragment.SettingFragment;
 import com.tribe.app.presentation.view.fragment.SettingUpdateProfileFragment;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -31,7 +34,7 @@ import rx.subscriptions.CompositeSubscription;
  * SettingActivity.java
  * Created by horatiothomas on 8/26/16.
  */
-public class SettingActivity extends BaseActivity implements SettingMVPView {
+public class SettingActivity extends BaseActivity implements SettingsMVPView {
 
     private static final String SETTING_FRAGMENT = "settingFragment";
     private static final String SETTING_PROFILE_FRAGMENT = "settingUpdateProfileFragment";
@@ -240,6 +243,16 @@ public class SettingActivity extends BaseActivity implements SettingMVPView {
 
     @Override
     public void onSuccessSync() {
+
+    }
+
+    @Override
+    public void friendshipUpdated(Friendship friendship) {
+
+    }
+
+    @Override
+    public void renderBlockedFriendshipList(List<Friendship> friendshipList) {
 
     }
 

@@ -23,7 +23,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerTribeComponent;
-import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
+import com.tribe.app.presentation.utils.preferences.SpeedPlayback;
 import com.tribe.app.presentation.mvp.presenter.TribePresenter;
 import com.tribe.app.presentation.mvp.view.TribeMVPView;
 import com.tribe.app.presentation.utils.FileUtils;

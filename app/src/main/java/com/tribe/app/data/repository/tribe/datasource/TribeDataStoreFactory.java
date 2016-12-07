@@ -8,7 +8,7 @@ import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
-import com.tribe.app.presentation.internal.di.scope.LocationContext;
+import com.tribe.app.presentation.utils.preferences.LocationContext;
 
 import java.text.SimpleDateFormat;
 

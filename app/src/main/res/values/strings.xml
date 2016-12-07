@@ -388,8 +388,11 @@
 	<string name="settings_follow_title">Follow us</string>
 	<string name="settings_follow_subtitle">Twitter, Instagram and Snapchat</string>
 	<string name="settings_follow_twitter">Twitter</string>
+	<string name="settings_follow_twitter_url">https://twitter.com/heytribe</string>
 	<string name="settings_follow_instagram">Instagram</string>
+	<string name="settings_follow_instagram_url">https://www.instagram.com/heytribe/</string>
 	<string name="settings_follow_snapchat">Snapchat</string>
+	<string name="settings_follow_snapchat_url">http://www.snapchat.com/add/heytribe</string>
 	<string name="settings_rate_title">Rate the app</string>
 	<string name="settings_rate_subtitle">We appreciate the love that you give us!</string>
 	<string name="settings_hidden_blocked_title">Removed or blocked friends/groups</string>
@@ -419,6 +422,9 @@
 	<string name="onboarding_phone_disclaimer">By registering, I agree to the Terms of Service &amp; Privacy Policy</string>
 	<string name="onboarding_step_code">We just texted a code for you to verify.</string>
 	<string name="onboarding_phone_number">Phone number</string>
+	<string name="onboarding_code_sending_status">Sending verification code…</string>
+	<string name="onboarding_code_sent_status">Code sent to %1$s</string>
+	<string name="onboarding_code_error_status">An error occured. Retry</string>
 	<string name="onboarding_error_wrong_pin">:closed_lock_with_key: Wrong verification code</string>
 	<string name="onboarding_connected">Connected</string>
 	<string name="onboarding_user_title">Set your profile</string>
@@ -465,6 +471,9 @@
 	<string name="onboarding_friends_to_invite_popup_message">Try with friends, teammates, classmates, roommates, work teams and long distance relationships.</string>
 	<string name="onboarding_friends_to_invite_popup_cancel">Never</string>
 	<string name="onboarding_friends_to_invite_popup_confirm">Exciting!</string>
+	<string name="onboarding_friends_to_invite_none_button">Don\'t send any invite</string>
+	<string name="onboarding_friends_to_invite_singular_button">Send %1$d invite</string>
+	<string name="onboarding_friends_to_invite_plural_button">Send %1$d invites</string>
 	<string name="onboarding_friends_to_invite_disclaimer">By continuing, I agree that I have permission to\ninvite my contacts. See Terms &amp; Privacy Policy</string>
 	
 	<!-- Legal -->
@@ -557,6 +566,8 @@
 	<string name="notification_snoozed">Snoozed message from %1$s available again. Catch up!</string>
 	<string name="notification_open_message">Open message</string>
 	<string name="notification_reply_chat">Reply in sidechat</string>
+	<string name="notification_online_hi">Hi :wave:</string>
+	<string name="notification_online_hi_message">Hi :wave:</string>
 	
 	<!-- Share -->
 	<string name="share_add_friends_addressbook_suggestions">I was able to get access to Tribe. Just noticed that you already have %1$d friends on this app. I can get you in: %2$s #JoinTheTribe</string>

@@ -15,32 +15,35 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
-import com.tribe.app.presentation.internal.di.scope.AddressBook;
-import com.tribe.app.presentation.internal.di.scope.AudioDefault;
-import com.tribe.app.presentation.internal.di.scope.DebugMode;
-import com.tribe.app.presentation.internal.di.scope.LastSync;
-import com.tribe.app.presentation.internal.di.scope.LocationContext;
-import com.tribe.app.presentation.internal.di.scope.Preload;
-import com.tribe.app.presentation.internal.di.scope.ShareProfile;
-import com.tribe.app.presentation.internal.di.scope.WeatherUnits;
+import com.tribe.app.presentation.utils.preferences.AddressBook;
+import com.tribe.app.presentation.utils.preferences.AudioDefault;
+import com.tribe.app.presentation.utils.preferences.DebugMode;
+import com.tribe.app.presentation.utils.preferences.LastSync;
+import com.tribe.app.presentation.utils.preferences.LocationContext;
+import com.tribe.app.presentation.utils.preferences.Preload;
+import com.tribe.app.presentation.utils.preferences.ShareProfile;
+import com.tribe.app.presentation.utils.preferences.WeatherUnits;
 import com.tribe.app.presentation.mvp.presenter.SettingsPresenter;
-import com.tribe.app.presentation.mvp.view.SettingMVPView;
+import com.tribe.app.presentation.mvp.view.SettingsMVPView;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.SettingActivity;
 import com.tribe.app.presentation.view.component.ActionView;
-import com.tribe.app.presentation.view.component.SettingFilterView;
+import com.tribe.app.presentation.view.component.settings.SettingsFilterView;
 import com.tribe.app.presentation.view.component.SettingItemView;
-import com.tribe.app.presentation.view.component.SettingThemeView;
+import com.tribe.app.presentation.view.component.settings.SettingsThemeView;
 import com.tribe.app.presentation.view.dialog_fragment.ShareDialogProfileFragment;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 import com.tribe.app.presentation.view.utils.Weather;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -54,7 +57,7 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by horatiothomas on 9/6/16.
  */
-public class SettingFragment extends BaseFragment implements SettingMVPView {
+public class SettingFragment extends BaseFragment implements SettingsMVPView {
 
     @BindView(R.id.settingsProfile)
     SettingItemView settingsProfile;
@@ -66,10 +69,10 @@ public class SettingFragment extends BaseFragment implements SettingMVPView {
     ActionView viewActionPoints;
 
     @BindView(R.id.settingsFilter)
-    SettingFilterView settingFilterView;
+    SettingsFilterView settingsFilterView;
 
     @BindView(R.id.settingsTheme)
-    SettingThemeView settingThemeView;
+    SettingsThemeView settingsThemeView;
 
     @BindView(R.id.messageSettingMemories)
     SettingItemView messageSettingMemories;
@@ -199,12 +202,12 @@ public class SettingFragment extends BaseFragment implements SettingMVPView {
     @Override
     public void onResume() {
         super.onResume();
-        settingFilterView.onResume();
+        settingsFilterView.onResume();
     }
 
     @Override
     public void onPause() {
-        settingFilterView.onPause();
+        settingsFilterView.onPause();
         super.onPause();
     }
 
@@ -538,6 +541,16 @@ public class SettingFragment extends BaseFragment implements SettingMVPView {
 
     @Override
     public void onSuccessSync() {
+
+    }
+
+    @Override
+    public void friendshipUpdated(Friendship friendship) {
+
+    }
+
+    @Override
+    public void renderBlockedFriendshipList(List<Friendship> friendshipList) {
 
     }
 

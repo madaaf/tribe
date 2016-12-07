@@ -9,7 +9,7 @@ import android.view.View;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
-import com.tribe.app.presentation.internal.di.scope.TutorialState;
+import com.tribe.app.presentation.utils.preferences.TutorialState;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 

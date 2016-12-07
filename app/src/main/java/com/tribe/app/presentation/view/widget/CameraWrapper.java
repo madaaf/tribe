@@ -24,8 +24,8 @@ import android.widget.FrameLayout;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.internal.di.scope.AudioDefault;
-import com.tribe.app.presentation.internal.di.scope.Filter;
+import com.tribe.app.presentation.utils.preferences.AudioDefault;
+import com.tribe.app.presentation.utils.preferences.Filter;
 import com.tribe.app.presentation.view.camera.shader.GlPixellateShader;
 import com.tribe.app.presentation.view.camera.shader.fx.GlLutShader;
 import com.tribe.app.presentation.view.camera.view.CameraView;
@@ -90,6 +90,9 @@ public class CameraWrapper extends CardView {
     @BindView(R.id.imgVideo)
     View imgVideo;
 
+    @BindView(R.id.viewGradient)
+    View viewGradient;
+
     @BindView(R.id.viewCameraForeground)
     View viewCameraForeground;
 
@@ -110,6 +113,7 @@ public class CameraWrapper extends CardView {
     private int cameraType;
     private int cameraHeight = 0;
     private int cameraWidth = 0;
+    private boolean hasCameraGradient = true;
 
     // RESOURCES
     private int marginTopInit, marginLeftInit, marginBottomInit, marginVerticalIcons, marginHorizontalIcons, diffTouch,
@@ -129,6 +133,7 @@ public class CameraWrapper extends CardView {
         cameraType = a.getInteger(R.styleable.CameraWrapper_cameraType, RECORDING);
         cameraHeight = a.getDimensionPixelSize(R.styleable.CameraWrapper_cameraHeight, ViewGroup.LayoutParams.MATCH_PARENT);
         cameraWidth = a.getDimensionPixelSize(R.styleable.CameraWrapper_cameraWidth, ViewGroup.LayoutParams.MATCH_PARENT);
+        hasCameraGradient = a.getBoolean(R.styleable.CameraWrapper_cameraGradient, true);
 
         a.recycle();
 
@@ -156,6 +161,8 @@ public class CameraWrapper extends CardView {
         inflater.inflate(R.layout.view_camera, this, true);
 
         ButterKnife.bind(this);
+
+        if (!hasCameraGradient) viewGradient.setVisibility(View.GONE);
 
         setAspectRatio(3.0 / 2.0);
 

@@ -323,6 +323,10 @@ public class Navigator {
         }
     }
 
+    public void navigateToUrl(Context context, String url) {
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+    }
+
     /**
      * Intent to send an email
      * @param context context to start activity

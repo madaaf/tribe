@@ -130,7 +130,10 @@ public class ActionView extends FrameLayout {
         a.recycle();
 
         int paddingStart = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
-        int paddingEnd = getResources().getDimensionPixelSize(R.dimen.horizontal_margin);
+        int paddingEnd =
+                type == TOGGLE ?
+                        getResources().getDimensionPixelSize(R.dimen.horizontal_margin_smaller)
+                        : getResources().getDimensionPixelSize(R.dimen.horizontal_margin);
         setPadding(paddingStart, paddingStart, paddingEnd, paddingStart);
 
         setClickable(true);
