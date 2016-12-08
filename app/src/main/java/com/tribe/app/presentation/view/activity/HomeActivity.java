@@ -477,9 +477,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         subscriptions.add(homeGridAdapter.onRecordEnd()
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(view -> {
-                    cameraWrapper.onEndRecord();
-                })
+                .doOnNext(view -> cameraWrapper.onEndRecord())
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .subscribe(recipient -> {
                     soundManager.playSound(SoundManager.END_RECORD, SoundManager.SOUND_LOW);
