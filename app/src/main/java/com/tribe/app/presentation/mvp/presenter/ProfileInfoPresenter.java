@@ -12,9 +12,9 @@ import com.tribe.app.domain.interactor.user.DoRegister;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.UpdateUser;
-import com.tribe.app.presentation.mvp.view.ProfileInfoView;
-import com.tribe.app.presentation.mvp.view.UpdateUserView;
-import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.mvp.view.ProfileInfoMVPView;
+import com.tribe.app.presentation.mvp.view.UpdateUserMVPView;
+import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
@@ -25,7 +25,7 @@ import javax.inject.Named;
 public class ProfileInfoPresenter extends UpdateUserPresenter {
 
     // VIEW ATTACHED
-    private ProfileInfoView profileInfoView;
+    private ProfileInfoMVPView profileInfoView;
 
     // USECASES
     private final JobManager jobManager;
@@ -54,31 +54,7 @@ public class ProfileInfoPresenter extends UpdateUserPresenter {
     }
 
     @Override
-    public void onCreate() {
-
-    }
-
-    @Override
-    public void onStart() {
-        // Unused
-    }
-
-    @Override
-    public void onResume() {
-        // Unused
-    }
-
-    @Override
-    public void onStop() {
-        // Unused
-    }
-
-    @Override
-    public void onPause() {
-    }
-
-    @Override
-    public void onDestroy() {
+    public void onViewDetached() {
         if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
         lookupUsername.unsubscribe();
         doRegister.unsubscribe();
@@ -88,8 +64,8 @@ public class ProfileInfoPresenter extends UpdateUserPresenter {
     }
 
     @Override
-    public void attachView(View v) {
-        profileInfoView = (ProfileInfoView) v;
+    public void onViewAttached(MVPView v) {
+        profileInfoView = (ProfileInfoMVPView) v;
     }
 
     public void loginFacebook() {
@@ -107,7 +83,7 @@ public class ProfileInfoPresenter extends UpdateUserPresenter {
     }
 
     @Override
-    protected UpdateUserView getUpdateUserView() {
+    protected UpdateUserMVPView getUpdateUserView() {
         return profileInfoView;
     }
 

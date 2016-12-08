@@ -7,7 +7,7 @@ import android.os.Bundle;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.DebugPresenter;
-import com.tribe.app.presentation.mvp.view.DebugView;
+import com.tribe.app.presentation.mvp.view.DebugMVPView;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
 
 import javax.inject.Inject;
@@ -19,7 +19,7 @@ import butterknife.Unbinder;
 /**
  * Created by tiago on 11/04/2016
  */
-public class DebugActivity extends BaseActivity implements DebugView {
+public class DebugActivity extends BaseActivity implements DebugMVPView {
 
     public static Intent getCallingIntent(Context context) {
         return new Intent(context, DebugActivity.class);
@@ -62,7 +62,7 @@ public class DebugActivity extends BaseActivity implements DebugView {
     }
 
     private void initPresenter() {
-        this.debugPresenter.attachView(this);
+        this.debugPresenter.onViewAttached(this);
     }
 
     @OnClick(R.id.viewClearTutorial)

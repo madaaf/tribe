@@ -58,6 +58,7 @@
             picture
             created_at
             tribe_save
+            push_notif
         }
     </string>
 

@@ -91,7 +91,7 @@ public class AndroidApplication extends Application {
         Realm.init(this);
         RealmConfiguration realmConfiguration = new RealmConfiguration
                 .Builder()
-                .schemaVersion(1)
+                .schemaVersion(2)
                 .migration((realm, oldVersion, newVersion) -> {
                     RealmSchema schema = realm.getSchema();
 
@@ -154,6 +154,13 @@ public class AndroidApplication extends Application {
                                 .removeField("admins")
                                 .renameField("admins_tmp", "admins");
 
+                        oldVersion++;
+                    }
+
+                    if (oldVersion == 1) {
+                        RealmObjectSchema userSchema = schema.get("UserRealm");
+
+                        userSchema.addField("push_notif", boolean.class);
                         oldVersion++;
                     }
                 })

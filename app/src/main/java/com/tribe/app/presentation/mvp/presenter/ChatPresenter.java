@@ -21,22 +21,16 @@ import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
-import com.tribe.app.domain.interactor.text.ConnectAndSubscribeMQTT;
 import com.tribe.app.domain.interactor.text.DeleteDiskConversation;
-import com.tribe.app.domain.interactor.text.DisconnectMQTT;
 import com.tribe.app.domain.interactor.text.DiskMarkMessageListAsRead;
 import com.tribe.app.domain.interactor.text.GetDiskChatMessageList;
 import com.tribe.app.domain.interactor.text.GetPendingMessageList;
-import com.tribe.app.domain.interactor.text.SubscribingMQTT;
-import com.tribe.app.domain.interactor.text.UnsubscribeMQTT;
 import com.tribe.app.domain.interactor.user.GetRecipientInfos;
-import com.tribe.app.presentation.mvp.view.MessageView;
-import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.mvp.view.MVPView;
+import com.tribe.app.presentation.mvp.view.MessageMVPView;
 import com.tribe.app.presentation.view.utils.MessageDownloadingStatus;
 import com.tribe.app.presentation.view.utils.MessageReceivingStatus;
 import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
-
-import org.eclipse.paho.client.mqttv3.IMqttToken;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,10 +48,6 @@ public class ChatPresenter implements Presenter {
 
     private final User currentUser;
     private final JobManager jobManager;
-    private final ConnectAndSubscribeMQTT connectAndSubscribeMQTT;
-    private final SubscribingMQTT subscribingMQTT;
-    private final DisconnectMQTT disconnectMQTT;
-    private final UnsubscribeMQTT unsubscribeMQTT;
     private final GetDiskChatMessageList diskGetChatMessages;
     private final DeleteDiskConversation deleteDiskConversation;
     private final DiskMarkMessageListAsRead diskMarkMessageListAsRead;
@@ -67,7 +57,7 @@ public class ChatPresenter implements Presenter {
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private DeleteMessageSubscriber deleteMessageSubscriber;
 
-    private MessageView messageView;
+    private MessageMVPView messageView;
 
     private String friendId;
 
@@ -78,17 +68,9 @@ public class ChatPresenter implements Presenter {
                          @Named("diskGetChatMessages") GetDiskChatMessageList diskGetChatMessages,
                          @Named("deleteDiskConversation") DeleteDiskConversation deleteDiskConversation,
                          @Named("diskMarkMessageListAsRead") DiskMarkMessageListAsRead diskMarkMessageListAsRead,
-                         @Named("connectAndSubscribe") ConnectAndSubscribeMQTT connectAndSubscribeMQTT,
-                         @Named("subscribing") SubscribingMQTT subscribingMQTT,
-                         @Named("disconnect") DisconnectMQTT disconnectMQTT,
-                         @Named("unsubscribe") UnsubscribeMQTT unsubscribeMQTT,
                          GetRecipientInfos getRecipientInfos) {
         this.currentUser = currentUser;
         this.jobManager = jobManager;
-        this.connectAndSubscribeMQTT = connectAndSubscribeMQTT;
-        this.subscribingMQTT = subscribingMQTT;
-        this.unsubscribeMQTT = unsubscribeMQTT;
-        this.disconnectMQTT = disconnectMQTT;
         this.diskGetChatMessages = diskGetChatMessages;
         this.deleteDiskConversation = deleteDiskConversation;
         this.diskMarkMessageListAsRead = diskMarkMessageListAsRead;
@@ -97,33 +79,7 @@ public class ChatPresenter implements Presenter {
     }
 
     @Override
-    public void onCreate() {
-    }
-
-    @Override
-    public void onStart() {
-    }
-
-    @Override
-    public void onResume() {
-        // Unused
-    }
-
-    @Override
-    public void onStop() {
-        //disconnectMQTT.execute(new DisconnectMQTTSubscriber());
-    }
-
-    @Override
-    public void onPause() {
-        // Unused
-    }
-
-    @Override
-    public void onDestroy() {
-//        connectAndSubscribeMQTT.unsubscribe();
-//        subscribingMQTT.unsubscribe();
-//        disconnectMQTT.unsubscribe();
+    public void onViewDetached() {
         if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
         diskGetChatMessages.unsubscribe();
         deleteDiskConversation.unsubscribe();
@@ -133,8 +89,8 @@ public class ChatPresenter implements Presenter {
     }
 
     @Override
-    public void attachView(View v) {
-        messageView = (MessageView) v;
+    public void onViewAttached(MVPView v) {
+        messageView = (MessageMVPView) v;
     }
 
     public void updateErrorMessages(String recipientId) {
@@ -230,8 +186,6 @@ public class ChatPresenter implements Presenter {
 
     public void subscribe(String id) {
         friendId = id;
-        connectAndSubscribeMQTT.setTopic("chats/" + id + "/#");
-        connectAndSubscribeMQTT.execute(new ConnectAndSubscribeMQTTSubscriber());
     }
 
     public void sendMessage(ChatMessage... messageList) {
@@ -260,57 +214,6 @@ public class ChatPresenter implements Presenter {
             diskMarkMessageListAsRead.setMessageList(onlyNonRead);
             diskMarkMessageListAsRead.execute(new DefaultSubscriber<>());
             jobManager.addJobInBackground(new MarkMessageListAsReadJob(recipient, onlyNonRead));
-        }
-    }
-
-    private final class ConnectAndSubscribeMQTTSubscriber extends DefaultSubscriber<IMqttToken> {
-
-        @Override
-        public void onCompleted() {
-            subscribingMQTT.setTopic("^chats/" + friendId + ".*");
-            subscribingMQTT.execute(new ListenSubscribingMQTTSubscriber());
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-
-        @Override
-        public void onNext(IMqttToken token) {
-        }
-    }
-
-    private final class ListenSubscribingMQTTSubscriber extends DefaultSubscriber<List<ChatMessage>> {
-
-        @Override
-        public void onCompleted() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-
-        @Override
-        public void onNext(List<com.tribe.app.domain.entity.ChatMessage> chatMessageList) {
-            messageView.renderMessageList(chatMessageList);
-        }
-    }
-
-    private final class DisconnectMQTTSubscriber extends DefaultSubscriber<IMqttToken> {
-
-        @Override
-        public void onCompleted() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-
-        @Override
-        public void onNext(IMqttToken token) {
         }
     }
 
@@ -345,7 +248,6 @@ public class ChatPresenter implements Presenter {
         @Override
         public void onNext(List<ChatMessage> chatMessagePendingList) {
             messageView.renderPendingMessages(chatMessagePendingList);
-            //sendMessage(chatMessageList.toArray(new ChatMessage[chatMessageList.size()]));
         }
     }
 

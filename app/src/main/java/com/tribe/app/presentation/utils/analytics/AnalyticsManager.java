@@ -7,11 +7,11 @@ import android.os.Bundle;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.internal.di.scope.AddressBook;
-import com.tribe.app.presentation.internal.di.scope.AudioDefault;
-import com.tribe.app.presentation.internal.di.scope.Filter;
-import com.tribe.app.presentation.internal.di.scope.LocationContext;
-import com.tribe.app.presentation.internal.di.scope.Preload;
+import com.tribe.app.presentation.utils.preferences.AddressBook;
+import com.tribe.app.presentation.utils.preferences.AudioDefault;
+import com.tribe.app.presentation.utils.preferences.Filter;
+import com.tribe.app.presentation.utils.preferences.LocationContext;
+import com.tribe.app.presentation.utils.preferences.Preload;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 
@@ -85,7 +85,7 @@ public class AnalyticsManager implements TagManager {
         }
         bundle.putBoolean(TagManagerConstants.CAMERA_ENABLED, PermissionUtils.hasPermissionsCamera(context));
         bundle.putBoolean(TagManagerConstants.MICROPHONE_ENABLED, PermissionUtils.hasPermissionsCamera(context));
-        bundle.putBoolean(TagManagerConstants.PUSH_ENABLED, true); // ALWAYS TRUE ON ANDROID
+        bundle.putBoolean(TagManagerConstants.PUSH_ENABLED, user.isPushNotif()); // ALWAYS TRUE ON ANDROID FOR PERMISSIONS
 
         if (user != null)
             bundle.putString(TagManagerConstants.USERNAME, user.getUsername());

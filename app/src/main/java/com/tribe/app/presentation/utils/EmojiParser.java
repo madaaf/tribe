@@ -36,6 +36,15 @@ public class EmojiParser {
         IEmojiMap.put(":clap:", "\uD83D\uDC4F");
         IEmojiMap.put(":lock:", "\uD83D\uDD12");
         IEmojiMap.put(":joy:", "\uD83D\uDE02");
+        IEmojiMap.put(":paperclip:", "\uD83D\uDCCE");
+        IEmojiMap.put(":closed_lock_with_key:", "\uD83D\uDD10");
+        IEmojiMap.put(":tada:", "\uD83C\uDF89");
+        IEmojiMap.put(":mag:", "\uD83D\uDD0D");
+        IEmojiMap.put(":link:", "\uD83D\uDD17");
+        IEmojiMap.put(":arrow_left:", "\u2B05");
+        IEmojiMap.put(":wave:", "\uD83D\uDC4B");
+        IEmojiMap.put(":heart:", "\u2764");
+        IEmojiMap.put(":broken_heart:", "\uD83D\uDC94");
     }
 
     /**

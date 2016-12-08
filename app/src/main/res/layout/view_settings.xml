@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.tribe.app.presentation.view.component.settings.SettingsView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.view.activity.SettingsActivity"
+    android:background="@null"
+    >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@color/grey.background.profile_info">
+
+            <com.tribe.app.presentation.view.component.ActionView
+                android:id="@+id/viewActionShareProfile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                app:actionType="sharing"
+                />
+
+            <include layout="@layout/view_separator_no_bg" />
+
+            <com.tribe.app.presentation.view.component.ActionView
+                android:id="@+id/viewActionProfile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                app:actionType="hierarchy"
+                app:actionTitle="@string/settings_profile_title"
+                app:actionBody="@string/settings_profile_subtitle"
+                />
+
+            <include layout="@layout/view_separator_no_bg" />
+
+            <com.tribe.app.presentation.view.component.ActionView
+                android:id="@+id/viewActionPoints"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                app:actionBody="@string/settings_score_subtitle"
+                app:actionType="points"
+                />
+
+            <include layout="@layout/view_separator_no_bg" />
+
+            <com.tribe.app.presentation.view.component.ActionView
+                android:id="@+id/viewActionFilters"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                app:actionType="hierarchy"
+                app:actionTitle="@string/settings_filters_and_themes_title"
+                app:actionBody="@string/settings_filters_and_themes_subtitle"
+                />
+
+            <include layout="@layout/view_separator_no_bg" />
+
+            <com.tribe.app.presentation.view.component.ActionView
+                android:id="@+id/viewActionParameters"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                app:actionType="hierarchy"
+                app:actionTitle="@string/settings_parameters_title"
+                app:actionBody="@string/settings_parameters_subtitle"
+                />
+
+            <include layout="@layout/view_separator_no_bg" />
+
+            <!--<com.tribe.app.presentation.view.component.ActionView
+                android:id="@+id/viewActionPermissions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                app:actionType="hierarchy"
+                app:actionTitle="@string/settings_permissions_title"
+                app:actionBody="@string/settings_permissions_subtitle"
+                />
+
+            <include layout="@layout/view_separator_no_bg" />-->
+
+            <!--<com.tribe.app.presentation.view.component.ActionView
+                android:id="@+id/viewActionHideBlock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                app:actionType="sharing"
+                app:actionTitle="@string/settings_cleanmygrid_title"
+                app:actionBody="@string/settings_cleanmygrid_subtitle"
+                />
+
+            <include layout="@layout/view_separator_no_bg" />-->
+
+            <com.tribe.app.presentation.view.component.ActionView
+                android:id="@+id/viewActionContact"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                app:actionType="regular"
+                app:actionTitle="@string/settings_message_title"
+                app:actionBody="@string/settings_message_subtitle"
+                />
+
+            <include layout="@layout/view_separator_no_bg" />
+
+            <com.tribe.app.presentation.view.component.ActionView
+                android:id="@+id/viewActionFollow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                app:actionType="regular"
+                app:actionTitle="@string/settings_follow_title"
+                app:actionBody="@string/settings_follow_subtitle"
+                />
+
+            <include layout="@layout/view_separator_no_bg" />
+
+            <com.tribe.app.presentation.view.component.ActionView
+                android:id="@+id/viewActionBlockedHidden"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                app:actionType="hierarchy"
+                app:actionTitle="@string/settings_hidden_blocked_title"
+                app:actionBody="@string/settings_hidden_blocked_subtitle"
+                />
+
+            <include layout="@layout/view_separator_no_bg" />
+
+            <com.tribe.app.presentation.view.component.ActionView
+                android:id="@+id/viewActionRateUs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                app:actionType="regular"
+                app:actionTitle="@string/settings_rate_title"
+                app:actionBody="@string/settings_rate_subtitle"
+                />
+
+            <include layout="@layout/view_separator_no_bg" />
+
+            <com.tribe.app.presentation.view.component.ActionView
+                android:id="@+id/viewActionLogout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                app:actionType="critical"
+                app:actionTitle="@string/settings_logout_title"
+                app:actionBody="@string/settings_logout_subtitle"
+                />
+
+            <include layout="@layout/view_separator_simple" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/vertical_margin"
+                android:layout_marginBottom="@dimen/vertical_margin"
+                android:src="@drawable/picto_tribe_logo_black"
+                android:alpha="0.4"
+                />
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:id="@+id/txtVersion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/vertical_margin"
+                android:gravity="center"
+                android:clickable="true"
+                style="@style/Body.One.Black40"
+                />
+        </LinearLayout>
+    </ScrollView>
+</com.tribe.app.presentation.view.component.settings.SettingsView>

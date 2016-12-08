@@ -8,8 +8,8 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.user.GetGroupInfos;
-import com.tribe.app.presentation.mvp.view.AccessView;
-import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.mvp.view.AccessMVPView;
+import com.tribe.app.presentation.mvp.view.MVPView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +24,7 @@ import rx.subscriptions.CompositeSubscription;
 public class AccessPresenter implements Presenter {
 
     // VIEW ATTACHED
-    private AccessView accessView;
+    private AccessMVPView accessView;
 
     // USECASES
     private JobManager jobManager;
@@ -38,45 +38,20 @@ public class AccessPresenter implements Presenter {
     @Inject
     public AccessPresenter(JobManager jobManager, @Named("synchroContactList") UseCase synchroContactList,
                            GetGroupInfos getGroupInfos) {
-        super();
         this.jobManager = jobManager;
         this.synchroContactList = synchroContactList;
         this.getGroupInfos = getGroupInfos;
     }
 
     @Override
-    public void onCreate() {
-
-    }
-
-    @Override
-    public void onStart() {
-        // Unused
-    }
-
-    @Override
-    public void onResume() {
-        // Unused
-    }
-
-    @Override
-    public void onStop() {
-        // Unused
-    }
-
-    @Override
-    public void onPause() {
-    }
-
-    @Override
-    public void onDestroy() {
+    public void onViewDetached() {
         if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
         lookupContactsSubscriber.unsubscribe();
     }
 
     @Override
-    public void attachView(View v) {
-        accessView = (AccessView) v;
+    public void onViewAttached(MVPView v) {
+        accessView = (AccessMVPView) v;
     }
 
     public void lookupContacts() {

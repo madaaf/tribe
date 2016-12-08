@@ -11,7 +11,7 @@ import com.tribe.app.domain.interactor.tribe.ConfirmTribe;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
-import com.tribe.app.presentation.mvp.view.SendTribeView;
+import com.tribe.app.presentation.mvp.view.SendTribeMVPView;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 
@@ -40,14 +40,10 @@ public abstract class SendTribePresenter implements Presenter {
     }
 
     @Override
-    public void onPause() {
+    public void onViewDetached() {
         diskDeleteTribeUsecase.unsubscribe();
         diskSaveTribeUsecase.unsubscribe();
-    }
-
-    @Override
-    public void onDestroy() {
-        onPause();
+        diskConfirmTribeUsecase.unsubscribe();
     }
 
     public TribeMessage createTribe(User user, Recipient recipient, @CameraWrapper.TribeMode String tribeMode) {
@@ -112,7 +108,7 @@ public abstract class SendTribePresenter implements Presenter {
         }
     }
 
-    protected abstract SendTribeView getView();
+    protected abstract SendTribeMVPView getView();
 
     protected final class TribeCreateSubscriber extends DefaultSubscriber<TribeMessage> {
 

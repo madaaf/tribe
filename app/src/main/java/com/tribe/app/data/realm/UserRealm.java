@@ -24,6 +24,7 @@ public class UserRealm extends RealmObject {
     public static final String INVISIBLE_MODE = "invisible_mode";
     public static final String TRIBE_SAVE = "tribe_save";
     public static final String UPDATED_AT = "updated_at";
+    public static final String PUSH_NOTIF = "push_notif";
 
     @PrimaryKey
     private String id;
@@ -41,6 +42,7 @@ public class UserRealm extends RealmObject {
     private RealmList<FriendshipRealm> friendships;
     private RealmList<MembershipRealm> memberships;
     private boolean invisible_mode;
+    private boolean push_notif = true;
 
     @Ignore
     private RealmList<GroupRealm> groups;
@@ -168,5 +170,13 @@ public class UserRealm extends RealmObject {
 
     public void setGroups(RealmList<GroupRealm> groups) {
         this.groups = groups;
+    }
+
+    public void setPushNotif(boolean pushNotif) {
+        this.push_notif = pushNotif;
+    }
+
+    public boolean isPushNotif() {
+        return push_notif;
     }
 }

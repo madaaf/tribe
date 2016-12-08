@@ -52,8 +52,8 @@ import com.tribe.app.domain.interactor.user.SynchroContactList;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.UIThread;
-import com.tribe.app.presentation.internal.di.scope.Theme;
-import com.tribe.app.presentation.internal.di.scope.TutorialState;
+import com.tribe.app.presentation.utils.preferences.Theme;
+import com.tribe.app.presentation.utils.preferences.TutorialState;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.FileUtils;
@@ -61,6 +61,7 @@ import com.tribe.app.presentation.utils.analytics.AnalyticsManager;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
+import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
@@ -324,8 +325,8 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    SoundManager provideSoundManager(Context context) {
-        return new SoundManager(context);
+    SoundManager provideSoundManager(Context context, @UISounds Preference<Boolean> uiSounds) {
+        return new SoundManager(context, uiSounds);
     }
 
     @Provides

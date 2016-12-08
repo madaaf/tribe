@@ -148,14 +148,14 @@ public class TopBarContainer extends FrameLayout {
         subscriptions.add(
                 topBarView.onClickRefresh()
                     .subscribe(aVoid -> {
-                        setRefreshing(true);
+                        setRefreshing(true, false);
                     })
         );
 
         subscriptions.add(
                 topBarView.onErrorDone()
                         .subscribe(aVoid -> {
-                            setRefreshing(false);
+                            setRefreshing(false, true);
                         })
         );
 
@@ -186,13 +186,13 @@ public class TopBarContainer extends FrameLayout {
 
     public boolean isRefreshing() { return isRefreshing; }
 
-    public void setRefreshing(boolean isRefreshing) {
+    public void setRefreshing(boolean isRefreshing, boolean error) {
         this.isRefreshing = isRefreshing;
 
         if (!isRefreshing) {
             beingDragged = false;
             topBarView.reset();
-            soundManager.playSound(SoundManager.END_REFRESH, SoundManager.SOUND_LOW);
+            soundManager.playSound((error ? SoundManager.ERROR_REFRESH : SoundManager.END_REFRESH), SoundManager.SOUND_LOW);
         } else {
             refresh();
         }

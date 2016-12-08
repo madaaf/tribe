@@ -7,8 +7,7 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.DiskUpdateFriendship;
 import com.tribe.app.domain.interactor.user.GetBlockedFriendshipList;
-import com.tribe.app.presentation.mvp.view.BlockView;
-import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.mvp.view.MVPView;
 
 import java.util.List;
 
@@ -19,7 +18,7 @@ import javax.inject.Inject;
  */
 public class BlockPresenter implements Presenter {
 
-    private BlockView blockView;
+    //private BlockMVPView blockView;
 
     private final DiskUpdateFriendship diskUpdateFriendship;
     private final GetBlockedFriendshipList getBlockedFriendshipList;
@@ -37,38 +36,14 @@ public class BlockPresenter implements Presenter {
     }
 
     @Override
-    public void onStart() {
-
-    }
-
-    @Override
-    public void onResume() {
-
-    }
-
-    @Override
-    public void onStop() {
-
-    }
-
-    @Override
-    public void onPause() {
-
-    }
-
-    @Override
-    public void onDestroy() {
+    public void onViewDetached() {
         diskUpdateFriendship.unsubscribe();
         getBlockedFriendshipList.unsubscribe();
     }
 
     @Override
-    public void attachView(View v) {
-        blockView = (BlockView) v;
-    }
-
-    @Override
-    public void onCreate() {
+    public void onViewAttached(MVPView v) {
+        //blockView = (BlockMVPView) v;
         loadBlockedFriendshipList();
     }
 
@@ -95,7 +70,7 @@ public class BlockPresenter implements Presenter {
 
         @Override
         public void onNext(List<Friendship> friendshipList) {
-            blockView.renderBlockedFriendshipList(friendshipList);
+            //blockView.renderBlockedFriendshipList(friendshipList);
         }
     }
 
@@ -109,7 +84,7 @@ public class BlockPresenter implements Presenter {
 
         @Override
         public void onNext(Friendship friendship) {
-            blockView.friendshipUpdated(friendship);
+            //blockView.friendshipUpdated(friendship);
         }
     }
 }

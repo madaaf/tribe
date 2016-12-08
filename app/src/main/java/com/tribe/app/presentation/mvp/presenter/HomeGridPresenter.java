@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.util.Pair;
+
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
 import com.tribe.app.data.network.job.UpdateFriendshipJob;
@@ -8,6 +10,7 @@ import com.tribe.app.data.network.job.UpdateTribeDownloadedJob;
 import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
@@ -20,7 +23,6 @@ import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
 import com.tribe.app.domain.interactor.tribe.ConfirmTribe;
 import com.tribe.app.domain.interactor.tribe.DeleteTribe;
-import com.tribe.app.domain.interactor.tribe.DiskMarkTribeListAsRead;
 import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.domain.interactor.user.CreateMembership;
 import com.tribe.app.domain.interactor.user.DiskUpdateFriendship;
@@ -31,12 +33,16 @@ import com.tribe.app.domain.interactor.user.LeaveGroup;
 import com.tribe.app.domain.interactor.user.RemoveGroup;
 import com.tribe.app.domain.interactor.user.SendOnlineNotification;
 import com.tribe.app.domain.interactor.user.SendToken;
-import com.tribe.app.presentation.mvp.view.HomeGridView;
-import com.tribe.app.presentation.mvp.view.SendTribeView;
-import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.domain.interactor.user.UpdateUser;
+import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
+import com.tribe.app.presentation.mvp.view.MVPView;
+import com.tribe.app.presentation.mvp.view.SendTribeMVPView;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
+import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -45,13 +51,12 @@ import javax.inject.Named;
 public class HomeGridPresenter extends SendTribePresenter {
 
     // VIEW ATTACHED
-    private HomeGridView homeGridView;
+    private HomeGridMVPView homeGridView;
 
     // USECASES
     private GetDiskUserInfos diskUserInfosUsecase;
     private UseCaseDisk diskGetMessageReceivedListUsecase;
     private UseCaseDisk diskGetPendingTribeListUsecase;
-    private DiskMarkTribeListAsRead diskMarkTribeListAsRead;
     private DiskUpdateFriendship diskUpdateFriendship;
     private LeaveGroup leaveGroup;
     private RemoveGroup removeGroup;
@@ -63,6 +68,8 @@ public class HomeGridPresenter extends SendTribePresenter {
     private UseCase cloudUserInfos;
     private UseCase cloudGetMessages;
     private SendOnlineNotification sendOnlineNotification;
+    private UpdateUser updateUser;
+    private RxFacebook rxFacebook;
 
     // SUBSCRIBERS
     private UpdateTribesReceivedToNotSeenSubscriber updateTribesReceivedToNotSeenSubscriber;
@@ -82,7 +89,6 @@ public class HomeGridPresenter extends SendTribePresenter {
                              @Named("diskConfirmTribe") ConfirmTribe confirmTribe,
                              @Named("diskGetReceivedMessages") UseCaseDisk diskGetReceivedMessageList,
                              @Named("diskGetPendingTribes") UseCaseDisk diskGetPendingTribeList,
-                             @Named("diskMarkTribeListAsRead") DiskMarkTribeListAsRead diskMarkTribeListAsRead,
                              LeaveGroup leaveGroup,
                              RemoveGroup removeGroup,
                              DiskUpdateFriendship diskUpdateFriendship,
@@ -93,12 +99,13 @@ public class HomeGridPresenter extends SendTribePresenter {
                              CreateMembership createMembership,
                              @Named("cloudUserInfos") UseCase cloudUserInfos,
                              @Named("cloudGetMessages") UseCase cloudGetMessages,
-                             SendOnlineNotification sendOnlineNotification) {
+                             SendOnlineNotification sendOnlineNotification,
+                             UpdateUser updateUser,
+                             RxFacebook rxFacebook) {
         super(jobManager, jobManagerDownload, diskSaveTribe, diskDeleteTribe, confirmTribe);
         this.diskUserInfosUsecase = diskUserInfos;
         this.diskGetMessageReceivedListUsecase = diskGetReceivedMessageList;
         this.diskGetPendingTribeListUsecase = diskGetPendingTribeList;
-        this.diskMarkTribeListAsRead = diskMarkTribeListAsRead;
         this.leaveGroup = leaveGroup;
         this.removeGroup = removeGroup;
         this.diskUpdateFriendship = diskUpdateFriendship;
@@ -110,21 +117,10 @@ public class HomeGridPresenter extends SendTribePresenter {
         this.cloudUserInfos = cloudUserInfos;
         this.cloudGetMessages = cloudGetMessages;
         this.sendOnlineNotification = sendOnlineNotification;
+        this.updateUser = updateUser;
+        this.rxFacebook = rxFacebook;
     }
 
-    @Override
-    public void onCreate() {
-        jobManager.addJobInBackground(new UpdateTribeDownloadedJob());
-        jobManager.addJobInBackground(new UpdateTribesErrorStatusJob());
-        onResume();
-    }
-
-    @Override
-    public void onStart() {
-
-    }
-
-    @Override
     public void onResume() {
         reload();
         loadTribeList();
@@ -132,19 +128,12 @@ public class HomeGridPresenter extends SendTribePresenter {
     }
 
     @Override
-    public void onStop() {
-        // Unused
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
+    public void onViewDetached() {
         sendTokenUseCase.unsubscribe();
         diskDeleteTribeUsecase.unsubscribe();
         diskSaveTribeUsecase.unsubscribe();
         diskGetMessageReceivedListUsecase.unsubscribe();
         diskGetPendingTribeListUsecase.unsubscribe();
-        diskMarkTribeListAsRead.unsubscribe();
         leaveGroup.unsubscribe();
         removeGroup.unsubscribe();
         diskUpdateTribesReceivedToNotSeen.unsubscribe();
@@ -153,17 +142,15 @@ public class HomeGridPresenter extends SendTribePresenter {
         cloudGetMessages.unsubscribe();
         cloudUserInfos.unsubscribe();
         sendOnlineNotification.unsubscribe();
+        updateUser.unsubscribe();
+        super.onViewDetached();
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        onPause();
-    }
-
-    @Override
-    public void attachView(View v) {
-        homeGridView = (HomeGridView) v;
+    public void onViewAttached(MVPView v) {
+        homeGridView = (HomeGridMVPView) v;
+        jobManager.addJobInBackground(new UpdateTribeDownloadedJob());
+        jobManager.addJobInBackground(new UpdateTribesErrorStatusJob());
     }
 
     public void reload() {
@@ -278,7 +265,7 @@ public class HomeGridPresenter extends SendTribePresenter {
     }
 
     @Override
-    protected SendTribeView getView() {
+    protected SendTribeMVPView getView() {
         return homeGridView;
     }
 
@@ -390,13 +377,12 @@ public class HomeGridPresenter extends SendTribePresenter {
         public void onCompleted() {}
 
         @Override
-        public void onError(Throwable e) {
-
-        }
+        public void onError(Throwable e) {}
 
         @Override
         public void onNext(Friendship friendship) {
             homeGridView.onFriendshipUpdated(friendship);
+            loadFriendList(null);
         }
     }
 
@@ -475,6 +461,39 @@ public class HomeGridPresenter extends SendTribePresenter {
 
         @Override
         public void onNext(Installation installation) {
+        }
+    }
+
+    public void updateUserFacebook(String fbid) {
+        List<Pair<String, String>> values = new ArrayList<>();
+        values.add(new Pair<>(UserRealm.FBID, String.valueOf(fbid)));
+        updateUser.prepare(values);
+        updateUser.execute(new DefaultSubscriber() {
+            @Override
+            public void onError(Throwable e) {
+                super.onError(e);
+                System.out.println("ON ERROR" + e.getMessage());
+            }
+
+            @Override
+            public void onNext(Object o) {
+                super.onNext(o);
+                System.out.println("ON NEXT");
+            }
+        });
+    }
+
+    public void loginFacebook() {
+        if (!FacebookUtils.isLoggedIn()) {
+            rxFacebook.requestLogin().subscribe(loginResult -> {
+                if (FacebookUtils.isLoggedIn()) {
+                    homeGridView.successFacebookLogin();
+                } else {
+                    homeGridView.errorFacebookLogin();
+                }
+            });
+        } else {
+            homeGridView.successFacebookLogin();
         }
     }
 }

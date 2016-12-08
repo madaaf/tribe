@@ -25,8 +25,8 @@ import com.tribe.app.domain.interactor.user.RemoveAdminsFromGroup;
 import com.tribe.app.domain.interactor.user.RemoveMembersFromGroup;
 import com.tribe.app.domain.interactor.user.UpdateGroup;
 import com.tribe.app.domain.interactor.user.UpdateMembership;
-import com.tribe.app.presentation.mvp.view.GroupView;
-import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.mvp.view.GroupMVPView;
+import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 
@@ -54,7 +54,7 @@ public class GroupPresenter implements Presenter {
     private final AddAdminsToGroup addAdminsToGroup;
     private final RemoveAdminsFromGroup removeAdminsFromGroup;
 
-    private GroupView groupView;
+    private GroupMVPView groupView;
 
     @Inject
     GroupPresenter(JobManager jobManager,
@@ -86,27 +86,7 @@ public class GroupPresenter implements Presenter {
     }
 
     @Override
-    public void onStart() {
-
-    }
-
-    @Override
-    public void onResume() {
-
-    }
-
-    @Override
-    public void onStop() {
-
-    }
-
-    @Override
-    public void onPause() {
-
-    }
-
-    @Override
-    public void onDestroy() {
+    public void onViewDetached() {
         getGroupMembers.unsubscribe();
         createGroup.unsubscribe();
         updateGroup.unsubscribe();
@@ -121,13 +101,8 @@ public class GroupPresenter implements Presenter {
     }
 
     @Override
-    public void attachView(View v) {
-        groupView = (GroupView) v;
-    }
-
-    @Override
-    public void onCreate() {
-
+    public void onViewAttached(MVPView v) {
+        groupView = (GroupMVPView) v;
     }
 
     public void createFriendship(String userId) {

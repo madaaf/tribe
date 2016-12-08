@@ -8,7 +8,7 @@ import android.view.Surface;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.internal.di.scope.SpeedPlayback;
+import com.tribe.app.presentation.utils.preferences.SpeedPlayback;
 import com.tribe.app.presentation.utils.StringUtils;
 
 import java.io.FileNotFoundException;

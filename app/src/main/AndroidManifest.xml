@@ -173,13 +173,6 @@
             android:theme="@style/AppTheme.Transparent.Dummy"
             />
 
-        <activity android:name=".presentation.view.activity.SettingActivity"
-            android:screenOrientation="portrait"
-            android:configChanges="orientation|screenSize"
-            android:windowSoftInputMode="adjustPan"
-            android:theme="@style/AppTheme.FullScreen"
-            />
-
         <activity android:name=".presentation.view.activity.BaseActionActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.FullScreen"
@@ -196,6 +189,11 @@
             />
 
         <activity android:name=".presentation.view.activity.SearchUserActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.FullScreen"
+            />
+
+        <activity android:name=".presentation.view.activity.SettingsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.FullScreen"
             />

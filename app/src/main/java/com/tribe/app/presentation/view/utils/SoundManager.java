@@ -5,6 +5,7 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 
 import java.util.HashMap;
@@ -35,6 +36,7 @@ public class SoundManager {
 
     // VARIABLES
     private Context context;
+    private Preference<Boolean> uiSounds;
     private SoundPool soundPool;
     private HashMap<Integer, Integer> soundPoolMap;
     private AudioManager audioManager;
@@ -42,8 +44,9 @@ public class SoundManager {
     private Vector<Integer> killSoundQueue = new Vector<>();
 
     @Inject
-    public SoundManager(Context context) {
+    public SoundManager(Context context, Preference<Boolean> uiSounds) {
         this.context = context;
+        this.uiSounds = uiSounds;
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             soundPool = (new SoundPool.Builder()).setMaxStreams(20)
@@ -81,7 +84,7 @@ public class SoundManager {
     }
 
     public void playSound(int index, float volumeRate) {
-        if (availaibleSounds.contains(index)) {
+        if (availaibleSounds.contains(index) && uiSounds.get()) {
             int streamVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
             float finalVol = volumeRate < streamVolume ? volumeRate : streamVolume;
             int soundId = soundPool.play(soundPoolMap.get(index), finalVol, finalVol, 1, 0, 1f);

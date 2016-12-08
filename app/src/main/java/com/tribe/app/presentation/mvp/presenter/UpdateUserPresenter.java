@@ -7,7 +7,7 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.UpdateUser;
-import com.tribe.app.presentation.mvp.view.UpdateUserView;
+import com.tribe.app.presentation.mvp.view.UpdateUserMVPView;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
@@ -37,7 +37,7 @@ public abstract class UpdateUserPresenter implements Presenter {
     }
 
     @Override
-    public void onDestroy() {
+    public void onViewDetached() {
         updateUser.unsubscribe();
         lookupUsername.unsubscribe();
     }
@@ -53,6 +53,8 @@ public abstract class UpdateUserPresenter implements Presenter {
             values.add(new Pair<>(UserRealm.PROFILE_PICTURE, pictureUri));
         values.add(new Pair<>(UserRealm.FBID, fbid));
 
+        getUpdateUserView().showLoading();
+
         updateUserSubscriber = new UpdateUserSubscriber();
         updateUser.prepare(values);
         updateUser.execute(new UpdateUserSubscriber());
@@ -61,6 +63,13 @@ public abstract class UpdateUserPresenter implements Presenter {
     public void updateUserTribeSave(boolean tribeSave) {
         List<Pair<String, String>> values = new ArrayList<>();
         values.add(new Pair<>(UserRealm.TRIBE_SAVE, String.valueOf(tribeSave)));
+        updateUser.prepare(values);
+        updateUser.execute(new UpdateUserSubscriber());
+    }
+
+    public void updateUserNotifications(boolean notifications) {
+        List<Pair<String, String>> values = new ArrayList<>();
+        values.add(new Pair<>(UserRealm.PUSH_NOTIF, String.valueOf(notifications)));
         updateUser.prepare(values);
         updateUser.execute(new UpdateUserSubscriber());
     }
@@ -102,7 +111,7 @@ public abstract class UpdateUserPresenter implements Presenter {
         lookupUsername.execute(lookupUsernameSubscriber);
     }
 
-    protected abstract UpdateUserView getUpdateUserView();
+    protected abstract UpdateUserMVPView getUpdateUserView();
 
     protected final class UpdateUserSubscriber extends DefaultSubscriber<User> {
 
@@ -119,6 +128,7 @@ public abstract class UpdateUserPresenter implements Presenter {
 
         @Override
         public void onNext(User user) {
+            getUpdateUserView().hideLoading();
             getUpdateUserView().successUpdateUser(user);
         }
     }

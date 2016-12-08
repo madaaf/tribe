@@ -4,7 +4,7 @@
     <integer name="time_record">15000</integer>
     <integer name="time_synchro">3000</integer>
     <integer name="time_code_countdown">60000</integer>
-    <integer name="long_anim">500</integer>
-    <integer name="medium_anim">400</integer>
+    <integer name="long_anim">400</integer>
+    <integer name="medium_anim">300</integer>
     <integer name="fast_anim">250</integer>
 </resources>

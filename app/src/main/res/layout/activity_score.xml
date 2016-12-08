@@ -3,9 +3,41 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="@drawable/shape_rect_white_rounded_top"
     android:orientation="vertical"
     >
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_bar_height_small"
+        >
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/score_title"
+            android:singleLine="true"
+            style="@style/Title.2.Black"
+            />
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
+            android:layout_gravity="left|center_vertical"
+            android:src="@drawable/picto_back"
+            android:scaleType="centerInside"
+            android:background="@drawable/selectable_button_oval"
+            />
+
+    </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_size"
+        android:background="@color/grey.light"
+        />
     
     <RelativeLayout
         android:layout_width="match_parent"
@@ -57,18 +89,6 @@
                 style="@style/Points.Reg.Yellow"
                 />
         </LinearLayout>
-
-        <ImageView
-            android:id="@+id/btnClose"
-            android:layout_width="@dimen/button_size"
-            android:layout_height="@dimen/button_size"
-            android:src="@drawable/picto_exit"
-            android:scaleType="centerInside"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:background="@drawable/selectable_button_oval"
-            />
-
     </RelativeLayout>
 
     <View
@@ -150,13 +170,6 @@
                 android:layout_gravity="center_vertical"
                 android:layout_margin="10dp"
                 android:scaleType="centerInside"
-                />
-
-            <View
-                android:layout_width="@dimen/divider_size"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="50dp"
-                android:background="@color/grey.light"
                 />
 
             <com.tribe.app.presentation.view.widget.TextViewFont

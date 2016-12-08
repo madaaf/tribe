@@ -37,6 +37,8 @@ public class BlockedFriendAdapter extends RecyclerView.Adapter {
         items = new ArrayList<>();
         itemsFiltered = new ArrayList<>();
 
+        filter = new BlockedFriendsFilter(items, this);
+
         setHasStableIds(true);
     }
 
@@ -99,8 +101,10 @@ public class BlockedFriendAdapter extends RecyclerView.Adapter {
 
     public void filterList(String text) {
         if (!StringUtils.isEmpty(text)) {
+            hasFilter = true;
             filter.filter(text);
         } else {
+            hasFilter = false;
             this.itemsFiltered.clear();
             this.itemsFiltered.addAll(this.items);
             notifyDataSetChanged();

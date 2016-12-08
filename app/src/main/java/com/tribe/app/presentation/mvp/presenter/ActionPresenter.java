@@ -2,7 +2,7 @@ package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.UpdateScoreJob;
-import com.tribe.app.presentation.mvp.view.View;
+import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 
 import javax.inject.Inject;
@@ -17,31 +17,12 @@ public class ActionPresenter implements Presenter {
     }
 
     @Override
-    public void onCreate() {
+    public void onViewDetached() {
 
     }
 
     @Override
-    public void onStart() {
-        // Unused
-    }
-
-    @Override
-    public void onResume() {
-        // Unused
-    }
-
-    @Override
-    public void onStop() {
-        // Unused
-    }
-
-    @Override
-    public void onPause() {
-    }
-
-    @Override
-    public void onDestroy() {
+    public void onViewAttached(MVPView v) {
 
     }
 
@@ -55,10 +36,5 @@ public class ActionPresenter implements Presenter {
 
     public void updateScoreRating() {
         jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.RATE_APP, 1));
-    }
-
-    @Override
-    public void attachView(View v) {
-
     }
 }

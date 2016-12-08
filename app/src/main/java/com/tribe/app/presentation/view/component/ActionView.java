@@ -33,7 +33,7 @@ import rx.subjects.PublishSubject;
  */
 public class ActionView extends FrameLayout {
 
-    @IntDef({ HIERARCHY, HIERARCHY_WITH_IMAGE, SHARING, TOGGLE, CRITICAL, POINTS })
+    @IntDef({ HIERARCHY, HIERARCHY_WITH_IMAGE, SHARING, TOGGLE, CRITICAL, POINTS, REGULAR })
     public @interface ActionViewType {
     }
 
@@ -43,6 +43,7 @@ public class ActionView extends FrameLayout {
     public static final int TOGGLE = 3;
     public static final int CRITICAL = 4;
     public static final int POINTS = 5;
+    public static final int REGULAR = 6;
 
     @Inject
     ScreenUtils screenUtils;
@@ -109,6 +110,8 @@ public class ActionView extends FrameLayout {
             layout = R.layout.view_action_critical;
         } else if (type == POINTS) {
             layout = R.layout.view_action_points;
+        } else if (type == REGULAR) {
+            layout = R.layout.view_action_regular;
         }
 
         LayoutInflater.from(getContext()).inflate(layout, this);
@@ -127,7 +130,10 @@ public class ActionView extends FrameLayout {
         a.recycle();
 
         int paddingStart = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
-        int paddingEnd = getResources().getDimensionPixelSize(R.dimen.horizontal_margin);
+        int paddingEnd =
+                type == TOGGLE ?
+                        getResources().getDimensionPixelSize(R.dimen.horizontal_margin_smaller)
+                        : getResources().getDimensionPixelSize(R.dimen.horizontal_margin);
         setPadding(paddingStart, paddingStart, paddingEnd, paddingStart);
 
         setClickable(true);

@@ -77,8 +77,8 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="5dp"
+        android:layout_height="@dimen/divider_size"
         android:layout_marginTop="@dimen/top_bar_height_small"
-        android:background="@drawable/shadow_bottom"
+        android:background="@color/grey.light"
         />
 </FrameLayout>

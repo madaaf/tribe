@@ -12,7 +12,7 @@ import android.util.Log;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.internal.di.scope.Filter;
+import com.tribe.app.presentation.utils.preferences.Filter;
 import com.tribe.app.presentation.view.camera.gles.GLES20ConfigChooser;
 import com.tribe.app.presentation.view.camera.gles.GLES20ContextFactory;
 import com.tribe.app.presentation.view.camera.gles.GlImageBitmapTexture;

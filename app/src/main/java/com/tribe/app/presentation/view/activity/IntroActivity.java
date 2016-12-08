@@ -18,8 +18,8 @@ import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
-import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
-import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
+import com.tribe.app.presentation.utils.preferences.LastMessageRequest;
+import com.tribe.app.presentation.utils.preferences.LastUserRequest;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -172,7 +172,7 @@ public class IntroActivity extends BaseActivity {
     }
 
     /**
-     * View Initialization methods
+     * MVPView Initialization methods
      */
 
     private void initUi() {

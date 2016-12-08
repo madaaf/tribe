@@ -28,6 +28,7 @@ public class User implements Serializable {
     private List<Recipient> friendshipList;
     private String fbid;
     private boolean invisible_mode;
+    private boolean push_notif;
 
     public User(String id) {
         this.id = id;
@@ -157,6 +158,14 @@ public class User implements Serializable {
         this.invisible_mode = invisibleMode;
     }
 
+    public void setPushNotif(boolean pushNotif) {
+        this.push_notif = pushNotif;
+    }
+
+    public boolean isPushNotif() {
+        return push_notif;
+    }
+
     public List<Recipient> getFriendshipList() {
         friendshipList = new ArrayList<>();
 
@@ -202,6 +211,7 @@ public class User implements Serializable {
             setFbid(user.getFbid());
             setInvisibleMode(user.isInvisibleMode());
             setTribeSave(user.isTribeSave());
+            setPushNotif(user.isPushNotif());
             if (user.getLocation() != null) setLocation(user.getLocation());
             if (user.getMembershipList() != null && user.getMembershipList().size() > 0) setMembershipList(user.getMembershipList());
             if (user.getFriendships() != null && user.getFriendshipList().size() > 0) setFriendships(user.getFriendships());
@@ -219,6 +229,7 @@ public class User implements Serializable {
         setPhone(null);
         setFbid(null);
         setInvisibleMode(false);
+        setPushNotif(false);
         setTribeSave(false);
         setLocation(null);
         setMembershipList(null);

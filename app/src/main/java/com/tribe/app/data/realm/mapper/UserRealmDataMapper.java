@@ -50,6 +50,7 @@ public class UserRealmDataMapper {
             user.setFbid(userRealm.getFbid());
             if (userRealm.getLocation() != null) user.setLocation(locationRealmDataMapper.transform(userRealm.getLocation()));
             user.setTribeSave(userRealm.isTribeSave());
+            user.setPushNotif(userRealm.isPushNotif());
             if (shouldTransformFriendships) {
                 if (userRealm.getMemberships() != null)
                     user.setMembershipList(membershipRealmDataMapper.transform(userRealm.getMemberships()));
@@ -103,6 +104,7 @@ public class UserRealmDataMapper {
             userRealm.setInvisibleMode(user.isInvisibleMode());
             userRealm.setFbid(user.getFbid());
             userRealm.setPhone(user.getPhone());
+            userRealm.setPushNotif(user.isPushNotif());
             if (user.getLocation() != null) userRealm.setLocation(locationRealmDataMapper.transform(user.getLocation()));
             userRealm.setTribeSave(user.isTribeSave());
             if (shouldTransformFriendships) {

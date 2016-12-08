@@ -63,6 +63,7 @@ public class UserCacheImpl implements UserCache {
                 userDB.setFbid(userRealm.getFbid());
                 userDB.setTribeSave(userRealm.isTribeSave());
                 userDB.setInvisibleMode(userRealm.isInvisibleMode());
+                userDB.setPushNotif(userRealm.isPushNotif());
 
                 if (userRealm.getLocation() != null) {
                     LocationRealm locationRealm = obsRealm.copyToRealmOrUpdate(userRealm.getLocation());

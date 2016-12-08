@@ -22,6 +22,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.ProfileInfoPresenter;
+import com.tribe.app.presentation.mvp.view.ProfileInfoMVPView;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
@@ -52,7 +53,7 @@ import rx.subscriptions.CompositeSubscription;
  * Responsible for collecting user's profile picture, name, and username.
  * Has ability to retrieve this information from Facebook.
  */
-public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.presentation.mvp.view.ProfileInfoView {
+public class ProfileInfoFragment extends BaseFragment implements ProfileInfoMVPView {
 
     private static final String LOGIN_ENTITY = "LOGIN_ENTITY";
     private static final String FACEBOOK_ENTITY = "FACEBOOK_ENTITY";
@@ -111,7 +112,7 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
     private Uri uriPicture;
 
     /**
-     * View Lifecycle
+     * MVPView Lifecycle
      */
 
     @Override
@@ -135,7 +136,7 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
         initDependencyInjector();
         initUi(fragmentView);
 
-        this.profileInfoPresenter.attachView(this);
+        this.profileInfoPresenter.onViewAttached(this);
         refactorNext();
 
         if (getUserVisibleHint() && getActivity() != null) {
@@ -192,6 +193,12 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
     }
 
     @Override
+    public void onStop() {
+        profileInfoPresenter.onViewDetached();
+        super.onStop();
+    }
+
+    @Override
     public void onDestroy() {
         unbinder.unbind();
 
@@ -200,15 +207,11 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
             subscriptions.clear();
         }
 
-        if (profileInfoPresenter != null) {
-            profileInfoPresenter.onDestroy();
-        }
-
         super.onDestroy();
     }
 
     /**
-     * View initialization
+     * MVPView initialization
      */
 
     public void initUi(View view) {
@@ -362,16 +365,6 @@ public class ProfileInfoFragment extends BaseFragment implements com.tribe.app.p
     public void hideLoading() {
         imgNextIcon.setVisibility(View.VISIBLE);
         circularProgressProfile.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void showRetry() {
-
-    }
-
-    @Override
-    public void hideRetry() {
-
     }
 
     @Override

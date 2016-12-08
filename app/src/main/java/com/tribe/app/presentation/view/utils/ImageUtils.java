@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Pair;
 
 import com.bumptech.glide.Glide;
@@ -53,7 +55,7 @@ public class ImageUtils {
         // Determine how much to scale down the image
         int scaleFactor = Math.min(photoW / IMG_SIZE, photoH / IMG_SIZE);
 
-        // Decode the image file into a Bitmap sized to fill the View
+        // Decode the image file into a Bitmap sized to fill the MVPView
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
         bmOptions.inPurgeable = true;
@@ -65,7 +67,7 @@ public class ImageUtils {
     public static Bitmap loadFromInputStream(InputStream inputStream) {
         // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        // Decode the image file into a Bitmap sized to fill the View
+        // Decode the image file into a Bitmap sized to fill the MVPView
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = 2;
         bmOptions.inPurgeable = true;
@@ -122,6 +124,12 @@ public class ImageUtils {
 
         return Observable
                 .from(positionUrls)
+                .filter(integerStringPair -> {
+                    ConnectivityManager connectivityManager
+                            = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                    NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+                    return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+                })
                 .flatMap(pair -> {
                     int finalSize = urls.size() > 3 ? (avatarSize) : (pair.first == 0 ? avatarSize : halfSize);
                     FutureTarget<File> futureTarget =
@@ -152,77 +160,83 @@ public class ImageUtils {
                             BitmapFactory.Options opt = new BitmapFactory.Options();
                             opt.inMutable = true;
                             Bitmap temp = BitmapFactoryUtils.decodeFile(pair.second.getAbsolutePath());
-                            bitmapList.add(Pair.create(pair.first, BitmapFactoryUtils.scale(temp, finalSize, true)));
+
+                            if (temp != null && temp.getWidth() > 0)
+                                bitmapList.add(Pair.create(pair.first, BitmapFactoryUtils.scale(temp, finalSize, true)));
                         }
                     }
 
                     return bitmapList;
                 })
                 .map(bitmapPairList -> {
-                    boolean isFull = bitmapPairList.size() > 3;
-                    Bitmap base = isFull
-                            ? Bitmap.createBitmap(avatarSize, avatarSize, Bitmap.Config.ARGB_8888) : bitmapPairList.get(0).second;
-                    Canvas canvas = new Canvas(base);
+                    if (bitmapPairList != null && bitmapPairList.size() > 0) {
+                        boolean isFull = bitmapPairList.size() > 3;
+                        Bitmap base = isFull
+                                ? Bitmap.createBitmap(avatarSize, avatarSize, Bitmap.Config.ARGB_8888) : bitmapPairList.get(0).second;
+                        Canvas canvas = new Canvas(base);
 
-                    Paint drawPaint = new Paint();
-                    drawPaint.setAntiAlias(false);
-                    drawPaint.setFilterBitmap(false);
+                        Paint drawPaint = new Paint();
+                        drawPaint.setAntiAlias(false);
+                        drawPaint.setFilterBitmap(false);
 
-                    int dividerSize = context.getResources().getDimensionPixelSize(R.dimen.divider_size);
+                        int dividerSize = context.getResources().getDimensionPixelSize(R.dimen.divider_size);
 
-                    for (int i = isFull ? 0 : 1; i < bitmapPairList.size(); i++) {
-                        int top = 0;
-                        int left = 0;
+                        for (int i = isFull ? 0 : 1; i < bitmapPairList.size(); i++) {
+                            int top = 0;
+                            int left = 0;
 
-                        switch (bitmapPairList.get(i).first) {
-                            case 1: {
-                                left = halfSize;
-                                top = halfSize;
-                                break;
+                            switch (bitmapPairList.get(i).first) {
+                                case 1: {
+                                    left = halfSize;
+                                    top = halfSize;
+                                    break;
+                                }
+
+                                case 2: {
+                                    left = halfSize;
+                                    top = 0;
+                                    break;
+                                }
+
+                                case 3: {
+                                    int bitmapSize = bitmapPairList.get(i).second.getWidth();
+                                    left = bitmapSize > halfSize ? halfSize - bitmapSize : 0;
+                                    top = halfSize;
+                                }
                             }
 
-                            case 2: {
-                                left = halfSize;
-                                top = 0;
-                                break;
-                            }
+                            canvas.drawBitmap(
+                                    bitmapPairList.get(i).second,
+                                    left,
+                                    top,
+                                    drawPaint
+                            );
 
-                            case 3: {
-                                int bitmapSize = bitmapPairList.get(i).second.getWidth();
-                                left = bitmapSize > halfSize ? halfSize - bitmapSize : 0;
-                                top = halfSize;
-                            }
+                            bitmapPairList.get(i).second.recycle();
+                            bitmapPairList.set(i, null);
                         }
 
-                        canvas.drawBitmap(
-                                bitmapPairList.get(i).second,
-                                left,
-                                top,
-                                drawPaint
-                        );
+                        Paint drawLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                        drawLinePaint.setStrokeWidth(dividerSize);
+                        drawLinePaint.setColor(Color.WHITE);
 
-                        bitmapPairList.get(i).second.recycle();
-                        bitmapPairList.set(i, null);
+                        if (bitmapPairList.size() == 2) {
+                            canvas.drawLine(halfSize, halfSize, avatarSize, halfSize, drawLinePaint);
+                            canvas.drawLine(halfSize, halfSize, halfSize, avatarSize, drawLinePaint);
+                        } else if (bitmapPairList.size() == 3) {
+                            canvas.drawLine(halfSize, halfSize, avatarSize, halfSize, drawLinePaint);
+                            canvas.drawLine(halfSize, 0, halfSize, avatarSize, drawLinePaint);
+                        } else if (bitmapPairList.size() == 4) {
+                            canvas.drawLine(0, halfSize, avatarSize, halfSize, drawLinePaint);
+                            canvas.drawLine(halfSize, 0, halfSize, avatarSize, drawLinePaint);
+                        }
+
+                        File endFile = FileUtils.getAvatarForGroupId(context, id, FileUtils.PHOTO);
+                        FileUtils.bitmapToFile(base, endFile);
+                        return base;
                     }
 
-                    Paint drawLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-                    drawLinePaint.setStrokeWidth(dividerSize);
-                    drawLinePaint.setColor(Color.WHITE);
-
-                    if (bitmapPairList.size() == 2) {
-                        canvas.drawLine(halfSize, halfSize, avatarSize, halfSize, drawLinePaint);
-                        canvas.drawLine(halfSize, halfSize, halfSize, avatarSize, drawLinePaint);
-                    } else if (bitmapPairList.size() == 3) {
-                        canvas.drawLine(halfSize, halfSize, avatarSize, halfSize, drawLinePaint);
-                        canvas.drawLine(halfSize, 0, halfSize, avatarSize, drawLinePaint);
-                    } else if (bitmapPairList.size() == 4) {
-                        canvas.drawLine(0, halfSize, avatarSize, halfSize, drawLinePaint);
-                        canvas.drawLine(halfSize, 0, halfSize, avatarSize, drawLinePaint);
-                    }
-
-                    File endFile = FileUtils.getAvatarForGroupId(context, id, FileUtils.PHOTO);
-                    FileUtils.bitmapToFile(base, endFile);
-                    return base;
+                    return null;
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());

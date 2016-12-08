@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.activity;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -10,7 +11,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +20,7 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
 
 import com.f2prateek.rx.preferences.Preference;
+import com.facebook.AccessToken;
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringConfig;
@@ -39,24 +40,25 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
-import com.tribe.app.domain.entity.MoreType;
 import com.tribe.app.domain.entity.PendingType;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
-import com.tribe.app.presentation.internal.di.scope.HasRatedApp;
-import com.tribe.app.presentation.internal.di.scope.HasReceivedPointsForCameraPermission;
-import com.tribe.app.presentation.internal.di.scope.LastOnlineNotification;
-import com.tribe.app.presentation.internal.di.scope.TribeSentCount;
-import com.tribe.app.presentation.internal.di.scope.WasAskedForCameraPermission;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
-import com.tribe.app.presentation.mvp.view.HomeGridView;
+import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
 import com.tribe.app.presentation.utils.DeepLinkUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
+import com.tribe.app.presentation.utils.preferences.AddressBook;
+import com.tribe.app.presentation.utils.preferences.HasRatedApp;
+import com.tribe.app.presentation.utils.preferences.HasReceivedPointsForCameraPermission;
+import com.tribe.app.presentation.utils.preferences.LastOnlineNotification;
+import com.tribe.app.presentation.utils.preferences.TribeSentCount;
+import com.tribe.app.presentation.utils.preferences.WasAskedForCameraPermission;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
@@ -66,6 +68,7 @@ import com.tribe.app.presentation.view.component.TopBarContainer;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
 import com.tribe.app.presentation.view.utils.Constants;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
@@ -86,7 +89,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-public class HomeActivity extends BaseActivity implements HasComponent<UserComponent>, HomeGridView, GoogleApiClient.OnConnectionFailedListener {
+public class HomeActivity extends BaseActivity implements HasComponent<UserComponent>, HomeGridMVPView, GoogleApiClient.OnConnectionFailedListener {
 
     private static final SpringConfig FILTER_VIEW_BOUNCE_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(1f, 2.5f);
     private static final SpringConfig FILTER_VIEW_NO_BOUNCE_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(1f, 2.5f);
@@ -138,6 +141,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     Preference<Long> lastOnlineNotification;
 
     @Inject
+    @AddressBook
+    Preference<Boolean> addressBook;
+
+    @Inject
     SoundManager soundManager;
 
     @BindView(R.id.recyclerViewFriends)
@@ -173,9 +180,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     // VARIABLES
     private HomeLayoutManager layoutManager;
-    private BottomSheetDialog dialogMore;
-    private RecyclerView recyclerViewMore;
-    private LabelSheetAdapter moreSheetAdapter;
     private boolean isRecording;
     private long timeRecording;
     private Tutorial tutorial;
@@ -243,6 +247,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     protected void onStop() {
         tagManager.onStop(this);
+        homeGridPresenter.onViewDetached();
         super.onStop();
     }
 
@@ -250,7 +255,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     protected void onResume() {
         super.onResume();
 
-        loadData();
+        homeGridPresenter.loadFriendList(null);
 
         subscriptions.add(Observable.
                 from(PermissionUtils.PERMISSIONS_CAMERA)
@@ -287,7 +292,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     protected void onPause() {
         cameraWrapper.onPause();
-        this.homeGridPresenter.onPause();
         cleanTutorial();
         super.onPause();
     }
@@ -441,20 +445,56 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
         subscriptions.add(homeGridAdapter.onClickMore()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
-                .subscribe(recipient -> {
-                    if (recipient instanceof Membership && (recipient.getReceivedTribes() == null || recipient.getReceivedTribes().size() == 0)) {
-                        Membership membership = (Membership) recipient;
-                        navigator.navigateToGroupDetails(this, membership);
-                    } else {
-                        setupBottomSheetMore(recipient);
-                    }
-                }));
+                .flatMap(recipient -> {
+                            if (recipient instanceof Membership && (recipient.getReceivedTribes() == null || recipient.getReceivedTribes().size() == 0)) {
+                                Membership membership = (Membership) recipient;
+                                navigator.navigateToGroupDetails(this, membership);
+                                return null;
+                            } else {
+                                return DialogFactory.showBottomSheetForRecipient(this, recipient);
+                            }
+                        },
+                        ((recipient, labelType) -> {
+                            if (labelType != null) {
+                                if (labelType.getTypeDef().equals(LabelType.CLEAR_MESSAGES)) {
+                                    homeGridPresenter.markTribeListAsRead(recipient, recipient.getReceivedTribes());
+                                } else if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
+                                    tagManager.trackEvent(TagManagerConstants.USER_TILE_HIDDEN);
+                                    homeGridPresenter.updateFriendship((Friendship) recipient, labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED : FriendshipRealm.HIDDEN);
+                                } else if (labelType.getTypeDef().equals(LabelType.GROUP_INFO)) {
+                                    Membership membership = (Membership) recipient;
+                                    navigator.navigateToGroupDetails(this, membership);
+                                } else if (labelType.getTypeDef().equals(LabelType.GROUP_LEAVE)) {
+                                    homeGridPresenter.leaveGroup(recipient.getId());
+                                }
+                            }
+
+                            return recipient;
+                        }))
+                .subscribe()
+        );
 
         subscriptions.add(homeGridAdapter.onClickErrorTribes()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
-                .subscribe(recipient -> {
-                    setupBottomSheetPendingTribes(recipient);
-                }));
+                .flatMap(recipient -> DialogFactory.showBottomSheetForPending(this, recipient),
+                        ((recipient, labelType) -> {
+                            PendingType pendingType = (PendingType) labelType;
+
+                            List<TribeMessage> messages = new ArrayList<>();
+                            for (Message message : pendingType.getPending()) {
+                                messages.add((TribeMessage) message);
+                            }
+
+                            if (pendingType.getPendingType().equals(PendingType.DELETE)) {
+                                homeGridPresenter.deleteTribe(pendingType.getPending().toArray(new TribeMessage[pendingType.getPending().size()]));
+                            } else {
+                                homeGridPresenter.sendTribe(pendingType.getPending().toArray(new TribeMessage[pendingType.getPending().size()]));
+                            }
+
+                            return null;
+                        }))
+                .subscribe()
+        );
 
         subscriptions.add(homeGridAdapter.onRecordStart()
                 .doOnNext(view -> {
@@ -472,7 +512,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                     recyclerViewFriends.requestDisallowInterceptTouchEvent(true);
                     isRecording = true;
                     cameraWrapper.onStartRecord(currentTribe.getLocalId());
-                }));
+                })
+        );
 
         subscriptions.add(homeGridAdapter.onRecordEnd()
                 .subscribeOn(Schedulers.computation())
@@ -492,14 +533,16 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                     }
 
                     isRecording = false;
-                }));
+                })
+        );
 
         subscriptions.add(homeGridAdapter.onClickTapToCancel()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .subscribe(recipient -> {
                     soundManager.playSound(SoundManager.TAP_TO_CANCEL, SoundManager.SOUND_LOW);
                     cleanupCurrentTribe(recipient);
-                }));
+                })
+        );
 
         subscriptions.add(homeGridAdapter.onNotCancel()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
@@ -532,7 +575,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 })
                 .delay(1500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(s -> homeGridPresenter.confirmTribe(s)));
+                .subscribe(s -> homeGridPresenter.confirmTribe(s))
+        );
     }
 
     private void initFilterView() {
@@ -561,6 +605,41 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             homeGridAdapter.filterList(s);
             hideFilterView();
         }));
+
+        subscriptions.add(viewFilter.onSyncFBClick().subscribe(syncView -> {
+            if (!syncView.isActive())
+                homeGridPresenter.loginFacebook();
+            else {
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(TagManagerConstants.FACEBOOK_CONNECTED, false);
+                tagManager.setProperty(bundle);
+                homeGridPresenter.updateUserFacebook(null);
+                FacebookUtils.logout();
+                viewFilter.setFBSync(false);
+            }
+        }));
+
+        subscriptions.add(viewFilter.onSyncABClick().subscribe(syncView -> {
+            if (!syncView.isActive()) {
+                RxPermissions.getInstance(this)
+                        .request(Manifest.permission.READ_CONTACTS)
+                        .subscribe(hasPermission -> {
+                            Bundle bundle = new Bundle();
+                            bundle.putBoolean(TagManagerConstants.ADDRESS_BOOK_ENABLED, hasPermission);
+                            tagManager.setProperty(bundle);
+
+                            addressBook.set(hasPermission);
+                            viewFilter.setABSync(hasPermission);
+                        });
+            } else {
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(TagManagerConstants.ADDRESS_BOOK_ENABLED, false);
+                tagManager.setProperty(bundle);
+
+                addressBook.set(false);
+                viewFilter.setABSync(false);
+            }
+        }));
     }
 
     private void initDependencyInjector() {
@@ -576,7 +655,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     }
 
     private void initPresenter() {
-        this.homeGridPresenter.attachView(this);
+        this.homeGridPresenter.onViewAttached(this);
     }
 
     private void initPullToRefresh() {
@@ -589,7 +668,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 .delay(TopBarContainer.MIN_LENGTH, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(refresh -> {
-                    if (canEndRefresh) topBarContainer.setRefreshing(false);
+                    if (canEndRefresh) topBarContainer.setRefreshing(false, false);
 
                     canEndRefresh = true;
                 }));
@@ -728,6 +807,17 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     }
 
     @Override
+    public void successFacebookLogin() {
+        homeGridPresenter.updateUserFacebook(AccessToken.getCurrentAccessToken().getUserId());
+        viewFilter.setFBSync(true);
+    }
+
+    @Override
+    public void errorFacebookLogin() {
+        viewFilter.setFBSync(false);
+    }
+
+    @Override
     public void onMembershipCreated(Membership membership) {
 
     }
@@ -774,18 +864,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @Override
     public void hideLoading() {
-        if (topBarContainer.isRefreshing() && canEndRefresh) topBarContainer.setRefreshing(false);
+        if (topBarContainer.isRefreshing() && canEndRefresh) topBarContainer.setRefreshing(false, false);
         canEndRefresh = true;
-    }
-
-    @Override
-    public void showRetry() {
-
-    }
-
-    @Override
-    public void hideRetry() {
-
     }
 
     @Override
@@ -816,146 +896,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         if (recipient.getTribe() != null) homeGridPresenter.deleteTribe(recipient.getTribe());
         homeGridAdapter.updateItemWithTribe(recipient.getPosition(), null);
         homeGridAdapter.notifyItemChanged(recipient.getPosition());
-    }
-
-    private void setupBottomSheetMore(Recipient recipient) {
-        if (dismissDialogSheetMore()) {
-            return;
-        }
-
-        List<LabelType> moreTypes = new ArrayList<>();
-        moreTypes.add(new MoreType(getString(R.string.grid_menu_friendship_clear_tribes), MoreType.CLEAR_MESSAGES));
-
-        if (recipient instanceof Friendship) {
-            moreTypes.add(new MoreType(getString(R.string.grid_menu_friendship_hide, recipient.getDisplayName()), MoreType.HIDE));
-            moreTypes.add(new MoreType(getString(R.string.grid_menu_friendship_block, recipient.getDisplayName()), MoreType.BLOCK_HIDE));
-        } else if (recipient instanceof Membership) {
-            moreTypes.add(new MoreType(getString(R.string.grid_menu_group_infos), MoreType.GROUP_INFO));
-        }
-
-        prepareBottomSheetMore(recipient, moreTypes);
-    }
-
-    private boolean dismissDialogSheetMore() {
-        if (dialogMore != null && dialogMore.isShowing()) {
-            dialogMore.dismiss();
-            return true;
-        }
-
-        return false;
-    }
-
-    private void prepareBottomSheetMore(Recipient recipient, List<LabelType> items) {
-        View view = getLayoutInflater().inflate(R.layout.bottom_sheet_more, null);
-        recyclerViewMore = (RecyclerView) view.findViewById(R.id.recyclerViewMore);
-        recyclerViewMore.setHasFixedSize(true);
-        recyclerViewMore.setLayoutManager(new LinearLayoutManager(this));
-        moreSheetAdapter = new LabelSheetAdapter(context(), items);
-        moreSheetAdapter.setHasStableIds(true);
-        recyclerViewMore.setAdapter(moreSheetAdapter);
-        subscriptions.add(moreSheetAdapter.clickLabelItem()
-                .map(labelView -> moreSheetAdapter.getItemAtPosition((Integer) labelView.getTag(R.id.tag_position)))
-                .subscribe(labelType -> {
-                    MoreType moreType = (MoreType) labelType;
-                    if (moreType.getMoreType().equals(MoreType.CLEAR_MESSAGES)) {
-                        homeGridPresenter.markTribeListAsRead(recipient, recipient.getReceivedTribes());
-                    } else if (moreType.getMoreType().equals(MoreType.HIDE) || moreType.getMoreType().equals(MoreType.BLOCK_HIDE)) {
-                        tagManager.trackEvent(TagManagerConstants.USER_TILE_HIDDEN);
-                        homeGridPresenter.updateFriendship((Friendship) recipient, moreType.getMoreType().equals(MoreType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED : FriendshipRealm.HIDDEN);
-                    } else if (moreType.getMoreType().equals(MoreType.GROUP_INFO)) {
-                        Membership membership = (Membership) recipient;
-                        navigator.navigateToGroupDetails(this, membership);
-                    } else if (moreType.getMoreType().equals(MoreType.GROUP_LEAVE)) {
-                        homeGridPresenter.leaveGroup(recipient.getId());
-                    }
-
-                    dismissDialogSheetMore();
-                }));
-
-        dialogMore = new BottomSheetDialog(this);
-        dialogMore.setContentView(view);
-        dialogMore.show();
-        dialogMore.setOnDismissListener(dialog -> {
-            moreSheetAdapter.releaseSubscriptions();
-            dialogMore = null;
-        });
-    }
-
-    private void setupBottomSheetPendingTribes(Recipient ... recipientList) {
-        if (dismissDialogSheetPendingTribes()) {
-            return;
-        }
-
-        List<LabelType> pendingTypes = new ArrayList<>();
-
-        for (Recipient recipient : recipientList) {
-            if (recipient.getErrorTribes() != null && recipient.getErrorTribes().size() > 0)
-                pendingTypes.addAll(recipient.createPendingTribeItems(this, recipientList.length > 1));
-        }
-
-        pendingTypes.add(new PendingType(new ArrayList<>(pendingTribes),
-                getString(R.string.grid_unsent_tribes_action_resend_all),
-                PendingType.RESEND));
-
-        pendingTypes.add(new PendingType(new ArrayList<>(pendingTribes),
-                getString(R.string.grid_unsent_tribes_action_delete_all),
-                PendingType.DELETE));
-
-        prepareBottomSheetPendingWithList(pendingTypes, recipientList.length > 1);
-    }
-
-    private void prepareBottomSheetPendingWithList(List<LabelType> items, boolean isGlobal) {
-        View view = getLayoutInflater().inflate(R.layout.bottom_sheet_user_pending, null);
-        recyclerViewPending = (RecyclerView) view.findViewById(R.id.recyclerViewPending);
-        recyclerViewPending.setHasFixedSize(true);
-        recyclerViewPending.setLayoutManager(new LinearLayoutManager(this));
-        labelSheetAdapter = new LabelSheetAdapter(context(), items);
-        labelSheetAdapter.setHasStableIds(true);
-        recyclerViewPending.setAdapter(labelSheetAdapter);
-        subscriptions.add(labelSheetAdapter.clickLabelItem()
-                .map(pendingTribeView -> labelSheetAdapter.getItemAtPosition((Integer) pendingTribeView.getTag(R.id.tag_position)))
-                .subscribe(labelType -> {
-                    PendingType pendingType = (PendingType) labelType;
-
-                    List<TribeMessage> messages = new ArrayList<>();
-                    for (Message message : pendingType.getPending()) {
-                        messages.add((TribeMessage) message);
-                    }
-
-                    if (pendingType.getPendingType().equals(PendingType.DELETE)) {
-                        homeGridPresenter.deleteTribe(pendingType.getPending().toArray(new TribeMessage[pendingType.getPending().size()]));
-                    } else {
-                        homeGridPresenter.sendTribe(pendingType.getPending().toArray(new TribeMessage[pendingType.getPending().size()]));
-                    }
-
-                    dismissDialogSheetPendingTribes();
-                }));
-
-        bottomSheetPendingTribeDialog = new BottomSheetDialog(this);
-        bottomSheetPendingTribeDialog.setContentView(view);
-        bottomSheetPendingTribeDialog.show();
-        bottomSheetPendingTribeDialog.setOnDismissListener(dialog -> {
-            labelSheetAdapter.releaseSubscriptions();
-            bottomSheetPendingTribeDialog = null;
-        });
-    }
-
-    private boolean dismissDialogSheetPendingTribes() {
-        if (bottomSheetPendingTribeDialog != null && bottomSheetPendingTribeDialog.isShowing()) {
-            bottomSheetPendingTribeDialog.dismiss();
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Loads all friends / tribes.
-     */
-    private void loadData() {
-        subscriptions.add(Observable.timer(100, TimeUnit.MILLISECONDS).onBackpressureDrop().observeOn(AndroidSchedulers.mainThread()).subscribe(t ->  {
-            this.homeGridPresenter.onCreate();
-        }));
     }
 
     private void navigateToSettings() {

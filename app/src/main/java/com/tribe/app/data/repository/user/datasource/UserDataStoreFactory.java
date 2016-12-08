@@ -12,8 +12,8 @@ import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.repository.user.contact.RxContacts;
-import com.tribe.app.presentation.internal.di.scope.LastMessageRequest;
-import com.tribe.app.presentation.internal.di.scope.LastUserRequest;
+import com.tribe.app.presentation.utils.preferences.LastMessageRequest;
+import com.tribe.app.presentation.utils.preferences.LastUserRequest;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 
 import java.text.SimpleDateFormat;

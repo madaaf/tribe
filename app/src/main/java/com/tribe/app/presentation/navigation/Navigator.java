@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.navigation;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -29,7 +30,7 @@ import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.PointsActivity;
 import com.tribe.app.presentation.view.activity.ScoreActivity;
 import com.tribe.app.presentation.view.activity.SearchUserActivity;
-import com.tribe.app.presentation.view.activity.SettingActivity;
+import com.tribe.app.presentation.view.activity.SettingsActivity;
 import com.tribe.app.presentation.view.activity.TribeActivity;
 
 import java.io.File;
@@ -175,7 +176,7 @@ public class Navigator {
      */
     public void navigateToSettings(Activity activity, int result) {
         if (activity != null) {
-            Intent intent = SettingActivity.getCallingIntent(activity);
+            Intent intent = SettingsActivity.getCallingIntent(activity);
             activity.startActivityForResult(intent, result);
             activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
         }
@@ -307,8 +308,9 @@ public class Navigator {
         List<ResolveInfo> resolvedInfoList = packManager.queryIntentActivities(tweetIntent,  PackageManager.MATCH_DEFAULT_ONLY);
 
         boolean resolved = false;
-        for(ResolveInfo resolveInfo: resolvedInfoList){
-            if(resolveInfo.activityInfo.packageName.startsWith("com.twitter.android")){
+
+        for (ResolveInfo resolveInfo: resolvedInfoList) {
+            if (resolveInfo.activityInfo.packageName.startsWith("com.twitter.android")) {
                 tweetIntent.setClassName(
                         resolveInfo.activityInfo.packageName,
                         resolveInfo.activityInfo.name );
@@ -316,11 +318,17 @@ public class Navigator {
                 break;
             }
         }
-        if(resolved){
-           context.startActivity(tweetIntent);
-        }else{
-            Toast.makeText(context, "Twitter app not found", Toast.LENGTH_LONG).show();
+
+        if (resolved) {
+            context.startActivity(tweetIntent);
+        } else {
+            context.startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://twitter.com/intent/tweet?text=@heytribe")));
         }
+    }
+
+    public void navigateToUrl(Context context, String url) {
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
     /**
@@ -331,8 +339,8 @@ public class Navigator {
      */
 
     public void composeEmail(Context context, String[] addresses, String subject) {
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("text/plain");
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:"));
         intent.putExtra(Intent.EXTRA_EMAIL, addresses);
         intent.putExtra(Intent.EXTRA_SUBJECT, subject);
         if (intent.resolveActivity(context.getPackageManager()) != null) {
@@ -432,16 +440,24 @@ public class Navigator {
             share.putExtra(Intent.EXTRA_STREAM, uri);
 
             if (StringUtils.isEmpty(selectedPackage)) {
-                context.startActivity(Intent.createChooser(share, context.getString(R.string.contacts_share_profile_button)));
+                try {
+                    context.startActivity(Intent.createChooser(share, context.getString(R.string.contacts_share_profile_button)));
+                } catch (ActivityNotFoundException ex) {
+                    basicShare(context, share);
+                }
             } else {
                 try {
                     share.setPackage(selectedPackage);
                     context.startActivity(share);
                 } catch (Exception ex) {
                     share.setPackage(null);
-                    context.startActivity(Intent.createChooser(share, context.getString(R.string.contacts_share_profile_button)));
+                    basicShare(context, share);
                 }
             }
         }
+    }
+
+    private void basicShare(Context context, Intent share) {
+        context.startActivity(Intent.createChooser(share, context.getString(R.string.contacts_share_profile_button)));
     }
 }
