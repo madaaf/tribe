@@ -591,9 +591,7 @@ public class TribeActivity extends BaseActivity implements TribeView, SensorEven
     }
 
     private void tapToCancel() {
-        soundManager.playSound(SoundManager.TAP_TO_CANCEL, SoundManager.SOUND_LOW
-        );
-        FileUtils.delete(context(), currentTribe.getLocalId(), FileUtils.VIDEO);
+        soundManager.playSound(SoundManager.TAP_TO_CANCEL, SoundManager.SOUND_LOW);
         tribePresenter.deleteTribe(currentTribe);
         currentTribe = null;
     }

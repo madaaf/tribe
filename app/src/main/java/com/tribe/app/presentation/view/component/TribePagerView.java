@@ -1154,8 +1154,10 @@ public class TribePagerView extends FrameLayout {
     private void showCamera(boolean bool) {
         cameraWrapper.setVisibility(View.VISIBLE);
         cameraWrapper.onResume(false);
+
         computeCurrentView();
-        currentView.pausePlayer();
+        if (currentView != null) currentView.pausePlayer();
+
         inReplyMode = true;
         openReplyMode(bool);
     }
@@ -1168,13 +1170,16 @@ public class TribePagerView extends FrameLayout {
 
     private void closeReplyMode() {
         springReplyMode.setEndValue(1f);
+
         if (getNbTribes() > 0) {
             showNbTribes();
             hideExitCamera();
         } else {
             showExitCamera();
         }
-        currentView.play();
+
+        computeCurrentView();
+        if (currentView != null) currentView.play();
     }
 
     @OnClick(R.id.imgCancelReply)
@@ -1208,7 +1213,7 @@ public class TribePagerView extends FrameLayout {
         speedPlayback.set(newSpeed);
 
         computeCurrentView();
-        currentView.changeSpeed();
+        if (currentView != null) currentView.changeSpeed();
     }
 
     public void changeAudioStreamType(int audioStreamType) {
@@ -1218,8 +1223,11 @@ public class TribePagerView extends FrameLayout {
 
     public void updateCurrentView() {
         computeCurrentView();
-        currentView.updateLocation();
-        currentView.play();
+
+        if (currentView != null) {
+            currentView.updateLocation();
+            currentView.play();
+        }
     }
 
     //////////////////////

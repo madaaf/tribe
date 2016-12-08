@@ -268,10 +268,16 @@ public class TribeCacheImpl implements TribeCache {
 
     @Override
     public void delete(TribeRealm tribeRealm) {
-        realm.executeTransactionAsync(realm1 -> {
-            final TribeRealm result = realm1.where(TribeRealm.class).equalTo("localId", tribeRealm.getLocalId()).findFirst();
-            result.deleteFromRealm();
-        });
+        Realm otherRealm = Realm.getDefaultInstance();
+
+        try {
+            otherRealm.executeTransactionAsync(realm1 -> {
+                final TribeRealm result = realm1.where(TribeRealm.class).equalTo("localId", tribeRealm.getLocalId()).findFirst();
+                if (result != null) result.deleteFromRealm();
+            });
+        } finally {
+            otherRealm.close();
+        }
     }
 
     private ChangeHelper<RealmResults<TribeRealm>> changeSetNotSeen = new ChangeHelper<>();

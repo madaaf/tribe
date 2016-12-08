@@ -105,7 +105,8 @@ public class MembersGroupView extends FrameLayout {
 
         adapter = new MemberListAdapter(getContext(), membership != null ? membership.isAdmin() : false);
 
-        List<GroupMember> memberList = new ArrayList<>(membership.getGroup().getGroupMembers());
+        List<GroupMember> memberList = new ArrayList<>();
+        if (membership.getGroup().getGroupMembers() != null) memberList.addAll(membership.getGroup().getGroupMembers());
         user.computeFriends(memberList);
         adapter.setItems(memberList);
         recyclerView.setAdapter(adapter);

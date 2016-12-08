@@ -9,7 +9,6 @@ import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.realm.ChatRealm;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.view.utils.MessageSendingStatus;
 
@@ -24,9 +23,6 @@ import javax.inject.Inject;
  * Created by tiago on 05/07/2016.
  */
 public class UpdateMessagesErrorStatusJob extends BaseJob {
-
-    @Inject
-    User currentUser;
 
     @Inject
     JobManager jobManager;

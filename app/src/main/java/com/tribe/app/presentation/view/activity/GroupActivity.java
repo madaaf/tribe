@@ -396,7 +396,7 @@ public class GroupActivity extends BaseActivity implements GroupView {
     private void computeTitle(boolean forward, View to) {
         if (to instanceof AddMembersGroupView) {
             setupTitle(groupEntity == null ? membership.getDisplayName() : getString(R.string.group_add_members_title), forward);
-            if (groupEntity == null || newMembers.size() > 0) {
+            if (groupEntity != null || newMembers.size() > 0) {
                 txtAction.setVisibility(View.VISIBLE);
                 if (newMembers.size() > 0) txtAction.setText(getString(R.string.action_add, newMembers.size()));
             }

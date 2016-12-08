@@ -10,6 +10,7 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import rx.Observable;
@@ -27,7 +28,7 @@ public class RxContacts {
     private ContactsHelper helper;
 
     @Inject
-    public RxContacts(Context context, User user, PhoneUtils phoneUtils) {
+    public RxContacts(Context context, @Named("userThreadSafe") User user, PhoneUtils phoneUtils) {
         this.user = user;
         this.phoneUtils = phoneUtils;
         withPhones = true;

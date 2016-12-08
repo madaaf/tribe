@@ -478,7 +478,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(view -> {
-                    isRecording = false;
                     cameraWrapper.onEndRecord();
                 })
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
@@ -493,12 +492,13 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                         cleanupCurrentTribe(recipient);
                         tileView.resetViewAfterTapToCancel(false);
                     }
+
+                    isRecording = false;
                 }));
 
         subscriptions.add(homeGridAdapter.onClickTapToCancel()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .subscribe(recipient -> {
-                    isRecording = false;
                     soundManager.playSound(SoundManager.TAP_TO_CANCEL, SoundManager.SOUND_LOW);
                     cleanupCurrentTribe(recipient);
                 }));
@@ -506,7 +506,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         subscriptions.add(homeGridAdapter.onNotCancel()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .filter(recipient -> {
-                    isRecording = false;
                     soundManager.playSound(SoundManager.SENT, SoundManager.SOUND_LOW);
                     TribeMessage tr = recipient.getTribe();
 
@@ -816,7 +815,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     }
 
     private void cleanupCurrentTribe(Recipient recipient) {
-        homeGridPresenter.deleteTribe(recipient.getTribe());
+        if (recipient.getTribe() != null) homeGridPresenter.deleteTribe(recipient.getTribe());
         homeGridAdapter.updateItemWithTribe(recipient.getPosition(), null);
         homeGridAdapter.notifyItemChanged(recipient.getPosition());
     }

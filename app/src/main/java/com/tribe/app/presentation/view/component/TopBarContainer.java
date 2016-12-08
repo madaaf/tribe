@@ -280,7 +280,7 @@ public class TopBarContainer extends FrameLayout {
             case MotionEvent.ACTION_MOVE : {
                 final int pointerIndex = event.findPointerIndex(activePointerId);
 
-                if (pointerIndex != INVALID_POINTER) {
+                if (pointerIndex != INVALID_POINTER && velocityTracker != null) {
                     float y = event.getY(pointerIndex) + location[1];
                     float offsetY = y - lastDownY + lastDownYTr;
 
@@ -298,7 +298,7 @@ public class TopBarContainer extends FrameLayout {
 
                 activePointerId = INVALID_POINTER;
 
-                if (pointerIndex != INVALID_POINTER) {
+                if (pointerIndex != INVALID_POINTER && velocityTracker != null) {
                     velocityTracker.addMovement(event);
                     velocityTracker.computeCurrentVelocity(1000);
 

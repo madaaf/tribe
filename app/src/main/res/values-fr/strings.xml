@@ -129,10 +129,14 @@
 	<string name="permission_global_popup_message">Occupons-nous des permissions pour que vous ne manquiez rien de l\'expérience de messagerie vidéo la plus incroyable.</string>
 	<string name="permission_global_popup_cancel">Rester nul</string>
 	<string name="permission_global_popup_confirm">C\'est parti !</string>
-	<string name="permission_facebook_popup_title">Amis facebook</string>
+	<string name="permission_facebook_popup_title">Retrouvez vos amis Facebook</string>
 	<string name="permission_facebook_popup_message">Vos amis Facebook seront synchronisé avec Tribe pour que vous puissiez retrouver facilement les personnes que vous connaissez déjà.</string>
 	<string name="permission_facebook_popup_ok">Parfait !</string>
 	<string name="permission_facebook_popup_ko">Pas d\'amis</string>
+	<string name="permission_addressbook_popup_title">Retrouver les contacts de votre Carnet d\'adresses</string>
+	<string name="permission_addressbook_popup_message">Vos amis seront synchronisé avec Tribe pour que vous puissiez retrouver facilement les personnes que vous connaissez déjà.</string>
+	<string name="permission_addressbook_popup_ok">Parfait !</string>
+	<string name="permission_addressbook_popup_ko">Pas d\'amis</string>
 	
 	<!-- Rating -->
 	<string name="rating_title">Envoyez-nous 5 étoiles\nen 1 minute !</string>
@@ -365,7 +369,8 @@
 	<string name="settings_tweet_subtitle">Nous répondons en moins de 24h à chaque tweet.</string>
 	<string name="settings_email_title">Envoyer un email à l\'équipe</string>
 	<string name="settings_email_subtitle">Nous répondons en moins de 48h à chaque email.</string>
-	<string name="settings_email_address">cyril@tribe.pm</string>
+	<string name="settings_email_address">support@tribe.pm</string>
+	<string name="settings_email_copied">:paperclip: support@tribe.pm ajouté au presse-papier. Ouvrez votre app de Mails pour coller l\'addresse email !</string>
 	<string name="settings_email_subject">À propos de Tribe</string>
 	<string name="settings_filters_and_themes_title">Filtres et thèmes</string>
 	<string name="settings_filters_and_themes_subtitle">Personnaliser votre expérience</string>
@@ -384,8 +389,11 @@
 	<string name="settings_follow_title">Suivez-nous</string>
 	<string name="settings_follow_subtitle">Twitter, Instagram et Snapchat</string>
 	<string name="settings_follow_twitter">Twitter</string>
+	<string name="settings_follow_twitter_url">https://twitter.com/heytribe</string>
 	<string name="settings_follow_instagram">Instagram</string>
+	<string name="settings_follow_instagram_url">https://www.instagram.com/heytribe/</string>
 	<string name="settings_follow_snapchat">Snapchat</string>
+	<string name="settings_follow_snapchat_url">http://www.snapchat.com/add/heytribe</string>
 	<string name="settings_rate_title">Noter l\'app</string>
 	<string name="settings_rate_subtitle">Le moyen le plus simple de nous envoyer du love.</string>
 	<string name="settings_hidden_blocked_title">Contacts/Groupes bloqués ou masqués</string>
@@ -412,8 +420,12 @@
 	
 	<!-- Onboarding -->
 	<string name="onboarding_step_phone">Entrez votre numéro de téléphone pour démarrer.</string>
+	<string name="onboarding_phone_disclaimer">By registering, I agree to the Terms of Service &amp; Privacy Policy</string>
 	<string name="onboarding_step_code">Entrez le code de vérification envoyé par SMS.</string>
 	<string name="onboarding_phone_number">Numéro de téléphone</string>
+	<string name="onboarding_code_sending_status">Sending verification code…</string>
+	<string name="onboarding_code_sent_status">Code sent to %1$s</string>
+	<string name="onboarding_code_error_status">An error occured. Retry</string>
 	<string name="onboarding_error_wrong_pin">:closed_lock_with_key: Mauvais code de vérification</string>
 	<string name="onboarding_connected">Connecté</string>
 	<string name="onboarding_user_title">Configurer votre profil</string>
@@ -460,6 +472,9 @@
 	<string name="onboarding_friends_to_invite_popup_message">Commencez avec vos amis, équipes, camarades, collocataires, collègues et relations longue distance.</string>
 	<string name="onboarding_friends_to_invite_popup_cancel">Jamais</string>
 	<string name="onboarding_friends_to_invite_popup_confirm">Génial !</string>
+	<string name="onboarding_friends_to_invite_none_button">Don\'t send any invite</string>
+	<string name="onboarding_friends_to_invite_singular_button">Send %1$d invite</string>
+	<string name="onboarding_friends_to_invite_plural_button">Send %1$d invites</string>
 	<string name="onboarding_friends_to_invite_disclaimer">By continuing, I agree that I have permission to\ninvite my contacts. See Terms &amp; Privacy Policy</string>
 	
 	<!-- Legal -->
@@ -477,7 +492,7 @@
 	<string name="pull_to_search_title">Trier votre grille par lettre</string>
 	
 	<!-- Grid Filter -->
-	<string name="grid_filter_title">Filter la grille par lettre</string>
+	<string name="grid_filter_title">Filtrer la grille par lettre</string>
 	<string name="grid_manage_title">Gérer vos amis</string>
 	
 	<!-- Top Bar -->
@@ -552,6 +567,8 @@
 	<string name="notification_snoozed">Message de %1$s à nouveau disponible</string>
 	<string name="notification_open_message">Ouvrir le message</string>
 	<string name="notification_reply_chat">Répondre en chat</string>
+	<string name="notification_online_hi">Hi :wave:</string>
+	<string name="notification_online_hi_message">Hi :wave:</string>
 	
 	<!-- Share -->
 	<string name="share_add_friends_addressbook_suggestions">I was able to get access to Tribe. Just noticed that you already have %1$d friends on this app. I can get you in: %2$s #JoinTheTribe</string>
