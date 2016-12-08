@@ -13,7 +13,7 @@
 
     <!-- PROGRESS BAR -->
     <dimen name="progress_bar_thickness">2dp</dimen>
-    <dimen name="progress_bar_thickness_small">0.5dp</dimen>
+    <dimen name="progress_bar_thickness_small">1dp</dimen>
 
     <!-- MARGINS -->
     <dimen name="horizontal_margin">20dp</dimen>
@@ -42,6 +42,7 @@
     <dimen name="group_suggestion_margin">5dp</dimen>
     <dimen name="group_suggestion_margin_mid">10dp</dimen>
     <dimen name="group_info_edit_icon_top_margin">11.5dp</dimen>
+    <dimen name="margin_end_action_view">70dp</dimen>
 
     <!-- PADDING -->
     <dimen name="icons_padding">3.75dp</dimen>

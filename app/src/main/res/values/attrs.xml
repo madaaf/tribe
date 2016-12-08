@@ -114,4 +114,13 @@
             <enum name="regular" value="6" />
         </attr>
     </declare-styleable>
+
+    <declare-styleable name="SyncView">
+        <attr name="syncIcon" format="integer" />
+        <attr name="syncBackground" format="integer" />
+        <attr name="syncType" format="enum">‡
+            <enum name="fb" value="0" />
+            <enum name="addressbook" value="1" />
+        </attr>
+    </declare-styleable>
 </resources>

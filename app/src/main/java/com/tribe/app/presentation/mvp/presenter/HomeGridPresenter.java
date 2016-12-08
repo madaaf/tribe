@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.util.Pair;
+
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
 import com.tribe.app.data.network.job.UpdateFriendshipJob;
@@ -8,6 +10,7 @@ import com.tribe.app.data.network.job.UpdateTribeDownloadedJob;
 import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
@@ -30,12 +33,16 @@ import com.tribe.app.domain.interactor.user.LeaveGroup;
 import com.tribe.app.domain.interactor.user.RemoveGroup;
 import com.tribe.app.domain.interactor.user.SendOnlineNotification;
 import com.tribe.app.domain.interactor.user.SendToken;
+import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.SendTribeMVPView;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
+import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -61,6 +68,8 @@ public class HomeGridPresenter extends SendTribePresenter {
     private UseCase cloudUserInfos;
     private UseCase cloudGetMessages;
     private SendOnlineNotification sendOnlineNotification;
+    private UpdateUser updateUser;
+    private RxFacebook rxFacebook;
 
     // SUBSCRIBERS
     private UpdateTribesReceivedToNotSeenSubscriber updateTribesReceivedToNotSeenSubscriber;
@@ -90,7 +99,9 @@ public class HomeGridPresenter extends SendTribePresenter {
                              CreateMembership createMembership,
                              @Named("cloudUserInfos") UseCase cloudUserInfos,
                              @Named("cloudGetMessages") UseCase cloudGetMessages,
-                             SendOnlineNotification sendOnlineNotification) {
+                             SendOnlineNotification sendOnlineNotification,
+                             UpdateUser updateUser,
+                             RxFacebook rxFacebook) {
         super(jobManager, jobManagerDownload, diskSaveTribe, diskDeleteTribe, confirmTribe);
         this.diskUserInfosUsecase = diskUserInfos;
         this.diskGetMessageReceivedListUsecase = diskGetReceivedMessageList;
@@ -106,6 +117,8 @@ public class HomeGridPresenter extends SendTribePresenter {
         this.cloudUserInfos = cloudUserInfos;
         this.cloudGetMessages = cloudGetMessages;
         this.sendOnlineNotification = sendOnlineNotification;
+        this.updateUser = updateUser;
+        this.rxFacebook = rxFacebook;
     }
 
     public void onResume() {
@@ -129,6 +142,7 @@ public class HomeGridPresenter extends SendTribePresenter {
         cloudGetMessages.unsubscribe();
         cloudUserInfos.unsubscribe();
         sendOnlineNotification.unsubscribe();
+        updateUser.unsubscribe();
         super.onViewDetached();
     }
 
@@ -447,6 +461,39 @@ public class HomeGridPresenter extends SendTribePresenter {
 
         @Override
         public void onNext(Installation installation) {
+        }
+    }
+
+    public void updateUserFacebook(String fbid) {
+        List<Pair<String, String>> values = new ArrayList<>();
+        values.add(new Pair<>(UserRealm.FBID, String.valueOf(fbid)));
+        updateUser.prepare(values);
+        updateUser.execute(new DefaultSubscriber() {
+            @Override
+            public void onError(Throwable e) {
+                super.onError(e);
+                System.out.println("ON ERROR" + e.getMessage());
+            }
+
+            @Override
+            public void onNext(Object o) {
+                super.onNext(o);
+                System.out.println("ON NEXT");
+            }
+        });
+    }
+
+    public void loginFacebook() {
+        if (!FacebookUtils.isLoggedIn()) {
+            rxFacebook.requestLogin().subscribe(loginResult -> {
+                if (FacebookUtils.isLoggedIn()) {
+                    homeGridView.successFacebookLogin();
+                } else {
+                    homeGridView.errorFacebookLogin();
+                }
+            });
+        } else {
+            homeGridView.successFacebookLogin();
         }
     }
 }

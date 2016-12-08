@@ -20,4 +20,6 @@ public interface HomeGridMVPView extends SendTribeMVPView {
     int getNbItems();
     void refreshGrid();
     void onFriendshipUpdated(Friendship friendship);
+    void successFacebookLogin();
+    void errorFacebookLogin();
 }

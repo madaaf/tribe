@@ -13,9 +13,10 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.FilterViewAdapter;
-import com.tribe.app.presentation.view.adapter.manager.FilterViewLayoutManager;
 import com.tribe.app.presentation.view.adapter.decorator.GridDividerTopAllItemDecoration;
+import com.tribe.app.presentation.view.adapter.manager.FilterViewLayoutManager;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.widget.SyncView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,6 +51,12 @@ public class FilterView extends LinearLayout {
 
     @BindView(R.id.recyclerViewFilter)
     RecyclerView recyclerViewFilter;
+
+    @BindView(R.id.viewSyncAB)
+    SyncView viewSyncAB;
+
+    @BindView(R.id.viewSyncFB)
+    SyncView viewSyncFB;
 
     // VARIABLES
     private FilterViewLayoutManager filterViewLayoutManager;
@@ -230,6 +237,14 @@ public class FilterView extends LinearLayout {
         return false;
     }
 
+    public void setFBSync(boolean success) {
+        viewSyncFB.setActive(success, true);
+    }
+
+    public void setABSync(boolean success) {
+        viewSyncAB.setActive(success, true);
+    }
+
     //////////////////////
     //   OBSERVABLES    //
     //////////////////////
@@ -241,4 +256,8 @@ public class FilterView extends LinearLayout {
     public Observable<Void> onCloseClick() {
         return onCloseClick;
     }
+
+    public Observable<SyncView> onSyncFBClick() { return viewSyncFB.onClick(); }
+
+    public Observable<SyncView> onSyncABClick() { return viewSyncAB.onClick(); }
 }

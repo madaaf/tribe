@@ -211,4 +211,17 @@ public final class DialogFactory {
         followTypes.add(new LabelType(context.getString(R.string.settings_follow_snapchat), LabelType.SNAPCHAT));
         return followTypes;
     }
+
+    public static Observable<LabelType> showBottomSheetForContact(Context context) {
+        return createBottomSheet(context, generateLabelsForContact(context));
+    }
+
+    private static List<LabelType> generateLabelsForContact(Context context) {
+        List<LabelType> messageTypes = new ArrayList<>();
+
+        messageTypes.add(new LabelType(context.getString(R.string.settings_message_tribe), LabelType.TRIBE));
+        messageTypes.add(new LabelType(context.getString(R.string.settings_message_email), LabelType.EMAIL));
+        messageTypes.add(new LabelType(context.getString(R.string.settings_message_twitter), LabelType.TWITTER));
+        return messageTypes;
+    }
 }

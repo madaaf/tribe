@@ -161,6 +161,7 @@ public class AndroidApplication extends Application {
                         RealmObjectSchema userSchema = schema.get("UserRealm");
 
                         userSchema.addField("push_notif", boolean.class);
+                        oldVersion++;
                     }
                 })
                 .build();

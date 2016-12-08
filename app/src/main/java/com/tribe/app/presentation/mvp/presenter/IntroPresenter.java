@@ -18,6 +18,7 @@ import com.tribe.app.domain.interactor.user.GetRequestCode;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.IntroMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 
@@ -169,7 +170,7 @@ public class IntroPresenter implements Presenter {
                             goToConnected(null);
                         } else if (errorLogin != null && !errorLogin.isVerified()) {
                             introView.pinError(errorLogin);
-                            introView.showError(introView.context().getString(R.string.onboarding_error_wrong_pin));
+                            introView.showError(EmojiParser.demojizedText(introView.context().getString(R.string.onboarding_error_wrong_pin)));
                         }
                     } catch (IOException e1) {
                         e1.printStackTrace();

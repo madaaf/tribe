@@ -46,9 +46,15 @@
         <item name="android:textColorPrimary">@android:color/black</item>
     </style>
 
-    <style name="GetNotifiedAnimation" parent="@android:style/Animation.Activity">
+    <style name="DialogAnimation" parent="@android:style/Animation.Activity">
         <item name="android:windowEnterAnimation">@anim/base_dialog_fragment_enter_animation</item>
         <item name="android:windowExitAnimation">@anim/base_dialog_fragment_exit_animation</item>
+    </style>
+
+    <style name="Custom.Dialog" parent="@style/Theme.AppCompat.Light.Dialog" >
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsFloating">false</item>
     </style>
 
     <style name="FilterViewAnimation">

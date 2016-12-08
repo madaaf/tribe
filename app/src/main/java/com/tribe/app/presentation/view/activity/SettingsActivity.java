@@ -282,10 +282,21 @@ public class SettingsActivity extends BaseActivity implements SettingsMVPView {
                 }));
 
         subscriptions.add(viewSettings.onContactClick()
-                .subscribe(aVoid -> {
-                    String[] addresses = {getString(R.string.settings_email_address)};
-                    navigator.composeEmail(this, addresses, getString(R.string.settings_email_subject));
-                }));
+                .flatMap(aVoid -> DialogFactory.showBottomSheetForContact(this),
+                        ((aVoid, labelType) -> {
+                            if (labelType.getTypeDef().equals(LabelType.TRIBE)) {
+                                //navigator.navigateToUrl(this, getString(R.string.settings_follow_instagram_url));
+                            } else if (labelType.getTypeDef().equals(LabelType.EMAIL)) {
+                                String[] addresses = {getString(R.string.settings_email_address)};
+                                navigator.composeEmail(this, addresses, getString(R.string.settings_email_subject));
+                            } else if (labelType.getTypeDef().equals(LabelType.TWITTER)) {
+                                navigator.tweet(this, "");
+                            }
+
+                            return null;
+                        }))
+                .subscribe()
+        );
 
         subscriptions.add(viewSettings.onFollowClick()
                 .flatMap(aVoid -> DialogFactory.showBottomSheetForFollow(this),

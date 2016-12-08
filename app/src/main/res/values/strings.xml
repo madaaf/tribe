@@ -369,7 +369,8 @@
 	<string name="settings_tweet_subtitle">We love interacting with our users on Twitter</string>
 	<string name="settings_email_title">Email the team</string>
 	<string name="settings_email_subtitle">We reply in less than 48 hours to every single email.</string>
-	<string name="settings_email_address">cyril@tribe.pm</string>
+	<string name="settings_email_address">support@tribe.pm</string>
+	<string name="settings_email_copied">:paperclip: support@tribe.pm copied to the clipboard. Open your Email app to paste the email address!</string>
 	<string name="settings_email_subject">Something about Tribe</string>
 	<string name="settings_filters_and_themes_title">Filters and themes</string>
 	<string name="settings_filters_and_themes_subtitle">Customize your experiences</string>
@@ -491,7 +492,7 @@
 	<string name="pull_to_search_title">Filter your grid by letter</string>
 	
 	<!-- Grid Filter -->
-	<string name="grid_filter_title">phone</string>
+	<string name="grid_filter_title">Filter your grid by letter</string>
 	<string name="grid_manage_title">Manage friends</string>
 	
 	<!-- Top Bar -->

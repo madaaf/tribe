@@ -76,6 +76,7 @@ public class SettingsPresenter extends UpdateUserPresenter {
         getDiskFBContactList.unsubscribe();
         diskUpdateFriendship.unsubscribe();
         getBlockedFriendshipList.unsubscribe();
+        super.onViewDetached();
     }
 
     @Override

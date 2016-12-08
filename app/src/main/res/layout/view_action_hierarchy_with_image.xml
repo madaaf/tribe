@@ -14,6 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="56dp"
+        android:layout_marginEnd="@dimen/margin_end_action_view"
         android:orientation="vertical">
         <include layout="@layout/view_action_base" />
     </LinearLayout>

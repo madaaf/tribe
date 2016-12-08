@@ -17,10 +17,8 @@ import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.activity.PointsActivity;
 import com.tribe.app.presentation.view.activity.ScoreActivity;
 import com.tribe.app.presentation.view.activity.SearchUserActivity;
-import com.tribe.app.presentation.view.activity.SettingActivity;
 import com.tribe.app.presentation.view.activity.SettingsActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
-import com.tribe.app.presentation.view.component.SettingItemView;
 import com.tribe.app.presentation.view.component.settings.SettingsBlockedHiddenView;
 import com.tribe.app.presentation.view.component.settings.SettingsFilterThemeView;
 import com.tribe.app.presentation.view.component.settings.SettingsFilterView;
@@ -33,8 +31,6 @@ import com.tribe.app.presentation.view.dialog_fragment.ShareDialogProfileFragmen
 import com.tribe.app.presentation.view.fragment.AccessFragment;
 import com.tribe.app.presentation.view.fragment.IntroViewFragment;
 import com.tribe.app.presentation.view.fragment.ProfileInfoFragment;
-import com.tribe.app.presentation.view.fragment.SettingBlockFragment;
-import com.tribe.app.presentation.view.fragment.SettingFragment;
 
 import dagger.Component;
 
@@ -65,13 +61,9 @@ public interface UserComponent extends ActivityComponent {
     void inject(SearchUserActivity searchUserActivity);
     void inject(SearchPresenter searchPresenter);
 
-    void inject(SettingActivity settingActivity);
-    void inject(SettingItemView settingItemView);
-    void inject(SettingFragment settingFragment);
     void inject(SettingsPresenter settingsPresenter);
     void inject(SettingsActivity settingsActivity);
     void inject(SettingsThemeView settingsThemeView);
-    void inject(SettingBlockFragment settingBlockFragment);
     void inject(SettingsFilterView settingsFilterView);
     void inject(SettingsView settingsView);
     void inject(SettingsProfileView settingsProfileView);

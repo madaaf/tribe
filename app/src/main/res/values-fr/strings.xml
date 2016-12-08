@@ -129,11 +129,11 @@
 	<string name="permission_global_popup_message">Occupons-nous des permissions pour que vous ne manquiez rien de l\'expérience de messagerie vidéo la plus incroyable.</string>
 	<string name="permission_global_popup_cancel">Rester nul</string>
 	<string name="permission_global_popup_confirm">C\'est parti !</string>
-	<string name="permission_facebook_popup_title">Amis facebook</string>
+	<string name="permission_facebook_popup_title">Retrouvez vos amis Facebook</string>
 	<string name="permission_facebook_popup_message">Vos amis Facebook seront synchronisé avec Tribe pour que vous puissiez retrouver facilement les personnes que vous connaissez déjà.</string>
 	<string name="permission_facebook_popup_ok">Parfait !</string>
 	<string name="permission_facebook_popup_ko">Pas d\'amis</string>
-	<string name="permission_addressbook_popup_title">Amis</string>
+	<string name="permission_addressbook_popup_title">Retrouver les contacts de votre Carnet d\'adresses</string>
 	<string name="permission_addressbook_popup_message">Vos amis seront synchronisé avec Tribe pour que vous puissiez retrouver facilement les personnes que vous connaissez déjà.</string>
 	<string name="permission_addressbook_popup_ok">Parfait !</string>
 	<string name="permission_addressbook_popup_ko">Pas d\'amis</string>
@@ -369,7 +369,8 @@
 	<string name="settings_tweet_subtitle">Nous répondons en moins de 24h à chaque tweet.</string>
 	<string name="settings_email_title">Envoyer un email à l\'équipe</string>
 	<string name="settings_email_subtitle">Nous répondons en moins de 48h à chaque email.</string>
-	<string name="settings_email_address">cyril@tribe.pm</string>
+	<string name="settings_email_address">support@tribe.pm</string>
+	<string name="settings_email_copied">:paperclip: support@tribe.pm ajouté au presse-papier. Ouvrez votre app de Mails pour coller l\'addresse email !</string>
 	<string name="settings_email_subject">À propos de Tribe</string>
 	<string name="settings_filters_and_themes_title">Filtres et thèmes</string>
 	<string name="settings_filters_and_themes_subtitle">Personnaliser votre expérience</string>
@@ -491,7 +492,7 @@
 	<string name="pull_to_search_title">Trier votre grille par lettre</string>
 	
 	<!-- Grid Filter -->
-	<string name="grid_filter_title">Filter la grille par lettre</string>
+	<string name="grid_filter_title">Filtrer la grille par lettre</string>
 	<string name="grid_manage_title">Gérer vos amis</string>
 	
 	<!-- Top Bar -->

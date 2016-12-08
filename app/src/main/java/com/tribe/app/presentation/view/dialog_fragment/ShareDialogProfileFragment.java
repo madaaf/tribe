@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.dialog_fragment;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,8 @@ import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.widget.DiagonalLayout;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.io.File;
@@ -41,6 +44,7 @@ public class ShareDialogProfileFragment extends BaseDialogFragment {
     public static ShareDialogProfileFragment newInstance() {
         Bundle args = new Bundle();
         ShareDialogProfileFragment fragment = new ShareDialogProfileFragment();
+        fragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.Custom_Dialog);
         fragment.setArguments(args);
         return fragment;
     }
@@ -69,6 +73,15 @@ public class ShareDialogProfileFragment extends BaseDialogFragment {
     @BindView(R.id.viewShapeAngle)
     View viewShapeAngle;
 
+    @BindView(R.id.layoutDiagonal)
+    DiagonalLayout layoutDiagonal;
+
+    @BindView(R.id.layoutBottom)
+    ViewGroup layoutBottom;
+
+    @Inject
+    ScreenUtils screenUtils;
+
     @Inject
     Navigator navigator;
 
@@ -85,6 +98,35 @@ public class ShareDialogProfileFragment extends BaseDialogFragment {
         initUi(fragmentView);
 
         return fragmentView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if (getDialog() == null)
+            return;
+
+        int dialogWidth = screenUtils.getWidthPx();
+        int oneFourth = dialogWidth / 4 - screenUtils.dpToPx(15);
+        int dialogHeight = dialogWidth + oneFourth;
+
+        ViewGroup.LayoutParams params = layoutBottom.getLayoutParams();
+        params.height = oneFourth;
+        layoutBottom.setLayoutParams(params);
+
+        ViewGroup.LayoutParams paramsDiagonal = layoutDiagonal.getLayoutParams();
+        paramsDiagonal.height = dialogWidth >> 1;
+        layoutDiagonal.setLayoutParams(paramsDiagonal);
+
+        int avatarWidth = (int) (dialogWidth / 2.5f);
+        ViewGroup.LayoutParams paramsAvatar = avatar.getLayoutParams();
+        paramsAvatar.height = avatarWidth;
+        paramsAvatar.width = avatarWidth;
+        avatar.setLayoutParams(paramsAvatar);
+
+
+        getDialog().getWindow().setLayout(dialogWidth, dialogHeight);
     }
 
     @Override

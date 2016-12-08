@@ -40,6 +40,8 @@ public class LabelType implements Serializable {
     public static final String INSTAGRAM = "instagram";
     public static final String TWITTER = "twitter";
     public static final String SNAPCHAT = "snapchat";
+    public static final String TRIBE = "tribe";
+    public static final String EMAIL = "email";
 
     private @GenericTypeDef String typeDef;
     private String label;
