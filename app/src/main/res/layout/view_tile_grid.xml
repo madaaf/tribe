@@ -30,8 +30,7 @@
         android:src="@drawable/picto_text"
         android:scaleType="centerInside"
         android:layout_gravity="bottom|right"
-        android:background="@null"
-        android:foreground="@drawable/selectable_button_oval"
+        android:background="@drawable/selectable_button_oval"
         android:clickable="true"
         />
 

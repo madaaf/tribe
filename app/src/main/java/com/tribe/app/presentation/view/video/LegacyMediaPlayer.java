@@ -92,7 +92,8 @@ LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.OnVideoSizeCha
             mediaPlayer.setOnPreparedListener(this);
             mediaPlayer.setOnErrorListener(this);
 
-            if (mute) mediaPlayer.setVolume(0, 0);
+            if (mute) mediaPlayer.setVolume(0.0f, 0.0f);
+            else mediaPlayer.setVolume(1.0f, 1.0f);
             mediaPlayer.setLooping(looping);
         } catch (Exception e) {
             e.printStackTrace();

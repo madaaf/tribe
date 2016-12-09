@@ -204,6 +204,7 @@ public class TribeActivity extends BaseActivity implements TribeMVPView, SensorE
         proximity = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetic = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        audioManager.setSpeakerphoneOn(true);
     }
 
     private void initUi() {
