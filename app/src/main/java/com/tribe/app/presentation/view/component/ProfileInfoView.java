@@ -207,7 +207,7 @@ public class ProfileInfoView extends LinearLayout {
 
         ArrayList<InputFilter> inputFilters = new ArrayList<InputFilter>(Arrays.asList(editUsername.getFilters()));
         inputFilters.add(0, filterAlphanumeric);
-        inputFilters.add(1, filterSpace);
+        inputFilters.add(1, filterSpace); 
         inputFilters.add(2, filterLowercase);
         InputFilter[] newInputFilters = inputFilters.toArray(new InputFilter[inputFilters.size()]);
         editUsername.setFilters(newInputFilters);
