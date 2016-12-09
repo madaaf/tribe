@@ -212,7 +212,7 @@ public class TribePagerView extends FrameLayout {
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private final PublishSubject<View> onDown = PublishSubject.create();
     private final PublishSubject<View> clickTapToCancel = PublishSubject.create();
-    private final PublishSubject<View> onNotCancel = PublishSubject.create();
+    private final PublishSubject<Recipient> onNotCancel = PublishSubject.create();
     private final PublishSubject<View> recordStarted = PublishSubject.create();
     private final PublishSubject<View> recordEnded = PublishSubject.create();
     private final PublishSubject<View> clickEnableLocation = PublishSubject.create();
@@ -1247,7 +1247,7 @@ public class TribePagerView extends FrameLayout {
         return clickTapToCancel;
     }
 
-    public Observable<View> onNotCancel() {
+    public Observable<Recipient> onNotCancel() {
         return onNotCancel;
     }
 

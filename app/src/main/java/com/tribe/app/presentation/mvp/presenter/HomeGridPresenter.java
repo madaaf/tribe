@@ -121,12 +121,6 @@ public class HomeGridPresenter extends SendTribePresenter {
         this.rxFacebook = rxFacebook;
     }
 
-    public void onResume() {
-        reload();
-        loadTribeList();
-        loadPendingTribeList();
-    }
-
     @Override
     public void onViewDetached() {
         sendTokenUseCase.unsubscribe();
@@ -151,6 +145,9 @@ public class HomeGridPresenter extends SendTribePresenter {
         homeGridView = (HomeGridMVPView) v;
         jobManager.addJobInBackground(new UpdateTribeDownloadedJob());
         jobManager.addJobInBackground(new UpdateTribesErrorStatusJob());
+        reload();
+        loadTribeList();
+        loadPendingTribeList();
     }
 
     public void reload() {

@@ -131,7 +131,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
                 supportGridAdapterDelegate.onClickTapToCancel());
     }
 
-    public Observable<View> onNotCancel() {
+    public Observable<Recipient> onNotCancel() {
         return Observable.merge(userGridAdapterDelegate.onNotCancel(),
                 groupGridAdapterDelegate.onNotCancel(),
                 supportGridAdapterDelegate.onNotCancel());

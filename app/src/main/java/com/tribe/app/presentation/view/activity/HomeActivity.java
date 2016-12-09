@@ -216,7 +216,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         initUi();
         initDimensions();
         initCamera();
-        initPresenter();
         initRegistrationToken();
         initFilterView();
         initRecyclerView();
@@ -242,6 +241,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     protected void onStart() {
         super.onStart();
         tagManager.onStart(this);
+        homeGridPresenter.onViewAttached(this);
     }
 
     @Override
@@ -254,8 +254,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     protected void onResume() {
         super.onResume();
-
-        homeGridPresenter.loadFriendList(null);
 
         subscriptions.add(Observable.
                 from(PermissionUtils.PERMISSIONS_CAMERA)
@@ -449,7 +447,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                             if (recipient instanceof Membership && (recipient.getReceivedTribes() == null || recipient.getReceivedTribes().size() == 0)) {
                                 Membership membership = (Membership) recipient;
                                 navigator.navigateToGroupDetails(this, membership);
-                                return null;
+                                return Observable.empty();
                             } else {
                                 return DialogFactory.showBottomSheetForRecipient(this, recipient);
                             }
@@ -471,8 +469,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
                             return recipient;
                         }))
-                .subscribe()
-        );
+                .subscribe());
+
 
         subscriptions.add(homeGridAdapter.onClickErrorTribes()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
@@ -545,7 +543,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         );
 
         subscriptions.add(homeGridAdapter.onNotCancel()
-                .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .filter(recipient -> {
                     soundManager.playSound(SoundManager.SENT, SoundManager.SOUND_LOW);
                     TribeMessage tr = recipient.getTribe();
@@ -652,10 +649,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 .activityModule(getActivityModule())
                 .applicationComponent(getApplicationComponent())
                 .build().inject(this);
-    }
-
-    private void initPresenter() {
-        this.homeGridPresenter.onViewAttached(this);
     }
 
     private void initPullToRefresh() {

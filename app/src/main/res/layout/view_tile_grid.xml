@@ -30,7 +30,8 @@
         android:src="@drawable/picto_text"
         android:scaleType="centerInside"
         android:layout_gravity="bottom|right"
-        android:background="@drawable/selectable_button_oval"
+        android:background="@null"
+        android:foreground="@drawable/selectable_button_oval"
         android:clickable="true"
         />
 
@@ -58,6 +59,7 @@
         android:drawablePadding="8dp"
         android:text="@string/grid_friendship_status_default"
         android:visibility="gone"
+        android:background="@null"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -82,6 +84,7 @@
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="15dp"
         android:alpha="0"
+        android:background="@null"
         app:textStyle="@style/Caption.White.1"
         />
 
@@ -107,6 +110,7 @@
         android:layout_width="@dimen/avatar_size_intermediate"
         android:layout_height="@dimen/avatar_size_intermediate"
         android:layout_gravity="center"
+        android:background="@null"
         />
 
     <View
@@ -133,6 +137,7 @@
             android:id="@+id/txtNbTribes"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@null"
             android:gravity="center"
             style="@style/Title.1"
             />
@@ -143,6 +148,7 @@
             android:layout_height="17.5dp"
             android:layout_gravity="center"
             android:visibility="gone"
+            android:background="@null"
             app:cpv_thickness="@dimen/progress_bar_thickness"
             app:cpv_indeterminate="true"
             app:cpv_color="@android:color/white"
@@ -156,6 +162,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:background="@null"
         android:scaleType="centerInside"
         android:src="@drawable/picto_cancel"
         android:scaleX="0"
@@ -167,6 +174,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:background="@null"
         android:scaleType="centerInside"
         android:src="@drawable/picto_done"
         android:scaleX="0"
@@ -179,6 +187,7 @@
         android:layout_width="@dimen/avatar_size"
         android:layout_height="@dimen/avatar_size"
         android:layout_gravity="center"
+        android:background="@null"
         android:max="@integer/time_tap_to_cancel"
         android:progress="0"
         android:progressDrawable="@drawable/progress_circular"

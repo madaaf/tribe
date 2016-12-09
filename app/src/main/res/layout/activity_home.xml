@@ -16,6 +16,7 @@
             android:id="@+id/topBarView"
             android:layout_width="match_parent"
             android:layout_height="@dimen/top_bar_height_small"
+            android:background="@null"
             />
 
         <android.support.v7.widget.RecyclerView

@@ -33,7 +33,7 @@ public abstract class RecipientGridAdapterDelegate extends RxAdapterDelegate<Lis
     protected final PublishSubject<View> clickChatView = PublishSubject.create();
     protected final PublishSubject<View> clickMoreView = PublishSubject.create();
     protected final PublishSubject<View> clickTapToCancel = PublishSubject.create();
-    protected final PublishSubject<View> onNotCancel = PublishSubject.create();
+    protected final PublishSubject<Recipient> onNotCancel = PublishSubject.create();
     protected final PublishSubject<View> recordStarted = PublishSubject.create();
     protected final PublishSubject<View> recordEnded = PublishSubject.create();
     protected final PublishSubject<View> clickErrorTribes = PublishSubject.create();
@@ -104,7 +104,7 @@ public abstract class RecipientGridAdapterDelegate extends RxAdapterDelegate<Lis
         return clickTapToCancel;
     }
 
-    public Observable<View> onNotCancel() {
+    public Observable<Recipient> onNotCancel() {
         return onNotCancel;
     }
 

@@ -16,7 +16,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.Interpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -78,6 +77,8 @@ public class TileView extends SquareFrameLayout {
     private static final SpringConfig SPRING_NO_BOUNCE = SpringConfig.fromBouncinessAndSpeed(BOUNCINESS_OUTSIDE, SPEED_OUTSIDE);
     private static final SpringConfig SPRING_BOUNCE = SpringConfig.fromBouncinessAndSpeed(BOUNCINESS_INSIDE, SPEED_INSIDE);
 
+    private static boolean isDown = false;
+
     private final float DIFF_DOWN = 20f;
     private final int LONG_PRESS = 200;
     private final int FADE_DURATION = 200;
@@ -125,7 +126,7 @@ public class TileView extends SquareFrameLayout {
     private final PublishSubject<View> clickChatView = PublishSubject.create();
     private final PublishSubject<View> clickMoreView = PublishSubject.create();
     private final PublishSubject<View> clickTapToCancel = PublishSubject.create();
-    private final PublishSubject<View> onNotCancel = PublishSubject.create();
+    private final PublishSubject<Recipient> onNotCancel = PublishSubject.create();
     private final PublishSubject<View> recordStarted = PublishSubject.create();
     private final PublishSubject<View> recordEnded = PublishSubject.create();
     private final PublishSubject<Boolean> replyModeStarted = PublishSubject.create(); // OPEN THE CAMERA WHILE RECORDING
@@ -149,9 +150,9 @@ public class TileView extends SquareFrameLayout {
     private int replySizeScaled;
 
     // VARIABLES
+    private Recipient recipient;
     private int type;
     private long longDown = 0L;
-    private boolean isDown = false;
     private float downX, downY, currentX, currentY;
     private TribeMessage currentTribe;
     private @CameraWrapper.TribeMode String currentTribeMode;
@@ -235,15 +236,21 @@ public class TileView extends SquareFrameLayout {
     }
 
     private void prepareTouchesChat() {
-        btnText.setOnClickListener(v -> clickChatView.onNext(this));
+        btnText.setOnClickListener(v -> {
+            if (!isDown) clickChatView.onNext(this);
+        });
     }
 
     private void prepareTouchesMore() {
-        txtName.setOnClickListener(v -> clickMoreView.onNext(this));
+        txtName.setOnClickListener(v -> {
+            if (!isDown) clickMoreView.onNext(this);
+        });
     }
 
     private void prepareTouchesErrorTribe() {
-        txtStatusError.setOnClickListener(v -> clickErrorTribes.onNext(this));
+        txtStatusError.setOnClickListener(v -> {
+            if (!isDown) clickErrorTribes.onNext(this);
+        });
     }
 
     private void prepareTouchesTile() {
@@ -303,20 +310,23 @@ public class TileView extends SquareFrameLayout {
 
                 return true;
             } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-                currentX = event.getRawX();
-                currentY = event.getRawY();
-                //if (isRecording) return true;
+                if (isDown) {
+                    currentX = event.getRawX();
+                    currentY = event.getRawY();
+                }
             } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                if (timer != null) timer.unsubscribe();
+                if (isDown) {
+                    if (timer != null) timer.unsubscribe();
 
-                if ((System.currentTimeMillis() - longDown) >= LONG_PRESS && isDown && isRecording) {
-                    recordEnded.onNext(this);
-                    isRecording = false;
-                } else if (isDown && (System.currentTimeMillis() - longDown) <= LONG_PRESS) {
-                    if ((type == TYPE_GRID || type == TYPE_SUPPORT)) {
-                        clickOpenTribes.onNext(this);
-                    } else {
-                        replyModeClickStarted.onNext(true);
+                    if ((System.currentTimeMillis() - longDown) >= LONG_PRESS && isDown && isRecording) {
+                        recordEnded.onNext(this);
+                        isRecording = false;
+                    } else if (isDown && (System.currentTimeMillis() - longDown) <= LONG_PRESS) {
+                        if ((type == TYPE_GRID || type == TYPE_SUPPORT)) {
+                            clickOpenTribes.onNext(this);
+                        } else {
+                            replyModeClickStarted.onNext(true);
+                        }
                     }
                 }
 
@@ -531,7 +541,7 @@ public class TileView extends SquareFrameLayout {
     }
 
     public void setInfo(Recipient recipient) {
-        // WE DON'T LOAD THE AVATAR AGAIN IF THE URL IS THE SAME
+        this.recipient = recipient;
         avatar.load(recipient);
 
         if ((type == TYPE_GRID || type == TYPE_SUPPORT)) {
@@ -654,16 +664,6 @@ public class TileView extends SquareFrameLayout {
         UIUtils.setBackgroundGrid(screenUtils, this, position);
     }
 
-    public void setAvatarScale(float scale, int duration, int delay, Interpolator interpolator) {
-        avatar.animate().scaleX(scale).scaleY(scale).setDuration(duration).setStartDelay(delay).setInterpolator(interpolator).start();
-    }
-
-//    public void preparePlayer(String localId) {
-//        if (localId != null) {
-//            playerView.createPlayer(FileUtils.getPathForId(localId));
-//        }
-//    }
-
     public void showTapToCancel(TribeMessage tribe, @CameraWrapper.TribeMode String tribeMode) {
         currentTribe = tribe;
         currentTribeMode = tribeMode;
@@ -710,7 +710,7 @@ public class TileView extends SquareFrameLayout {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(time -> {
-                            onNotCancel.onNext(TileView.this);
+                            onNotCancel.onNext(recipient);
                             if (type != TYPE_TILE) resetViewAfterTapToCancel(true);
                         });
             }
@@ -794,7 +794,7 @@ public class TileView extends SquareFrameLayout {
         return clickTapToCancel;
     }
 
-    public Observable<View> onNotCancel() {
+    public Observable<Recipient> onNotCancel() {
         return onNotCancel;
     }
 
