@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.widget.Toast;
 
 import com.tribe.app.BuildConfig;
@@ -436,7 +437,10 @@ public class Navigator {
             share.setType("image/jpeg");
             share.putExtra(Intent.EXTRA_TEXT, EmojiParser.demojizedText(context.getString(R.string.share_add_friends_handle)));
 
-            Uri uri = Uri.fromFile(file);
+            Uri uri = FileProvider.getUriForFile(context,
+                    BuildConfig.APPLICATION_ID + ".provider",
+                    file);
+
             share.putExtra(Intent.EXTRA_STREAM, uri);
 
             if (StringUtils.isEmpty(selectedPackage)) {

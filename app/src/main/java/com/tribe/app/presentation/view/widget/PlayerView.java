@@ -69,6 +69,8 @@ public class PlayerView extends FrameLayout implements TextureView.SurfaceTextur
             params.height = getHeight();
             textureViewLayout.setRadius(params.width / 2);
             textureViewLayout.setLayoutParams(params);
+            textureViewLayout.invalidate();
+            textureViewLayout.requestLayout();
         }
     }
 

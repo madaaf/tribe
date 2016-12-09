@@ -201,9 +201,9 @@ public class ProfileInfoView extends LinearLayout {
     private void initUi() {
         setOrientation(VERTICAL);
 
-        loadAvatar(user.getProfilePicture());
-        setEditDisplayName(user.getDisplayName());
-        setEditUsername(user.getUsername());
+        if (!StringUtils.isEmpty(user.getProfilePicture())) loadAvatar(user.getProfilePicture());
+        if (!StringUtils.isEmpty(user.getDisplayName())) setEditDisplayName(user.getDisplayName());
+        if (!StringUtils.isEmpty(user.getUsername())) setEditUsername(user.getUsername());
 
         ArrayList<InputFilter> inputFilters = new ArrayList<InputFilter>(Arrays.asList(editUsername.getFilters()));
         inputFilters.add(0, filterAlphanumeric);

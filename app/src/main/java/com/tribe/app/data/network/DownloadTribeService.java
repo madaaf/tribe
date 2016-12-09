@@ -168,6 +168,9 @@ public class DownloadTribeService extends Service {
                         }
 
                         return file;
+                    }).onErrorResumeNext(throwable -> {
+                        computeEndStatus(tribeRealm, MessageDownloadingStatus.STATUS_DOWNLOAD_ERROR);
+                        return Observable.empty();
                     });
                 }, (tribeRealm, file) -> {
                     if (file != null && file.exists() && file.length() > 0) {
@@ -175,16 +178,20 @@ public class DownloadTribeService extends Service {
                         file.delete();
                     }
 
-                    Pair<String, Object> updatePair = Pair.create(TribeRealm.MESSAGE_DOWNLOADING_STATUS, MessageDownloadingStatus.STATUS_DOWNLOADED);
-                    tribeCache.update(tribeRealm.getId(), updatePair);
-
-                    alreadyProcessed.remove(tribeRealm.getLocalId());
+                    computeEndStatus(tribeRealm, MessageDownloadingStatus.STATUS_DOWNLOADED);
 
                     return tribeRealm;
                 }, 1)
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe();
+    }
+
+    private void computeEndStatus(TribeRealm tribeRealm, @MessageDownloadingStatus.Status String status) {
+        Pair<String, Object> updatePair = Pair.create(TribeRealm.MESSAGE_DOWNLOADING_STATUS, status);
+        tribeCache.update(tribeRealm.getId(), updatePair);
+
+        alreadyProcessed.remove(tribeRealm.getLocalId());
     }
 
     protected void setStatus(String id, @MessageDownloadingStatus.Status String status) {

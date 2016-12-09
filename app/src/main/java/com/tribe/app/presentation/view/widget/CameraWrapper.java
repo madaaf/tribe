@@ -200,8 +200,7 @@ public class CameraWrapper extends CardView {
     }
 
     public void onResume(boolean animate) {
-        if (audioManager == null)
-            audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+        refactorAudioManager();
 
         if (animate && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             int cx = getWidth();
@@ -229,8 +228,7 @@ public class CameraWrapper extends CardView {
     }
 
     public void onStartRecord(String fileId) {
-        if (audioManager == null)
-            audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+        refactorAudioManager();
 
         if (audioManager != null && audioManager.isMusicActive()) {
             int result;
@@ -256,6 +254,8 @@ public class CameraWrapper extends CardView {
     }
 
     public void onEndRecord() {
+        refactorAudioManager();
+
         if (audioManager != null) audioManager.abandonAudioFocus(null);
 
         if (isAudioMode) {
@@ -609,5 +609,10 @@ public class CameraWrapper extends CardView {
                 preview.setShader(new GlLutShader(getContext().getResources(), resourceFilter));
             }
         }
+    }
+
+    private void refactorAudioManager() {
+        if (audioManager == null)
+            audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
     }
 }

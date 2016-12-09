@@ -119,6 +119,12 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
                 supportGridAdapterDelegate.onClickMore());
     }
 
+    public Observable<View> onDown() {
+        return Observable.merge(userGridAdapterDelegate.onDown(),
+                groupGridAdapterDelegate.onDown(),
+                supportGridAdapterDelegate.onDown());
+    }
+
     public Observable<View> onRecordStart() {
         return Observable.merge(userGridAdapterDelegate.onRecordStart(),
                 groupGridAdapterDelegate.onRecordStart(),

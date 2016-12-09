@@ -23,6 +23,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.SettingsPresenter;
 import com.tribe.app.presentation.mvp.view.SettingsMVPView;
@@ -183,7 +184,7 @@ public class SettingsActivity extends BaseActivity implements SettingsMVPView {
 
     @Override
     public void onBackPressed() {
-        hideLoading();
+        if (progressView.getVisibility() == View.VISIBLE) hideLoading();
         screenUtils.hideKeyboard(this);
 
         if (disableUI) {
@@ -453,7 +454,9 @@ public class SettingsActivity extends BaseActivity implements SettingsMVPView {
 
     @Override
     public void goToLauncher() {
-
+        ((AndroidApplication) getApplication()).logoutUser();
+        navigator.navigateToLogout(this);
+        finish();
     }
 
     @Override

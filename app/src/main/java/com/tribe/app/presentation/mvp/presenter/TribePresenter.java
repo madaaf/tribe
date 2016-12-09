@@ -66,10 +66,10 @@ public class TribePresenter extends SendTribePresenter implements Presenter {
     }
 
     public void markTribeListAsRead(Recipient recipient, List<TribeMessage> tribeList) {
-        if (tribeList != null && tribeList.size() > 0)
+        if (tribeList != null && tribeList.size() > 0) {
             jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.SEND_RECEIVE_TRIBE, tribeList.size()));
-
-        jobManager.addJobInBackground(new MarkTribeListAsReadJob(recipient, tribeList));
+            jobManager.addJobInBackground(new MarkTribeListAsReadJob(recipient, tribeList));
+        }
     }
 
     public void markTribeAsSave(Recipient recipient, TribeMessage tribeMessage) {

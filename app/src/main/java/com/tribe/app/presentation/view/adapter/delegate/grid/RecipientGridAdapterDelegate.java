@@ -29,6 +29,7 @@ public abstract class RecipientGridAdapterDelegate extends RxAdapterDelegate<Lis
     protected Context context;
 
     // RX SUBSCRIPTIONS / SUBJECTS
+    protected final PublishSubject<View> onDown = PublishSubject.create();
     protected final PublishSubject<View> clickOpenTribes = PublishSubject.create();
     protected final PublishSubject<View> clickChatView = PublishSubject.create();
     protected final PublishSubject<View> clickMoreView = PublishSubject.create();
@@ -50,6 +51,7 @@ public abstract class RecipientGridAdapterDelegate extends RxAdapterDelegate<Lis
         RecipientGridViewHolder recipientGridViewHolder = new RecipientGridViewHolder(layoutInflater.inflate(getLayoutId(), parent, false));
 
         recipientGridViewHolder.viewTile.initClicks();
+        recipientGridViewHolder.viewTile.onDown().subscribe(onDown);
         recipientGridViewHolder.viewTile.onRecordStart().subscribe(recordStarted);
         recipientGridViewHolder.viewTile.onRecordEnd().subscribe(recordEnded);
         recipientGridViewHolder.viewTile.onClickChat().subscribe(clickChatView);
@@ -78,6 +80,10 @@ public abstract class RecipientGridAdapterDelegate extends RxAdapterDelegate<Lis
         }
 
         vh.viewTile.setStatus(recipient.getReceivedTribes(), recipient.getSentTribes(), recipient.getErrorTribes(), recipient.getReceivedMessages());
+    }
+
+    public Observable<View> onDown() {
+        return onDown;
     }
 
     public Observable<View> onOpenTribes() {

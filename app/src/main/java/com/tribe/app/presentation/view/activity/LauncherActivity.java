@@ -46,7 +46,6 @@ public class LauncherActivity extends BaseActivity {
 
         branch.initSession((referringParams, error) -> {
             if (error != null) {
-                System.out.println("HEY ERROR");
                 Log.i("Tribe", error.getMessage());
             }
         }, this.getIntent().getData(), this);

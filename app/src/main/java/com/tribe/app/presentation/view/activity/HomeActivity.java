@@ -496,6 +496,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
         subscriptions.add(homeGridAdapter.onRecordStart()
                 .doOnNext(view -> {
+                    recyclerViewFriends.requestDisallowInterceptTouchEvent(true);
                     isRecording = true;
                     soundManager.playSound(SoundManager.START_RECORD, SoundManager.SOUND_LOW);
                 })
@@ -507,8 +508,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                     TribeMessage currentTribe = homeGridPresenter.createTribe(getCurrentUser(), recipient, cameraWrapper.getTribeMode());
                     homeGridAdapter.updateItemWithTribe(recipient.getPosition(), currentTribe);
                     recyclerViewFriends.postDelayed(() -> homeGridAdapter.notifyItemChanged(recipient.getPosition()), 300);
-                    recyclerViewFriends.requestDisallowInterceptTouchEvent(true);
-                    isRecording = true;
                     cameraWrapper.onStartRecord(currentTribe.getLocalId());
                 })
         );

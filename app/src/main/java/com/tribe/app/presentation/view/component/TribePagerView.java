@@ -246,11 +246,11 @@ public class TribePagerView extends FrameLayout {
         super.onDetachedFromWindow();
 
         springLeft.removeListener(springLeftListener);
-        springRight.addListener(springRightListener);
-        springTop.addListener(springTopListener);
-        springBottom.addListener(springBottomListener);
-        springAlpha.addListener(springAlphaListener);
-        springAlphaSwipeDown.addListener(springAlphaSwipeDownListener);
+        springRight.removeListener(springRightListener);
+        springTop.removeListener(springTopListener);
+        springBottom.removeListener(springBottomListener);
+        springAlpha.removeListener(springAlphaListener);
+        springAlphaSwipeDown.removeListener(springAlphaSwipeDownListener);
 
         tribePagerAdapter.onDestroy();
 

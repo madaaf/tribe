@@ -11,7 +11,7 @@
 
     <rotate
         android:fromDegrees="0"
-        android:toDegrees="-10"
+        android:toDegrees="-2"
         android:duration="500"
         />
 

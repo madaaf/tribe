@@ -646,18 +646,22 @@ public class TileView extends SquareFrameLayout {
                 }
             } else {
                 txtStatus.setVisibility(View.VISIBLE);
-
-                if (circularProgressView.getVisibility() == View.VISIBLE) {
-                    txtNbTribes.setVisibility(View.VISIBLE);
-                    circularProgressView.setVisibility(View.GONE);
-                }
+                refactorLoading();
             }
         } else {
+            refactorLoading();
             txtStatusError.setVisibility(View.GONE);
             txtStatus.setVisibility(View.GONE);
         }
 
         if (viewNewText != null) viewNewText.setVisibility(receivedMessages != null && receivedMessages.size() > 0 ? View.VISIBLE : View.GONE);
+    }
+
+    private void refactorLoading() {
+        if (circularProgressView.getVisibility() == View.VISIBLE) {
+            txtNbTribes.setVisibility(View.VISIBLE);
+            circularProgressView.setVisibility(View.GONE);
+        }
     }
 
     public void setBackground(int position) {

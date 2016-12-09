@@ -174,7 +174,9 @@ public final class DialogFactory {
 
     private static List<LabelType> generateLabelsForRecipient(Context context, Recipient recipient) {
         List<LabelType> moreTypeList = new ArrayList<>();
-        moreTypeList.add(new LabelType(context.getString(R.string.grid_menu_friendship_clear_tribes), LabelType.CLEAR_MESSAGES));
+
+        if (recipient.getReceivedTribes() != null && recipient.getReceivedTribes().size() > 0)
+            moreTypeList.add(new LabelType(context.getString(R.string.grid_menu_friendship_clear_tribes), LabelType.CLEAR_MESSAGES));
 
         if (recipient instanceof Friendship) {
             moreTypeList.add(new LabelType(context.getString(R.string.grid_menu_friendship_hide, recipient.getDisplayName()), LabelType.HIDE));
