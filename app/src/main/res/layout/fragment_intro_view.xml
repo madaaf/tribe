@@ -27,7 +27,7 @@
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtIntroMessage"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
         android:layout_marginLeft="@dimen/horizontal_margin"

@@ -237,8 +237,10 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
                 setupVisualizerFxAndUI();
             }
 
-            if (surfaceTexture != null)
+            if (surfaceTexture != null) {
                 mediaPlayer.setSurface(surfaceTexture);
+                mediaPlayer.prepare();
+            }
 
             subscriptions.add(mediaPlayer.onPreparedPlayer().subscribe(prepared -> {
                 isPrepared = true;
@@ -453,7 +455,10 @@ public class TribeComponentView extends FrameLayout implements TextureView.Surfa
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         surfaceTexture = surface;
-        if (mediaPlayer != null && tribe.isDownloaded()) mediaPlayer.setSurface(surface);
+        if (mediaPlayer != null && tribe.isDownloaded()) {
+            mediaPlayer.setSurface(surface);
+            mediaPlayer.prepare();
+        }
     }
 
     @Override

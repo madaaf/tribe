@@ -8,6 +8,7 @@ import com.tribe.app.presentation.mvp.presenter.SearchPresenter;
 import com.tribe.app.presentation.mvp.presenter.SettingsPresenter;
 import com.tribe.app.presentation.utils.facebook.FacebookHiddenActivity;
 import com.tribe.app.presentation.utils.mediapicker.MediaHiddenActivity;
+import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.BaseActionActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
@@ -61,8 +62,8 @@ public interface UserComponent extends ActivityComponent {
     void inject(SearchUserActivity searchUserActivity);
     void inject(SearchPresenter searchPresenter);
 
-    void inject(SettingsPresenter settingsPresenter);
     void inject(SettingsActivity settingsActivity);
+    void inject(SettingsPresenter settingsPresenter);
     void inject(SettingsThemeView settingsThemeView);
     void inject(SettingsFilterView settingsFilterView);
     void inject(SettingsView settingsView);
@@ -70,4 +71,6 @@ public interface UserComponent extends ActivityComponent {
     void inject(SettingsFilterThemeView settingsFilterThemeView);
     void inject(SettingsParametersView settingsParametersView);
     void inject(SettingsBlockedHiddenView settingsBlockedHiddenView);
+
+    void inject(AuthActivity authActivity);
 }

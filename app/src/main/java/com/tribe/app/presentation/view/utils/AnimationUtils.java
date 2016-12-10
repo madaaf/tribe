@@ -14,7 +14,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
@@ -51,56 +50,6 @@ public class AnimationUtils {
     public static final int ANIMATION_DURATION_EXTRA_SHORT = 100;
     public static final int ANIMATION_DURATION_SHORT = 300;
     public static final int ANIMATION_DURATION_MID = 500;
-
-    public static Animation fadeInAnimation(final View view, long duration, long delay) {
-        Animation animation = new AlphaAnimation(0, 1);
-        animation.setInterpolator(new DecelerateInterpolator());
-        animation.setDuration(duration);
-        animation.setStartOffset(delay);
-
-        animation.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                view.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationStart(Animation animation) {
-                view.setVisibility(View.GONE);
-            }
-        });
-
-        return animation;
-    }
-
-    public static Animation fadeOutAnimation(final View view, long duration, long delay) {
-        Animation animation = new AlphaAnimation(1, 0);
-        animation.setInterpolator(new DecelerateInterpolator());
-        animation.setDuration(duration);
-        animation.setStartOffset(delay);
-
-        animation.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                view.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationStart(Animation animation) {
-                view.setVisibility(View.VISIBLE);
-            }
-        });
-
-        return animation;
-    }
 
     public static void scaleUp(final View view, long duration, long delay, Interpolator interpolator) {
         view.setScaleX(0);

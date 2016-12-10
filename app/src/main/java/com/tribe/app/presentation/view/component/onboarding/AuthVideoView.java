@@ -1,16 +1,15 @@
-package com.tribe.app.presentation.view.widget;
+package com.tribe.app.presentation.view.component.onboarding;
 
 import android.content.Context;
 import android.graphics.SurfaceTexture;
-import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.TextureView;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.video.TribeMediaPlayer;
+import com.tribe.app.presentation.view.widget.video.ScalableVideoView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -20,28 +19,29 @@ import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
- * Created by horatiothomas on 8/15/16.
+ * Created by tiago on 12/09/16.
  */
-public class IntroVideoView extends FrameLayout implements TextureView.SurfaceTextureListener {
+public class AuthVideoView extends FrameLayout implements TextureView.SurfaceTextureListener {
 
-    @BindView(R.id.textureViewLayout)
-    CardView textureViewLayout;
+    @BindView(R.id.viewVideoScalable)
+    ScalableVideoView viewVideoScalable;
 
     // VARIABLES
-    private VideoTextureView videoTextureView;
     private TribeMediaPlayer mediaPlayer;
+    private SurfaceTexture surfaceTexture;
+    private boolean isPaused;
 
     // OBSERVABLES
     private Unbinder unbinder;
     private final PublishSubject<Boolean> videoStarted = PublishSubject.create();
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
-    public IntroVideoView(Context context) {
+    public AuthVideoView(Context context) {
         this(context, null);
         init(context, null);
     }
 
-    public IntroVideoView(Context context, AttributeSet attrs) {
+    public AuthVideoView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
     }
@@ -55,38 +55,42 @@ public class IntroVideoView extends FrameLayout implements TextureView.SurfaceTe
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        initPlayer();
     }
 
-    public void createPlayer(String media) {
-        videoTextureView = new VideoTextureView(getContext());
-        CardView.LayoutParams params = new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        textureViewLayout.addView(videoTextureView, params);
-        videoTextureView.setScaleType(ScalableTextureView.CENTER_CROP);
-        videoTextureView.setSurfaceTextureListener(this);
+    @Override
+    protected void onDetachedFromWindow() {
+        releasePlayer();
+        super.onDetachedFromWindow();
+    }
 
-        mediaPlayer = new TribeMediaPlayer.TribeMediaPlayerBuilder(getContext(), media)
+    public void onPause() {
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+            isPaused = true;
+        }
+    }
+
+    public void initPlayer() {
+        viewVideoScalable.setSurfaceTextureListener(this);
+
+        mediaPlayer = new TribeMediaPlayer.TribeMediaPlayerBuilder(getContext(), "asset:///video/onboarding_video.mp4")
                 .autoStart(true)
                 .looping(true)
-                .mute(true)
                 .isLocal(true)
+                .forceLegacy(true)
                 .build();
 
-        subscriptions.add(mediaPlayer.onVideoStarted().subscribe(videoStarted));
-
-        subscriptions.add(mediaPlayer.onPreparedPlayer().subscribe(prepared -> {
-
-        }));
+        if (surfaceTexture != null) {
+            mediaPlayer.setSurface(surfaceTexture);
+            mediaPlayer.prepare();
+        }
 
         subscriptions.add(mediaPlayer.onVideoSizeChanged().subscribe(videoSize -> {
-            if (videoTextureView != null && videoTextureView.getContentHeight() != videoSize.getHeight()) {
-                videoTextureView.setContentWidth(videoSize.getWidth());
-                videoTextureView.setContentHeight(videoSize.getHeight());
-                videoTextureView.updateTextureViewSize();
-            }
-
-            subscriptions.add(mediaPlayer.onErrorPlayer().subscribe(error -> {
-            }));
+            viewVideoScalable.scaleVideoSize(videoSize.getWidth(), videoSize.getHeight());
         }));
+
+        subscriptions.add(mediaPlayer.onVideoStarted().subscribe(videoStarted));
     }
 
     public void releasePlayer() {
@@ -97,19 +101,28 @@ public class IntroVideoView extends FrameLayout implements TextureView.SurfaceTe
         }
     }
 
-    public void hideVideo() {
-        releasePlayer();
-        textureViewLayout.removeView(videoTextureView);
-        videoTextureView = null;
-    }
-
     public void play() {
         mediaPlayer.play();
     }
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        mediaPlayer.setSurface(surface);
+        surfaceTexture = surface;
+
+        if (mediaPlayer != null) {
+            mediaPlayer.setSurface(surface);
+
+            try {
+                if (isPaused) {
+                    play();
+                    isPaused = false;
+                } else {
+                    mediaPlayer.prepare();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -119,6 +132,7 @@ public class IntroVideoView extends FrameLayout implements TextureView.SurfaceTe
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+        surfaceTexture = null;
         return false;
     }
 

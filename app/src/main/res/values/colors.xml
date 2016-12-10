@@ -7,6 +7,7 @@
     <color name="black.opacity.40">#66000000</color>
     <color name="black.opacity.50">#80000000</color>
     <color name="black.opacity.70">#B3000000</color>
+    <color name="black.opacity.80">#CC000000</color>
     <color name="black.tribe">#1A1A1A</color>
     <color name="black.infos">#1A14181A</color>
     <color name="black.tribe.viewer">#1F2327</color>

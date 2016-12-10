@@ -126,6 +126,7 @@ public class TribeVideoView extends FrameLayout implements TextureView.SurfaceTe
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         mediaPlayer.setSurface(surface);
+        mediaPlayer.prepare();
     }
 
     @Override

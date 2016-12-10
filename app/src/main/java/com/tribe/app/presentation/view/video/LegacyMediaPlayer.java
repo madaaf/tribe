@@ -8,8 +8,8 @@ import android.view.Surface;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.utils.preferences.SpeedPlayback;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.preferences.SpeedPlayback;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -113,42 +113,45 @@ LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.OnVideoSizeCha
             mediaPlayer.setSurface(null);
         } else {
             mediaPlayer.setSurface(new Surface(surfaceTexture));
+        }
+    }
 
+    @Override
+    public void prepare() {
+        try {
+            if (!isLocal) {
+                RandomAccessFile raf = new RandomAccessFile(media, "r");
+                mediaPlayer.setDataSource(raf.getFD(), 0, raf.length());
+                mediaPlayer.setAudioStreamType(getAudioStreamType());
+            } else if (!StringUtils.isEmpty(media) && media.contains("asset")) { // TODO BETTER
+                AssetFileDescriptor afd = context.getAssets().openFd("video/onboarding_video.mp4");
+                mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+                afd.close();
+            }
+
+            mediaPlayer.prepareAsync();
+        } catch (IllegalStateException ex) {
+            ex.printStackTrace();
             try {
-                if (!isLocal) {
-                    RandomAccessFile raf = new RandomAccessFile(media, "r");
-                    mediaPlayer.setDataSource(raf.getFD(), 0, raf.length());
-                    mediaPlayer.setAudioStreamType(getAudioStreamType());
-                } else if (!StringUtils.isEmpty(media) && media.contains("asset")) { // TODO BETTER
-                    AssetFileDescriptor afd = context.getAssets().openFd("video/onboarding_video.mp4");
-                    mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-                    afd.close();
-                }
-
+                mediaPlayer.reset();
+                RandomAccessFile raf = new RandomAccessFile(media, "r");
+                mediaPlayer.setDataSource(raf.getFD());
+                mediaPlayer.setAudioStreamType(getAudioStreamType());
                 mediaPlayer.prepareAsync();
-            } catch (IllegalStateException ex) {
-                ex.printStackTrace();
-                try {
-                    mediaPlayer.reset();
-                    RandomAccessFile raf = new RandomAccessFile(media, "r");
-                    mediaPlayer.setDataSource(raf.getFD());
-                    mediaPlayer.setAudioStreamType(getAudioStreamType());
-                    mediaPlayer.prepareAsync();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } catch (FileNotFoundException e) {
-                onErrorPlayer.onNext(FILE_NOT_FOUND_ERROR);
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } catch (FileNotFoundException e) {
+            onErrorPlayer.onNext(FILE_NOT_FOUND_ERROR);
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
     @Override
     public void pause() {
-        mediaPlayer.stop();
+        mediaPlayer.pause();
     }
 
     @Override
@@ -221,6 +224,11 @@ LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.OnVideoSizeCha
     @Override
     public void onCompletion(MediaPlayer mp) {
         //onCompletion.onNext(true);
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return mediaPlayer.isPlaying();
     }
 
     private void scheduleTimer() {

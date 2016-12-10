@@ -62,6 +62,7 @@ public abstract class TribeMediaPlayer {
     protected abstract void setup();
     public abstract void setMedia(String media);
     public abstract void setSurface(SurfaceTexture surfaceTexture);
+    public abstract void prepare();
     public abstract void setPlaybackRate();
     public abstract void pause();
     public abstract void play();
@@ -70,6 +71,7 @@ public abstract class TribeMediaPlayer {
     public abstract long getDuration();
     public abstract void seekTo(long position);
     public abstract int getAudioSessionId();
+    public abstract boolean isPlaying();
 
     public static class TribeMediaPlayerBuilder {
         private final Context context;

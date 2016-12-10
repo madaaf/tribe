@@ -20,6 +20,7 @@ import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.BaseActionActivity;
 import com.tribe.app.presentation.view.activity.ChatActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
@@ -68,7 +69,7 @@ public class Navigator {
      */
     public void navigateToLogin(Context context, Uri deepLink) {
         if (context != null) {
-            Intent intent = IntroActivity.getCallingIntent(context);
+            Intent intent = AuthActivity.getCallingIntent(context);
             intent.setData(deepLink);
             context.startActivity(intent);
         }

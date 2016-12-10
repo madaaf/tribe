@@ -126,6 +126,7 @@ public class PlayerView extends FrameLayout implements TextureView.SurfaceTextur
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         mediaPlayer.setSurface(surface);
+        mediaPlayer.prepare();
     }
 
     @Override

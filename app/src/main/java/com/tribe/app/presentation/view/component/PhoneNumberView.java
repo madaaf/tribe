@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -35,20 +34,17 @@ import rx.subscriptions.CompositeSubscription;
 
 public class PhoneNumberView extends FrameLayout {
 
-    @BindView(R.id.editTextPhoneNumber)
-    EditTextFont editTextPhoneNumber;
+    @BindView(R.id.editTxtPhoneNumber)
+    EditTextFont editTxtPhoneNumber;
 
-    @BindView(R.id.imgCountryCode)
-    ImageView imgCountryCode;
+    @BindView(R.id.imgCountry)
+    ImageView imgCountry;
 
-    @BindView(R.id.imageViewNextIcon)
-    ImageView imageViewNextIcon;
+    @BindView(R.id.btnNext)
+    ImageView btnNext;
 
-    @BindView(R.id.countryButton)
-    View countryButton;
-
-    @BindView(R.id.circularProgressViewPhoneNumber)
-    CircularProgressView circularProgressViewPhoneNumber;
+    @BindView(R.id.progressView)
+    CircularProgressView progressView;
 
     // VARIABLES
     private PhoneUtils phoneUtils;
@@ -101,10 +97,10 @@ public class PhoneNumberView extends FrameLayout {
 
         countryCode = context.getResources().getConfiguration().locale.getCountry();
 
-        subscriptions.add(RxView.clicks(countryButton)
+        subscriptions.add(RxView.clicks(imgCountry)
                 .subscribe(countryClickEventSubject));
 
-        subscriptions.add(RxView.clicks(imageViewNextIcon)
+        subscriptions.add(RxView.clicks(btnNext)
                 .subscribe(nextClick));
     }
 
@@ -117,7 +113,7 @@ public class PhoneNumberView extends FrameLayout {
 
         try {
             Drawable countryFlagImg = ContextCompat.getDrawable(getContext(), R.drawable.class.getField("picto_flag_" + codeCountry.toLowerCase()).getInt(null));
-            imgCountryCode.setImageDrawable(countryFlagImg);
+            imgCountry.setImageDrawable(countryFlagImg);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (NoSuchFieldException e) {
@@ -133,8 +129,8 @@ public class PhoneNumberView extends FrameLayout {
             String viewPhoneNumber = phoneUtils.formatPhoneNumberForView(PhoneNumberView.this.getPhoneNumberInput(), countryCode);
             if (viewPhoneNumber != null) {
                 editable = false;
-                editTextPhoneNumber.setText(viewPhoneNumber);
-                editTextPhoneNumber.setSelection(editTextPhoneNumber.getText().length());
+                editTxtPhoneNumber.setText(viewPhoneNumber);
+                editTxtPhoneNumber.setSelection(editTxtPhoneNumber.getText().length());
                 editable = true;
             }
         }
@@ -145,11 +141,11 @@ public class PhoneNumberView extends FrameLayout {
     }
 
     public void setPhoneNumber(String str) {
-        editTextPhoneNumber.setText(str);
+        editTxtPhoneNumber.setText(str);
     }
 
     public String getPhoneNumberInput() {
-        return editTextPhoneNumber.getText().toString();
+        return editTxtPhoneNumber.getText().toString();
     }
 
     public String getPhoneNumberFormatted() {
@@ -167,7 +163,7 @@ public class PhoneNumberView extends FrameLayout {
     public void setPhoneUtils(PhoneUtils phoneUtils) {
         this.phoneUtils = phoneUtils;
 
-        subscriptions.add(RxTextView.textChanges(editTextPhoneNumber).map((charSequence) -> charSequence.toString())
+        subscriptions.add(RxTextView.textChanges(editTxtPhoneNumber).map((charSequence) -> charSequence.toString())
                 .filter(s -> s != null && s.length() > 2)
                 .doOnNext(s -> checkValidPhoneNumber())
                 .map(s -> currentPhoneNumber != null)
@@ -178,49 +174,49 @@ public class PhoneNumberView extends FrameLayout {
 
     public void setNextEnabled(boolean enabled) {
         if (enabled) {
-            imageViewNextIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_next_icon_black));
-            imageViewNextIcon.setClickable(true);
-            imageViewNextIcon.setEnabled(true);
+            btnNext.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_next_icon_black));
+            btnNext.setClickable(true);
+            btnNext.setEnabled(true);
         } else {
-            imageViewNextIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_next_icon));
-            imageViewNextIcon.setClickable(false);
-            imageViewNextIcon.setEnabled(false);
+            btnNext.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_next_icon));
+            btnNext.setClickable(false);
+            btnNext.setEnabled(false);
         }
     }
 
     public void setNextVisible(boolean visible) {
         if (visible) {
-            imageViewNextIcon.clearAnimation();
-            imageViewNextIcon.setAlpha(1f);
-            imageViewNextIcon.setVisibility(VISIBLE);
+            btnNext.clearAnimation();
+            btnNext.setAlpha(1f);
+            btnNext.setVisibility(VISIBLE);
         } else {
-            imageViewNextIcon.setVisibility(INVISIBLE);
+            btnNext.setVisibility(INVISIBLE);
         }
     }
 
     public void openKeyboard() {
-        editTextPhoneNumber.requestFocus();
-        editTextPhoneNumber.postDelayed(() -> {
+        editTxtPhoneNumber.requestFocus();
+        editTxtPhoneNumber.postDelayed(() -> {
             InputMethodManager keyboard = (InputMethodManager)
                     getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            keyboard.showSoftInput(editTextPhoneNumber, 0);
+            keyboard.showSoftInput(editTxtPhoneNumber, 0);
         }, 200);
     }
 
 
     public void fadeOutNext() {
-        AnimationUtils.fadeOutFast(imageViewNextIcon);
+        AnimationUtils.fadeOutFast(btnNext);
     }
 
     public void nextIconVisisble() {
-        imageViewNextIcon.setAlpha(1f);
+        btnNext.setAlpha(1f);
     }
 
     public void progressViewVisible(boolean visible) {
         if (visible) {
-            circularProgressViewPhoneNumber.setVisibility(VISIBLE);
+            progressView.setVisibility(VISIBLE);
         } else {
-            circularProgressViewPhoneNumber.setVisibility(INVISIBLE);
+            progressView.setVisibility(INVISIBLE);
         }
     }
 }

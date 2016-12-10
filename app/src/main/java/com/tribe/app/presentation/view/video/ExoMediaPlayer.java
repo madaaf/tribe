@@ -12,9 +12,6 @@ import com.google.android.exoplayer.MediaCodecAudioTrackRenderer;
 import com.google.android.exoplayer.MediaCodecSelector;
 import com.google.android.exoplayer.MediaCodecTrackRenderer;
 import com.google.android.exoplayer.MediaCodecVideoTrackRenderer;
-import com.google.android.exoplayer.SampleSource;
-import com.google.android.exoplayer.audio.AudioCapabilities;
-import com.google.android.exoplayer.drm.DrmSessionManager;
 import com.google.android.exoplayer.extractor.ExtractorSampleSource;
 import com.google.android.exoplayer.extractor.mp4.Mp4Extractor;
 import com.google.android.exoplayer.upstream.Allocator;
@@ -111,6 +108,11 @@ public class ExoMediaPlayer extends TribeMediaPlayer implements MediaCodecVideoT
     }
 
     @Override
+    public void prepare() {
+
+    }
+
+    @Override
     public void pause() {
         exoPlayer.setPlayWhenReady(false);
     }
@@ -158,6 +160,11 @@ public class ExoMediaPlayer extends TribeMediaPlayer implements MediaCodecVideoT
     @Override
     public long getDuration() {
         return exoPlayer.getDuration();
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return false;
     }
 
     @Override
