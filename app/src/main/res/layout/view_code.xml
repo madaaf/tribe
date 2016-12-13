@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/bottom_bar_height"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/white.opacity.100"
-    android:layout_gravity="bottom">
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="0dp"
@@ -17,14 +14,15 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/imgBackIcon"
-        android:layout_width="@dimen/icons_end"
-        android:layout_height="@dimen/icons_end"
-        android:layout_gravity="bottom"
-        android:background="@drawable/selectable_button_oval"
+        android:id="@+id/imgBack"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="start|center_vertical"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:background="@drawable/bg_skip_transition"
+        android:foreground="@drawable/selectable_button_oval_light"
         android:scaleType="centerInside"
-        android:clickable="true"
-        android:src="@drawable/picto_next_icon_black"
+        android:src="@drawable/picto_skip"
         android:scaleX="-1"
         />
 
@@ -35,9 +33,9 @@
         android:layout_gravity="center">
 
         <com.tribe.app.presentation.view.widget.EditTextFont
+            android:id="@+id/editTxtCode"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:id="@+id/editTextCode"
             android:background="@null"
             android:textColor="@android:color/black"
             android:maxLength="4"
@@ -53,7 +51,8 @@
             android:layout_width="14dp"
             android:layout_height="14dp"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/picto_pin_circle"/>
+            android:src="@drawable/picto_pin_circle"
+            />
 
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtCode1"
@@ -69,7 +68,8 @@
             android:layout_height="14dp"
             android:layout_marginStart="34dp"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/picto_pin_circle"/>
+            android:src="@drawable/picto_pin_circle"
+            />
 
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtCode2"
@@ -86,7 +86,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="68dp"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/picto_pin_circle"/>
+            android:src="@drawable/picto_pin_circle"
+            />
 
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtCode3"
@@ -103,7 +104,8 @@
             android:layout_height="14dp"
             android:layout_marginStart="102dp"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/picto_pin_circle"/>
+            android:src="@drawable/picto_pin_circle"
+            />
 
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtCode4"
@@ -117,11 +119,11 @@
     </FrameLayout>
 
     <com.github.rahatarmanahmed.cpv.CircularProgressView
-        android:id="@+id/circularProgressViewCode"
-        android:layout_width="wrap_content"
+        android:id="@+id/progressView"
+        android:layout_width="@dimen/code_progress_size"
         android:layout_height="@dimen/code_progress_size"
         android:layout_gravity="end|center_vertical"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginEnd="@dimen/horizontal_margin_small"
         android:visibility="invisible"
         app:cpv_animAutostart="true"
         app:cpv_indeterminate="true"
@@ -129,27 +131,50 @@
         app:cpv_thickness="2dp"
         />
 
-    <ProgressBar
-        android:id="@+id/progressBarCountdown"
-        style="?android:attr/progressBarStyleHorizontal"
+    <FrameLayout
+        android:id="@+id/layoutCountdown"
         android:layout_width="@dimen/code_progress_size"
         android:layout_height="@dimen/code_progress_size"
         android:layout_gravity="end|center_vertical"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:visibility="invisible"
-        android:max="@integer/time_code_countdown"
-        android:background="@drawable/shape_oval_black"
-        android:progressDrawable="@drawable/progress_circular_countdown"
-        />
+        android:layout_marginEnd="@dimen/horizontal_margin_small"
+        android:visibility="gone"
+        >
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtCountdown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            style="@style/Small.2.Black"
+            />
+
+        <ProgressBar
+            android:id="@+id/progressBarCountdown"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="@dimen/code_progress_size"
+            android:layout_height="@dimen/code_progress_size"
+            android:layout_gravity="center"
+            android:max="@integer/time_code_countdown"
+            android:progressDrawable="@drawable/progress_circular_countdown"
+            />
+    </FrameLayout>
 
     <ImageView
-        android:id="@+id/imgConnectedIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/imgConnected"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_gravity="end|center_vertical"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginEnd="@dimen/horizontal_margin_small"
         android:gravity="center"
         android:src="@drawable/picto_connected_icon"
         />
 
-</FrameLayout>
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtConnected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/onboarding_connected"
+        android:background="@null"
+        style="@style/Headline.Blue"
+        />
+</merge>

@@ -3,41 +3,52 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/shape_rect_white_rounded_corners"
+    android:background="@drawable/shape_rect_white_rounded_top_new"
     >
 
-    <ImageView
-        android:id="@+id/searchIconImageView"
-        android:layout_width="@dimen/icons_end"
-        android:layout_height="@dimen/icons_end"
-        android:scaleType="centerInside"
-        android:src="@drawable/picto_search_icon"
-        />
-
-    <com.tribe.app.presentation.view.widget.EditTextFont
-        android:id="@+id/countrySearchView"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/icons_end"
-        android:layout_marginStart="@dimen/icons_end"
-        android:backgroundTint="@android:color/white"
-        android:textColor="@android:color/black"
-        android:singleLine="true"
-        android:gravity="center_vertical"
-        android:imeOptions="actionDone"/>
+        android:layout_height="@dimen/top_bar_height"
+        android:background="@null"
+        >
+
+        <ImageView
+            android:id="@+id/searchIconImageView"
+            android:layout_width="@dimen/icons_end"
+            android:layout_height="@dimen/icons_end"
+            android:scaleType="centerInside"
+            android:src="@drawable/picto_search_icon"
+            />
+
+        <com.tribe.app.presentation.view.widget.EditTextFont
+            android:id="@+id/countrySearchView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/icons_end"
+            android:layout_gravity="center_vertical"
+            android:backgroundTint="@android:color/white"
+            android:textColor="@android:color/black"
+            android:singleLine="true"
+            android:imeOptions="actionDone"
+            />
+
+    </FrameLayout>
 
     <android.support.v7.widget.RecyclerView
-        android:layout_marginTop="@dimen/icons_end"
         android:id="@+id/recyclerViewCountry"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="#E0E6E9"
+        android:layout_marginTop="@dimen/icons_end"
+        android:divider="@color/grey.light"
         android:dividerHeight="0.5dp"
-        android:listSelector="@null" />
+        android:listSelector="@null"
+        />
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="5dp"
+        android:layout_height="@dimen/divider_size"
         android:layout_marginTop="@dimen/icons_end"
-        android:background="@drawable/shadow_bottom" />
+        android:background="@color/grey.light"
+        />
 
 </FrameLayout>

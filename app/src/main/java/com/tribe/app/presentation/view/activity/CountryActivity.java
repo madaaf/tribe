@@ -28,14 +28,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import rx.Observable;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by tiago on 10/06/2016.
  * Last Modified by Horatio
- * Activity used for a user to select their country when inputting their phone number in the IntroViewFragment.
+ * Activity used for a user to select their country when inputting their phone number in the AuthViewFragment.
  */
 public class CountryActivity extends BaseActivity {
 
@@ -63,7 +63,7 @@ public class CountryActivity extends BaseActivity {
     private List<Country> listCountryCopy;
 
     private Unbinder unbinder;
-    private Subscription subscription;
+    private CompositeSubscription subscriptions = new CompositeSubscription();
 
     /**
      * Lifecycle methods
@@ -83,7 +83,7 @@ public class CountryActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         countryAdapter.releaseSubscriptions();
-        subscription.unsubscribe();
+        subscriptions.unsubscribe();
         super.onDestroy();
     }
 
@@ -97,33 +97,34 @@ public class CountryActivity extends BaseActivity {
      */
 
     public void initCountryList() {
-        Observable.just(new ArrayList<>(phoneUtils.getSupportedRegions()))
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(listCodeCountry -> {
-                    listCountry = new ArrayList<>();
+        subscriptions.add(
+                Observable.just(new ArrayList<>(phoneUtils.getSupportedRegions()))
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(listCodeCountry -> {
+                            listCountry = new ArrayList<>();
 
-                    for (String countryCode : listCodeCountry) {
-                        String countryName = (new Locale("", countryCode).getDisplayCountry());
-                        listCountry.add(new Country(countryCode, countryName));
-                    }
+                            for (String countryCode : listCodeCountry) {
+                                String countryName = (new Locale("", countryCode).getDisplayCountry());
+                                listCountry.add(new Country(countryCode, countryName));
+                            }
 
-                    Collections.sort(listCountry);
-                    listCountryCopy = new ArrayList<>();
-                    listCountryCopy.addAll(listCountry);
-                    countryAdapter.setItems(listCountry);
-                    linearLayoutManager = new LinearLayoutManager(this);
-                    recyclerViewCountry.setLayoutManager(linearLayoutManager);
-                    recyclerViewCountry.setAdapter(countryAdapter);
+                            Collections.sort(listCountry);
+                            listCountryCopy = new ArrayList<>();
+                            listCountryCopy.addAll(listCountry);
+                            countryAdapter.setItems(listCountry);
+                            linearLayoutManager = new LinearLayoutManager(this);
+                            recyclerViewCountry.setLayoutManager(linearLayoutManager);
+                            recyclerViewCountry.setAdapter(countryAdapter);
 
-                    subscription = countryAdapter.clickCountryItem().subscribe(view -> {
-                        Country country = countryAdapter.getItemAtPosition(recyclerViewCountry.getChildLayoutPosition(view));
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra(Extras.COUNTRY_CODE, country.code);
-                        setResult(Activity.RESULT_OK, resultIntent);
-                        finish();
-                    });
-                });
+                            subscriptions.add(countryAdapter.clickCountryItem().subscribe(view -> {
+                                Country country = countryAdapter.getItemAtPosition(recyclerViewCountry.getChildLayoutPosition(view));
+                                Intent resultIntent = new Intent();
+                                resultIntent.putExtra(Extras.COUNTRY_CODE, country.code);
+                                setResult(Activity.RESULT_OK, resultIntent);
+                                finish();
+                            }));
+                        }));
     }
 
     private void initSearchView() {
@@ -147,21 +148,24 @@ public class CountryActivity extends BaseActivity {
 
     /**
      * Method used for search. Takes in a string parameter and updates recycler view accordingly.
+     *
      * @param text
      */
 
     private void filter(String text) {
-        if(text.isEmpty()){
+        if (text.isEmpty()) {
             listCountry.clear();
             listCountry.addAll(listCountryCopy);
-        } else{
+        } else {
             ArrayList<Country> result = new ArrayList<>();
             text = text.toLowerCase();
-            for(Country item: listCountryCopy){
-                if(item.name.toLowerCase().contains(text) || item.name.toLowerCase().contains(text)){
+
+            for (Country item : listCountryCopy) {
+                if (item.name.toLowerCase().contains(text) || item.name.toLowerCase().contains(text)) {
                     result.add(item);
                 }
             }
+
             listCountry.clear();
             listCountry.addAll(result);
         }
@@ -178,5 +182,11 @@ public class CountryActivity extends BaseActivity {
                 .activityModule(getActivityModule())
                 .build()
                 .inject(this);
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(0, R.anim.slide_in_down);
     }
 }

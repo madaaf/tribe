@@ -1,13 +1,16 @@
-package com.tribe.app.presentation.view.component;
+package com.tribe.app.presentation.view.component.onboarding;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -17,9 +20,16 @@ import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
+import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,21 +43,37 @@ import rx.subscriptions.CompositeSubscription;
  * CodeView.java
  * Created by tiago on 10/06/2016.
  * Last Modified by Horatio.
- * Component used in MVPView Pager in IntroViewFragment.java for a user to input their verification code.
+ * Component used in MVPView Pager in AuthViewFragment.java for a user to input their verification code.
  */
 public class CodeView extends FrameLayout {
 
-    @BindView(R.id.editTextCode)
-    EditTextFont editTextCode;
+    private static final int DURATION = 300;
+    private static final int DURATION_MEDIUM = 500;
+    private static final int DURATION_FAST = 150;
 
-    @BindView(R.id.circularProgressViewCode)
-    CircularProgressView circularProgressViewCode;
+    @Inject
+    ScreenUtils screenUtils;
+
+    @BindView(R.id.editTxtCode)
+    EditTextFont editTxtCode;
+
+    @BindView(R.id.progressView)
+    CircularProgressView progressView;
 
     @BindView(R.id.progressBarCountdown)
     ProgressBar progressBarCountdown;
 
-    @BindView(R.id.imgBackIcon)
-    ImageView imgBackIcon;
+    @BindView(R.id.layoutCountdown)
+    ViewGroup layoutCountdown;
+
+    @BindView(R.id.txtCountdown)
+    TextViewFont txtCountdown;
+
+    @BindView(R.id.imgBack)
+    ImageView imgBack;
+
+    @BindView(R.id.layoutPin)
+    ViewGroup layoutPin;
 
     @BindView(R.id.pinCircle1)
     ImageView pinCircle1;
@@ -73,8 +99,11 @@ public class CodeView extends FrameLayout {
     @BindView(R.id.txtCode4)
     TextViewFont txtCode4;
 
-    @BindView(R.id.imgConnectedIcon)
-    ImageView imgConnectedIcon;
+    @BindView(R.id.imgConnected)
+    ImageView imgConnected;
+
+    @BindView(R.id.txtConnected)
+    TextViewFont txtConnected;
 
     // OBSERVABLES
     private Unbinder unbinder;
@@ -83,8 +112,10 @@ public class CodeView extends FrameLayout {
     private PublishSubject<Void> backClicked = PublishSubject.create();
     private PublishSubject<Void> countdownExpired = PublishSubject.create();
 
+    // VARIABLES
     private int timeCodeCountdown;
     private int currentCountdown = 0;
+    private ObjectAnimator animator;
 
     public CodeView(Context context) {
         super(context);
@@ -94,11 +125,6 @@ public class CodeView extends FrameLayout {
         super(context, attrs);
     }
 
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public CodeView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
 
     /**
      * Lifecycle methods
@@ -122,10 +148,14 @@ public class CodeView extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.view_code, this);
         unbinder = ButterKnife.bind(this);
 
-        imgConnectedIcon.setScaleX(0);
-        imgConnectedIcon.setScaleY(0);
+        initDependencyInjector();
 
-        subscriptions.add(RxTextView.textChanges(editTextCode).map(CharSequence::toString)
+        imgConnected.setScaleX(0);
+        imgConnected.setScaleY(0);
+
+        txtConnected.setTranslationX(screenUtils.getWidthPx());
+
+        subscriptions.add(RxTextView.textChanges(editTxtCode).map(CharSequence::toString)
                 .map(s -> {
                     switch (s.length()) {
                         case 0:
@@ -172,35 +202,51 @@ public class CodeView extends FrameLayout {
                 })
                 .subscribe(codeValid));
 
-        subscriptions.add(RxView.clicks(imgBackIcon).subscribe(aVoid -> {
+        subscriptions.add(RxView.clicks(imgBack).subscribe(aVoid -> {
             resetPinCodeView();
             backClicked.onNext(null);
         }));
     }
 
+    protected ApplicationComponent getApplicationComponent() {
+        return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
+    }
+
+    protected ActivityModule getActivityModule() {
+        return new ActivityModule(((Activity) getContext()));
+    }
+
+    private void initDependencyInjector() {
+        DaggerUserComponent.builder()
+                .activityModule(getActivityModule())
+                .applicationComponent(getApplicationComponent())
+                .build().inject(this);
+    }
+
     @OnClick(R.id.layoutPin)
     void clickLayoutPin() {
-        openKeyboard();
+        openKeyboard(0);
     }
 
-    public void openKeyboard() {
-        editTextCode.requestFocus();
-        editTextCode.postDelayed(() -> {
+    public void openKeyboard(int delay) {
+        editTxtCode.requestFocus();
+        editTxtCode.postDelayed(() -> {
             InputMethodManager keyboard = (InputMethodManager)
                     getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            keyboard.showSoftInput(editTextCode, 0);
-        }, 200);
+            keyboard.showSoftInput(editTxtCode, 0);
+        }, delay);
     }
 
-    public void startCountdown(int startTime) {
+    public void startCountdown() {
         timeCodeCountdown = getContext().getResources().getInteger(R.integer.time_code_countdown);
-        progressBarCountdown.setVisibility(VISIBLE);
-        progressBarCountdown.setProgress(startTime);
+        progressBarCountdown.setProgress(timeCodeCountdown);
+        layoutCountdown.setVisibility(View.VISIBLE);
 
-        ObjectAnimator animator = ObjectAnimator.ofInt(progressBarCountdown, "progress", progressBarCountdown.getMax());
+        animator = ObjectAnimator.ofInt(progressBarCountdown, "progress", 0);
         animator.setDuration(timeCodeCountdown);
         animator.addUpdateListener(animation -> {
             currentCountdown = (Integer) animation.getAnimatedValue();
+            txtCountdown.setText("" + (currentCountdown / 1000));
         });
 
         animator.addListener(new AnimatorListenerAdapter() {
@@ -208,7 +254,6 @@ public class CodeView extends FrameLayout {
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
                 countdownExpired.onNext(null);
-                countdownExpired.onCompleted();
                 currentCountdown = 0;
             }
         });
@@ -217,7 +262,8 @@ public class CodeView extends FrameLayout {
     }
 
     public void removeCountdown() {
-        progressBarCountdown.setVisibility(INVISIBLE);
+        if (animator != null) animator.cancel();
+        layoutCountdown.setVisibility(GONE);
     }
 
     public int getCurrentCountdown() {
@@ -225,7 +271,7 @@ public class CodeView extends FrameLayout {
     }
 
     /**
-     * Obeservable
+     * Observable
      */
 
     public Observable<Boolean> codeValid() {
@@ -245,42 +291,48 @@ public class CodeView extends FrameLayout {
      */
 
     public String getCode() {
-        return editTextCode.getText().toString();
+        return editTxtCode.getText().toString();
     }
 
-    public void progressViewVisible(boolean visible) {
-        if (visible) {
-            progressBarCountdown.setVisibility(INVISIBLE);
-            circularProgressViewCode.setVisibility(VISIBLE);
-        } else {
-            circularProgressViewCode.setVisibility(INVISIBLE);
-            progressBarCountdown.setVisibility(VISIBLE);
-        }
+    public void showLoading() {
+        progressBarCountdown.setVisibility(GONE);
+        progressView.setVisibility(VISIBLE);
     }
 
-
-    public void animateConnectedIcon() {
-        AnimationUtils.scaleIn(imgConnectedIcon, 300);
+    public void hideLoading() {
+        progressView.setVisibility(GONE);
+        progressBarCountdown.setVisibility(VISIBLE);
     }
 
-    public void fadeConnectedOut() {
-        imgConnectedIcon.animate()
-                .setDuration(50)
-                .alpha(0)
-                .setStartDelay(0)
-                .start();
-    }
+    public void showConnected() {
+        imgConnected.animate()
+                .scaleY(1).scaleX(1)
+                .setDuration(DURATION)
+                .setInterpolator(new OvershootInterpolator(1.5f))
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        imgConnected.animate()
+                                .translationX(
+                                    - screenUtils.getWidthPx()
+                                            + 2 * getContext().getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small)
+                                            + imgConnected.getWidth()
+                                )
+                                .setDuration(DURATION * 2)
+                                .setInterpolator(new DecelerateInterpolator())
+                                .setListener(null)
+                                .start();
 
-    public void setImgBackIconVisible() {
-        imgBackIcon.setAlpha(1f);
-    }
-
-    public void fadeBackOut() {
-        imgBackIcon.animate()
-                .setDuration(50)
-                .alpha(0)
-                .setStartDelay(0)
-                .start();
+                        txtConnected.animate()
+                                .translationX(0)
+                                .setDuration(DURATION_MEDIUM)
+                                .setInterpolator(new DecelerateInterpolator())
+                                .start();
+                    }
+                }).start();
+        AnimationUtils.fadeIn(imgConnected, DURATION_FAST);
+        AnimationUtils.fadeOut(imgBack, DURATION_FAST);
+        AnimationUtils.fadeOut(layoutPin, DURATION_FAST);
     }
 
     private void resetPinCodeView() {
@@ -288,11 +340,10 @@ public class CodeView extends FrameLayout {
         pinCircle2.setVisibility(VISIBLE);
         pinCircle3.setVisibility(VISIBLE);
         pinCircle4.setVisibility(VISIBLE);
-        editTextCode.setText("");
+        editTxtCode.setText("");
         txtCode1.setText("");
         txtCode2.setText("");
         txtCode3.setText("");
         txtCode4.setText("");
     }
-
 }

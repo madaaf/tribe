@@ -3,12 +3,14 @@ package com.tribe.app.presentation.view.utils;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ArgbEvaluator;
+import android.animation.IntEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.support.design.widget.CoordinatorLayout;
 import android.view.View;
@@ -166,7 +168,8 @@ public class AnimationUtils {
                         super.onAnimationEnd(animation);
                         view.animate()
                                 .scaleX(1).scaleY(1)
-                                .setDuration(duration/2)
+                                .setDuration(duration / 2)
+                                .setListener(null)
                                 .start();
                     }
                 }).start();
@@ -196,6 +199,18 @@ public class AnimationUtils {
         });
         animator.start();
     }
+
+    public static void animateBottomPadding(View view, int padding, int duration) {
+        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        ValueAnimator animator = ValueAnimator.ofInt(view.getPaddingBottom(), padding);
+        animator.setDuration(duration);
+        animator.addUpdateListener(animation -> {
+            view.setPadding(0, 0, 0, (Integer) animation.getAnimatedValue());
+            view.setLayoutParams(lp);
+        });
+        animator.start();
+    }
+
 
     public static void animateLeftMargin(View view, int margin, int duration) {
         ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
@@ -349,5 +364,19 @@ public class AnimationUtils {
             ColorDrawable colorDrawable = (ColorDrawable) background;
             colorDrawable.setColor(color);
         }
+    }
+
+    public static void crossFadeDrawable(LayerDrawable layer, int from, int to, int duration) {
+        ValueAnimator alphaAnimationFrom = ValueAnimator.ofObject(new IntEvaluator(), 255, 0);
+        alphaAnimationFrom.addUpdateListener(animator -> layer.getDrawable(from).setAlpha((Integer) animator.getAnimatedValue()));
+        alphaAnimationFrom.setDuration(duration);
+        alphaAnimationFrom.setInterpolator(new DecelerateInterpolator());
+        alphaAnimationFrom.start();
+
+        ValueAnimator alphaAnimationTo = ValueAnimator.ofObject(new IntEvaluator(), 0, 255);
+        alphaAnimationTo.addUpdateListener(animator -> layer.getDrawable(to).setAlpha((Integer) animator.getAnimatedValue()));
+        alphaAnimationTo.setDuration(duration);
+        alphaAnimationTo.setInterpolator(new DecelerateInterpolator());
+        alphaAnimationTo.start();
     }
 }

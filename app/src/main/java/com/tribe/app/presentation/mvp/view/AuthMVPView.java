@@ -4,7 +4,7 @@ import com.tribe.app.domain.entity.ErrorLogin;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.User;
 
-public interface IntroMVPView extends LoadDataMVPView {
+public interface AuthMVPView extends LoadDataMVPView {
 
     void goToCode(Pin pin);
     void goToHome();

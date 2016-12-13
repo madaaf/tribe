@@ -79,6 +79,17 @@ public class ScreenUtils {
 		}
 	}
 
+	public void showKeyboard(View view, int delay) {
+		if (view != null) {
+			view.requestFocus();
+			view.postDelayed(() -> {
+				InputMethodManager keyboard = (InputMethodManager)
+						context.getSystemService(Context.INPUT_METHOD_SERVICE);
+				keyboard.showSoftInput(view, 0);
+			}, delay);
+		}
+	}
+
 	public void setTopMargin(View view, int topMargin) {
 		FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) view.getLayoutParams();
 		layoutParams.topMargin = topMargin;

@@ -27,8 +27,6 @@
 
     </FrameLayout>
 
-
-
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtDisplayName"
         android:layout_marginStart="@dimen/setting_block_item_left_margin"

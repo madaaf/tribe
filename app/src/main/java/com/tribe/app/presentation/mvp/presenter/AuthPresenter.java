@@ -1,7 +1,5 @@
 package com.tribe.app.presentation.mvp.presenter;
 
-import android.os.Handler;
-
 import com.google.gson.Gson;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
@@ -16,11 +14,10 @@ import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetRequestCode;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
-import com.tribe.app.presentation.mvp.view.IntroMVPView;
+import com.tribe.app.presentation.mvp.view.AuthMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.activity.IntroActivity;
 
 import java.io.IOException;
 
@@ -29,22 +26,18 @@ import javax.inject.Inject;
 import retrofit2.adapter.rxjava.HttpException;
 
 
-public class IntroPresenter implements Presenter {
+public class AuthPresenter implements Presenter {
 
     private final GetRequestCode cloudGetRequestCodeUseCase;
     private final DoLoginWithPhoneNumber cloudLoginUseCase;
     private final GetCloudUserInfos cloudUserInfos;
 
-    // TODO: remove after threading is removed
-    private boolean isActive1 = false;
-    private boolean isActive2 = false;
-
-    private IntroMVPView introView;
+    private AuthMVPView introView;
 
     @Inject
-    public IntroPresenter(GetRequestCode cloudGetRequestCodeUseCase,
-                          DoLoginWithPhoneNumber cloudLoginUseCase,
-                          GetCloudUserInfos cloudUserInfos) {
+    public AuthPresenter(GetRequestCode cloudGetRequestCodeUseCase,
+                         DoLoginWithPhoneNumber cloudLoginUseCase,
+                         GetCloudUserInfos cloudUserInfos) {
         this.cloudLoginUseCase = cloudLoginUseCase;
         this.cloudGetRequestCodeUseCase = cloudGetRequestCodeUseCase;
         this.cloudUserInfos = cloudUserInfos;
@@ -58,38 +51,22 @@ public class IntroPresenter implements Presenter {
 
     @Override
     public void onViewAttached(MVPView v) {
-        introView = (IntroMVPView) v;
+        introView = (AuthMVPView) v;
     }
 
     public void requestCode(String phoneNumber) {
-
-        if (IntroActivity.uiOnlyMode) {
-            goToCode(new Pin());
-        } else {
-            showViewLoading();
-            cloudGetRequestCodeUseCase.prepare(phoneNumber);
-            cloudGetRequestCodeUseCase.execute(new RequestCodeSubscriber());
-        }
+        showViewLoading();
+        cloudGetRequestCodeUseCase.prepare(phoneNumber);
+        cloudGetRequestCodeUseCase.execute(new RequestCodeSubscriber());
     }
 
     public LoginEntity login(String phoneNumber, String code, String pinId) {
         LoginEntity loginEntity = new LoginEntity(phoneNumber, code, pinId);
+
         showViewLoading();
 
-        if (IntroActivity.uiOnlyMode) {
-            isActive2 = true;
-            Handler handler = new Handler();
-            handler.postDelayed(() -> {
-                if (isActive2) {
-                    hideViewLoading();
-                    goToConnected(null);
-                    isActive2 = false;
-                }
-            }, 2000);
-        } else {
-            cloudLoginUseCase.prepare(loginEntity);
-            cloudLoginUseCase.execute(new LoginSubscriber());
-        }
+        cloudLoginUseCase.prepare(loginEntity);
+        cloudLoginUseCase.execute(new LoginSubscriber());
 
         return loginEntity;
     }

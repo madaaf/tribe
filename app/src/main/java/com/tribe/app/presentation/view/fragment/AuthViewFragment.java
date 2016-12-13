@@ -19,14 +19,14 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.mvp.presenter.IntroPresenter;
-import com.tribe.app.presentation.mvp.view.IntroMVPView;
+import com.tribe.app.presentation.mvp.presenter.AuthPresenter;
+import com.tribe.app.presentation.mvp.view.AuthMVPView;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.activity.IntroActivity;
-import com.tribe.app.presentation.view.component.CodeView;
+import com.tribe.app.presentation.view.component.onboarding.CodeView;
 import com.tribe.app.presentation.view.component.ConnectedView;
-import com.tribe.app.presentation.view.component.PhoneNumberView;
+import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
 import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
@@ -47,14 +47,14 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
- * IntroViewFragment.java
+ * AuthViewFragment.java
  * Created by horatiothomas on 8/17/16.
  * The first fragment of the view pager from IntroActivity.java.
  * This fragment contains the intro video and the view pager that goes through
  * the process of capturing the users phone number, sending, and validating their pin code.
  * Next fragment in onboarding view pager is ProfileInfoFragment.
  */
-public class IntroViewFragment extends BaseFragment implements IntroMVPView {
+public class AuthViewFragment extends BaseFragment implements AuthMVPView {
 
     private static final String LOGIN_ENTITY = "LOGIN_ENTITY";
     private static final String PIN = "PIN";
@@ -63,10 +63,10 @@ public class IntroViewFragment extends BaseFragment implements IntroMVPView {
     private static final String CODE = "CODE";
     private static final String COUNTDOWN = "COUNTDOWN";
 
-    public static IntroViewFragment newInstance() {
+    public static AuthViewFragment newInstance() {
         Bundle args = new Bundle();
 
-        IntroViewFragment fragment = new IntroViewFragment();
+        AuthViewFragment fragment = new AuthViewFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -78,7 +78,7 @@ public class IntroViewFragment extends BaseFragment implements IntroMVPView {
     User currentUser;
 
     @Inject
-    IntroPresenter introPresenter;
+    AuthPresenter authPresenter;
 
     @Inject
     ScreenUtils screenUtils;
@@ -222,10 +222,10 @@ public class IntroViewFragment extends BaseFragment implements IntroMVPView {
         subscriptions.add(viewCode.codeValid().subscribe(isValid -> {
             if (isValid && isResumed() && getUserVisibleHint()) {
                 if (IntroActivity.uiOnlyMode) {
-                    loginEntity = introPresenter.login("", "", "");
+                    loginEntity = authPresenter.login("", "", "");
                 } else {
                     this.code = viewCode.getCode();
-                    loginEntity = introPresenter.login(phoneNumber, code, pin.getPinId());
+                    loginEntity = authPresenter.login(phoneNumber, code, pin.getPinId());
                 }
             }
         }));
@@ -247,12 +247,11 @@ public class IntroViewFragment extends BaseFragment implements IntroMVPView {
     }
 
     private void initPhoneNumberView() {
-        viewPhoneNumber.setPhoneUtils(getApplicationComponent().phoneUtils());
+        //viewPhoneNumber.setPhoneUtils(getApplicationComponent().phoneUtils());
         if (!StringUtils.isEmpty(phoneNumber)) viewPhoneNumber.setPhoneNumber(phoneNumber);
 
         subscriptions.add(viewPhoneNumber.phoneNumberValid().subscribe(isValid -> {
             if (viewPager.getCurrentItem() == PAGE_PHONE_NUMBER) {
-                this.phoneNumber = viewPhoneNumber.getPhoneNumberFormatted();
                 viewPhoneNumber.setNextEnabled(isValid);
             }
         }));
@@ -267,7 +266,7 @@ public class IntroViewFragment extends BaseFragment implements IntroMVPView {
     }
 
     private void initPresenter() {
-        introPresenter.onViewAttached(this);
+        authPresenter.onViewAttached(this);
     }
 
     /**
@@ -323,20 +322,20 @@ public class IntroViewFragment extends BaseFragment implements IntroMVPView {
      */
 
     private void backToPhoneNumber() {
-        viewCode.fadeBackOut();
-        viewPhoneNumber.nextIconVisisble();
+        //viewCode.fadeBackOut();
+        //viewPhoneNumber.nextIconVisible();
         viewPager.setCurrentItem(PAGE_PHONE_NUMBER, true);
-        viewPhoneNumber.openKeyboard();
+        //viewPhoneNumber.openKeyboard();
     }
 
     private void requestCode() {
-        viewPhoneNumber.fadeOutNext();
-        viewCode.setImgBackIconVisible();
-        introPresenter.requestCode(phoneNumber);
+        //viewPhoneNumber.fadeOutNext();
+        //viewCode.setImgBackIconVisible();
+        authPresenter.requestCode(phoneNumber);
     }
 
     private void requestCodeInResend() {
-        introPresenter.requestCode(phoneNumber);
+        authPresenter.requestCode(phoneNumber);
         initCountdown(0);
     }
 
@@ -349,7 +348,7 @@ public class IntroViewFragment extends BaseFragment implements IntroMVPView {
         }));
 
         subscriptions.add(authenticationDialogFragment.cancelClicked().subscribe(aVoid -> {
-            viewPhoneNumber.openKeyboard();
+            //viewPhoneNumber.openKeyboard();
         }));
     }
 
@@ -373,11 +372,13 @@ public class IntroViewFragment extends BaseFragment implements IntroMVPView {
     private void initCountdown(int currentCountdown) {
         if (!countdownActive) {
             countdownActive = true;
-            viewCode.startCountdown(currentCountdown);
+            viewCode.startCountdown();
+
             countdownSubscription = viewCode.countdownExpired().subscribe(aVoid -> {
                 resend();
                 countdownActive = false;
             });
+
             subscriptions.add(countdownSubscription);
         }
     }
@@ -386,11 +387,11 @@ public class IntroViewFragment extends BaseFragment implements IntroMVPView {
     public void goToCode(Pin pin) {
         tagManager.trackEvent(TagManagerConstants.ONBOARDING_SEND_PIN);
         this.pin = pin;
-        viewPhoneNumber.fadeOutNext();
+        //viewPhoneNumber.fadeOutNext();
         txtIntroMessage.setText(getString(R.string.onboarding_step_code));
         viewPager.setCurrentItem(PAGE_CODE, true);
         initCountdown(0);
-        viewCode.openKeyboard();
+        //viewCode.openKeyboard();
     }
 
 
@@ -412,14 +413,14 @@ public class IntroViewFragment extends BaseFragment implements IntroMVPView {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(time -> {
-                    viewCode.animateConnectedIcon();
+                    //viewCode.animateConnectedIcon();
 
                     subscriptions.add(Observable.timer(300, TimeUnit.MILLISECONDS)
                             .onBackpressureDrop()
                             .subscribeOn(Schedulers.newThread())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(time1 -> {
-                                viewCode.fadeConnectedOut();
+                                //viewCode.fadeConnectedOut();
                                 viewPager.setCurrentItem(PAGE_CONNECTED, true);
                                 viewConnected.animateConnected();
                             }));
@@ -463,21 +464,17 @@ public class IntroViewFragment extends BaseFragment implements IntroMVPView {
     @Override
     public void showLoading() {
         if (viewPager.getCurrentItem() == PAGE_PHONE_NUMBER) {
-            viewPhoneNumber.setNextVisible(false);
-            viewPhoneNumber.progressViewVisible(true);
+
         } else {
-            viewCode.progressViewVisible(true);
+            //viewCode.progressViewVisible(true);
         }
     }
 
     @Override
     public void hideLoading() {
         if (viewPhoneNumber != null) {
-            viewPhoneNumber.setNextVisible(true);
-            viewPhoneNumber.setNextEnabled(true);
-            viewPhoneNumber.progressViewVisible(false);
         }
-        if (viewCode != null) viewCode.progressViewVisible(false);
+        //if (viewCode != null) viewCode.progressViewVisible(false);
     }
 
     @Override

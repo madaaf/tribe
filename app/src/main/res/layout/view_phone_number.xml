@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
 
     <LinearLayout
         android:layout_width="0dp"
@@ -15,12 +16,14 @@
 
     <ImageView
         android:id="@+id/imgCountry"
-        android:layout_width="25dp"
-        android:layout_height="18dp"
-        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:layout_width="@dimen/nav_icon_size"
+        android:layout_height="@dimen/nav_icon_size"
         android:layout_gravity="center_vertical"
-        android:scaleType="centerInside"
+        android:layout_marginLeft="2.5dp"
+        android:scaleType="fitCenter"
+        android:padding="12.5dp"
         android:clickable="true"
+        android:background="@drawable/selectable_button_oval"
         android:gravity="center"
         android:src="@drawable/picto_us_flag"
         />
@@ -36,7 +39,8 @@
         android:background="@null"
         android:gravity="center"
         android:hint="@string/onboarding_phone_number"
-        android:inputType="phone" />
+        android:inputType="phone"
+        />
 
     <ImageView
         android:id="@+id/btnNext"
@@ -45,10 +49,9 @@
         android:layout_gravity="end|center_vertical"
         android:layout_marginEnd="@dimen/horizontal_margin_small"
         android:background="@drawable/bg_skip_transition"
-        android:foreground="@drawable/selectable_button_oval"
+        android:foreground="@drawable/selectable_button_oval_light"
         android:scaleType="centerInside"
         android:src="@drawable/picto_skip"
-        android:clickable="false"
         />
 
     <com.github.rahatarmanahmed.cpv.CircularProgressView

@@ -42,13 +42,33 @@ public class PhoneUtils {
         return currentPhoneNumber != null;
     }
 
+    private boolean validate(String number, String countryCode) {
+        PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
+        String isoCode = phoneNumberUtil.getRegionCodeForCountryCode(Integer.parseInt(countryCode));
+        Phonenumber.PhoneNumber phoneNumber = null;
+        try {
+            //phoneNumber = phoneNumberUtil.parse(phNumber, "IN");  //if you want to pass region code
+            phoneNumber = phoneNumberUtil.parse(number, isoCode);
+        } catch (NumberParseException e) {
+            System.err.println(e);
+        }
+
+        boolean isValid = phoneNumberUtil.isValidNumber(phoneNumber);
+        if (isValid) {
+            String internationalFormat = phoneNumberUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public String formatMobileNumber(String number, String countryCode) {
         try {
             Phonenumber.PhoneNumber phoneNumber = phoneUtil.parse(number, countryCode);
             PhoneNumberUtil.PhoneNumberType type = phoneUtil.getNumberType(phoneNumber);
             boolean isMobile = type == PhoneNumberUtil.PhoneNumberType.MOBILE || type == PhoneNumberUtil.PhoneNumberType.FIXED_LINE_OR_MOBILE;
 
-            if (phoneUtil.isValidNumber(phoneNumber) && (isMobile || type == PhoneNumberUtil.PhoneNumberType.UNKNOWN)) {
+            if (phoneUtil.isValidNumber(phoneNumber) && isMobile) {
                 return phoneUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
             }
 

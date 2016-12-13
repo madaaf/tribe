@@ -52,6 +52,7 @@
     <color name="grey.suggestion">#DCE3EB</color>
     <color name="grey.authentication">#393939</color>
     <color name="grey.light.mask">#33F7F7F7</color>
+    <color name="grey.blue">#DBE0E9</color>
 
     <!-- BLUE -->
     <color name="blue.text">#02ADF2</color>

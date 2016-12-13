@@ -425,6 +425,7 @@
 	<string name="onboarding_phone_number">Phone number</string>
 	<string name="onboarding_code_sending_status">Sending verification code…</string>
 	<string name="onboarding_code_sent_status">Code sent to %1$s</string>
+	<string name="onboarding_code_resend_status">Haven\'t received the code? Tap to resend!</string>
 	<string name="onboarding_code_error_status">An error occured. Retry</string>
 	<string name="onboarding_error_wrong_pin">:closed_lock_with_key: Wrong verification code</string>
 	<string name="onboarding_connected">Connected</string>
@@ -698,8 +699,11 @@
 	<string name="search_searching">Searching</string>
 	<string name="search_add_friends">They are already connected on Tribe</string>
 	<string name="search_invite_friends">Your friends are missing out!</string>
+	<string name="search_suggest_friends">People you may know</string>
+	<string name="search_invite_contacts">People you should invite</string>
 	<string name="search_no_friends_to_add">No friends connected on Tribe</string>
 	<string name="search_no_friends_to_invite">No friends connected on Tribe</string>
+	<string name="search_no_friends_to_suggest">No friends connected on Tribe</string>
 	<string name="search_add_facebook_title">Load friends from facebook</string>
 	<string name="search_add_facebook_subtitle">Don’t miss people you talk to often.</string>
 	<string name="search_add_addressbook_title">Load friends from address book</string>

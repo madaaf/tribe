@@ -536,7 +536,6 @@ public class TribeActivity extends BaseActivity implements TribeMVPView, SensorE
     @Override
     public void onBackPressed() {
         tribePresenter.markTribeListAsRead(recipient, viewTribePager.getTribeListSeens());
-
         super.onBackPressed();
     }
 

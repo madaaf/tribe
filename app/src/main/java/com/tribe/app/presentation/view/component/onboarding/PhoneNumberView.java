@@ -1,11 +1,12 @@
-package com.tribe.app.presentation.view.component;
+package com.tribe.app.presentation.view.component.onboarding;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -13,10 +14,16 @@ import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
+import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,11 +35,19 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * PhoneNumberView.java
  * Created by tiago on 10/06/2016.
- * Last modified by Horatio
- * Component used in IntroViewFragment.java for a user to input their phone number, country code, and verify that it is a valid phone number.
+ * Last modified by Tiago
+ * Component used in AuthActivity.java for a user to input their phone number, country code, and verify that it is a valid phone number.
  */
 
 public class PhoneNumberView extends FrameLayout {
+
+    private final static int DURATION = 200;
+
+    @Inject
+    ScreenUtils screenUtils;
+
+    @Inject
+    PhoneUtils phoneUtils;
 
     @BindView(R.id.editTxtPhoneNumber)
     EditTextFont editTxtPhoneNumber;
@@ -47,7 +62,6 @@ public class PhoneNumberView extends FrameLayout {
     CircularProgressView progressView;
 
     // VARIABLES
-    private PhoneUtils phoneUtils;
     private String countryCode = "US";
     private String currentPhoneNumber;
     private Context context;
@@ -95,6 +109,10 @@ public class PhoneNumberView extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.view_phone_number, this);
         unbinder = ButterKnife.bind(this);
 
+        initDependencyInjector();
+
+        btnNext.setEnabled(false);
+
         countryCode = context.getResources().getConfiguration().locale.getCountry();
 
         subscriptions.add(RxView.clicks(imgCountry)
@@ -102,6 +120,14 @@ public class PhoneNumberView extends FrameLayout {
 
         subscriptions.add(RxView.clicks(btnNext)
                 .subscribe(nextClick));
+
+        subscriptions.add(RxTextView.textChanges(editTxtPhoneNumber).map((charSequence) -> charSequence.toString())
+                .filter(s -> s != null && s.length() > 2)
+                .doOnNext(s -> checkValidPhoneNumber())
+                .map(s -> currentPhoneNumber != null)
+                .subscribe(phoneNumberValid));
+
+        initWithCodeCountry(countryCode);
     }
 
     public String getCountryCode() {
@@ -124,7 +150,7 @@ public class PhoneNumberView extends FrameLayout {
     }
 
     private void checkValidPhoneNumber() {
-        if (editable && !StringUtils.isEmpty(PhoneNumberView.this.getPhoneNumberInput())) {
+        if (editable && !StringUtils.isEmpty(getPhoneNumberInput())) {
             currentPhoneNumber = phoneUtils.formatMobileNumber(PhoneNumberView.this.getPhoneNumberInput(), countryCode);
             String viewPhoneNumber = phoneUtils.formatPhoneNumberForView(PhoneNumberView.this.getPhoneNumberInput(), countryCode);
             if (viewPhoneNumber != null) {
@@ -134,10 +160,6 @@ public class PhoneNumberView extends FrameLayout {
                 editable = true;
             }
         }
-    }
-
-    public Observable<Boolean> phoneNumberValid() {
-        return phoneNumberValid;
     }
 
     public void setPhoneNumber(String str) {
@@ -152,71 +174,59 @@ public class PhoneNumberView extends FrameLayout {
         return currentPhoneNumber;
     }
 
+    public void setNextEnabled(boolean enabled) {
+        if (enabled && !btnNext.isEnabled()) {
+            ((TransitionDrawable) btnNext.getBackground()).startTransition(DURATION);
+            btnNext.setEnabled(true);
+        } else if (!enabled && btnNext.isEnabled()) {
+            ((TransitionDrawable) btnNext.getBackground()).reverseTransition(DURATION);
+            btnNext.setEnabled(false);
+        }
+    }
+
+    public void showLoading() {
+        btnNext.setVisibility(GONE);
+        progressView.setVisibility(VISIBLE);
+    }
+
+    public void hideLoading() {
+        btnNext.setVisibility(VISIBLE);
+        progressView.setVisibility(GONE);
+    }
+
+    public void openKeyboard(int delay) {
+        screenUtils.showKeyboard(editTxtPhoneNumber, delay);
+    }
+
+    public void hideKeyboard() {
+        screenUtils.hideKeyboard(editTxtPhoneNumber);
+    }
+
+    protected ApplicationComponent getApplicationComponent() {
+        return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
+    }
+
+    protected ActivityModule getActivityModule() {
+        return new ActivityModule(((Activity) getContext()));
+    }
+
+    private void initDependencyInjector() {
+        DaggerUserComponent.builder()
+                .activityModule(getActivityModule())
+                .applicationComponent(getApplicationComponent())
+                .build().inject(this);
+    }
+
+    // OBSERVABLES
+    public Observable<Boolean> phoneNumberValid() {
+        return phoneNumberValid;
+    }
+
     public Observable<Void> countryClick() {
         return countryClickEventSubject;
     }
 
     public Observable<Void> nextClick() {
         return nextClick;
-    }
-
-    public void setPhoneUtils(PhoneUtils phoneUtils) {
-        this.phoneUtils = phoneUtils;
-
-        subscriptions.add(RxTextView.textChanges(editTxtPhoneNumber).map((charSequence) -> charSequence.toString())
-                .filter(s -> s != null && s.length() > 2)
-                .doOnNext(s -> checkValidPhoneNumber())
-                .map(s -> currentPhoneNumber != null)
-                .subscribe(phoneNumberValid));
-
-        initWithCodeCountry(countryCode);
-    }
-
-    public void setNextEnabled(boolean enabled) {
-        if (enabled) {
-            btnNext.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_next_icon_black));
-            btnNext.setClickable(true);
-            btnNext.setEnabled(true);
-        } else {
-            btnNext.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.picto_next_icon));
-            btnNext.setClickable(false);
-            btnNext.setEnabled(false);
-        }
-    }
-
-    public void setNextVisible(boolean visible) {
-        if (visible) {
-            btnNext.clearAnimation();
-            btnNext.setAlpha(1f);
-            btnNext.setVisibility(VISIBLE);
-        } else {
-            btnNext.setVisibility(INVISIBLE);
-        }
-    }
-
-    public void openKeyboard() {
-        editTxtPhoneNumber.requestFocus();
-        editTxtPhoneNumber.postDelayed(() -> {
-            InputMethodManager keyboard = (InputMethodManager)
-                    getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            keyboard.showSoftInput(editTxtPhoneNumber, 0);
-        }, 200);
-    }
-
-
-    public void fadeOutNext() {
-        AnimationUtils.fadeOutFast(btnNext);
-    }
-
-    public void nextIconVisisble() {
-        btnNext.setAlpha(1f);
-    }
-
-    public void progressViewVisible(boolean visible) {
-        if (visible) {
-            progressView.setVisibility(VISIBLE);
-        } else {
-            progressView.setVisibility(INVISIBLE);
-        }
     }
 }

@@ -242,6 +242,27 @@
         <item name="android:textSize">35sp</item>
     </style>
 
+    <style name="Small">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">9sp</item>
+    </style>
+
+    <style name="Small.1" parent="@style/Small">
+        <item name="customFont">Roboto-Regular.ttf</item>
+    </style>
+
+    <style name="Small.2" parent="@style/Small">
+        <item name="customFont">Roboto-Bold.ttf</item>
+    </style>
+
+    <style name="Small.2.Black" parent="@style/Small.2">
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="Small.1.Black40" parent="@style/Small.1">
+        <item name="android:textColor">@color/black.opacity.40</item>
+    </style>
+
     <style name="Text.Input">
         <item name="customFont">Roboto-Regular.ttf</item>
         <item name="android:singleLine">true</item>

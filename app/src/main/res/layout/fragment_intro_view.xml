@@ -46,14 +46,14 @@
         android:layout_gravity="bottom"
         >
 
-        <com.tribe.app.presentation.view.component.PhoneNumberView
+        <com.tribe.app.presentation.view.component.onboarding.PhoneNumberView
             android:id="@+id/viewPhoneNumber"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@null"
             />
 
-        <com.tribe.app.presentation.view.component.CodeView
+        <com.tribe.app.presentation.view.component.onboarding.CodeView
             android:id="@+id/viewCode"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

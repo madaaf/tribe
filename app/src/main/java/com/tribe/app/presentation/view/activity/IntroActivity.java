@@ -25,7 +25,7 @@ import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.fragment.AccessFragment;
-import com.tribe.app.presentation.view.fragment.IntroViewFragment;
+import com.tribe.app.presentation.view.fragment.AuthViewFragment;
 import com.tribe.app.presentation.view.fragment.ProfileInfoFragment;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
@@ -47,7 +47,7 @@ import rx.subscriptions.CompositeSubscription;
  * IntroActivity.java
  * This is the first activity when app is launched for the first time.
  * Consists of a fragment view pager that is used throughout the onboarding process.
- * The first fragment in the view pager is IntroViewFragment.java
+ * The first fragment in the view pager is AuthViewFragment.java
  */
 
 public class IntroActivity extends BaseActivity {
@@ -243,7 +243,7 @@ public class IntroActivity extends BaseActivity {
 
         private static final int NUM_ITEMS = 3;
 
-        private WeakReference<IntroViewFragment> introViewFragment;
+        private WeakReference<AuthViewFragment> introViewFragment;
         private WeakReference<ProfileInfoFragment> profileInfoFragment;
         private WeakReference<AccessFragment> accessFragment;
 
@@ -260,13 +260,13 @@ public class IntroActivity extends BaseActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return IntroViewFragment.newInstance();
+                    return AuthViewFragment.newInstance();
                 case 1:
                     return ProfileInfoFragment.newInstance();
                 case 2:
                     return AccessFragment.newInstance();
                 default:
-                    return IntroViewFragment.newInstance();
+                    return AuthViewFragment.newInstance();
             }
         }
 
@@ -276,7 +276,7 @@ public class IntroActivity extends BaseActivity {
 
             switch (position) {
                 case 0:
-                    introViewFragment = new WeakReference<>((IntroViewFragment) createdFragment);
+                    introViewFragment = new WeakReference<>((AuthViewFragment) createdFragment);
                     if (!StringUtils.isEmpty(countryCode))
                         introViewFragment.get().initPhoneNumberViewWithCountryCode(countryCode);
                     break;
@@ -291,7 +291,7 @@ public class IntroActivity extends BaseActivity {
             return createdFragment;
         }
 
-        public IntroViewFragment getIntroViewFragment() {
+        public AuthViewFragment getIntroViewFragment() {
             if (introViewFragment != null)
                 return introViewFragment.get();
 

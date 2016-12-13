@@ -31,9 +31,6 @@ public class ConnectedView extends FrameLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    public ConnectedView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
 
     @BindView(R.id.txtConnected)
     TextViewFont txtConnected;

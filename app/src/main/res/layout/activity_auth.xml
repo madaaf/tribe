@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/viewRoot"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
     >
+
     <com.tribe.app.presentation.view.component.onboarding.AuthVideoView
         android:id="@+id/viewVideoAuth"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@null"
+        />
+
+    <View
+        android:id="@+id/viewBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black.opacity.80"
+        android:alpha="0"
         />
 
     <ImageView
-        android:id="@+id/imgSkip"
+        android:id="@+id/btnSkip"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_gravity="right|top"
@@ -21,11 +35,16 @@
         android:alpha="0"
         />
 
-    <View
-        android:id="@+id/viewBackground"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/black.opacity.40"
+    <ImageView
+        android:id="@+id/btnPlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/picto_play"
+        android:scaleType="centerInside"
+        android:clickable="true"
+        android:foreground="@drawable/selectable_button_oval_light"
+        android:alpha="0"
         />
 
     <LinearLayout
@@ -34,8 +53,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@null"
-        android:orientation="vertical"
-        android:animateLayoutChanges="true">
+        android:orientation="vertical">
 
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtMessage"
@@ -51,11 +69,33 @@
             android:textAlignment="center"
             />
 
-        <com.tribe.app.presentation.view.component.PhoneNumberView
-            android:id="@+id/viewPhoneNumber"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/bottom_bar_height"
-            android:background="@drawable/shape_rect_white_rounded_top_new"
+            android:background="@drawable/shape_rect_white_rounded_top_new">
+
+            <com.tribe.app.presentation.view.component.onboarding.PhoneNumberView
+                android:id="@+id/viewPhoneNumber"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                />
+
+            <com.tribe.app.presentation.view.component.onboarding.CodeView
+                android:id="@+id/viewCode"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                />
+        </FrameLayout>
+
+        <include layout="@layout/view_separator_simple" />
+
+        <com.tribe.app.presentation.view.component.onboarding.StatusView
+            android:id="@+id/viewStatus"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:clickable="true"
             />
     </LinearLayout>
-</merge>
+</FrameLayout>

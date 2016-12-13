@@ -20,6 +20,9 @@ import com.tribe.app.presentation.view.activity.ScoreActivity;
 import com.tribe.app.presentation.view.activity.SearchUserActivity;
 import com.tribe.app.presentation.view.activity.SettingsActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
+import com.tribe.app.presentation.view.component.onboarding.CodeView;
+import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
+import com.tribe.app.presentation.view.component.onboarding.StatusView;
 import com.tribe.app.presentation.view.component.settings.SettingsBlockedHiddenView;
 import com.tribe.app.presentation.view.component.settings.SettingsFilterThemeView;
 import com.tribe.app.presentation.view.component.settings.SettingsFilterView;
@@ -30,7 +33,7 @@ import com.tribe.app.presentation.view.component.settings.SettingsView;
 import com.tribe.app.presentation.view.dialog_fragment.PointsDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.ShareDialogProfileFragment;
 import com.tribe.app.presentation.view.fragment.AccessFragment;
-import com.tribe.app.presentation.view.fragment.IntroViewFragment;
+import com.tribe.app.presentation.view.fragment.AuthViewFragment;
 import com.tribe.app.presentation.view.fragment.ProfileInfoFragment;
 
 import dagger.Component;
@@ -42,6 +45,7 @@ import dagger.Component;
 @PerActivity
 @Component(dependencies = ApplicationComponent.class, modules = {ActivityModule.class, UserModule.class})
 public interface UserComponent extends ActivityComponent {
+
     void inject(DebugActivity debugActivity);
     void inject(IntroActivity introActivity);
     void inject(FacebookHiddenActivity facebookHiddenActivity);
@@ -49,7 +53,7 @@ public interface UserComponent extends ActivityComponent {
     void inject(HomeActivity homeActivity);
     void inject(ScoreActivity scoreActivity);
     void inject(PointsActivity pointsActivity);
-    void inject(IntroViewFragment introViewFragment);
+    void inject(AuthViewFragment introViewFragment);
     void inject(AccessFragment accessFragment);
     void inject(ProfileInfoFragment profileInfoFragment);
     void inject(ProfileInfoView profileInfoView);
@@ -61,6 +65,10 @@ public interface UserComponent extends ActivityComponent {
     void inject(GroupActivity groupActivity);
     void inject(SearchUserActivity searchUserActivity);
     void inject(SearchPresenter searchPresenter);
+
+    void inject(PhoneNumberView phoneNumberView);
+    void inject(StatusView statusView);
+    void inject(CodeView codeView);
 
     void inject(SettingsActivity settingsActivity);
     void inject(SettingsPresenter settingsPresenter);

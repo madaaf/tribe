@@ -7,11 +7,11 @@
     >
 
     <shape
-        android:innerRadiusRatio="1.9"
+        android:innerRadiusRatio="2.3"
         android:shape="ring"
-        android:thickness="-11sp"
+        android:thickness="1dp"
         android:useLevel="true"
         >
-        <solid android:color="@android:color/white" />
+        <solid android:color="@android:color/black" />
     </shape>
 </rotate>

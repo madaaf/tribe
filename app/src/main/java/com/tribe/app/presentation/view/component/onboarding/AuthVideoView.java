@@ -29,7 +29,8 @@ public class AuthVideoView extends FrameLayout implements TextureView.SurfaceTex
     // VARIABLES
     private TribeMediaPlayer mediaPlayer;
     private SurfaceTexture surfaceTexture;
-    private boolean isPaused;
+    private boolean isPaused, shouldResume = false;
+    private int videoWidth, videoHeight;
 
     // OBSERVABLES
     private Unbinder unbinder;
@@ -64,10 +65,11 @@ public class AuthVideoView extends FrameLayout implements TextureView.SurfaceTex
         super.onDetachedFromWindow();
     }
 
-    public void onPause() {
+    public void onPause(boolean shouldResume) {
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
             isPaused = true;
+            shouldResume = true;
         }
     }
 
@@ -87,7 +89,9 @@ public class AuthVideoView extends FrameLayout implements TextureView.SurfaceTex
         }
 
         subscriptions.add(mediaPlayer.onVideoSizeChanged().subscribe(videoSize -> {
-            viewVideoScalable.scaleVideoSize(videoSize.getWidth(), videoSize.getHeight());
+            videoWidth = videoSize.getWidth();
+            videoHeight = videoSize.getHeight();
+            viewVideoScalable.scaleVideoSize(videoWidth, videoHeight);
         }));
 
         subscriptions.add(mediaPlayer.onVideoStarted().subscribe(videoStarted));
@@ -113,10 +117,13 @@ public class AuthVideoView extends FrameLayout implements TextureView.SurfaceTex
             mediaPlayer.setSurface(surface);
 
             try {
-                if (isPaused) {
+                if (isPaused && shouldResume) {
                     play();
                     isPaused = false;
-                } else {
+                    shouldResume = false;
+                } else if (isPaused && !shouldResume) {
+                    mediaPlayer.seekTo(mediaPlayer.getPosition());
+                } else if (!isPaused) {
                     mediaPlayer.prepare();
                 }
             } catch (Exception ex) {
@@ -127,7 +134,7 @@ public class AuthVideoView extends FrameLayout implements TextureView.SurfaceTex
 
     @Override
     public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-
+        viewVideoScalable.scaleVideoSize(videoWidth, videoHeight);
     }
 
     @Override

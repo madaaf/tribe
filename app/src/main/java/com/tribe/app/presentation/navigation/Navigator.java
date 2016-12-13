@@ -84,6 +84,7 @@ public class Navigator {
         if (activity != null) {
             Intent intent = CountryActivity.getCallingIntent(activity);
             activity.startActivityForResult(intent, REQUEST_COUNTRY);
+            activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
         }
     }
 
