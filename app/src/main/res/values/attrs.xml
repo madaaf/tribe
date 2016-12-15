@@ -123,4 +123,13 @@
             <enum name="addressbook" value="1" />
         </attr>
     </declare-styleable>
+
+    <declare-styleable name="LoadFriendsView">
+        <attr name="loadTitle" format="string" />
+        <attr name="loadBody" format="string" />
+        <attr name="loadType" format="enum">
+            <enum name="fb" value="0" />
+            <enum name="addressbook" value="1" />
+        </attr>
+    </declare-styleable>
 </resources>

@@ -24,15 +24,12 @@ import butterknife.Unbinder;
 import rx.subscriptions.CompositeSubscription;
 
 /**
- * PhoneNumberView.java
- * Created by tiago on 10/06/2016.
- * Last modified by Horatio
- * Component used in AuthViewFragment.java for a user to input their phone number, country code, and verify that it is a valid phone number.
+ * Created by tiago on 12/10/2016.
  */
 
 public class StatusView extends FrameLayout {
 
-    private static final int DURATION = 200;
+    private static final int DURATION = 300;
 
     public static final int DISCLAIMER = 0;
     public static final int SENDING = 1;

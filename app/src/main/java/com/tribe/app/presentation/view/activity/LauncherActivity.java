@@ -9,10 +9,9 @@ import android.util.Log;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.utils.DeviceUtils;
+import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 
 import javax.inject.Inject;
 
@@ -53,17 +52,15 @@ public class LauncherActivity extends BaseActivity {
         this.getApplicationComponent().inject(this);
 
         Uri deepLink = getIntent().getData();
-        if (currentUser == null || StringUtils.isEmpty(currentUser.getUsername())
-                || currentUser.getFriendshipList().size() == 0) {
+        if (currentUser == null || StringUtils.isEmpty(currentUser.getUsername())) {
             navigator.navigateToLogin(this, deepLink);
         } else {
-            if (currentUser != null && currentUser.hasOnlySupport())
-                navigator.navigateToLogin(this, deepLink);
-            else if (lastVersion.get().equals(DeviceUtils.getVersionCode(this))) {
-                navigator.navigateToHome(this, true, deepLink);
-            } else {
-                navigator.computeActions(this, false, null);
-            }
+            navigator.navigateToAuthAccess(this, deepLink);
+//            if (lastVersion.get().equals(DeviceUtils.getVersionCode(this))) {
+//                navigator.navigateToHome(this, true, deepLink);
+//            } else {
+//                navigator.computeActions(this, false, null);
+//            }
         }
 
         finish();

@@ -1,25 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="@dimen/bottom_bar_height"
-    android:layout_gravity="bottom"
-    android:background="@drawable/shape_facebook_blue_rect_bottom">
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
 
-    <ImageView
+    <com.tribe.app.presentation.view.widget.TextViewFont
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/picto_facebook_logo"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="@dimen/vertical_margin"
-        android:layout_marginStart="@dimen/horizontal_margin"
+        android:text="@string/onboarding_user_facebook_button_title"
+        style="@style/Headline.White.2"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/vertical_margin"
-        android:layout_gravity="bottom|center_horizontal"
-        android:gravity="center"
-        android:text="@string/onboarding_user_facebook_button_title"
-        style="@style/Title.2.White"
+        android:layout_marginTop="7dp"
+        android:text="@string/onboarding_user_facebook_button_subtitle"
+        style="@style/Body.One.White40"
         />
-</FrameLayout>
+</merge>

@@ -8,18 +8,23 @@ import com.tribe.app.presentation.mvp.presenter.SearchPresenter;
 import com.tribe.app.presentation.mvp.presenter.SettingsPresenter;
 import com.tribe.app.presentation.utils.facebook.FacebookHiddenActivity;
 import com.tribe.app.presentation.utils.mediapicker.MediaHiddenActivity;
+import com.tribe.app.presentation.view.activity.AuthAccessActivity;
 import com.tribe.app.presentation.view.activity.AuthActivity;
+import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.BaseActionActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.IntroActivity;
+import com.tribe.app.presentation.view.activity.PickYourFriendsActivity;
 import com.tribe.app.presentation.view.activity.PointsActivity;
 import com.tribe.app.presentation.view.activity.ScoreActivity;
 import com.tribe.app.presentation.view.activity.SearchUserActivity;
 import com.tribe.app.presentation.view.activity.SettingsActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
+import com.tribe.app.presentation.view.component.common.LoadFriendsView;
+import com.tribe.app.presentation.view.component.onboarding.AccessView;
 import com.tribe.app.presentation.view.component.onboarding.CodeView;
 import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
 import com.tribe.app.presentation.view.component.onboarding.StatusView;
@@ -33,7 +38,6 @@ import com.tribe.app.presentation.view.component.settings.SettingsView;
 import com.tribe.app.presentation.view.dialog_fragment.PointsDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.ShareDialogProfileFragment;
 import com.tribe.app.presentation.view.fragment.AccessFragment;
-import com.tribe.app.presentation.view.fragment.AuthViewFragment;
 import com.tribe.app.presentation.view.fragment.ProfileInfoFragment;
 
 import dagger.Component;
@@ -53,7 +57,6 @@ public interface UserComponent extends ActivityComponent {
     void inject(HomeActivity homeActivity);
     void inject(ScoreActivity scoreActivity);
     void inject(PointsActivity pointsActivity);
-    void inject(AuthViewFragment introViewFragment);
     void inject(AccessFragment accessFragment);
     void inject(ProfileInfoFragment profileInfoFragment);
     void inject(ProfileInfoView profileInfoView);
@@ -66,10 +69,6 @@ public interface UserComponent extends ActivityComponent {
     void inject(SearchUserActivity searchUserActivity);
     void inject(SearchPresenter searchPresenter);
 
-    void inject(PhoneNumberView phoneNumberView);
-    void inject(StatusView statusView);
-    void inject(CodeView codeView);
-
     void inject(SettingsActivity settingsActivity);
     void inject(SettingsPresenter settingsPresenter);
     void inject(SettingsThemeView settingsThemeView);
@@ -81,4 +80,12 @@ public interface UserComponent extends ActivityComponent {
     void inject(SettingsBlockedHiddenView settingsBlockedHiddenView);
 
     void inject(AuthActivity authActivity);
+    void inject(PhoneNumberView phoneNumberView);
+    void inject(StatusView statusView);
+    void inject(CodeView codeView);
+    void inject(AuthProfileActivity authProfileActivity);
+    void inject(AuthAccessActivity authAccessActivity);
+    void inject(AccessView accessView);
+    void inject(PickYourFriendsActivity pickYourFriendsActivity);
+    void inject(LoadFriendsView loadFriendsView);
 }

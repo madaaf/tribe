@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- BLACKS -->
+    <color name="black.opacity.3">#08000000</color>
     <color name="black.opacity.5">#0D000000</color>
     <color name="black.opacity.10">#1A000000</color>
     <color name="black.opacity.20">#33000000</color>
@@ -86,6 +87,9 @@
     <color name="orange">#FD6E02</color>
     <color name="orange.error">#FF6D00</color>
 
+    <!-- BROWNS -->
+    <color name="brown">#9B6A51</color>
+
     <!-- APPS COLORS -->
     <color name="snapchat">#FFE400</color>
     <color name="twitter">#00AAEC</color>
@@ -109,8 +113,9 @@
     <color name="confetti.1">#68CFC5</color>
     <color name="confetti.2">#654AF7</color>
     <color name="confetti.3">#8F61CC</color>
-    <color name="confetti.4">#E87CD6</color>
+    <color name="confetti.4">#FDE175</color>
     <color name="confetti.5">#97D3EF</color>
+    <color name="confetti.6">#F9474C</color>
 
     <!-- Themes -->
 

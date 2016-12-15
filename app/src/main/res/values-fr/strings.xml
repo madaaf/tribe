@@ -167,14 +167,22 @@
 	<string name="tribe_more_save">Sauvegarder dans votre bibliothèque</string>
 	<string name="tribe_more_save_success">Sauvegardé !</string>
 	<string name="tribe_more_report">Reporter</string>
-	<string name="tribe_more_set_speed_1x">Diminuer la vitesse (1x)</string>
-	<string name="tribe_more_set_speed_2x">Augmenter la vitesse (2x)</string>
+	<string name="tribe_more_set_speed_1x">Vitesse de lecture (1x)</string>
+	<string name="tribe_more_set_speed_2x">Vitesse de lecture (2x)</string>
 	<string name="tribe_more_set_language">Mettre à jour la langue des sous-titres</string>
 	<string name="tribe_metadata_activate_location">Location</string>
 	<string name="tribe_metadata_get_directions">Itinéraire</string>
 	<string name="tribe_event_saved">Ajouté au calendrier</string>
 	<string name="tribe_more_back">Revoir le tribe précédent</string>
 	<string name="tribe_more_back_impossible">Impossible, il s\'agit du premier Tribe.</string>
+	<string name="tribe_more_recipients">Vu par...</string>
+	<string name="tribe_more_delete">Supprimer le message</string>
+	<string name="tribe_empty_view">Rester appuyé pour enregistrer votre message</string>
+	<string name="tribe_more_resend">Renvoyer le message</string>
+	
+	<!-- Tribe Recipients -->
+	<string name="tribe_recipients_title">Vu par</string>
+	<string name="tribe_recipients_action_add_friend">Ajouter en ami</string>
 	
 	<!-- Grid -->
 	<string name="grid_user_points">Points</string>
@@ -186,6 +194,7 @@
 	<string name="grid_friendship_status_new_messages">Affichez !</string>
 	<string name="grid_friendship_status_loading">Chargement</string>
 	<string name="grid_friendship_status_reply">À votre tour</string>
+	<string name="grid_friendship_status_error">Non envoyé</string>
 	<string name="grid_support_title">Des questions?</string>
 	<string name="grid_support_status_default">Discute avec l\'Équipe</string>
 	<string name="grid_support_status_sending">Envoi à l’Équipe</string>
@@ -195,6 +204,7 @@
 	<string name="grid_support_status_new_messages">Messages de l’Équipe</string>
 	<string name="grid_support_status_loading">Chargement</string>
 	<string name="grid_support_status_reply">Répondez à l’Équipe</string>
+	<string name="grid_support_status_error">Non envoyé</string>
 	<string name="grid_ghost">Pas encore inscrit</string>
 	<string name="grid_friendship_recording_message">%1$d message</string>
 	<string name="grid_friendship_recording_messages">%1$d messages</string>
@@ -285,6 +295,8 @@
 	<string name="group_details_lang_title">Langue des sous-titres</string>
 	<string name="group_details_settings_title">Réglages</string>
 	<string name="group_details_settings_subtitle">Identité, sous-titres et notifications push</string>
+	<string name="group_details_add_members_title">Ajoute de nouveaux membres</string>
+	<string name="group_details_add_members_subtitle">Recherche des amis et envoie un lien de partage</string>
 	
 	<!-- Group Settings -->
 	<string name="group_settings_title">Réglages du groupe</string>

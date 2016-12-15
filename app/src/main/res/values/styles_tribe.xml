@@ -109,7 +109,19 @@
     </style>
 
     <style name="Title.2.Blue" parent="@style/Title.2">
-        <item name="android:textColor">@drawable/color_blue_action_selector</item>
+        <item name="android:textColor">@color/blue.text</item>
+    </style>
+
+    <style name="Title.2.FB" parent="@style/Title.2">
+        <item name="android:textColor">@color/blue.facebook.dark</item>
+    </style>
+
+    <style name="Title.2.AddressBook" parent="@style/Title.2">
+        <item name="android:textColor">@color/brown</item>
+    </style>
+
+    <style name="Title.2.Grey" parent="@style/Title.2">
+        <item name="android:textColor">@color/grey.light</item>
     </style>
 
     <style name="Title.2.Points" parent="@style/Title.2">
@@ -176,8 +188,8 @@
         <item name="customFont">Roboto-Bold.ttf</item>
     </style>
 
-    <style name="Headline.Black.40" parent="Headline">
-        <item name="android:textColor">@color/black.opacity.40</item>
+    <style name="Headline.Black.Regular" parent="Headline.Black">
+        <item name="customFont">Roboto-Regular.ttf</item>
     </style>
     
     <style name="Headline.Blue" parent="Headline">
@@ -261,6 +273,10 @@
 
     <style name="Small.1.Black40" parent="@style/Small.1">
         <item name="android:textColor">@color/black.opacity.40</item>
+    </style>
+
+    <style name="Small.1.Black20" parent="@style/Small.1">
+        <item name="android:textColor">@color/black.opacity.20</item>
     </style>
 
     <style name="Text.Input">

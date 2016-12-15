@@ -472,14 +472,13 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
                 .delay(DURATION, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(aLong -> {
-                    // TODO CONNECTED
                     viewCode.showConnected();
                 })
                 .delay(1700, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(time -> {
                     if (user == null || StringUtils.isEmpty(user.getProfilePicture()) || StringUtils.isEmpty(user.getUsername())) {
-                        // TODO GO TO PROFILE INFO
+                        navigator.navigateToAuthProfile(this, deepLink, loginEntity);
                     } else {
                         tagManager.trackEvent(TagManagerConstants.ONBOARDING_CONNECTION);
                         // TODO GO TO ACCESS

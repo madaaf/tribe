@@ -200,6 +200,7 @@ public class ProfileInfoView extends LinearLayout {
 
     private void initUi() {
         setOrientation(VERTICAL);
+        setBackground(null);
 
         if (!StringUtils.isEmpty(user.getProfilePicture())) loadAvatar(user.getProfilePicture());
         if (!StringUtils.isEmpty(user.getDisplayName())) setEditDisplayName(user.getDisplayName());
@@ -222,10 +223,8 @@ public class ProfileInfoView extends LinearLayout {
                         .doOnNext(s -> {
                             if (!StringUtils.isEmpty(s)) {
                                 editUsername.setHint("");
-                                showArobase();
                             } else {
                                 editUsername.setHint(R.string.onboarding_user_username_placeholder);
-                                hideArobase();
                             }
                         })
                         .debounce(200, TimeUnit.MILLISECONDS)
@@ -264,7 +263,17 @@ public class ProfileInfoView extends LinearLayout {
 
         subscriptions.add(
                 RxView.clicks(imgAvatar)
-                        .flatMap(aVoid -> DialogFactory.showBottomSheetForCamera(getContext()),
+                        .doOnNext(aVoid -> {
+                            imgAvatar.setEnabled(false);
+                            if (editDisplayName.hasFocus()) screenUtils.hideKeyboard(editDisplayName);
+                            else if (editUsername.hasFocus()) screenUtils.hideKeyboard(editUsername);
+                        })
+                        .delay(200, TimeUnit.MILLISECONDS)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .flatMap(aVoid -> {
+                                    imgAvatar.setEnabled(true);
+                                    return DialogFactory.showBottomSheetForCamera(getContext());
+                                },
                                 ((aVoid, labelType) -> {
                                     if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
                                         subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA)
@@ -336,14 +345,6 @@ public class ProfileInfoView extends LinearLayout {
         if (imgUsernameInd.getScaleX() == 1) {
             AnimationUtils.scaleDown(imgUsernameInd, DURATION, new DecelerateInterpolator());
         }
-    }
-
-    public void hideArobase() {
-        txtArobase.setVisibility(View.GONE);
-    }
-
-    public void showArobase() {
-        txtArobase.setVisibility(View.VISIBLE);
     }
 
     public void showUsernameProgress() {
@@ -444,7 +445,7 @@ public class ProfileInfoView extends LinearLayout {
         StringBuilder builder = new StringBuilder();
         for (int i = start; i < end; i++) {
             char c = source.charAt(i);
-            if (Character.isLetterOrDigit(c)) {
+            if (Character.isLetterOrDigit(c) || c == '_' || c == '-') {
                 builder.append(c);
             }
         }

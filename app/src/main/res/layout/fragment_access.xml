@@ -42,10 +42,10 @@
         android:background="@null"
         android:text="@string/onboarding_queue_description"
         android:gravity="center"
-        style="@style/Headline.Black.40"
+        style="@style/Headline.Black.Regular"
         />
 
-    <com.tribe.app.presentation.view.component.AccessLockView
+    <com.tribe.app.presentation.view.component.AccessView
         android:id="@+id/accessLockView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

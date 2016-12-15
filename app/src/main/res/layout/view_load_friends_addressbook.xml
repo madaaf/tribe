@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <FrameLayout
+        android:layout_width="72.5dp"
+        android:layout_height="72.5dp"
+        android:background="@null"
+        >
+
+        <com.tribe.app.presentation.view.widget.AvatarView
+            android:id="@+id/viewAvatar"
+            android:layout_width="22.5dp"
+            android:layout_height="22.5dp"
+            android:layout_margin="@dimen/horizontal_margin_small"
+            />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|bottom"
+            android:layout_margin="@dimen/horizontal_margin_small"
+            android:src="@drawable/picto_addressbook_load"
+            />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:paddingRight="@dimen/horizontal_margin_small">
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            style="@style/Title.2.AddressBook"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/search_add_addressbook_title"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            style="@style/Body.One.Black40"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/search_add_addressbook_subtitle"
+            />
+    </LinearLayout>
+</merge>

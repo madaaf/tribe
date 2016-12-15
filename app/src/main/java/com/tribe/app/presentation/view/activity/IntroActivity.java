@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -18,14 +17,11 @@ import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
-import com.tribe.app.presentation.utils.preferences.LastMessageRequest;
-import com.tribe.app.presentation.utils.preferences.LastUserRequest;
-import com.tribe.app.presentation.navigation.Navigator;
-import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.utils.preferences.LastMessageRequest;
+import com.tribe.app.presentation.utils.preferences.LastUserRequest;
 import com.tribe.app.presentation.view.fragment.AccessFragment;
-import com.tribe.app.presentation.view.fragment.AuthViewFragment;
 import com.tribe.app.presentation.view.fragment.ProfileInfoFragment;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
@@ -140,38 +136,6 @@ public class IntroActivity extends BaseActivity {
     }
 
     /**
-     * onActivityResult here handles four different scenarios:
-     * 1. Country code selector
-     *    In IntroviewFragment.java, when a user changes their country they are brought to a new activity
-     *    and then returned to the fragment, where the results are handled here.
-     *
-     * 2. Get image from Gallery
-     *    In ProfileInfoFragment.java, when a user chooses a photo from their camera for a profile picture,
-     *    their picture is setup here
-     *
-     * 3. Capture image
-     *    In ProfileInfoFragment.java a user can take a picture for their profile picture.
-     *    The result is handled here.
-     *
-     * 4. Facebook Login
-     *    This handles the Facebook login in ProfileInfoFragment.java.
-     */
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // 1. Country code selector
-        if (requestCode == Navigator.REQUEST_COUNTRY && resultCode == Activity.RESULT_OK && data.getStringExtra(Extras.COUNTRY_CODE) != null) {
-            countryCode = data.getStringExtra(Extras.COUNTRY_CODE);
-
-            if (introViewPagerAdapter != null && introViewPagerAdapter.getIntroViewFragment() != null) {
-                introViewPagerAdapter.getIntroViewFragment().initPhoneNumberViewWithCountryCode(countryCode);
-            }
-        }
-    }
-
-    /**
      * MVPView Initialization methods
      */
 
@@ -243,7 +207,6 @@ public class IntroActivity extends BaseActivity {
 
         private static final int NUM_ITEMS = 3;
 
-        private WeakReference<AuthViewFragment> introViewFragment;
         private WeakReference<ProfileInfoFragment> profileInfoFragment;
         private WeakReference<AccessFragment> accessFragment;
 
@@ -259,14 +222,12 @@ public class IntroActivity extends BaseActivity {
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-                case 0:
-                    return AuthViewFragment.newInstance();
                 case 1:
                     return ProfileInfoFragment.newInstance();
                 case 2:
                     return AccessFragment.newInstance();
                 default:
-                    return AuthViewFragment.newInstance();
+                    return null;
             }
         }
 
@@ -275,11 +236,7 @@ public class IntroActivity extends BaseActivity {
             Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
 
             switch (position) {
-                case 0:
-                    introViewFragment = new WeakReference<>((AuthViewFragment) createdFragment);
-                    if (!StringUtils.isEmpty(countryCode))
-                        introViewFragment.get().initPhoneNumberViewWithCountryCode(countryCode);
-                    break;
+
                 case 1:
                     profileInfoFragment = new WeakReference<>((ProfileInfoFragment) createdFragment);
                     break;
@@ -289,13 +246,6 @@ public class IntroActivity extends BaseActivity {
             }
 
             return createdFragment;
-        }
-
-        public AuthViewFragment getIntroViewFragment() {
-            if (introViewFragment != null)
-                return introViewFragment.get();
-
-            return null;
         }
 
         public ProfileInfoFragment getProfileInfoFragment() {

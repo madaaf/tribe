@@ -46,7 +46,7 @@ public class AccessPresenter implements Presenter {
     @Override
     public void onViewDetached() {
         if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
-        lookupContactsSubscriber.unsubscribe();
+        if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
     }
 
     @Override

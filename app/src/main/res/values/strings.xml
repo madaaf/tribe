@@ -167,14 +167,22 @@
 	<string name="tribe_more_save">Save in camera roll</string>
 	<string name="tribe_more_save_success">Saved!</string>
 	<string name="tribe_more_report">Report</string>
-	<string name="tribe_more_set_speed_1x">Decrease speed (1x)</string>
-	<string name="tribe_more_set_speed_2x">Increase speed (2x)</string>
+	<string name="tribe_more_set_speed_1x">Reading speed (1x)</string>
+	<string name="tribe_more_set_speed_2x">Reading speed (2x)</string>
 	<string name="tribe_more_set_language">Change subtitles language</string>
 	<string name="tribe_metadata_activate_location">Location</string>
 	<string name="tribe_metadata_get_directions">Directions</string>
 	<string name="tribe_event_saved">Added to calendar</string>
 	<string name="tribe_more_back">See the previous tribe</string>
 	<string name="tribe_more_back_impossible">Impossible to go back, it\'s the first message.</string>
+	<string name="tribe_more_recipients">Viewed by...</string>
+	<string name="tribe_more_delete">Delete message</string>
+	<string name="tribe_empty_view">Tap long to record your message</string>
+	<string name="tribe_more_resend">Resend message</string>
+	
+	<!-- Tribe Recipients -->
+	<string name="tribe_recipients_title">Viewed by</string>
+	<string name="tribe_recipients_action_add_friend">Add as friend</string>
 	
 	<!-- Grid -->
 	<string name="grid_user_points">Points</string>
@@ -186,6 +194,7 @@
 	<string name="grid_friendship_status_new_messages">Tap to view!</string>
 	<string name="grid_friendship_status_loading">Loading</string>
 	<string name="grid_friendship_status_reply">Reply</string>
+	<string name="grid_friendship_status_error">Not sent</string>
 	<string name="grid_support_title">Any questions?</string>
 	<string name="grid_support_status_default">Chat with the CEO</string>
 	<string name="grid_support_status_sending">Sending to the CEO</string>
@@ -195,6 +204,7 @@
 	<string name="grid_support_status_new_messages">Messages from CEO</string>
 	<string name="grid_support_status_loading">Loading</string>
 	<string name="grid_support_status_reply">Reply to the CEO</string>
+	<string name="grid_support_status_error">Not sent</string>
 	<string name="grid_ghost">Has not joined yet</string>
 	<string name="grid_friendship_recording_message">%1$d message</string>
 	<string name="grid_friendship_recording_messages">%1$d messages</string>
@@ -285,6 +295,8 @@
 	<string name="group_details_lang_title">Subtitles language</string>
 	<string name="group_details_settings_title">Settings</string>
 	<string name="group_details_settings_subtitle">Identity, subtitles &amp; push notifications</string>
+	<string name="group_details_add_members_title">Add new members</string>
+	<string name="group_details_add_members_subtitle">Search friends and send shareable link</string>
 	
 	<!-- Group Settings -->
 	<string name="group_settings_title">Group settings</string>
@@ -437,7 +449,7 @@
 	<string name="onboarding_user_username_restrictions">Usernames may include letters, numbers, underscores, and dashes.</string>
 	<string name="onboarding_user_facebook_button_title">Go faster with facebook!</string>
 	<string name="onboarding_user_facebook_button_subtitle">Recommended route, it\'s quick &amp; easy!</string>
-	<string name="onboarding_queue_title">Find you friends</string>
+	<string name="onboarding_queue_title">Find your friends</string>
 	<string name="onboarding_queue_description">Discover which of your\nfriends are already here.</string>
 	<string name="onboarding_queue_disclaimer">We send your contacts to the server to connect you\nwith friends. Check out our Terms &amp; Privacy for details.</string>
 	<string name="onboarding_queue_button_title">Search for my friends</string>

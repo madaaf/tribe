@@ -34,7 +34,7 @@ import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.component.AccessBottomBarView;
-import com.tribe.app.presentation.view.component.AccessLockView;
+import com.tribe.app.presentation.view.component.AccessView;
 import com.tribe.app.presentation.view.component.TextFriendsView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
@@ -107,15 +107,14 @@ public class AccessFragment extends BaseFragment implements AccessMVPView {
     AccessBottomBarView accessBottomBarView;
 
     @BindView(R.id.accessLockView)
-    AccessLockView accessLockView;
+    AccessView accessView;
 
     @BindView(R.id.textFriendsView)
     TextFriendsView textFriendsView;
 
     @BindView(R.id.confettiLayout)
     FrameLayout confettiLayout;
-
-
+    
     // OBSERVABLES
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -256,12 +255,12 @@ public class AccessFragment extends BaseFragment implements AccessMVPView {
         pulseWidth = screenUtils.dpToPx(pulseWidthDp);
         lockViewWidth = screenUtils.dpToPx(lockViewWidthDp);
 
-        FrameLayout.LayoutParams lockViewLayoutParams = (FrameLayout.LayoutParams) accessLockView.getLayoutParams();
+        FrameLayout.LayoutParams lockViewLayoutParams = (FrameLayout.LayoutParams) accessView.getLayoutParams();
         lockViewLayoutParams.height = lockViewWidth;
         lockViewLayoutParams.width = lockViewWidth;
 
-        accessLockView.setLayoutParams(lockViewLayoutParams);
-        accessLockView.setViewWidthHeight(whiteCircleWidth, pulseWidth);
+        accessView.setLayoutParams(lockViewLayoutParams);
+        accessView.setViewWidthHeight(whiteCircleWidth, pulseWidth);
     }
 
     public void setUser(User user) {
@@ -287,7 +286,7 @@ public class AccessFragment extends BaseFragment implements AccessMVPView {
                 .setDuration(DURATION_SHORT)
                 .setStartDelay(0);
 
-        accessLockView.setToAccess();
+        accessView.setToAccess();
         accessBottomBarView.setClickable(false);
         accessBottomBarView.animate()
                 .alpha(1)
@@ -331,7 +330,7 @@ public class AccessFragment extends BaseFragment implements AccessMVPView {
                 .setDuration(DURATION_SHORT)
                 .setStartDelay(0);
 
-        accessLockView.setToHangTight(0);
+        accessView.setToHangTight(0);
         accessBottomBarView.setClickable(false);
         accessBottomBarView.animate()
                 .setDuration(DURATION)
@@ -356,7 +355,7 @@ public class AccessFragment extends BaseFragment implements AccessMVPView {
     private void goToSorry() {
         viewState = STATE_SORRY;
 
-        accessLockView.setToSorry();
+        accessView.setToSorry();
         accessBottomBarView.setClickable(false);
         accessBottomBarView.animate()
                 .setDuration(DURATION)
@@ -371,7 +370,7 @@ public class AccessFragment extends BaseFragment implements AccessMVPView {
                                 .translationY(0)
                                 .setStartDelay(0);
 
-                        AnimationUtils.animateBottomMargin(accessLockView, screenUtils.dpToPx(80), DURATION);
+                        AnimationUtils.animateBottomMargin(accessView, screenUtils.dpToPx(80), DURATION);
                         AnimationUtils.animateBottomMargin(txtAccessDesc, screenUtils.dpToPx(170), DURATION);
 
                         changeBaseView(EmojiParser.demojizedText(getString(R.string.onboarding_queue_declined_title)),
@@ -416,7 +415,7 @@ public class AccessFragment extends BaseFragment implements AccessMVPView {
                                 getString(R.string.onboarding_queue_valid_description),
                                 getString(R.string.onboarding_queue_valid_button_title),
                                 R.drawable.shape_rect_blue_rounded_bottom);
-                        accessLockView.setToCongrats();
+                        accessView.setToCongrats();
 
                         accessBottomBarView.animate()
                                 .setDuration(DURATION)
@@ -454,7 +453,7 @@ public class AccessFragment extends BaseFragment implements AccessMVPView {
      */
 
     private void cleanUpSorry() {
-        AnimationUtils.animateBottomMargin(accessLockView, screenUtils.dpToPx(50), DURATION);
+        AnimationUtils.animateBottomMargin(accessView, screenUtils.dpToPx(50), DURATION);
         AnimationUtils.animateBottomMargin(txtAccessDesc, screenUtils.dpToPx(112), DURATION);
 
         textFriendsView.animate()
@@ -479,7 +478,7 @@ public class AccessFragment extends BaseFragment implements AccessMVPView {
     }
 
     public void fadeBigLockIn() {
-        accessLockView.fadeBigLockIn();
+        accessView.fadeBigLockIn();
     }
 
     private void lookupContacts() {
@@ -524,7 +523,7 @@ public class AccessFragment extends BaseFragment implements AccessMVPView {
         }
 
         if (relationsInApp.values() != null && relationsInApp.values().size() > 0) {
-            accessLockView.animateProgress();
+            accessView.animateProgress();
 
             lookupSubscription =
                     Observable.zip(
@@ -534,7 +533,7 @@ public class AccessFragment extends BaseFragment implements AccessMVPView {
                     ).subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread()).subscribe(relation -> {
                         numFriends++;
-                        accessLockView.setToHangTight(numFriends);
+                        accessView.setToHangTight(numFriends);
 
                         if (numFriends == relationsInApp.values().size()) {
                             subscriptions.add(Observable.timer(750, TimeUnit.MILLISECONDS)

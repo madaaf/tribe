@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
+import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
@@ -20,7 +21,9 @@ import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.activity.AuthAccessActivity;
 import com.tribe.app.presentation.view.activity.AuthActivity;
+import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.BaseActionActivity;
 import com.tribe.app.presentation.view.activity.ChatActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
@@ -88,6 +91,23 @@ public class Navigator {
         }
     }
 
+    public void navigateToAuthProfile(Activity activity, Uri deepLink, LoginEntity loginEntity) {
+        if (activity != null) {
+            Intent intent = AuthProfileActivity.getCallingIntent(activity, loginEntity);
+            intent.setData(deepLink);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
+        }
+    }
+
+    public void navigateToAuthAccess(Activity activity, Uri deepLink) {
+        if (activity != null) {
+            Intent intent = AuthAccessActivity.getCallingIntent(activity);
+            intent.setData(deepLink);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
+        }
+    }
 
     /**
      * Goes to the main grid.

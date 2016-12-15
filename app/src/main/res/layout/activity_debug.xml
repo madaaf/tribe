@@ -26,7 +26,7 @@
                 android:gravity="center|left"
                 android:text="Clear Tutorial"
                 android:clickable="true"
-                style="@style/Headline.Black.40"
+                style="@style/Headline.Black.Regular"
                 />
 
             <View
@@ -45,7 +45,7 @@
                 android:gravity="center|left"
                 android:text="Resend support messages"
                 android:clickable="true"
-                style="@style/Headline.Black.40"
+                style="@style/Headline.Black.Regular"
                 />
 
             <View
@@ -55,7 +55,5 @@
                 />
 
         </LinearLayout>
-
     </ScrollView>
-
 </FrameLayout>
