@@ -3,11 +3,13 @@ package com.tribe.app.presentation.view.component.common;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
+import android.support.v4.widget.TextViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.tribe.app.R;
@@ -48,14 +50,17 @@ public class LoadFriendsView extends LinearLayout {
     @BindView(R.id.txtBody)
     TextViewFont txtBody;
 
-    @Nullable
-    @BindView(R.id.avatarView)
-    AvatarView avatarView;
+    @BindView(R.id.viewAvatar)
+    AvatarView viewAvatar;
+
+    @BindView(R.id.imgIcon)
+    ImageView imgIcon;
 
     // VARIABLES
     private Unbinder unbinder;
     private int type;
     private String imageUrl;
+    private int iconId;
     private String body;
     private String title;
 
@@ -78,17 +83,13 @@ public class LoadFriendsView extends LinearLayout {
     }
 
     private void init(Context context, AttributeSet attrs) {
+        initDependencyInjector();
+
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.LoadFriendsView);
 
         setType(a.getInt(R.styleable.LoadFriendsView_loadType, FB));
 
-        int layout = 0;
-
-        if (type == FB) {
-            layout = R.layout.view_load_friends_fb;
-        } else if (type == ADDRESSBOOK) {
-            layout = R.layout.view_load_friends_addressbook;
-        }
+        int layout = R.layout.view_load_friends;
 
         LayoutInflater.from(getContext()).inflate(layout, this);
         unbinder = ButterKnife.bind(this);
@@ -98,16 +99,19 @@ public class LoadFriendsView extends LinearLayout {
         }
 
         if (a.hasValue(R.styleable.LoadFriendsView_loadBody)) {
-            setBody(getResources().getString(a.getResourceId(R.styleable.LoadFriendsView_loadBody, R.string.group_details_settings_subtitle)));
+            setBody(getResources().getString(a.getResourceId(R.styleable.LoadFriendsView_loadBody, R.string.search_add_addressbook_subtitle)));
         } else {
             computeBody();
         }
+
+        if (a.hasValue(R.styleable.LoadFriendsView_loadIcon))
+            setIcon(a.getResourceId(R.styleable.LoadFriendsView_loadIcon, 0));
 
         a.recycle();
 
         setClickable(true);
         setOrientation(HORIZONTAL);
-        setMinimumHeight(screenUtils.dpToPx(72));
+        setMinimumHeight(screenUtils.dpToPx(72.5f));
         setOnClickListener(v -> onClick.onNext(null));
     }
 
@@ -133,6 +137,9 @@ public class LoadFriendsView extends LinearLayout {
     public void setTitle(String str) {
         title = str;
         computeTitle();
+
+        if (type == FB) TextViewCompat.setTextAppearance(txtTitle, R.style.Title_2_FB);
+        else TextViewCompat.setTextAppearance(txtTitle, R.style.Title_2_AddressBook);
     }
 
     public void setBody(String str) {
@@ -143,6 +150,11 @@ public class LoadFriendsView extends LinearLayout {
     public void setImage(String url) {
         imageUrl = url;
         computeImageView();
+    }
+
+    public void setIcon(@DrawableRes int iconId) {
+        this.iconId = iconId;
+        imgIcon.setImageResource(iconId);
     }
 
     private void computeTitle() {
@@ -161,8 +173,8 @@ public class LoadFriendsView extends LinearLayout {
     }
 
     private void computeImageView() {
-        if (avatarView != null && !StringUtils.isEmpty(imageUrl)) {
-            avatarView.load(imageUrl);
+        if (viewAvatar != null && !StringUtils.isEmpty(imageUrl)) {
+            viewAvatar.load(imageUrl);
         }
     }
 

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
     <FrameLayout
-        android:layout_width="72.5dp"
-        android:layout_height="72.5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:background="@null"
         >
 
@@ -14,6 +14,7 @@
             />
 
         <ImageView
+            android:id="@+id/imgIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right|bottom"
@@ -33,7 +34,6 @@
             style="@style/Title.2.AddressBook"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/search_add_addressbook_title"
             />
 
         <com.tribe.app.presentation.view.widget.TextViewFont
@@ -41,7 +41,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:text="@string/search_add_addressbook_subtitle"
             />
     </LinearLayout>
 </merge>

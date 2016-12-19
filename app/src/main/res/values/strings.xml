@@ -77,6 +77,10 @@
 	<string name="permission_popup_push_home_points">Enabling notifications</string>
 	<string name="permission_popup_push_home_no">Stay alone</string>
 	<string name="permission_popup_push_home_yes">Notify me</string>
+	<string name="permission_push_fake_alert_title">Push Notifications</string>
+	<string name="permission_push_fake_alert_description">Do you wanna allow push notifications ?</string>
+	<string name="permission_push_fake_alert_allow">Allow</string>
+	<string name="permission_push_fake_alert_cancel">No</string>
 	<string name="permission_push_disabled_alert_title">Push permission denied</string>
 	<string name="permission_push_disabled_alert_description">Don\'t worry! You can enable it right now in your Settings.</string>
 	<string name="permission_push_disabled_alert_redirect">Go to Settings</string>

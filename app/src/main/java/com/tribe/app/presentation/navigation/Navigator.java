@@ -32,6 +32,7 @@ import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
+import com.tribe.app.presentation.view.activity.PickYourFriendsActivity;
 import com.tribe.app.presentation.view.activity.PointsActivity;
 import com.tribe.app.presentation.view.activity.ScoreActivity;
 import com.tribe.app.presentation.view.activity.SearchUserActivity;
@@ -103,6 +104,15 @@ public class Navigator {
     public void navigateToAuthAccess(Activity activity, Uri deepLink) {
         if (activity != null) {
             Intent intent = AuthAccessActivity.getCallingIntent(activity);
+            intent.setData(deepLink);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
+        }
+    }
+
+    public void navigateToPickYourFriends(Activity activity, Uri deepLink) {
+        if (activity != null) {
+            Intent intent = PickYourFriendsActivity.getCallingIntent(activity);
             intent.setData(deepLink);
             activity.startActivity(intent);
             activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);

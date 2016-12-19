@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.view.activity.AuthAccessActivity"
+    tools:context=".presentation.view.activity.PickYourFriendsActivity"
     android:background="@drawable/shape_rect_white_rounded_top"
     >
 
@@ -62,10 +62,19 @@
     
     <!-- TODO INSERT VIEW -->
 
+    <com.tribe.app.presentation.view.component.common.LoadFriendsView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/load_friends_height"
+        app:loadTitle="@string/search_add_facebook_title"
+        app:loadBody="@string/search_add_facebook_subtitle"
+        app:loadType="fb"
+        app:loadIcon="@drawable/picto_facebook_load"
+        />
+
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_size"
-        android:layout_marginBottom="72.5dp"
+        android:layout_marginBottom="@dimen/load_friends_height"
         android:layout_gravity="bottom"
         android:background="@color/grey.light"
         />
