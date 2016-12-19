@@ -85,6 +85,7 @@ import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.MemberListAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.text.PhotoMessageAdapterDelegate;
@@ -194,6 +195,7 @@ public interface ApplicationComponent {
     void inject(MembersGroupView membersGroupView);
     void inject(MemberListAdapterDelegate memberListAdapterDelegate);
     void inject(SyncView syncView);
+    void inject(UserListAdapterDelegate userListAdapterDelegate);
 
     // JOBS
     void inject(BaseJob baseJob);

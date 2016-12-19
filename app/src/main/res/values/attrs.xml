@@ -127,6 +127,7 @@
     <declare-styleable name="LoadFriendsView">
         <attr name="loadTitle" format="string" />
         <attr name="loadBody" format="string" />
+        <attr name="loadBG" format="integer" />
         <attr name="loadIcon" format="integer" />
         <attr name="loadType" format="enum">
             <enum name="fb" value="0" />

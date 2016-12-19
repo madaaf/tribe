@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    android:id="@+id/layoutContent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:foreground="@drawable/selectable_button"
+    android:background="@null"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="@dimen/horizontal_margin_small"
+    >
+
+    <ImageView
+        android:id="@+id/imgAvatar"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_gravity="left|center_vertical"
+        android:background="@drawable/shape_oval_black40"
+        android:scaleType="centerCrop"
+        />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="55dp">
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            style="@style/Title.1.Black"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtUsername"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_below="@id/txtName"
+            android:singleLine="true"
+            style="@style/Body.One.Blue"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtPoints"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/txtName"
+            android:singleLine="true"
+            style="@style/Points.Reg.Yellow"
+            />
+    </RelativeLayout>
+    
+    <FrameLayout
+        android:id="@+id/btnAdd"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_gravity="right"
+        android:background="@drawable/shape_oval_grey"
+        android:foreground="@drawable/selectable_button_oval"
+        android:clickable="true"
+        android:clipToPadding="false"
+        >
+
+        <View
+            android:id="@+id/btnAddBG"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@drawable/shape_circle_blue"
+            android:visibility="gone"
+            />
+
+        <ImageView
+            android:id="@+id/imgPicto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/picto_add"
+            android:scaleType="centerInside"
+            />
+
+        <com.github.rahatarmanahmed.cpv.CircularProgressView
+            android:id="@+id/progressBarAdd"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            app:cpv_thickness="2dp"
+            app:cpv_indeterminate="true"
+            app:cpv_color="@color/grey.light"
+            app:cpv_animAutostart="true"
+            android:visibility="gone"
+            />
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/imgGhost"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:src="@drawable/picto_phantom"
+        android:scaleType="centerInside"
+        android:layout_gravity="right"
+        android:visibility="gone"
+        />
+
+</FrameLayout>

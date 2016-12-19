@@ -96,6 +96,8 @@ public interface UserDataStore {
      */
     Observable<List<ContactInterface>> contactsFB();
 
+    Observable<List<ContactInterface>> contactsOnApp();
+
     /**
      * Get an {@link Observable} which will get the number of friends from each address book member
      */

@@ -91,7 +91,7 @@ public class MembersGroupView extends FrameLayout {
     public void updateGroup(Group group) {
         membership.setGroup(group);
         List<GroupMember> memberList = new ArrayList<>(membership.getGroup().getGroupMembers());
-        user.computeFriends(memberList);
+        user.computeMemberFriends(memberList);
         adapter.setItems(memberList);
     }
 
@@ -107,7 +107,7 @@ public class MembersGroupView extends FrameLayout {
 
         List<GroupMember> memberList = new ArrayList<>();
         if (membership.getGroup().getGroupMembers() != null) memberList.addAll(membership.getGroup().getGroupMembers());
-        user.computeFriends(memberList);
+        user.computeMemberFriends(memberList);
         adapter.setItems(memberList);
         recyclerView.setAdapter(adapter);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(0, 50);

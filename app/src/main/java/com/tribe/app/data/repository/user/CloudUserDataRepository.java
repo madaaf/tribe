@@ -155,6 +155,11 @@ public class CloudUserDataRepository implements UserRepository {
     }
 
     @Override
+    public Observable<List<Contact>> contactsOnApp() {
+        return null;
+    }
+
+    @Override
     public Observable<Void> howManyFriends() {
         final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
         return userDataStore.howManyFriends();

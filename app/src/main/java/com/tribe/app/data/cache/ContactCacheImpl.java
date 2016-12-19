@@ -4,9 +4,11 @@ import android.content.Context;
 
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactFBRealm;
+import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -14,6 +16,7 @@ import javax.inject.Inject;
 
 import io.realm.Case;
 import io.realm.Realm;
+import io.realm.RealmObject;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
@@ -139,6 +142,33 @@ public class ContactCacheImpl implements ContactCache {
                     .asObservable()
                     .filter(contactFBRealms -> contactFBRealms.isLoaded())
                     .map(contactFBRealms -> realm.copyFromRealm(contactFBRealms));
+    }
+
+    @Override
+    public Observable<List<ContactInterface>> contactsOnApp() {
+        return Observable.merge(realm.where(ContactABRealm.class)
+                        .isNotEmpty("userList")
+                        .findAllSorted(new String[]{"name"}, new Sort[]{Sort.ASCENDING})
+                        .asObservable()
+                        .filter(contactABRealms -> contactABRealms.isLoaded())
+                        .map(contactABRealms -> realm.copyFromRealm(contactABRealms)),
+                realm.where(ContactFBRealm.class)
+                        .isNotEmpty("userList")
+                        .findAllSorted(new String[]{"name"}, new Sort[]{Sort.ASCENDING})
+                        .asObservable()
+                        .filter(contactFBRealms -> contactFBRealms.isLoaded())
+                        .map(contactFBRealms -> realm.copyFromRealm(contactFBRealms))
+        ).map(realmObjects -> {
+            List<ContactInterface> ci = new ArrayList<>();
+
+            if (realmObjects != null) {
+                for (RealmObject obj : realmObjects) {
+                    ci.add((ContactInterface) obj);
+                }
+            }
+
+            return ci;
+        });
     }
 
     @Override

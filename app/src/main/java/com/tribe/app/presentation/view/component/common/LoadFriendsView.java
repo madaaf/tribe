@@ -9,10 +9,13 @@ import android.support.v4.widget.TextViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -27,8 +30,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import rx.Observable;
-import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 12/14/16.
@@ -44,6 +45,9 @@ public class LoadFriendsView extends LinearLayout {
     @Inject
     ScreenUtils screenUtils;
 
+    @Inject
+    User user;
+
     @BindView(R.id.txtTitle)
     TextViewFont txtTitle;
 
@@ -56,6 +60,12 @@ public class LoadFriendsView extends LinearLayout {
     @BindView(R.id.imgIcon)
     ImageView imgIcon;
 
+    @BindView(R.id.layoutBG)
+    ViewGroup layoutBG;
+
+    @BindView(R.id.progressView)
+    CircularProgressView progressView;
+
     // VARIABLES
     private Unbinder unbinder;
     private int type;
@@ -63,9 +73,6 @@ public class LoadFriendsView extends LinearLayout {
     private int iconId;
     private String body;
     private String title;
-
-    // OBSERVABLES
-    private PublishSubject<Void> onClick = PublishSubject.create();
 
     public LoadFriendsView(Context context) {
         super(context);
@@ -107,12 +114,15 @@ public class LoadFriendsView extends LinearLayout {
         if (a.hasValue(R.styleable.LoadFriendsView_loadIcon))
             setIcon(a.getResourceId(R.styleable.LoadFriendsView_loadIcon, 0));
 
+        if (a.hasValue(R.styleable.LoadFriendsView_loadBG))
+            setLayoutBG(a.getResourceId(R.styleable.LoadFriendsView_loadBG, 0));
+
         a.recycle();
 
+        setImage(user.getProfilePicture());
         setClickable(true);
         setOrientation(HORIZONTAL);
         setMinimumHeight(screenUtils.dpToPx(72.5f));
-        setOnClickListener(v -> onClick.onNext(null));
     }
 
     protected ApplicationComponent getApplicationComponent() {
@@ -157,6 +167,20 @@ public class LoadFriendsView extends LinearLayout {
         imgIcon.setImageResource(iconId);
     }
 
+    public void setLayoutBG(@DrawableRes int bgId) {
+        layoutBG.setBackgroundResource(bgId);
+    }
+
+    public void showLoading() {
+        imgIcon.setVisibility(View.GONE);
+        progressView.setVisibility(View.VISIBLE);
+    }
+
+    public void hideLoading() {
+        progressView.setVisibility(View.GONE);
+        imgIcon.setVisibility(View.VISIBLE);
+    }
+
     private void computeTitle() {
         if (txtTitle != null && !StringUtils.isEmpty(title)) {
             txtTitle.setText(title);
@@ -176,10 +200,5 @@ public class LoadFriendsView extends LinearLayout {
         if (viewAvatar != null && !StringUtils.isEmpty(imageUrl)) {
             viewAvatar.load(imageUrl);
         }
-    }
-
-    // OBSERVABLES
-    public Observable<Void> onClick() {
-        return onClick;
     }
 }

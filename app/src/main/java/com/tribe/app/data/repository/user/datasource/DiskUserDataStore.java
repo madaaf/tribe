@@ -111,6 +111,11 @@ public class DiskUserDataStore implements UserDataStore {
     }
 
     @Override
+    public Observable<List<ContactInterface>> contactsOnApp() {
+        return contactCache.contactsOnApp();
+    }
+
+    @Override
     public Observable<Void> howManyFriends() {
         return null;
     }

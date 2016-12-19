@@ -2,6 +2,7 @@ package com.tribe.app.data.cache;
 
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactFBRealm;
+import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 
@@ -40,6 +41,14 @@ public interface ContactCache {
      * @return
      */
     Observable<List<ContactFBRealm>> contactsFB();
+
+    /**
+     * Should only be called from a main thread interactor (UseCaseDisk)
+     * it is NOT thread safe due to the Realm thread's complexity
+     * Updates the UI through subscribers when changes are made to any ContactFBRealm object
+     * @return
+     */
+    Observable<List<ContactInterface>> contactsOnApp();
 
     /**
      * This contacts can be called anywhere, it is thread safe due to the Realm thread's complexity

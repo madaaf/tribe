@@ -28,6 +28,7 @@ import com.tribe.app.domain.interactor.user.GetBlockedFriendshipList;
 import com.tribe.app.domain.interactor.user.GetCloudMessageList;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetDiskContactList;
+import com.tribe.app.domain.interactor.user.GetDiskContactOnAppList;
 import com.tribe.app.domain.interactor.user.GetDiskFBContactList;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.GetGroupMembers;
@@ -216,6 +217,13 @@ public class UserModule {
     @Named("diskContactList")
     UseCaseDisk provideGetContactList(GetDiskContactList getDiskContactList) {
         return getDiskContactList;
+    }
+
+    @Provides
+    @PerActivity
+    @Named("diskContactOnAppList")
+    UseCaseDisk provideGetContactOnAppList(GetDiskContactOnAppList getDiskContactOnAppList) {
+        return getDiskContactOnAppList;
     }
 
     @Provides

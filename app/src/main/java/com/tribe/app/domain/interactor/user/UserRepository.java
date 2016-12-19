@@ -102,6 +102,8 @@ public interface UserRepository {
      */
     Observable<List<Contact>> contactsFB();
 
+    Observable<List<Contact>> contactsOnApp();
+
     /**
      * Get an {@link Observable} which will emit
      */

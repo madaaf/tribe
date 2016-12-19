@@ -59,16 +59,28 @@
             />
 
     </FrameLayout>
-    
-    <!-- TODO INSERT VIEW -->
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/top_bar_height_small"
+        android:clipToPadding="false"
+        android:background="@null"
+        />
 
     <com.tribe.app.presentation.view.component.common.LoadFriendsView
+        android:id="@+id/viewFriendsFBLoad"
         android:layout_width="match_parent"
         android:layout_height="@dimen/load_friends_height"
+        android:layout_gravity="bottom"
+        android:clickable="true"
+        android:background="@drawable/selectable_button"
         app:loadTitle="@string/search_add_facebook_title"
         app:loadBody="@string/search_add_facebook_subtitle"
         app:loadType="fb"
         app:loadIcon="@drawable/picto_facebook_load"
+        app:loadBG="@drawable/bg_facebook_load"
         />
 
     <View

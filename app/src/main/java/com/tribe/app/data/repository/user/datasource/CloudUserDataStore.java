@@ -566,6 +566,11 @@ public class CloudUserDataStore implements UserDataStore {
     }
 
     @Override
+    public Observable<List<ContactInterface>> contactsOnApp() {
+        return null;
+    }
+
+    @Override
     public Observable<Void> howManyFriends() {
         return contactCache.contactsThreadSafe()
                 .map(contactABRealmList -> {

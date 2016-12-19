@@ -245,14 +245,20 @@ public class DiskUserDataRepository implements UserRepository {
     }
 
     @Override
+    public Observable<List<Contact>> contactsOnApp() {
+        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+        return userDataStore.contactsOnApp().map(collection -> contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection)));
+    }
+
+    @Override
     public Observable<Void> howManyFriends() {
         return null;
     }
 
     @Override
-    public Observable<SearchResult> findByUsername(String usernamve) {
+    public Observable<SearchResult> findByUsername(String username) {
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-        return userDataStore.findByUsername(usernamve).map(searchResultRealm -> searchResultRealmDataMapper.transform(searchResultRealm));
+        return userDataStore.findByUsername(username).map(searchResultRealm -> searchResultRealmDataMapper.transform(searchResultRealm));
     }
 
     @Override

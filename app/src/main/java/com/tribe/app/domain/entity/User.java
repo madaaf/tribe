@@ -30,6 +30,9 @@ public class User implements Serializable {
     private boolean invisible_mode;
     private boolean push_notif;
 
+    private boolean animateAdd = false;
+    private boolean isFriend = false;
+
     public User(String id) {
         this.id = id;
     }
@@ -188,6 +191,22 @@ public class User implements Serializable {
         return friendshipList;
     }
 
+    public boolean isAnimateAdd() {
+        return animateAdd;
+    }
+
+    public void setAnimateAdd(boolean animateAdd) {
+        this.animateAdd = animateAdd;
+    }
+
+    public boolean isFriend() {
+        return isFriend;
+    }
+
+    public void setFriend(boolean friend) {
+        isFriend = friend;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -267,11 +286,22 @@ public class User implements Serializable {
         return userList;
     }
 
-    public void computeFriends(List<GroupMember> groupMemberList) {
+    public void computeMemberFriends(List<GroupMember> groupMemberList) {
         for (GroupMember groupMember : groupMemberList) {
             for (Friendship friendship : friendships) {
                 if (friendship.getFriend().equals(groupMember.getUser())) {
                     groupMember.setFriend(true);
+                }
+            }
+        }
+
+    }
+
+    public void computeUserFriends(List<User> userList) {
+        for (User user : userList) {
+            for (Friendship friendship : friendships) {
+                if (friendship.getFriend().equals(user)) {
+                    user.setFriend(true);
                 }
             }
         }
