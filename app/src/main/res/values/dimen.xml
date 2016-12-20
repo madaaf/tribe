@@ -74,6 +74,7 @@
     <dimen name="group_search_height">64dp</dimen>
     <dimen name="group_members_height">70dp</dimen>
     <dimen name="load_friends_height">72.5dp</dimen>
+    <dimen name="pick_all_height">72.5dp</dimen>
 
     <!-- WIDTHS -->
     <dimen name="snooze_mode_width">93dp</dimen>

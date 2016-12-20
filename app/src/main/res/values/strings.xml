@@ -457,13 +457,13 @@
 	<string name="onboarding_queue_description">Discover which of your\nfriends are already here.</string>
 	<string name="onboarding_queue_disclaimer">We send your contacts to the server to connect you\nwith friends. Check out our Terms &amp; Privacy for details.</string>
 	<string name="onboarding_queue_button_title">Search for my friends</string>
-	<string name="onboarding_queue_loading_title">Find you friends</string>
+	<string name="onboarding_queue_loading_title">Find your friends</string>
 	<string name="onboarding_queue_loading_description">Connecting with your friends...</string>
 	<string name="onboarding_queue_loading_friends">friends</string>
 	<string name="onboarding_queue_declined_title">You don\'t have access yet :pensive:</string>
 	<string name="onboarding_queue_declined_description">You need at least one friend\nto enter. Send invites! :dizzy:</string>
 	<string name="onboarding_queue_declined_button_title">Try again</string>
-	<string name="onboarding_queue_valid_title">Find you friends</string>
+	<string name="onboarding_queue_valid_title">Find your friends</string>
 	<string name="onboarding_queue_valid_description">Congratulations,\nyou\'re ready to go!</string>
 	<string name="onboarding_queue_valid_button_title">Enter now</string>
 	<string name="onboarding_popup_confirm_description">We are about to send a code\nto verify this phone number.</string>

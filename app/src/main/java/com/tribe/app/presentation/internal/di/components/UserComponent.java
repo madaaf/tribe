@@ -24,6 +24,7 @@ import com.tribe.app.presentation.view.activity.SearchUserActivity;
 import com.tribe.app.presentation.view.activity.SettingsActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
+import com.tribe.app.presentation.view.component.common.PickAllView;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
 import com.tribe.app.presentation.view.component.onboarding.CodeView;
 import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
@@ -88,4 +89,5 @@ public interface UserComponent extends ActivityComponent {
     void inject(AccessView accessView);
     void inject(PickYourFriendsActivity pickYourFriendsActivity);
     void inject(LoadFriendsView loadFriendsView);
+    void inject(PickAllView pickAllView);
 }

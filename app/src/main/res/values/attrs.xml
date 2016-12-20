@@ -134,4 +134,10 @@
             <enum name="addressbook" value="1" />
         </attr>
     </declare-styleable>
+
+    <declare-styleable name="PickAllView">
+        <attr name="pickAllTitle" format="string" />
+        <attr name="pickAllBody" format="string" />
+        <attr name="pickAllBGColor" format="color" />
+    </declare-styleable>
 </resources>

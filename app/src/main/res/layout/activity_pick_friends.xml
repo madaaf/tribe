@@ -60,14 +60,69 @@
 
     </FrameLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/top_bar_height_small"
-        android:clipToPadding="false"
-        android:background="@null"
-        />
+        android:orientation="vertical">
+
+        <com.tribe.app.presentation.view.component.common.PickAllView
+            android:id="@+id/viewPickAll"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/pick_all_height"
+            android:layout_gravity="bottom"
+            android:clickable="true"
+            android:foreground="@drawable/selectable_button_light"
+            app:pickAllTitle="@string/onboarding_friends_to_add_shortcut_title"
+            app:pickAllBGColor="@color/blue.text"
+            />
+
+        <include layout="@layout/view_separator" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/top_bar_height"
+            android:background="@null"
+            >
+
+            <ImageView
+                android:id="@+id/imgSearch"
+                android:layout_width="@dimen/icons_end"
+                android:layout_height="@dimen/icons_end"
+                android:layout_gravity="center_vertical"
+                android:scaleType="centerInside"
+                android:src="@drawable/picto_search_icon"
+                />
+
+            <com.tribe.app.presentation.view.widget.EditTextFont
+                android:id="@+id/editTextSearchContact"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/icons_end"
+                android:layout_marginStart="@dimen/icons_end"
+                android:layout_marginEnd="@dimen/horizontal_margin_small"
+                android:layout_gravity="center_vertical"
+                android:hint="@string/contacts_search_placeholder"
+                android:backgroundTint="@android:color/black"
+                android:background="@null"
+                android:singleLine="true"
+                android:gravity="center_vertical"
+                android:imeOptions="actionDone"
+                style="@style/Text.Input.Search"
+                />
+
+        </FrameLayout>
+
+        <include layout="@layout/view_separator" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:background="@null"
+            />
+
+    </LinearLayout>
 
     <com.tribe.app.presentation.view.component.common.LoadFriendsView
         android:id="@+id/viewFriendsFBLoad"
@@ -79,8 +134,8 @@
         app:loadTitle="@string/search_add_facebook_title"
         app:loadBody="@string/search_add_facebook_subtitle"
         app:loadType="fb"
-        app:loadIcon="@drawable/picto_facebook_load"
         app:loadBG="@drawable/bg_facebook_load"
+        app:loadIcon="@drawable/picto_facebook_load"
         />
 
     <View

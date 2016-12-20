@@ -16,6 +16,7 @@ import com.tribe.app.presentation.view.adapter.UserListAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.DividerFirstLastItemDecoration;
 import com.tribe.app.presentation.view.adapter.manager.UserListLayoutManager;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
+import com.tribe.app.presentation.view.component.common.PickAllView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
@@ -55,7 +56,10 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
     CircularProgressView progressView;
 
     @BindView(R.id.viewFriendsFBLoad)
-    LoadFriendsView loadFriendsFBView;
+    LoadFriendsView viewFriendsFBLoad;
+
+    @BindView(R.id.viewPickAll)
+    PickAllView viewPickAll;
 
     // VARIABLES
     private Unbinder unbinder;
@@ -100,9 +104,9 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
     }
 
     private void init() {
-        loadFriendsFBView.setOnClickListener(v -> {
+        viewFriendsFBLoad.setOnClickListener(v -> {
             friendsPresenter.loginFacebook();
-            loadFriendsFBView.showLoading();
+            viewFriendsFBLoad.showLoading();
         });
     }
 
@@ -145,6 +149,13 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
     public void renderContactList(List<User> contactList) {
         user.computeUserFriends(contactList);
         adapter.setItems(contactList);
+
+        if (contactList.size() > 1) {
+            viewPickAll.setAvatars(contactList.get(0).getProfilePicture(), contactList.get(1).getProfilePicture());
+            viewPickAll.setBody(getString(R.string.onboarding_friends_to_add_shortcut_subtitle, contactList.size()));
+        } else {
+            viewPickAll.setBody(getString(R.string.onboarding_friends_to_add_shortcut_subtitle_one, contactList.size()));
+        }
     }
 
     @Override
@@ -164,13 +175,13 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
 
     @Override
     public void successFacebookLogin() {
-        loadFriendsFBView.hideLoading();
+        viewFriendsFBLoad.hideLoading();
         // TODO REMOVE VIEW / LAUNCH SYNC
     }
 
     @Override
     public void errorFacebookLogin() {
-        loadFriendsFBView.hideLoading();
+        viewFriendsFBLoad.hideLoading();
     }
 
     @Override

@@ -82,6 +82,7 @@
         <activity
             android:name=".presentation.view.activity.PickYourFriendsActivity"
             android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme"
             />
