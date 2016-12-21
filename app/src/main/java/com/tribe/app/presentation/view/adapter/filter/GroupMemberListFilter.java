@@ -2,19 +2,19 @@ package com.tribe.app.presentation.view.adapter.filter;
 
 import android.widget.Filter;
 
-import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.view.adapter.UserListAdapter;
+import com.tribe.app.domain.entity.GroupMember;
+import com.tribe.app.presentation.view.adapter.FriendMembersAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserListFilter extends Filter {
+public class GroupMemberListFilter extends Filter {
 
-    private List<Object> userList;
-    private List<Object> filteredUserList;
-    private UserListAdapter adapter;
+    private List<GroupMember> userList;
+    private List<GroupMember> filteredUserList;
+    private FriendMembersAdapter adapter;
 
-    public UserListFilter(List<Object> userList, UserListAdapter adapter) {
+    public GroupMemberListFilter(List<GroupMember> userList, FriendMembersAdapter adapter) {
         this.userList = userList;
         this.filteredUserList = new ArrayList();
         this.adapter = adapter;
@@ -26,13 +26,9 @@ public class UserListFilter extends Filter {
         final FilterResults results = new FilterResults();
 
         if (userList != null && userList.size() > 0) {
-            for (final Object item : userList) {
-                if (item instanceof User) {
-                    User user = (User) item;
-
-                    if (user.getDisplayName().toLowerCase().startsWith(constraint.toString().toLowerCase())) {
-                        filteredUserList.add(item);
-                    }
+            for (final GroupMember item : userList) {
+                if (item.getUser().getDisplayName().toLowerCase().startsWith(constraint.toString().toLowerCase())) {
+                    filteredUserList.add(item);
                 }
             }
         }

@@ -27,10 +27,10 @@ import butterknife.ButterKnife;
 /**
  * Created by tiago on 11/29/16.
  */
-public class UserListAdapterDelegate extends AddAnimationAdapterDelegate<List<User>> {
+public class UserListAdapterDelegate extends AddAnimationAdapterDelegate<List<Object>> {
 
     @Inject
-    User user;
+    User currentUser;
 
     // VARIABLES
     private int avatarSize;
@@ -42,7 +42,7 @@ public class UserListAdapterDelegate extends AddAnimationAdapterDelegate<List<Us
     }
 
     @Override
-    public boolean isForViewType(@NonNull List<User> items, int position) {
+    public boolean isForViewType(@NonNull List<Object> items, int position) {
         return items.get(position) instanceof User;
     }
 
@@ -54,27 +54,34 @@ public class UserListAdapterDelegate extends AddAnimationAdapterDelegate<List<Us
     }
 
     @Override
-    public void onBindViewHolder(@NonNull List<User> items, int position, @NonNull RecyclerView.ViewHolder holder) {
+    public void onBindViewHolder(@NonNull List<Object> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         UserListViewHolder vh = (UserListViewHolder) holder;
         User user = (User) items.get(position);
+
+        vh.btnAdd.setVisibility(View.VISIBLE);
+        vh.imgGhost.setVisibility(View.GONE);
 
         if (animations.containsKey(holder)) {
             animations.get(holder).cancel();
         }
 
-        vh.btnAdd.setVisibility(View.VISIBLE);
-        vh.imgGhost.setVisibility(View.GONE);
-
         if (user.isAnimateAdd()) {
             animateAddSuccessful(vh);
-        } else if (user.isFriend()) {
-            vh.imgPicto.setVisibility(View.VISIBLE);
-            vh.imgPicto.setImageResource(R.drawable.picto_done_white);
-            vh.btnAddBG.setVisibility(View.VISIBLE);
-            vh.progressBarAdd.setVisibility(View.GONE);
-        } else if (user.isInvisibleMode()) {
-            vh.btnAdd.setVisibility(View.GONE);
-            vh.imgGhost.setVisibility(View.VISIBLE);
+        } else {
+            if (user.isFriend() || user.isNewFriend()) {
+                vh.imgPicto.setVisibility(View.VISIBLE);
+                vh.imgPicto.setImageResource(R.drawable.picto_done_white);
+                vh.btnAddBG.setVisibility(View.VISIBLE);
+                vh.progressBarAdd.setVisibility(View.GONE);
+            } else if (user.isInvisibleMode()) {
+                vh.btnAdd.setVisibility(View.GONE);
+                vh.imgGhost.setVisibility(View.VISIBLE);
+            } else {
+                vh.imgPicto.setVisibility(View.VISIBLE);
+                vh.imgPicto.setImageResource(R.drawable.picto_add);
+                vh.btnAddBG.setVisibility(View.GONE);
+                vh.progressBarAdd.setVisibility(View.GONE);
+            }
         }
 
         vh.txtName.setText(user.getDisplayName());
@@ -93,7 +100,13 @@ public class UserListAdapterDelegate extends AddAnimationAdapterDelegate<List<Us
                     .into(vh.imgAvatar);
         }
 
-        if (!user.equals(user) && !user.isFriend() && !user.isInvisibleMode()) setClicks(vh, null);
+        if (!currentUser.equals(user) && !user.isFriend() && !user.isInvisibleMode()) {
+            vh.btnAdd.setOnClickListener(v -> {
+                user.setNewFriend(!user.isNewFriend());
+                user.setAnimateAdd(user.isNewFriend());
+                onClick(vh);
+            });
+        }
     }
 
     static class UserListViewHolder extends AddAnimationViewHolder {

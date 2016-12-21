@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.viewholder.AddAnimationViewHolder;
 
@@ -41,45 +40,45 @@ public abstract class AddAnimationAdapterDelegate<T> extends RxAdapterDelegate<T
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    protected void setClicks(AddAnimationViewHolder vh, Friendship friendship) {
-        vh.btnAdd.setOnClickListener(v -> {
-            if (friendship == null || friendship.isBlockedOrHidden()) {
-                AnimatorSet animatorSet = new AnimatorSet();
+    protected void onClick(AddAnimationViewHolder vh) {
+        animations.put(vh, animate(vh));
+        clickAdd.onNext(vh.itemView);
+    }
 
-                ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(vh.imgPicto, "rotation", 0f, 45f);
-                rotationAnim.setDuration(DURATION);
-                rotationAnim.setInterpolator(new DecelerateInterpolator());
+    protected AnimatorSet animate(AddAnimationViewHolder vh) {
+        AnimatorSet animatorSet = new AnimatorSet();
 
-                ObjectAnimator alphaAnimAdd = ObjectAnimator.ofFloat(vh.imgPicto, "alpha", 1f, 0f);
-                alphaAnimAdd.setDuration(DURATION);
-                alphaAnimAdd.setInterpolator(new DecelerateInterpolator());
-                alphaAnimAdd.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        vh.imgPicto.setRotation(0);
-                        vh.imgPicto.setAlpha(1f);
-                        vh.imgPicto.setVisibility(View.GONE);
-                    }
-                });
+        ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(vh.imgPicto, "rotation", 0f, 45f);
+        rotationAnim.setDuration(DURATION);
+        rotationAnim.setInterpolator(new DecelerateInterpolator());
 
-                ObjectAnimator alphaAnimProgress = ObjectAnimator.ofFloat(vh.progressBarAdd, "alpha", 0f, 1f);
-                alphaAnimProgress.setDuration(DURATION);
-                alphaAnimProgress.setStartDelay(150);
-                alphaAnimProgress.setInterpolator(new DecelerateInterpolator());
-                alphaAnimProgress.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                        vh.progressBarAdd.setAlpha(0f);
-                        vh.progressBarAdd.setVisibility(View.VISIBLE);
-                    }
-                });
-
-                animatorSet.play(rotationAnim).with(alphaAnimAdd).with(alphaAnimProgress);
-                animatorSet.start();
-                animations.put(vh, animatorSet);
-                clickAdd.onNext(vh.itemView);
+        ObjectAnimator alphaAnimAdd = ObjectAnimator.ofFloat(vh.imgPicto, "alpha", 1f, 0f);
+        alphaAnimAdd.setDuration(DURATION);
+        alphaAnimAdd.setInterpolator(new DecelerateInterpolator());
+        alphaAnimAdd.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                vh.imgPicto.setRotation(0);
+                vh.imgPicto.setAlpha(1f);
+                vh.imgPicto.setVisibility(View.GONE);
             }
         });
+
+        ObjectAnimator alphaAnimProgress = ObjectAnimator.ofFloat(vh.progressBarAdd, "alpha", 0f, 1f);
+        alphaAnimProgress.setDuration(DURATION);
+        alphaAnimProgress.setStartDelay(150);
+        alphaAnimProgress.setInterpolator(new DecelerateInterpolator());
+        alphaAnimProgress.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                vh.progressBarAdd.setAlpha(0f);
+                vh.progressBarAdd.setVisibility(View.VISIBLE);
+            }
+        });
+
+        animatorSet.play(rotationAnim).with(alphaAnimAdd).with(alphaAnimProgress);
+        animatorSet.start();
+        return animatorSet;
     }
 
     protected void animateAddSuccessful(AddAnimationViewHolder vh) {

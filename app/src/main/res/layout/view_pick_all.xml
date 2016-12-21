@@ -11,6 +11,7 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_margin="@dimen/horizontal_margin_small"
+            android:background="@drawable/shape_oval_black40"
             />
 
         <LinearLayout
@@ -26,6 +27,7 @@
                 android:id="@+id/viewAvatarBis"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
+                android:background="@drawable/shape_oval_black40"
                 />
 
         </LinearLayout>

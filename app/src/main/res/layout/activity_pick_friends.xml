@@ -10,6 +10,7 @@
     >
 
     <LinearLayout
+        android:id="@+id/layoutFocus"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:focusableInTouchMode="true"
@@ -36,7 +37,7 @@
 
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtAction"
-            style="@style/Title.2.Blue"
+            style="@style/Title.2.Grey"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="right|center_vertical"
@@ -95,7 +96,7 @@
                 />
 
             <com.tribe.app.presentation.view.widget.EditTextFont
-                android:id="@+id/editTextSearchContact"
+                android:id="@+id/editTextSearch"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/icons_end"
                 android:layout_marginStart="@dimen/icons_end"
@@ -112,7 +113,7 @@
 
         </FrameLayout>
 
-        <include layout="@layout/view_separator" />
+        <include layout="@layout/view_separator_simple" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView"
@@ -124,27 +125,34 @@
 
     </LinearLayout>
 
-    <com.tribe.app.presentation.view.component.common.LoadFriendsView
-        android:id="@+id/viewFriendsFBLoad"
+    <LinearLayout
+        android:id="@+id/layoutFriendsFBLoad"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/load_friends_height"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:clickable="true"
-        android:background="@drawable/selectable_button"
-        app:loadTitle="@string/search_add_facebook_title"
-        app:loadBody="@string/search_add_facebook_subtitle"
-        app:loadType="fb"
-        app:loadBG="@drawable/bg_facebook_load"
-        app:loadIcon="@drawable/picto_facebook_load"
-        />
+        android:orientation="vertical">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider_size"
-        android:layout_marginBottom="@dimen/load_friends_height"
-        android:layout_gravity="bottom"
-        android:background="@color/grey.light"
-        />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_size"
+            android:layout_marginBottom="@dimen/load_friends_height"
+            android:background="@color/grey.light"
+            />
+
+        <com.tribe.app.presentation.view.component.common.LoadFriendsView
+            android:id="@+id/viewFriendsFBLoad"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/load_friends_height"
+            android:clickable="true"
+            android:background="@drawable/selectable_button"
+            app:loadTitle="@string/search_add_facebook_title"
+            app:loadBody="@string/search_add_facebook_subtitle"
+            app:loadType="fb"
+            app:loadBG="@drawable/bg_facebook_load"
+            app:loadIcon="@drawable/picto_facebook_load"
+            />
+
+    </LinearLayout>
     
     <View
         android:layout_width="match_parent"

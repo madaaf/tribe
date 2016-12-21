@@ -64,7 +64,7 @@
         android:layout_width="@dimen/setting_pic_size"
         android:layout_height="@dimen/setting_pic_size"
         android:layout_gravity="end"
-        android:background="@drawable/shape_oval_grey"
+        android:background="@drawable/shape_oval_light_grey"
         android:foreground="@drawable/selectable_button_oval"
         android:clickable="true"
         android:clipToPadding="false"

@@ -13,6 +13,8 @@ import java.util.List;
  */
 public class User implements Serializable {
 
+    public static final String ID_EMPTY = "EMPTY";
+
     private String id;
     private String profilePicture;
     private String displayName;
@@ -30,8 +32,9 @@ public class User implements Serializable {
     private boolean invisible_mode;
     private boolean push_notif;
 
-    private boolean animateAdd = false;
     private boolean isFriend = false;
+    private boolean isNewFriend = false;
+    private boolean animateAdd = false;
 
     public User(String id) {
         this.id = id;
@@ -191,14 +194,6 @@ public class User implements Serializable {
         return friendshipList;
     }
 
-    public boolean isAnimateAdd() {
-        return animateAdd;
-    }
-
-    public void setAnimateAdd(boolean animateAdd) {
-        this.animateAdd = animateAdd;
-    }
-
     public boolean isFriend() {
         return isFriend;
     }
@@ -207,10 +202,26 @@ public class User implements Serializable {
         isFriend = friend;
     }
 
+    public boolean isNewFriend() {
+        return isNewFriend;
+    }
+
+    public void setNewFriend(boolean newFriend) {
+        isNewFriend = newFriend;
+    }
+
+    public boolean isAnimateAdd() {
+        return animateAdd;
+    }
+
+    public void setAnimateAdd(boolean animateAdd) {
+        this.animateAdd = animateAdd;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null) return false;
+        if (o == null || !(o instanceof User)) return false;
 
         User that = (User) o;
 

@@ -119,7 +119,9 @@ public class MemberListAdapterDelegate extends AddAnimationAdapterDelegate<List<
                     .into(vh.imgAvatar);
         }
 
-        if (!user.equals(groupMember.getUser()) && !groupMember.isFriend() && !groupMember.getUser().isInvisibleMode()) setClicks(vh, null);
+        if (!user.equals(groupMember.getUser()) && !groupMember.isFriend() && !groupMember.getUser().isInvisibleMode()) {
+            vh.btnAdd.setOnClickListener(v -> onClick(vh));
+        }
     }
 
     public Observable<View> onLongClick() {

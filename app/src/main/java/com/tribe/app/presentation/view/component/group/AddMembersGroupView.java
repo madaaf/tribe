@@ -198,7 +198,7 @@ public class AddMembersGroupView extends FrameLayout {
         }
 
         recyclerView.setAdapter(adapter);
-        recyclerView.addItemDecoration(new DividerFirstLastItemDecoration(screenUtils.dpToPx(2.5f), screenUtils.dpToPx(10)));
+        recyclerView.addItemDecoration(new DividerFirstLastItemDecoration(screenUtils.dpToPx(2.5f), screenUtils.dpToPx(10), 0));
         recyclerView.getRecycledViewPool().setMaxRecycledViews(0, 50);
         recyclerView.setHasFixedSize(true);
         recyclerView.setNestedScrollingEnabled(groupEntity == null);

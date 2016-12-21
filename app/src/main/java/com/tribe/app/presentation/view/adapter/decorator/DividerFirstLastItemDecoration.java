@@ -12,16 +12,19 @@ public class DividerFirstLastItemDecoration extends RecyclerView.ItemDecoration 
 
     private int marginTop;
     private int marginBottom;
+    private int startPosition;
 
     /**
      * Sole constructor. Takes in {@link Drawable} objects to be used as
      * horizontal and vertical dividers.
      * @param marginTop the margin top
      * @param marginBottom the margin bottom
+     * @param startPosition the start position of the decorator
      */
-    public DividerFirstLastItemDecoration(int marginTop, int marginBottom) {
+    public DividerFirstLastItemDecoration(int marginTop, int marginBottom, int startPosition) {
         this.marginTop = marginTop;
         this.marginBottom = marginBottom;
+        this.startPosition = startPosition;
     }
 
     /**
@@ -40,7 +43,7 @@ public class DividerFirstLastItemDecoration extends RecyclerView.ItemDecoration 
         final int itemPosition = parent.getChildAdapterPosition(view);
         final int itemCount = state.getItemCount();
 
-        boolean childIsInFirstRow = itemPosition == 0;
+        boolean childIsInFirstRow = itemPosition == startPosition;
 
         outRect.top = 0;
         outRect.bottom = 0;

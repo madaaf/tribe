@@ -136,8 +136,8 @@ public class SearchResultGridAdapterDelegate extends AddAnimationAdapterDelegate
     }
 
     protected void setClicks(SearchResultViewHolder vh, SearchResult searchResult) {
-        if (!searchResult.isMyself()) {
-            setClicks(vh, searchResult.getFriendship());
+        if (!searchResult.isMyself() && (searchResult.getFriendship() == null && searchResult.getFriendship().isBlockedOrHidden())) {
+            vh.btnAdd.setOnClickListener(v -> onClick(vh));
         } else {
             vh.btnAdd.setOnClickListener(null);
         }

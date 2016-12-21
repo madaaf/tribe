@@ -80,7 +80,9 @@ public class BlockedFriendAdapterDelegate extends AddAnimationAdapterDelegate<Li
                     .into(vh.imgAvatar);
         }
 
-        setClicks(vh, friendship);
+        if (friendship.isBlockedOrHidden()) {
+            vh.btnAdd.setOnClickListener(v -> onClick(vh));
+        }
     }
 
     static class BlockFriendViewHolder extends AddAnimationViewHolder {

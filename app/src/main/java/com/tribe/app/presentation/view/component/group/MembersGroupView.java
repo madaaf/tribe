@@ -112,7 +112,7 @@ public class MembersGroupView extends FrameLayout {
         recyclerView.setAdapter(adapter);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(0, 50);
         recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new DividerFirstLastItemDecoration(screenUtils.dpToPx(5), screenUtils.dpToPx(5)));
+        recyclerView.addItemDecoration(new DividerFirstLastItemDecoration(screenUtils.dpToPx(5), screenUtils.dpToPx(5), 0));
 
         subscriptions.add(adapter.clickAdd()
                 .map(view -> adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view)).getUser())

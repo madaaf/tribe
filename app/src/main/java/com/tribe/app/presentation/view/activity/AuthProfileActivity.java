@@ -35,10 +35,6 @@ import rx.subscriptions.CompositeSubscription;
 
 public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPView {
 
-    private static int DURATION = 300;
-    private static int DURATION_MEDIUM = 400;
-    private static int DURATION_FAST = 150;
-
     private static final String LOGIN_ENTITY = "LOGIN_ENTITY";
 
     public static Intent getCallingIntent(Context context, LoginEntity loginEntity) {
@@ -125,7 +121,8 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
             txtAction.setCustomFont(this, "Roboto-Bold.ttf");
         }));
 
-        subscriptions.add(RxView.clicks(facebookView).subscribe(aVoid -> {
+        subscriptions.add(RxView.clicks(facebookView)
+                .subscribe(aVoid -> {
                     if (FacebookUtils.isLoggedIn()) {
                         getInfoFromFacebook();
                     } else {
@@ -134,7 +131,8 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
                 })
         );
 
-        subscriptions.add(profileInfoView.onUsernameInput().subscribe(s -> {
+        subscriptions.add(profileInfoView.onUsernameInput()
+                .subscribe(s -> {
                     profileInfoPresenter.lookupUsername(s);
                 })
         );

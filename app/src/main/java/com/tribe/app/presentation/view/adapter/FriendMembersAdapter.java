@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.friend.FriendMemberAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.filter.UserListFilter;
+import com.tribe.app.presentation.view.adapter.filter.GroupMemberListFilter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ public class FriendMembersAdapter extends RecyclerView.Adapter {
     private List<GroupMember> items;
     private List<GroupMember> itemsFiltered;
     private boolean hasFilter = false;
-    private UserListFilter filter;
+    private GroupMemberListFilter filter;
 
     public FriendMembersAdapter(Context context) {
         delegatesManager = new RxAdapterDelegatesManager<>();
@@ -36,7 +36,7 @@ public class FriendMembersAdapter extends RecyclerView.Adapter {
 
         items = new ArrayList<>();
         itemsFiltered = new ArrayList<>();
-        filter = new UserListFilter(items, this);
+        filter = new GroupMemberListFilter(items, this);
 
         setHasStableIds(true);
     }

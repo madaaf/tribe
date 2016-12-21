@@ -122,7 +122,8 @@ public class SearchUserActivity extends BaseActivity implements SearchMVPView {
                     updateSearch();
                 })
                 .debounce(500, TimeUnit.MILLISECONDS)
-                .subscribe(s -> searchPresenter.findByUsername(s)));
+                .subscribe(s -> searchPresenter.findByUsername(s))
+        );
     }
 
     private void initPresenter() {
