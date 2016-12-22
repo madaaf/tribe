@@ -44,6 +44,7 @@
             android:layout_marginRight="@dimen/horizontal_margin"
             android:gravity="right|center_vertical"
             android:text="@string/action_done"
+            android:clickable="true"
             />
 
         <com.github.rahatarmanahmed.cpv.CircularProgressView
@@ -62,6 +63,7 @@
     </FrameLayout>
 
     <LinearLayout
+        android:id="@+id/layoutContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/top_bar_height_small"
@@ -78,9 +80,17 @@
             app:pickAllBGColor="@color/blue.text"
             />
 
-        <include layout="@layout/view_separator" />
+        <LinearLayout
+            android:id="@+id/viewSeparatorLarge"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <include layout="@layout/view_separator" />
+        </LinearLayout>
 
         <FrameLayout
+            android:id="@+id/layoutSearch"
             android:layout_width="match_parent"
             android:layout_height="@dimen/top_bar_height"
             android:background="@null"
@@ -113,7 +123,12 @@
 
         </FrameLayout>
 
-        <include layout="@layout/view_separator_simple" />
+        <View
+            android:id="@+id/viewSeparatorSearch"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_size"
+            android:background="@color/grey.light"
+            />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView"
@@ -126,31 +141,23 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/layoutFriendsFBLoad"
+        android:id="@+id/layoutTop"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/top_bar_height_small"
+        android:orientation="vertical"
+        android:layout_gravity="top"
+        android:visibility="gone">
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutBottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:layout_gravity="bottom"
-        android:orientation="vertical">
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/divider_size"
-            android:layout_marginBottom="@dimen/load_friends_height"
-            android:background="@color/grey.light"
-            />
-
-        <com.tribe.app.presentation.view.component.common.LoadFriendsView
-            android:id="@+id/viewFriendsFBLoad"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/load_friends_height"
-            android:clickable="true"
-            android:background="@drawable/selectable_button"
-            app:loadTitle="@string/search_add_facebook_title"
-            app:loadBody="@string/search_add_facebook_subtitle"
-            app:loadType="fb"
-            app:loadBG="@drawable/bg_facebook_load"
-            app:loadIcon="@drawable/picto_facebook_load"
-            />
+        android:visibility="gone">
 
     </LinearLayout>
     

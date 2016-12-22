@@ -9,5 +9,6 @@ public interface FriendsMVPView extends LoadDataMVPView {
     void renderContactList(List<User> contactList);
     void successFacebookLogin();
     void errorFacebookLogin();
+    void syncDone();
 }
 

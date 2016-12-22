@@ -43,7 +43,12 @@ public class UserListAdapterDelegate extends AddAnimationAdapterDelegate<List<Ob
 
     @Override
     public boolean isForViewType(@NonNull List<Object> items, int position) {
-        return items.get(position) instanceof User;
+        if (items.get(position) instanceof User) {
+            User user = (User) items.get(position);
+            return !user.getId().equals(User.ID_EMPTY);
+        } else {
+            return false;
+        }
     }
 
     @NonNull
@@ -66,6 +71,7 @@ public class UserListAdapterDelegate extends AddAnimationAdapterDelegate<List<Ob
         }
 
         if (user.isAnimateAdd()) {
+            user.setAnimateAdd(false);
             animateAddSuccessful(vh);
         } else {
             if (user.isFriend() || user.isNewFriend()) {

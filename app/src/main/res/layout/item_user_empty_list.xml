@@ -37,7 +37,7 @@
         <View
             android:layout_width="72.5dp"
             android:layout_height="12dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="12.5dp"
             android:background="@drawable/shape_rect_light_grey_rounded"
             />
 

@@ -150,6 +150,7 @@ public class LoadFriendsView extends LinearLayout {
 
         if (type == FB) TextViewCompat.setTextAppearance(txtTitle, R.style.Title_2_FB);
         else TextViewCompat.setTextAppearance(txtTitle, R.style.Title_2_AddressBook);
+        txtTitle.setCustomFont(getContext(), "Roboto-Bold.ttf");
     }
 
     public void setBody(String str) {

@@ -213,10 +213,11 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
             Bundle bundleUser = new Bundle();
             bundleUser.putString(TagManagerConstants.USERNAME, this.user.getUsername());
             tagManager.setProperty(bundleUser);
+            tagManager.setUserId(user.getId());
         }
 
         if (FacebookUtils.isLoggedIn()) this.profileInfoPresenter.updateFacebookScoreLogin();
-        // TODO GO TO ACCESS
+        navigator.navigateToAuthAccess(this, deepLink);
     }
 
     @Override

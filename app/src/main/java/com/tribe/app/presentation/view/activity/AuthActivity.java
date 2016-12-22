@@ -460,6 +460,8 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
     @Override
     public void goToConnected(User user) {
+        if (user != null && !StringUtils.isEmpty(user.getId())) tagManager.setUserId(user.getId());
+
         this.user.copy(user);
 
         viewCode.removeCountdown();
@@ -481,7 +483,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
                         navigator.navigateToAuthProfile(this, deepLink, loginEntity);
                     } else {
                         tagManager.trackEvent(TagManagerConstants.ONBOARDING_CONNECTION);
-                        // TODO GO TO ACCESS
+                        navigator.navigateToAuthAccess(this, deepLink);
                     }
                 }));
     }

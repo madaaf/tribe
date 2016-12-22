@@ -83,6 +83,7 @@ public class MemberListAdapterDelegate extends AddAnimationAdapterDelegate<List<
 
         if (groupMember.isAnimateAdd()) {
             animateAddSuccessful(vh);
+            groupMember.setAnimateAdd(false);
         } else if (groupMember.isFriend()) {
             vh.imgPicto.setVisibility(View.VISIBLE);
             vh.imgPicto.setImageResource(R.drawable.picto_done_white);

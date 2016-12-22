@@ -54,12 +54,6 @@ public class AccessPresenter implements Presenter {
         accessView = (AccessMVPView) v;
     }
 
-    public void lookupContacts() {
-        if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
-        lookupContactsSubscriber = new LookupContactsSubscriber();
-        synchroContactList.execute(lookupContactsSubscriber);
-    }
-
     public void cancelLookupContacts() {
         synchroContactList.unsubscribe();
         if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
@@ -68,6 +62,12 @@ public class AccessPresenter implements Presenter {
     public void lookupGroupInfos(String groupId) {
         getGroupInfos.prepare(groupId);
         getGroupInfos.execute(new GetGroupInfosSubscriber());
+    }
+
+    public void lookupContacts() {
+        if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
+        lookupContactsSubscriber = new LookupContactsSubscriber();
+        synchroContactList.execute(lookupContactsSubscriber);
     }
 
     private class LookupContactsSubscriber extends DefaultSubscriber<List<Contact>> {

@@ -3,6 +3,7 @@ package com.tribe.app.presentation.mvp.presenter;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.user.GetDiskContactOnAppList;
 import com.tribe.app.presentation.mvp.view.FriendsMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
@@ -15,36 +16,42 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 
 public class FriendsPresenter implements Presenter {
 
     private final RxFacebook rxFacebook;
     private final GetDiskContactOnAppList diskContactOnAppList;
+    private final UseCase synchroContactList;
 
     private ContactListSubscriber contactListSubscriber;
+    private LookupContactsSubscriber lookupContactsSubscriber;
 
     private FriendsMVPView friendsMVPView;
 
     @Inject
     public FriendsPresenter(GetDiskContactOnAppList getDiskContactOnAppList,
-                            RxFacebook rxFacebook) {
+                            RxFacebook rxFacebook,
+                            @Named("synchroContactList") UseCase synchroContactList) {
         this.rxFacebook = rxFacebook;
         this.diskContactOnAppList = getDiskContactOnAppList;
+        this.synchroContactList = synchroContactList;
     }
 
     @Override
     public void onViewDetached() {
         diskContactOnAppList.unsubscribe();
+        if (contactListSubscriber != null) contactListSubscriber.unsubscribe();
+        synchroContactList.unsubscribe();
     }
 
     @Override
     public void onViewAttached(MVPView v) {
         friendsMVPView = (FriendsMVPView) v;
-        loadContacts();
     }
 
-    private void loadContacts() {
+    public void loadContacts() {
         if (contactListSubscriber != null) {
             contactListSubscriber.unsubscribe();
         }
@@ -74,7 +81,7 @@ public class FriendsPresenter implements Presenter {
                     userMap.put(user.getId(), user);
                 }
 
-                friendsMVPView.renderContactList(new ArrayList<>(userMap.values()));
+                friendsMVPView.renderContactList(new ArrayList<>());
             }
         }
     }
@@ -90,6 +97,29 @@ public class FriendsPresenter implements Presenter {
             });
         } else {
             friendsMVPView.successFacebookLogin();
+        }
+    }
+
+    public void lookupContacts() {
+        if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
+        lookupContactsSubscriber = new LookupContactsSubscriber();
+        synchroContactList.execute(lookupContactsSubscriber);
+    }
+
+    private class LookupContactsSubscriber extends DefaultSubscriber<List<Contact>> {
+
+        @Override
+        public void onCompleted() { }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+            friendsMVPView.syncDone();
+        }
+
+        @Override
+        public void onNext(List<Contact> contactList) {
+            friendsMVPView.syncDone();
         }
     }
 }
