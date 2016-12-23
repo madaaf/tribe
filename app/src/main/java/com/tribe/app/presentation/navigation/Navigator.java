@@ -98,6 +98,7 @@ public class Navigator {
             intent.setData(deepLink);
             activity.startActivity(intent);
             activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
+            activity.finish();
         }
     }
 
@@ -107,6 +108,7 @@ public class Navigator {
             intent.setData(deepLink);
             activity.startActivity(intent);
             activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
+            activity.finish();
         }
     }
 
@@ -116,6 +118,7 @@ public class Navigator {
             intent.setData(deepLink);
             activity.startActivity(intent);
             activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
+            activity.finish();
         }
     }
 

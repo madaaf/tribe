@@ -100,8 +100,8 @@ android {
 
             buildConfigField "String", "TRIBE_PUBLIC_KEY", "\"${tribe_public_key_debug}\""
             buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key_debug}\""
-            buildConfigField "String", "TRIBE_API", "\"http://api.dev.tribe.pm\""
-            buildConfigField "String", "TRIBE_AUTH", "\"http://auth.dev.tribe.pm\""
+            buildConfigField "String", "TRIBE_API", "\"https://apidev.tribe.pm\""
+            buildConfigField "String", "TRIBE_AUTH", "\"https://authdev.tribe.pm\""
             buildConfigField "String", "AMPLITUDE_KEY", "\"${amplitude_debug}\""
             buildConfigField "String", "TRIBE_URL", "\"${tribe_url_debug}\""
             buildConfigField "String", "TRIBE_DYNAMIC_LINK", "\"${tribe_dynamic_link_debug}\""

@@ -10,5 +10,7 @@ public interface FriendsMVPView extends LoadDataMVPView {
     void successFacebookLogin();
     void errorFacebookLogin();
     void syncDone();
+    void successCreateFriendships();
+    void errorCreateFriendships();
 }
 

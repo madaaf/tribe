@@ -279,6 +279,11 @@ public class DiskUserDataRepository implements UserRepository {
     }
 
     @Override
+    public Observable<Void> createFriendships(String... userIds) {
+        return null;
+    }
+
+    @Override
     public Observable<Void> removeFriendship(String userId) {
         return null;
     }

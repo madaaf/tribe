@@ -72,10 +72,12 @@ public class RxContacts {
         Cursor c = helper.getContactsCursor(query, sorter, filter);
         while (c.moveToNext()) {
             ContactABRealm contact = helper.fetchContact(c, withPhones);
-            if (!subscriber.isUnsubscribed())
-                subscriber.onNext(contact);
-            else
-                break;
+            if (contact != null) {
+                if (!subscriber.isUnsubscribed())
+                    subscriber.onNext(contact);
+                else
+                    break;
+            }
 
             if (ContactsHelper.DEBUG)
                 Log.i("emit", contact.toString() + " is subscribed=" + !subscriber.isUnsubscribed());

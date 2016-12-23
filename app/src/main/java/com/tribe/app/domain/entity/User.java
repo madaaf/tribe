@@ -308,15 +308,21 @@ public class User implements Serializable {
 
     }
 
-    public void computeUserFriends(List<User> userList) {
-        for (User user : userList) {
-            for (Friendship friendship : friendships) {
-                if (friendship.getFriend().equals(user)) {
-                    user.setFriend(true);
+    public int computeUserFriends(List<User> userList) {
+        int count = 0;
+
+        if (friendships != null) {
+            for (User user : userList) {
+                for (Friendship friendship : friendships) {
+                    if (friendship.getFriend().equals(user)) {
+                        user.setFriend(true);
+                        count++;
+                    }
                 }
             }
         }
 
+        return count;
     }
 
     @Override

@@ -151,8 +151,10 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
             viewAccess.showLoading(0);
             txtAction.setVisibility(View.GONE);
             lookupContacts();
-        } else {
+        } else if (viewAccess.getStatus() == AccessView.LOADING) {
             showCongrats();
+        } else if (viewAccess.getStatus() == AccessView.DONE) {
+            navigator.navigateToPickYourFriends(this, deepLink);
         }
     }
 

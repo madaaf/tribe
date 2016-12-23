@@ -84,10 +84,6 @@ public class ContactsHelper {
         return result;
     }
 
-    public static String cleanPhone(String phone) {
-        return phone.replaceAll("-|\\s|\\(|\\)|\\+", "");
-    }
-
     @NonNull
     ContactABRealm fetchContact(Cursor c, boolean withPhones) {
         String id = c.getString(c.getColumnIndex(Contacts._ID));
@@ -98,6 +94,8 @@ public class ContactsHelper {
         long lastTimeContacted = c.getLong(c.getColumnIndex(Contacts.LAST_TIME_CONTACTED));
         contact.setLastTimeContacted(lastTimeContacted);
 
+        int countInternational = 0;
+
         // get data
         if (withPhones && c.getInt(c.getColumnIndex(Contacts.HAS_PHONE_NUMBER)) > 0) {
             HashMap<String, Pair<String, Boolean>> phonesPair = new HashMap<>();
@@ -106,7 +104,7 @@ public class ContactsHelper {
                 String value = data.getString(data.getColumnIndex(ContactsContract.Data.DATA1));
                 switch (data.getString(data.getColumnIndex(ContactsContract.Data.MIMETYPE))) {
                     case CommonDataKinds.Phone.CONTENT_ITEM_TYPE:
-                        String phoneNumberFormatted = phoneUtils.formatNumber(value, countryCode);
+                        String phoneNumberFormatted = phoneUtils.formatMobileNumber(value, String.valueOf(countryCode));
                         boolean isFormatted = !StringUtils.isEmpty(phoneNumberFormatted);
                         phonesPair.put(isFormatted ? phoneNumberFormatted : value.trim(),
                                 new Pair<>(isFormatted ? phoneNumberFormatted : value.trim(), isFormatted));
@@ -122,6 +120,8 @@ public class ContactsHelper {
                     phoneRealm.setPhone(phonePair.first);
                     phoneRealm.setInternational(phonePair.second);
                     realmList.add(phoneRealm);
+
+                    if (phonePair.second) countInternational++;
                 }
             }
 
@@ -129,7 +129,10 @@ public class ContactsHelper {
             data.close();
         }
 
-        return contact;
+        if (countInternational > 0)
+            return contact;
+
+        return null;
     }
 
     Cursor getContactsCursor(String query, Sorter sorter, Filter[] filter) {

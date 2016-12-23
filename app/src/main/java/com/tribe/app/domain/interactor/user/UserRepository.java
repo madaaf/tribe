@@ -127,6 +127,8 @@ public interface UserRepository {
      */
     Observable<Friendship> createFriendship(String userId);
 
+    Observable<Void> createFriendships(String ...userIds);
+
     /**
      * Get an {@link Observable} which will emit a void
      */

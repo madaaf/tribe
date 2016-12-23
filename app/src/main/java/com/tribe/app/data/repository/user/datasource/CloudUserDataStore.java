@@ -14,8 +14,8 @@ import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
+import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LoginEntity;
-import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.network.entity.RegisterEntity;
 import com.tribe.app.data.network.entity.UsernameEntity;
 import com.tribe.app.data.realm.AccessToken;
@@ -435,6 +435,9 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<List<ContactInterface>> contacts() {
+        contactCache.deleteContactsAB();
+        contactCache.deleteContactsFB();
+
         return Observable.zip(
                 rxContacts.getContacts().toList(),
                 rxFacebook.requestFriends(),
@@ -470,17 +473,10 @@ public class CloudUserDataStore implements UserDataStore {
 
             UserRealm currentUser = userCache.userInfosNoObs(accessToken.getUserId());
 
-            // WE REMOVE ALL THE PHONE NUMBERS THAT WE'RE ALREADY FRIENDS WITH
             if (currentUser != null) {
-                for (FriendshipRealm fr : currentUser.getFriendships()) {
-                    contactList.remove(phones.get(fr.getFriend().getPhone()));
-                    phones.remove(fr.getFriend().getPhone());
-                    fbIds.remove(fr.getFriend().getFbid());
-                }
-
                 phones.remove(currentUser.getPhone());
             }
-
+            
             if (phones.size() > 0 || fbIds.size() > 0) {
                 StringBuffer buffer = new StringBuffer();
 
@@ -540,22 +536,13 @@ public class CloudUserDataStore implements UserDataStore {
                             }
                         }
                     }
+
                     return Pair.create(phones, lookupEntity);
                 });
             }
 
             return Observable.just(Pair.create(phones, null));
         }, (contactList, entityPair) -> {
-            LookupEntity lookupEntity = entityPair.second != null ? (LookupEntity) entityPair.second : null;
-
-            if (lookupEntity != null && lookupEntity.getLookup() != null && lookupEntity.getLookup().size() > 0) {
-                for (UserRealm userRealmLookup : lookupEntity.getLookup()) {
-                    for (ContactInterface ci : contactList) {
-                        ci.addUser(userRealmLookup);
-                    }
-                }
-            }
-
             return contactList;
         }).doOnNext(saveToCacheContacts);
     }
@@ -712,6 +699,39 @@ public class CloudUserDataStore implements UserDataStore {
                         contactCache.changeSearchResult(friendshipRealm.getFriend().getUsername(), friendshipRealm);
                     }
                 });
+    }
+
+    public Observable<Void> createFriendships(String ...userIds) {
+        StringBuffer buffer = new StringBuffer();
+        String mutationCreateFriendship = null;
+
+        int count = 0;
+        for (String id : userIds) {
+            buffer.append(context.getString(R.string.createFriendship_input, count, id, context.getString(R.string.friendships_infos)));
+            count++;
+        }
+
+        mutationCreateFriendship = context.getString(R.string.friendship_mutation, buffer.toString(), context.getString(R.string.userfragment_infos));
+
+        return (StringUtils.isEmpty(mutationCreateFriendship) ? Observable.just(new CreateFriendshipEntity()) : tribeApi.createFriendship(mutationCreateFriendship))
+                .onErrorResumeNext(Observable.just(null))
+                .doOnNext(createFriendshipEntity -> {
+
+                    if (createFriendshipEntity != null && createFriendshipEntity.getNewFriendshipList() != null
+                            && createFriendshipEntity.getNewFriendshipList().size() > 0) {
+                        UserRealm currentUser = userCache.userInfosNoObs(accessToken.getUserId());
+
+                        for (FriendshipRealm fr : createFriendshipEntity.getNewFriendshipList()) {
+                            FriendshipRealm frDB = userCache.friendshipForUserId(fr.getSubId());
+                            if (frDB != null) {
+                                frDB.setStatus(fr.getStatus());
+                                frDB.setBlocked(fr.isBlocked());
+                            }
+                            currentUser.getFriendships().add(fr);
+                            userCache.put(currentUser);
+                        }
+                    }
+                }).map(createFriendshipEntity -> null);
     }
 
     @Override

@@ -198,6 +198,13 @@ public class CloudUserDataRepository implements UserRepository {
     }
 
     @Override
+    public Observable<Void> createFriendships(String ...userIds) {
+        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+        return cloudDataStore
+                .createFriendships(userIds);
+    }
+
+    @Override
     public Observable<Void> removeFriendship(String friendshipId) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
         return cloudDataStore.removeFriendship(friendshipId);

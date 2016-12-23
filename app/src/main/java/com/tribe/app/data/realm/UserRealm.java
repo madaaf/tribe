@@ -179,4 +179,14 @@ public class UserRealm extends RealmObject {
     public boolean isPushNotif() {
         return push_notif;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || !(o instanceof UserRealm)) return false;
+
+        UserRealm that = (UserRealm) o;
+
+        return id != null ? id.equals(that.getId()) : that.getId() == null;
+    }
 }

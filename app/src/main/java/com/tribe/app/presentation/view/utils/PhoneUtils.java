@@ -73,7 +73,7 @@ public class PhoneUtils {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
 
         return null;

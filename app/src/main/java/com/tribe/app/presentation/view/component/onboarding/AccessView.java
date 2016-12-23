@@ -46,6 +46,7 @@ public class AccessView extends LinearLayout {
 
     private final static int DURATION = 300;
     private final static int DURATION_SHORT = 100;
+    private final static int DURATION_MEDIUM = 400;
     private final static int PULSATING_DURATION = 1200;
 
     @IntDef({NONE, LOADING, DONE})
@@ -148,7 +149,7 @@ public class AccessView extends LinearLayout {
 
         status = NONE;
 
-        hideView(layoutFriends);
+        hideView(layoutFriends, false);
 
         int circleSize = (int) (screenUtils.getWidthPx() * 0.4f);
         int pulseSize = circleSize + screenUtils.dpToPx(40);
@@ -167,14 +168,13 @@ public class AccessView extends LinearLayout {
                     expandAndContract();
                 }));
 
-        imgIcon.setScaleX(5);
-        imgIcon.setScaleY(5);
+        imgIcon.setScaleX(8);
+        imgIcon.setScaleY(8);
         imgIcon.animate()
                 .scaleX(1)
                 .scaleY(1)
-                .setDuration(DURATION)
-                .setStartDelay(500)
-                .setInterpolator(new OvershootInterpolator(1.2f))
+                .setDuration(750)
+                .setInterpolator(new OvershootInterpolator(0.45f))
                 .start();
     }
 
@@ -239,8 +239,8 @@ public class AccessView extends LinearLayout {
 
             txtStatus.setText(R.string.onboarding_queue_loading_description);
 
-            hideView(imgIcon);
-            layoutFriends.postDelayed(() -> showView(layoutFriends), DURATION >> 1);
+            hideView(imgIcon, true);
+            layoutFriends.postDelayed(() -> showView(layoutFriends, true), DURATION >> 1);
         }
     }
 
@@ -252,29 +252,29 @@ public class AccessView extends LinearLayout {
 
             imgIcon.setImageResource(R.drawable.picto_tick_access);
 
-            hideView(layoutFriends);
-            imgIcon.postDelayed(() -> showView(imgIcon), DURATION >> 1);
+            hideView(layoutFriends, true);
+            imgIcon.postDelayed(() -> showView(imgIcon, true), DURATION >> 1);
 
             subscriptions.clear();
             removePulsingCircleAnimation();
         }
     }
 
-    private void hideView(View view) {
+    private void hideView(View view, boolean animate) {
         view.animate()
                 .alpha(0)
                 .translationY(screenUtils.dpToPx(20))
-                .setDuration(DURATION)
+                .setDuration(animate ? DURATION : 0)
                 .setStartDelay(0)
                 .setInterpolator(new DecelerateInterpolator())
                 .start();
     }
 
-    private void showView(View view) {
+    private void showView(View view, boolean animate) {
         view.animate()
                 .alpha(1)
                 .translationY(0)
-                .setDuration(DURATION)
+                .setDuration(animate ? DURATION : 0)
                 .setStartDelay(0)
                 .setInterpolator(new DecelerateInterpolator())
                 .start();

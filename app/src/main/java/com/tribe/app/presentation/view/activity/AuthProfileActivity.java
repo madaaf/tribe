@@ -217,6 +217,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
         }
 
         if (FacebookUtils.isLoggedIn()) this.profileInfoPresenter.updateFacebookScoreLogin();
+
         navigator.navigateToAuthAccess(this, deepLink);
     }
 

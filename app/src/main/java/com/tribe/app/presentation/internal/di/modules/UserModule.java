@@ -15,6 +15,7 @@ import com.tribe.app.domain.interactor.tribe.SaveTribe;
 import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.domain.interactor.user.AddMembersToGroup;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
+import com.tribe.app.domain.interactor.user.CreateFriendships;
 import com.tribe.app.domain.interactor.user.CreateMembership;
 import com.tribe.app.domain.interactor.user.DiskFindContactByValue;
 import com.tribe.app.domain.interactor.user.DiskSearchResults;
@@ -265,6 +266,12 @@ public class UserModule {
     @PerActivity
     CreateFriendship provideCreateFriendship(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
         return new CreateFriendship(userRepository, threadExecutor, postExecutionThread);
+    }
+
+    @Provides
+    @PerActivity
+    CreateFriendships provideCreateFriendships(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+        return new CreateFriendships(userRepository, threadExecutor, postExecutionThread);
     }
 
     @Provides

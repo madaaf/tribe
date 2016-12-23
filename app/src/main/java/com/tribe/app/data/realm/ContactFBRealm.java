@@ -47,6 +47,7 @@ public class ContactFBRealm extends RealmObject implements ContactInterface {
         return userList;
     }
 
+    @Override
     public void setUserList(RealmList<UserRealm> userList) {
         this.userList = userList;
     }
@@ -65,7 +66,16 @@ public class ContactFBRealm extends RealmObject implements ContactInterface {
     public void addUser(UserRealm userRealm) {
         if (this.userList == null) this.userList = new RealmList<>();
 
-        this.userList.add(userRealm);
+        boolean shouldAdd = true;
+
+        for (UserRealm userExisting : userList) {
+            if (userExisting.equals(userRealm)) {
+                shouldAdd = false;
+                break;
+            }
+        }
+
+        if (shouldAdd) this.userList.add(userRealm);
     }
 
     @Override

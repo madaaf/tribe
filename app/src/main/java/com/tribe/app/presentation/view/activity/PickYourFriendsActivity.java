@@ -22,6 +22,7 @@ import com.tribe.app.presentation.mvp.presenter.FriendsPresenter;
 import com.tribe.app.presentation.mvp.view.FriendsMVPView;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.view.adapter.UserListAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.DividerFirstLastItemDecoration;
@@ -117,6 +118,8 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
     private Uri deepLink;
     private UserListLayoutManager layoutManager;
     private List<User> newFriends;
+    private int countFriends;
+    private List<User> contactList;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -156,6 +159,7 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
 
     private void init() {
         newFriends = new ArrayList<>();
+        contactList = new ArrayList<>();
         renderContactList(new ArrayList<>());
         refactorActions();
 
@@ -193,7 +197,7 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
         recyclerView.setAdapter(adapter);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(0, 50);
         recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new DividerFirstLastItemDecoration(screenUtils.dpToPx(5), screenUtils.dpToPx(5), 1));
+        recyclerView.addItemDecoration(new DividerFirstLastItemDecoration(screenUtils.dpToPx(7.5f), screenUtils.dpToPx(5), 1));
 
         subscriptions.add(
                 adapter.clickAdd()
@@ -223,8 +227,8 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
     }
 
     private void refactorActions() {
-        boolean permissionsFB = true;
-        boolean permissionsContact = false;
+        boolean permissionsFB = FacebookUtils.isLoggedIn();
+        boolean permissionsContact = PermissionUtils.hasPermissionsContact(this);
 
         if (!permissionsContact && !permissionsFB) {
             layoutContent.setVisibility(View.GONE);
@@ -233,6 +237,7 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
         } else if (!permissionsContact || !permissionsFB) {
             layoutBottom.setVisibility(View.VISIBLE);
             initLoadView(getLayoutInflater().inflate(R.layout.view_load_ab_fb_friends, layoutBottom));
+        } else if (permissionsContact || permissionsFB) {
             friendsPresenter.loadContacts();
         }
 
@@ -241,7 +246,7 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
                 lookupContacts();
                 viewFriendsAddressBookLoad.showLoading();
             });
-        } else {
+        } else if (!permissionsFB) {
             viewFriendsAddressBookLoad.setVisibility(View.GONE);
             viewSeparatorAddressBook.setVisibility(View.GONE);
         }
@@ -252,7 +257,7 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
                 friendsPresenter.loginFacebook();
                 viewFriendsFBLoad.showLoading();
             });
-        } else {
+        } else if (!permissionsContact) {
             viewFriendsFBLoad.setVisibility(View.GONE);
             viewSeparatorFBTop.setVisibility(View.GONE);
             viewSeparatorFBBottom.setVisibility(View.GONE);
@@ -260,7 +265,7 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
     }
 
     private void refactorDone() {
-        if (newFriends.size() > 0) TextViewCompat.setTextAppearance(txtAction, R.style.Title_2_Blue);
+        if (newFriends.size() > 0 || countFriends == contactList.size() || contactList.size() == 0) TextViewCompat.setTextAppearance(txtAction, R.style.Title_2_Blue);
         else TextViewCompat.setTextAppearance(txtAction, R.style.Title_2_Grey);
         txtAction.setCustomFont(this, "Roboto-Bold.ttf");
     }
@@ -285,6 +290,11 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
         friendsPresenter.lookupContacts();
     }
 
+    private void navigateToHome() {
+        navigator.navigateToHome(this, false, deepLink);
+        finish();
+    }
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -306,25 +316,44 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
     @OnClick(R.id.txtAction)
     void onClickAction() {
         if (newFriends.size() == 0) {
-            subscriptions.add(DialogFactory.dialog(
-                            this,
-                            getString(R.string.onboarding_friends_to_add_popup_title),
-                            getString(R.string.onboarding_friends_to_add_popup_message),
-                            getString(R.string.onboarding_friends_to_add_popup_confirm),
-                            getString(R.string.onboarding_friends_to_add_popup_cancel))
-                    .filter(x -> x == false)
-                    .subscribe(aVoid -> {
-                        navigator.navigateToHome(this, false, deepLink);
-                    }));
+            if (countFriends == contactList.size() || contactList.size() == 0) {
+                navigateToHome();
+            } else {
+                subscriptions.add(DialogFactory.dialog(
+                        this,
+                        getString(R.string.onboarding_friends_to_add_popup_title),
+                        getString(R.string.onboarding_friends_to_add_popup_message),
+                        getString(R.string.onboarding_friends_to_add_popup_confirm),
+                        getString(R.string.onboarding_friends_to_add_popup_cancel))
+                        .filter(x -> x == false)
+                        .subscribe(aVoid -> {
+                            navigator.navigateToHome(this, false, deepLink);
+                        }));
+            }
+        } else {
+            friendsPresenter.createFriendships(newFriends);
         }
+    }
+
+    @OnClick(R.id.viewPickAll)
+    void onPickAll() {
+        friendsPresenter.createFriendships(contactList);
     }
 
     @Override
     public void renderContactList(List<User> contactList) {
-        user.computeUserFriends(contactList);
+        countFriends = user.computeUserFriends(contactList);
         adapter.setItems(new ArrayList<>(contactList));
 
         if (contactList != null && contactList.size() > 0) {
+            this.contactList.clear();
+            this.contactList.addAll(contactList);
+
+            viewPickAll.setVisibility(View.VISIBLE);
+            viewSeparatorLarge.setVisibility(View.VISIBLE);
+            viewSeparatorSearch.setVisibility(View.VISIBLE);
+            layoutSearch.setVisibility(View.VISIBLE);
+
             if (contactList.size() > 1) {
                 viewPickAll.setAvatars(contactList.get(0).getProfilePicture(), contactList.get(1).getProfilePicture());
                 viewPickAll.setBody(getString(R.string.onboarding_friends_to_add_shortcut_subtitle, contactList.size()));
@@ -333,21 +362,26 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
                 viewPickAll.setBody(getString(R.string.onboarding_friends_to_add_shortcut_subtitle_one, contactList.size()));
             }
         } else {
+            contactList.clear();
             viewPickAll.setVisibility(View.GONE);
             viewSeparatorLarge.setVisibility(View.GONE);
             viewSeparatorSearch.setVisibility(View.GONE);
             layoutSearch.setVisibility(View.GONE);
         }
+
+        refactorDone();
     }
 
     @Override
     public void showLoading() {
-
+        txtAction.setVisibility(View.GONE);
+        progressView.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideLoading() {
-
+        txtAction.setVisibility(View.VISIBLE);
+        progressView.setVisibility(View.GONE);
     }
 
     @Override
@@ -370,6 +404,16 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
         refactorActions();
         viewFriendsFBLoad.hideLoading();
         viewFriendsAddressBookLoad.hideLoading();
+    }
+
+    @Override
+    public void successCreateFriendships() {
+        navigateToHome();
+    }
+
+    @Override
+    public void errorCreateFriendships() {
+
     }
 
     @Override

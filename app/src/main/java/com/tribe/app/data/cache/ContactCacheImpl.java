@@ -16,7 +16,6 @@ import javax.inject.Inject;
 
 import io.realm.Case;
 import io.realm.Realm;
-import io.realm.RealmObject;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
@@ -146,29 +145,24 @@ public class ContactCacheImpl implements ContactCache {
 
     @Override
     public Observable<List<ContactInterface>> contactsOnApp() {
-        return Observable.merge(realm.where(ContactABRealm.class)
+        return Observable.zip(realm.where(ContactABRealm.class)
                         .isNotEmpty("userList")
                         .findAllSorted(new String[]{"name"}, new Sort[]{Sort.ASCENDING})
                         .asObservable()
                         .filter(contactABRealms -> contactABRealms.isLoaded())
-                        .map(contactABRealms -> realm.copyFromRealm(contactABRealms)),
+                        .map(contactABRealms -> realm.copyFromRealm(contactABRealms)).defaultIfEmpty(new ArrayList<>()),
                 realm.where(ContactFBRealm.class)
                         .isNotEmpty("userList")
                         .findAllSorted(new String[]{"name"}, new Sort[]{Sort.ASCENDING})
                         .asObservable()
                         .filter(contactFBRealms -> contactFBRealms.isLoaded())
-                        .map(contactFBRealms -> realm.copyFromRealm(contactFBRealms))
-        ).map(realmObjects -> {
-            List<ContactInterface> ci = new ArrayList<>();
-
-            if (realmObjects != null) {
-                for (RealmObject obj : realmObjects) {
-                    ci.add((ContactInterface) obj);
-                }
-            }
-
-            return ci;
-        });
+                        .map(contactFBRealms -> realm.copyFromRealm(contactFBRealms)).defaultIfEmpty(new ArrayList<>())
+                , (contactABRealms, contactFBRealms) -> {
+                    List<ContactInterface> result = new ArrayList<>();
+                    result.addAll(contactABRealms);
+                    result.addAll(contactFBRealms);
+                    return result;
+                });
     }
 
     @Override
