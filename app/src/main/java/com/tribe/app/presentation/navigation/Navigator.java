@@ -410,6 +410,7 @@ public class Navigator {
         sendIntent.setData(Uri.parse("sms:" + phone));
         sendIntent.putExtra("sms_body", activity.getResources().getString(R.string.share_add_friends_addressbook_suggestions, nbFriends, BuildConfig.TRIBE_URL));
         activity.startActivity(sendIntent);
+        activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }
 
     public void openFacebookMessenger(String body, Activity activity) {

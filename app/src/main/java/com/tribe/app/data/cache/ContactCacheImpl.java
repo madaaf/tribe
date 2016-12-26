@@ -176,6 +176,17 @@ public class ContactCacheImpl implements ContactCache {
     }
 
     @Override
+    public Observable<List<ContactABRealm>> contactsToInvite() {
+        return realm.where(ContactABRealm.class)
+                .greaterThanOrEqualTo("howManyFriends", 1)
+                .isEmpty("userList")
+                .findAllSorted(new String[] {"howManyFriends", "name"}, new Sort[] {Sort.DESCENDING, Sort.ASCENDING})
+                .asObservable()
+                .filter(contactABRealms -> contactABRealms.isLoaded())
+                .map(contactABRealms -> realm.copyFromRealm(contactABRealms));
+    }
+
+    @Override
     public Observable<List<ContactABRealm>> findContactsByValue(String value) {
         return realm.where(ContactABRealm.class)
                     .beginGroup()

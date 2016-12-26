@@ -56,6 +56,13 @@ public interface ContactCache {
      */
     Observable<List<ContactABRealm>> contactsThreadSafe();
 
+    /**
+     * Should only be called from a main thread interactor (UseCaseDisk)
+     * it is NOT thread safe due to the Realm thread's complexity
+     * @return
+     */
+    Observable<List<ContactABRealm>> contactsToInvite();
+
     Observable<List<ContactABRealm>> findContactsByValue(String value);
     Observable<SearchResultRealm> findContactByUsername(String username);
 

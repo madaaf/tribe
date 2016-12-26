@@ -136,6 +136,8 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
         initResources();
         manageDeepLink(getIntent());
         initRecyclerView();
+
+        tagManager.trackEvent(TagManagerConstants.ONBOARDING_SHOW_ADD_FRIENDS);
     }
 
     @Override
@@ -306,8 +308,16 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
     }
 
     private void navigateToHome() {
+        tagManager.trackEvent(TagManagerConstants.ONBOARDING_COMPLETED);
         navigator.navigateToHome(this, false, deepLink);
         finish();
+    }
+
+    private void addUsers(List<User> userList) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(TagManagerConstants.TOTAL, userList.size());
+        tagManager.trackEvent(TagManagerConstants.ONBOARDING_DID_INVITE_FRIENDS, bundle);
+        friendsPresenter.createFriendships(userList);
     }
 
     @Override
@@ -346,13 +356,13 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
                         }));
             }
         } else {
-            friendsPresenter.createFriendships(newFriends);
+            addUsers(newFriends);
         }
     }
 
     @OnClick(R.id.viewPickAll)
     void onPickAll() {
-        friendsPresenter.createFriendships(contactList);
+        addUsers(contactList);
     }
 
     @Override

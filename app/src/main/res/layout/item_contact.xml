@@ -32,17 +32,7 @@
             android:layout_marginTop="5dp"
             android:layout_below="@id/txtName"
             android:singleLine="true"
-            style="@style/Body.One.Black40"
-            />
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtPoints"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@id/txtName"
-            android:singleLine="true"
-            style="@style/Points.Reg.Yellow"
+            style="@style/Body.One.Green"
             />
     </RelativeLayout>
 

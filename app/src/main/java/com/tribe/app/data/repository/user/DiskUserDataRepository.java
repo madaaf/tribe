@@ -8,6 +8,7 @@ import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MembershipRealm;
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.ChatRealmDataMapper;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
 import com.tribe.app.data.realm.mapper.MembershipRealmDataMapper;
@@ -24,9 +25,9 @@ import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
+import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
-import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
@@ -248,6 +249,35 @@ public class DiskUserDataRepository implements UserRepository {
     public Observable<List<Contact>> contactsOnApp() {
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
         return userDataStore.contactsOnApp().map(collection -> contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection)));
+    }
+
+    @Override
+    public Observable<List<Contact>> contactsInvite() {
+        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+        return Observable.combineLatest(
+                userDataStore.userInfos(null, null),
+                userDataStore.contactsOnApp(),
+                userDataStore.contactsToInvite(),
+                (userRealm, contactOnAppList, contactInviteList) -> {
+                    List<ContactInterface> ciList = new ArrayList<>();
+
+                    if (userRealm.getFriendships() != null && userRealm.getFriendships().size() > 0) {
+                        for (ContactInterface ciAB : contactOnAppList) {
+                            boolean add = true;
+
+                            for (FriendshipRealm fr : userRealm.getFriendships()) {
+                                for (UserRealm user : ciAB.getUsers()) {
+                                    if (fr.getFriend().equals(user)) add = false;
+                                }
+                            }
+
+                            if (add) ciList.add(ciAB);
+                        }
+                    }
+
+                    ciList.addAll(contactInviteList);
+                    return ciList;
+                }).map(collection -> contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection)));
     }
 
     @Override

@@ -116,6 +116,11 @@ public class DiskUserDataStore implements UserDataStore {
     }
 
     @Override
+    public Observable<List<ContactInterface>> contactsToInvite() {
+        return contactCache.contactsToInvite().map(contactABRealms -> new ArrayList<ContactInterface>(contactABRealms));
+    }
+
+    @Override
     public Observable<Void> howManyFriends() {
         return null;
     }

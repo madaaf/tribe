@@ -4,6 +4,7 @@ import android.util.Pair;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
+import com.tribe.app.data.network.job.RefreshHowManyFriendsJob;
 import com.tribe.app.data.network.job.UpdateFriendshipJob;
 import com.tribe.app.data.network.job.UpdateScoreJob;
 import com.tribe.app.data.network.job.UpdateTribeDownloadedJob;
@@ -11,6 +12,7 @@ import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
@@ -70,6 +72,7 @@ public class HomeGridPresenter extends SendTribePresenter {
     private SendOnlineNotification sendOnlineNotification;
     private UpdateUser updateUser;
     private RxFacebook rxFacebook;
+    private UseCase synchroContactList;
 
     // SUBSCRIBERS
     private UpdateTribesReceivedToNotSeenSubscriber updateTribesReceivedToNotSeenSubscriber;
@@ -79,6 +82,7 @@ public class HomeGridPresenter extends SendTribePresenter {
     private BootstrapSupportSubscriber bootstrapSupportSubscriber;
     private MessageReceivedListSubscriber messageReceivedListSubscriber;
     private CloudMessageListSubscriber cloudMessageListSubscriber;
+    private LookupContactsSubscriber lookupContactsSubscriber;
 
     @Inject
     public HomeGridPresenter(JobManager jobManager,
@@ -101,7 +105,8 @@ public class HomeGridPresenter extends SendTribePresenter {
                              @Named("cloudGetMessages") UseCase cloudGetMessages,
                              SendOnlineNotification sendOnlineNotification,
                              UpdateUser updateUser,
-                             RxFacebook rxFacebook) {
+                             RxFacebook rxFacebook,
+                             @Named("synchroContactList") UseCase synchroContactList) {
         super(jobManager, jobManagerDownload, diskSaveTribe, diskDeleteTribe, confirmTribe);
         this.diskUserInfosUsecase = diskUserInfos;
         this.diskGetMessageReceivedListUsecase = diskGetReceivedMessageList;
@@ -119,6 +124,7 @@ public class HomeGridPresenter extends SendTribePresenter {
         this.sendOnlineNotification = sendOnlineNotification;
         this.updateUser = updateUser;
         this.rxFacebook = rxFacebook;
+        this.synchroContactList = synchroContactList;
     }
 
     @Override
@@ -495,6 +501,28 @@ public class HomeGridPresenter extends SendTribePresenter {
             });
         } else {
             homeGridView.successFacebookLogin();
+        }
+    }
+
+    public void lookupContacts() {
+        if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
+        lookupContactsSubscriber = new LookupContactsSubscriber();
+        synchroContactList.execute(lookupContactsSubscriber);
+    }
+
+    private class LookupContactsSubscriber extends DefaultSubscriber<List<Contact>> {
+
+        @Override
+        public void onCompleted() { }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(List<Contact> contactList) {
+            jobManager.addJobInBackground(new RefreshHowManyFriendsJob());
         }
     }
 }

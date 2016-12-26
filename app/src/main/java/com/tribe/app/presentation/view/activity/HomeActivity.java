@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -27,6 +26,7 @@ import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
 import com.facebook.rebound.SpringUtil;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
@@ -59,11 +59,11 @@ import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.HasRatedApp;
 import com.tribe.app.presentation.utils.preferences.HasReceivedPointsForCameraPermission;
 import com.tribe.app.presentation.utils.preferences.LastOnlineNotification;
+import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.LocationContext;
 import com.tribe.app.presentation.utils.preferences.TribeSentCount;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
-import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 import com.tribe.app.presentation.view.component.FilterView;
 import com.tribe.app.presentation.view.component.TileView;
@@ -103,6 +103,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private static final float OVERSHOOT_TENSION_LIGHT = 1.25f;
     private static final int DURATION = 600;
     private static final int DURATION_FAST = 300;
+    private static final long TWENTY_FOUR_HOURS = 86400000;
 
     public static final int SETTINGS_RESULT = 101, TRIBES_RESULT = 104;
 
@@ -157,6 +158,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     Preference<Boolean> locationContext;
 
     @Inject
+    @LastSync
+    Preference<Long> lastSync;
+
+    @Inject
     SoundManager soundManager;
 
     @BindView(R.id.recyclerViewFriends)
@@ -196,9 +201,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     private long timeRecording;
     private Tutorial tutorial;
     private List<TribeMessage> pendingTribes;
-    private BottomSheetDialog bottomSheetPendingTribeDialog;
-    private RecyclerView recyclerViewPending;
-    private LabelSheetAdapter labelSheetAdapter;
     private boolean isFilterMode = false;
     private boolean hasFilter = false;
     private boolean isAnimatingNavigation = false;
@@ -254,6 +256,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         super.onStart();
         tagManager.onStart(this);
         homeGridPresenter.onViewAttached(this);
+
+        if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
+            syncContacts();
+        }
     }
 
     @Override
@@ -370,12 +376,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         }));
     }
 
-    private void askLocationPermissions() {
-        subscriptions.add(RxPermissions.getInstance(this)
-                .request(PermissionUtils.PERMISSIONS_LOCATION)
-                .subscribe(granted -> handleLocationPermissions(granted)));
-    }
-
     private void handleLocationPermissions(boolean isGranted) {
         Bundle bundle = new Bundle();
         bundle.putBoolean(TagManagerConstants.LOCATION_ENABLED, isGranted);
@@ -384,19 +384,24 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         if (isGranted) {
             homeGridPresenter.updateScoreLocation();
             locationContext.set(true);
-            subscriptions.add(reactiveLocationProvider
-                    .getLastKnownLocation().subscribe(locationProvided -> {
-                        if (locationProvided != null) {
-                            Location location = new Location(locationProvided.getLongitude(), locationProvided.getLatitude());
-                            location.setLatitude(location.getLatitude());
-                            location.setLongitude(location.getLongitude());
-                            location.setHasLocation(true);
-                            location.setId(getCurrentUser().getId());
-                            getCurrentUser().setLocation(location);
-                        } else {
-                            getCurrentUser().setLocation(null);
-                        }
-                    }));
+
+            GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+            int resultCode = googleApiAvailability.isGooglePlayServicesAvailable(this);
+            if (resultCode == ConnectionResult.SUCCESS) {
+                subscriptions.add(reactiveLocationProvider
+                        .getLastKnownLocation().subscribe(locationProvided -> {
+                            if (locationProvided != null) {
+                                Location location = new Location(locationProvided.getLongitude(), locationProvided.getLatitude());
+                                location.setLatitude(location.getLatitude());
+                                location.setLongitude(location.getLongitude());
+                                location.setHasLocation(true);
+                                location.setId(getCurrentUser().getId());
+                                getCurrentUser().setLocation(location);
+                            } else {
+                                getCurrentUser().setLocation(null);
+                            }
+                        }));
+            }
         } else {
             locationContext.set(false);
         }
@@ -678,6 +683,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
                             addressBook.set(hasPermission);
                             viewFilter.setABSync(hasPermission);
+                            if (hasPermission) syncContacts();
                         });
             } else {
                 Bundle bundle = new Bundle();
@@ -862,6 +868,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     public void successFacebookLogin() {
         homeGridPresenter.updateUserFacebook(AccessToken.getCurrentAccessToken().getUserId());
         viewFilter.setFBSync(true);
+        if (FacebookUtils.isLoggedIn()) syncContacts();
     }
 
     @Override
@@ -1102,5 +1109,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             //homeGridPresenter.sendOnlineNotification();
             lastOnlineNotification.set(System.currentTimeMillis());
         }
+    }
+
+    private void syncContacts() {
+        homeGridPresenter.lookupContacts();
+        lastSync.set(System.currentTimeMillis());
     }
 }

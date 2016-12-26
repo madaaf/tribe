@@ -55,12 +55,7 @@ public class LauncherActivity extends BaseActivity {
         if (currentUser == null || StringUtils.isEmpty(currentUser.getUsername())) {
             navigator.navigateToLogin(this, deepLink);
         } else {
-            //navigator.navigateToPickYourFriends(this, deepLink);
-            //if (lastVersion.get().equals(DeviceUtils.getVersionCode(this))) {
             navigator.navigateToHome(this, true, deepLink);
-            //} else {
-            //    navigator.computeActions(this, false, null);
-            //}
         }
 
         finish();

@@ -14,6 +14,7 @@ import com.tribe.app.presentation.view.adapter.delegate.contact.ContactsGridAdap
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactsHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SeparatorAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,11 +29,14 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class ContactAdapter extends RecyclerView.Adapter {
 
+    public static final int HEADER_TYPE = 99;
+
     // DELEGATES
     protected RxAdapterDelegatesManager delegatesManager;
     private ButtonPointsAdapterDelegate buttonPointsAdapterDelegate;
     private SearchResultGridAdapterDelegate searchResultGridAdapterDelegate;
     private ContactsGridAdapterDelegate contactsGridAdapterDelegate;
+    private UserListAdapterDelegate userListAdapterDelegate;
 
     // VARIABLES
     private List<Object> items;
@@ -57,8 +61,12 @@ public class ContactAdapter extends RecyclerView.Adapter {
 
         contactsGridAdapterDelegate = new ContactsGridAdapterDelegate(context);
         delegatesManager.addDelegate(contactsGridAdapterDelegate);
+
+        userListAdapterDelegate = new UserListAdapterDelegate(context);
+        delegatesManager.addDelegate(userListAdapterDelegate);
+
         delegatesManager.addDelegate(new SeparatorAdapterDelegate(context));
-        delegatesManager.addDelegate(new ContactsHeaderAdapterDelegate(context));
+        delegatesManager.addDelegate(HEADER_TYPE, new ContactsHeaderAdapterDelegate(context));
 
         setHasStableIds(true);
     }
@@ -106,20 +114,48 @@ public class ContactAdapter extends RecyclerView.Adapter {
         return items;
     }
 
-    public void updateSearch(SearchResult searchResult, List<Contact> contactList) {
+    public void setItems(List<Object> items) {
+        this.items.clear();
+        this.items.addAll(items);
+
+        this.notifyDataSetChanged();
+    }
+
+    public void updateSearch(SearchResult searchResult, List<Object> contactList) {
         this.items.clear();
         this.items.add(R.string.search_usernames);
         this.items.add(searchResult);
         this.items.add(new String());
+
         if (contactList != null && contactList.size() > 0) {
-            this.items.add(R.string.contacts_section_search_friends);
             this.items.addAll(contactList);
         }
+
         this.notifyDataSetChanged();
+    }
+
+    public void updateAdd(User user) {
+        for (Object obj : items) {
+            if (obj instanceof Contact) {
+                Contact c = (Contact) obj;
+                User oldUser = c.getUserList().get(0);
+                if (oldUser.equals(user)) {
+                    oldUser.setAnimateAdd(true);
+                    oldUser.setFriend(true);
+                    notifyDataSetChanged();
+                    break;
+                }
+            }
+        }
     }
 
     // OBSERVABLES
     public Observable<View> onClickAdd() {
-        return searchResultGridAdapterDelegate.clickAdd();
+        return Observable.merge(searchResultGridAdapterDelegate.clickAdd(),
+                userListAdapterDelegate.clickAdd());
+    }
+
+    public Observable<View> onClickInvite() {
+        return contactsGridAdapterDelegate.onClickInvite();
     }
 }

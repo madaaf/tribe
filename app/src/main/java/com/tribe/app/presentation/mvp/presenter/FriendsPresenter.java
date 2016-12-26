@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
@@ -35,7 +36,8 @@ public class FriendsPresenter implements Presenter {
     private FriendsMVPView friendsMVPView;
 
     @Inject
-    public FriendsPresenter(GetDiskContactOnAppList getDiskContactOnAppList,
+    public FriendsPresenter(JobManager jobManager,
+                            GetDiskContactOnAppList getDiskContactOnAppList,
                             RxFacebook rxFacebook,
                             @Named("synchroContactList") UseCase synchroContactList,
                             CreateFriendships createFriendships) {

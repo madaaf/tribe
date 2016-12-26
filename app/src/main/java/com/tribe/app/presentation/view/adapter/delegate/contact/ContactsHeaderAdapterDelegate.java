@@ -48,7 +48,7 @@ public class ContactsHeaderAdapterDelegate extends RxAdapterDelegate<List<Object
         vh.txtSubLabel.setText((Integer) items.get(position));
     }
 
-    static class ContactsHeaderViewHolder extends RecyclerView.ViewHolder {
+    public static class ContactsHeaderViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.txtSubLabel)
         TextViewFont txtSubLabel;

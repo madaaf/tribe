@@ -18,7 +18,8 @@ public class TagManagerConstants {
     public static final String ONBOARDING_SMS_NOT_RECEIVED = "Onboarding - SMS Not Received";
     public static final String ONBOARDING_RESEND_PIN = "Onboarding - Resend Pin";
     public static final String ONBOARDING_PIN_ERROR = "Onboarding - Pin Error";
-    public static final String ONBOARDING_INVITE = "Onboarding - Invite";
+    public static final String ONBOARDING_SHOW_ADD_FRIENDS = "Onboarding - Show Add Friends";
+    public static final String ONBOARDING_DID_INVITE_FRIENDS = "Onboarding - Did Add Friends";
     public static final String KPI_TRIBES_OPENED = "KPI - Tribes Opened";
     public static final String KPI_TRIBES_SENT = "KPI - Tribes Sent";
     public static final String KPI_CHAT_OPENED = "KPI - Chat Opened";
@@ -36,6 +37,8 @@ public class TagManagerConstants {
     public static final String SCORE_SHARE = "Score - Share";
     public static final String SCORE_CHECK_RULES = "Score - Check Rules";
     public static final String SCORE_OPEN_METADATA = "Score - Open Metadata";
+    public static final String FILTER_FACEBOOK_SYNC = "Filter - Facebook Sync";
+    public static final String FILTER_ADDRESSBOOK_SYNC = "Filter - AddressBook Sync";
 
     /**
      * ERRORS
@@ -65,6 +68,8 @@ public class TagManagerConstants {
     public static final String TYPE_INVITE_MESSENGER = "Messenger";
     public static final String TYPE_INVITE_SMS = "SMS";
     public static final String TYPE_INVITE_WHATSAPP = "WhatsApp";
+    public static final String TOTAL = "Total";
+    public static final String SYNCED_FRIENDS = "Sync Friends";
 
     /**
      * USER PROPERTIES

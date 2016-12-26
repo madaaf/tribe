@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
-import com.tribe.app.presentation.view.utils.ScoreUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
@@ -39,7 +38,12 @@ public class ContactsGridAdapterDelegate extends RxAdapterDelegate<List<Object>>
 
     @Override
     public boolean isForViewType(@NonNull List<Object> items, int position) {
-        return (items.get(position) instanceof Contact);
+        if (items.get(position) instanceof Contact) {
+            Contact contact = (Contact) items.get(position);
+            return (contact.getUserList() == null || contact.getUserList().size() == 0);
+        }
+
+        return false;
     }
 
     @NonNull
@@ -58,7 +62,6 @@ public class ContactsGridAdapterDelegate extends RxAdapterDelegate<List<Object>>
         Contact contact = (Contact) items.get(position);
 
         vh.txtName.setText(contact.getName());
-        vh.txtPoints.setText(context.getString(R.string.points_suffix, ScoreUtils.Point.INVITE.getPoints()));
         vh.txtDescription.setText(context.getString(R.string.contacts_section_addressbook_friends_in_app, contact.getHowManyFriends()));
     }
 
@@ -70,9 +73,6 @@ public class ContactsGridAdapterDelegate extends RxAdapterDelegate<List<Object>>
 
         @BindView(R.id.txtName)
         TextViewFont txtName;
-
-        @BindView(R.id.txtPoints)
-        TextViewFont txtPoints;
 
         @BindView(R.id.txtDescription)
         TextViewFont txtDescription;

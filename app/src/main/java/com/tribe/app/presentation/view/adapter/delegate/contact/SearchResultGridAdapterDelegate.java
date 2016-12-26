@@ -27,15 +27,11 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 18/05/2016.
  */
 public class SearchResultGridAdapterDelegate extends AddAnimationAdapterDelegate<List<Object>> {
-
-    private static final int DURATION = 300;
-    private static final float OVERSHOOT = 0.75f;
 
     public static final String ACTION_ADD = "action_add";
 
@@ -45,10 +41,6 @@ public class SearchResultGridAdapterDelegate extends AddAnimationAdapterDelegate
     // VARIABLES
     private int avatarSize;
     private Map<SearchResultViewHolder, AnimatorSet> animations = new HashMap<>();
-
-    // OBSERVABLES
-    private PublishSubject<View> clickAdd = PublishSubject.create();
-    private PublishSubject<View> clickRemove = PublishSubject.create();
 
     public SearchResultGridAdapterDelegate(Context context) {
         super(context);
@@ -122,6 +114,7 @@ public class SearchResultGridAdapterDelegate extends AddAnimationAdapterDelegate
             } else {
                 vh.txtName.setText(context.getString(R.string.contacts_section_search_searching));
             }
+
             vh.txtUsername.setText("@" + searchResult.getUsername());
 
             vh.imgAvatar.setImageDrawable(null);

@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -46,6 +47,9 @@ public class UserListAdapterDelegate extends AddAnimationAdapterDelegate<List<Ob
         if (items.get(position) instanceof User) {
             User user = (User) items.get(position);
             return !user.getId().equals(User.ID_EMPTY);
+        } else if (items.get(position) instanceof Contact) {
+            Contact contact = (Contact) items.get(position);
+            return (contact.getUserList() != null && contact.getUserList().size() > 0);
         } else {
             return false;
         }
@@ -61,7 +65,7 @@ public class UserListAdapterDelegate extends AddAnimationAdapterDelegate<List<Ob
     @Override
     public void onBindViewHolder(@NonNull List<Object> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         UserListViewHolder vh = (UserListViewHolder) holder;
-        User user = (User) items.get(position);
+        User user = items.get(position) instanceof Contact ? ((Contact) items.get(position)).getUserList().get(0) : (User) items.get(position);
 
         vh.btnAdd.setVisibility(View.VISIBLE);
         vh.imgGhost.setVisibility(View.GONE);
@@ -104,6 +108,9 @@ public class UserListAdapterDelegate extends AddAnimationAdapterDelegate<List<Ob
                     .bitmapTransform(new CropCircleTransformation(context))
                     .crossFade()
                     .into(vh.imgAvatar);
+            vh.imgAvatar.setBackground(null);
+        } else {
+            vh.imgAvatar.setBackgroundResource(R.drawable.shape_oval_black40);
         }
 
         if (!currentUser.equals(user) && !user.isFriend() && !user.isInvisibleMode()) {
