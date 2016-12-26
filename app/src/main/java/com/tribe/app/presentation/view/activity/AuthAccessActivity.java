@@ -13,7 +13,6 @@ import com.github.jinatonic.confetti.CommonConfetti;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -24,7 +23,6 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
-import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.ArrayList;
@@ -158,20 +156,22 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
         }
     }
 
+    @OnClick(R.id.viewAccess)
+    void onClickAccess() {
+        if (viewAccess.getStatus() == AccessView.NONE) {
+            viewAccess.showLoading(0);
+            txtAction.setVisibility(View.GONE);
+            lookupContacts();
+        }
+    }
+
+
     @Override
     public void renderFriendList(List<User> userList) {
         Map<String, Object> relationsInApp = new HashMap<>();
 
         for (User user : userList) {
-            if (!user.isInvisibleMode()) relationsInApp.put(user.getId(), user);
-        }
-
-        if (user.getFriendships() != null) {
-            for (Friendship fr : user.getFriendships()) {
-                if (!relationsInApp.containsKey(fr.getFriend().getId()) && fr.getSubId() != null && !fr.getSubId().equals(Constants.SUPPORT_ID)) {
-                    relationsInApp.put(fr.getFriend().getId(), fr.getFriend());
-                }
-            }
+            relationsInApp.put(user.getId(), user);
         }
 
         if (relationsInApp.values() != null && relationsInApp.values().size() > 0) {

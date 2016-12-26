@@ -34,8 +34,9 @@ public class AuthVideoView extends FrameLayout implements TextureView.SurfaceTex
 
     // OBSERVABLES
     private Unbinder unbinder;
-    private final PublishSubject<Boolean> videoStarted = PublishSubject.create();
     private CompositeSubscription subscriptions = new CompositeSubscription();
+    private final PublishSubject<Boolean> videoStarted = PublishSubject.create();
+    private final PublishSubject<Boolean> videoCompleted = PublishSubject.create();
 
     public AuthVideoView(Context context) {
         this(context, null);
@@ -95,6 +96,8 @@ public class AuthVideoView extends FrameLayout implements TextureView.SurfaceTex
         }));
 
         subscriptions.add(mediaPlayer.onVideoStarted().subscribe(videoStarted));
+
+        subscriptions.add(mediaPlayer.onCompletion().subscribe(videoCompleted));
     }
 
     public void releasePlayer() {
@@ -150,5 +153,9 @@ public class AuthVideoView extends FrameLayout implements TextureView.SurfaceTex
 
     public Observable<Boolean> videoStarted() {
         return videoStarted;
+    }
+
+    public Observable<Boolean> videoCompleted() {
+        return videoCompleted;
     }
 }

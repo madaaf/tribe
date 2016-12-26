@@ -125,7 +125,6 @@ public class ShareDialogProfileFragment extends BaseDialogFragment {
         paramsAvatar.width = avatarWidth;
         avatar.setLayoutParams(paramsAvatar);
 
-
         getDialog().getWindow().setLayout(dialogWidth, dialogHeight);
     }
 

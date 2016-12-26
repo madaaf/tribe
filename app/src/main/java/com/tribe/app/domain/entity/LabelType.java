@@ -43,6 +43,11 @@ public class LabelType implements Serializable {
     public static final String TRIBE = "tribe";
     public static final String EMAIL = "email";
 
+    public static final String INVITE_SMS = "inviteSMS";
+    public static final String INVITE_WHATSAPP = "inviteWhatsapp";
+    public static final String INVITE_MESSENGER = "inviteMessenger";
+    public static final String SEARCH = "search";
+
     private @GenericTypeDef String typeDef;
     private String label;
 

@@ -10,6 +10,7 @@
         android:id="@+id/viewVideoAuth"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clickable="true"
         android:background="@null"
         />
 
@@ -18,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/black.opacity.80"
-        android:alpha="0"
+        android:visibility="gone"
         />
 
     <ImageView
@@ -27,6 +28,7 @@
         android:layout_height="30dp"
         android:layout_gravity="right|top"
         android:layout_margin="@dimen/horizontal_margin_small"
+        android:paddingLeft="1dp"
         android:src="@drawable/picto_skip"
         android:scaleType="centerInside"
         android:clickable="true"

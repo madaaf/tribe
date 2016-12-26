@@ -58,9 +58,6 @@ public class TopBarView extends FrameLayout {
     @BindView(R.id.imgAvatar)
     ImageView imgAvatar;
 
-    @BindView(R.id.imgSearch)
-    ImageView imgSearch;
-
     @BindView(R.id.syncLayout)
     FrameLayout syncLayout;
 
@@ -99,7 +96,6 @@ public class TopBarView extends FrameLayout {
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private PublishSubject<Void> clickRefresh = PublishSubject.create();
     private PublishSubject<Void> clickSettings = PublishSubject.create();
-    private PublishSubject<Void> clickSearch = PublishSubject.create();
     private PublishSubject<Void> errorDone = PublishSubject.create();
     private PublishSubject<Void> clickInvites = PublishSubject.create();
     private PublishSubject<Void> clickGroups = PublishSubject.create();
@@ -178,9 +174,6 @@ public class TopBarView extends FrameLayout {
                     if (isAClickInView(imgAvatar, (int) startX, (int) startY)) {
                         imgAvatar.onTouchEvent(event);
                         imgAvatar.performClick();
-                    } else if (isAClickInView(imgSearch, (int) startX, (int) startY)) {
-                        imgSearch.onTouchEvent(event);
-                        imgSearch.performClick();
                     } else if (isAClickInView(syncLayout, (int) startX, (int) startY)) {
                         syncLayout.onTouchEvent(event);
                         syncLayout.performClick();
@@ -203,10 +196,6 @@ public class TopBarView extends FrameLayout {
 
             default:
                 if (isAClickInView(imgAvatar, (int) event.getX(), (int) event.getY())) imgAvatar.onTouchEvent(event);
-                else if (isAClickInView(imgSearch, (int) event.getX(), (int) event.getY())) {
-                    System.out.println("IMG SEARCH : ACTION_MOVE");
-                    imgSearch.onTouchEvent(event);
-                }
                 else if (isAClickInView(syncLayout, (int) event.getX(), (int) event.getY())) syncLayout.onTouchEvent(event);
                 else if (isAClickInView(btnInvites, (int) event.getX(), (int) event.getY())) btnInvites.onTouchEvent(event);
                 else if (isAClickInView(btnGroup, (int) event.getX(), (int) event.getY())) btnGroup.onTouchEvent(event);
@@ -214,11 +203,6 @@ public class TopBarView extends FrameLayout {
         }
 
         return false;
-    }
-
-    @OnClick(R.id.imgSearch)
-    void launchSearch() {
-        clickSearch.onNext(null);
     }
 
     @OnClick(R.id.imgAvatar)
@@ -269,7 +253,6 @@ public class TopBarView extends FrameLayout {
         btnGroup.setAlpha(alpha);
         btnInvites.setAlpha(alpha);
         imgAvatar.setAlpha(alpha);
-        imgSearch.setAlpha(alpha);
 
         float alphaSpinner = (float) SpringUtil.mapValueFromRangeToRange(
                 value,
@@ -314,7 +297,6 @@ public class TopBarView extends FrameLayout {
         AnimationUtils.fadeIn(btnGroup, DURATION);
         AnimationUtils.fadeIn(btnInvites, DURATION);
         AnimationUtils.fadeIn(imgAvatar, DURATION);
-        AnimationUtils.fadeIn(imgSearch, DURATION);
         AnimationUtils.fadeOut(txtNbMessages, DURATION);
         resetNewMessages();
     }
@@ -401,10 +383,6 @@ public class TopBarView extends FrameLayout {
 
     public Observable<Void> onClickSettings() {
         return clickSettings;
-    }
-
-    public Observable<Void> onClickSearch() {
-        return clickSearch;
     }
 
     public Observable<Void> onErrorDone() {

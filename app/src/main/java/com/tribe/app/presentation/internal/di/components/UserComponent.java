@@ -36,6 +36,7 @@ import com.tribe.app.presentation.view.component.settings.SettingsParametersView
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
 import com.tribe.app.presentation.view.component.settings.SettingsThemeView;
 import com.tribe.app.presentation.view.component.settings.SettingsView;
+import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.PointsDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.ShareDialogProfileFragment;
 import com.tribe.app.presentation.view.fragment.AccessFragment;
@@ -64,6 +65,7 @@ public interface UserComponent extends ActivityComponent {
     void inject(GroupPresenter groupPresenter);
     void inject(MediaHiddenActivity mediaHiddenActivity);
     void inject(PointsDialogFragment pointsDialogFragment);
+    void inject(AuthenticationDialogFragment authenticationDialogFragment);
     void inject(ShareDialogProfileFragment shareDialogProfileFragment);
     void inject(BaseActionActivity baseActionActivity);
     void inject(GroupActivity groupActivity);

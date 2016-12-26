@@ -435,8 +435,8 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<List<ContactInterface>> contacts() {
-        contactCache.deleteContactsAB();
-        contactCache.deleteContactsFB();
+        //contactCache.deleteContactsAB();
+        //contactCache.deleteContactsFB();
 
         return Observable.zip(
                 rxContacts.getContacts().toList(),

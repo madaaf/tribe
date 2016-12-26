@@ -20,6 +20,7 @@ import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.TribeMessage;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.component.TribePagerView;
 
@@ -30,6 +31,8 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
+
+import static com.tribe.app.domain.entity.LabelType.CLEAR_MESSAGES;
 
 public final class DialogFactory {
 
@@ -176,7 +179,7 @@ public final class DialogFactory {
         List<LabelType> moreTypeList = new ArrayList<>();
 
         if (recipient.getReceivedTribes() != null && recipient.getReceivedTribes().size() > 0)
-            moreTypeList.add(new LabelType(context.getString(R.string.grid_menu_friendship_clear_tribes), LabelType.CLEAR_MESSAGES));
+            moreTypeList.add(new LabelType(context.getString(R.string.grid_menu_friendship_clear_tribes), CLEAR_MESSAGES));
 
         if (recipient instanceof Friendship) {
             moreTypeList.add(new LabelType(context.getString(R.string.grid_menu_friendship_hide, recipient.getDisplayName()), LabelType.HIDE));
@@ -225,5 +228,24 @@ public final class DialogFactory {
         messageTypes.add(new LabelType(context.getString(R.string.settings_message_email), LabelType.EMAIL));
         messageTypes.add(new LabelType(context.getString(R.string.settings_message_twitter), LabelType.TWITTER));
         return messageTypes;
+    }
+
+    public static Observable<LabelType> showBottomSheetForInvites(Context context) {
+        return createBottomSheet(context, generateLabelsForInvites(context));
+    }
+
+    private static List<LabelType> generateLabelsForInvites(Context context) {
+        List<LabelType> moreTypeList = new ArrayList<>();
+
+        moreTypeList.add(new LabelType(EmojiParser.demojizedText(context.getString(R.string.topbar_invite_search_action)), LabelType.SEARCH));
+        moreTypeList.add(new LabelType(EmojiParser.demojizedText(context.getString(R.string.topbar_invite_sms_action_android)), LabelType.INVITE_SMS));
+
+        if (DeviceUtils.appInstalled(context, "com.whatsapp"))
+            moreTypeList.add(new LabelType(EmojiParser.demojizedText(context.getString(R.string.topbar_invite_whatsapp_action)), LabelType.INVITE_WHATSAPP));
+
+        if (DeviceUtils.appInstalled(context, "com.facebook.orca"))
+            moreTypeList.add(new LabelType(EmojiParser.demojizedText(context.getString(R.string.topbar_invite_messenger_action)), LabelType.INVITE_MESSENGER));
+
+        return moreTypeList;
     }
 }

@@ -12,6 +12,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
@@ -94,7 +95,7 @@ public class PointsDialogFragment extends BaseDialogFragment {
         super.initUi(view);
 
         subscriptions.add(RxView.clicks(txtShare).subscribe(aVoid -> {
-            navigator.shareHandle(user.getUsername(), getActivity());
+            navigator.openSms(EmojiParser.demojizedText(getString(R.string.share_add_friends_handle)), getActivity());
             dismiss();
         }));
 

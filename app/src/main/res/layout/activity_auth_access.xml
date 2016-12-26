@@ -64,6 +64,8 @@
         android:id="@+id/viewAccess"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/top_bar_height_small"
+        android:clickable="true"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont

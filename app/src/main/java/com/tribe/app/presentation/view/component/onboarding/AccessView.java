@@ -168,12 +168,12 @@ public class AccessView extends LinearLayout {
                     expandAndContract();
                 }));
 
-        imgIcon.setScaleX(8);
-        imgIcon.setScaleY(8);
+        imgIcon.setScaleX(10f);
+        imgIcon.setScaleY(10f);
         imgIcon.animate()
                 .scaleX(1)
                 .scaleY(1)
-                .setDuration(750)
+                .setDuration(600)
                 .setInterpolator(new OvershootInterpolator(0.45f))
                 .start();
     }

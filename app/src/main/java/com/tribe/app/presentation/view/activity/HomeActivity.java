@@ -49,6 +49,7 @@ import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
 import com.tribe.app.presentation.utils.DeepLinkUtils;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
@@ -670,15 +671,23 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                     navigateToSettings();
                 }));
 
-        subscriptions.add(topBarContainer.onClickSearch()
-                .subscribe(aVoid -> {
-                    navigateToSearch(null);
-                }));
-
         subscriptions.add(topBarContainer.onClickInvites()
-                .subscribe(aVoid -> {
-                    navigateToInvites();
-                }));
+                .flatMap(aVoid -> DialogFactory.showBottomSheetForInvites(this),
+                        ((aVoid, labelType) -> {
+                            if (labelType.getTypeDef().equals(LabelType.SEARCH)) {
+                                navigateToSearch(null);
+                            } else if (labelType.getTypeDef().equals(LabelType.INVITE_SMS)) {
+                                navigateToInvitesSMS();
+                            } else if (labelType.getTypeDef().equals(LabelType.INVITE_WHATSAPP)) {
+                                navigateToInvitesWhatsapp();
+                            } else if (labelType.getTypeDef().equals(LabelType.INVITE_MESSENGER)) {
+                                navigateToInvitesMessenger();
+                            }
+
+                            return null;
+                        }))
+                .subscribe()
+        );
 
         subscriptions.add(topBarContainer.onClickGroups()
                 .subscribe(aVoid -> {
@@ -906,9 +915,19 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         HomeActivity.this.navigator.navigateToChat(HomeActivity.this, recipient.getSubId(), recipient instanceof Membership);
     }
 
-    private void navigateToInvites() {
+    private void navigateToInvitesSMS() {
         shouldOverridePendingTransactions = true;
-        HomeActivity.this.navigator.shareHandle(getCurrentUser().getUsername(), this);
+        HomeActivity.this.navigator.openSms(EmojiParser.demojizedText(getString(R.string.share_add_friends_handle)), this);
+    }
+
+    private void navigateToInvitesMessenger() {
+        shouldOverridePendingTransactions = true;
+        HomeActivity.this.navigator.openFacebookMessenger(EmojiParser.demojizedText(getString(R.string.share_add_friends_handle)), this);
+    }
+
+    private void navigateToInvitesWhatsapp() {
+        shouldOverridePendingTransactions = true;
+        HomeActivity.this.navigator.openWhatsApp(EmojiParser.demojizedText(getString(R.string.share_add_friends_handle)), this);
     }
 
     private void navigateToCreateGroup() {

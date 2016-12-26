@@ -152,6 +152,11 @@ LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.OnVideoSizeCha
     @Override
     public void pause() {
         mediaPlayer.pause();
+
+        if (timerSubscription != null) {
+            timerSubscription.unsubscribe();
+            timerSubscription = null;
+        }
     }
 
     @Override

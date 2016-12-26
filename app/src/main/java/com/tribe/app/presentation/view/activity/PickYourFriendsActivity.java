@@ -131,6 +131,8 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
 
         unbinder = ButterKnife.bind(this);
 
+        FacebookUtils.logout();
+
         initDependencyInjector();
         init();
         initResources();
@@ -230,14 +232,22 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
         boolean permissionsFB = FacebookUtils.isLoggedIn();
         boolean permissionsContact = PermissionUtils.hasPermissionsContact(this);
 
+        layoutBottom.removeAllViews();
+        layoutTop.removeAllViews();
+
+        if (permissionsContact && permissionsFB) return;
+
         if (!permissionsContact && !permissionsFB) {
             layoutContent.setVisibility(View.GONE);
             layoutTop.setVisibility(View.VISIBLE);
             initLoadView(getLayoutInflater().inflate(R.layout.view_load_ab_fb_friends, layoutTop));
         } else if (!permissionsContact || !permissionsFB) {
+            layoutContent.setVisibility(View.VISIBLE);
             layoutBottom.setVisibility(View.VISIBLE);
             initLoadView(getLayoutInflater().inflate(R.layout.view_load_ab_fb_friends, layoutBottom));
-        } else if (permissionsContact || permissionsFB) {
+        }
+
+        if (permissionsContact || permissionsFB) {
             friendsPresenter.loadContacts();
         }
 
@@ -281,6 +291,8 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
                     if (hasPermission) {
                         addressBook.set(true);
                         sync();
+                    } else {
+                        viewFriendsAddressBookLoad.hideLoading();
                     }
                 });
     }
@@ -349,7 +361,11 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
             this.contactList.clear();
             this.contactList.addAll(contactList);
 
-            viewPickAll.setVisibility(View.VISIBLE);
+            if (countFriends == contactList.size() || contactList.size() == 0)
+                viewPickAll.setVisibility(View.GONE);
+            else
+                viewPickAll.setVisibility(View.VISIBLE);
+
             viewSeparatorLarge.setVisibility(View.VISIBLE);
             viewSeparatorSearch.setVisibility(View.VISIBLE);
             layoutSearch.setVisibility(View.VISIBLE);

@@ -45,9 +45,6 @@ public class ContactCacheImpl implements ContactCache {
             obsRealm.delete(ContactABRealm.class);
             obsRealm.copyToRealmOrUpdate(contactList);
             obsRealm.commitTransaction();
-        } catch (IllegalStateException ex) {
-            if (obsRealm.isInTransaction()) obsRealm.cancelTransaction();
-            ex.printStackTrace();
         } finally {
             obsRealm.close();
         }
@@ -145,24 +142,23 @@ public class ContactCacheImpl implements ContactCache {
 
     @Override
     public Observable<List<ContactInterface>> contactsOnApp() {
-        return Observable.zip(realm.where(ContactABRealm.class)
+        return Observable.combineLatest(realm.where(ContactABRealm.class)
                         .isNotEmpty("userList")
                         .findAllSorted(new String[]{"name"}, new Sort[]{Sort.ASCENDING})
                         .asObservable()
-                        .filter(contactABRealms -> contactABRealms.isLoaded())
                         .map(contactABRealms -> realm.copyFromRealm(contactABRealms)).defaultIfEmpty(new ArrayList<>()),
                 realm.where(ContactFBRealm.class)
                         .isNotEmpty("userList")
                         .findAllSorted(new String[]{"name"}, new Sort[]{Sort.ASCENDING})
                         .asObservable()
-                        .filter(contactFBRealms -> contactFBRealms.isLoaded())
-                        .map(contactFBRealms -> realm.copyFromRealm(contactFBRealms)).defaultIfEmpty(new ArrayList<>())
-                , (contactABRealms, contactFBRealms) -> {
-                    List<ContactInterface> result = new ArrayList<>();
-                    result.addAll(contactABRealms);
-                    result.addAll(contactFBRealms);
-                    return result;
-                });
+                        .map(contactFBRealms -> realm.copyFromRealm(contactFBRealms)).defaultIfEmpty(new ArrayList<>()),
+                (contactABRealms, contactFBRealms) -> {
+                    List<ContactInterface> ci = new ArrayList<>();
+                    ci.addAll(contactABRealms);
+                    ci.addAll(contactFBRealms);
+                    return ci;
+                }
+        );
     }
 
     @Override

@@ -16,7 +16,6 @@ import com.f2prateek.rx.preferences.Preference;
 import com.github.jinatonic.confetti.CommonConfetti;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tbruyelle.rxpermissions.RxPermissions;
-import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
@@ -26,13 +25,13 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.mvp.presenter.AccessPresenter;
 import com.tribe.app.presentation.mvp.view.AccessMVPView;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.view.component.AccessBottomBarView;
 import com.tribe.app.presentation.view.component.AccessView;
 import com.tribe.app.presentation.view.component.TextFriendsView;
@@ -215,7 +214,7 @@ public class AccessFragment extends BaseFragment implements AccessMVPView {
                             Bundle bundle = new Bundle();
                             bundle.putString(TagManagerConstants.TYPE, TagManagerConstants.TYPE_INVITE_MESSENGER);
                             tagManager.trackEvent(TagManagerConstants.ONBOARDING_INVITE, bundle);
-                            navigator.openFacebookMessenger(getString(R.string.share_onboarding, BuildConfig.TRIBE_URL), getContext());
+                            //navigator.openFacebookMessenger(getString(R.string.share_onboarding, BuildConfig.TRIBE_URL), getContext());
                         }));
 
         subscriptions.add(
@@ -225,7 +224,7 @@ public class AccessFragment extends BaseFragment implements AccessMVPView {
                             Bundle bundle = new Bundle();
                             bundle.putString(TagManagerConstants.TYPE, TagManagerConstants.TYPE_INVITE_WHATSAPP);
                             tagManager.trackEvent(TagManagerConstants.ONBOARDING_INVITE, bundle);
-                            navigator.openWhatsApp(getString(R.string.share_onboarding, BuildConfig.TRIBE_URL), getContext());
+                            //navigator.openWhatsApp(getString(R.string.share_onboarding, BuildConfig.TRIBE_URL), getContext());
                         }));
 
         subscriptions.add(
@@ -235,7 +234,7 @@ public class AccessFragment extends BaseFragment implements AccessMVPView {
                             Bundle bundle = new Bundle();
                             bundle.putString(TagManagerConstants.TYPE, TagManagerConstants.TYPE_INVITE_SMS);
                             tagManager.trackEvent(TagManagerConstants.ONBOARDING_INVITE, bundle);
-                            navigator.sendText(getString(R.string.share_onboarding, BuildConfig.TRIBE_URL), getContext());
+                            //navigator.sendText(getString(R.string.share_onboarding, BuildConfig.TRIBE_URL), getContext());
                         }));
     }
 

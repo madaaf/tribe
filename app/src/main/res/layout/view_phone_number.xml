@@ -48,6 +48,7 @@
         android:layout_height="30dp"
         android:layout_gravity="end|center_vertical"
         android:layout_marginEnd="@dimen/horizontal_margin_small"
+        android:paddingLeft="1dp"
         android:background="@drawable/bg_skip_transition"
         android:foreground="@drawable/selectable_button_oval_light"
         android:scaleType="centerInside"

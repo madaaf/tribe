@@ -10,11 +10,15 @@ import android.widget.LinearLayout;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.view.component.CodeSentToView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import rx.Observable;
@@ -28,6 +32,8 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class AuthenticationDialogFragment extends BaseDialogFragment {
 
+    private static final int WIDTH_MAX = 300;
+
     public static AuthenticationDialogFragment newInstance(String phoneNumber, boolean resend) {
         Bundle args = new Bundle();
         args.putString(PHONE_NUMBER, phoneNumber);
@@ -36,6 +42,9 @@ public class AuthenticationDialogFragment extends BaseDialogFragment {
         fragment.setArguments(args);
         return fragment;
     }
+
+    @Inject
+    ScreenUtils screenUtils;
 
     @BindView(R.id.layoutParent)
     LinearLayout layoutParent;
@@ -67,6 +76,7 @@ public class AuthenticationDialogFragment extends BaseDialogFragment {
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private PublishSubject<Void> confirmClicked = PublishSubject.create();
     private PublishSubject<Void> cancelClicked = PublishSubject.create();
+    private PublishSubject<Void> onDismiss = PublishSubject.create();
 
     public Observable<Void> confirmClicked() {
         return confirmClicked;
@@ -76,11 +86,29 @@ public class AuthenticationDialogFragment extends BaseDialogFragment {
         return cancelClicked;
     }
 
+    public Observable<Void> onDismiss() { return onDismiss; }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View fragmentView = inflater.inflate(R.layout.dialog_fragment_authentication, container, false);
+        initDependencyInjector();
         initUi(fragmentView);
         return fragmentView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if (getDialog() == null)
+            return;
+
+        int widthMax = screenUtils.dpToPx(WIDTH_MAX);
+        int dialogWidth = screenUtils.getWidthPx() - (screenUtils.dpToPx(15) * 2);
+        dialogWidth = Math.min(widthMax, dialogWidth);
+        int dialogHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
+
+        getDialog().getWindow().setLayout(dialogWidth, dialogHeight);
     }
 
     @Override
@@ -146,5 +174,12 @@ public class AuthenticationDialogFragment extends BaseDialogFragment {
             subscriptions.unsubscribe();
             subscriptions.clear();
         }
+    }
+
+    private void initDependencyInjector() {
+        DaggerUserComponent.builder()
+                .activityModule(getActivityModule())
+                .applicationComponent(getApplicationComponent())
+                .build().inject(this);
     }
 }

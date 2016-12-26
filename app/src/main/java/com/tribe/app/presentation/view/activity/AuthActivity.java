@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -55,6 +54,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
     private static int DURATION = 300;
     private static int DURATION_MEDIUM = 400;
+    private static int DURATION_LONG = 600;
     private static int DURATION_FAST = 150;
 
     private static final String COUNTRY_CODE = "COUNTRY_CODE";
@@ -182,11 +182,15 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
         layoutBottom.setTranslationY(screenUtils.getHeightPx());
         viewCode.setTranslationX(screenUtils.getWidthPx());
 
-        subscriptions.add(Observable.timer(BuildConfig.DEBUG ? 0 : 5000, TimeUnit.MILLISECONDS)
+        subscriptions.add(Observable.timer(BuildConfig.DEBUG ? 5000 : 5000, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(aLong -> {
-                    AnimationUtils.fadeIn(btnSkip, DURATION);
-                })
+                .filter(aLong -> viewBackground.getVisibility() == View.GONE)
+                .subscribe(aLong -> AnimationUtils.fadeIn(btnSkip, DURATION))
+        );
+
+        subscriptions.add(authVideoView.videoCompleted()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(aLong -> showPhoneInput())
         );
 
         initViewPhoneNumber();
@@ -225,6 +229,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
                     if (isValid) {
                         cleanCountdown();
                         loginEntity = authPresenter.login(viewPhoneNumber.getPhoneNumberFormatted(), viewCode.getCode(), pin.getPinId());
+                        //loginEntity = authPresenter.login(viewPhoneNumber.getPhoneNumberFormatted(), viewCode.getCode(), "");
                     }
                 })
         );
@@ -246,8 +251,19 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
     @OnClick(R.id.btnSkip)
     void skip() {
+        showPhoneInput();
+    }
+
+    @OnClick(R.id.viewVideoAuth)
+    void endVideo() {
+        showPhoneInput();
+    }
+
+    private void showPhoneInput() {
         authVideoView.onPause(false);
         AnimationUtils.fadeOut(btnSkip, DURATION);
+        viewBackground.setAlpha(0);
+        viewBackground.setVisibility(View.VISIBLE);
         AnimationUtils.fadeIn(viewBackground, DURATION);
         btnSkip.setEnabled(false);
         showLayoutBottom();
@@ -268,7 +284,13 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
         authVideoView.play();
         viewPhoneNumber.hideKeyboard();
         AnimationUtils.fadeIn(btnSkip, DURATION);
-        AnimationUtils.fadeOut(viewBackground, DURATION);
+        AnimationUtils.fadeOut(viewBackground, DURATION, new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                viewBackground.setVisibility(View.GONE);
+                viewBackground.animate().setListener(null).start();
+            }
+        });
         AnimationUtils.fadeOut(btnPlay, DURATION);
         btnPlay.setEnabled(false);
         btnSkip.setEnabled(true);
@@ -311,7 +333,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
         viewPhoneNumber
                 .animate()
                 .translationX(-screenUtils.getWidthPx())
-                .setDuration(DURATION_MEDIUM)
+                .setDuration(DURATION)
                 .start();
     }
 
@@ -323,7 +345,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
         viewPhoneNumber
                 .animate()
                 .translationX(0)
-                .setDuration(DURATION_MEDIUM)
+                .setDuration(DURATION)
                 .start();
     }
 
@@ -333,7 +355,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
         viewCode
             .animate()
             .translationX(screenUtils.getWidthPx())
-            .setDuration(DURATION_MEDIUM)
+            .setDuration(DURATION)
             .start();
     }
 
@@ -345,7 +367,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
         viewCode
             .animate()
             .translationX(0)
-            .setDuration(DURATION_MEDIUM)
+            .setDuration(DURATION)
             .setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
@@ -413,18 +435,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
                 true
             );
 
-        authenticationDialogFragment.onDismiss(new DialogInterface() {
-            @Override
-            public void cancel() {
-                viewStatus.showResend();
-            }
-
-            @Override
-            public void dismiss() {
-                viewStatus.showResend();
-            }
-        });
-
         authenticationDialogFragment.show(getSupportFragmentManager(), AuthenticationDialogFragment.class.getName());
         subscriptions.add(authenticationDialogFragment.confirmClicked().subscribe(aVoid -> {
             tagManager.trackEvent(TagManagerConstants.ONBOARDING_RESEND_PIN);
@@ -465,18 +475,20 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
         this.user.copy(user);
 
         viewCode.removeCountdown();
-        txtMessage.setVisibility(View.GONE);
-        viewStatus.setVisibility(View.GONE);
-        screenUtils.hideKeyboard(this);
 
         subscriptions.add(Observable.timer(DURATION, TimeUnit.MILLISECONDS)
                 .onBackpressureDrop()
-                .delay(DURATION, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(aLong -> viewCode.showConnected())
+                .delay(DURATION_LONG, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(aLong -> {
-                    viewCode.showConnected();
+                    txtMessage.setVisibility(View.GONE);
+                    viewStatus.setVisibility(View.GONE);
+                    screenUtils.hideKeyboard(this);
+                    viewCode.showConnectedEnd();
                 })
-                .delay(1700, TimeUnit.MILLISECONDS)
+                .delay(1400, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(time -> {
                     if (user == null || StringUtils.isEmpty(user.getProfilePicture()) || StringUtils.isEmpty(user.getUsername())) {

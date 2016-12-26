@@ -30,7 +30,6 @@ import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
-import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.PickYourFriendsActivity;
 import com.tribe.app.presentation.view.activity.PointsActivity;
@@ -224,7 +223,7 @@ public class Navigator {
      */
     public void navigateToLogout(Activity activity) {
         if (activity != null) {
-            Intent i = new Intent(activity, IntroActivity.class);
+            Intent i = new Intent(activity, AuthActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             activity.startActivity(i);
         }
@@ -398,10 +397,10 @@ public class Navigator {
         context.startActivity(sendIntent);
     }
 
-    public void shareHandle(String handle, Activity activity) {
+    public void openSms(String body, Activity activity) {
         Intent sendIntent = new Intent(Intent.ACTION_VIEW);
         sendIntent.setData(Uri.parse("sms:"));
-        sendIntent.putExtra("sms_body", EmojiParser.demojizedText(activity.getString(R.string.share_add_friends_handle)));
+        sendIntent.putExtra("sms_body", body);
         activity.startActivity(sendIntent);
         activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }
@@ -413,57 +412,34 @@ public class Navigator {
         activity.startActivity(sendIntent);
     }
 
-    public void openFacebookMessenger(String body, Context context) {
+    public void openFacebookMessenger(String body, Activity activity) {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, body);
         sendIntent.setType("text/plain");
         sendIntent.setPackage("com.facebook.orca");
         try {
-            context.startActivity(sendIntent);
+            activity.startActivity(sendIntent);
         } catch (android.content.ActivityNotFoundException ex) {
             // TODO externalize this string
-            Toast.makeText(context, "Facebook Messenger is not installed.", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, "Facebook Messenger is not installed.", Toast.LENGTH_LONG).show();
         }
+
+        activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }
 
-    public void openWhatsApp(String body, Context context) {
+    public void openWhatsApp(String body, Activity activity) {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, body);
         sendIntent.setType("text/plain");
         sendIntent.setPackage("com.whatsapp");
         try {
-            context.startActivity(sendIntent);
+            activity.startActivity(sendIntent);
         } catch (android.content.ActivityNotFoundException ex) {
             // TODO externalize this string
-            Toast.makeText(context, "Whatsapp is not installed.", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, "Whatsapp is not installed.", Toast.LENGTH_LONG).show();
         }
-    }
-
-    public void openSnapchat(String body, Activity activity) {
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_TEXT, body);
-        intent.setPackage(SNAPCHAT);
-        activity.startActivity(Intent.createChooser(intent, "Open Snapchat"));
-    }
-
-    public void openSlack(String body, Activity activity) {
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_TEXT, body);
-        intent.setPackage("com.Slack");
-        activity.startActivity(Intent.createChooser(intent, "Open Slack"));
-    }
-
-    public void openTelegram(String body, Activity activity) {
-        Intent sendIntent = new Intent();
-        sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, body);
-        sendIntent.setType("text/plain");
-        sendIntent.setPackage("org.telegram.messenger");
-        activity.startActivity(sendIntent);
     }
 
     public void shareHandle(Context context, String handle, File file, String selectedPackage) {

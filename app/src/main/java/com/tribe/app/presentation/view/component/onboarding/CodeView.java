@@ -24,7 +24,6 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -47,6 +46,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class CodeView extends FrameLayout {
 
+    private static final int DELAY = 300;
     private static final int DURATION = 300;
     private static final int DURATION_MEDIUM = 500;
     private static final int DURATION_FAST = 150;
@@ -308,31 +308,45 @@ public class CodeView extends FrameLayout {
         imgConnected.animate()
                 .scaleY(1).scaleX(1)
                 .setDuration(DURATION)
-                .setInterpolator(new OvershootInterpolator(1.5f))
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        imgConnected.animate()
-                                .translationX(
-                                    - screenUtils.getWidthPx()
-                                            + 2 * getContext().getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small)
-                                            + imgConnected.getWidth()
-                                )
-                                .setDuration(DURATION * 2)
-                                .setInterpolator(new DecelerateInterpolator())
-                                .setListener(null)
-                                .start();
+                .setInterpolator(new OvershootInterpolator(1.20f))
+                .start();
+    }
 
-                        txtConnected.animate()
-                                .translationX(0)
-                                .setDuration(DURATION_MEDIUM)
-                                .setInterpolator(new DecelerateInterpolator())
-                                .start();
-                    }
-                }).start();
-        AnimationUtils.fadeIn(imgConnected, DURATION_FAST);
-        AnimationUtils.fadeOut(imgBack, DURATION_FAST);
-        AnimationUtils.fadeOut(layoutPin, DURATION_FAST);
+    public void showConnectedEnd() {
+        imgConnected.animate()
+                .translationX(
+                        - screenUtils.getWidthPx()
+                                + 2 * getContext().getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small)
+                                + imgConnected.getWidth()
+                )
+                .setDuration(DURATION)
+                .setStartDelay(DELAY)
+                .setInterpolator(new DecelerateInterpolator())
+                .setListener(null)
+                .start();
+
+        txtConnected.animate()
+                .translationX(0)
+                .setDuration(DURATION_MEDIUM)
+                .setStartDelay(DELAY)
+                .setInterpolator(new OvershootInterpolator(0.25f))
+                .start();
+
+        imgBack.animate()
+                .translationX(- screenUtils.getWidthPx())
+                .setDuration(DURATION)
+                .setStartDelay(DELAY)
+                .setInterpolator(new DecelerateInterpolator())
+                .setListener(null)
+                .start();
+
+        layoutPin.animate()
+                .translationX(- screenUtils.getWidthPx())
+                .setDuration(DURATION)
+                .setStartDelay(DELAY)
+                .setInterpolator(new DecelerateInterpolator())
+                .setListener(null)
+                .start();
     }
 
     private void resetPinCodeView() {

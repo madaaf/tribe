@@ -1,15 +1,11 @@
 package com.tribe.app.presentation.view.adapter.delegate.contact;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -136,49 +132,11 @@ public class SearchResultGridAdapterDelegate extends AddAnimationAdapterDelegate
     }
 
     protected void setClicks(SearchResultViewHolder vh, SearchResult searchResult) {
-        if (!searchResult.isMyself() && (searchResult.getFriendship() == null && searchResult.getFriendship().isBlockedOrHidden())) {
+        if (!searchResult.isInvisibleMode() && !searchResult.isMyself() && (searchResult.getFriendship() == null || searchResult.getFriendship().isBlockedOrHidden())) {
             vh.btnAdd.setOnClickListener(v -> onClick(vh));
         } else {
             vh.btnAdd.setOnClickListener(null);
         }
-    }
-
-    private void animateAddSuccessful(SearchResultViewHolder vh) {
-        AnimatorSet animatorSet = new AnimatorSet();
-
-        ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(vh.imgPicto, "rotation", -45f, 0f);
-        rotationAnim.setDuration(300);
-        rotationAnim.setInterpolator(new DecelerateInterpolator());
-        rotationAnim.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                vh.imgPicto.setImageResource(R.drawable.picto_done_white);
-                vh.imgPicto.setVisibility(View.VISIBLE);
-                vh.progressBarAdd.setVisibility(View.GONE);
-            }
-        });
-
-        ObjectAnimator scaleXAnim = ObjectAnimator.ofFloat(vh.imgPicto, "scaleX", 0.2f, 1f);
-        scaleXAnim.setDuration(300);
-        scaleXAnim.setInterpolator(new DecelerateInterpolator());
-
-        ObjectAnimator scaleYAnim = ObjectAnimator.ofFloat(vh.imgPicto, "scaleY", 0.2f, 1f);
-        scaleYAnim.setDuration(300);
-        scaleYAnim.setInterpolator(new DecelerateInterpolator());
-
-        ObjectAnimator alphaBG = ObjectAnimator.ofFloat(vh.btnAddBG, "alpha", 0f, 1f);
-        alphaBG.setDuration(300);
-        alphaBG.setInterpolator(new DecelerateInterpolator());
-        alphaBG.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                vh.btnAddBG.setVisibility(View.VISIBLE);
-            }
-        });
-
-        animatorSet.play(rotationAnim).with(scaleXAnim).with(scaleYAnim).with(alphaBG);
-        animatorSet.start();
-        animations.put(vh, animatorSet);
     }
 
     public class SearchResultViewHolder extends AddAnimationViewHolder {

@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".presentation.view.activity.PickYourFriendsActivity"
     android:background="@drawable/shape_rect_white_rounded_top"
+    android:animateLayoutChanges="true"
     >
 
     <LinearLayout
@@ -147,7 +148,8 @@
         android:layout_marginTop="@dimen/top_bar_height_small"
         android:orientation="vertical"
         android:layout_gravity="top"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:animateLayoutChanges="true">
 
     </LinearLayout>
 
@@ -157,7 +159,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_gravity="bottom"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:animateLayoutChanges="true">
 
     </LinearLayout>
     

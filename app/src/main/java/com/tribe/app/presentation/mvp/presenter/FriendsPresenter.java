@@ -137,7 +137,7 @@ public class FriendsPresenter implements Presenter {
             Set<String> userIds = new HashSet<>();
 
             for (User user : userList) {
-                userIds.add(user.getId());
+                if (!user.isInvisibleMode()) userIds.add(user.getId());
             }
 
             createFriendships.setUserIds(userIds.toArray(new String[userIds.size()]));
