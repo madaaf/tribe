@@ -252,6 +252,10 @@ public class HomeGridPresenter extends SendTribePresenter {
         jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.CAMERA, 1));
     }
 
+    public void updateScoreLocation() {
+        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.LOCATION, 1));
+    }
+
     public void sendToken(String token) {
         sendTokenUseCase.setToken(token);
         sendTokenUseCase.execute(new SendTokenSubscriber());

@@ -38,6 +38,7 @@ import com.tribe.app.data.network.DownloadTribeService;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
+import com.tribe.app.domain.entity.Location;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.PendingType;
@@ -58,8 +59,9 @@ import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.HasRatedApp;
 import com.tribe.app.presentation.utils.preferences.HasReceivedPointsForCameraPermission;
 import com.tribe.app.presentation.utils.preferences.LastOnlineNotification;
+import com.tribe.app.presentation.utils.preferences.LastVersionCode;
+import com.tribe.app.presentation.utils.preferences.LocationContext;
 import com.tribe.app.presentation.utils.preferences.TribeSentCount;
-import com.tribe.app.presentation.utils.preferences.WasAskedForCameraPermission;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
@@ -69,6 +71,7 @@ import com.tribe.app.presentation.view.component.TopBarContainer;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
 import com.tribe.app.presentation.view.utils.Constants;
+import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -85,6 +88,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -130,10 +134,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     Preference<Boolean> hasReceivedPointsForCameraPermission;
 
     @Inject
-    @WasAskedForCameraPermission
-    Preference<Boolean> wasAskedForCameraPermission;
-
-    @Inject
     @HasRatedApp
     Preference<Boolean> hasRatedApp;
 
@@ -144,6 +144,17 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Inject
     @AddressBook
     Preference<Boolean> addressBook;
+
+    @Inject
+    @LastVersionCode
+    Preference<Integer> lastVersion;
+
+    @Inject
+    ReactiveLocationProvider reactiveLocationProvider;
+
+    @Inject
+    @LocationContext
+    Preference<Boolean> locationContext;
 
     @Inject
     SoundManager soundManager;
@@ -256,19 +267,29 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     protected void onResume() {
         super.onResume();
 
-        subscriptions.add(Observable.
-                from(PermissionUtils.PERMISSIONS_CAMERA)
-                .map(permission -> RxPermissions.getInstance(HomeActivity.this).isGranted(permission))
-                .toList()
-                .subscribe(grantedList -> {
-                    boolean areAllGranted = true;
+        if (!lastVersion.get().equals(DeviceUtils.getVersionCode(this))) {
+            subscriptions.add(RxPermissions.getInstance(HomeActivity.this)
+                    .requestEach(PermissionUtils.PERMISSIONS_HOME)
+                    .subscribe(granted -> {
+                        lastVersion.set(DeviceUtils.getVersionCode(this));
+                        handleCameraPermissions(PermissionUtils.hasPermissionsCamera(this), false);
+                        handleLocationPermissions(PermissionUtils.hasPermissionsLocation(this));
+                    }));
+        } else {
+            subscriptions.add(Observable.from(PermissionUtils.PERMISSIONS_CAMERA)
+                    .map(permission -> RxPermissions.getInstance(HomeActivity.this).isGranted(permission))
+                    .toList()
+                    .subscribe(grantedList -> {
+                        boolean areAllGranted = true;
 
-                    for (Boolean granted : grantedList) {
-                        if (!granted) areAllGranted = false;
-                    }
+                        for (Boolean granted : grantedList) {
+                            if (!granted) areAllGranted = false;
+                        }
 
-                    handleCameraPermissions(areAllGranted, false);
-                }));
+                        handleCameraPermissions(areAllGranted, false);
+                    })
+            );
+        }
 
         if (shouldOverridePendingTransactions) {
             overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
@@ -349,9 +370,39 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         }));
     }
 
-    private void handleCameraPermissions(boolean isGranted, boolean shouldAnimate) {
-        wasAskedForCameraPermission.set(true);
+    private void askLocationPermissions() {
+        subscriptions.add(RxPermissions.getInstance(this)
+                .request(PermissionUtils.PERMISSIONS_LOCATION)
+                .subscribe(granted -> handleLocationPermissions(granted)));
+    }
 
+    private void handleLocationPermissions(boolean isGranted) {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(TagManagerConstants.LOCATION_ENABLED, isGranted);
+        tagManager.setProperty(bundle);
+
+        if (isGranted) {
+            homeGridPresenter.updateScoreLocation();
+            locationContext.set(true);
+            subscriptions.add(reactiveLocationProvider
+                    .getLastKnownLocation().subscribe(locationProvided -> {
+                        if (locationProvided != null) {
+                            Location location = new Location(locationProvided.getLongitude(), locationProvided.getLatitude());
+                            location.setLatitude(location.getLatitude());
+                            location.setLongitude(location.getLongitude());
+                            location.setHasLocation(true);
+                            location.setId(getCurrentUser().getId());
+                            getCurrentUser().setLocation(location);
+                        } else {
+                            getCurrentUser().setLocation(null);
+                        }
+                    }));
+        } else {
+            locationContext.set(false);
+        }
+    }
+
+    private void handleCameraPermissions(boolean isGranted, boolean shouldAnimate) {
         if (isGranted) {
             if (!hasReceivedPointsForCameraPermission.get()) {
                 hasReceivedPointsForCameraPermission.set(true);

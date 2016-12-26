@@ -131,8 +131,6 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
 
         unbinder = ButterKnife.bind(this);
 
-        FacebookUtils.logout();
-
         initDependencyInjector();
         init();
         initResources();
@@ -235,7 +233,11 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
         layoutBottom.removeAllViews();
         layoutTop.removeAllViews();
 
-        if (permissionsContact && permissionsFB) return;
+        if (permissionsContact && permissionsFB) {
+            recyclerView.setPadding(0, 0, 0, 0);
+            friendsPresenter.loadContacts();
+            return;
+        }
 
         if (!permissionsContact && !permissionsFB) {
             layoutContent.setVisibility(View.GONE);
@@ -244,6 +246,7 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
         } else if (!permissionsContact || !permissionsFB) {
             layoutContent.setVisibility(View.VISIBLE);
             layoutBottom.setVisibility(View.VISIBLE);
+            recyclerView.setPadding(0, 0, 0, getResources().getDimensionPixelSize(R.dimen.load_friends_height));
             initLoadView(getLayoutInflater().inflate(R.layout.view_load_ab_fb_friends, layoutBottom));
         }
 
@@ -275,7 +278,7 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
     }
 
     private void refactorDone() {
-        if (newFriends.size() > 0 || countFriends == contactList.size() || contactList.size() == 0) TextViewCompat.setTextAppearance(txtAction, R.style.Title_2_Blue);
+        if (newFriends.size() > 0 || countFriends > 0 || contactList.size() == 0) TextViewCompat.setTextAppearance(txtAction, R.style.Title_2_Blue);
         else TextViewCompat.setTextAppearance(txtAction, R.style.Title_2_Grey);
         txtAction.setCustomFont(this, "Roboto-Bold.ttf");
     }
@@ -328,7 +331,7 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
     @OnClick(R.id.txtAction)
     void onClickAction() {
         if (newFriends.size() == 0) {
-            if (countFriends == contactList.size() || contactList.size() == 0) {
+            if (countFriends > 0 || contactList.size() == 0) {
                 navigateToHome();
             } else {
                 subscriptions.add(DialogFactory.dialog(

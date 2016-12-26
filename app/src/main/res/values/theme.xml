@@ -28,6 +28,10 @@
         <item name="android:windowNoTitle">true</item>
     </style>
 
+    <style name="AppTheme.FullScreen.Black" parent="@style/AppTheme.FullScreen">
+        <item name="android:windowBackground">@android:color/black</item>
+    </style>
+
     <style name="AppTheme.FullScreen.Translucent" parent="@style/Theme.AppCompat.Light">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>

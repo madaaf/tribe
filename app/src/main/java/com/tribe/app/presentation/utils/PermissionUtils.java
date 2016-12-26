@@ -17,6 +17,8 @@ public class PermissionUtils {
     public static final String PERMISSIONS_CONTACTS = Manifest.permission.READ_CONTACTS;
     public static final String[] PERMISSIONS_CAMERA = new String[]{ Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE };
+    public static final String[] PERMISSIONS_HOME = new String[]{ Manifest.permission.CAMERA,
+            Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE, PERMISSION_COARSE, PERMISSION_FINE };
 
     public static boolean hasPermissionsLocation(Context context) {
        return (RxPermissions.getInstance(context).isGranted(PermissionUtils.PERMISSION_COARSE)

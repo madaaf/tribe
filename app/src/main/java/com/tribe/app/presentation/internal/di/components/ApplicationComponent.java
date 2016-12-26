@@ -79,7 +79,7 @@ import com.tribe.app.presentation.utils.preferences.Theme;
 import com.tribe.app.presentation.utils.preferences.TribeSentCount;
 import com.tribe.app.presentation.utils.preferences.TutorialState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
-import com.tribe.app.presentation.utils.preferences.WasAskedForCameraPermission;
+import com.tribe.app.presentation.utils.preferences.WasAskedForPermissions;
 import com.tribe.app.presentation.utils.preferences.WeatherUnits;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
@@ -334,7 +334,7 @@ public interface ApplicationComponent {
     @HasReceivedPointsForCameraPermission
     Preference<Boolean> hasReceivedPointsForCameraPermission();
 
-    @WasAskedForCameraPermission
+    @WasAskedForPermissions
     Preference<Boolean> wasAskedForCameraPermission();
 
     @LastSync

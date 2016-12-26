@@ -67,7 +67,7 @@ public class AuthVideoView extends FrameLayout implements TextureView.SurfaceTex
     }
 
     public void onPause(boolean shouldResume) {
-        if (mediaPlayer.isPlaying()) {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
             isPaused = true;
             shouldResume = true;

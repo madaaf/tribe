@@ -16,7 +16,6 @@ import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
-import com.tribe.app.presentation.view.activity.IntroActivity;
 import com.tribe.app.presentation.view.activity.PickYourFriendsActivity;
 import com.tribe.app.presentation.view.activity.PointsActivity;
 import com.tribe.app.presentation.view.activity.ScoreActivity;
@@ -39,8 +38,6 @@ import com.tribe.app.presentation.view.component.settings.SettingsView;
 import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.PointsDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.ShareDialogProfileFragment;
-import com.tribe.app.presentation.view.fragment.AccessFragment;
-import com.tribe.app.presentation.view.fragment.ProfileInfoFragment;
 
 import dagger.Component;
 
@@ -53,14 +50,11 @@ import dagger.Component;
 public interface UserComponent extends ActivityComponent {
 
     void inject(DebugActivity debugActivity);
-    void inject(IntroActivity introActivity);
     void inject(FacebookHiddenActivity facebookHiddenActivity);
     void inject(CountryActivity countryActivity);
     void inject(HomeActivity homeActivity);
     void inject(ScoreActivity scoreActivity);
     void inject(PointsActivity pointsActivity);
-    void inject(AccessFragment accessFragment);
-    void inject(ProfileInfoFragment profileInfoFragment);
     void inject(ProfileInfoView profileInfoView);
     void inject(GroupPresenter groupPresenter);
     void inject(MediaHiddenActivity mediaHiddenActivity);

@@ -18,7 +18,7 @@ import com.tribe.app.presentation.utils.preferences.HasRatedApp;
 import com.tribe.app.presentation.utils.preferences.HasReceivedPointsForCameraPermission;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.LocationContext;
-import com.tribe.app.presentation.utils.preferences.WasAskedForCameraPermission;
+import com.tribe.app.presentation.utils.preferences.WasAskedForPermissions;
 import com.tribe.app.presentation.mvp.presenter.ActionPresenter;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
@@ -80,7 +80,7 @@ public class BaseActionActivity extends BaseActivity {
     Preference<Boolean> hasReceivedPointsForCameraPermission;
 
     @Inject
-    @WasAskedForCameraPermission
+    @WasAskedForPermissions
     Preference<Boolean> wasAskedForCameraPermission;
 
     @Inject

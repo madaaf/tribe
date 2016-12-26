@@ -21,6 +21,7 @@ import com.tribe.app.presentation.utils.preferences.LastUserRequest;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.LocationContext;
 import com.tribe.app.presentation.utils.preferences.Memories;
+import com.tribe.app.presentation.utils.preferences.PreferencesConstants;
 import com.tribe.app.presentation.utils.preferences.Preload;
 import com.tribe.app.presentation.utils.preferences.PushNotifications;
 import com.tribe.app.presentation.utils.preferences.ShareProfile;
@@ -29,11 +30,9 @@ import com.tribe.app.presentation.utils.preferences.Theme;
 import com.tribe.app.presentation.utils.preferences.TribeSentCount;
 import com.tribe.app.presentation.utils.preferences.TutorialState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
-import com.tribe.app.presentation.utils.preferences.WasAskedForCameraPermission;
+import com.tribe.app.presentation.utils.preferences.WasAskedForPermissions;
 import com.tribe.app.presentation.utils.preferences.WeatherUnits;
-import com.tribe.app.presentation.utils.preferences.PreferencesConstants;
 import com.tribe.app.presentation.view.component.TribePagerView;
-import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.Distance;
 
 import java.util.HashSet;
@@ -185,7 +184,7 @@ public class DataModule {
 
     @Provides
     @Singleton
-    @WasAskedForCameraPermission
+    @WasAskedForPermissions
     Preference<Boolean> provideWasAskedForCameraPermission(RxSharedPreferences prefs) {
         return prefs.getBoolean(PreferencesConstants.WAS_ASKED_FOR_CAMERA_PERMISSION, false);
     }
@@ -201,7 +200,7 @@ public class DataModule {
     @Singleton
     @LastVersionCode
     Preference<Integer> provideLastVersionCode(Context context, RxSharedPreferences prefs) {
-        return prefs.getInteger(PreferencesConstants.PREVIOUS_VERSION_CODE, DeviceUtils.getVersionCode(context));
+        return prefs.getInteger(PreferencesConstants.PREVIOUS_VERSION_CODE, -1);
     }
 
     @Provides
