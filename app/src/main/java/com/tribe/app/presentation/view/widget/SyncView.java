@@ -99,11 +99,7 @@ public class SyncView extends FrameLayout {
             onClick.onNext(this);
         });
 
-        if (type == FB && FacebookUtils.isLoggedIn()) {
-            setActive(true, false);
-        } else if (type == ADDRESSBOOK && addressBook.get()) {
-            setActive(true, false);
-        }
+        updateSync();
 
         a.recycle();
     }
@@ -151,6 +147,14 @@ public class SyncView extends FrameLayout {
             bgSynced.reverseTransition(animated ? 200 : 0);
 
             viewSynced.setImageResource(R.drawable.picto_exclamation);
+        }
+    }
+
+    public void updateSync() {
+        if (type == FB && FacebookUtils.isLoggedIn()) {
+            setActive(true, false);
+        } else if (type == ADDRESSBOOK && addressBook.get()) {
+            setActive(true, false);
         }
     }
 

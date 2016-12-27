@@ -6,12 +6,15 @@ import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.DiskSearchResults;
 import com.tribe.app.domain.interactor.user.FindByUsername;
 import com.tribe.app.domain.interactor.user.GetDiskContactInviteList;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.SearchMVPView;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
+import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.view.utils.ScoreUtils;
 
 import java.util.ArrayList;
@@ -31,24 +34,35 @@ public class SearchPresenter implements Presenter {
     private DiskSearchResults searchResults;
     private CreateFriendship createFriendship;
     private GetDiskContactInviteList diskContactInviteList;
+    private UseCase synchroContactList;
+    private RxFacebook rxFacebook;
+    private UseCase refreshHowManyFriends;
 
     // SUBSCRIBERS
     private CreateFriendshipSubscriber createFriendshipSubscriber;
     private DefaultSubscriber findByUsernameSubscriber;
     private ContactListSubscriber contactListSubscriber;
+    private LookupContactsSubscriber lookupContactsSubscriber;
+    private RefreshHowManyFriendsSubscriber refreshHowManyFriendsSubscriber;
 
     @Inject
     public SearchPresenter(JobManager jobManager,
                            @Named("cloudFindByUsername") FindByUsername findByUsername,
                            @Named("diskSearchResults") DiskSearchResults diskSearchResults,
                            CreateFriendship createFriendship,
-                           GetDiskContactInviteList diskContactInviteList) {
+                           GetDiskContactInviteList diskContactInviteList,
+                           @Named("synchroContactList") UseCase synchroContactList,
+                           RxFacebook rxFacebook,
+                           @Named("refreshHowManyFriends") UseCase refreshHowManyFriends) {
         super();
         this.jobManager = jobManager;
         this.findByUsername = findByUsername;
         this.searchResults = diskSearchResults;
         this.createFriendship = createFriendship;
         this.diskContactInviteList = diskContactInviteList;
+        this.synchroContactList = synchroContactList;
+        this.rxFacebook = rxFacebook;
+        this.refreshHowManyFriends = refreshHowManyFriends;
     }
 
     @Override
@@ -57,6 +71,7 @@ public class SearchPresenter implements Presenter {
         searchResults.unsubscribe();
         createFriendship.unsubscribe();
         diskContactInviteList.unsubscribe();
+        synchroContactList.unsubscribe();
     }
 
     @Override
@@ -152,6 +167,66 @@ public class SearchPresenter implements Presenter {
 
             diskContactInviteList.unsubscribe();
             contactListSubscriber.unsubscribe();
+        }
+    }
+
+    public void lookupContacts() {
+        if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
+        lookupContactsSubscriber = new LookupContactsSubscriber();
+        synchroContactList.execute(lookupContactsSubscriber);
+    }
+
+    private class LookupContactsSubscriber extends DefaultSubscriber<List<Contact>> {
+
+        @Override
+        public void onCompleted() { }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+            searchView.syncDone();
+        }
+
+        @Override
+        public void onNext(List<Contact> contactList) {
+            refreshHowManyFriends();
+        }
+    }
+
+    public void loginFacebook() {
+        if (!FacebookUtils.isLoggedIn()) {
+            rxFacebook.requestLogin().subscribe(loginResult -> {
+                if (FacebookUtils.isLoggedIn()) {
+                    searchView.successFacebookLogin();
+                } else {
+                    searchView.errorFacebookLogin();
+                }
+            });
+        } else {
+            searchView.successFacebookLogin();
+        }
+    }
+
+    public void refreshHowManyFriends() {
+        if (refreshHowManyFriendsSubscriber != null) refreshHowManyFriendsSubscriber.unsubscribe();
+        refreshHowManyFriendsSubscriber = new RefreshHowManyFriendsSubscriber();
+        refreshHowManyFriends.execute(refreshHowManyFriendsSubscriber);
+    }
+
+    private class RefreshHowManyFriendsSubscriber extends DefaultSubscriber<List<Void>> {
+
+        @Override
+        public void onCompleted() { }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+            searchView.syncDone();
+        }
+
+        @Override
+        public void onNext(List<Void> contactList) {
+            searchView.syncDone();
         }
     }
 }

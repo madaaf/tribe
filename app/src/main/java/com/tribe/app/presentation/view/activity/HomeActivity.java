@@ -301,6 +301,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
             overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
             shouldOverridePendingTransactions = false;
         }
+
+        viewFilter.updateSync();
     }
 
     @Override
@@ -669,6 +671,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 homeGridPresenter.updateUserFacebook(null);
                 FacebookUtils.logout();
                 viewFilter.setFBSync(false);
+                syncContacts();
             }
         }));
 
@@ -683,7 +686,6 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
                             addressBook.set(hasPermission);
                             viewFilter.setABSync(hasPermission);
-                            if (hasPermission) syncContacts();
                         });
             } else {
                 Bundle bundle = new Bundle();
@@ -693,6 +695,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 addressBook.set(false);
                 viewFilter.setABSync(false);
             }
+
+            syncContacts();
         }));
     }
 
@@ -868,7 +872,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     public void successFacebookLogin() {
         homeGridPresenter.updateUserFacebook(AccessToken.getCurrentAccessToken().getUserId());
         viewFilter.setFBSync(true);
-        if (FacebookUtils.isLoggedIn()) syncContacts();
+        syncContacts();
     }
 
     @Override

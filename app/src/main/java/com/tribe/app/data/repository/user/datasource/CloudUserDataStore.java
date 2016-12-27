@@ -101,7 +101,8 @@ public class CloudUserDataStore implements UserDataStore {
                               TribeApi tribeApi, LoginApi loginApi,
                               AccessToken accessToken, Installation installation,
                               ReactiveLocationProvider reactiveLocationProvider, Context context,
-                              Preference<String> lastMessageRequest, Preference<String> lastUserRequest, SimpleDateFormat utcSimpleDate) {
+                              Preference<String> lastMessageRequest, Preference<String> lastUserRequest,
+                              SimpleDateFormat utcSimpleDate) {
         this.userCache = userCache;
         this.tribeCache = tribeCache;
         this.chatCache = chatCache;

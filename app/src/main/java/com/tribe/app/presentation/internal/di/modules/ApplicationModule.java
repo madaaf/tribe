@@ -52,6 +52,7 @@ import com.tribe.app.domain.interactor.user.SynchroContactList;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.UIThread;
+import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.Theme;
 import com.tribe.app.presentation.utils.preferences.TutorialState;
 import com.tribe.app.presentation.navigation.Navigator;
@@ -158,8 +159,8 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    RxContacts provideRxContacts(Context context, User user, PhoneUtils phoneUtils) {
-        return new RxContacts(context, user, phoneUtils);
+    RxContacts provideRxContacts(Context context, User user, PhoneUtils phoneUtils, @AddressBook Preference<Boolean> addressBook) {
+        return new RxContacts(context, user, phoneUtils, addressBook);
     }
 
     @Provides

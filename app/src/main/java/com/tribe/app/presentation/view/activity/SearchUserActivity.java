@@ -6,10 +6,13 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.jakewharton.rxbinding.widget.RxTextView;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.ContactAB;
@@ -19,10 +22,15 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.SearchPresenter;
 import com.tribe.app.presentation.mvp.view.SearchMVPView;
+import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
+import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.view.adapter.ContactAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.DividerHeadersItemDecoration;
 import com.tribe.app.presentation.view.adapter.manager.ContactsLayoutManager;
+import com.tribe.app.presentation.view.component.common.LoadFriendsView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 
@@ -63,6 +71,10 @@ public class SearchUserActivity extends BaseActivity implements SearchMVPView {
     @Inject
     User currentUser;
 
+    @Inject
+    @AddressBook
+    Preference<Boolean> addressBook;
+
     @BindView(R.id.recyclerViewContacts)
     RecyclerView recyclerViewContacts;
 
@@ -71,6 +83,21 @@ public class SearchUserActivity extends BaseActivity implements SearchMVPView {
 
     @BindView(R.id.layoutFocus)
     ViewGroup layoutFocus;
+
+    @BindView(R.id.layoutContent)
+    ViewGroup layoutContent;
+
+    @BindView(R.id.layoutBottom)
+    ViewGroup layoutBottom;
+
+    @BindView(R.id.layoutTop)
+    ViewGroup layoutTop;
+
+    LoadFriendsView viewFriendsFBLoad;
+    LoadFriendsView viewFriendsAddressBookLoad;
+    View viewSeparatorAddressBook;
+    View viewSeparatorFBTop;
+    View viewSeparatorFBBottom;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -130,6 +157,8 @@ public class SearchUserActivity extends BaseActivity implements SearchMVPView {
         unbinder = ButterKnife.bind(this);
 
         contactList = new ArrayList<>();
+
+        refactorActions();
 
         subscriptions.add(RxTextView.textChanges(editTextSearchContact).map(CharSequence::toString)
                 .doOnNext(s -> {
@@ -204,6 +233,87 @@ public class SearchUserActivity extends BaseActivity implements SearchMVPView {
         this.contactAdapter.updateSearch(searchResult, contactList);
     }
 
+    private void refactorActions() {
+        boolean permissionsFB = FacebookUtils.isLoggedIn();
+        boolean permissionsContact = PermissionUtils.hasPermissionsContact(this) && addressBook.get();
+
+        layoutBottom.removeAllViews();
+        layoutTop.removeAllViews();
+
+        if (permissionsContact && permissionsFB) {
+            recyclerViewContacts.setPadding(0, 0, 0, 0);
+            searchPresenter.loadContacts();
+            return;
+        }
+
+        if (!permissionsContact && !permissionsFB) {
+            layoutContent.setVisibility(View.GONE);
+            layoutTop.setVisibility(View.VISIBLE);
+            initLoadView(getLayoutInflater().inflate(R.layout.view_load_ab_fb_friends, layoutTop));
+        } else if (!permissionsContact || !permissionsFB) {
+            layoutContent.setVisibility(View.VISIBLE);
+            layoutBottom.setVisibility(View.VISIBLE);
+            recyclerViewContacts.setPadding(0, 0, 0, getResources().getDimensionPixelSize(R.dimen.load_friends_height));
+            initLoadView(getLayoutInflater().inflate(R.layout.view_load_ab_fb_friends, layoutBottom));
+        }
+
+        if (permissionsContact || permissionsFB) {
+            searchPresenter.loadContacts();
+        }
+
+        if (!permissionsContact) {
+            viewFriendsAddressBookLoad.setOnClickListener(v -> {
+                lookupContacts();
+                viewFriendsAddressBookLoad.showLoading();
+            });
+        } else if (!permissionsFB) {
+            viewFriendsAddressBookLoad.setVisibility(View.GONE);
+            viewSeparatorAddressBook.setVisibility(View.GONE);
+        }
+
+        if (!permissionsFB) {
+            if (permissionsContact) viewSeparatorFBBottom.setVisibility(View.GONE);
+            viewFriendsFBLoad.setOnClickListener(v -> {
+                searchPresenter.loginFacebook();
+                viewFriendsFBLoad.showLoading();
+            });
+        } else if (!permissionsContact) {
+            viewFriendsFBLoad.setVisibility(View.GONE);
+            viewSeparatorFBTop.setVisibility(View.GONE);
+            viewSeparatorFBBottom.setVisibility(View.GONE);
+        }
+    }
+
+    private void initLoadView(View v) {
+        viewFriendsFBLoad = ButterKnife.findById(v, R.id.viewFriendsFBLoad);
+        viewFriendsAddressBookLoad = ButterKnife.findById(v, R.id.viewFriendsAddressBookLoad);
+        viewSeparatorAddressBook = ButterKnife.findById(v, R.id.viewSeparatorAddressBook);
+        viewSeparatorFBTop = ButterKnife.findById(v, R.id.viewSeparatorFBTop);
+        viewSeparatorFBBottom = ButterKnife.findById(v, R.id.viewSeparatorFBBottom);
+    }
+
+    private void lookupContacts() {
+        RxPermissions.getInstance(this)
+                .request(PermissionUtils.PERMISSIONS_CONTACTS)
+                .subscribe(hasPermission -> {
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean(TagManagerConstants.ADDRESS_BOOK_ENABLED, hasPermission);
+                    tagManager.setProperty(bundle);
+
+                    if (hasPermission) {
+                        addressBook.set(true);
+                        sync();
+                    } else {
+                        viewFriendsAddressBookLoad.hideLoading();
+                    }
+                });
+    }
+
+    private void sync() {
+        tagManager.trackEvent(TagManagerConstants.ONBOARDING_CONTACTS_SYNC);
+        searchPresenter.lookupContacts();
+    }
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -235,13 +345,29 @@ public class SearchUserActivity extends BaseActivity implements SearchMVPView {
 
     @Override
     public void onAddSuccess(Friendship friendship) {
-        //currentUser.getFriendships().add(friendship);
         contactAdapter.updateAdd(friendship.getFriend());
     }
 
     @Override
     public void onAddError() {
         updateSearch();
+    }
+
+    @Override
+    public void successFacebookLogin() {
+        sync();
+    }
+
+    @Override
+    public void errorFacebookLogin() {
+        viewFriendsFBLoad.hideLoading();
+    }
+
+    @Override
+    public void syncDone() {
+        refactorActions();
+        viewFriendsFBLoad.hideLoading();
+        viewFriendsAddressBookLoad.hideLoading();
     }
 
     @Override

@@ -4,9 +4,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 
 import javax.inject.Inject;
@@ -26,15 +28,17 @@ public class RxContacts {
     private Filter[] filter;
     private PhoneUtils phoneUtils;
     private ContactsHelper helper;
+    private Preference<Boolean> addressBook;
 
     @Inject
-    public RxContacts(Context context, @Named("userThreadSafe") User user, PhoneUtils phoneUtils) {
+    public RxContacts(Context context, @Named("userThreadSafe") User user, PhoneUtils phoneUtils, @AddressBook Preference<Boolean> addressBook) {
         this.user = user;
         this.phoneUtils = phoneUtils;
         withPhones = true;
         sorter = Sorter.LAST_TIME_CONTACTED;
         filter = new Filter[] { Filter.HAS_PHONE };
         helper = new ContactsHelper(context, phoneUtils);
+        this.addressBook = addressBook;
     }
 
     private Observable<ContactABRealm> contactsObservable;
@@ -69,20 +73,22 @@ public class RxContacts {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private void emit(String query, boolean withPhones, Sorter sorter, Filter[] filter, Subscriber<? super ContactABRealm> subscriber) {
-        Cursor c = helper.getContactsCursor(query, sorter, filter);
-        while (c.moveToNext()) {
-            ContactABRealm contact = helper.fetchContact(c, withPhones);
-            if (contact != null) {
-                if (!subscriber.isUnsubscribed())
-                    subscriber.onNext(contact);
-                else
-                    break;
-            }
+        if (addressBook.get()) {
+            Cursor c = helper.getContactsCursor(query, sorter, filter);
+            while (c.moveToNext()) {
+                ContactABRealm contact = helper.fetchContact(c, withPhones);
+                if (contact != null) {
+                    if (!subscriber.isUnsubscribed())
+                        subscriber.onNext(contact);
+                    else
+                        break;
+                }
 
-            if (ContactsHelper.DEBUG)
-                Log.i("emit", contact.toString() + " is subscribed=" + !subscriber.isUnsubscribed());
+                if (ContactsHelper.DEBUG)
+                    Log.i("emit", contact.toString() + " is subscribed=" + !subscriber.isUnsubscribed());
+            }
+            c.close();
         }
-        c.close();
 
         subscriber.onCompleted();
     }

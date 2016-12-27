@@ -40,16 +40,13 @@ public class ContactAdapter extends RecyclerView.Adapter {
 
     // VARIABLES
     private List<Object> items;
-    private User currentUser;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
     @Inject
-    public ContactAdapter(Context context, User currentUser) {
+    public ContactAdapter(Context context) {
         items = new ArrayList<>();
-
-        this.currentUser = currentUser;
 
         delegatesManager = new RxAdapterDelegatesManager();
 

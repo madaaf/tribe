@@ -14,4 +14,7 @@ public interface SearchMVPView extends LoadDataMVPView {
     void renderContactList(List<Object> contactList);
     void onAddSuccess(Friendship friendship);
     void onAddError();
+    void syncDone();
+    void successFacebookLogin();
+    void errorFacebookLogin();
 }

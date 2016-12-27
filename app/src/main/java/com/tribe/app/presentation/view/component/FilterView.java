@@ -245,6 +245,11 @@ public class FilterView extends LinearLayout {
         viewSyncAB.setActive(success, true);
     }
 
+    public void updateSync() {
+        viewSyncAB.updateSync();
+        viewSyncFB.updateSync();
+    }
+
     //////////////////////
     //   OBSERVABLES    //
     //////////////////////
