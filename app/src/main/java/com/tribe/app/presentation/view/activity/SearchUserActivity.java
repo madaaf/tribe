@@ -106,7 +106,8 @@ public class SearchUserActivity extends BaseActivity implements SearchMVPView {
     private boolean isSearchMode = false;
     private Unbinder unbinder;
     private ContactsLayoutManager layoutManager;
-    private List<Object> contactList;
+    private List<Object> filteredContactList;
+    private List<Object> originalContactList;
     private SearchResult searchResult;
     private String username;
     private boolean shouldOverridePendingTransactions = false;
@@ -156,7 +157,8 @@ public class SearchUserActivity extends BaseActivity implements SearchMVPView {
         setContentView(R.layout.activity_search);
         unbinder = ButterKnife.bind(this);
 
-        contactList = new ArrayList<>();
+        filteredContactList = new ArrayList<>();
+        originalContactList = new ArrayList<>();
 
         refactorActions();
 
@@ -164,6 +166,7 @@ public class SearchUserActivity extends BaseActivity implements SearchMVPView {
                 .doOnNext(s -> {
                     if (StringUtils.isEmpty(s)) {
                         isSearchMode = false;
+                        filter();
                         showContactList();
                     }
                 })
@@ -230,7 +233,8 @@ public class SearchUserActivity extends BaseActivity implements SearchMVPView {
     }
 
     private void updateSearch() {
-        this.contactAdapter.updateSearch(searchResult, contactList);
+        filter();
+        this.contactAdapter.updateSearch(searchResult, filteredContactList);
     }
 
     private void refactorActions() {
@@ -385,44 +389,56 @@ public class SearchUserActivity extends BaseActivity implements SearchMVPView {
 
     @Override
     public void renderContactList(List<Object> contactList) {
+        this.originalContactList.clear();
+        this.originalContactList.addAll(contactList);
         refactorContacts(contactList);
         showContactList();
     }
 
     private void showContactList() {
         if (!isSearchMode)
-            contactAdapter.setItems(this.contactList);
+            contactAdapter.setItems(this.filteredContactList);
+    }
+
+    private void filter() {
+        refactorContacts(originalContactList);
     }
 
     private void refactorContacts(List<Object> contactList) {
-        this.contactList.clear();
+        this.filteredContactList.clear();
 
         int count = 0;
         boolean headerOnAppDone = false;
         boolean headerInviteDone = false;
 
+
+        Contact contact = null;
+
         for (Object obj : contactList) {
-            Contact contact = (Contact) obj;
-            if (count == 0 && (contact.getUserList() != null && contact.getUserList().size() > 0) && !headerOnAppDone) {
-                this.contactList.add(R.string.search_suggest_friends);
+            contact = (Contact) obj;
 
-                User user = contact.getUserList().get(0);
+            if (!isSearchMode || (isSearchMode && contact.getName().toLowerCase().startsWith(searchResult.getUsername().toString().toLowerCase()))) {
+                if (count == 0 && (contact.getUserList() != null && contact.getUserList().size() > 0) && !headerOnAppDone) {
+                    this.filteredContactList.add(R.string.search_suggest_friends);
 
-                for (Friendship friendship : currentUser.getFriendships()) {
-                    if (friendship.getFriend().equals(user)) {
-                        user.setAnimateAdd(true);
-                        user.setFriend(true);
+                    User user = contact.getUserList().get(0);
+
+                    for (Friendship friendship : currentUser.getFriendships()) {
+                        if (friendship.getFriend().equals(user)) {
+                            user.setAnimateAdd(true);
+                            user.setFriend(true);
+                        }
                     }
+
+                    headerOnAppDone = true;
+                } else if ((contact.getUserList() == null || contact.getUserList().size() == 0) && !headerInviteDone) {
+                    this.filteredContactList.add(new String());
+                    this.filteredContactList.add(R.string.search_invite_contacts);
+                    headerInviteDone = true;
                 }
 
-                headerOnAppDone = true;
-            } else if ((contact.getUserList() == null || contact.getUserList().size() == 0) && !headerInviteDone) {
-                this.contactList.add(new String());
-                this.contactList.add(R.string.search_invite_contacts);
-                headerInviteDone = true;
+                this.filteredContactList.add(contact);
             }
-
-            this.contactList.add(contact);
         }
     }
 
