@@ -15,14 +15,11 @@ import com.google.gson.reflect.TypeToken;
 import com.jakewharton.byteunits.DecimalByteUnit;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
-import com.tribe.app.data.cache.ChatCache;
-import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.FileApi;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
-import com.tribe.app.data.network.deserializer.ChatHistoryDeserializer;
 import com.tribe.app.data.network.deserializer.CollectionAdapter;
 import com.tribe.app.data.network.deserializer.CreateFriendshipDeserializer;
 import com.tribe.app.data.network.deserializer.DateDeserializer;
@@ -32,26 +29,20 @@ import com.tribe.app.data.network.deserializer.InstallsDeserializer;
 import com.tribe.app.data.network.deserializer.LookupDeserializer;
 import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
 import com.tribe.app.data.network.deserializer.NewMembershipDeserializer;
-import com.tribe.app.data.network.deserializer.NewMessageDeserializer;
-import com.tribe.app.data.network.deserializer.NewTribeDeserializer;
 import com.tribe.app.data.network.deserializer.ScoreEntityDeserializer;
 import com.tribe.app.data.network.deserializer.SearchResultDeserializer;
 import com.tribe.app.data.network.deserializer.TribeAccessTokenDeserializer;
 import com.tribe.app.data.network.deserializer.TribeUserDeserializer;
 import com.tribe.app.data.network.deserializer.UserListDeserializer;
-import com.tribe.app.data.network.deserializer.UserMessageListDeserializer;
 import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.network.entity.RefreshEntity;
 import com.tribe.app.data.network.entity.ScoreEntity;
 import com.tribe.app.data.realm.AccessToken;
-import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MembershipRealm;
-import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
-import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
@@ -113,8 +104,6 @@ public class NetModule {
     Gson provideGson(@Named("utcSimpleDate") SimpleDateFormat utcSimpleDate,
                      @Named("utcSimpleDateFull") SimpleDateFormat utcSimpleDateFull,
                      UserCache userCache,
-                     TribeCache tribeCache,
-                     ChatCache chatCache,
                      AccessToken accessToken) {
 
         GroupDeserializer groupDeserializer = new GroupDeserializer();
@@ -133,14 +122,10 @@ public class NetModule {
                 })
                 .registerTypeAdapter(new TypeToken<UserRealm>() {}.getType(), new TribeUserDeserializer(groupDeserializer, utcSimpleDate))
                 .registerTypeAdapter(AccessToken.class, new TribeAccessTokenDeserializer())
-                .registerTypeAdapter(TribeRealm.class, new NewTribeDeserializer<>())
                 .registerTypeAdapter(GroupRealm.class, groupDeserializer)
-                .registerTypeAdapter(ChatRealm.class, new NewMessageDeserializer<>())
-                .registerTypeAdapter(new TypeToken<List<MessageRealmInterface>>(){}.getType(), new UserMessageListDeserializer<>(utcSimpleDate, userCache, tribeCache, chatCache, accessToken))
                 .registerTypeAdapter(Installation.class, new NewInstallDeserializer<>())
                 .registerTypeAdapter(Date.class, new DateDeserializer(utcSimpleDateFull))
                 .registerTypeAdapter(new TypeToken<List<UserRealm>>(){}.getType(), new UserListDeserializer<>())
-                .registerTypeAdapter(new TypeToken<List<ChatRealm>>(){}.getType(), new ChatHistoryDeserializer(utcSimpleDate, userCache, tribeCache, chatCache, accessToken))
                 .registerTypeAdapter(LookupEntity.class, new LookupDeserializer())
                 .registerTypeAdapter(CreateFriendshipEntity.class, new CreateFriendshipDeserializer())
                 .registerTypeAdapter(new TypeToken<List<Integer>>(){}.getType(), new HowManyFriendsDeserializer())

@@ -14,7 +14,6 @@ import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Membership;
-import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
@@ -57,10 +56,9 @@ public interface UserRepository {
     /**
      * Get an {@link Observable} which will emit a {@link User}
      * @param userId the id of the user for which we get the info
-     * @param filterRecipient the filter for the recipients
      *
      */
-    Observable<User> userInfos(final String userId, String filterRecipient);
+    Observable<User> userInfos(final String userId);
 
     /**
      * Get an {@link Observable} which will emit a {@link User}
@@ -70,18 +68,6 @@ public interface UserRepository {
     Observable<Installation> createOrUpdateInstall(final String token);
 
     Observable<Installation> removeInstall();
-
-    /**
-     * Get an {@link Observable} which will emit a {@link List <Message>} containing infos
-     * about the tribes received and sent.
-     */
-    Observable<List<Message>> messages();
-
-    /**
-     * Get an {@link Observable} which will emit a {@link List <Message>} containing infos
-     * about the messages (tribe / chat) received.
-     */
-    Observable<List<Message>> messagesReceived(String friendshipId);
 
     /**
      * Get an {@link Observable} which will emit a {@link User} containing infos
@@ -171,10 +157,6 @@ public interface UserRepository {
 
     Observable<Void> leaveGroup(String membershipId);
 
-    Observable<Membership> modifyPrivateGroupLink(String membershipId, boolean create);
-
-    Observable<Void> bootstrapSupport();
-
     Observable<Friendship> updateFriendship(final String friendshipId, @FriendshipRealm.FriendshipStatus String status);
 
     Observable<List<Friendship>> getBlockedFriendshipList();
@@ -186,8 +168,6 @@ public interface UserRepository {
     Observable<Membership> createMembership(String groupId);
 
     Observable<Recipient> getRecipientInfos(String recipientId, boolean isToGroup);
-
-    Observable<Void> updateMessagesReceivedToNotSeen();
 
     Observable<Void> sendOnlineNotification();
 }

@@ -3,89 +3,58 @@
     <!-- BLACKS -->
     <color name="black.opacity.3">#08000000</color>
     <color name="black.opacity.5">#0D000000</color>
-    <color name="black.opacity.10">#1A000000</color>
     <color name="black.opacity.20">#33000000</color>
     <color name="black.opacity.40">#66000000</color>
     <color name="black.opacity.50">#80000000</color>
     <color name="black.opacity.70">#B3000000</color>
     <color name="black.opacity.80">#CC000000</color>
-    <color name="black.tribe">#1A1A1A</color>
     <color name="black.infos">#1A14181A</color>
-    <color name="black.tribe.viewer">#1F2327</color>
 
     <!-- WHITES -->
     <color name="white.opacity.15">#26FFFFFF</color>
     <color name="white.opacity.20">#33FFFFFF</color>
     <color name="white.opacity.40">#66FFFFFF</color>
     <color name="white.opacity.50">#80FFFFFF</color>
-    <color name="white.opacity.100">#FFFFFF</color>
 
     <!-- ME -->
 
     <!-- PALETTE ONE -->
-    <color name="palette.one.one">#acacac</color>
-    <color name="palette.one.two">#b9b9b9</color>
-    <color name="palette.one.three">#c6c6c6</color>
-    <color name="palette.one.four">#d3d3d3</color>
-    <color name="palette.one.five">#dfdfdf</color>
-    <color name="palette.one.six">#ececec</color>
-    <color name="palette.one.seven">#f9f9f9</color>
 
     <!-- PALETTE TWO -->
-    <color name="palette.two.one">#cc8259</color>
-    <color name="palette.two.two">#eaaae1</color>
-    <color name="palette.two.three">#e29a93</color>
-    <color name="palette.two.four">#f09a49</color>
-    <color name="palette.two.five">#f08b02</color>
 
     <!-- GREYS -->
     <color name="grey.light">#D9E0E9</color>
     <color name="grey.action.tint">#98aab4</color>
     <color name="grey.permissions">#93AAB5</color>
-    <color name="grey.background">#FBFDFD</color>
     <color name="grey.dark">#666666</color>
     <color name="grey.background.profile_info">#F7F7F7</color>
     <color name="grey.text.profile_info">#949494</color>
     <color name="grey.text.friends_verify">#999999</color>
-    <color name="grey.darker">#4A4A4A</color>
-    <color name="grey.circle">#F6F6F6</color>
-    <color name="grey.group">#747474</color>
-    <color name="grey.suggestion">#DCE3EB</color>
     <color name="grey.authentication">#393939</color>
-    <color name="grey.light.mask">#33F7F7F7</color>
     <color name="grey.blue">#DBE0E9</color>
 
     <!-- BLUE -->
     <color name="blue.text">#02ADF2</color>
-    <color name="blue.text.access">#05B6F4</color>
-    <color name="blue.grey.faded">#F8FDFF</color>
     <color name="blue.facebook">#007FFF</color>
     <color name="blue.facebook.dark">#4460A0</color>
     <color name="blue.opaque">#0099E4</color>
 
     <!-- VIOLET -->
-    <color name="violet.status">#9013FE</color>
     <color name="purple.group">#8161DA</color>
 
     <!-- YELLOWS -->
     <color name="yellow">#FEBE00</color>
     <color name="yellow.opacity.40">#66FEBE00</color>
-    <color name="yellow.status">#F8E71C</color>
 
     <!-- GREENS -->
     <color name="green.status">#2ECC4C</color>
-    <color name="green.text.friends">#97C308</color>
     <color name="green.group">#3FDA8D</color>
 
     <!-- REDS -->
     <color name="red">#F9474C</color>
-    <color name="red.status">#FA5400</color>
-    <color name="red.deep">#F42F3E</color>
     <color name="red.circle">#F22936</color>
 
     <!-- ORANGES -->
-    <color name="orange">#FD6E02</color>
-    <color name="orange.error">#FF6D00</color>
 
     <!-- BROWNS -->
     <color name="brown">#9B6A51</color>

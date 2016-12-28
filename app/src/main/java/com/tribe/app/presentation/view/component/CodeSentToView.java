@@ -8,8 +8,6 @@ import android.widget.FrameLayout;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
-import org.w3c.dom.Text;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;

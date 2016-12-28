@@ -9,7 +9,6 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.view.adapter.delegate.contact.ButtonPointsAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactsGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactsHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
@@ -33,7 +32,6 @@ public class ContactAdapter extends RecyclerView.Adapter {
 
     // DELEGATES
     protected RxAdapterDelegatesManager delegatesManager;
-    private ButtonPointsAdapterDelegate buttonPointsAdapterDelegate;
     private SearchResultGridAdapterDelegate searchResultGridAdapterDelegate;
     private ContactsGridAdapterDelegate contactsGridAdapterDelegate;
     private UserListAdapterDelegate userListAdapterDelegate;
@@ -49,9 +47,6 @@ public class ContactAdapter extends RecyclerView.Adapter {
         items = new ArrayList<>();
 
         delegatesManager = new RxAdapterDelegatesManager();
-
-        buttonPointsAdapterDelegate = new ButtonPointsAdapterDelegate(context);
-        delegatesManager.addDelegate(buttonPointsAdapterDelegate);
 
         searchResultGridAdapterDelegate = new SearchResultGridAdapterDelegate(context);
         delegatesManager.addDelegate(searchResultGridAdapterDelegate);

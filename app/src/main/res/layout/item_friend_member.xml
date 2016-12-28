@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layoutContent"
     android:layout_width="match_parent"
     android:layout_height="65dp"
@@ -11,8 +9,7 @@
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:paddingLeft="@dimen/horizontal_margin_small"
-    android:paddingRight="@dimen/horizontal_margin_small"
-    >
+    android:paddingRight="@dimen/horizontal_margin_small">
 
     <ImageView
         android:id="@+id/imgAvatar"

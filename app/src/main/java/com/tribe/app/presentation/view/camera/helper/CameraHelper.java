@@ -10,11 +10,11 @@ import java.util.List;
 
 public interface CameraHelper {
 
-    static final int DEFAULT_CAMERA_ID = 1;
+    int DEFAULT_CAMERA_ID = 1;
 
     int getNumberOfCameras();
 
-    public static class CameraInfoCompat {
+    class CameraInfoCompat {
         public static final int CAMERA_FACING_BACK = 0;
         public static final int CAMERA_FACING_FRONT = 1;
 

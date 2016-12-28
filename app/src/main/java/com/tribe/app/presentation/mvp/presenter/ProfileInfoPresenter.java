@@ -7,7 +7,6 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
-import com.tribe.app.domain.interactor.user.DoBootstrapSupport;
 import com.tribe.app.domain.interactor.user.DoRegister;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.LookupUsername;
@@ -30,12 +29,10 @@ public class ProfileInfoPresenter extends UpdateUserPresenter {
     // USECASES
     private final JobManager jobManager;
     private final DoRegister doRegister;
-    private final DoBootstrapSupport bootstrapSupport;
     private final GetCloudUserInfos cloudUserInfos;
 
     // SUBSCRIBERS
     private RegisterSubscriber registerSubscriber;
-    private BootstrapSupportSubscriber bootstrapSupportSubscriber;
     private UserInfoSubscriber userInfoSubscriber;
 
     @Inject
@@ -43,13 +40,11 @@ public class ProfileInfoPresenter extends UpdateUserPresenter {
                                 RxFacebook rxFacebook,
                                 @Named("lookupByUsername") LookupUsername lookupUsername,
                                 DoRegister doRegister,
-                                DoBootstrapSupport bootstrapSupport,
                                 UpdateUser updateUser,
                                 GetCloudUserInfos cloudUserInfos) {
         super(updateUser, lookupUsername, rxFacebook);
         this.jobManager = jobManager;
         this.doRegister = doRegister;
-        this.bootstrapSupport = bootstrapSupport;
         this.cloudUserInfos = cloudUserInfos;
     }
 
@@ -60,7 +55,6 @@ public class ProfileInfoPresenter extends UpdateUserPresenter {
         doRegister.unsubscribe();
         cloudUserInfos.unsubscribe();
         updateUser.unsubscribe();
-        bootstrapSupport.unsubscribe();
     }
 
     @Override
@@ -106,14 +100,6 @@ public class ProfileInfoPresenter extends UpdateUserPresenter {
         doRegister.execute(registerSubscriber);
     }
 
-    public void boostrapSupport() {
-        if (bootstrapSupportSubscriber != null)
-            bootstrapSupportSubscriber.unsubscribe();
-
-        bootstrapSupportSubscriber = new BootstrapSupportSubscriber();
-        bootstrapSupport.execute(bootstrapSupportSubscriber);
-    }
-
     public void getUserInfo() {
         if (userInfoSubscriber != null)
             userInfoSubscriber.unsubscribe();
@@ -152,24 +138,7 @@ public class ProfileInfoPresenter extends UpdateUserPresenter {
 
         @Override
         public void onNext(AccessToken accessToken) {
-            if (accessToken != null) boostrapSupport();
-        }
-    }
-
-    private class BootstrapSupportSubscriber extends DefaultSubscriber<Void> {
-
-        @Override
-        public void onCompleted() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-
-        @Override
-        public void onNext(Void aVoid) {
-            getUserInfo();
+            if (accessToken != null) getUserInfo();
         }
     }
 

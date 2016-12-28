@@ -19,10 +19,8 @@ import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
-import com.tribe.app.presentation.view.component.TribePagerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +29,6 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
-
-import static com.tribe.app.domain.entity.LabelType.CLEAR_MESSAGES;
 
 public final class DialogFactory {
 
@@ -157,29 +153,12 @@ public final class DialogFactory {
         return cameraTypeList;
     }
 
-    public static Observable<LabelType> showBottomSheetForTribe(Context context, TribeMessage tribe, Float speedPlayback) {
-        return createBottomSheet(context, generateLabelsForTribe(context, tribe, speedPlayback));
-    }
-
-    private static List<LabelType> generateLabelsForTribe(Context context, TribeMessage tribe, Float speedPlayback) {
-        List<LabelType> tribeTypeList = new ArrayList<>();
-        if (tribe.isCanSave()) tribeTypeList.add(new LabelType(context.getString(R.string.tribe_more_save), LabelType.TRIBE_SAVE));
-        tribeTypeList.add(new LabelType(
-                speedPlayback.equals(TribePagerView.SPEED_NORMAL)
-                        ? context.getString(R.string.tribe_more_set_speed_2x) : context.getString(R.string.tribe_more_set_speed_1x),
-                speedPlayback.equals(TribePagerView.SPEED_NORMAL) ? LabelType.TRIBE_INCREASE_SPEED : LabelType.TRIBE_DECREASE_SPEED));
-        return tribeTypeList;
-    }
-
     public static Observable<LabelType> showBottomSheetForRecipient(Context context, Recipient recipient) {
         return createBottomSheet(context, generateLabelsForRecipient(context, recipient));
     }
 
     private static List<LabelType> generateLabelsForRecipient(Context context, Recipient recipient) {
         List<LabelType> moreTypeList = new ArrayList<>();
-
-        if (recipient.getReceivedTribes() != null && recipient.getReceivedTribes().size() > 0)
-            moreTypeList.add(new LabelType(context.getString(R.string.grid_menu_friendship_clear_tribes), CLEAR_MESSAGES));
 
         if (recipient instanceof Friendship) {
             moreTypeList.add(new LabelType(context.getString(R.string.grid_menu_friendship_hide, recipient.getDisplayName()), LabelType.HIDE));
@@ -189,19 +168,6 @@ public final class DialogFactory {
         }
 
         return moreTypeList;
-    }
-
-    public static Observable<LabelType> showBottomSheetForPending(Context context, Recipient recipient) {
-        return createBottomSheet(context, generateLabelsForPending(context, recipient));
-    }
-
-    private static List<LabelType> generateLabelsForPending(Context context, Recipient recipient) {
-        List<LabelType> pendingTypes = new ArrayList<>();
-
-        if (recipient.getErrorTribes() != null && recipient.getErrorTribes().size() > 0)
-            pendingTypes.addAll(recipient.createPendingTribeItems(context, false));
-
-        return pendingTypes;
     }
 
     public static Observable<LabelType> showBottomSheetForFollow(Context context) {

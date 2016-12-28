@@ -61,7 +61,4 @@
         <item name="android:windowIsFloating">false</item>
     </style>
 
-    <style name="FilterViewAnimation">
-        <item name="android:windowEnterAnimation">@anim/filter_view_enter_animation</item>
-    </style>
 </resources>

@@ -15,52 +15,6 @@
         android:foreground="@drawable/selectable_button_oval_light"
         />
 
-    <FrameLayout
-        android:id="@+id/syncLayout"
-        android:layout_width="@dimen/avatar_size_smaller"
-        android:layout_height="@dimen/avatar_size_smaller"
-        android:layout_gravity="left|center_vertical"
-        android:layout_marginLeft="65dp"
-        android:background="@drawable/bg_top_bar_circle"
-        android:clickable="true"
-        android:foreground="@drawable/selectable_button_oval_light">
-
-        <ImageView
-            android:id="@+id/imgTick"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:src="@drawable/picto_sync_done"
-            android:scaleType="centerInside"
-            />
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtNbMessages"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:maxLines="1"
-            android:background="@null"
-            style="@style/Body.Two.White"
-            android:alpha="0"
-            />
-
-        <com.github.rahatarmanahmed.cpv.CircularProgressView
-            android:id="@+id/progressRefresh"
-            android:layout_width="17.5dp"
-            android:layout_height="17.5dp"
-            android:layout_gravity="center"
-            android:alpha="0"
-            android:background="@null"
-            app:cpv_animAutostart="true"
-            app:cpv_indeterminate="true"
-            app:cpv_animDuration="3000"
-            app:cpv_color="@android:color/white"
-            app:cpv_thickness="2sp"
-            />
-
-    </FrameLayout>
-
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -69,25 +23,10 @@
         android:orientation="horizontal">
 
         <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/btnGroup"
+            android:id="@+id/btnNew"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/horizontal_margin_small"
             android:drawableLeft="@drawable/picto_add_group"
-            android:drawablePadding="7.5dp"
-            android:padding="10dp"
-            android:background="@drawable/selectable_button_all_rounded"
-            android:text="@string/topbar_create_group"
-            android:singleLine="true"
-            style="@style/Body.Two.White"
-            android:clickable="true"
-            />
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/btnInvites"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/picto_invites"
             android:drawablePadding="7.5dp"
             android:padding="10dp"
             android:background="@drawable/selectable_button_all_rounded"

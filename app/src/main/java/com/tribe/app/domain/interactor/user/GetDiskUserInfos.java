@@ -14,7 +14,6 @@ import rx.Observable;
 public class GetDiskUserInfos extends UseCaseDisk {
 
     private String userId;
-    private String filterRecipient;
     private UserRepository userRepository;
 
     @Inject
@@ -23,13 +22,12 @@ public class GetDiskUserInfos extends UseCaseDisk {
         this.userRepository = userRepository;
     }
 
-    public void prepare(String userId, String filterRecipient) {
+    public void prepare(String userId) {
         this.userId = userId;
-        this.filterRecipient = filterRecipient;
     }
 
     @Override
     protected Observable buildUseCaseObservable() {
-        return this.userRepository.userInfos(userId, filterRecipient);
+        return this.userRepository.userInfos(userId);
     }
 }

@@ -90,203 +90,12 @@
         %2$s
     </string>
 
-    <string name="tribe.send.solo" translatable="false">
-        mutation {
-            sendTribeToUser(
-                %1$s
-            ) { id, recorded_at }
-        }
-    </string>
-
-    <string name="tribe.send.group" translatable="false">
-        mutation {
-            sendTribeToGroup(
-                %1$s
-            ) { id, recorded_at }
-        }
-    </string>
-
-    <string name="tribe.input" translatable="false">
-        tribe : {
-            to: \"%1$s\",
-            type: \"%2$s\",
-            recorded_at: \"%3$s\",
-            %4$s
-        }
-    </string>
-
-    <string name="tribe.coord.input" translatable="false">
-        coord : {
-            latitude : %1$s,
-            longitude : %2$s
-        }
-    </string>
-
-    <string name="message.send.solo" translatable="false">
-        mutation {
-            sendMessageToUser(
-                %1$s
-            ) { id, content, created_at, recorded_at }
-        }
-    </string>
-
-    <string name="message.send.group" translatable="false">
-        mutation {
-            sendMessageToGroup(
-                %1$s
-            ) { id, content, created_at, recorded_at }
-        }
-    </string>
-
-    <string name="message.input" translatable="false">
-        message : {
-            to: \"%1$s\",
-            type: \"%2$s\",
-            recorded_at: \"%3$s\",
-            content : \"%4$s\"
-        }
-    </string>
-
-    <string name="chat.history.friendships" translatable="false">
-        {
-            friendships(ids: [\"%1$s\"]) {
-                messages(limit: %2$d) {
-                    id
-                }
-            }
-        }
-    </string>
-
-    <string name="chat.history.groups" translatable="false">
-        {
-            groups(ids: [\"%1$s\"]) {
-                messages(limit: %2$d) {
-                    id
-                }
-            }
-        }
-    </string>
-
-    <string name="messages.infos" translatable="false">
-        {
-            user {
-                tribes %1$s {
-                    id
-                    from
-                    to
-                    to_group
-                    type url
-                    recorded_at
-                    can_save
-                    coord {
-                        latitude
-                        longitude
-                    }
-
-                    weather {
-                        temp_f
-                        temp_c
-                        icon
-                    }
-
-                    location {
-                        city
-                        country
-                    }
-
-                    recipients {
-                        to
-                        is_seen
-                    }
-                }
-
-                unSeenMessages {
-                    id
-                    from
-                    to
-                    to_group
-                    type
-                    content
-                    recorded_at
-                    created_at
-
-                    recipients {
-                        to
-                        is_seen
-                    }
-                }
-            }
-
-            %2$s
-        }
-    </string>
-
-    <string name="messages.status" translatable="false">
-        {
-            %1$s
-        }
-    </string>
-
     <string name="input.start" translatable="false">
         (start : \"%1$s\")
     </string>
 
-    <string name="tribe.sent.infos" translatable="false">
-        tribes (ids: [%1$s]) {
-            id
-
-            recipients {
-                to
-                is_seen
-            }
-        }
-    </string>
-
     <string name="mutation" translatable="false">
         mutation { %1$s }
-    </string>
-
-    <string name="tribe.markAsSeen.item" translatable="false">
-        %1$s: markTribeAsSeen(id: \"%2$s\")
-    </string>
-
-    <string name="tribe.markAsSave.item" translatable="false">
-        %1$s: markTribeAsSaved(id: \"%2$s\")
-    </string>
-
-     <string name="message.sent.infos" translatable="false">
-        messages (ids: [%1$s]) {
-            id
-
-            recipients {
-                to
-                is_seen
-            }
-        }
-    </string>
-
-    <string name="messages.infos.short" translatable="false">
-        {
-            messages (ids: [%1$s]) {
-                id
-                from
-                to
-                to_group
-                type
-                content
-                recorded_at
-                created_at
-
-                recipients {
-                    to
-                    is_seen
-                }
-            }
-        }
-    </string>
-
-    <string name="chatMessage.markAsSeen.item" translatable="false">
-        %1$s: markMessageAsSeen(id: \"%2$s\")
     </string>
 
     <string name="installs" translatable="false">
@@ -517,16 +326,6 @@
         %3$s
     </string>
 
-    <string name="membership.infos" translatable="false">
-        {
-            memberships (ids : [\"%1$s\"]) {
-                ...GroupInfo
-            }
-        }
-
-        %2$s
-    </string>
-
     <string name="update.membership" translatable="false">
         mutation {
             updateMembership(membershipId : \"%1$s\",
@@ -595,28 +394,6 @@
         %4$s
     </string>
     
-    <string name="generate.private.link" translatable="false">
-        mutation {
-            generatePrivateLink(membershipId: \"%1$s\") {
-                ...MembershipInfo
-            }
-        }
-
-        %2$s
-        %3$s
-    </string>
-
-    <string name="remove.private.link" translatable="false">
-        mutation {
-            removePrivateLink(membershipId: \"%1$s\") {
-                ...MembershipInfo
-            }
-        }
-
-        %2$s
-        %3$s
-    </string>
-
     <string name="user.mutate.score" translatable="false">
         mutation {
             %1$s

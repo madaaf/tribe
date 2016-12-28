@@ -29,6 +29,6 @@ public class GetCloudUserInfos extends UseCase {
 
     @Override
     protected Observable buildUseCaseObservable() {
-        return this.userRepository.userInfos(userId, null);
+        return this.userRepository.userInfos(userId);
     }
 }

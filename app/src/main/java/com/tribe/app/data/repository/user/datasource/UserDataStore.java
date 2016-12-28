@@ -10,7 +10,6 @@ import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MembershipRealm;
-import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
@@ -52,10 +51,9 @@ public interface UserDataStore {
     /**
      * Get an {@link Observable} which will emit a {@link UserRealm}
      * @param userId the id of the user for which we get the info
-     * @param filterRecipient the filter for the recipients
      *
      */
-    Observable<UserRealm> userInfos(final String userId, String filterRecipient);
+    Observable<UserRealm> userInfos(final String userId);
 
     /**
      * Get an {@link Observable} which will emit a {@link User}
@@ -69,13 +67,6 @@ public interface UserDataStore {
      * @return
      */
     Observable<Installation> removeInstall();
-
-    /**
-     * Get an {@link Observable} which will emit a {@link List <MessageRealmInterface>} containing infos
-     * about the messages received and sent.
-     */
-    Observable<List<MessageRealmInterface>> messages();
-
 
     /**
      *
@@ -179,8 +170,6 @@ public interface UserDataStore {
     Observable<MembershipRealm> createMembership(String groupId);
 
     Observable<RecipientRealmInterface> getRecipientInfos(String recipientId, boolean isToGroup);
-
-    Observable<Void> updateMessagesReceivedToNotSeen();
 
     Observable<Void> sendOnlineNotification();
 }

@@ -5,12 +5,8 @@ import android.content.Context;
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.config.Configuration;
 import com.f2prateek.rx.preferences.Preference;
-import com.tribe.app.data.cache.ChatCache;
-import com.tribe.app.data.cache.ChatCacheImpl;
 import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.ContactCacheImpl;
-import com.tribe.app.data.cache.TribeCache;
-import com.tribe.app.data.cache.TribeCacheImpl;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.cache.UserCacheImpl;
 import com.tribe.app.data.executor.JobExecutor;
@@ -19,10 +15,7 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
-import com.tribe.app.data.repository.chat.CloudChatDataRepository;
-import com.tribe.app.data.repository.chat.DiskChatDataRepository;
-import com.tribe.app.data.repository.tribe.CloudTribeDataRepository;
-import com.tribe.app.data.repository.tribe.DiskTribeDataRepository;
+import com.tribe.app.data.repository.tribe.LiveDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.data.repository.user.contact.RxContacts;
@@ -30,22 +23,9 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
-import com.tribe.app.domain.interactor.text.ChatRepository;
-import com.tribe.app.domain.interactor.text.CloudManageChatHistory;
-import com.tribe.app.domain.interactor.text.CloudMarkMessageListAsRead;
-import com.tribe.app.domain.interactor.text.CloudUpdateStatuses;
-import com.tribe.app.domain.interactor.text.DeleteChat;
-import com.tribe.app.domain.interactor.text.GetDiskChatMessageList;
-import com.tribe.app.domain.interactor.text.SendChat;
-import com.tribe.app.domain.interactor.tribe.CloudMarkTribeAsSave;
-import com.tribe.app.domain.interactor.tribe.CloudMarkTribeListAsRead;
-import com.tribe.app.domain.interactor.tribe.ConfirmTribe;
-import com.tribe.app.domain.interactor.tribe.DeleteTribe;
-import com.tribe.app.domain.interactor.tribe.SendTribe;
-import com.tribe.app.domain.interactor.tribe.TribeRepository;
+import com.tribe.app.domain.interactor.tribe.LiveRepository;
 import com.tribe.app.domain.interactor.user.CloudUpdateFriendship;
 import com.tribe.app.domain.interactor.user.CloudUpdateUserListScore;
-import com.tribe.app.domain.interactor.user.GetCloudMessageList;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.RefreshHowManyFriends;
 import com.tribe.app.domain.interactor.user.SynchroContactList;
@@ -135,24 +115,6 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    ChatRepository provideTextRepository(CloudChatDataRepository textDataRepository) {
-        return textDataRepository;
-    }
-
-    @Provides
-    @Singleton
-    ChatCache provideTextCache(ChatCacheImpl textCache) {
-        return textCache;
-    }
-
-    @Provides
-    @Singleton
-    TribeCache provideTribeCache(TribeCacheImpl tribeCache) {
-        return tribeCache;
-    }
-
-    @Provides
-    @Singleton
     ContactCache provideContactCache(ContactCacheImpl contactCache) {
         return contactCache;
     }
@@ -165,26 +127,8 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    TribeRepository provideCloudTribeRepository(CloudTribeDataRepository tribeDataRepository) {
+    LiveRepository provideCloudTribeRepository(LiveDataRepository tribeDataRepository) {
         return tribeDataRepository;
-    }
-
-    @Provides
-    @Singleton
-    TribeRepository provideDiskTribeRepository(DiskTribeDataRepository tribeDataRepository) {
-        return tribeDataRepository;
-    }
-
-    @Provides
-    @Singleton
-    ChatRepository provideDiskChatRepository(DiskChatDataRepository chatDataRepository) {
-        return chatDataRepository;
-    }
-
-    @Provides
-    @Singleton
-    ChatRepository provideCloudChatRepository(CloudChatDataRepository chatDataRepository) {
-        return chatDataRepository;
     }
 
     @Provides
@@ -337,42 +281,6 @@ public class ApplicationModule {
     }
 
     @Provides
-    @Named("cloudSendTribe")
-    SendTribe provideCloudSendTribe(SendTribe sendTribeDisk) {
-        return sendTribeDisk;
-    }
-
-    @Provides
-    @Named("diskDeleteTribe")
-    DeleteTribe provideDiskDeleteTribe(DeleteTribe deleteTribeDisk) {
-        return deleteTribeDisk;
-    }
-
-    @Provides
-    @Named("diskConfirmTribe")
-    ConfirmTribe provideDiskConfirmTribe(ConfirmTribe confirmTribeDisk) {
-        return confirmTribeDisk;
-    }
-
-    @Provides
-    @Named("cloudGetMessages")
-    UseCase provideCloudGetMessages(GetCloudMessageList getCloudMessageList) {
-        return getCloudMessageList;
-    }
-
-    @Provides
-    @Named("cloudSendChat")
-    SendChat provideCloudSendChat(SendChat sendChatDisk) {
-        return sendChatDisk;
-    }
-
-    @Provides
-    @Named("diskDeleteChat")
-    DeleteChat provideDiskDeleteChat(DeleteChat deleteChatDisk) {
-        return deleteChatDisk;
-    }
-
-    @Provides
     @Named("cloudUserInfos")
     UseCase provideCloudGetUserInfos(GetCloudUserInfos getCloudUserInfos) {
         return getCloudUserInfos;
@@ -385,45 +293,9 @@ public class ApplicationModule {
     }
 
     @Provides
-    @Named("cloudMarkTribeListAsRead")
-    CloudMarkTribeListAsRead cloudMarkTribeListAsRead(CloudMarkTribeListAsRead cloudMarkTribeListAsRead) {
-        return cloudMarkTribeListAsRead;
-    }
-
-    @Provides
-    @Named("diskGetChatMessages")
-    GetDiskChatMessageList provideGetDiskChatMessageList(GetDiskChatMessageList getDiskChatMessageList) {
-        return getDiskChatMessageList;
-    }
-
-    @Provides
-    @Named("cloudMarkMessageListAsRead")
-    CloudMarkMessageListAsRead cloudMarkMessageListAsRead(CloudMarkMessageListAsRead cloudMarkMessageListAsRead) {
-        return cloudMarkMessageListAsRead;
-    }
-
-    @Provides
-    @Named("updateStatuses")
-    CloudUpdateStatuses provideUpdateStatuses(CloudUpdateStatuses cloudUpdateStatuses) {
-        return cloudUpdateStatuses;
-    }
-
-    @Provides
-    @Named("manageChatHistory")
-    CloudManageChatHistory provideManageChatHistory(CloudManageChatHistory cloudManageChatHistory) {
-        return cloudManageChatHistory;
-    }
-
-    @Provides
     @Named("refreshHowManyFriends")
     UseCase provideRefreshHowManyFriends(RefreshHowManyFriends refreshHowManyFriends) {
         return refreshHowManyFriends;
-    }
-
-    @Provides
-    @Named("cloudMarkTribeAsSave")
-    CloudMarkTribeAsSave provideCloudMarkTribeAsSave(CloudMarkTribeAsSave cloudMarkTribeAsSave) {
-        return cloudMarkTribeAsSave;
     }
 
     @Provides
@@ -452,23 +324,6 @@ public class ApplicationModule {
                     ((BaseJob) job).inject(application.getApplicationComponent());
                 }
             });
-
-        return new JobManager(builder.build());
-    }
-
-    @Provides
-    @Singleton
-    @Named("jobManagerDownload")
-    JobManager provideJobManagerDownload() {
-        Configuration.Builder builder = new Configuration.Builder(application)
-                .id("JOBS_DOWNLOAD")
-                .maxConsumerCount(1)
-                .consumerKeepAlive(180)
-                .injector(job -> {
-                    if (job instanceof BaseJob) {
-                        ((BaseJob) job).inject(application.getApplicationComponent());
-                    }
-                });
 
         return new JobManager(builder.build());
     }

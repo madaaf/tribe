@@ -19,7 +19,6 @@ import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.utils.preferences.AudioDefault;
 import com.tribe.app.presentation.utils.preferences.LocationContext;
-import com.tribe.app.presentation.utils.preferences.PushNotifications;
 import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.utils.preferences.WeatherUnits;
 import com.tribe.app.presentation.view.component.ActionView;
@@ -48,10 +47,6 @@ public class SettingsParametersView extends ScrollView {
 
     @Inject
     ReactiveLocationProvider reactiveLocationProvider;
-
-    @Inject
-    @PushNotifications
-    Preference<Boolean> pushNotifications;
 
     @Inject
     @LocationContext

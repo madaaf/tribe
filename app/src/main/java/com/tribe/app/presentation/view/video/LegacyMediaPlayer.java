@@ -6,17 +6,13 @@ import android.media.MediaPlayer;
 import android.media.PlaybackParams;
 import android.view.Surface;
 
-import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.utils.preferences.SpeedPlayback;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
 
 import rx.Observable;
 import rx.Subscription;
@@ -28,10 +24,6 @@ import rx.android.schedulers.AndroidSchedulers;
 public class
 LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.OnVideoSizeChangedListener,
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener {
-
-    @Inject
-    @SpeedPlayback
-    Preference<Float> speedPlayback;
 
     // VARIABLES
     private MediaPlayer mediaPlayer = null;
@@ -199,7 +191,6 @@ LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.OnVideoSizeCha
         if (android.os.Build.VERSION.SDK_INT >= 23 && mediaPlayer != null) {
             try {
                 PlaybackParams myPlayBackParams = new PlaybackParams();
-                myPlayBackParams.setSpeed(speedPlayback.get());
                 mediaPlayer.setPlaybackParams(myPlayBackParams);
                 scheduleTimer();
             } catch (IllegalStateException ex) {}

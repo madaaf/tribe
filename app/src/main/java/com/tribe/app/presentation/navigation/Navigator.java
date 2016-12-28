@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.widget.Toast;
 
@@ -15,17 +14,13 @@ import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.domain.entity.Membership;
-import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
-import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.AuthAccessActivity;
 import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
-import com.tribe.app.presentation.view.activity.BaseActionActivity;
-import com.tribe.app.presentation.view.activity.ChatActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.GroupActivity;
@@ -36,7 +31,6 @@ import com.tribe.app.presentation.view.activity.PointsActivity;
 import com.tribe.app.presentation.view.activity.ScoreActivity;
 import com.tribe.app.presentation.view.activity.SearchUserActivity;
 import com.tribe.app.presentation.view.activity.SettingsActivity;
-import com.tribe.app.presentation.view.activity.TribeActivity;
 
 import java.io.File;
 import java.util.List;
@@ -149,35 +143,6 @@ public class Navigator {
         }
     }
 
-
-    /**
-     * Goes to the text chat screen.
-     *
-     * @param activity An activity needed to open the destiny activity.
-     */
-    public void navigateToChat(Activity activity, String recipientId, boolean isToGroup) {
-        if (activity != null) {
-            Intent intent = ChatActivity.getCallingIntent(activity, recipientId, isToGroup);
-            activity.startActivity(intent);
-            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
-        }
-    }
-
-    /**
-     * Goes to the text chat screen.
-     *
-     * @param activity An activity needed to open the destiny activity.
-     * @param position position of the friendship in the grid
-     * @param recipient a recipient (friendship with user / group) to open the tribes
-     */
-    public void navigateToTribe(Activity activity, int position, Recipient recipient, int result) {
-        if (activity != null) {
-            Intent intent = TribeActivity.getCallingIntent(activity, position, recipient);
-            activity.startActivityForResult(intent, result);
-            activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
-        }
-    }
-
     /**
      * Goes to the score screen.
      *
@@ -279,35 +244,6 @@ public class Navigator {
             Intent intent = SearchUserActivity.getCallingIntent(activity, username);
             activity.startActivity(intent);
             activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
-        }
-    }
-
-    /**
-     * Goes to the permissions screens or home.
-     *
-     * @param activity activity needed to open the destiny activity.
-     */
-    public void computeActions(Activity activity, boolean isOnboarding, @Nullable @BaseActionActivity.ActionType Integer type) {
-        boolean hasPermissionsCamera = PermissionUtils.hasPermissionsCamera(activity);
-        boolean hasPermissionsLocation = PermissionUtils.hasPermissionsLocation(activity);
-
-        if (type != null && type == BaseActionActivity.ACTION_RATING) {
-            Intent intent = BaseActionActivity.getCallingIntent(activity, false, BaseActionActivity.ACTION_RATING);
-            activity.startActivity(intent);
-            activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
-        } else if (activity != null && (!hasPermissionsCamera || !hasPermissionsLocation)) {
-            Intent intent = BaseActionActivity.getCallingIntent(activity, isOnboarding, type != null ? type :
-                    (!hasPermissionsCamera ? BaseActionActivity.ACTION_PERMISSIONS_CAMERA : BaseActionActivity.ACTION_PERMISSIONS_LOCATION));
-
-            activity.startActivity(intent);
-
-            if (isOnboarding) {
-                activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
-            } else {
-                activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
-            }
-        } else if (hasPermissionsCamera && hasPermissionsLocation) {
-            navigateToHome(activity, !isOnboarding, null);
         }
     }
 

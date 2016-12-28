@@ -11,7 +11,6 @@ import com.tribe.app.presentation.utils.mediapicker.MediaHiddenActivity;
 import com.tribe.app.presentation.view.activity.AuthAccessActivity;
 import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
-import com.tribe.app.presentation.view.activity.BaseActionActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.GroupActivity;
@@ -22,6 +21,7 @@ import com.tribe.app.presentation.view.activity.ScoreActivity;
 import com.tribe.app.presentation.view.activity.SearchUserActivity;
 import com.tribe.app.presentation.view.activity.SettingsActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
+import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
 import com.tribe.app.presentation.view.component.common.PickAllView;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
@@ -61,7 +61,6 @@ public interface UserComponent extends ActivityComponent {
     void inject(PointsDialogFragment pointsDialogFragment);
     void inject(AuthenticationDialogFragment authenticationDialogFragment);
     void inject(ShareDialogProfileFragment shareDialogProfileFragment);
-    void inject(BaseActionActivity baseActionActivity);
     void inject(GroupActivity groupActivity);
     void inject(SearchUserActivity searchUserActivity);
     void inject(SearchPresenter searchPresenter);
@@ -86,4 +85,6 @@ public interface UserComponent extends ActivityComponent {
     void inject(PickYourFriendsActivity pickYourFriendsActivity);
     void inject(LoadFriendsView loadFriendsView);
     void inject(PickAllView pickAllView);
+
+    void inject(TileView tileView);
 }

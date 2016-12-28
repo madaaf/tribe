@@ -27,8 +27,6 @@ import android.support.annotation.NonNull;
 import java.util.LinkedList;
 import java.util.List;
 
-import static android.R.attr.versionName;
-
 /**
  * A Utility class to help determine characteristics about the device
  */

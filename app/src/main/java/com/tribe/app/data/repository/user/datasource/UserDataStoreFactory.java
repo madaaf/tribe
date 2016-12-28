@@ -3,9 +3,7 @@ package com.tribe.app.data.repository.user.datasource;
 import android.content.Context;
 
 import com.f2prateek.rx.preferences.Preference;
-import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.ContactCache;
-import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
@@ -13,7 +11,6 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
-import com.tribe.app.presentation.utils.preferences.LastMessageRequest;
 import com.tribe.app.presentation.utils.preferences.LastUserRequest;
 
 import java.text.SimpleDateFormat;
@@ -32,8 +29,6 @@ public class UserDataStoreFactory {
 
     private final Context context;
     private final UserCache userCache;
-    private final TribeCache tribeCache;
-    private final ChatCache chatCache;
     private final ContactCache contactCache;
     private final RxContacts rxContacts;
     private final RxFacebook rxFacebook;
@@ -42,17 +37,14 @@ public class UserDataStoreFactory {
     private final AccessToken accessToken;
     private final Installation installation;
     private final ReactiveLocationProvider reactiveLocationProvider;
-    private final Preference<String> lastMessageRequest;
     private final Preference<String> lastUserRequest;
     private final SimpleDateFormat utcSimpleDate;
 
     @Inject
     public UserDataStoreFactory(Context context, UserCache userCache,
-                                TribeCache tribeCache, ChatCache chatCache,
                                 ContactCache contactCache, RxContacts rxContacts, RxFacebook rxFacebook,
                                 TribeApi tribeApi, LoginApi loginApi, AccessToken accessToken,
                                 Installation installation, ReactiveLocationProvider reactiveLocationProvider,
-                                @LastMessageRequest Preference<String> lastMessageRequest,
                                 @LastUserRequest Preference<String> lastUserRequest,
                                 @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate) {
 
@@ -62,8 +54,6 @@ public class UserDataStoreFactory {
 
         this.context = context.getApplicationContext();
         this.userCache = userCache;
-        this.tribeCache = tribeCache;
-        this.chatCache = chatCache;
         this.contactCache = contactCache;
         this.rxContacts = rxContacts;
         this.rxFacebook = rxFacebook;
@@ -72,7 +62,6 @@ public class UserDataStoreFactory {
         this.accessToken = accessToken;
         this.installation = installation;
         this.reactiveLocationProvider = reactiveLocationProvider;
-        this.lastMessageRequest = lastMessageRequest;
         this.lastUserRequest = lastUserRequest;
         this.utcSimpleDate = utcSimpleDate;
     }
@@ -80,15 +69,15 @@ public class UserDataStoreFactory {
     /**
      * Create {@link UserDataStore}
      */
-    public UserDataStore createDiskDataStore() { return new DiskUserDataStore(userCache, accessToken, contactCache, tribeCache, chatCache); }
+    public UserDataStore createDiskDataStore() { return new DiskUserDataStore(userCache, accessToken, contactCache); }
 
     /**
      * Create {@link UserDataStore} to retrieve data from the Cloud.
      */
     public UserDataStore createCloudDataStore() {
-        return new CloudUserDataStore(this.userCache, this.tribeCache, this.chatCache, this.contactCache,
+        return new CloudUserDataStore(this.userCache, this.contactCache,
                 this.rxContacts, this.rxFacebook, this.tribeApi, this.loginApi,
-                this.accessToken, this.installation, this.reactiveLocationProvider, this.context,
-                this.lastMessageRequest, this.lastUserRequest, this.utcSimpleDate);
+                this.accessToken, this.installation, this.reactiveLocationProvider, this.context
+                , this.lastUserRequest, this.utcSimpleDate);
     }
 }

@@ -35,25 +35,6 @@
                 android:background="@color/grey.light"
                 />
 
-            <com.tribe.app.presentation.view.widget.TextViewFont
-                android:id="@+id/viewBootstrapSupport"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/bottom_bar_height"
-                android:layout_gravity="center"
-                android:foreground="@drawable/selectable_button"
-                android:paddingLeft="@dimen/horizontal_margin_small"
-                android:gravity="center|left"
-                android:text="Resend support messages"
-                android:clickable="true"
-                style="@style/Headline.Black.Regular"
-                />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/divider_size"
-                android:background="@color/grey.light"
-                />
-
         </LinearLayout>
     </ScrollView>
 </FrameLayout>

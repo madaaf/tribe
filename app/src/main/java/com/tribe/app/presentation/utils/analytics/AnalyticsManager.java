@@ -11,7 +11,6 @@ import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.AudioDefault;
 import com.tribe.app.presentation.utils.preferences.Filter;
 import com.tribe.app.presentation.utils.preferences.LocationContext;
-import com.tribe.app.presentation.utils.preferences.Preload;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 
@@ -36,10 +35,6 @@ public class AnalyticsManager implements TagManager {
     @Inject
     @AudioDefault
     Preference<Boolean> audioDefault;
-
-    @Inject
-    @Preload
-    Preference<Boolean> preload;
 
     @Inject
     @AddressBook
@@ -76,7 +71,6 @@ public class AnalyticsManager implements TagManager {
 
         bundle.putBoolean(TagManagerConstants.LOCATION_ENABLED, locationContext.get());
         bundle.putBoolean(TagManagerConstants.AUDIO_ONLY_ENABLED, audioDefault.get());
-        bundle.putBoolean(TagManagerConstants.PRELOAD_ENABLED, preload.get());
         bundle.putBoolean(TagManagerConstants.FACEBOOK_CONNECTED, FacebookUtils.isLoggedIn());
         bundle.putBoolean(TagManagerConstants.ADDRESS_BOOK_ENABLED, addressBook.get() && PermissionUtils.hasPermissionsContact(context));
         if (user != null) {

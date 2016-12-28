@@ -205,15 +205,6 @@ public class FilterView extends LinearLayout {
         return false;
     }
 
-    public static boolean isUnread(Recipient recipient) {
-        if (recipient.getReceivedTribes() != null && !recipient.getReceivedTribes().isEmpty()
-                || recipient.getReceivedMessages() != null && !recipient.getReceivedMessages().isEmpty()) {
-            return true;
-        }
-
-        return false;
-    }
-
     public static boolean isEmoji(Recipient recipient) {
         if (recipient.getDisplayName().length() > 5
                 && recipient.getDisplayName().substring(0, 5) == ("/[\u2190-\u21FF] | [\u2600-\u26FF] | [\u2700-\u27BF] | [\u3000-\u303F] | [\u1F300-\u1F64F] | [\u1F680-\u1F6FF]/g")) {

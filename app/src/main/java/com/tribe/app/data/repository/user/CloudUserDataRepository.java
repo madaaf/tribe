@@ -20,7 +20,6 @@ import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.Membership;
-import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
@@ -93,9 +92,9 @@ public class CloudUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<User> userInfos(String userId, String filterRecipient) {
+    public Observable<User> userInfos(String userId) {
         final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-        return userDataStore.userInfos(userId, filterRecipient)
+        return userDataStore.userInfos(userId)
                 .doOnError(throwable -> {
                     throwable.printStackTrace();
                 })
@@ -114,33 +113,11 @@ public class CloudUserDataRepository implements UserRepository {
         return userDataStore.removeInstall();
     }
 
-    /***
-     *
-     * @return is not used as it's just for sync
-     */
-    @Override
-    public Observable<List<Message>> messages() {
-        final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-        return userDataStore.messages().map(messageRealmList -> {
-            List<Message> messageList = new ArrayList<Message>();
-            return messageList;
-        });
-    }
-
     @Override
     public Observable<User> updateUser(List<Pair<String, String>> values) {
         final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
         return userDataStore.updateUser(values)
                 .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
-    }
-
-    /***
-     *
-     * NOT USED
-     */
-    @Override
-    public Observable<List<Message>> messagesReceived(String friendshipId) {
-        return null;
     }
 
     @Override
@@ -300,18 +277,6 @@ public class CloudUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<Membership> modifyPrivateGroupLink(String membershipId, boolean create) {
-        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-        return cloudDataStore.modifyPrivateGroupLink(membershipId, create).map(this.membershipRealmDataMapper::transform);
-    }
-
-    @Override
-    public Observable<Void> bootstrapSupport() {
-        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-        return cloudDataStore.bootstrapSupport();
-    }
-
-    @Override
     public Observable<Friendship> updateFriendship(String friendshipId, @FriendshipRealm.FriendshipStatus String status) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
         return cloudDataStore.updateFriendship(friendshipId, status).map(friendshipRealm -> this.userRealmDataMapper.getFriendshipRealmDataMapper().transform(friendshipRealm));
@@ -342,11 +307,6 @@ public class CloudUserDataRepository implements UserRepository {
 
     @Override
     public Observable<Recipient> getRecipientInfos(String recipientId, boolean isToGroup) {
-        return null;
-    }
-
-    @Override
-    public Observable<Void> updateMessagesReceivedToNotSeen() {
         return null;
     }
 

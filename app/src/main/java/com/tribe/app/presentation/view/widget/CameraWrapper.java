@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 
 import com.f2prateek.rx.preferences.Preference;
@@ -31,7 +30,6 @@ import com.tribe.app.presentation.view.camera.shader.fx.GlLutShader;
 import com.tribe.app.presentation.view.camera.view.CameraView;
 import com.tribe.app.presentation.view.camera.view.GlPreview;
 import com.tribe.app.presentation.view.camera.view.PictoVisualizerView;
-import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -107,7 +105,6 @@ public class CameraWrapper extends CardView {
     private GlPreview preview;
     private double aspectRatio;
     private boolean isAudioMode;
-    private PathView pathView;
     private boolean canMove = true;
     private AudioManager audioManager;
     private int cameraType;
@@ -249,8 +246,6 @@ public class CameraWrapper extends CardView {
         } else {
             if (fileId != null) preview.startRecording(fileId, null);
         }
-
-        addPathView();
     }
 
     public void onEndRecord() {
@@ -264,7 +259,6 @@ public class CameraWrapper extends CardView {
         }
 
         preview.stopRecording();
-        removePathView();
     }
 
     public void setAspectRatio(double ratio) {
@@ -566,34 +560,6 @@ public class CameraWrapper extends CardView {
         imgVideo.animate().alpha(1).setDuration(DURATION).setInterpolator(new DecelerateInterpolator()).start();
         imgSound.animate().alpha(1).setDuration(DURATION).setInterpolator(new DecelerateInterpolator()).start();
         imgFlash.animate().alpha(1).setDuration(DURATION).setInterpolator(new DecelerateInterpolator()).start();
-    }
-
-    private void addPathView() {
-
-        int width  = viewCameraForeground.getWidth();
-        int height = viewCameraForeground.getHeight();
-
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width, height);
-        pathView = new PathView(getContext());
-        pathView.setLayoutParams(params);
-
-        addView(pathView);
-        pathView.start(width, height);
-    }
-
-    private void removePathView() {
-        removeView(pathView);
-    }
-
-    public void hideCamera() {
-        if (marginTopInit < (screenUtils.getHeightPx() >> 1))
-            AnimationUtils.animateTopMargin(this, -screenUtils.getHeightPx(), DURATION >> 1, new OvershootInterpolator(OVERSHOOT));
-        else
-            AnimationUtils.animateTopMargin(this, screenUtils.getHeightPx(), DURATION >> 1, new OvershootInterpolator(OVERSHOOT));
-    }
-
-    public void showCamera() {
-        AnimationUtils.animateTopMargin(this, marginTopInit, DURATION >> 1, new OvershootInterpolator(OVERSHOOT));
     }
 
     public void updateFilter() {

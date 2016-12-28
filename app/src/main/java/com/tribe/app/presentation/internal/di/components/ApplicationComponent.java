@@ -5,40 +5,19 @@ import android.content.SharedPreferences;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.f2prateek.rx.preferences.Preference;
-import com.tribe.app.data.cache.ChatCache;
-import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
-import com.tribe.app.data.network.DownloadTribeService;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.job.BaseJob;
 import com.tribe.app.data.network.job.DeleteContactsABJob;
 import com.tribe.app.data.network.job.DeleteContactsFBJob;
-import com.tribe.app.data.network.job.DeleteMessageJob;
-import com.tribe.app.data.network.job.DownloadChatVideoJob;
-import com.tribe.app.data.network.job.MarkMessageListAsReadJob;
-import com.tribe.app.data.network.job.MarkTribeAsSavedJob;
-import com.tribe.app.data.network.job.MarkTribeListAsReadJob;
 import com.tribe.app.data.network.job.RefreshHowManyFriendsJob;
-import com.tribe.app.data.network.job.SendChatJob;
-import com.tribe.app.data.network.job.SendTribeJob;
 import com.tribe.app.data.network.job.SynchroContactsJob;
-import com.tribe.app.data.network.job.UpdateChatHistoryJob;
-import com.tribe.app.data.network.job.UpdateChatMessagesJob;
 import com.tribe.app.data.network.job.UpdateFriendshipJob;
-import com.tribe.app.data.network.job.UpdateMessagesErrorStatusJob;
-import com.tribe.app.data.network.job.UpdateMessagesJob;
-import com.tribe.app.data.network.job.UpdateMessagesVideoErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateScoreJob;
-import com.tribe.app.data.network.job.UpdateTribeDownloadedJob;
-import com.tribe.app.data.network.job.UpdateTribeToDownloadJob;
-import com.tribe.app.data.network.job.UpdateTribesErrorStatusJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.data.network.job.UpdateUserListScoreJob;
 import com.tribe.app.data.realm.AccessToken;
-import com.tribe.app.data.repository.chat.CloudChatDataRepository;
-import com.tribe.app.data.repository.chat.DiskChatDataRepository;
-import com.tribe.app.data.repository.tribe.CloudTribeDataRepository;
-import com.tribe.app.data.repository.tribe.DiskTribeDataRepository;
+import com.tribe.app.data.repository.tribe.LiveDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.domain.entity.User;
@@ -64,19 +43,14 @@ import com.tribe.app.presentation.utils.preferences.Filter;
 import com.tribe.app.presentation.utils.preferences.HasRatedApp;
 import com.tribe.app.presentation.utils.preferences.HasReceivedPointsForCameraPermission;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
-import com.tribe.app.presentation.utils.preferences.LastMessageRequest;
 import com.tribe.app.presentation.utils.preferences.LastOnlineNotification;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastUserRequest;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.LocationContext;
 import com.tribe.app.presentation.utils.preferences.Memories;
-import com.tribe.app.presentation.utils.preferences.Preload;
-import com.tribe.app.presentation.utils.preferences.PushNotifications;
 import com.tribe.app.presentation.utils.preferences.ShareProfile;
-import com.tribe.app.presentation.utils.preferences.SpeedPlayback;
 import com.tribe.app.presentation.utils.preferences.Theme;
-import com.tribe.app.presentation.utils.preferences.TribeSentCount;
 import com.tribe.app.presentation.utils.preferences.TutorialState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.utils.preferences.WasAskedForPermissions;
@@ -86,11 +60,7 @@ import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.MemberListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.grid.MeGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.text.PhotoMessageAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.text.TutorialMessageAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.text.VideoMessageAdapterDelegate;
 import com.tribe.app.presentation.view.camera.view.GlPreview;
 import com.tribe.app.presentation.view.camera.view.HistogramVisualizerView;
 import com.tribe.app.presentation.view.component.ActionView;
@@ -99,8 +69,6 @@ import com.tribe.app.presentation.view.component.RatingView;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.TopBarContainer;
 import com.tribe.app.presentation.view.component.TopBarView;
-import com.tribe.app.presentation.view.component.TribeComponentView;
-import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.component.group.AddMembersGroupView;
 import com.tribe.app.presentation.view.component.group.CreateGroupView;
@@ -123,11 +91,9 @@ import com.tribe.app.presentation.view.widget.ButtonPointsView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.LabelButton;
-import com.tribe.app.presentation.view.widget.PathView;
 import com.tribe.app.presentation.view.widget.PlayerView;
 import com.tribe.app.presentation.view.widget.SyncView;
 import com.tribe.app.presentation.view.widget.TextViewAnimatedDots;
-import com.tribe.app.presentation.view.widget.TribeVideoView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -157,23 +123,15 @@ public interface ApplicationComponent {
     void inject(AnalyticsManager analyticsManager);
 
     void inject(LauncherActivity launcherActivity);
-    void inject(MeGridAdapterDelegate meGridAdapterDelegate);
     void inject(RecipientGridAdapterDelegate recipientGridAdapterDelegate);
     void inject(AvatarView avatarView);
     void inject(CameraWrapper cameraWrapper);
     void inject(HistogramVisualizerView visualizerView);
-    void inject(PathView pathView);
-    void inject(TribePagerView tribePagerView);
     void inject(PlayerView playerView);
-    void inject(TribeComponentView tribeComponentView);
     void inject(TribeFirebaseInstanceIDService instanceIDService);
-    void inject(PhotoMessageAdapterDelegate photoMessageAdapterDelegate);
-    void inject(TutorialMessageAdapterDelegate tutorialMessageAdapterDelegate);
     void inject(LabelButton labelButton);
     void inject(IntroVideoView introVideoView);
     void inject(LegacyMediaPlayer legacyMediaPlayer);
-    void inject(VideoMessageAdapterDelegate videoMessageAdapterDelegate);
-    void inject(TribeVideoView tribeVideoView);
     void inject(ButtonPointsView buttonPointsView);
     void inject(SearchResultGridAdapterDelegate searchResultGridAdapterDelegate);
     void inject(TopBarContainer topBarContainer);
@@ -199,32 +157,16 @@ public interface ApplicationComponent {
 
     // JOBS
     void inject(BaseJob baseJob);
-    void inject(SendTribeJob sendTribeJob);
-    void inject(SendChatJob sendChatJob);
-    void inject(MarkMessageListAsReadJob markMessageListAsReadJob);
     void inject(UpdateUserJob updateUserJob);
-    void inject(UpdateMessagesJob updateMessagesJob);
-    void inject(UpdateTribesErrorStatusJob updateTribesErrorStatusJob);
-    void inject(MarkTribeListAsReadJob markTribeListAsReadJob);
-    void inject(UpdateMessagesErrorStatusJob updateMessagesErrorStatusJob);
-    void inject(UpdateChatMessagesJob updateChatMessagesJob);
-    void inject(UpdateTribeDownloadedJob updateTribeDownloadedJob);
-    void inject(DownloadChatVideoJob downloadChatVideoJob);
-    void inject(UpdateChatHistoryJob updateChatHistoryJob);
     void inject(SynchroContactsJob synchroContactsJob);
     void inject(RefreshHowManyFriendsJob refreshHowManyFriendsJob);
-    void inject(UpdateMessagesVideoErrorStatusJob messagesVideoErrorStatusJob);
     void inject(UpdateScoreJob updateScoreJob);
-    void inject(MarkTribeAsSavedJob markTribeAsSavedJob);
     void inject(UpdateFriendshipJob updateFriendshipJob);
     void inject(UpdateUserListScoreJob updateUserListScoreJob);
-    void inject(DeleteMessageJob deleteMessageJob);
-    void inject(UpdateTribeToDownloadJob updateTribeToDownloadJob);
     void inject(DeleteContactsABJob deleteContactsABJob);
     void inject(DeleteContactsFBJob deleteContactsFBJob);
 
     // SERVICES
-    void inject(DownloadTribeService downloadTribeService);
 
     //Exposed to sub-graphs.
     Context context();
@@ -237,13 +179,7 @@ public interface ApplicationComponent {
 
     DiskUserDataRepository diskUserRepository();
 
-    CloudTribeDataRepository cloudTribeRepository();
-
-    DiskTribeDataRepository diskTribeRepository();
-
-    CloudChatDataRepository cloudChatRepository();
-
-    DiskChatDataRepository diskChatRepository();
+    LiveDataRepository cloudTribeRepository();
 
     TribeAuthorizer tribeAuthorizer();
 
@@ -255,15 +191,9 @@ public interface ApplicationComponent {
 
     User currentUser();
 
-    TribeCache tribeCache();
-
     UserCache userCache();
 
-    ChatCache chatCache();
-
     JobManager jobManager();
-
-    @Named("jobManagerDownload") JobManager jobManagerDownload();
 
     Realm realm();
 
@@ -276,9 +206,6 @@ public interface ApplicationComponent {
     PaletteGrid paletteGrid();
 
     ImageUtils imageUtils();
-
-    @SpeedPlayback
-    Preference<Float> speedPlayblack();
 
     @DistanceUnits
     Preference<String> distanceUnits();
@@ -295,9 +222,6 @@ public interface ApplicationComponent {
     @LocationContext
     Preference<Boolean> locationContext();
 
-    @Preload
-    Preference<Boolean> preload();
-
     @Theme
     Preference<Integer> theme();
 
@@ -309,9 +233,6 @@ public interface ApplicationComponent {
 
     @AddressBook
     Preference<Boolean> addressBook();
-
-    @LastMessageRequest
-    Preference<String> lastMessageRequest();
 
     @LastUserRequest
     Preference<String> lastUserRequest();
@@ -340,9 +261,6 @@ public interface ApplicationComponent {
     @LastSync
     Preference<Long> lastSync();
 
-    @TribeSentCount
-    Preference<Integer> tribeSentCount();
-
     @LastVersionCode
     Preference<Integer> lastVersionCode();
 
@@ -360,9 +278,6 @@ public interface ApplicationComponent {
 
     @UISounds
     Preference<Boolean> uiSounds();
-
-    @PushNotifications
-    Preference<Boolean> pushNotifications();
 
     SoundManager soundManager();
 

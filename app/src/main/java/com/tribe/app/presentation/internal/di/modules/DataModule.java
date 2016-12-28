@@ -13,7 +13,6 @@ import com.tribe.app.presentation.utils.preferences.Filter;
 import com.tribe.app.presentation.utils.preferences.HasRatedApp;
 import com.tribe.app.presentation.utils.preferences.HasReceivedPointsForCameraPermission;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
-import com.tribe.app.presentation.utils.preferences.LastMessageRequest;
 import com.tribe.app.presentation.utils.preferences.LastNotifyRequest;
 import com.tribe.app.presentation.utils.preferences.LastOnlineNotification;
 import com.tribe.app.presentation.utils.preferences.LastSync;
@@ -22,17 +21,12 @@ import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.LocationContext;
 import com.tribe.app.presentation.utils.preferences.Memories;
 import com.tribe.app.presentation.utils.preferences.PreferencesConstants;
-import com.tribe.app.presentation.utils.preferences.Preload;
-import com.tribe.app.presentation.utils.preferences.PushNotifications;
 import com.tribe.app.presentation.utils.preferences.ShareProfile;
-import com.tribe.app.presentation.utils.preferences.SpeedPlayback;
 import com.tribe.app.presentation.utils.preferences.Theme;
-import com.tribe.app.presentation.utils.preferences.TribeSentCount;
 import com.tribe.app.presentation.utils.preferences.TutorialState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.utils.preferences.WasAskedForPermissions;
 import com.tribe.app.presentation.utils.preferences.WeatherUnits;
-import com.tribe.app.presentation.view.component.TribePagerView;
 import com.tribe.app.presentation.view.utils.Distance;
 
 import java.util.HashSet;
@@ -61,13 +55,6 @@ public class DataModule {
     @Singleton
     RxSharedPreferences provideRxSharedPreferences(SharedPreferences prefs) {
         return RxSharedPreferences.create(prefs);
-    }
-
-    @Provides
-    @Singleton
-    @SpeedPlayback
-    Preference<Float> provideSpeedRate(RxSharedPreferences prefs) {
-        return prefs.getFloat(PreferencesConstants.SPEED_PLAYBACK, TribePagerView.SPEED_NORMAL);
     }
 
     @Provides
@@ -107,13 +94,6 @@ public class DataModule {
 
     @Provides
     @Singleton
-    @Preload
-    Preference<Boolean> providePreload(RxSharedPreferences prefs) {
-        return prefs.getBoolean(PreferencesConstants.PRELOAD, false);
-    }
-
-    @Provides
-    @Singleton
     @Theme
     Preference<Integer> provideTheme(RxSharedPreferences prefs) {
         return prefs.getInteger(PreferencesConstants.THEME, 0);
@@ -124,13 +104,6 @@ public class DataModule {
     @InvisibleMode
     Preference<Boolean> provideInvisibleMode(RxSharedPreferences prefs) {
         return prefs.getBoolean(PreferencesConstants.INVISIBLE_MODE, false);
-    }
-
-    @Provides
-    @Singleton
-    @LastMessageRequest
-    Preference<String> provideLastMessageRequest(RxSharedPreferences prefs) {
-        return prefs.getString(PreferencesConstants.LAST_MESSAGE_REQUEST, "");
     }
 
     @Provides
@@ -191,13 +164,6 @@ public class DataModule {
 
     @Provides
     @Singleton
-    @TribeSentCount
-    Preference<Integer> tribeSentCount(RxSharedPreferences prefs) {
-        return prefs.getInteger(PreferencesConstants.TRIBE_SENT_COUNT, 0);
-    }
-
-    @Provides
-    @Singleton
     @LastVersionCode
     Preference<Integer> provideLastVersionCode(Context context, RxSharedPreferences prefs) {
         return prefs.getInteger(PreferencesConstants.PREVIOUS_VERSION_CODE, -1);
@@ -236,12 +202,5 @@ public class DataModule {
     @UISounds
     Preference<Boolean> provideUISounds(RxSharedPreferences prefs) {
         return prefs.getBoolean(PreferencesConstants.UI_SOUNDS, true);
-    }
-
-    @Provides
-    @Singleton
-    @PushNotifications
-    Preference<Boolean> providePushNotifications(RxSharedPreferences prefs) {
-        return prefs.getBoolean(PreferencesConstants.PUSH_NOTIFICATIONS, true);
     }
 }

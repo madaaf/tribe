@@ -9,39 +9,28 @@ import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.data.realm.mapper.ChatRealmDataMapper;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
 import com.tribe.app.data.realm.mapper.MembershipRealmDataMapper;
 import com.tribe.app.data.realm.mapper.SearchResultRealmDataMapper;
-import com.tribe.app.data.realm.mapper.TribeRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
-import com.tribe.app.data.repository.chat.datasource.ChatDataStore;
-import com.tribe.app.data.repository.chat.datasource.ChatDataStoreFactory;
-import com.tribe.app.data.repository.tribe.datasource.TribeDataStore;
-import com.tribe.app.data.repository.tribe.datasource.TribeDataStoreFactory;
 import com.tribe.app.data.repository.user.datasource.UserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
-import com.tribe.app.domain.entity.ChatMessage;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.Membership;
-import com.tribe.app.domain.entity.Message;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
-import com.tribe.app.domain.entity.TribeMessage;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.component.FilterView;
-import com.tribe.app.presentation.view.utils.MessageSendingStatus;
+import com.tribe.app.presentation.view.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -57,10 +46,6 @@ public class DiskUserDataRepository implements UserRepository {
 
     private final UserDataStoreFactory userDataStoreFactory;
     private final UserRealmDataMapper userRealmDataMapper;
-    private final TribeDataStoreFactory tribeDataStoreFactory;
-    private final TribeRealmDataMapper tribeRealmDataMapper;
-    private final ChatDataStoreFactory chatDataStoreFactory;
-    private final ChatRealmDataMapper chatRealmDataMapper;
     private final ContactRealmDataMapper contactRealmDataMapper;
     private final SearchResultRealmDataMapper searchResultRealmDataMapper;
     private final MembershipRealmDataMapper membershipRealmDataMapper;
@@ -74,18 +59,10 @@ public class DiskUserDataRepository implements UserRepository {
     @Inject
     public DiskUserDataRepository(UserDataStoreFactory dataStoreFactory,
                                   UserRealmDataMapper realmDataMapper,
-                                  TribeDataStoreFactory tribeDataStoreFactory,
-                                  TribeRealmDataMapper tribeRealmDataMapper,
-                                  ChatDataStoreFactory chatDataStoreFactory,
-                                  ChatRealmDataMapper chatRealmDataMapper,
                                   ContactRealmDataMapper contactRealmDataMapper,
                                   MembershipRealmDataMapper membershipRealmDataMapper) {
         this.userDataStoreFactory = dataStoreFactory;
         this.userRealmDataMapper = realmDataMapper;
-        this.tribeDataStoreFactory = tribeDataStoreFactory;
-        this.tribeRealmDataMapper = tribeRealmDataMapper;
-        this.chatDataStoreFactory = chatDataStoreFactory;
-        this.chatRealmDataMapper = chatRealmDataMapper;
         this.contactRealmDataMapper = contactRealmDataMapper;
         this.searchResultRealmDataMapper = new SearchResultRealmDataMapper(userRealmDataMapper.getFriendshipRealmDataMapper());
         this.membershipRealmDataMapper = membershipRealmDataMapper;
@@ -101,20 +78,15 @@ public class DiskUserDataRepository implements UserRepository {
     public Observable<AccessToken> register(String displayName, String username, LoginEntity loginEntity) { return null; }
 
     @Override
-    public Observable<User> userInfos(String userId, String filterRecipient) {
-        final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
+    public Observable<User> userInfos(String userId) {
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-        final ChatDataStore chatDataStore = this.chatDataStoreFactory.createDiskChatStore();
 
-        return Observable.combineLatest(
-                tribeDataStore.tribesNotSeen(null).map(collection -> tribeRealmDataMapper.transform(collection)),
-                userDataStore
-                        .userInfos(null, filterRecipient)
+        return userDataStore.userInfos(null)
                         .map(userRealm -> {
                             if (userRealm != null && userRealm.getFriendships() != null) {
                                 RealmList<FriendshipRealm> result = new RealmList<>();
                                 for (FriendshipRealm fr : userRealm.getFriendships()) {
-                                    if (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus().equals(FriendshipRealm.DEFAULT)) {
+                                    if (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus().equals(FriendshipRealm.DEFAULT) && !fr.getFriend().getId().equals(Constants.SUPPORT_ID)) {
                                         result.add(fr);
                                     }
                                 }
@@ -122,75 +94,7 @@ public class DiskUserDataRepository implements UserRepository {
                             }
 
                             return userRealmDataMapper.transform(userRealm, true);
-                        }),
-                chatDataStore
-                        .messages(null)
-                        .map(collection -> chatRealmDataMapper.transform(collection)),
-                (tribes, user, chatMessages) -> {
-                    List<Recipient> result = user.getFriendshipList();
-
-                    for (Recipient recipient : result) {
-                        List<TribeMessage> receivedTribes = new ArrayList<>();
-                        List<TribeMessage> sentTribes = new ArrayList<>();
-                        List<TribeMessage> errorTribes = new ArrayList<>();
-                        List<ChatMessage> receivedChatMessage = new ArrayList<>();
-
-                        for (TribeMessage tribe : tribes) {
-                            if (tribe.getFrom() != null) {
-                                if (!tribe.getFrom().getId().equals(user.getId()) && (tribe.isToGroup() && tribe.getTo().getSubId().equals(recipient.getSubId()))
-                                        || (!tribe.isToGroup() && tribe.getFrom().getId().equals(recipient.getSubId()))) {
-                                    receivedTribes.add(tribe);
-                                } else if (tribe.getFrom().getId().equals(user.getId())
-                                        && tribe.getTo() != null && tribe.getTo().getSubId() != null && tribe.getTo().getSubId().equals(recipient.getSubId())) {
-                                    if (tribe.getMessageSendingStatus().equals(MessageSendingStatus.STATUS_ERROR))
-                                        errorTribes.add(tribe);
-                                    else sentTribes.add(tribe);
-                                }
-                            }
-                        }
-
-                        recipient.setErrorTribes(errorTribes);
-                        recipient.setReceivedTribes(receivedTribes);
-                        recipient.setSentTribes(sentTribes);
-
-                        for (ChatMessage chatMessage : chatMessages) {
-                            if (chatMessage.getFrom() != null) {
-                                if (!chatMessage.getFrom().getId().equals(user.getId()) && (chatMessage.isToGroup() && chatMessage.getTo().getSubId().equals(recipient.getSubId()))
-                                        || (!chatMessage.isToGroup() && chatMessage.getFrom().getId().equals(recipient.getSubId()))) {
-                                    receivedChatMessage.add(chatMessage);
-                                }
-                            }
-                        }
-
-                        recipient.setReceivedMessages(receivedChatMessage);
-                    }
-
-                    return user;
-                }
-        ).map(user -> {
-            if (!StringUtils.isEmpty(filterRecipient)) {
-                List<Friendship> filteredFriendshipList = new ArrayList<>();
-                List<Membership> filteredMembershipList = new ArrayList<>();
-
-                for (Friendship friendship : user.getFriendships()) {
-                    if (FilterView.shouldFilter(filterRecipient, friendship)) {
-                        filteredFriendshipList.add(friendship);
-                    }
-                }
-
-                user.setFriendships(filteredFriendshipList);
-
-                for (Membership membership : user.getMembershipList()) {
-                    if (FilterView.shouldFilter(filterRecipient, membership)) {
-                        filteredMembershipList.add(membership);
-                    }
-                }
-
-                user.setMembershipList(filteredMembershipList);
-            }
-
-            return user;
-        }).debounce(500, TimeUnit.MILLISECONDS);
+                        });
     }
 
     @Override
@@ -206,31 +110,6 @@ public class DiskUserDataRepository implements UserRepository {
     @Override
     public Observable<Installation> removeInstall() {
         return null;
-    }
-
-    /***
-     * NOT USED
-     * @return
-     */
-    @Override
-    public Observable<List<Message>> messages() {
-        return null;
-    }
-
-    @Override
-    public Observable<List<Message>> messagesReceived(String friendshipId) {
-        final TribeDataStore tribeDataStore = this.tribeDataStoreFactory.createDiskDataStore();
-        final ChatDataStore chatDataStore = this.chatDataStoreFactory.createDiskChatStore();
-
-        return Observable.combineLatest(tribeDataStore.tribesReceived(null).map(collection -> tribeRealmDataMapper.transform(collection)),
-                chatDataStore.messagesReceived(null).map(collection -> chatRealmDataMapper.transform(collection)),
-                (tribes, chatMessages) -> {
-                    List<Message> messageList = new ArrayList<>();
-                    messageList.addAll(tribes);
-                    messageList.addAll(chatMessages);
-                    return messageList;
-                }
-        );
     }
 
     @Override
@@ -255,7 +134,7 @@ public class DiskUserDataRepository implements UserRepository {
     public Observable<List<Contact>> contactsInvite() {
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
         return Observable.combineLatest(
-                userDataStore.userInfos(null, null),
+                userDataStore.userInfos(null),
                 userDataStore.contactsOnApp(),
                 userDataStore.contactsToInvite(),
                 (userRealm, contactOnAppList, contactInviteList) -> {
@@ -384,16 +263,6 @@ public class DiskUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<Membership> modifyPrivateGroupLink(String membershipId, boolean create) {
-        return null;
-    }
-
-    @Override
-    public Observable<Void> bootstrapSupport() {
-        return null;
-    }
-
-    @Override
     public Observable<Friendship> updateFriendship(String friendshipId, @FriendshipRealm.FriendshipStatus String status) {
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
         return userDataStore.updateFriendship(friendshipId, status)
@@ -405,7 +274,7 @@ public class DiskUserDataRepository implements UserRepository {
         final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
 
         return userDataStore
-                .userInfos(null, null)
+                .userInfos(null)
                 .map(userRealm -> {
                     if (userRealm != null && userRealm.getFriendships() != null) {
                         RealmList<FriendshipRealm> result = new RealmList<>();
@@ -450,12 +319,6 @@ public class DiskUserDataRepository implements UserRepository {
                         return userRealmDataMapper.getFriendshipRealmDataMapper().transform((FriendshipRealm) recipientRealmInterface);
                     }
                 });
-    }
-
-    @Override
-    public Observable<Void> updateMessagesReceivedToNotSeen() {
-        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-        return userDataStore.updateMessagesReceivedToNotSeen();
     }
 
     @Override

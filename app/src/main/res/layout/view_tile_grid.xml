@@ -23,76 +23,12 @@
         android:drawablePadding="7.5dp"
         />
 
-    <ImageView
-        android:id="@+id/btnText"
-        android:layout_width="@dimen/button_size"
-        android:layout_height="@dimen/button_size"
-        android:src="@drawable/picto_text"
-        android:scaleType="centerInside"
-        android:layout_gravity="bottom|right"
-        android:background="@drawable/selectable_button_oval"
-        android:clickable="true"
-        />
-
-    <View
-        android:id="@+id/viewNewText"
-        android:layout_width="10dp"
-        android:layout_height="10dp"
-        android:layout_gravity="bottom|right"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="@dimen/vertical_margin_large"
-        android:background="@drawable/shape_circle_red"
-        android:visibility="gone"
-        />
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/Text.Grid.Status"
-        android:layout_gravity="bottom|left"
-        android:layout_marginBottom="15dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="60dp"
-        android:drawableLeft="@drawable/picto_to_send"
-        android:drawablePadding="8dp"
-        android:text="@string/grid_friendship_status_default"
-        android:visibility="gone"
-        android:background="@null"
-        />
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtStatusError"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/Caption.White.1"
-        android:layout_gravity="bottom|left"
-        android:layout_marginBottom="15dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="60dp"
-        android:background="@drawable/shape_rounded_grid_error"
-        android:drawableLeft="@drawable/picto_error_tribe"
-        android:drawablePadding="4dp"
-        android:padding="5dp"
-        />
-
-    <com.tribe.app.presentation.view.widget.TextViewAnimatedDots
-        android:id="@+id/txtSending"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="15dp"
-        android:alpha="0"
-        android:background="@null"
-        app:textStyle="@style/Caption.White.1"
-        />
-
     <View
         android:id="@+id/viewShadow"
         android:layout_height="@dimen/avatar_size_with_shadow"
         android:layout_width="@dimen/avatar_size_with_shadow"
         android:layout_gravity="center"
-        android:background="@drawable/shadow_circle"
+        android:background="@drawable/bg_avatar_shadow"
     />
 
     <com.tribe.app.presentation.view.widget.AvatarView
@@ -104,99 +40,4 @@
         android:background="@null"
         />
 
-    <com.tribe.app.presentation.view.widget.PlayerView
-        android:id="@+id/viewPlayer"
-        android:layout_width="@dimen/avatar_size_intermediate"
-        android:layout_height="@dimen/avatar_size_intermediate"
-        android:layout_gravity="center"
-        android:background="@null"
-        />
-
-    <View
-        android:id="@+id/viewForeground"
-        android:layout_width="@dimen/avatar_size_inner"
-        android:layout_height="@dimen/avatar_size_inner"
-        android:layout_gravity="center"
-        android:background="@drawable/shape_ring_foreground_white"
-        android:alpha="0"
-        />
-
-    <FrameLayout
-        android:id="@+id/layoutNbTribes"
-        android:layout_width="@dimen/notif_size"
-        android:layout_height="@dimen/notif_size"
-        android:layout_marginLeft="37.5dp"
-        android:layout_gravity="center"
-        android:background="@drawable/shape_circle_red"
-        android:scaleX="0"
-        android:scaleY="0"
-        >
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtNbTribes"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:gravity="center"
-            style="@style/Title.1"
-            />
-
-        <com.github.rahatarmanahmed.cpv.CircularProgressView
-            android:id="@+id/circularProgressView"
-            android:layout_width="17.5dp"
-            android:layout_height="17.5dp"
-            android:layout_gravity="center"
-            android:visibility="gone"
-            android:background="@null"
-            app:cpv_thickness="@dimen/progress_bar_thickness"
-            app:cpv_indeterminate="true"
-            app:cpv_color="@android:color/white"
-            app:cpv_animAutostart="true"
-            />
-
-    </FrameLayout>
-
-    <ImageView
-        android:id="@+id/imgCancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="@null"
-        android:scaleType="centerInside"
-        android:src="@drawable/picto_cancel"
-        android:scaleX="0"
-        android:scaleY="0"
-        />
-
-    <ImageView
-        android:id="@+id/imgDone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="@null"
-        android:scaleType="centerInside"
-        android:src="@drawable/picto_done"
-        android:scaleX="0"
-        android:scaleY="0"
-        />
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="@dimen/avatar_size"
-        android:layout_height="@dimen/avatar_size"
-        android:layout_gravity="center"
-        android:background="@null"
-        android:max="@integer/time_tap_to_cancel"
-        android:progress="0"
-        android:progressDrawable="@drawable/progress_circular"
-        />
-
-    <View
-        android:id="@+id/viewPressedForeground"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:background="@drawable/shape_rectangle_border_black_opacity"
-        />
 </merge>

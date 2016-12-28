@@ -2,7 +2,6 @@ package com.tribe.app.presentation.service;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.tribe.app.data.network.job.UpdateMessagesJob;
 import com.tribe.app.presentation.AndroidApplication;
 
 /**
@@ -20,6 +19,5 @@ public class TribeFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        ((AndroidApplication) getApplication()).getApplicationComponent().jobManager().addJobInBackground(new UpdateMessagesJob());
     }
 }

@@ -8,9 +8,7 @@ import android.util.Pair;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
-import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.ContactCache;
-import com.tribe.app.data.cache.TribeCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
@@ -19,7 +17,6 @@ import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.network.entity.RegisterEntity;
 import com.tribe.app.data.network.entity.UsernameEntity;
 import com.tribe.app.data.realm.AccessToken;
-import com.tribe.app.data.realm.ChatRealm;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactFBRealm;
 import com.tribe.app.data.realm.ContactInterface;
@@ -28,12 +25,10 @@ import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.LocationRealm;
 import com.tribe.app.data.realm.MembershipRealm;
-import com.tribe.app.data.realm.MessageRealmInterface;
 import com.tribe.app.data.realm.PhoneRealm;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
-import com.tribe.app.data.realm.TribeRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.domain.entity.GroupEntity;
@@ -48,10 +43,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -74,8 +67,6 @@ public class CloudUserDataStore implements UserDataStore {
     private final TribeApi tribeApi;
     private final LoginApi loginApi;
     private UserCache userCache = null;
-    private final TribeCache tribeCache;
-    private final ChatCache chatCache;
     private final ContactCache contactCache;
     private final RxContacts rxContacts;
     private final RxFacebook rxFacebook;
@@ -83,7 +74,6 @@ public class CloudUserDataStore implements UserDataStore {
     private AccessToken accessToken = null;
     private Installation installation = null;
     private final ReactiveLocationProvider reactiveLocationProvider;
-    private Preference<String> lastMessageRequest;
     private Preference<String> lastUserRequest;
     private SimpleDateFormat utcSimpleDate = null;
 
@@ -96,16 +86,14 @@ public class CloudUserDataStore implements UserDataStore {
      * @param context     the context
      * @param accessToken the access token
      */
-    public CloudUserDataStore(UserCache userCache, TribeCache tribeCache, ChatCache chatCache,
+    public CloudUserDataStore(UserCache userCache,
                               ContactCache contactCache, RxContacts rxContacts, RxFacebook rxFacebook,
                               TribeApi tribeApi, LoginApi loginApi,
                               AccessToken accessToken, Installation installation,
                               ReactiveLocationProvider reactiveLocationProvider, Context context,
-                              Preference<String> lastMessageRequest, Preference<String> lastUserRequest,
+                              Preference<String> lastUserRequest,
                               SimpleDateFormat utcSimpleDate) {
         this.userCache = userCache;
-        this.tribeCache = tribeCache;
-        this.chatCache = chatCache;
         this.contactCache = contactCache;
         this.rxContacts = rxContacts;
         this.rxFacebook = rxFacebook;
@@ -115,7 +103,6 @@ public class CloudUserDataStore implements UserDataStore {
         this.accessToken = accessToken;
         this.installation = installation;
         this.reactiveLocationProvider = reactiveLocationProvider;
-        this.lastMessageRequest = lastMessageRequest;
         this.lastUserRequest = lastUserRequest;
         this.utcSimpleDate = utcSimpleDate;
     }
@@ -149,7 +136,7 @@ public class CloudUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<UserRealm> userInfos(String userId, String filterRecipient) {
+    public Observable<UserRealm> userInfos(String userId) {
         String initRequest = utcSimpleDate.format(new Date());
         int avatarSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size);
 
@@ -249,130 +236,6 @@ public class CloudUserDataStore implements UserDataStore {
     @Override
     public Observable<Installation> removeInstall() {
         return this.tribeApi.removeInstall(context.getString(R.string.install_remove, installation.getId()));
-    }
-
-    @Override
-    public Observable<List<MessageRealmInterface>> messages() {
-        StringBuffer idsTribes = new StringBuffer();
-
-        Set<String> toIds = new HashSet<>();
-
-        UserRealm user = userCache.userInfosNoObs(accessToken.getUserId());
-
-        if (user.getFriendships() != null) {
-            for (FriendshipRealm fr : user.getFriendships()) {
-                toIds.add(fr.getFriend().getId());
-            }
-
-            List<TribeRealm> lastTribesSent = tribeCache.tribesSent(toIds);
-
-            int countTribes = 0;
-            for (TribeRealm tribeRealm : lastTribesSent) {
-                if (!StringUtils.isEmpty(tribeRealm.getId())) {
-                    idsTribes.append((countTribes > 0 ? "," : "") + "\"" + tribeRealm.getId() + "\"");
-                    countTribes++;
-                }
-            }
-        }
-
-        String req = context.getString(R.string.messages_infos,
-                !StringUtils.isEmpty(lastMessageRequest.get()) ? context.getString(R.string.input_start, lastMessageRequest.get()) : "",
-                !StringUtils.isEmpty(idsTribes.toString()) ? context.getString(R.string.tribe_sent_infos, idsTribes) : "");
-
-        return tribeApi.messages(req)
-                .flatMap(messageRealmInterfaceList -> {
-                    Set<String> idsFrom = new HashSet<>();
-                    Set<String> idsMembershipToCreate = new HashSet<>();
-
-                    for (MessageRealmInterface message : messageRealmInterfaceList) {
-                        if (message.getFrom() != null) {
-                            UserRealm userRealm = userCache.userInfosNoObs(message.getFrom().getId());
-
-                            if (userRealm == null) {
-                                idsFrom.add(message.getFrom().getId());
-                            } else {
-                                if (!message.isToGroup()) {
-                                    FriendshipRealm fr = userCache.friendshipForUserId(userRealm.getId());
-                                    if (fr != null && fr.isHidden()) userCache.updateFriendshipNoObs(fr.getId(), FriendshipRealm.DEFAULT);
-                                }
-                                message.setFrom(userRealm);
-                            }
-                        }
-
-//                        if (message.isToGroup() && message.getRecipient() != null) {
-//                            idsMembershipToCreate.add(message.getRecipient().getSubId());
-//                        }
-                    }
-
-                    if (idsFrom.size() > 0) {
-                        StringBuilder result = new StringBuilder();
-
-                        for (String string : idsFrom) {
-                            result.append("\"" + string + "\"");
-                            result.append(",");
-                        }
-
-                        String idsFromStr = result.length() > 0 ? result.substring(0, result.length() - 1) : "";
-
-                        String reqUserList = context.getString(R.string.user_infos_list, idsFromStr, context.getString(R.string.userfragment_infos));
-                        return tribeApi.getUserListInfos(reqUserList);
-                    } else {
-                        return Observable.just(new ArrayList<UserRealm>());
-                    }
-                },
-                (messageRealmInterfaceList, userRealmList) -> {
-                    List<MessageRealmInterface> messageRealmListFinal = new ArrayList<MessageRealmInterface>();
-
-                    if (userRealmList != null && userRealmList.size() > 0) {
-                        for (MessageRealmInterface message : messageRealmInterfaceList) {
-                            if (message.getFrom() != null && StringUtils.isEmpty(message.getFrom().getUsername())) {
-                                for (UserRealm userRealm : userRealmList) {
-                                    if (userRealm != null && message.getFrom().getId().equals(userRealm.getId())) {
-                                        message.setFrom(userRealm);
-                                        messageRealmListFinal.add(message);
-                                    }
-                                }
-                            } else {
-                                messageRealmListFinal.add(message);
-                            }
-                        }
-                    }
-
-                    return messageRealmInterfaceList;
-                })
-                .doOnNext(messages -> {
-                    if (messages != null && messages.size() > 0) {
-                        List<MessageRealmInterface> subMessages = new ArrayList<MessageRealmInterface>();
-
-                        for (MessageRealmInterface message : messages) {
-                            if (message.getRecordedAt() != null) subMessages.add(message);
-                        }
-
-                        Collections.sort(subMessages, (one, two) -> {
-                            if (one == null ^ two == null) {
-                                return (one == null) ? -1 : 1;
-                            }
-
-                            if (one == null && two == null) return 0;
-
-                            if (one.getUpdatedAt() == null ^ two.getUpdatedAt() == null) {
-                                return (one.getUpdatedAt() == null) ? -1 : 1;
-                            }
-
-                            if (one.getUpdatedAt() == null && two.getUpdatedAt() == null) {
-                                return one.getRecordedAt().before(two.getRecordedAt()) ? -1 : 1;
-                            }
-
-                            return one.getUpdatedAt().before(two.getUpdatedAt()) ? -1 : 1;
-                        });
-
-                        if (subMessages != null && subMessages.size() > 0) {
-                            Date date = new Date(subMessages.get(subMessages.size() - 1).getRecordedAt().getTime() + 1000);
-                            this.lastMessageRequest.set(utcSimpleDate.format(date));
-                        }
-                    }
-                })
-                .doOnNext(saveToCacheMessages);
     }
 
     @Override
@@ -790,21 +653,6 @@ public class CloudUserDataStore implements UserDataStore {
         }
     };
 
-    private final Action1<List<MessageRealmInterface>> saveToCacheMessages = messageRealmList -> {
-        if (messageRealmList != null && messageRealmList.size() > 0) {
-            List<TribeRealm> tribeRealmList = new ArrayList<>();
-            List<ChatRealm> chatRealmList = new ArrayList<>();
-
-            for (MessageRealmInterface message : messageRealmList) {
-                if (message instanceof TribeRealm) tribeRealmList.add((TribeRealm) message);
-                else if (message instanceof ChatRealm) chatRealmList.add((ChatRealm) message);
-            }
-
-            if (tribeRealmList.size() > 0) CloudUserDataStore.this.tribeCache.insert(tribeRealmList);
-            if (chatRealmList.size() > 0) CloudUserDataStore.this.chatCache.put(chatRealmList);
-        }
-    };
-
     private final Action1<List<ContactInterface>> saveToCacheContacts = contactRealmList -> {
         if (contactRealmList != null && contactRealmList.size() > 0) {
             List<ContactFBRealm> contactFBRealm = new ArrayList<>();
@@ -1162,11 +1010,6 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<RecipientRealmInterface> getRecipientInfos(String recipientId, boolean isToGroup) {
-        return null;
-    }
-
-    @Override
-    public Observable<Void> updateMessagesReceivedToNotSeen() {
         return null;
     }
 

@@ -212,20 +212,6 @@
         <item name="android:textColor">@android:color/black</item>
     </style>
 
-    <style name="Weather">
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:textSize">30sp</item>
-        <item name="android:singleLine">true</item>
-        <item name="customFont">Roboto-Regular.ttf</item>
-    </style>
-
-    <style name="Emoji">
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:textSize">65sp</item>
-        <item name="android:singleLine">false</item>
-        <item name="customFont">Roboto-Regular.ttf</item>
-    </style>
-
     <style name="Points">
         <item name="customFont">SBNav.ttf</item>
     </style>

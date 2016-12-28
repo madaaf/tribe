@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.view.adapter;
 
-import com.hannesdorfmann.adapterdelegates2.AdapterDelegate;
 import com.hannesdorfmann.adapterdelegates2.AdapterDelegatesManager;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 

@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public interface PreviewTexture {
 
-    public interface OnFrameAvailableListener {
+    interface OnFrameAvailableListener {
         void onFrameAvailable(PreviewTexture previewTexture);
     }
 

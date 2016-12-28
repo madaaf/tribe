@@ -5,8 +5,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import com.tribe.app.domain.entity.FilterEntity;
-import com.tribe.app.presentation.view.adapter.delegate.pulltosearch.IconAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.pulltosearch.LetterAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.filterview.IconAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.filterview.LetterAdapterDelegate;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.ArrayList;

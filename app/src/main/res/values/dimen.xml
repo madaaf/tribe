@@ -7,18 +7,15 @@
 
     <!-- RADIUSES-->
     <dimen name="radius_gallery_img">2.5dp</dimen>
-    <dimen name="radius_img">5dp</dimen>
     <dimen name="radius_share_img">12.5dp</dimen>
     <dimen name="camera_radius">5dp</dimen>
 
     <!-- PROGRESS BAR -->
-    <dimen name="progress_bar_thickness">2dp</dimen>
     <dimen name="progress_bar_thickness_small">1dp</dimen>
 
     <!-- MARGINS -->
     <dimen name="horizontal_margin">20dp</dimen>
     <dimen name="vertical_margin">20dp</dimen>
-    <dimen name="horizontal_margin_mid">17.5dp</dimen>
     <dimen name="vertical_margin_mid">17.5dp</dimen>
     <dimen name="vertical_margin_smaller">10dp</dimen>
     <dimen name="horizontal_margin_smaller">10dp</dimen>
@@ -28,107 +25,45 @@
     <dimen name="vertical_margin_xsmall">5dp</dimen>
     <dimen name="horizontal_margin_large">25dp</dimen>
     <dimen name="horizontal_margin_xlarge">30dp</dimen>
-    <dimen name="horizontal_margin_xxlarge">50dp</dimen>
     <dimen name="vertical_margin_large">25dp</dimen>
     <dimen name="vertical_margin_xlarge">30dp</dimen>
-    <dimen name="vertical_margin_proximity">5dp</dimen>
-    <dimen name="vertical_margin_reply_tile">50dp</dimen>
-    <dimen name="horizontal_left_margin_chat">71dp</dimen>
-    <dimen name="horizontal_left_margin_onboarding_choose_picture_button">95dp</dimen>
-    <dimen name="setting_section_title_horizontal_margin">45dp</dimen>
-    <dimen name="setting_block_item_left_margin">55dp</dimen>
-    <dimen name="setting_block_search_bar_height">64dp</dimen>
-    <dimen name="group_member_image_overlap_margin">-15dp</dimen>
-    <dimen name="group_suggestion_margin">5dp</dimen>
-    <dimen name="group_suggestion_margin_mid">10dp</dimen>
-    <dimen name="group_info_edit_icon_top_margin">11.5dp</dimen>
     <dimen name="margin_end_action_view">70dp</dimen>
 
     <!-- PADDING -->
     <dimen name="icons_padding">3.75dp</dimen>
-    <dimen name="text_padding">15dp</dimen>
     <dimen name="section_button_vertical_padding">12dp</dimen>
-    <dimen name="setting_block_item_horizontal_padding">15dp</dimen>
-    <dimen name="cpv_padding">10dp</dimen>
-    <dimen name="cpv_padding_edit">5dp</dimen>
-    <dimen name="padding_small">10dp</dimen>
-    <dimen name="padding_mid">15dp</dimen>
 
     <!-- HEIGHTS -->
     <dimen name="top_bar_height_small">50dp</dimen>
     <dimen name="top_bar_height">65dp</dimen>
-    <dimen name="chat_bar_height">50dp</dimen>
     <dimen name="bottom_bar_height">60dp</dimen>
-    <dimen name="bottom_bar_with_shadow_height">70dp</dimen>
-    <dimen name="tribe_bottom_bar_height">47.5dp</dimen>
-    <dimen name="back_to_message_height">48dp</dimen>
-    <dimen name="snooze_items_height">100dp</dimen>
-    <dimen name="chat_header_height">40dp</dimen>
-    <dimen name="score_progress_height">45dp</dimen>
-    <dimen name="onboarding_top_bar_height">80dp</dimen>
-    <dimen name="onboarding_choose_picture_button_height">48dp</dimen>
     <dimen name="onboarding_choose_name_height">64dp</dimen>
-    <dimen name="setting_section_bar_height">40dp</dimen>
-    <dimen name="create_invite_view_height">115dp</dimen>
-    <dimen name="group_info_bar_height">64dp</dimen>
-    <dimen name="group_search_height">64dp</dimen>
     <dimen name="group_members_height">70dp</dimen>
     <dimen name="load_friends_height">72.5dp</dimen>
     <dimen name="pick_all_height">72.5dp</dimen>
 
     <!-- WIDTHS -->
-    <dimen name="snooze_mode_width">93dp</dimen>
 
     <!-- SIZES -->
-    <dimen name="avatar_size_onboarding">65dp</dimen>
     <dimen name="avatar_size">75dp</dimen>
     <dimen name="avatar_size_with_shadow">82dp</dimen>
     <dimen name="avatar_size_scaled">110dp</dimen>
-    <dimen name="avatar_size_intermediate">96dp</dimen> <!-- CHANGE AVATAR_SIZE_INTERMEDIATE_HALF ACCORDINGLY -->
-    <dimen name="avatar_size_intermediate_half">48dp</dimen>
-    <dimen name="avatar_size_inner">74dp</dimen>
-    <dimen name="avatar_size_inner_scaled">109dp</dimen>
-    <dimen name="avatar_size_inner_intermediate">84dp</dimen>
+    <!-- CHANGE AVATAR_SIZE_INTERMEDIATE_HALF ACCORDINGLY -->
     <dimen name="avatar_size_small">41dp</dimen>
     <dimen name="avatar_size_smaller">35dp</dimen>
-    <dimen name="avatar_size_small_with_shadow">45dp</dimen>
-    <dimen name="nav_size_max">55dp</dimen>
-    <dimen name="nav_size_small">45dp</dimen>
-    <dimen name="nav_layout_height">75dp</dimen>
-    <dimen name="inside_cell_border">20dp</dimen>
-    <dimen name="camera_height">165dp</dimen>
-    <dimen name="camera_width">110dp</dimen>
     <dimen name="camera_height_settings">111.5dp</dimen>
     <dimen name="camera_width_settings">80dp</dimen>
     <dimen name="camera_stroke_width">8dp</dimen>
-    <dimen name="tribe_icon_size">15dp</dimen>
-    <dimen name="tribe_icon_size_max">70dp</dimen>
-    <dimen name="notif_size">27dp</dimen>
     <dimen name="notif_size_big">40dp</dimen>
     <dimen name="icons_start">30dp</dimen>
     <dimen name="icons_end">60dp</dimen>
-    <dimen name="status_size">10dp</dimen>
-    <dimen name="reply_size">75dp</dimen>
-    <dimen name="reply_size_full">130dp</dimen>
-    <dimen name="avatar_size_reply_intermediate">50dp</dimen>
-    <dimen name="avatar_size_reply_full">98dp</dimen>
-    <dimen name="reply_tap_to_cancel">82dp</dimen>
-    <dimen name="score_circle_size">40dp</dimen>
-    <dimen name="setting_pic_size">40dp</dimen>
     <dimen name="setting_theme_size">40dp</dimen>
     <dimen name="setting_theme_vertical_padding">15dp</dimen>
-    <dimen name="group_image_bg_size">83dp</dimen>
     <dimen name="dialog_fragment_width">262dp</dimen>
-    <dimen name="dialog_fragment_icon_size">66dp</dimen>
-    <dimen name="friend_adapter_fill_size">30dp</dimen>
-    <dimen name="group_member_image_size">50dp</dimen>
     <dimen name="nav_icon_size">50dp</dimen>
     <dimen name="filter_letter_size">35dp</dimen>
     <dimen name="filter_letter_container_size">50dp</dimen>
-    <dimen name="image_badge_size">20dp</dimen>
-    <dimen name="group_cpv_size">28dp</dimen>
     <dimen name="cards_icon_size">15dp</dimen>
-    <dimen name="group_suggestion_text_size">13sp</dimen>
     <dimen name="voice_message_avatar_size">75dp</dimen>
     <dimen name="med_icon_size">40dp</dimen>
     <dimen name="code_progress_size">25dp</dimen>
@@ -137,7 +72,6 @@
     <dimen name="threshold_dismiss">100dp</dimen>
 
     <!-- TRANSLATIONS -->
-    <dimen name="transition_grid_pressed">45dp</dimen>
     <dimen name="transition_grid_back_to_top">150dp</dimen>
     <dimen name="transition_replace">40dp</dimen>
 </resources>

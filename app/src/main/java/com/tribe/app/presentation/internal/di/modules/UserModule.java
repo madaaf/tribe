@@ -6,13 +6,6 @@ import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
-import com.tribe.app.domain.interactor.tribe.ConfirmTribe;
-import com.tribe.app.domain.interactor.tribe.DeleteTribe;
-import com.tribe.app.domain.interactor.tribe.GetNotSeenDiskTribeList;
-import com.tribe.app.domain.interactor.tribe.GetPendingTribeList;
-import com.tribe.app.domain.interactor.tribe.GetReceivedDiskTribeList;
-import com.tribe.app.domain.interactor.tribe.SaveTribe;
-import com.tribe.app.domain.interactor.tribe.SendTribe;
 import com.tribe.app.domain.interactor.user.AddMembersToGroup;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.CreateFriendships;
@@ -20,13 +13,10 @@ import com.tribe.app.domain.interactor.user.CreateMembership;
 import com.tribe.app.domain.interactor.user.DiskFindContactByValue;
 import com.tribe.app.domain.interactor.user.DiskSearchResults;
 import com.tribe.app.domain.interactor.user.DiskUpdateFriendship;
-import com.tribe.app.domain.interactor.user.DiskUpdateMessagesReceivedToNotSeen;
-import com.tribe.app.domain.interactor.user.DoBootstrapSupport;
 import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
 import com.tribe.app.domain.interactor.user.DoRegister;
 import com.tribe.app.domain.interactor.user.FindByUsername;
 import com.tribe.app.domain.interactor.user.GetBlockedFriendshipList;
-import com.tribe.app.domain.interactor.user.GetCloudMessageList;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetDiskContactList;
 import com.tribe.app.domain.interactor.user.GetDiskContactOnAppList;
@@ -34,7 +24,6 @@ import com.tribe.app.domain.interactor.user.GetDiskFBContactList;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.GetGroupMembers;
 import com.tribe.app.domain.interactor.user.GetHeadDeepLink;
-import com.tribe.app.domain.interactor.user.GetReceivedDiskMessageList;
 import com.tribe.app.domain.interactor.user.GetRequestCode;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.NotifyFBFriends;
@@ -83,12 +72,6 @@ public class UserModule {
 
     @Provides
     @PerActivity
-    DoBootstrapSupport provideBootstrapSupport(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        return new DoBootstrapSupport(userRepository, threadExecutor, postExecutionThread);
-    }
-
-    @Provides
-    @PerActivity
     UseCase provideUpdateUser(UpdateUser updateUser) {
         return updateUser;
     }
@@ -126,65 +109,9 @@ public class UserModule {
 
     @Provides
     @PerActivity
-    @Named("cloudGetMessages")
-    UseCase provideCloudGetMessageList(GetCloudMessageList getCloudMessageList) {
-        return getCloudMessageList;
-    }
-
-    @Provides
-    @PerActivity
     @Named("diskUserInfos")
     GetDiskUserInfos provideDiskGetUserInfos(GetDiskUserInfos getDiskUserInfos) {
         return getDiskUserInfos;
-    }
-
-    @Provides
-    @PerActivity
-    @Named("diskSaveTribe")
-    SaveTribe provideDiskSendTribe(SaveTribe saveTribeDisk) {
-        return saveTribeDisk;
-    }
-
-    @Provides
-    @PerActivity
-    @Named("cloudSendTribe")
-    SendTribe provideCloudSendTribe(SendTribe sendTribeDisk) {
-        return sendTribeDisk;
-    }
-
-    @Provides
-    @PerActivity
-    @Named("diskDeleteTribe")
-    DeleteTribe provideDiskDeleteTribe(DeleteTribe deleteTribeDisk) {
-        return deleteTribeDisk;
-    }
-
-    @Provides
-    @PerActivity
-    @Named("diskConfirmTribe")
-    ConfirmTribe provideDiskConfirmTribe(ConfirmTribe confirmTribeDisk) {
-        return confirmTribeDisk;
-    }
-
-    @Provides
-    @PerActivity
-    @Named("diskGetNotSeenTribes")
-    UseCaseDisk provideDiskGetNotSeenTribes(GetNotSeenDiskTribeList getNotSeenDiskTribeList) {
-        return getNotSeenDiskTribeList;
-    }
-
-    @Provides
-    @PerActivity
-    @Named("diskGetReceivedTribeList")
-    UseCaseDisk provideDiskGetReceivedTribes(GetReceivedDiskTribeList getReceivedDiskTribeList) {
-        return getReceivedDiskTribeList;
-    }
-
-    @Provides
-    @PerActivity
-    @Named("diskGetReceivedMessages")
-    UseCaseDisk provideDiskGetReceivedMessages(GetReceivedDiskMessageList getReceivedDiskMessageList) {
-        return getReceivedDiskMessageList;
     }
 
     @Provides
@@ -198,13 +125,6 @@ public class UserModule {
     @PerActivity
     UseCase providesRemoveInstall(RemoveInstall removeInstall) {
         return removeInstall;
-    }
-
-    @Provides
-    @PerActivity
-    @Named("diskGetPendingTribes")
-    UseCaseDisk provideGetPendingTribeList(GetPendingTribeList pendingTribeList) {
-        return pendingTribeList;
     }
 
     @Provides
@@ -311,13 +231,6 @@ public class UserModule {
     @PerActivity
     CreateMembership provideCreateMembership(CloudUserDataRepository cloudUserDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
         return new CreateMembership(cloudUserDataRepository, threadExecutor, postExecutionThread);
-    }
-
-    @Provides
-    @PerActivity
-    @Named("diskUpdateMessagesReceivedToNotSeen")
-    UseCaseDisk provideUpdateTribesReceivedToNotSeen(DiskUpdateMessagesReceivedToNotSeen diskUpdateMessagesReceivedToNotSeen) {
-        return diskUpdateMessagesReceivedToNotSeen;
     }
 
     @Provides

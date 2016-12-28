@@ -70,11 +70,6 @@ public class DebugActivity extends BaseActivity implements DebugMVPView {
         tutorialManager.clearTutorial();
     }
 
-    @OnClick(R.id.viewBootstrapSupport)
-    void clickBootstrapSupport() {
-        debugPresenter.boostrapSupport();
-    }
-
     @Override
     public void finish() {
         super.finish();
