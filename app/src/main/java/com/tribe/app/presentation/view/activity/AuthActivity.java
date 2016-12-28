@@ -59,6 +59,13 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
     private static final String COUNTRY_CODE = "COUNTRY_CODE";
     private static final String DEEP_LINK = "DEEP_LINK";
+    private static final String LOGIN_ENTITY = "LOGIN_ENTITY";
+    private static final String PIN = "PIN";
+    private static final String ERROR_LOGIN = "ERROR_LOGIN";
+    private static final String PHONE_NUMBER = "PHONE_NUMBER";
+    private static final String CODE = "CODE";
+    private static final String COUNTDOWN = "COUNTDOWN";
+    private static final String IS_PAUSED = "IS_PAUSED";
 
     public static Intent getCallingIntent(Context context) {
         Intent intent = new Intent(context, AuthActivity.class);
@@ -113,13 +120,18 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     StatusView viewStatus;
 
     // VARIABLES
-    private Uri deepLink;
     private Unbinder unbinder;
+    private Uri deepLink;
     private AuthenticationDialogFragment authenticationDialogFragment;
     private Pin pin;
     private ErrorLogin errorLogin;
     private LoginEntity loginEntity;
     private boolean countdownActive;
+    private String countryCode;
+    private String phoneNumber;
+    private String code;
+    private int currentCountdown;
+    private boolean shouldPauseOnRestore = false;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -128,12 +140,29 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            if (savedInstanceState.getParcelable(DEEP_LINK) != null) deepLink = savedInstanceState.getParcelable(DEEP_LINK);
+            if (savedInstanceState.getString(COUNTRY_CODE) != null) countryCode = savedInstanceState.getString(COUNTRY_CODE);
+            if (savedInstanceState.get(LOGIN_ENTITY) != null) loginEntity = (LoginEntity) savedInstanceState.getSerializable(LOGIN_ENTITY);
+            if (savedInstanceState.get(ERROR_LOGIN) != null) errorLogin = (ErrorLogin) savedInstanceState.getSerializable(ERROR_LOGIN);
+            if (savedInstanceState.get(PIN) != null) pin = (Pin) savedInstanceState.getSerializable(PIN);
+            if (savedInstanceState.get(CODE) != null) code = savedInstanceState.getString(CODE);
+            if (savedInstanceState.get(PHONE_NUMBER) != null) phoneNumber = savedInstanceState.getString(PHONE_NUMBER);
+            if (savedInstanceState.get(COUNTDOWN) != null) {
+                currentCountdown = savedInstanceState.getInt(COUNTDOWN);
+            }
+            if (savedInstanceState.get(IS_PAUSED) != null) shouldPauseOnRestore = savedInstanceState.getBoolean(IS_PAUSED);
+        }
+
         setContentView(R.layout.activity_auth);
 
         unbinder = ButterKnife.bind(this);
 
         initDependencyInjector();
         init();
+
+        screenUtils.hideKeyboard(this);
 
         lastMessageRequest.set("");
         lastUserRequest.set("");
@@ -142,7 +171,14 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
     protected void onPause() {
+        shouldPauseOnRestore = true;
+        screenUtils.hideKeyboard(this);
         authVideoView.onPause(true);
         super.onPause();
     }
@@ -163,7 +199,26 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     protected void onDestroy() {
         if (unbinder != null) unbinder.unbind();
         if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+        if (countdownSubscription != null) countdownSubscription.unsubscribe();
         super.onDestroy();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (!StringUtils.isEmpty(countryCode)) outState.putString(COUNTRY_CODE, countryCode);
+        if (deepLink != null) outState.putParcelable(DEEP_LINK, deepLink);
+        if (loginEntity != null) outState.putSerializable(LOGIN_ENTITY, loginEntity);
+        if (errorLogin != null) outState.putSerializable(ERROR_LOGIN, errorLogin);
+        if (pin != null) outState.putSerializable(PIN, pin);
+        if (!StringUtils.isEmpty(viewPhoneNumber.getPhoneNumberInput())) outState.putString(PHONE_NUMBER, viewPhoneNumber.getPhoneNumberInput());
+        if (!StringUtils.isEmpty(code)) outState.putString(CODE, code);
+        if (countdownActive) outState.putInt(COUNTDOWN, viewCode.getCurrentCountdown());
+        if (shouldPauseOnRestore) {
+            outState.putBoolean(IS_PAUSED, shouldPauseOnRestore);
+        } else {
+            outState.remove(IS_PAUSED);
+        }
     }
 
     @Override
@@ -171,7 +226,8 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == Navigator.REQUEST_COUNTRY && resultCode == Activity.RESULT_OK && data.getStringExtra(Extras.COUNTRY_CODE) != null) {
-            viewPhoneNumber.initWithCodeCountry(data.getStringExtra(Extras.COUNTRY_CODE));
+            countryCode = data.getStringExtra(Extras.COUNTRY_CODE);
+            viewPhoneNumber.initWithCodeCountry(countryCode);
         }
     }
 
@@ -190,7 +246,19 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
         subscriptions.add(authVideoView.videoCompleted()
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(aLong -> showPhoneInput())
+                .subscribe(aLong -> showPhoneInput(true))
+        );
+
+        subscriptions.add(authVideoView.videoStarted()
+                .delay(50, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aLong -> {
+                    if (shouldPauseOnRestore) {
+                        System.out.println("PAUSE");
+                        authVideoView.onPause(true);
+                    }
+                }
+            )
         );
 
         initViewPhoneNumber();
@@ -198,6 +266,9 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     }
 
     private void initViewPhoneNumber() {
+        if (!StringUtils.isEmpty(countryCode)) viewPhoneNumber.initWithCodeCountry(countryCode);
+        if (!StringUtils.isEmpty(phoneNumber)) viewPhoneNumber.setPhoneNumber(phoneNumber);
+
         subscriptions.add(viewPhoneNumber.phoneNumberValid()
                 .subscribe(isValid -> {
                     viewPhoneNumber.setNextEnabled(isValid);
@@ -215,9 +286,13 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
                 .subscribe(aVoid -> {
                     confirmPhoneNumber();
                 }));
+
+        if (shouldPauseOnRestore && pin == null) showPhoneInput(false);
     }
 
     private void initViewCode() {
+        if (!StringUtils.isEmpty(code)) viewCode.setCode(code);
+
         subscriptions.add(viewCode.backClicked()
                 .subscribe(aVoid -> {
                     backToPhoneNumber();
@@ -233,6 +308,11 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
                     }
                 })
         );
+
+        if (pin != null) {
+            showPhoneInput(false);
+            goToCodeView(false);
+        }
     }
 
     private void initDependencyInjector() {
@@ -251,22 +331,22 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
     @OnClick(R.id.btnSkip)
     void skip() {
-        showPhoneInput();
+        showPhoneInput(true);
     }
 
     @OnClick(R.id.viewVideoAuth)
     void endVideo() {
-        showPhoneInput();
+        showPhoneInput(true);
     }
 
-    private void showPhoneInput() {
+    private void showPhoneInput(boolean animate) {
         authVideoView.onPause(false);
-        AnimationUtils.fadeOut(btnSkip, DURATION);
+        AnimationUtils.fadeOut(btnSkip, animate ? DURATION : 0);
         viewBackground.setAlpha(0);
         viewBackground.setVisibility(View.VISIBLE);
-        AnimationUtils.fadeIn(viewBackground, DURATION);
+        AnimationUtils.fadeIn(viewBackground, animate ? DURATION : 0);
         btnSkip.setEnabled(false);
-        showLayoutBottom();
+        showLayoutBottom(animate);
     }
 
     @OnClick(R.id.viewBackground)
@@ -281,6 +361,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
     @OnClick(R.id.btnPlay)
     void play() {
+        shouldPauseOnRestore = false;
         authVideoView.play();
         viewPhoneNumber.hideKeyboard();
         AnimationUtils.fadeIn(btnSkip, DURATION);
@@ -305,16 +386,16 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
         }
     }
 
-    private void showLayoutBottom() {
+    private void showLayoutBottom(boolean animate) {
         layoutBottom
                 .animate()
                 .translationY(0)
-                .setDuration(DURATION)
+                .setDuration(animate ? DURATION : 0)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         layoutBottom.animate().setListener(null).start();
-                        viewPhoneNumber.openKeyboard(DURATION);
+                        viewPhoneNumber.openKeyboard(animate ? DURATION : 0);
                         viewBackground.setEnabled(true);
                     }
                 })
@@ -329,11 +410,11 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
                 .start();
     }
 
-    private void hideViewPhoneNumber() {
+    private void hideViewPhoneNumber(boolean animate) {
         viewPhoneNumber
                 .animate()
                 .translationX(-screenUtils.getWidthPx())
-                .setDuration(DURATION)
+                .setDuration(animate ? DURATION : 0)
                 .start();
     }
 
@@ -359,20 +440,20 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
             .start();
     }
 
-    private void showViewCode() {
-        AnimationUtils.fadeOut(btnPlay, DURATION_FAST);
+    private void showViewCode(boolean animate) {
+        AnimationUtils.fadeOut(btnPlay, animate ? DURATION_FAST : 0);
         txtMessage.setText(R.string.onboarding_step_code);
         initCountdown();
 
         viewCode
             .animate()
             .translationX(0)
-            .setDuration(DURATION)
+            .setDuration(animate ? DURATION : 0)
             .setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     viewCode.animate().setListener(null).start();
-                    viewCode.openKeyboard(DURATION);
+                    viewCode.openKeyboard(animate ? DURATION : 0);
                 }
             })
             .start();
@@ -384,9 +465,10 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
         viewStatus.showDisclaimer();
     }
 
-    private void goToCodeView() {
-        showViewCode();
-        hideViewPhoneNumber();
+    private void goToCodeView(boolean animate) {
+        viewStatus.showCodeSent(viewPhoneNumber.getPhoneNumberFormatted());
+        showViewCode(animate);
+        hideViewPhoneNumber(animate);
     }
 
     private void confirmPhoneNumber() {
@@ -458,9 +540,8 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     public void goToCode(Pin pin) {
         tagManager.trackEvent(TagManagerConstants.ONBOARDING_SEND_PIN);
         this.pin = pin;
-        viewStatus.showCodeSent(viewPhoneNumber.getPhoneNumberFormatted());
 
-        goToCodeView();
+        goToCodeView(true);
     }
 
     @Override

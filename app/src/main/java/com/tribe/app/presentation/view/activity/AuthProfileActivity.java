@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.TextViewCompat;
 import android.view.View;
 
+import com.facebook.login.LoginResult;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
@@ -19,11 +21,15 @@ import com.tribe.app.presentation.mvp.view.ProfileInfoMVPView;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
+import com.tribe.app.presentation.utils.facebook.RxFacebook;
+import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.FacebookView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -31,11 +37,16 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPView {
 
     private static final String LOGIN_ENTITY = "LOGIN_ENTITY";
+    private static final String FACEBOOK_ENTITY = "FACEBOOK_ENTITY";
+    private static final String DEEPLINK = "DEEPLINK";
+    private static final String URI_PICTURE = "URI_PICTURE";
 
     public static Intent getCallingIntent(Context context, LoginEntity loginEntity) {
         Intent intent = new Intent(context, AuthProfileActivity.class);
@@ -45,6 +56,12 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
     @Inject
     User user;
+
+    @Inject
+    RxImagePicker rxImagePicker;
+
+    @Inject
+    RxFacebook rxFacebook;
 
     @Inject
     ScreenUtils screenUtils;
@@ -72,6 +89,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
     private Unbinder unbinder;
     private LoginEntity loginEntity;
     private FacebookEntity facebookEntity;
+    private Uri uriPicture;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -83,9 +101,37 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
         unbinder = ButterKnife.bind(this);
 
+        if (savedInstanceState != null) {
+            if (savedInstanceState.get(LOGIN_ENTITY) != null) loginEntity = (LoginEntity) savedInstanceState.getSerializable(LOGIN_ENTITY);
+            if (savedInstanceState.get(FACEBOOK_ENTITY) != null) facebookEntity = (FacebookEntity) savedInstanceState.getSerializable(FACEBOOK_ENTITY);
+            if (savedInstanceState.get(DEEPLINK) != null) deepLink = savedInstanceState.getParcelable(DEEPLINK);
+            if (savedInstanceState.get(URI_PICTURE) != null) {
+                uriPicture = savedInstanceState.getParcelable(URI_PICTURE);
+            }
+        }
+
         initDependencyInjector();
         initParams(getIntent());
         init();
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
+        subscriptions.add(Observable
+                .timer(500, TimeUnit.MILLISECONDS)
+                .onBackpressureDrop()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aLong -> {
+                    uriPicture = rxImagePicker.getUri();
+
+                    if (uriPicture != null) {
+                        profileInfoView.loadUri(uriPicture);
+                    }
+                }));
+
+        if (profileInfoView != null && uriPicture != null) profileInfoView.loadUri(uriPicture);
     }
 
     @Override
@@ -93,6 +139,24 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
         super.onStart();
         profileInfoPresenter.onViewAttached(this);
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        subscriptions.add(Observable
+                .timer(2000, TimeUnit.MILLISECONDS)
+                .onBackpressureDrop()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aLong -> {
+                    LoginResult loginResult = rxFacebook.getLoginResult();
+
+                    if (loginResult != null && FacebookUtils.isLoggedIn()) {
+                        successFacebookLogin();
+                    }
+                }));
+    }
+
 
     @Override
     protected void onStop() {
@@ -105,6 +169,15 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
         if (unbinder != null) unbinder.unbind();
         if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
         super.onDestroy();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (loginEntity != null) outState.putSerializable(LOGIN_ENTITY, loginEntity);
+        if (facebookEntity != null) outState.putSerializable(FACEBOOK_ENTITY, facebookEntity);
+        if (deepLink != null) outState.putParcelable(DEEPLINK, deepLink);
+        if (uriPicture != null) outState.putParcelable(URI_PICTURE, uriPicture);
     }
 
     private void initParams(Intent intent) {
@@ -240,7 +313,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
     @Override
     public void usernameResult(Boolean available) {
         boolean usernameValid = available;
-        profileInfoView.setUsernameValid(usernameValid || profileInfoView.getUsername().equals(user.getUsername()));
+        profileInfoView.setUsernameValid(usernameValid || (user != null && !StringUtils.isEmpty(profileInfoView.getUsername()) && profileInfoView.getUsername().equals(user.getUsername())));
     }
 
     @Override

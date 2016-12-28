@@ -117,6 +117,7 @@ public class StatusView extends FrameLayout {
     }
 
     public void showCodeSent(String phoneNumber) {
+        AnimationUtils.crossFadeDrawable(background, drawableFrom(), 1, 0);
         TextViewCompat.setTextAppearance(txtStatus, R.style.Title_1_White);
         txtStatus.setText(getContext().getString(R.string.onboarding_code_sent_status, phoneNumber));
         status = SENT;

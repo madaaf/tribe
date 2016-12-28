@@ -60,7 +60,7 @@
             android:name=".presentation.view.activity.AuthActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"
-            android:configChanges="orientation|screenSize"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:theme="@style/AppTheme"
             />
 

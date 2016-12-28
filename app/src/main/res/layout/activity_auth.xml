@@ -6,6 +6,16 @@
     android:layout_width="match_parent"
     >
 
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:focusableInTouchMode="true"
+        android:focusable="true"
+        android:clickable="true"
+        >
+        <requestFocus />
+    </LinearLayout>
+
     <com.tribe.app.presentation.view.component.onboarding.AuthVideoView
         android:id="@+id/viewVideoAuth"
         android:layout_width="match_parent"

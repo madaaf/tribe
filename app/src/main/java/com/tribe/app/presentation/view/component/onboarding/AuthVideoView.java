@@ -23,6 +23,8 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class AuthVideoView extends FrameLayout implements TextureView.SurfaceTextureListener {
 
+    private static final String PAUSED = "PAUSED";
+
     @BindView(R.id.viewVideoScalable)
     ScalableVideoView viewVideoScalable;
 
@@ -110,6 +112,11 @@ public class AuthVideoView extends FrameLayout implements TextureView.SurfaceTex
 
     public void play() {
         mediaPlayer.play();
+        isPaused = false;
+    }
+
+    public boolean isPaused() {
+        return isPaused;
     }
 
     @Override

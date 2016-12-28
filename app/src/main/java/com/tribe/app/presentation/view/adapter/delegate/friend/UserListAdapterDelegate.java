@@ -35,10 +35,12 @@ public class UserListAdapterDelegate extends AddAnimationAdapterDelegate<List<Ob
 
     // VARIABLES
     private int avatarSize;
+    private String noProfilePicture;
 
     public UserListAdapterDelegate(Context context) {
         super(context);
         this.avatarSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
+        this.noProfilePicture = context.getString(R.string.no_profile_picture_url);
         ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
     }
 
@@ -101,7 +103,7 @@ public class UserListAdapterDelegate extends AddAnimationAdapterDelegate<List<Ob
         else
             vh.txtUsername.setText("");
 
-        if (!StringUtils.isEmpty(user.getProfilePicture())) {
+        if (!StringUtils.isEmpty(user.getProfilePicture()) && !user.getProfilePicture().equals(noProfilePicture)) {
             Glide.with(context).load(user.getProfilePicture())
                     .thumbnail(0.25f)
                     .override(avatarSize, avatarSize)

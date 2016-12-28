@@ -139,6 +139,8 @@ public class CodeView extends FrameLayout {
             subscriptions.unsubscribe();
             subscriptions.clear();
         }
+
+        if (animator != null) animator.cancel();
     }
 
     @Override
@@ -178,7 +180,8 @@ public class CodeView extends FrameLayout {
                             pinCircle2.setVisibility(INVISIBLE);
                             pinCircle3.setVisibility(VISIBLE);
                             pinCircle4.setVisibility(VISIBLE);
-                            txtCode2.setText(s.substring(1));
+                            txtCode1.setText(s.substring(0, 1));
+                            txtCode2.setText(s.substring(1, 2));
                             txtCode3.setText("");
                             break;
                         case 3:
@@ -186,7 +189,9 @@ public class CodeView extends FrameLayout {
                             pinCircle2.setVisibility(INVISIBLE);
                             pinCircle3.setVisibility(INVISIBLE);
                             pinCircle4.setVisibility(VISIBLE);
-                            txtCode3.setText(s.substring(2));
+                            txtCode1.setText(s.substring(0, 1));
+                            txtCode2.setText(s.substring(1, 2));
+                            txtCode3.setText(s.substring(2, 3));
                             txtCode4.setText("");
                             break;
                         case 4:
@@ -194,7 +199,10 @@ public class CodeView extends FrameLayout {
                             pinCircle2.setVisibility(INVISIBLE);
                             pinCircle3.setVisibility(INVISIBLE);
                             pinCircle4.setVisibility(INVISIBLE);
-                            txtCode4.setText(s.substring(3));
+                            txtCode1.setText(s.substring(0, 1));
+                            txtCode2.setText(s.substring(1, 2));
+                            txtCode3.setText(s.substring(2, 3));
+                            txtCode4.setText(s.substring(3, 4));
                             break;
                     }
 
@@ -347,6 +355,10 @@ public class CodeView extends FrameLayout {
                 .setInterpolator(new DecelerateInterpolator())
                 .setListener(null)
                 .start();
+    }
+
+    public void setCode(String code) {
+        editTxtCode.setText(code);
     }
 
     private void resetPinCodeView() {

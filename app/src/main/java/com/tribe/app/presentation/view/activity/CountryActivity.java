@@ -15,6 +15,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.view.adapter.CountryPhoneNumberAdapter;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 
 import java.util.ArrayList;
@@ -50,6 +51,9 @@ public class CountryActivity extends BaseActivity {
     @Inject
     CountryPhoneNumberAdapter countryAdapter;
 
+    @Inject
+    ScreenUtils screenUtils;
+
     @BindView(R.id.recyclerViewCountry)
     RecyclerView recyclerViewCountry;
 
@@ -81,6 +85,12 @@ public class CountryActivity extends BaseActivity {
     }
 
     @Override
+    protected void onPause() {
+        screenUtils.hideKeyboard(this);
+        super.onPause();
+    }
+
+    @Override
     protected void onDestroy() {
         countryAdapter.releaseSubscriptions();
         subscriptions.unsubscribe();
@@ -97,12 +107,14 @@ public class CountryActivity extends BaseActivity {
      */
 
     public void initCountryList() {
+        listCountry = new ArrayList<>();
+        listCountryCopy = new ArrayList<>();
+
         subscriptions.add(
                 Observable.just(new ArrayList<>(phoneUtils.getSupportedRegions()))
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(listCodeCountry -> {
-                            listCountry = new ArrayList<>();
 
                             for (String countryCode : listCodeCountry) {
                                 String countryName = (new Locale("", countryCode).getDisplayCountry());
@@ -110,7 +122,6 @@ public class CountryActivity extends BaseActivity {
                             }
 
                             Collections.sort(listCountry);
-                            listCountryCopy = new ArrayList<>();
                             listCountryCopy.addAll(listCountry);
                             countryAdapter.setItems(listCountry);
                             linearLayoutManager = new LinearLayoutManager(this);

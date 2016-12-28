@@ -61,36 +61,41 @@
 
     </FrameLayout>
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/btnGroup"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right|center_vertical"
-        android:layout_marginRight="110dp"
-        android:drawableLeft="@drawable/picto_add_group"
-        android:drawablePadding="7.5dp"
-        android:padding="10dp"
-        android:background="@drawable/selectable_button_all_rounded"
-        android:text="@string/topbar_create_group"
-        android:singleLine="true"
-        style="@style/Body.Two.White"
-        android:clickable="true"
-        />
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/btnInvites"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right|center_vertical"
         android:layout_marginRight="@dimen/horizontal_margin_small"
-        android:drawableLeft="@drawable/picto_invites"
-        android:drawablePadding="7.5dp"
-        android:padding="10dp"
-        android:background="@drawable/selectable_button_all_rounded"
-        android:text="@string/topbar_invite_friend"
-        android:singleLine="true"
-        style="@style/Body.Two.White"
-        android:clickable="true"
-        />
+        android:layout_gravity="right|center_vertical"
+        android:orientation="horizontal">
 
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/btnGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/horizontal_margin_small"
+            android:drawableLeft="@drawable/picto_add_group"
+            android:drawablePadding="7.5dp"
+            android:padding="10dp"
+            android:background="@drawable/selectable_button_all_rounded"
+            android:text="@string/topbar_create_group"
+            android:singleLine="true"
+            style="@style/Body.Two.White"
+            android:clickable="true"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/btnInvites"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/picto_invites"
+            android:drawablePadding="7.5dp"
+            android:padding="10dp"
+            android:background="@drawable/selectable_button_all_rounded"
+            android:text="@string/topbar_new_friend"
+            android:singleLine="true"
+            style="@style/Body.Two.White"
+            android:clickable="true"
+            />
+
+    </LinearLayout>
 </merge>
