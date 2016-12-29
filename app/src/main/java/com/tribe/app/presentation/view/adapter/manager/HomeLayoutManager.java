@@ -12,6 +12,8 @@ public class HomeLayoutManager extends GridLayoutManager {
 
     public HomeLayoutManager(Context context) {
         super(context, 2);
+        setItemPrefetchEnabled(true);
+        setInitialPrefetchItemCount(8);
     }
 
     public void setScrollEnabled(boolean enabled) {

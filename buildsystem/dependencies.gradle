@@ -8,22 +8,22 @@ ext {
     //Android
     androidBuildToolsVersion = "25.0.1"
     androidMinSdkVersion = 18
-    androidTargetSdkVersion = 24
-    androidCompileSdkVersion = 24
+    androidTargetSdkVersion = 25
+    androidCompileSdkVersion = 25
 
     //Libraries
     daggerVersion = '2.8'
     butterKnifeVersion = '8.4.0'
-    recyclerViewVersion = '25.0.1'
-    appCompatVersion = '25.0.1'
-    designSupportVersion = '25.0.1'
-    cardDesignVersion = '25.0.1'
+    recyclerViewVersion = '25.1.0'
+    appCompatVersion = '25.1.0'
+    designSupportVersion = '25.1.0'
+    cardDesignVersion = '25.1.0'
     rxJavaVersion = '1.2.1'
     rxAndroidVersion = '1.2.1'
     javaxAnnotationVersion = '1.0'
     gsonVersion = '2.8.0'
     retrofitVersion = '2.1.0'
-    androidAnnotationsVersion = '25.0.1'
+    androidAnnotationsVersion = '25.1.0'
     okHttpVersion = '3.5.0'
     priorityJobQueueVersion = '2.0.1'
     pahoMQTT3Version = '1.0.2'
