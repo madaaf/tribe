@@ -46,7 +46,6 @@ public class TileView extends SquareFrameLayout {
     private Unbinder unbinder;
 
     // RX SUBSCRIPTIONS / SUBJECTS
-    private final PublishSubject<View> onDown = PublishSubject.create();
     private final PublishSubject<View> clickMoreView = PublishSubject.create();
 
     // RESOURCES
@@ -97,13 +96,13 @@ public class TileView extends SquareFrameLayout {
     public void initSize() {
         int size = (int) ((screenUtils.getWidthPx() >> 1) * 0.4f);
         ViewGroup.LayoutParams params = avatar.getLayoutParams();
-        params.width = size - screenUtils.dpToPx(15);
-        params.height = size - screenUtils.dpToPx(15);
+        params.width = size;
+        params.height = size;
         avatar.setLayoutParams(params);
 
         params = viewShadow.getLayoutParams();
-        params.width = size;
-        params.height = size;
+        params.width = size + screenUtils.dpToPx(25);
+        params.height = size + screenUtils.dpToPx(25);
         viewShadow.setLayoutParams(params);
 
         avatar.invalidate();

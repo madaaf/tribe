@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.widget.FrameLayout;
 
 import com.facebook.rebound.SpringConfig;
@@ -117,6 +118,19 @@ public class TopBarContainer extends FrameLayout {
     ///////////////////////
     //    TOUCH EVENTS   //
     ///////////////////////
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        boolean isTouchInTopBar = ev.getRawY() < topBarView.getHeight();
+        if (!isEnabled() || canChildScrollUp() || isTouchInTopBar) {
+            if (isTouchInTopBar)
+                topBarView.onTouchEvent(ev);
+
+            return false;
+        }
+
+        return false;
+    }
 
     private boolean canChildScrollUp() {
         return ViewCompat.canScrollVertically(recyclerView, -1);
