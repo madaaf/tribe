@@ -27,6 +27,7 @@ allprojects {
 
     repositories {
         maven { url "http://appboy.github.io/appboy-android-sdk/sdk" }
+        maven { url  "http://tokbox.bintray.com/maven" }
     }
 }
 

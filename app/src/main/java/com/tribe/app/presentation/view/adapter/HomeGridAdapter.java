@@ -106,6 +106,11 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
                 groupGridAdapterDelegate.onClickMore());
     }
 
+    public Observable<View> onClick() {
+        return Observable.merge(userGridAdapterDelegate.onClick(),
+                groupGridAdapterDelegate.onClick());
+    }
+
     public void setItems(List<Recipient> items) {
         this.items.clear();
         this.items.add(new Friendship(Recipient.ID_HEADER));

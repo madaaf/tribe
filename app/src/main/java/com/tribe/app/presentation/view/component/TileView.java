@@ -47,6 +47,7 @@ public class TileView extends SquareFrameLayout {
 
     // RX SUBSCRIPTIONS / SUBJECTS
     private final PublishSubject<View> clickMoreView = PublishSubject.create();
+    private final PublishSubject<View> click = PublishSubject.create();
 
     // RESOURCES
     private int sizeAvatar;
@@ -112,12 +113,17 @@ public class TileView extends SquareFrameLayout {
     public void initClicks() {
         if (type == TYPE_GRID) {
             prepareTouchesMore();
+            prepareClickOnView();
         }
     }
 
     private void prepareTouchesMore() {
-        txtName.setOnClickListener(v -> {
-            clickMoreView.onNext(this);
+        txtName.setOnClickListener(v -> clickMoreView.onNext(this));
+    }
+
+    private void prepareClickOnView() {
+        setOnClickListener(v -> {
+            click.onNext(v);
         });
     }
 
@@ -137,12 +143,14 @@ public class TileView extends SquareFrameLayout {
     }
 
     public void setBackground(int position) {
-        UIUtils.setBackgroundGrid(screenUtils, this, position);
+        UIUtils.setBackgroundGrid(screenUtils, this, position, true);
     }
 
     public Observable<View> onClickMore() {
         return clickMoreView;
     }
+
+    public Observable<View> onClick() { return click; }
 
     private void initDependencyInjector() {
         ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);

@@ -10,7 +10,7 @@ import android.view.View;
 
 public class UIUtils {
 
-    public static void setBackgroundGrid(ScreenUtils screenUtils, View v, int position) {
+    public static void setBackgroundGrid(ScreenUtils screenUtils, View v, int position, boolean hasCorners) {
         Drawable background = v.getBackground();
         int color = PaletteGrid.get(position);
         int radiusTopLeft = position == 1 ? screenUtils.dpToPx(5) : 0;
@@ -21,14 +21,14 @@ public class UIUtils {
             GradientDrawable gradientDrawable = new GradientDrawable();
             gradientDrawable.setShape(GradientDrawable.RECTANGLE);
             gradientDrawable.setColor(color);
-            gradientDrawable.setCornerRadii(radiusMatrix);
+            if (hasCorners) gradientDrawable.setCornerRadii(radiusMatrix);
             v.setBackground(gradientDrawable);
         }
 
         if (background instanceof GradientDrawable) {
             GradientDrawable gradientDrawable = (GradientDrawable) background;
             gradientDrawable.setColor(color);
-            gradientDrawable.setCornerRadii(radiusMatrix);
+            if (hasCorners) gradientDrawable.setCornerRadii(radiusMatrix);
         }
     }
 }

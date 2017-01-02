@@ -30,6 +30,7 @@ public abstract class RecipientGridAdapterDelegate extends RxAdapterDelegate<Lis
 
     // RX SUBSCRIPTIONS / SUBJECTS
     protected final PublishSubject<View> clickMoreView = PublishSubject.create();
+    protected final PublishSubject<View> click = PublishSubject.create();
 
     public RecipientGridAdapterDelegate(Context context) {
         this.context = context;
@@ -45,6 +46,7 @@ public abstract class RecipientGridAdapterDelegate extends RxAdapterDelegate<Lis
         recipientGridViewHolder.viewTile.initSize();
         recipientGridViewHolder.viewTile.initClicks();
         recipientGridViewHolder.viewTile.onClickMore().subscribe(clickMoreView);
+        recipientGridViewHolder.viewTile.onClick().subscribe(click);
 
         return recipientGridViewHolder;
     }
@@ -61,6 +63,8 @@ public abstract class RecipientGridAdapterDelegate extends RxAdapterDelegate<Lis
     public Observable<View> onClickMore() {
         return clickMoreView;
     }
+
+    public Observable<View> onClick() { return click; }
 
     protected abstract int getLayoutId();
 

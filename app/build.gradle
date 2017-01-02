@@ -89,7 +89,7 @@ android {
 
     buildTypes {
         debug {
-            generateStrings()
+            //generateStrings()
             
             signingConfig signingConfigs.debug
             testCoverageEnabled true
@@ -104,6 +104,9 @@ android {
             buildConfigField "String", "AMPLITUDE_KEY", "\"${amplitude_debug}\""
             buildConfigField "String", "TRIBE_URL", "\"${tribe_url_debug}\""
             buildConfigField "String", "TRIBE_DYNAMIC_LINK", "\"${tribe_dynamic_link_debug}\""
+            buildConfigField "String", "OPEN_TOK_API_KEY", "\"${opentok_api_key_debug}\""
+            buildConfigField "String", "OPEN_TOK_SESSION_ID", "\"${opentok_session_id_debug}\""
+            buildConfigField "String", "OPEN_TOK_TOKEN", "\"${opentok_token_debug}\""
         }
 
         tribe2 {
@@ -124,6 +127,8 @@ android {
 
         release {
             debuggable false
+            minifyEnabled true
+            shrinkResources true
             signingConfig signingConfigs.release
             resValue "string", "app_name", "Tribe"
             resValue "string", "branch_io", "\"${branch_io_prod}\""
@@ -135,6 +140,9 @@ android {
             buildConfigField "String", "AMPLITUDE_KEY", "\"${amplitude_prod}\""
             buildConfigField "String", "TRIBE_URL", "\"${tribe_url}\""
             buildConfigField "String", "TRIBE_DYNAMIC_LINK", "\"${tribe_dynamic_link}\""
+            buildConfigField "String", "OPEN_TOK_API_KEY", "\"${opentok_api_key}\""
+            buildConfigField "String", "OPEN_TOK_SESSION_ID", "\"${opentok_session_id}\""
+            buildConfigField "String", "OPEN_TOK_TOKEN", "\"${opentok_token}\""
         }
     }
 }
@@ -193,6 +201,8 @@ dependencies {
     compile presentationDependencies.recyclerViewAnimators
     compile presentationDependencies.firebaseRemote
     compile presentationDependencies.branchIo
+    compile presentationDependencies.openTok
+    compile presentationDependencies.timber
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker

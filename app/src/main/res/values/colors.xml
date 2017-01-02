@@ -9,6 +9,7 @@
     <color name="black.opacity.70">#B3000000</color>
     <color name="black.opacity.80">#CC000000</color>
     <color name="black.infos">#1A14181A</color>
+    <color name="black.light">#1F2125</color>
 
     <!-- WHITES -->
     <color name="white.opacity.15">#26FFFFFF</color>

@@ -267,7 +267,15 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
                             return recipient;
                         }))
-                .subscribe());
+                .subscribe()
+        );
+
+        subscriptions.add(homeGridAdapter.onClick()
+                .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
+                .subscribe(recipient -> {
+                    navigator.navigateToLiveTest(this, recipient);
+                })
+        );
     }
 
     private void initDependencyInjector() {
@@ -401,13 +409,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @Override
     public void hideLoading() {
-        //if (topBarContainer.isRefreshing() && canEndRefresh) topBarContainer.setRefreshing(false, false);
-        //canEndRefresh = true;
     }
 
     @Override
     public void showError(String message) {
-        //topBarContainer.showError();
     }
 
     @Override

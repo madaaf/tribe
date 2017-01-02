@@ -200,6 +200,18 @@
             android:theme="@style/AppTheme.FullScreen"
             />
 
+        <activity
+            android:name=".presentation.view.activity.LiveActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.BlackLight"
+            />
+
+        <activity
+            android:name=".presentation.view.activity.LiveTestActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.BlackLight"
+            />
+
         <service android:name=".presentation.service.TribeFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

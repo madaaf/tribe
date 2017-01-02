@@ -48,7 +48,7 @@ public class EmptyGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>>
     @Override
     public void onBindViewHolder(@NonNull List<Recipient> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         EmptyGridViewHolder vh = (EmptyGridViewHolder) holder;
-        UIUtils.setBackgroundGrid(screenUtils, vh.layoutContent, position);
+        UIUtils.setBackgroundGrid(screenUtils, vh.layoutContent, position, true);
     }
 
     static class EmptyGridViewHolder extends RecyclerView.ViewHolder {

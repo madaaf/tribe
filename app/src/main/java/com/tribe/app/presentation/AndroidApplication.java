@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.multidex.MultiDex;
 
-import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.stetho.Stetho;
@@ -21,13 +20,13 @@ import java.util.Date;
 import java.util.List;
 
 import io.branch.referral.Branch;
-import io.fabric.sdk.android.Fabric;
 import io.realm.DynamicRealmObject;
 import io.realm.FieldAttribute;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmObjectSchema;
 import io.realm.RealmSchema;
+import timber.log.Timber;
 
 /**
  * Android Main Application
@@ -39,13 +38,13 @@ public class AndroidApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics());
-        this.initializeInjector();
-        this.initializeLeakDetection();
-        this.initializeRealm();
-        this.initializeStetho();
-        this.initializeFacebook();
-        this.initializeBranch();
+        initInjector();
+        initLeakDetection();
+        initRealm();
+        initStetho();
+        initFacebook();
+        initBranch();
+        initTimber();
     }
 
     @Override
@@ -59,7 +58,7 @@ public class AndroidApplication extends Application {
         super.onTerminate();
     }
 
-    private void initializeInjector() {
+    private void initInjector() {
         this.applicationComponent = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))
                 .build();
@@ -69,7 +68,7 @@ public class AndroidApplication extends Application {
         return this.applicationComponent;
     }
 
-    private void initializeLeakDetection() {
+    private void initLeakDetection() {
         if (BuildConfig.DEBUG) {
 //            if (LeakCanary.isInAnalyzerProcess(this)) {
 //                // This process is dedicated to LeakCanary for heap analysis.
@@ -81,13 +80,13 @@ public class AndroidApplication extends Application {
         }
     }
 
-    private void initializeStetho() {
+    private void initStetho() {
         if (BuildConfig.DEBUG) {
             Stetho.initializeWithDefaults(this);
         }
     }
 
-    private void initializeRealm() {
+    private void initRealm() {
         Realm.init(this);
         RealmConfiguration realmConfiguration = new RealmConfiguration
                 .Builder()
@@ -168,13 +167,21 @@ public class AndroidApplication extends Application {
         Realm.setDefaultConfiguration(realmConfiguration);
     }
 
-    private void initializeFacebook() {
+    private void initFacebook() {
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
     }
 
-    private void initializeBranch() {
+    private void initBranch() {
         Branch.getAutoInstance(this);
+    }
+
+    private void initTimber() {
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        } else {
+            Timber.plant(new ProductionTree(this));
+        }
     }
 
     public void logoutUser() {

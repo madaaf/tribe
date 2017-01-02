@@ -14,6 +14,7 @@ import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.domain.entity.Membership;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
@@ -26,6 +27,8 @@ import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
+import com.tribe.app.presentation.view.activity.LiveActivity;
+import com.tribe.app.presentation.view.activity.LiveTestActivity;
 import com.tribe.app.presentation.view.activity.PickYourFriendsActivity;
 import com.tribe.app.presentation.view.activity.PointsActivity;
 import com.tribe.app.presentation.view.activity.ScoreActivity;
@@ -242,6 +245,28 @@ public class Navigator {
     public void navigateToSearchUser(Activity activity, String username) {
         if (activity != null) {
             Intent intent = SearchUserActivity.getCallingIntent(activity, username);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+        }
+    }
+
+    /**
+     * Goes to the live screen.
+     *
+     * @param activity activity needed to open the destiny activity.
+     * @param recipient recipient to go live with
+     */
+    public void navigateToLive(Activity activity, Recipient recipient) {
+        if (activity != null) {
+            Intent intent = LiveActivity.getCallingIntent(activity, recipient);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+        }
+    }
+
+    public void navigateToLiveTest(Activity activity, Recipient recipient) {
+        if (activity != null) {
+            Intent intent = LiveTestActivity.getCallingIntent(activity, recipient);
             activity.startActivity(intent);
             activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
         }
