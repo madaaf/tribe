@@ -33,4 +33,14 @@ public class UserLive {
     public void setView(View view) {
         this.view = view;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return user.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return user.hashCode();
+    }
 }

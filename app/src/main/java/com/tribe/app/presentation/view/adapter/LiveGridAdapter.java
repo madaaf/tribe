@@ -1,11 +1,13 @@
 package com.tribe.app.presentation.view.adapter;
 
 import android.content.Context;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.presentation.view.adapter.delegate.live.LiveGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.diff.UserLiveDiffCallback;
 import com.tribe.app.presentation.view.adapter.viewmodel.UserLive;
 
 import java.util.ArrayList;
@@ -26,7 +28,6 @@ public class LiveGridAdapter extends RecyclerView.Adapter {
 
     // VARIABLES
     private List<UserLive> items;
-    private int screenHeight = 0;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -46,6 +47,7 @@ public class LiveGridAdapter extends RecyclerView.Adapter {
     @Override
     public long getItemId(int position) {
         UserLive userLive = getItemAtPosition(position);
+        System.out.println("Position : " + position + " Hash code : " + userLive.getUser().hashCode());
         return userLive.getUser().hashCode();
     }
 
@@ -79,8 +81,14 @@ public class LiveGridAdapter extends RecyclerView.Adapter {
     }
 
     public void setItems(List<UserLive> items) {
+        final UserLiveDiffCallback diffCallback = new UserLiveDiffCallback(this.items, items);
+        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
+
+        liveGridAdapterDelegate.setCount(items.size());
+
         this.items.clear();
         this.items.addAll(items);
+        diffResult.dispatchUpdatesTo(this);
     }
 
     public UserLive getItemAtPosition(int position) {
@@ -96,7 +104,6 @@ public class LiveGridAdapter extends RecyclerView.Adapter {
     }
 
     public void setScreenHeight(int screenHeight) {
-        this.screenHeight = screenHeight;
         liveGridAdapterDelegate.setScreenHeight(screenHeight);
     }
 }

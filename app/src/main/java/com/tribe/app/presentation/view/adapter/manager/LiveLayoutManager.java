@@ -11,7 +11,7 @@ public class LiveLayoutManager extends GridLayoutManager {
     private boolean isScrollEnabled = true;
 
     public LiveLayoutManager(Context context) {
-        super(context, 1);
+        super(context, 2);
         setItemPrefetchEnabled(true);
         setReverseLayout(true);
         setInitialPrefetchItemCount(8);

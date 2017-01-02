@@ -13,6 +13,7 @@ import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.viewmodel.UserLive;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.List;
 
@@ -56,24 +57,31 @@ public class LiveGridAdapterDelegate extends RxAdapterDelegate<List<UserLive>> {
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
         LiveViewHolder liveViewHolder = new LiveViewHolder(layoutInflater.inflate(R.layout.item_live_grid, parent, false));
 
-        if (count <= 2) {
-            ViewGroup.LayoutParams params = liveViewHolder.itemView.getLayoutParams();
-            params.height = screenHeight >> 1;
-            liveViewHolder.itemView.setLayoutParams(params);
-        } else if (count <= 4) {
-            ViewGroup.LayoutParams params = liveViewHolder.itemView.getLayoutParams();
-            params.height = screenHeight >> 1;
-            liveViewHolder.itemView.setLayoutParams(params);
-        }
-
         return liveViewHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull List<UserLive> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         LiveViewHolder vh = (LiveViewHolder) holder;
+        UserLive userLive = items.get(position);
+
+        if (count <= 4) {
+            ViewGroup.LayoutParams params = vh.itemView.getLayoutParams();
+            params.height = screenHeight >> 1;
+            vh.itemView.setLayoutParams(params);
+        } else if (count >= 5 && count <= 6) {
+            ViewGroup.LayoutParams params = vh.itemView.getLayoutParams();
+            params.height = screenHeight / 3;
+            vh.itemView.setLayoutParams(params);
+        } else if (count > 6 && count <= 8) {
+            ViewGroup.LayoutParams params = vh.itemView.getLayoutParams();
+            params.height = screenHeight / 4;
+            vh.itemView.setLayoutParams(params);
+        }
 
         UIUtils.setBackgroundGrid(screenUtils, vh.layoutContainer, position, false);
+
+        vh.txtName.setText(userLive.getUser().getId());
     }
 
     public void setCount(int count) {
@@ -89,6 +97,7 @@ public class LiveGridAdapterDelegate extends RxAdapterDelegate<List<UserLive>> {
     static class LiveViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.layoutContainer) public ViewGroup layoutContainer;
+        @BindView(R.id.txtName) public TextViewFont txtName;
 
         public LiveViewHolder(View itemView) {
             super(itemView);

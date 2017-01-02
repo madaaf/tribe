@@ -3,7 +3,9 @@ package com.tribe.app.presentation.view.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.view.View;
 
 import com.tribe.app.R;
@@ -24,7 +26,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import jp.wasabeef.recyclerview.animators.ScaleInRightAnimator;
+import jp.wasabeef.recyclerview.animators.FadeInAnimator;
 import rx.subscriptions.CompositeSubscription;
 
 public class LiveTestActivity extends BaseActivity {
@@ -46,6 +48,7 @@ public class LiveTestActivity extends BaseActivity {
     // VARIABLES
     private Unbinder unbinder;
     private LiveLayoutManager layoutManager;
+    private List<UserLive> userLiveList;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -80,20 +83,40 @@ public class LiveTestActivity extends BaseActivity {
     }
 
     private void init() {
+        userLiveList = new ArrayList<>();
+
         liveGridAdapter.setScreenHeight(getScreenHeight());
         layoutManager = new LiveLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(new ScaleInRightAnimator());
+        FadeInAnimator animator = new FadeInAnimator();
+        animator.setChangeDuration(0);
+        recyclerView.setItemAnimator(animator);
+        ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
-        List<UserLive> userLiveList = new ArrayList<>();
         userLiveList.add(new UserLive(new User("0"), new View(this)));
-        userLiveList.add(new UserLive(new User("1"), new View(this)));
         liveGridAdapter.setItems(userLiveList);
 
         recyclerView.setAdapter(liveGridAdapter);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(0, 1);
         recyclerView.requestDisallowInterceptTouchEvent(true);
         layoutManager.setScrollEnabled(false);
+        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                if (layoutManager.getItemCount() <= 2) return 2;
+                else if (layoutManager.getItemCount() == 4
+                        || layoutManager.getItemCount() == 6
+                        || layoutManager.getItemCount() == 8) {
+                    return 1;
+                } else if (layoutManager.getItemCount() == 3
+                        || layoutManager.getItemCount() == 5
+                        || layoutManager.getItemCount() == 7) {
+                    return position == 0 ? 2 : 1;
+                }
+
+                return layoutManager.getSpanCount();
+            }
+        });
     }
 
     private void initResources() {
@@ -121,9 +144,23 @@ public class LiveTestActivity extends BaseActivity {
 
     @OnClick(R.id.imgAdd)
     void onAdd() {
-//        int position = liveGridAdapter.getItemCount();
-        layoutManager.setSpanCount(2);
-        layoutManager.requestLayout();
+        int position = liveGridAdapter.getItemCount();
+
+        if (position < 8) {
+            UserLive userLive = new UserLive(new User(String.valueOf(position)), new View(this));
+            refactorPositionInGrid(position, userLive);
+            liveGridAdapter.setItems(userLiveList);
+        }
+    }
+
+    private void refactorPositionInGrid(int position, UserLive userLive) {
+        if (position == 3 || position == 5 || position == 7) { // The 4th and the 6th live feed go right next to the 0
+            userLiveList.add(1, userLive);
+        } else if (position == 4 || position == 6) { // The 5th and 7th live feed go right below to the 0
+            userLiveList.add(0, userLive);
+        } else {
+            userLiveList.add(position, userLive);
+        }
     }
 
     @Override
