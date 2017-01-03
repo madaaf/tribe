@@ -15,7 +15,8 @@
         android:clickable="true"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:orientation="vertical" />
+        android:orientation="vertical"
+        />
 
     <FrameLayout
         android:layout_width="match_parent"

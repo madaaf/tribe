@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -90,7 +91,7 @@ public class LiveTestActivity extends BaseActivity {
         recyclerView.setLayoutManager(layoutManager);
         FadeInAnimator animator = new FadeInAnimator();
         animator.setChangeDuration(0);
-        recyclerView.setItemAnimator(animator);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
         ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
         userLiveList.add(new UserLive(new User("0"), new View(this)));

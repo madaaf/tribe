@@ -227,6 +227,17 @@ public class AnimationUtils {
         animator.start();
     }
 
+    public static void animateRightMargin(View view, int margin, int duration) {
+        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        ValueAnimator animator = ValueAnimator.ofInt(lp.rightMargin, margin);
+        animator.setDuration(duration);
+        animator.addUpdateListener(animation -> {
+            lp.rightMargin = (Integer) animation.getAnimatedValue();
+            view.setLayoutParams(lp);
+        });
+        animator.start();
+    }
+
     public static void animateTopMargin(View view, int margin, int duration, Interpolator interpolator) {
         ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         ValueAnimator animator = ValueAnimator.ofInt(lp.topMargin, margin);

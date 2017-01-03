@@ -7,7 +7,7 @@
         android:id="@+id/imgAvatar"
         android:layout_width="@dimen/avatar_size_smaller"
         android:layout_height="@dimen/avatar_size_smaller"
-        android:layout_gravity="left|center_vertical"
+        android:layout_gravity="center_vertical|left"
         android:layout_marginLeft="@dimen/horizontal_margin_small"
         android:background="@drawable/bg_top_bar_circle"
         android:scaleType="centerInside"
@@ -15,26 +15,69 @@
         android:foreground="@drawable/selectable_button_oval_light"
         />
 
-    <LinearLayout
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/btnNew"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="35dp"
         android:layout_marginRight="@dimen/horizontal_margin_small"
         android:layout_gravity="right|center_vertical"
-        android:orientation="horizontal">
+        android:gravity="center_vertical"
+        android:drawableLeft="@drawable/picto_add_new"
+        android:drawablePadding="7.5dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:background="@drawable/selectable_button_all_rounded_white_10"
+        android:text="@string/topbar_new_live"
+        android:singleLine="true"
+        style="@style/Body.Two.White"
+        android:clickable="true"
+        />
 
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/btnNew"
+    <ImageView
+        android:id="@+id/imgClose"
+        android:layout_width="@dimen/avatar_size_smaller"
+        android:layout_height="@dimen/avatar_size_smaller"
+        android:layout_marginRight="@dimen/horizontal_margin_small"
+        android:layout_gravity="right|center_vertical"
+        android:background="@drawable/bg_top_bar_circle"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_search_close"
+        android:clickable="true"
+        android:foreground="@drawable/selectable_button_oval_light"
+        />
+
+    <LinearLayout
+        android:id="@+id/btnSearch"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/avatar_size_smaller"
+        android:layout_gravity="center_vertical|left"
+        android:paddingLeft="@dimen/horizontal_margin_smaller"
+        android:paddingRight="@dimen/horizontal_margin_smaller"
+        android:background="@drawable/shape_rect_rounded_white_10"
+        android:orientation="horizontal"
+        android:clickable="true"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/imgSearch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/picto_add_group"
-            android:drawablePadding="7.5dp"
-            android:padding="10dp"
-            android:background="@drawable/selectable_button_all_rounded"
-            android:text="@string/topbar_new_friend"
-            android:singleLine="true"
-            style="@style/Body.Two.White"
-            android:clickable="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/picto_search_white"
             />
 
+        <com.tribe.app.presentation.view.widget.EditTextFont
+            android:id="@+id/editTextSearch"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:background="@null"
+            android:gravity="center_vertical"
+            android:hint="@string/topbar_search"
+            android:textColorHint="@color/white.opacity.40"
+            android:singleLine="true"
+            style="@style/Body.One.White"
+            android:imeOptions="actionDone"
+            />
     </LinearLayout>
 </merge>

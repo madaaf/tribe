@@ -516,6 +516,8 @@
 	<string name="topbar_create_group">Group</string>
 	<string name="topbar_invite_friend">Invites</string>
 	<string name="topbar_new_friend">Friend</string>
+	<string name="topbar_new_live">New</string>
+	<string name="topbar_search">Search</string>
 	<string name="topbar_invite_friend_toast">Which friend would you like to invite to chat today? :tada:</string>
 	<string name="topbar_invite_search_action">:mag: Find friends already on Tribe</string>
 	<string name="topbar_invite_sms_action_ios">:link: Invite friends on iMessage</string>

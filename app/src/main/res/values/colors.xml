@@ -12,6 +12,8 @@
     <color name="black.light">#1F2125</color>
 
     <!-- WHITES -->
+    <color name="white.opacity.5">#0DFFFFFF</color>
+    <color name="white.opacity.10">#1AFFFFFF</color>
     <color name="white.opacity.15">#26FFFFFF</color>
     <color name="white.opacity.20">#33FFFFFF</color>
     <color name="white.opacity.40">#66FFFFFF</color>

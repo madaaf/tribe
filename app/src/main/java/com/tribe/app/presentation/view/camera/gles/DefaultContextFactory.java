@@ -1,12 +1,13 @@
 package com.tribe.app.presentation.view.camera.gles;
 
 import android.opengl.GLSurfaceView;
-import android.util.Log;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
+
+import timber.log.Timber;
 
 import static javax.microedition.khronos.egl.EGL10.EGL_NONE;
 import static javax.microedition.khronos.egl.EGL10.EGL_NO_CONTEXT;
@@ -39,7 +40,7 @@ public class DefaultContextFactory implements GLSurfaceView.EGLContextFactory {
     @Override
     public void destroyContext(final EGL10 egl, final EGLDisplay display, final EGLContext context) {
         if (!egl.eglDestroyContext(display, context)) {
-            Log.e(TAG, "display:" + display + " context: " + context);
+            Timber.e("display:" + display + " context: " + context);
             throw new RuntimeException("eglDestroyContex" + egl.eglGetError());
         }
     }

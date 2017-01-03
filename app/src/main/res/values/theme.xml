@@ -12,6 +12,10 @@
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
     </style>
 
+    <style name="AppTheme.Black" parent="@style/AppTheme">
+        <item name="android:windowBackground">@android:color/black</item>
+    </style>
+
     <style name="AppTheme.BlackLight" parent="@style/AppTheme">
         <item name="android:windowBackground">@color/black.light</item>
     </style>

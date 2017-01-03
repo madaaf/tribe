@@ -13,14 +13,14 @@
         android:layout_marginTop="10dp"
         android:layout_marginLeft="@dimen/horizontal_margin_small"
         android:layout_marginRight="@dimen/horizontal_margin_small"
-        android:background="@drawable/selectable_button_all_rounded"
+        android:background="@drawable/selectable_button_all_rounded_white_5"
         android:clickable="true"
         android:singleLine="true"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:paddingLeft="7.5dp"
-        android:paddingRight="7.5dp"
-        android:drawablePadding="7.5dp"
+        android:paddingTop="7dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:drawablePadding="8.6dp"
         />
 
     <View
