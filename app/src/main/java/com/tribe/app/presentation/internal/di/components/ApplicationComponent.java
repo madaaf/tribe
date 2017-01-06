@@ -13,9 +13,7 @@ import com.tribe.app.data.network.job.DeleteContactsFBJob;
 import com.tribe.app.data.network.job.RefreshHowManyFriendsJob;
 import com.tribe.app.data.network.job.SynchroContactsJob;
 import com.tribe.app.data.network.job.UpdateFriendshipJob;
-import com.tribe.app.data.network.job.UpdateScoreJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
-import com.tribe.app.data.network.job.UpdateUserListScoreJob;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.repository.tribe.LiveDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
@@ -87,8 +85,6 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.video.LegacyMediaPlayer;
 import com.tribe.app.presentation.view.widget.AvatarView;
-import com.tribe.app.presentation.view.widget.ButtonCardView;
-import com.tribe.app.presentation.view.widget.ButtonPointsView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.LabelButton;
@@ -133,13 +129,11 @@ public interface ApplicationComponent {
     void inject(LabelButton labelButton);
     void inject(IntroVideoView introVideoView);
     void inject(LegacyMediaPlayer legacyMediaPlayer);
-    void inject(ButtonPointsView buttonPointsView);
     void inject(SearchResultGridAdapterDelegate searchResultGridAdapterDelegate);
     void inject(TopBarContainer topBarContainer);
     void inject(TopBarView topBarView);
     void inject(FilterView filterView);
 
-    void inject(ButtonCardView buttonCardView);
     void inject(GlPreview glPreview);
     void inject(VisualizerView visualizerView);
     void inject(RatingView ratingView);
@@ -162,9 +156,7 @@ public interface ApplicationComponent {
     void inject(UpdateUserJob updateUserJob);
     void inject(SynchroContactsJob synchroContactsJob);
     void inject(RefreshHowManyFriendsJob refreshHowManyFriendsJob);
-    void inject(UpdateScoreJob updateScoreJob);
     void inject(UpdateFriendshipJob updateFriendshipJob);
-    void inject(UpdateUserListScoreJob updateUserListScoreJob);
     void inject(DeleteContactsABJob deleteContactsABJob);
     void inject(DeleteContactsFBJob deleteContactsFBJob);
 

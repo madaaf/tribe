@@ -3,7 +3,6 @@ package com.tribe.app.presentation.mvp.presenter;
 import android.util.Pair;
 
 import com.birbit.android.jobqueue.JobManager;
-import com.tribe.app.data.network.job.UpdateScoreJob;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.domain.entity.Friendship;
@@ -28,7 +27,6 @@ import com.tribe.app.domain.interactor.user.UpdateMembership;
 import com.tribe.app.presentation.mvp.view.GroupMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.utils.ScoreUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -126,7 +124,6 @@ public class GroupPresenter implements Presenter {
         public void onNext(Friendship friendship) {
             if (friendship == null) groupView.onUserAddError();
             else {
-                jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.NEW_FRIENDSHIP, 1));
                 groupView.onUserAddSuccess(friendship);
             }
         }

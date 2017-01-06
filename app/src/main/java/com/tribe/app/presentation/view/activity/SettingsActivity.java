@@ -248,12 +248,6 @@ public class SettingsActivity extends BaseActivity implements SettingsMVPView {
     private void setupSettingsView() {
         viewSettings = (SettingsView) viewStack.push(R.layout.view_settings);
 
-        subscriptions.add(viewSettings.onPointsClick()
-                .subscribe(aVoid -> {
-                    navigator.navigateToScorePoints(this);
-                })
-        );
-
         subscriptions.add(viewSettings.onShareProfileClick()
                 .subscribe(aVoid -> {
                     ShareDialogProfileFragment shareDialogProfileFragment = ShareDialogProfileFragment.newInstance();
@@ -261,7 +255,6 @@ public class SettingsActivity extends BaseActivity implements SettingsMVPView {
 
                     if (!shareProfile.get()) {
                         shareProfile.set(true);
-                        settingsPresenter.updateScoreShare();
                     }
                 })
         );
@@ -322,7 +315,6 @@ public class SettingsActivity extends BaseActivity implements SettingsMVPView {
         subscriptions.add(viewSettings.onRateClick()
                 .subscribe(aVoid -> {
                     navigator.rateApp(this);
-                    settingsPresenter.updateScoreRateApp();
                 }));
 
         subscriptions.add(viewSettings.onLogoutClick()
@@ -362,10 +354,6 @@ public class SettingsActivity extends BaseActivity implements SettingsMVPView {
 
         subscriptions.add(viewSettingsParameters.onChangeInvisible()
                 .subscribe(aBoolean -> settingsPresenter.updateUserInvisibleMode(aBoolean))
-        );
-
-        subscriptions.add(viewSettingsParameters.onChangeLocation()
-                .subscribe(aBoolean -> settingsPresenter.updateScoreLocation())
         );
 
         subscriptions.add(viewSettingsParameters.onChangeMemories()

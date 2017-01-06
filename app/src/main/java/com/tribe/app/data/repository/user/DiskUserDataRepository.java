@@ -30,7 +30,6 @@ import com.tribe.app.presentation.view.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -289,11 +288,6 @@ public class DiskUserDataRepository implements UserRepository {
 
                     return userRealmDataMapper.transform(userRealm, true).getFriendships();
                 });
-    }
-
-    @Override
-    public Observable<List<User>> updateUserListScore(Set<String> userIds) {
-        return null;
     }
 
     @Override

@@ -13,15 +13,14 @@ import com.tribe.app.data.realm.Installation;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
-import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.GroupEntity;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 
 import java.util.List;
-import java.util.Set;
 
 import rx.Observable;
 
@@ -160,8 +159,6 @@ public interface UserRepository {
     Observable<Friendship> updateFriendship(final String friendshipId, @FriendshipRealm.FriendshipStatus String status);
 
     Observable<List<Friendship>> getBlockedFriendshipList();
-
-    Observable<List<User>> updateUserListScore(Set<String> userIds);
 
     Observable<String> getHeadDeepLink(String url);
 

@@ -20,7 +20,6 @@ import com.tribe.app.domain.entity.GroupEntity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import rx.Observable;
 
@@ -206,11 +205,6 @@ public class DiskUserDataStore implements UserDataStore {
     @Override
     public Observable<FriendshipRealm> updateFriendship(String friendshipId, @FriendshipRealm.FriendshipStatus String status) {
         return userCache.updateFriendship(friendshipId, status);
-    }
-
-    @Override
-    public Observable<List<UserRealm>> updateUserListScore(Set<String> userIds) {
-        return null;
     }
 
     @Override

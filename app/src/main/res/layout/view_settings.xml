@@ -44,17 +44,6 @@
             <include layout="@layout/view_separator_no_bg" />
 
             <com.tribe.app.presentation.view.component.ActionView
-                android:id="@+id/viewActionPoints"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                app:actionBody="@string/settings_score_subtitle"
-                app:actionType="points"
-                />
-
-            <include layout="@layout/view_separator_no_bg" />
-
-            <com.tribe.app.presentation.view.component.ActionView
                 android:id="@+id/viewActionFilters"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

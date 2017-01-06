@@ -47,7 +47,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -949,35 +948,6 @@ public class CloudUserDataStore implements UserDataStore {
     @Override
     public Observable<FriendshipRealm> updateFriendship(String friendshipId, @FriendshipRealm.FriendshipStatus String status) {
         return tribeApi.updateFriendship(context.getString(R.string.user_update_friendship, friendshipId, status));
-    }
-
-    @Override
-    public Observable<List<UserRealm>> updateUserListScore(Set<String> userIds) {
-        if (userIds.size() > 0) {
-            StringBuilder result = new StringBuilder();
-
-            for (String string : userIds) {
-                result.append("\"" + string + "\"");
-                result.append(",");
-            }
-
-            String idsStr = result.length() > 0 ? result.substring(0, result.length() - 1) : "";
-
-            String req = context.getString(R.string.user_infos_list,
-                    idsStr,
-                    context.getString(R.string.userfragment_score));
-
-            return tribeApi.updateUserListScore(req)
-                .map(userRealmList -> {
-                    for (UserRealm userRealm : userRealmList) {
-                        userCache.updateScore(userRealm.getId(), userRealm.getScore());
-                    }
-
-                    return userRealmList;
-                });
-        }
-
-        return Observable.empty();
     }
 
     @Override

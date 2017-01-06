@@ -108,8 +108,7 @@
             <enum name="sharing" value="2" />
             <enum name="toggle" value="3" />
             <enum name="critical" value="4" />
-            <enum name="points" value="5" />
-            <enum name="regular" value="6" />
+            <enum name="regular" value="5" />
         </attr>
     </declare-styleable>
 
@@ -138,4 +137,11 @@
         <attr name="pickAllBody" format="string" />
         <attr name="pickAllBGColor" format="color" />
     </declare-styleable>
+
+    <declare-styleable name="PulseLayout">
+        <attr name="pulseCount" format="integer" />
+        <attr name="pulseDuration" format="integer" />
+        <attr name="pulseColor" format="color" />
+    </declare-styleable>
+
 </resources>

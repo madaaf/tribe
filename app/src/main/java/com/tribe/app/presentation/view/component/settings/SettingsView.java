@@ -14,7 +14,6 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.component.ActionView;
-import com.tribe.app.presentation.view.utils.ScoreUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import javax.inject.Inject;
@@ -38,9 +37,6 @@ public class SettingsView extends FrameLayout {
 
     @BindView(R.id.viewActionProfile)
     ActionView viewActionProfile;
-
-    @BindView(R.id.viewActionPoints)
-    ActionView viewActionPoints;
 
     @BindView(R.id.viewActionShareProfile)
     ActionView viewActionShareProfile;
@@ -113,9 +109,6 @@ public class SettingsView extends FrameLayout {
     }
 
     private void initUI() {
-        ScoreUtils.Level level = ScoreUtils.getLevelForScore(user.getScore());
-        viewActionPoints.setTitle(getContext().getString(level.getStringId()));
-
         viewActionShareProfile.setTitle(getContext().getString(R.string.settings_profile_share_title, "@" + user.getUsername()));
         viewActionShareProfile.setBody(getContext().getString(R.string.settings_profile_share_title, BuildConfig.TRIBE_URL + "/@" + user.getUsername()));
 
@@ -147,10 +140,6 @@ public class SettingsView extends FrameLayout {
 
     public Observable<Void> onShareProfileClick() {
         return viewActionShareProfile.onClick();
-    }
-
-    public Observable<Void> onPointsClick() {
-        return viewActionPoints.onClick();
     }
 
     public Observable<Void> onFiltersClick() {

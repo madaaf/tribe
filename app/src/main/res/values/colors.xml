@@ -174,4 +174,8 @@
     <color name="black.10">#7B7B7B</color>
     <color name="black.11">#5C5C5C</color>
     <color name="black.12">#616161</color>
+
+    <!-- Pulses -->
+    <color name="live">#FD2448</color>
+    <color name="online">@android:color/white</color>
 </resources>

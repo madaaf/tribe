@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
-import com.tribe.app.data.network.job.UpdateScoreJob;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.SearchResult;
@@ -15,7 +14,6 @@ import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.SearchMVPView;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
-import com.tribe.app.presentation.view.utils.ScoreUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,7 +131,6 @@ public class SearchPresenter implements Presenter {
             if (friendship == null) {
                 searchView.onAddError();
             } else {
-                jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.NEW_FRIENDSHIP, 1));
                 searchView.onAddSuccess(friendship);
             }
         }

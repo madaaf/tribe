@@ -18,7 +18,6 @@ import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.User;
 
 import java.util.List;
-import java.util.Set;
 
 import rx.Observable;
 
@@ -162,8 +161,6 @@ public interface UserDataStore {
     Observable<Void> bootstrapSupport();
 
     Observable<FriendshipRealm> updateFriendship(String friendshipId, @FriendshipRealm.FriendshipStatus String status);
-
-    Observable<List<UserRealm>> updateUserListScore(Set<String> userIds);
 
     Observable<String> getHeadDeepLink(String url);
 

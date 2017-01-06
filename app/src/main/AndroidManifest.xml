@@ -91,6 +91,7 @@
             android:name=".presentation.view.activity.HomeActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
+            android:windowSoftInputMode="stateHidden"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Black"
@@ -140,20 +141,6 @@
             android:name=".presentation.view.activity.CountryActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            />
-
-        <activity
-            android:name=".presentation.view.activity.ScoreActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"
-            />
-
-        <activity
-            android:name=".presentation.view.activity.PointsActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"
             />
 
         <activity

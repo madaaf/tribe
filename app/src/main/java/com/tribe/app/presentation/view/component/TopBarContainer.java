@@ -7,7 +7,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 
-import com.facebook.rebound.SpringConfig;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -23,13 +22,6 @@ import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 public class TopBarContainer extends FrameLayout {
-
-    public static final int MIN_LENGTH = 1250; // ms
-
-    private static final SpringConfig PULL_TO_SEARCH_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(0f, 5f);
-    private static final float DRAG_RATE = 0.5f;
-    private static final int DRAG_THRESHOLD = 20;
-    private static final int INVALID_POINTER = -1;
 
     @Inject
     SoundManager soundManager;
@@ -113,6 +105,14 @@ public class TopBarContainer extends FrameLayout {
                 topBarView.onClickSettings()
                         .subscribe(clickSettings)
         );
+    }
+
+    public boolean isSearchMode() {
+        return topBarView.isSearchMode();
+    }
+
+    public void closeSearch() {
+        topBarView.closeSearch();
     }
 
     ///////////////////////

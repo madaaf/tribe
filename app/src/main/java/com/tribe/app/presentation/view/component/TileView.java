@@ -15,6 +15,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.AvatarView;
+import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.SquareFrameLayout;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
@@ -37,9 +38,17 @@ public class TileView extends SquareFrameLayout {
     @Inject
     ScreenUtils screenUtils;
 
-    @Nullable @BindView(R.id.txtName) public TextViewFont txtName;
-    @BindView(R.id.viewShadow) public View viewShadow;
-    @BindView(R.id.avatar) public AvatarView avatar;
+    @Nullable @BindView(R.id.txtName)
+    public TextViewFont txtName;
+
+    @BindView(R.id.viewShadow)
+    public View viewShadow;
+
+    @BindView(R.id.avatar)
+    public AvatarView avatar;
+
+    @BindView(R.id.layoutPulse)
+    public PulseLayout layoutPulse;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions;
@@ -50,7 +59,6 @@ public class TileView extends SquareFrameLayout {
     private final PublishSubject<View> click = PublishSubject.create();
 
     // RESOURCES
-    private int sizeAvatar;
 
     // VARIABLES
     private Recipient recipient;
@@ -72,8 +80,6 @@ public class TileView extends SquareFrameLayout {
         a.recycle();
 
         subscriptions = new CompositeSubscription();
-
-        sizeAvatar = context.getResources().getDimensionPixelSize(R.dimen.avatar_size);
 
         int resLayout = 0;
 
@@ -105,6 +111,11 @@ public class TileView extends SquareFrameLayout {
         params.width = size + screenUtils.dpToPx(25);
         params.height = size + screenUtils.dpToPx(25);
         viewShadow.setLayoutParams(params);
+
+        params = layoutPulse.getLayoutParams();
+        params.width = size + screenUtils.dpToPx(100);
+        params.height = size + screenUtils.dpToPx(100);
+        layoutPulse.setLayoutParams(params);
 
         avatar.invalidate();
         avatar.requestLayout();
@@ -139,6 +150,8 @@ public class TileView extends SquareFrameLayout {
             }
 
             txtName.setText(recipient.getDisplayName());
+
+            layoutPulse.start();
         }
     }
 

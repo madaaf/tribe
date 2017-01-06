@@ -33,7 +33,7 @@ import rx.subjects.PublishSubject;
  */
 public class ActionView extends FrameLayout {
 
-    @IntDef({ HIERARCHY, HIERARCHY_WITH_IMAGE, SHARING, TOGGLE, CRITICAL, POINTS, REGULAR })
+    @IntDef({ HIERARCHY, HIERARCHY_WITH_IMAGE, SHARING, TOGGLE, CRITICAL, REGULAR })
     public @interface ActionViewType {
     }
 
@@ -42,8 +42,7 @@ public class ActionView extends FrameLayout {
     public static final int SHARING = 2;
     public static final int TOGGLE = 3;
     public static final int CRITICAL = 4;
-    public static final int POINTS = 5;
-    public static final int REGULAR = 6;
+    public static final int REGULAR = 5;
 
     @Inject
     ScreenUtils screenUtils;
@@ -108,8 +107,6 @@ public class ActionView extends FrameLayout {
             layout = R.layout.view_action_toggle;
         } else if (type == CRITICAL) {
             layout = R.layout.view_action_critical;
-        } else if (type == POINTS) {
-            layout = R.layout.view_action_points;
         } else if (type == REGULAR) {
             layout = R.layout.view_action_regular;
         }

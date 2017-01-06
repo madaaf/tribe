@@ -391,10 +391,15 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        // This is important : Hack to open a dummy activity for 200-500ms (cannot be noticed by user as it is for 500ms
-        // and transparent floating activity and auto finishes)
-        startActivity(new Intent(this, DummyActivity.class));
-        finish();
+
+        if (!topBarContainer.isSearchMode()) {
+            // This is important : Hack to open a dummy activity for 200-500ms (cannot be noticed by user as it is for 500ms
+            // and transparent floating activity and auto finishes)
+            startActivity(new Intent(this, DummyActivity.class));
+            finish();
+        } else {
+            topBarContainer.closeSearch();
+        }
     }
 
     @Override

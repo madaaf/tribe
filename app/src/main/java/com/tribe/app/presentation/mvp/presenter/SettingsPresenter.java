@@ -5,7 +5,6 @@ import com.tribe.app.data.network.job.DeleteContactsABJob;
 import com.tribe.app.data.network.job.DeleteContactsFBJob;
 import com.tribe.app.data.network.job.RefreshHowManyFriendsJob;
 import com.tribe.app.data.network.job.UpdateFriendshipJob;
-import com.tribe.app.data.network.job.UpdateScoreJob;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
@@ -22,7 +21,6 @@ import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.SettingsMVPView;
 import com.tribe.app.presentation.mvp.view.UpdateUserMVPView;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
-import com.tribe.app.presentation.view.utils.ScoreUtils;
 
 import java.util.List;
 
@@ -103,14 +101,6 @@ public class SettingsPresenter extends UpdateUserPresenter {
         getDiskFBContactList.execute(new ContactFBListSubscriber());
     }
 
-    public void updateScoreLocation() {
-        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.LOCATION, 1));
-    }
-
-    public void updateScoreRateApp() {
-        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.RATE_APP, 1));
-    }
-
     public void deleteABContacts() {
         jobManager.addJobInBackground(new DeleteContactsABJob());
     }
@@ -126,10 +116,6 @@ public class SettingsPresenter extends UpdateUserPresenter {
     @Override
     protected UpdateUserMVPView getUpdateUserView() {
         return settingsView;
-    }
-
-    public void updateScoreShare() {
-        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.SHARE_PROFILE, 1));
     }
 
     private final class RemoveInstallSubscriber extends DefaultSubscriber<User> {

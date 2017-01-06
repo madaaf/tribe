@@ -30,8 +30,6 @@ import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.LiveTestActivity;
 import com.tribe.app.presentation.view.activity.PickYourFriendsActivity;
-import com.tribe.app.presentation.view.activity.PointsActivity;
-import com.tribe.app.presentation.view.activity.ScoreActivity;
 import com.tribe.app.presentation.view.activity.SearchUserActivity;
 import com.tribe.app.presentation.view.activity.SettingsActivity;
 
@@ -143,32 +141,6 @@ public class Navigator {
                 activity.startActivity(intent);
                 activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
             }
-        }
-    }
-
-    /**
-     * Goes to the score screen.
-     *
-     * @param activity An activity needed to open the destiny activity.
-     */
-    public void navigateToScorePoints(Activity activity) {
-        if (activity != null) {
-            Intent intent = ScoreActivity.getCallingIntent(activity);
-            activity.startActivity(intent);
-            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
-        }
-    }
-
-    /**
-     * Goes to the points screen.
-     *
-     * @param activity An activity needed to open the destiny activity.
-     */
-    public void navigateToPoints(Activity activity) {
-        if (activity != null) {
-            Intent intent = PointsActivity.getCallingIntent(activity);
-            activity.startActivity(intent);
-            activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
         }
     }
 

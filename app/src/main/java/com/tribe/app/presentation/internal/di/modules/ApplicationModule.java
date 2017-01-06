@@ -25,7 +25,6 @@ import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.tribe.LiveRepository;
 import com.tribe.app.domain.interactor.user.CloudUpdateFriendship;
-import com.tribe.app.domain.interactor.user.CloudUpdateUserListScore;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.RefreshHowManyFriends;
 import com.tribe.app.domain.interactor.user.SynchroContactList;
@@ -302,12 +301,6 @@ public class ApplicationModule {
     @Named("cloudUpdateFriendship")
     CloudUpdateFriendship provideCloudUpdateFriendship(CloudUpdateFriendship cloudUpdateFriendship) {
         return cloudUpdateFriendship;
-    }
-
-    @Provides
-    @Named("cloudUpdateUserListScore")
-    CloudUpdateUserListScore provideCloudUpdateUserListScore(CloudUpdateUserListScore cloudUpdateUserListScore) {
-        return cloudUpdateUserListScore;
     }
 
     @Provides

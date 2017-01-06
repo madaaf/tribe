@@ -225,7 +225,7 @@ public class TopBarView extends FrameLayout {
     }
 
     @OnClick(R.id.imgClose)
-    void closeSearch() {
+    public void closeSearch() {
         searchMode = false;
         screenUtils.hideKeyboard(editTextSearch);
         editTextSearch.getText().clear();
@@ -284,12 +284,17 @@ public class TopBarView extends FrameLayout {
         return true;
     }
 
+    public boolean isSearchMode() {
+        return searchMode;
+    }
+
     @Override
     public boolean dispatchKeyEventPreIme(KeyEvent event) {
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 
-        if (imm.isActive() && event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+        if (imm.isActive() && event.getKeyCode() == KeyEvent.KEYCODE_BACK && searchMode) {
             closeSearch();
+            return true;
         }
 
         return super.dispatchKeyEventPreIme(event);

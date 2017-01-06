@@ -19,8 +19,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-import static com.tribe.app.presentation.view.widget.ButtonPointsView.PROFILE;
-
 /**
  * Created by tiago on 11/19/2016.
  */
@@ -78,7 +76,7 @@ public class GroupSuggestionView extends FrameLayout {
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.GroupSuggestionView);
 
-        setType(a.getInt(R.styleable.GroupSuggestionView_groupType, PROFILE));
+        setType(a.getInt(R.styleable.GroupSuggestionView_groupType, BEST_FRIENDS));
         drawableId = a.getResourceId(R.styleable.GroupSuggestionView_groupDrawable, 0);
 
         if (a.hasValue(R.styleable.GroupSuggestionView_groupDrawable)) {
