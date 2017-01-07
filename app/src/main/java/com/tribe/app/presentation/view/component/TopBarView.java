@@ -14,16 +14,15 @@ import android.view.ViewTreeObserver;
 import android.view.animation.OvershootInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
+import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
+import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
 
 import javax.inject.Inject;
 
@@ -32,8 +31,11 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+
+import static com.tribe.app.R.id.imgAvatar;
 
 /**
  * Created by tiago on 11/15/2016.
@@ -51,8 +53,8 @@ public class TopBarView extends FrameLayout {
     @Inject
     User user;
 
-    @BindView(R.id.imgAvatar)
-    ImageView imgAvatar;
+    @BindView(R.id.viewAvatar)
+    AvatarLiveView viewAvatar;
 
     @BindView(R.id.btnNew)
     View btnNew;
@@ -80,6 +82,7 @@ public class TopBarView extends FrameLayout {
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private PublishSubject<Void> clickSettings = PublishSubject.create();
     private PublishSubject<Void> clickNew = PublishSubject.create();
+    private PublishSubject<String> onSearch = PublishSubject.create();
 
     public TopBarView(Context context) {
         super(context);
@@ -124,21 +127,23 @@ public class TopBarView extends FrameLayout {
         editTextSearch.setEnabled(false);
 
         btnSearch.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
             @Override
             public void onGlobalLayout() {
                 btnSearch.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 MarginLayoutParams params = (MarginLayoutParams) btnSearch.getLayoutParams();
                 params.rightMargin = btnNew.getWidth() + 2 * marginSmall;
-                params.leftMargin = imgAvatar.getWidth() + 2 * marginSmall;
+                params.leftMargin = viewAvatar.getWidth() + 2 * marginSmall;
                 btnSearch.setLayoutParams(params);
             }
         });
 
-        Glide.with(getContext()).load(user.getProfilePicture())
-                .override(avatarSize, avatarSize)
-                .bitmapTransform(new CropCircleTransformation(getContext()))
-                .crossFade()
-                .into(imgAvatar);
+        viewAvatar.load(user.getProfilePicture());
+
+        subscriptions.add(RxTextView.textChanges(editTextSearch).map(CharSequence::toString)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(onSearch)
+        );
     }
 
     private void initResources() {
@@ -154,9 +159,9 @@ public class TopBarView extends FrameLayout {
         switch (action & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_UP: {
                 if (isAClick(startX, event.getRawX(), startY, event.getRawY())) {
-                    if (isAClickInView(imgAvatar, (int) startX, (int) startY)) {
-                        imgAvatar.onTouchEvent(event);
-                        imgAvatar.performClick();
+                    if (isAClickInView(viewAvatar, (int) startX, (int) startY)) {
+                        viewAvatar.onTouchEvent(event);
+                        viewAvatar.performClick();
                     } else if (isAClickInView(btnNew, (int) startX, (int) startY)) {
                         btnNew.onTouchEvent(event);
                         btnNew.performClick();
@@ -178,8 +183,8 @@ public class TopBarView extends FrameLayout {
             }
 
             default:
-                if (isAClickInView(imgAvatar, (int) event.getRawX(), (int) event.getRawY())) {
-                    imgAvatar.onTouchEvent(event);
+                if (isAClickInView(viewAvatar, (int) event.getRawX(), (int) event.getRawY())) {
+                    viewAvatar.onTouchEvent(event);
                 } else if (isAClickInView(btnNew, (int) event.getRawX(), (int) event.getRawY())) {
                     btnNew.onTouchEvent(event);
                 } else if (isAClickInView(btnSearch, (int) event.getRawX(), (int) event.getRawY())) {
@@ -194,7 +199,7 @@ public class TopBarView extends FrameLayout {
         return false;
     }
 
-    @OnClick(R.id.imgAvatar)
+    @OnClick(imgAvatar)
     void launchSettings() {
         clickSettings.onNext(null);
     }
@@ -218,7 +223,7 @@ public class TopBarView extends FrameLayout {
             }
         });
         hideView(btnNew, false);
-        hideView(imgAvatar, true);
+        hideView(viewAvatar, true);
 
         AnimationUtils.animateLeftMargin(btnSearch, marginSmall, DURATION);
         AnimationUtils.animateRightMargin(btnSearch, imgClose.getWidth() + 2 * marginSmall, DURATION);
@@ -226,6 +231,8 @@ public class TopBarView extends FrameLayout {
 
     @OnClick(R.id.imgClose)
     public void closeSearch() {
+        onSearch.onNext(null);
+
         searchMode = false;
         screenUtils.hideKeyboard(editTextSearch);
         editTextSearch.getText().clear();
@@ -234,9 +241,9 @@ public class TopBarView extends FrameLayout {
 
         showView(btnNew, null);
         hideView(imgClose, false);
-        showView(imgAvatar, null);
+        showView(viewAvatar, null);
 
-        AnimationUtils.animateLeftMargin(btnSearch, imgAvatar.getWidth() + 2 * marginSmall, DURATION);
+        AnimationUtils.animateLeftMargin(btnSearch, viewAvatar.getWidth() + 2 * marginSmall, DURATION);
         AnimationUtils.animateRightMargin(btnSearch, btnNew.getWidth() + 2 * marginSmall, DURATION);
     }
 
@@ -309,5 +316,7 @@ public class TopBarView extends FrameLayout {
     }
 
     public Observable<Void> onClickNew() { return clickNew; }
+
+    public Observable<String> onSearch() { return onSearch; }
 }
 

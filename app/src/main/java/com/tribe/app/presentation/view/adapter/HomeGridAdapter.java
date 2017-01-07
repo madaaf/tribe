@@ -12,7 +12,9 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyHeaderGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.GroupGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.UserConnectedGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.UserLiveGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.filter.RecipientFilter;
 import com.tribe.app.presentation.view.adapter.interfaces.RecyclerViewItemEnabler;
 import com.tribe.app.presentation.view.utils.ListUtils;
@@ -37,6 +39,8 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
 
     protected RxAdapterDelegatesManager delegatesManager;
     private UserGridAdapterDelegate userGridAdapterDelegate;
+    private UserLiveGridAdapterDelegate userLiveGridAdapterDelegate;
+    private UserConnectedGridAdapterDelegate userConnectedGridAdapterDelegate;
     private GroupGridAdapterDelegate groupGridAdapterDelegate;
 
     // VARIABLES
@@ -58,6 +62,12 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
 
         userGridAdapterDelegate = new UserGridAdapterDelegate(context);
         delegatesManager.addDelegate(userGridAdapterDelegate);
+
+        userLiveGridAdapterDelegate = new UserLiveGridAdapterDelegate(context);
+        delegatesManager.addDelegate(userLiveGridAdapterDelegate);
+
+        userConnectedGridAdapterDelegate = new UserConnectedGridAdapterDelegate(context);
+        delegatesManager.addDelegate(userConnectedGridAdapterDelegate);
 
         groupGridAdapterDelegate = new GroupGridAdapterDelegate(context);
         delegatesManager.addDelegate(groupGridAdapterDelegate);
@@ -102,13 +112,21 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
     }
 
     public Observable<View> onClickMore() {
-        return Observable.merge(userGridAdapterDelegate.onClickMore(),
-                groupGridAdapterDelegate.onClickMore());
+        return Observable.merge(
+                userGridAdapterDelegate.onClickMore(),
+                groupGridAdapterDelegate.onClickMore(),
+                userConnectedGridAdapterDelegate.onClickMore(),
+                userLiveGridAdapterDelegate.onClickMore()
+        );
     }
 
     public Observable<View> onClick() {
-        return Observable.merge(userGridAdapterDelegate.onClick(),
-                groupGridAdapterDelegate.onClick());
+        return Observable.merge(
+                userGridAdapterDelegate.onClick(),
+                groupGridAdapterDelegate.onClick(),
+                userConnectedGridAdapterDelegate.onClick(),
+                userLiveGridAdapterDelegate.onClick()
+        );
     }
 
     public void setItems(List<Recipient> items) {

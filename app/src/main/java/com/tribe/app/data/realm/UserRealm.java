@@ -43,6 +43,9 @@ public class UserRealm extends RealmObject {
     private RealmList<MembershipRealm> memberships;
     private boolean invisible_mode;
     private boolean push_notif = true;
+    private boolean live = false;
+    private boolean connected = false;
+    private Date last_online;
 
     @Ignore
     private RealmList<GroupRealm> groups;
@@ -178,6 +181,30 @@ public class UserRealm extends RealmObject {
 
     public boolean isPushNotif() {
         return push_notif;
+    }
+
+    public boolean isLive() {
+        return live;
+    }
+
+    public void setLive(boolean live) {
+        this.live = live;
+    }
+
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public void setConnected(boolean connected) {
+        this.connected = connected;
+    }
+
+    public Date getLastOnline() {
+        return last_online;
+    }
+
+    public void setLastOnline(Date lastOnline) {
+        this.last_online = lastOnline;
     }
 
     @Override

@@ -7,7 +7,7 @@
         android:background="@null"
         >
 
-        <com.tribe.app.presentation.view.widget.AvatarView
+        <com.tribe.app.presentation.view.widget.avatar.AvatarView
             android:id="@+id/viewAvatar"
             android:layout_width="30dp"
             android:layout_height="30dp"

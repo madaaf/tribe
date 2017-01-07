@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <com.tribe.app.presentation.view.widget.AvatarView
+    <com.tribe.app.presentation.view.widget.avatar.AvatarView
         android:id="@+id/avatarView"
         android:layout_width="@dimen/avatar_size_small"
         android:layout_height="@dimen/avatar_size_small"

@@ -1,68 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     >
 
-    <com.tribe.app.presentation.view.widget.PulseLayout
-        android:id="@+id/layoutPulse"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <View
+        android:id="@+id/viewShadow"
+        android:layout_height="@dimen/avatar_size_with_shadow"
+        android:layout_width="@dimen/avatar_size_with_shadow"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_avatar_shadow"
+        />
+
+    <com.tribe.app.presentation.view.widget.avatar.AvatarView
+        android:id="@+id/avatar"
+        android:layout_width="@dimen/avatar_size"
+        android:layout_height="@dimen/avatar_size"
         android:layout_gravity="center"
         android:background="@null"
-        app:pulseCount="3"
-        app:pulseDuration="2500"
-        app:pulseColor="@color/live">
-
-        <View
-            android:id="@+id/viewShadow"
-            android:layout_height="@dimen/avatar_size_with_shadow"
-            android:layout_width="@dimen/avatar_size_with_shadow"
-            android:layout_centerInParent="true"
-            android:background="@drawable/bg_avatar_shadow"
-            />
-
-        <com.tribe.app.presentation.view.widget.AvatarView
-            android:id="@+id/avatar"
-            android:layout_width="@dimen/avatar_size"
-            android:layout_height="@dimen/avatar_size"
-            android:layout_centerInParent="true"
-            app:border="true"
-            android:background="@null"
-            />
-
-    </com.tribe.app.presentation.view.widget.PulseLayout>
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/Body.One.White40"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="@dimen/horizontal_margin_small"
-        android:layout_marginLeft="@dimen/horizontal_margin_small"
-        android:layout_marginRight="@dimen/horizontal_margin_small"
-        android:singleLine="true"
-        android:text="Connected"
         />
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/Body.Two.White"
-        android:layout_gravity="top|center_horizontal"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="@dimen/horizontal_margin_small"
-        android:layout_marginRight="@dimen/horizontal_margin_small"
-        android:background="@drawable/selectable_button_all_rounded_white_5"
-        android:clickable="true"
-        android:singleLine="true"
-        android:paddingTop="7dp"
-        android:paddingBottom="8dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:drawablePadding="8.6dp"
-        />
+    <include layout="@layout/view_tile_grid_base" />
 
 </merge>

@@ -51,6 +51,9 @@ public class UserRealmDataMapper {
             if (userRealm.getLocation() != null) user.setLocation(locationRealmDataMapper.transform(userRealm.getLocation()));
             user.setTribeSave(userRealm.isTribeSave());
             user.setPushNotif(userRealm.isPushNotif());
+            user.setLive(userRealm.isLive());
+            user.setConnected(userRealm.isConnected());
+            user.setLastOnline(userRealm.getLastOnline());
             if (shouldTransformFriendships) {
                 if (userRealm.getMemberships() != null)
                     user.setMembershipList(membershipRealmDataMapper.transform(userRealm.getMemberships()));
@@ -107,6 +110,9 @@ public class UserRealmDataMapper {
             userRealm.setPushNotif(user.isPushNotif());
             if (user.getLocation() != null) userRealm.setLocation(locationRealmDataMapper.transform(user.getLocation()));
             userRealm.setTribeSave(user.isTribeSave());
+            userRealm.setLive(user.isLive());
+            userRealm.setConnected(user.isConnected());
+            userRealm.setLastOnline(user.getLastOnline());
             if (shouldTransformFriendships) {
                 if (user.getMembershipList() != null)
                     userRealm.setMemberships(membershipRealmDataMapper.transformMemberships(user.getMembershipList()));

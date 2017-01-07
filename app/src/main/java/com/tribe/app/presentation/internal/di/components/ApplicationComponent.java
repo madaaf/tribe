@@ -63,7 +63,6 @@ import com.tribe.app.presentation.view.adapter.delegate.live.LiveGridAdapterDele
 import com.tribe.app.presentation.view.camera.view.GlPreview;
 import com.tribe.app.presentation.view.camera.view.HistogramVisualizerView;
 import com.tribe.app.presentation.view.component.ActionView;
-import com.tribe.app.presentation.view.component.FilterView;
 import com.tribe.app.presentation.view.component.RatingView;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.TopBarContainer;
@@ -84,7 +83,8 @@ import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.video.LegacyMediaPlayer;
-import com.tribe.app.presentation.view.widget.AvatarView;
+import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.LabelButton;
@@ -122,6 +122,7 @@ public interface ApplicationComponent {
     void inject(LauncherActivity launcherActivity);
     void inject(RecipientGridAdapterDelegate recipientGridAdapterDelegate);
     void inject(AvatarView avatarView);
+    void inject(AvatarLiveView avatarLiveView);
     void inject(CameraWrapper cameraWrapper);
     void inject(HistogramVisualizerView visualizerView);
     void inject(PlayerView playerView);
@@ -132,7 +133,6 @@ public interface ApplicationComponent {
     void inject(SearchResultGridAdapterDelegate searchResultGridAdapterDelegate);
     void inject(TopBarContainer topBarContainer);
     void inject(TopBarView topBarView);
-    void inject(FilterView filterView);
 
     void inject(GlPreview glPreview);
     void inject(VisualizerView visualizerView);

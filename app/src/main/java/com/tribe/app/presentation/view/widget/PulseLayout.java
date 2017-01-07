@@ -19,6 +19,8 @@ import com.tribe.app.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.R.attr.repeatCount;
+
 /**
  * Created by tiago on 01/06/2017
  * Taken from https://github.com/booncol/Pulsator4Droid/
@@ -26,16 +28,12 @@ import java.util.List;
  */
 public class PulseLayout extends RelativeLayout {
 
-    public static final int INFINITE = 0;
-
     private static final int DEFAULT_COUNT = 2;
     private static final int DEFAULT_COLOR = Color.BLACK;
     private static final int DEFAULT_DURATION = 1000;
-    private static final int DEFAULT_REPEAT = INFINITE;
 
     private int count;
     private int duration;
-    private int repeat;
     private int color;
 
     private final List<View> views = new ArrayList<>();
@@ -85,7 +83,6 @@ public class PulseLayout extends RelativeLayout {
 
         count = DEFAULT_COUNT;
         duration = DEFAULT_DURATION;
-        repeat = DEFAULT_REPEAT;
         color = DEFAULT_COLOR;
 
         try {
@@ -114,6 +111,7 @@ public class PulseLayout extends RelativeLayout {
         }
 
         animatorSet.start();
+
     }
 
     /**
@@ -204,6 +202,7 @@ public class PulseLayout extends RelativeLayout {
 
             if (paint != null) {
                 paint.setColor(color);
+
             }
         }
     }
@@ -241,8 +240,6 @@ public class PulseLayout extends RelativeLayout {
                 LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT);
 
-        int repeatCount = (repeat == INFINITE) ? ObjectAnimator.INFINITE : repeat;
-
         List<Animator> animators = new ArrayList<>();
 
         for (int index = 0; index < count; index++) {
@@ -253,34 +250,51 @@ public class PulseLayout extends RelativeLayout {
 
             addView(pulseView, index, layoutParams);
             views.add(pulseView);
-
-            long delay = index * duration / count;
-
-            // setup animators
-            ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(pulseView, "ScaleX", 0f, 1f);
-            scaleXAnimator.setRepeatCount(repeatCount);
-            scaleXAnimator.setRepeatMode(ObjectAnimator.RESTART);
-            scaleXAnimator.setStartDelay(delay);
-            animators.add(scaleXAnimator);
-
-            ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(pulseView, "ScaleY", 0f, 1f);
-            scaleYAnimator.setRepeatCount(repeatCount);
-            scaleYAnimator.setRepeatMode(ObjectAnimator.RESTART);
-            scaleYAnimator.setStartDelay(delay);
-            animators.add(scaleYAnimator);
-
-            ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(pulseView, "Alpha", 1f, 0f);
-            alphaAnimator.setRepeatCount(repeatCount);
-            alphaAnimator.setRepeatMode(ObjectAnimator.RESTART);
-            alphaAnimator.setStartDelay(delay);
-            animators.add(alphaAnimator);
+            createAnimationForView(index, pulseView, animators);
         }
 
+        prepareAnimations(animators);
+    }
+
+    private void resumePulse() {
+        List<Animator> animators = new ArrayList<>();
+
+        for (int index = 0; index < views.size(); index++) {
+            createAnimationForView(index, views.get(index), animators);
+        }
+
+        prepareAnimations(animators);
+    }
+
+    private void createAnimationForView(int index, View pulseView, List<Animator> animators) {
+        long delay = index * duration / count;
+
+        ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(pulseView, "scaleX", pulseView.getScaleX(), 1f);
+        scaleXAnimator.setRepeatCount(repeatCount);
+        scaleXAnimator.setRepeatMode(ObjectAnimator.RESTART);
+        scaleXAnimator.setStartDelay(delay);
+        animators.add(scaleXAnimator);
+
+        ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(pulseView, "scaleY", pulseView.getScaleY(), 1f);
+        scaleYAnimator.setRepeatCount(repeatCount);
+        scaleYAnimator.setRepeatMode(ObjectAnimator.RESTART);
+        scaleYAnimator.setStartDelay(delay);
+        animators.add(scaleYAnimator);
+
+        ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(pulseView, "alpha", pulseView.getAlpha(), 0f);
+        alphaAnimator.setRepeatCount(repeatCount);
+        alphaAnimator.setRepeatMode(ObjectAnimator.RESTART);
+        alphaAnimator.setStartDelay(delay);
+        animators.add(alphaAnimator);
+    }
+
+    private void prepareAnimations(List<Animator> animators) {
         animatorSet = new AnimatorSet();
         animatorSet.playTogether(animators);
         animatorSet.setInterpolator(new DecelerateInterpolator());
         animatorSet.setDuration(duration);
         animatorSet.addListener(new AnimatorListenerAdapter() {
+            
             @Override
             public void onAnimationCancel(Animator animation) {
                 started = false;
@@ -319,6 +333,15 @@ public class PulseLayout extends RelativeLayout {
         if (animatorSet != null) {
             animatorSet.cancel();
             animatorSet = null;
+        }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        if (views != null && views.size() > 0) {
+            resumePulse();
         }
     }
 

@@ -41,6 +41,7 @@ public class TopBarContainer extends FrameLayout {
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private PublishSubject<Void> clickSettings = PublishSubject.create();
     private PublishSubject<Void> clickNew = PublishSubject.create();
+    private PublishSubject<String> onSearch = PublishSubject.create();
 
     public TopBarContainer(Context context) {
         super(context);
@@ -105,6 +106,11 @@ public class TopBarContainer extends FrameLayout {
                 topBarView.onClickSettings()
                         .subscribe(clickSettings)
         );
+
+        subscriptions.add(
+                topBarView.onSearch()
+                        .subscribe(onSearch)
+        );
     }
 
     public boolean isSearchMode() {
@@ -151,4 +157,6 @@ public class TopBarContainer extends FrameLayout {
     public Observable<Void> onClickNew() {
         return clickNew;
     }
+
+    public Observable<String> onSearch() { return onSearch; }
 }

@@ -79,6 +79,7 @@
                 android:background="@null"
                 android:singleLine="true"
                 android:gravity="center_vertical"
+                android:inputType="text|textVisiblePassword"
                 android:imeOptions="actionDone"
                 style="@style/Text.Input.Search"
                 />

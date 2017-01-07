@@ -136,7 +136,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         initDimensions();
         initRegistrationToken();
         initRecyclerView();
-        initPullToRefresh();
+        initTopBar();
         initRemoteConfig();
         manageDeepLink(getIntent());
     }
@@ -290,7 +290,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                 .build().inject(this);
     }
 
-    private void initPullToRefresh() {
+    private void initTopBar() {
         subscriptions.add(topBarContainer.onClickSettings()
                 .subscribe(aVoid -> {
                     navigateToSettings();
@@ -312,6 +312,11 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
                             return null;
                         }))
                 .subscribe()
+        );
+
+        subscriptions.add(
+                topBarContainer.onSearch()
+                    .subscribe(s -> homeGridAdapter.filterList(s))
         );
     }
 

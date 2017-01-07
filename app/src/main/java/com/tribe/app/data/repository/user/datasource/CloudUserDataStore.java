@@ -298,9 +298,6 @@ public class CloudUserDataStore implements UserDataStore {
 
     @Override
     public Observable<List<ContactInterface>> contacts() {
-        //contactCache.deleteContactsAB();
-        //contactCache.deleteContactsFB();
-
         return Observable.zip(
                 rxContacts.getContacts().toList(),
                 rxFacebook.requestFriends(),
@@ -678,14 +675,7 @@ public class CloudUserDataStore implements UserDataStore {
 
     private final Action1<UserRealm> saveToCacheUpdateUser = userRealm -> {
         if (userRealm != null && userCache != null) {
-            UserRealm dbUser = userCache.userInfosNoObs(accessToken.getUserId());
-            dbUser.setProfilePicture(userRealm.getProfilePicture());
-            dbUser.setUsername(userRealm.getUsername());
-            dbUser.setDisplayName(userRealm.getDisplayName());
-            dbUser.setTribeSave(userRealm.isTribeSave());
-            dbUser.setInvisibleMode(userRealm.isInvisibleMode());
-            dbUser.setPushNotif(userRealm.isPushNotif());
-            userCache.put(dbUser);
+            userCache.put(userRealm);
         }
     };
 

@@ -1,5 +1,7 @@
 package com.tribe.app.domain.entity;
 
+import com.tribe.app.presentation.utils.DateUtils;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -37,15 +39,23 @@ public abstract class Recipient implements Serializable {
     }
 
     public static int nullSafeComparator(final Recipient one, final Recipient two) {
-        if (one.getUpdatedAt() == null ^ two.getUpdatedAt() == null) {
-            return (one.getUpdatedAt() == null) ? 1 : -1;
-        }
+        int res = ((Boolean) two.isLive()).compareTo(one.isLive());
+        if (res != 0) return res;
 
-        if (one.getUpdatedAt() == null && two.getUpdatedAt() == null) {
-            return 0;
-        }
+        res = ((Boolean) two.isConnected()).compareTo(one.isConnected());
+        if (res != 0) return res;
 
-        return two.getUpdatedAt().compareTo(one.getUpdatedAt());
+        return DateUtils.compareDateNullSafe(two.getLastOnline(), one.getLastOnline());
+
+//        if (one.getUpdatedAt() == null ^ two.getUpdatedAt() == null) {
+//            return (one.getUpdatedAt() == null) ? 1 : -1;
+//        }
+//
+//        if (one.getUpdatedAt() == null && two.getUpdatedAt() == null) {
+//            return 0;
+//        }
+//
+//        return two.getUpdatedAt().compareTo(one.getUpdatedAt());
     }
 
     public abstract String getDisplayName();
@@ -55,7 +65,9 @@ public abstract class Recipient implements Serializable {
     public abstract String getSubId();
     public abstract String getId();
     public abstract Date getUpdatedAt();
-    public abstract void setScore(int score);
+    public abstract boolean isLive();
+    public abstract boolean isConnected();
+    public abstract Date getLastOnline();
 
     @Override
     public int hashCode() {

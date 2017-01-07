@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.component;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.annotation.Nullable;
+import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,10 +15,12 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
-import com.tribe.app.presentation.view.widget.AvatarView;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.SquareFrameLayout;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.avatar.Avatar;
+
+import java.util.Date;
 
 import javax.inject.Inject;
 
@@ -33,22 +36,30 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class TileView extends SquareFrameLayout {
 
-    public final static int TYPE_GRID = 0;
+    public final static int TYPE_GRID_LIVE = 0;
+    public final static int TYPE_GRID_CONNECTED = 1;
+    public final static int TYPE_GRID = 2;
 
     @Inject
     ScreenUtils screenUtils;
 
-    @Nullable @BindView(R.id.txtName)
+    @Nullable
+    @BindView(R.id.txtName)
     public TextViewFont txtName;
 
+    @Nullable
     @BindView(R.id.viewShadow)
     public View viewShadow;
 
     @BindView(R.id.avatar)
-    public AvatarView avatar;
+    public View avatar;
 
+    @Nullable
     @BindView(R.id.layoutPulse)
     public PulseLayout layoutPulse;
+
+    @BindView(R.id.txtStatus)
+    public TextViewFont txtStatus;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions;
@@ -84,6 +95,14 @@ public class TileView extends SquareFrameLayout {
         int resLayout = 0;
 
         switch (type) {
+            case TYPE_GRID_LIVE:
+                resLayout = R.layout.view_tile_grid_live;
+                break;
+
+            case TYPE_GRID_CONNECTED:
+                resLayout = R.layout.view_tile_grid_connected;
+                break;
+
             case TYPE_GRID:
                 resLayout = R.layout.view_tile_grid;
                 break;
@@ -91,6 +110,9 @@ public class TileView extends SquareFrameLayout {
 
         LayoutInflater.from(getContext()).inflate(resLayout, this);
         unbinder = ButterKnife.bind(this);
+
+        if (type == TYPE_GRID_LIVE || type == TYPE_GRID_CONNECTED)
+            layoutPulse.start();
 
         initDependencyInjector();
     }
@@ -107,25 +129,25 @@ public class TileView extends SquareFrameLayout {
         params.height = size;
         avatar.setLayoutParams(params);
 
-        params = viewShadow.getLayoutParams();
-        params.width = size + screenUtils.dpToPx(25);
-        params.height = size + screenUtils.dpToPx(25);
-        viewShadow.setLayoutParams(params);
-
-        params = layoutPulse.getLayoutParams();
-        params.width = size + screenUtils.dpToPx(100);
-        params.height = size + screenUtils.dpToPx(100);
-        layoutPulse.setLayoutParams(params);
+        if (type == TYPE_GRID_CONNECTED || type == TYPE_GRID_LIVE) {
+            params = layoutPulse.getLayoutParams();
+            params.width = size + screenUtils.dpToPx(90);
+            params.height = size + screenUtils.dpToPx(90);
+            layoutPulse.setLayoutParams(params);
+        } else {
+            params = viewShadow.getLayoutParams();
+            params.width = size + screenUtils.dpToPx(25);
+            params.height = size + screenUtils.dpToPx(25);
+            viewShadow.setLayoutParams(params);
+        }
 
         avatar.invalidate();
         avatar.requestLayout();
     }
 
     public void initClicks() {
-        if (type == TYPE_GRID) {
-            prepareTouchesMore();
-            prepareClickOnView();
-        }
+        prepareTouchesMore();
+        prepareClickOnView();
     }
 
     private void prepareTouchesMore() {
@@ -133,25 +155,38 @@ public class TileView extends SquareFrameLayout {
     }
 
     private void prepareClickOnView() {
-        setOnClickListener(v -> {
-            click.onNext(v);
-        });
+        setOnClickListener(v -> click.onNext(v));
     }
 
     public void setInfo(Recipient recipient) {
         this.recipient = recipient;
-        avatar.load(recipient);
+        ((Avatar) avatar).load(recipient);
 
-        if (type == TYPE_GRID) {
-            if (recipient instanceof Membership) {
-                txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small, 0, 0, 0);
-            } else {
-                txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+        if (recipient instanceof Membership) {
+            txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small, 0, 0, 0);
+        } else {
+            txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+        }
+
+        txtName.setText(recipient.getDisplayName());
+
+        if (recipient.isLive()) {
+            txtStatus.setText(R.string.grid_status_live);
+        } else if (recipient.isConnected()) {
+            txtStatus.setText(R.string.grid_status_connected);
+        } else {
+            if (recipient.getLastOnline() != null) {
+                txtStatus.setText(
+                        getContext().getString(
+                            R.string.grid_status_last_seen,
+                            DateUtils.getRelativeTimeSpanString(
+                                    recipient.getLastOnline().getTime(),
+                                    new Date().getTime(),
+                                    DateUtils.MINUTE_IN_MILLIS
+                            ).toString().toLowerCase()
+                        )
+                );
             }
-
-            txtName.setText(recipient.getDisplayName());
-
-            layoutPulse.start();
         }
     }
 

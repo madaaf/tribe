@@ -17,7 +17,7 @@ import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
-import com.tribe.app.presentation.view.widget.AvatarView;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 
 import java.io.Serializable;

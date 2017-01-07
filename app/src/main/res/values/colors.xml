@@ -177,5 +177,5 @@
 
     <!-- Pulses -->
     <color name="live">#FD2448</color>
-    <color name="online">@android:color/white</color>
+    <color name="online">#FFFFFF</color>
 </resources>

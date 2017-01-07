@@ -54,8 +54,18 @@ public class Membership extends Recipient {
     }
 
     @Override
-    public void setScore(int score) {
+    public boolean isLive() {
+        return false;
+    }
 
+    @Override
+    public boolean isConnected() {
+        return false;
+    }
+
+    @Override
+    public Date getLastOnline() {
+        return null;
     }
 
     public void setId(String id) {

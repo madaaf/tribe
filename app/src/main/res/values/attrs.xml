@@ -5,12 +5,19 @@
     </declare-styleable>
 
     <declare-styleable name="AvatarView">
-        <attr name="border" format="boolean" />
         <attr name="avatarType" format="enum">
-            <enum name="group" value="0" />
-            <enum name="single" value="1" />
+            <enum name="live" value="0" />
+            <enum name="regular" value="1" />
         </attr>
     </declare-styleable>
+
+    <declare-styleable name="AvatarLiveView">
+        <attr name="avatarLiveType" format="enum">
+            <enum name="live" value="0" />
+            <enum name="connected" value="1" />
+        </attr>
+    </declare-styleable>
+
 
     <declare-styleable name="RoundedCornerLayout">
         <attr name="cornerRadius" format="dimension" />
@@ -18,7 +25,9 @@
 
     <declare-styleable name="TileView">
         <attr name="tileType" format="enum">
-            <enum name="grid" value="0" />
+            <enum name="live" value="0" />
+            <enum name="connected" value="1" />
+            <enum name="grid" value="2" />
         </attr>
     </declare-styleable>
 
@@ -129,6 +138,13 @@
         <attr name="loadType" format="enum">
             <enum name="fb" value="0" />
             <enum name="addressbook" value="1" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="LiveIndView">
+        <attr name="liveType" format="enum">
+            <enum name="live" value="0" />
+            <enum name="connected" value="1" />
         </attr>
     </declare-styleable>
 

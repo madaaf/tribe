@@ -209,6 +209,9 @@
 	<string name="grid_support_status_loading">Loading</string>
 	<string name="grid_support_status_reply">Reply to the CEO</string>
 	<string name="grid_support_status_error">Not sent</string>
+	<string name="grid_status_live">Live</string>
+	<string name="grid_status_connected">Connected</string>
+	<string name="grid_status_last_seen">Last seen %1$s</string>
 	<string name="grid_ghost">Has not joined yet</string>
 	<string name="grid_friendship_recording_message">%1$d message</string>
 	<string name="grid_friendship_recording_messages">%1$d messages</string>

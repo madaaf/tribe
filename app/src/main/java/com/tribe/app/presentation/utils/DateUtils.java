@@ -57,4 +57,16 @@ public class DateUtils {
 
         return sb.toString();
     }
+
+    public static int compareDateNullSafe(Date one, Date two) {
+        if (one == null ^ two == null) {
+            return (one == null) ? 1 : -1;
+        }
+
+        if (one == null && two == null) {
+            return 0;
+        }
+
+        return two.compareTo(one);
+    }
 }

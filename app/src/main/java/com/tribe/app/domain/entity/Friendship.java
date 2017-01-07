@@ -101,8 +101,18 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
     }
 
     @Override
-    public void setScore(int score) {
-        friend.setScore(score);
+    public boolean isLive() {
+        return friend.isLive();
+    }
+
+    @Override
+    public boolean isConnected() {
+        return friend.isConnected();
+    }
+
+    @Override
+    public Date getLastOnline() {
+        return friend.getLastOnline();
     }
 
     public boolean isShouldAnimateAdd() {

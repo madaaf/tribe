@@ -29,7 +29,10 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -84,12 +87,36 @@ public class DiskUserDataRepository implements UserRepository {
                         .map(userRealm -> {
                             if (userRealm != null && userRealm.getFriendships() != null) {
                                 RealmList<FriendshipRealm> result = new RealmList<>();
+                                int count = 0;
+
                                 for (FriendshipRealm fr : userRealm.getFriendships()) {
                                     if (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus().equals(FriendshipRealm.DEFAULT) && !fr.getFriend().getId().equals(Constants.SUPPORT_ID)) {
+                                        if (count == 0) {
+                                            fr.getFriend().setLive(true);
+                                            fr.getFriend().setConnected(true);
+                                            fr.getFriend().setLastOnline(new Date());
+                                        } else if (count == 1) {
+                                            fr.getFriend().setLive(false);
+                                            fr.getFriend().setConnected(true);
+                                            fr.getFriend().setLastOnline(new Date());
+                                        } else {
+                                            Calendar calendar = Calendar.getInstance();
+                                            calendar.setTime(new Date());
+                                            Random r = new Random();
+                                            calendar.add(Calendar.DAY_OF_YEAR, - (r.nextInt(10 - 1) + 1));
+                                            fr.getFriend().setConnected(false);
+                                            fr.getFriend().setLive(false);
+                                            fr.getFriend().setLastOnline(calendar.getTime());
+                                        }
+
                                         result.add(fr);
+                                        count++;
                                     }
                                 }
+
+
                                 userRealm.setFriendships(result);
+                                count++;
                             }
 
                             return userRealmDataMapper.transform(userRealm, true);

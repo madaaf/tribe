@@ -22,7 +22,7 @@
         android:paddingLeft="@dimen/horizontal_margin_small"
         android:background="@android:color/white">
 
-        <com.tribe.app.presentation.view.widget.AvatarView
+        <com.tribe.app.presentation.view.widget.avatar.AvatarView
             android:id="@+id/avatarView"
             android:layout_width="@dimen/avatar_size_small"
             android:layout_height="@dimen/avatar_size_small"

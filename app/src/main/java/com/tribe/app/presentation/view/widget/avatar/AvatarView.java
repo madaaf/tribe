@@ -1,14 +1,14 @@
-package com.tribe.app.presentation.view.widget;
+package com.tribe.app.presentation.view.widget.avatar;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.support.annotation.IntDef;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
 
@@ -22,8 +22,12 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.ImageUtils;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.widget.RoundedCornerLayout;
 
 import java.io.File;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,20 +38,23 @@ import rx.schedulers.Schedulers;
 /**
  * Created by tiago on 17/02/2016.
  */
-public class AvatarView extends RoundedCornerLayout {
+public class AvatarView extends RoundedCornerLayout implements Avatar {
 
-    @IntDef({GROUP, SINGLE})
+    @IntDef({ LIVE, REGULAR })
     public @interface AvatarType {}
 
-    public static final int GROUP = 0;
-    public static final int SINGLE = 1;
+    public static final int LIVE = 0;
+    public static final int REGULAR = 1;
+
+    @Inject
+    ScreenUtils screenUtils;
 
     @BindView(R.id.imgAvatar)
     ImageView imgAvatar;
 
     // VARIABLES
-    private boolean hasBorder = false;
     private int type;
+    private Paint transparentPaint;
 
     // RESOURCES
     private int avatarSize;
@@ -72,13 +79,18 @@ public class AvatarView extends RoundedCornerLayout {
         ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AvatarView);
-        //hasBorder = a.getBoolean(R.styleable.AvatarView_border, false);
-        type = a.getInt(R.styleable.AvatarView_avatarType, SINGLE);
+        type = a.getInt(R.styleable.AvatarView_avatarType, REGULAR);
 
         avatarSize = getResources().getDimensionPixelSize(R.dimen.avatar_size);
 
         setWillNotDraw(false);
         a.recycle();
+
+        transparentPaint = new Paint();
+        transparentPaint.setAntiAlias(true);
+        transparentPaint.setDither(false);
+        transparentPaint.setColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+        transparentPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
     }
 
     @Override
@@ -90,27 +102,13 @@ public class AvatarView extends RoundedCornerLayout {
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
 
-        if (hasBorder) {
-            float borderWidth = 1f;
-
-            DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
-            borderWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, borderWidth, metrics);
-
-            Paint paintBorder = new Paint(Paint.ANTI_ALIAS_FLAG);
-            paintBorder.setAntiAlias(true);
-            paintBorder.setColor(Color.WHITE);
-            paintBorder.setStyle(Paint.Style.STROKE);
-            paintBorder.setAntiAlias(true);
-            paintBorder.setStrokeWidth(borderWidth);
-
-            float viewWidth = getWidth();
-            float circleCenter = viewWidth / 2;
-
-            canvas.drawCircle(circleCenter, circleCenter,
-                    circleCenter, paintBorder);
+        if (type == LIVE) {
+            int radius = getRadius();
+            canvas.drawCircle(getWidth() - radius, getHeight() - radius, radius, transparentPaint);
         }
     }
 
+    @Override
     public void load(Recipient recipient) {
         String previousAvatar = (String) getTag(R.id.profile_picture);
 
@@ -150,6 +148,7 @@ public class AvatarView extends RoundedCornerLayout {
         }
     }
 
+    @Override
     public void load(String url) {
         if (!StringUtils.isEmpty(url) && !url.equals(getContext().getString(R.string.no_profile_picture_url))) {
             setTag(R.id.profile_picture, url);
@@ -173,8 +172,8 @@ public class AvatarView extends RoundedCornerLayout {
                 .into(imgAvatar);
     }
 
-    public void setHasBorder(boolean hasBorder) {
-        this.hasBorder = hasBorder;
+    public int getRadius() {
+        return (int) (getMeasuredWidth() * 0.2f);
     }
 
     public void setType(@AvatarType int type) {

@@ -6,7 +6,7 @@
         android:background="@null"
         >
 
-        <com.tribe.app.presentation.view.widget.AvatarView
+        <com.tribe.app.presentation.view.widget.avatar.AvatarView
             android:id="@+id/viewAvatar"
             android:layout_width="30dp"
             android:layout_height="30dp"
@@ -23,7 +23,7 @@
             android:layout_marginBottom="@dimen/horizontal_margin_smaller"
             android:gravity="center">
 
-            <com.tribe.app.presentation.view.widget.AvatarView
+            <com.tribe.app.presentation.view.widget.avatar.AvatarView
                 android:id="@+id/viewAvatarBis"
                 android:layout_width="30dp"
                 android:layout_height="30dp"

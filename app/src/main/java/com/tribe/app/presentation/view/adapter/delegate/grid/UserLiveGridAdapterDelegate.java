@@ -13,9 +13,9 @@ import java.util.List;
 /**
  * Created by tiago on 18/05/2016.
  */
-public class UserGridAdapterDelegate extends RecipientGridAdapterDelegate {
+public class UserLiveGridAdapterDelegate extends RecipientGridAdapterDelegate {
 
-    public UserGridAdapterDelegate(Context context) {
+    public UserLiveGridAdapterDelegate(Context context) {
         super(context);
     }
 
@@ -25,12 +25,12 @@ public class UserGridAdapterDelegate extends RecipientGridAdapterDelegate {
                 && !items.get(position).getSubId().equals(Constants.SUPPORT_ID)
                 && !items.get(position).getSubId().equals(Recipient.ID_HEADER)
                 && !items.get(position).getSubId().equals(Recipient.ID_EMPTY)
-                && !items.get(position).isLive() && !items.get(position).isConnected();
+                && items.get(position).isLive();
     }
 
 
     @Override
     protected int getLayoutId() {
-        return R.layout.item_user_grid;
+        return R.layout.item_user_live_grid;
     }
 }
