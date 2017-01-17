@@ -16,7 +16,7 @@
         android:id="@+id/viewGradient"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@drawable/bg_gradient_camera_bottom"
+        android:background="@drawable/bg_gradient_bottom"
         android:layout_gravity="bottom"
         />
 

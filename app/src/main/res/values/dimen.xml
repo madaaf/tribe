@@ -41,6 +41,8 @@
     <dimen name="group_members_height">70dp</dimen>
     <dimen name="load_friends_height">72.5dp</dimen>
     <dimen name="pick_all_height">72.5dp</dimen>
+    <dimen name="live_notification_min_height">65dp</dimen>
+    <dimen name="live_notification_max_height">286dp</dimen>
 
     <!-- WIDTHS -->
 
@@ -70,6 +72,7 @@
 
     <!-- THRESHOLDS -->
     <dimen name="threshold_dismiss">100dp</dimen>
+    <dimen name="threshold_open_notification">50dp</dimen>
 
     <!-- TRANSLATIONS -->
     <dimen name="transition_grid_back_to_top">150dp</dimen>

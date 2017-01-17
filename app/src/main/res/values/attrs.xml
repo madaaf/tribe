@@ -18,7 +18,6 @@
         </attr>
     </declare-styleable>
 
-
     <declare-styleable name="RoundedCornerLayout">
         <attr name="cornerRadius" format="dimension" />
     </declare-styleable>
@@ -160,4 +159,7 @@
         <attr name="pulseColor" format="color" />
     </declare-styleable>
 
+    <declare-styleable name="LiveNotificationView">
+        <attr name="notificationTitle" format="string" />
+    </declare-styleable>
 </resources>

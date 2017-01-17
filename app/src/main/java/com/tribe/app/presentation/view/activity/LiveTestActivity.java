@@ -4,12 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.view.View;
 
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -17,6 +17,8 @@ import com.tribe.app.presentation.view.adapter.LiveGridAdapter;
 import com.tribe.app.presentation.view.adapter.manager.LiveLayoutManager;
 import com.tribe.app.presentation.view.adapter.viewmodel.UserLive;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.widget.LiveNotificationView;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +29,21 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import jp.wasabeef.recyclerview.animators.FadeInAnimator;
 import rx.subscriptions.CompositeSubscription;
 
 public class LiveTestActivity extends BaseActivity {
 
+    public static final String ID = "ID";
+    public static final String NAME = "NAME";
+    public static final String PICTURE = "PICTURE";
+    public static final String IS_GROUP = "IS_GROUP";
+
     public static Intent getCallingIntent(Context context, Recipient recipient) {
         Intent intent = new Intent(context, LiveTestActivity.class);
+        intent.putExtra(ID, recipient.getId());
+        intent.putExtra(NAME, recipient.getDisplayName());
+        intent.putExtra(PICTURE, recipient.getProfilePicture());
+        intent.putExtra(IS_GROUP, recipient instanceof Membership);
         return intent;
     }
 
@@ -46,8 +56,18 @@ public class LiveTestActivity extends BaseActivity {
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
 
+    @BindView(R.id.txtName)
+    TextViewFont txtName;
+
+    @BindView(R.id.viewLiveNotification)
+    LiveNotificationView viewLiveNotification;
+
     // VARIABLES
     private Unbinder unbinder;
+    private String id;
+    private String name;
+    private String picture;
+    private boolean isGroup;
     private LiveLayoutManager layoutManager;
     private List<UserLive> userLiveList;
 
@@ -61,9 +81,11 @@ public class LiveTestActivity extends BaseActivity {
 
         unbinder = ButterKnife.bind(this);
 
+        initParams();
         initDependencyInjector();
         init();
         initResources();
+        initRecyclerView();
     }
 
     @Override
@@ -83,14 +105,33 @@ public class LiveTestActivity extends BaseActivity {
         super.onDestroy();
     }
 
-    private void init() {
-        userLiveList = new ArrayList<>();
+    private void initParams() {
+        if (getIntent().hasExtra(ID)) {
+            id = getIntent().getStringExtra(ID);
+            name = getIntent().getStringExtra(NAME);
+            picture = getIntent().getStringExtra(PICTURE);
+            isGroup = getIntent().getBooleanExtra(IS_GROUP, false);
+        }
+    }
 
+    private void init() {
+        if (isGroup) {
+            txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small, 0, 0, 0);
+        } else {
+            txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+        }
+
+        txtName.setText(name);
+
+        viewLiveNotification.setTitle(getString(R.string.live_notification_online, name));
+        viewLiveNotification.loadAvatar(picture);
+    }
+
+    private void initRecyclerView() {
+        userLiveList = new ArrayList<>();
         liveGridAdapter.setScreenHeight(getScreenHeight());
         layoutManager = new LiveLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        FadeInAnimator animator = new FadeInAnimator();
-        animator.setChangeDuration(0);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
@@ -100,24 +141,6 @@ public class LiveTestActivity extends BaseActivity {
         recyclerView.setAdapter(liveGridAdapter);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(0, 1);
         recyclerView.requestDisallowInterceptTouchEvent(true);
-        layoutManager.setScrollEnabled(false);
-        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                if (layoutManager.getItemCount() <= 2) return 2;
-                else if (layoutManager.getItemCount() == 4
-                        || layoutManager.getItemCount() == 6
-                        || layoutManager.getItemCount() == 8) {
-                    return 1;
-                } else if (layoutManager.getItemCount() == 3
-                        || layoutManager.getItemCount() == 5
-                        || layoutManager.getItemCount() == 7) {
-                    return position == 0 ? 2 : 1;
-                }
-
-                return layoutManager.getSpanCount();
-            }
-        });
     }
 
     private void initResources() {

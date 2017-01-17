@@ -83,6 +83,7 @@ import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.video.LegacyMediaPlayer;
+import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
@@ -150,6 +151,8 @@ public interface ApplicationComponent {
     void inject(SyncView syncView);
     void inject(UserListAdapterDelegate userListAdapterDelegate);
     void inject(LiveGridAdapterDelegate liveGridAdapterDelegate);
+
+    void inject(LiveNotificationView liveNotificationView);
 
     // JOBS
     void inject(BaseJob baseJob);

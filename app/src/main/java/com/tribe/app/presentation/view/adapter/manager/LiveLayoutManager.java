@@ -15,6 +15,24 @@ public class LiveLayoutManager extends GridLayoutManager {
         setItemPrefetchEnabled(true);
         setReverseLayout(true);
         setInitialPrefetchItemCount(8);
+        setScrollEnabled(false);
+        setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                if (getItemCount() <= 2) return 2;
+                else if (getItemCount() == 4
+                        || getItemCount() == 6
+                        || getItemCount() == 8) {
+                    return 1;
+                } else if (getItemCount() == 3
+                        || getItemCount() == 5
+                        || getItemCount() == 7) {
+                    return position == 0 ? 2 : 1;
+                }
+
+                return getSpanCount();
+            }
+        });
     }
 
     public void setScrollEnabled(boolean enabled) {

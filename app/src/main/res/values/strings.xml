@@ -184,6 +184,10 @@
 	<string name="tribe_empty_view">Tap long to record your message</string>
 	<string name="tribe_more_resend">Resend message</string>
 	
+	<!-- Live -->
+	<string name="live_notification_online">%1$s is online</string>
+	<string name="live_notification_jam">%1$s (%2$s) wants to jam live with you!</string>
+	
 	<!-- Tribe Recipients -->
 	<string name="tribe_recipients_title">Viewed by</string>
 	<string name="tribe_recipients_action_add_friend">Add as friend</string>

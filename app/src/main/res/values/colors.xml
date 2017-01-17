@@ -4,6 +4,7 @@
     <color name="black.opacity.3">#08000000</color>
     <color name="black.opacity.5">#0D000000</color>
     <color name="black.opacity.20">#33000000</color>
+    <color name="black.opacity.30">#4D000000</color>
     <color name="black.opacity.40">#66000000</color>
     <color name="black.opacity.50">#80000000</color>
     <color name="black.opacity.70">#B3000000</color>
@@ -16,6 +17,7 @@
     <color name="white.opacity.10">#1AFFFFFF</color>
     <color name="white.opacity.15">#26FFFFFF</color>
     <color name="white.opacity.20">#33FFFFFF</color>
+    <color name="white.opacity.30">#4DFFFFFF</color>
     <color name="white.opacity.40">#66FFFFFF</color>
     <color name="white.opacity.50">#80FFFFFF</color>
 
@@ -176,6 +178,6 @@
     <color name="black.12">#616161</color>
 
     <!-- Pulses -->
-    <color name="live">#FD2448</color>
+    <color name="live">#BE38B0</color>
     <color name="online">#FFFFFF</color>
 </resources>
