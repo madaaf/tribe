@@ -8,9 +8,6 @@ public class Membership extends Recipient {
     private String id;
     private Group group;
     private boolean mute;
-    private boolean is_admin;
-    private String link;
-    private Date link_expires_at;
     private Date created_at;
     private Date updated_at;
 
@@ -86,30 +83,6 @@ public class Membership extends Recipient {
 
     public void setMute(boolean mute) {
         this.mute = mute;
-    }
-
-    public boolean isAdmin() {
-        return is_admin;
-    }
-
-    public void setIsAdmin(boolean is_admin) {
-        this.is_admin = is_admin;
-    }
-
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
-    }
-
-    public Date getLink_expires_at() {
-        return link_expires_at;
-    }
-
-    public void setLink_expires_at(Date link_expires_at) {
-        this.link_expires_at = link_expires_at;
     }
 
     public Date getCreatedAt() {

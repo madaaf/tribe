@@ -263,7 +263,7 @@ public class AddMembersGroupView extends FrameLayout {
         txtGroupName.setText(groupName());
 
         if (membership != null) {
-            viewActionShareLink.setBody(membership.getGroup().getGroupLink());
+            viewActionShareLink.setBody("");
         }
     }
 

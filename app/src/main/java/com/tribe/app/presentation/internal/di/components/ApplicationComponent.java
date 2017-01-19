@@ -74,6 +74,9 @@ import com.tribe.app.presentation.view.component.group.GroupSuggestionView;
 import com.tribe.app.presentation.view.component.group.MembersGroupView;
 import com.tribe.app.presentation.view.component.group.SettingsGroupView;
 import com.tribe.app.presentation.view.component.group.UpdateGroupView;
+import com.tribe.app.presentation.view.component.live.LiveContainer;
+import com.tribe.app.presentation.view.component.live.LiveInviteView;
+import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
@@ -83,15 +86,15 @@ import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.video.LegacyMediaPlayer;
-import com.tribe.app.presentation.view.widget.LiveNotificationView;
-import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
-import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.LabelButton;
+import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.PlayerView;
 import com.tribe.app.presentation.view.widget.SyncView;
 import com.tribe.app.presentation.view.widget.TextViewAnimatedDots;
+import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -153,6 +156,10 @@ public interface ApplicationComponent {
     void inject(LiveGridAdapterDelegate liveGridAdapterDelegate);
 
     void inject(LiveNotificationView liveNotificationView);
+    void inject(LiveView liveView);
+    void inject(LiveContainer liveContainer);
+    void inject(LiveInviteView liveInviteView);
+
 
     // JOBS
     void inject(BaseJob baseJob);

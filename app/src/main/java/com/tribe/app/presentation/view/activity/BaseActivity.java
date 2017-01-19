@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-import com.appboy.Appboy;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -30,13 +29,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Appboy.getInstance(BaseActivity.this).openSession(BaseActivity.this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Appboy.getInstance(BaseActivity.this).closeSession(BaseActivity.this);
     }
 
     @Override

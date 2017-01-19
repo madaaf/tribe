@@ -63,6 +63,11 @@ public class DiskUserDataStore implements UserDataStore {
     }
 
     @Override
+    public Observable<List<FriendshipRealm>> friendships() {
+        return this.userCache.friendships();
+    }
+
+    @Override
     public Observable<Installation> createOrUpdateInstall(String token) {
         return null;
     }
@@ -173,27 +178,12 @@ public class DiskUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<Void> addAdminsToGroup(String groupId, List<String> memberIds) {
-        return null;
-    }
-
-    @Override
-    public Observable<Void> removeAdminsFromGroup(String groupId, List<String> memberIds) {
-        return null;
-    }
-
-    @Override
     public Observable<Void> removeGroup(String groupId) {
         return null;
     }
 
     @Override
     public Observable<Void> leaveGroup(String groupId) {
-        return null;
-    }
-
-    @Override
-    public Observable<MembershipRealm> modifyPrivateGroupLink(String membershipId, boolean create) {
         return null;
     }
 

@@ -25,6 +25,7 @@ public interface UserCache {
     void put(AccessToken accessToken);
     void put(Installation installation);
     Observable<UserRealm> userInfos(String userId);
+    Observable<List<FriendshipRealm>> friendships();
     UserRealm userInfosNoObs(String userId);
     MembershipRealm membershipForGroupId(String groupId);
     FriendshipRealm friendshipForUserId(String userId);
@@ -33,8 +34,6 @@ public interface UserCache {
     void updateGroup(GroupRealm groupRealm, boolean isFull);
     void addMembersToGroup(String groupId, List<String> memberIds);
     void removeMembersFromGroup(String groupId, List<String> memberIds);
-    void addAdminsToGroup(String groupId, List<String> memberIds);
-    void removeAdminsFromGroup(String groupId, List<String> memberIds);
     void removeGroup(String groupId);
     void removeGroupFromMembership(String membershipId);
     void insertMembership(String userId, MembershipRealm membershipRealm);

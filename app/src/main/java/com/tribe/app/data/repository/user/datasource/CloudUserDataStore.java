@@ -165,6 +165,11 @@ public class CloudUserDataStore implements UserDataStore {
     }
 
     @Override
+    public Observable<List<FriendshipRealm>> friendships() {
+        return null;
+    }
+
+    @Override
     public Observable<Installation> createOrUpdateInstall(String token) {
         if (installation == null || StringUtils.isEmpty(installation.getToken())) {
             String req = context.getString(R.string.installs);
@@ -867,26 +872,6 @@ public class CloudUserDataStore implements UserDataStore {
     }
 
     @Override
-    public Observable<Void> addAdminsToGroup(String groupId, List<String> memberIds) {
-        String memberIdsJson = listToArrayReq(memberIds);
-        String request = context.getString(R.string.add_admins_group, groupId, memberIdsJson);
-        return this.tribeApi.addAdminsToGroup(request)
-                .doOnNext(aVoid -> {
-                    userCache.addAdminsToGroup(groupId, memberIds);
-                });
-    }
-
-    @Override
-    public Observable<Void> removeAdminsFromGroup(String groupId, List<String> memberIds) {
-        String memberIdsJson = listToArrayReq(memberIds);
-        String request = context.getString(R.string.remove_admins_group, groupId, memberIdsJson);
-        return this.tribeApi.removeAdminsFromGroup(request)
-                .doOnNext(aVoid -> {
-                    userCache.removeAdminsFromGroup(groupId, memberIds);
-                });
-    }
-
-    @Override
     public Observable<Void> removeGroup(String groupId) {
         String request = context.getString(R.string.remove_group, groupId);
 
@@ -901,11 +886,6 @@ public class CloudUserDataStore implements UserDataStore {
         String request = context.getString(R.string.leave_group, membershipId);
         return this.tribeApi.leaveGroup(request)
                 .doOnNext(aVoid -> userCache.removeGroupFromMembership(membershipId));
-    }
-
-    @Override
-    public Observable<MembershipRealm> modifyPrivateGroupLink(String membershipId, boolean create) {
-        return null;
     }
 
     public String listToJson(List<String> list) {

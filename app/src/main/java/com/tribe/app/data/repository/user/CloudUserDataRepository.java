@@ -19,8 +19,8 @@ import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
-import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.GroupEntity;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
@@ -29,7 +29,6 @@ import com.tribe.app.domain.interactor.user.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -99,6 +98,11 @@ public class CloudUserDataRepository implements UserRepository {
                     throwable.printStackTrace();
                 })
                 .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
+    }
+
+    @Override
+    public Observable<List<Friendship>> friendships() {
+        return null;
     }
 
     @Override
@@ -250,18 +254,6 @@ public class CloudUserDataRepository implements UserRepository {
     public Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
         return cloudDataStore.removeMembersFromGroup(groupId, memberIds);
-    }
-
-    @Override
-    public Observable<Void> addAdminsToGroup(String groupId, List<String> memberIds) {
-        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-        return cloudDataStore.addAdminsToGroup(groupId, memberIds);
-    }
-
-    @Override
-    public Observable<Void> removeAdminsFromGroup(String groupId, List<String> memberIds) {
-        final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-        return cloudDataStore.removeAdminsFromGroup(groupId, memberIds);
     }
 
     @Override

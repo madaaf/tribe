@@ -12,7 +12,6 @@ import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
-import com.tribe.app.domain.interactor.user.AddAdminsToGroup;
 import com.tribe.app.domain.interactor.user.AddMembersToGroup;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.CreateGroup;
@@ -20,7 +19,6 @@ import com.tribe.app.domain.interactor.user.DiskGetMembership;
 import com.tribe.app.domain.interactor.user.GetGroupInfos;
 import com.tribe.app.domain.interactor.user.GetGroupMembers;
 import com.tribe.app.domain.interactor.user.LeaveGroup;
-import com.tribe.app.domain.interactor.user.RemoveAdminsFromGroup;
 import com.tribe.app.domain.interactor.user.RemoveMembersFromGroup;
 import com.tribe.app.domain.interactor.user.UpdateGroup;
 import com.tribe.app.domain.interactor.user.UpdateMembership;
@@ -49,8 +47,6 @@ public class GroupPresenter implements Presenter {
     private final GetGroupInfos getGroupInfos;
     private final CreateFriendship createFriendship;
     private final RemoveMembersFromGroup removeMembersFromGroup;
-    private final AddAdminsToGroup addAdminsToGroup;
-    private final RemoveAdminsFromGroup removeAdminsFromGroup;
 
     private GroupMVPView groupView;
 
@@ -65,9 +61,7 @@ public class GroupPresenter implements Presenter {
                    UpdateMembership updateMembership,
                    GetGroupInfos getGroupInfos,
                    CreateFriendship createFriendship,
-                   RemoveMembersFromGroup removeMembersFromGroup,
-                   AddAdminsToGroup addAdminsToGroup,
-                   RemoveAdminsFromGroup removeAdminsFromGroup) {
+                   RemoveMembersFromGroup removeMembersFromGroup) {
         this.jobManager = jobManager;
         this.getGroupMembers = getGroupMembers;
         this.createGroup = createGroup;
@@ -79,8 +73,6 @@ public class GroupPresenter implements Presenter {
         this.getGroupInfos = getGroupInfos;
         this.createFriendship = createFriendship;
         this.removeMembersFromGroup = removeMembersFromGroup;
-        this.addAdminsToGroup = addAdminsToGroup;
-        this.removeAdminsFromGroup = removeAdminsFromGroup;
     }
 
     @Override
@@ -94,8 +86,6 @@ public class GroupPresenter implements Presenter {
         getGroupInfos.unsubscribe();
         createFriendship.unsubscribe();
         removeMembersFromGroup.unsubscribe();
-        addAdminsToGroup.unsubscribe();
-        removeAdminsFromGroup.unsubscribe();
     }
 
     @Override
@@ -327,52 +317,6 @@ public class GroupPresenter implements Presenter {
         @Override
         public void onNext(Void aVoid) {
             groupView.onMemberRemoveSuccess();
-        }
-    }
-
-    public void addAdminsToGroup(String groupId, User user) {
-        List<String> memberIds = new ArrayList<>();
-        memberIds.add(user.getId());
-        addAdminsToGroup.prepare(groupId, memberIds);
-        addAdminsToGroup.execute(new AddAdminsToGroupSubscriber());
-    }
-
-    private final class AddAdminsToGroupSubscriber extends DefaultSubscriber<Void> {
-
-        @Override
-        public void onCompleted() {}
-
-        @Override
-        public void onError(Throwable e) {
-            groupView.onAddAdminError();
-        }
-
-        @Override
-        public void onNext(Void aVoid) {
-            groupView.onAddAdminSuccess();
-        }
-    }
-
-    public void removeAdminsFromGroup(String groupId, User user) {
-        List<String> memberIds = new ArrayList<>();
-        memberIds.add(user.getId());
-        removeAdminsFromGroup.prepare(groupId, memberIds);
-        removeAdminsFromGroup.execute(new RemoveAdminsFromGroupSubscriber());
-    }
-
-    private final class RemoveAdminsFromGroupSubscriber extends DefaultSubscriber<Void> {
-
-        @Override
-        public void onCompleted() {}
-
-        @Override
-        public void onError(Throwable e) {
-            groupView.onRemoveAdminSuccess();
-        }
-
-        @Override
-        public void onNext(Void aVoid) {
-            groupView.onRemoveAdminSuccess();
         }
     }
 }

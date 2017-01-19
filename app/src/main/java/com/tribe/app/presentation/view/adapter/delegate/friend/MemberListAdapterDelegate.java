@@ -37,14 +37,12 @@ public class MemberListAdapterDelegate extends AddAnimationAdapterDelegate<List<
 
     // VARIABLES
     private int avatarSize;
-    private boolean currentUserAdmin = false;
 
     // RX SUBSCRIPTIONS / SUBJECTS
     private PublishSubject<View> longClick = PublishSubject.create();
 
-    public MemberListAdapterDelegate(Context context, boolean currentUserAdmin) {
+    public MemberListAdapterDelegate(Context context) {
         super(context);
-        this.currentUserAdmin = currentUserAdmin;
         this.avatarSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
         ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
     }
@@ -59,12 +57,10 @@ public class MemberListAdapterDelegate extends AddAnimationAdapterDelegate<List<
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
         RecyclerView.ViewHolder vh = new GroupMemberViewHolder(layoutInflater.inflate(R.layout.item_member_list, parent, false));
 
-        if (currentUserAdmin) {
-            vh.itemView.setOnLongClickListener(v -> {
-                longClick.onNext(v);
-                return true;
-            });
-        }
+        vh.itemView.setOnLongClickListener(v -> {
+            longClick.onNext(v);
+            return true;
+        });
 
         return vh;
     }
@@ -101,15 +97,7 @@ public class MemberListAdapterDelegate extends AddAnimationAdapterDelegate<List<
         else
             vh.txtUsername.setText("");
 
-        if (groupMember.isAdmin()) {
-            vh.imgMemberBadge.setVisibility(View.VISIBLE);
-            vh.imgMemberBadge.setImageResource(R.drawable.picto_badge_admin);
-        } else if (currentUserAdmin) {
-            vh.imgMemberBadge.setVisibility(View.VISIBLE);
-            vh.imgMemberBadge.setImageResource(R.drawable.picto_badge_more);
-        } else {
-            vh.imgMemberBadge.setVisibility(View.GONE);
-        }
+        vh.imgMemberBadge.setVisibility(View.GONE);
 
         if (!StringUtils.isEmpty(groupMember.getUser().getProfilePicture())) {
             Glide.with(context).load(groupMember.getUser().getProfilePicture())

@@ -94,18 +94,14 @@
     <!-- Themes -->
 
     <!-- Classic -->
-    <color name="classic.1">#FF8C7F</color>
-    <color name="classic.2">#69DDD7</color>
-    <color name="classic.3">#6540FB</color>
-    <color name="classic.4">#9862DA</color>
-    <color name="classic.5">#FD83E9</color>
-    <color name="classic.6">#96DDFF</color>
-    <color name="classic.7">#32DDB0</color>
-    <color name="classic.8">#FDE175</color>
-    <color name="classic.9">#E155E7</color>
-    <color name="classic.10">#60A1EE</color>
-    <color name="classic.11">#866DEA</color>
-    <color name="classic.12">#FFBBE2</color>
+    <color name="classic.1">#63F2FF</color>
+    <color name="classic.2">#722BFF</color>
+    <color name="classic.3">#E469FF</color>
+    <color name="classic.4">#3BDBCE</color>
+    <color name="classic.5">#FFA497</color>
+    <color name="classic.6">#007FFF</color>
+    <color name="classic.7">#B379FF</color>
+    <color name="classic.8">#9EEEFF</color>
 
     <!-- Blue -->
     <color name="blue.1">#20B8FC</color>
@@ -179,5 +175,4 @@
 
     <!-- Pulses -->
     <color name="live">#BE38B0</color>
-    <color name="online">#FFFFFF</color>
 </resources>

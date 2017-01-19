@@ -25,16 +25,13 @@ public class GroupRealm extends RealmObject {
 
     private String name;
     private String picture;
-    private String link;
     private Date created_at;
     private Date updated_at;
 
     private RealmList<GroupMemberRealm> members;
-    private RealmList<GroupMemberRealm> admins;
 
     public GroupRealm() {
         this.members = new RealmList<>();
-        this.admins = new RealmList<>();
     }
 
     public String getId() {
@@ -61,14 +58,6 @@ public class GroupRealm extends RealmObject {
         this.picture = picture;
     }
 
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String groupLink) {
-        this.link = groupLink;
-    }
-
     public Date getCreatedAt() {
         return created_at;
     }
@@ -91,14 +80,6 @@ public class GroupRealm extends RealmObject {
 
     public void setMembers(RealmList<GroupMemberRealm> members) {
         this.members = members;
-    }
-
-    public RealmList<GroupMemberRealm> getAdmins() {
-        return admins;
-    }
-
-    public void setAdmins(RealmList<GroupMemberRealm> admins) {
-        this.admins = admins;
     }
 
     public List<String> getMembersPics() {

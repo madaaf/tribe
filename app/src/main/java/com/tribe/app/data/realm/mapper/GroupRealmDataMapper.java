@@ -40,9 +40,7 @@ public class GroupRealmDataMapper {
             group = new Group(groupRealm.getId());
             group.setName(groupRealm.getName());
             group.setPicture(groupRealm.getPicture());
-            group.setGroupLink(groupRealm.getLink());
             group.setMembers(groupMemberRealmDataMapper.transform(groupRealm.getMembers()));
-            group.setAdmins(groupMemberRealmDataMapper.transform(groupRealm.getAdmins()));
         }
 
         return group;
@@ -82,7 +80,6 @@ public class GroupRealmDataMapper {
             groupRealm.setPicture(group.getPicture());
             groupRealm.setName(group.getName());
             groupRealm.setMembers(groupMemberRealmDataMapper.transformList(group.getMembers()));
-            groupRealm.setAdmins(groupMemberRealmDataMapper.transformList(group.getAdmins()));
         }
 
         return groupRealm;

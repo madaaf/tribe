@@ -124,6 +124,44 @@ public class DiskUserDataRepository implements UserRepository {
     }
 
     @Override
+    public Observable<List<Friendship>> friendships() {
+        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+
+        return userDataStore.friendships()
+                .map(friendshipRealmList -> {
+                    RealmList<FriendshipRealm> result = new RealmList<>();
+                    int count = 0;
+
+                    for (FriendshipRealm fr : friendshipRealmList) {
+                        if (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus().equals(FriendshipRealm.DEFAULT) && !fr.getFriend().getId().equals(Constants.SUPPORT_ID)) {
+                            if (count == 0) {
+                                fr.getFriend().setLive(true);
+                                fr.getFriend().setConnected(true);
+                                fr.getFriend().setLastOnline(new Date());
+                            } else if (count == 1) {
+                                fr.getFriend().setLive(false);
+                                fr.getFriend().setConnected(true);
+                                fr.getFriend().setLastOnline(new Date());
+                            } else {
+                                Calendar calendar = Calendar.getInstance();
+                                calendar.setTime(new Date());
+                                Random r = new Random();
+                                calendar.add(Calendar.DAY_OF_YEAR, - (r.nextInt(10 - 1) + 1));
+                                fr.getFriend().setConnected(false);
+                                fr.getFriend().setLive(false);
+                                fr.getFriend().setLastOnline(calendar.getTime());
+                            }
+
+                            result.add(fr);
+                            count++;
+                        }
+                    }
+
+                    return userRealmDataMapper.getFriendshipRealmDataMapper().transform(result);
+                });
+    }
+
+    @Override
     public Observable<User> updateUser(List<Pair<String, String>> values) {
         return null;
     }
@@ -265,16 +303,6 @@ public class DiskUserDataRepository implements UserRepository {
 
     @Override
     public Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds) {
-        return null;
-    }
-
-    @Override
-    public Observable<Void> addAdminsToGroup(String groupId, List<String> memberIds) {
-        return null;
-    }
-
-    @Override
-    public Observable<Void> removeAdminsFromGroup(String groupId, List<String> memberIds) {
         return null;
     }
 

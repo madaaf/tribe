@@ -19,9 +19,6 @@ public class MembershipRealm extends RealmObject implements RecipientRealmInterf
     private GroupRealm group;
     private boolean mute;
     private String category;
-    private boolean is_admin;
-    private String link;
-    private Date link_expires_at;
     private Date created_at;
     private Date updated_at;
 
@@ -55,30 +52,6 @@ public class MembershipRealm extends RealmObject implements RecipientRealmInterf
 
     public void setCategory(String category) {
         this.category = category;
-    }
-
-    public boolean isAdmin() {
-        return is_admin;
-    }
-
-    public void setIsAdmin(boolean isAdmin) {
-        this.is_admin = isAdmin;
-    }
-
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
-    }
-
-    public Date getLink_expires_at() {
-        return link_expires_at;
-    }
-
-    public void setLink_expires_at(Date link_expires_at) {
-        this.link_expires_at = link_expires_at;
     }
 
     public Date getCreated_at() {

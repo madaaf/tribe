@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.service;
 
-import com.appboy.Appboy;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.tribe.app.data.realm.Installation;
@@ -32,7 +31,6 @@ public class TribeFirebaseInstanceIDService extends FirebaseInstanceIdService {
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
 
         if (refreshedToken != null) {
-            Appboy.getInstance(getApplicationContext()).registerAppboyPushMessages(refreshedToken);
             sendTokenUseCase.setToken(refreshedToken);
             sendTokenUseCase.execute(new SendTokenSubscriber());
         }

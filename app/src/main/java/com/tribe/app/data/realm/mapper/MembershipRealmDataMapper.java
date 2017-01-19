@@ -38,10 +38,7 @@ public class MembershipRealmDataMapper {
         if (membershipRealm != null) {
             membership = new Membership(membershipRealm.getId());
             membership.setGroup(groupRealmDataMapper.transform(membershipRealm.getGroup()));
-            membership.setIsAdmin(membershipRealm.isAdmin());
             membership.setMute(membershipRealm.isMute());
-            membership.setLink(membershipRealm.getLink());
-            membership.setLink_expires_at(membershipRealm.getLink_expires_at());
             membership.setCreatedAt(membershipRealm.getCreatedAt());
             membership.setUpdatedAt(membershipRealm.getUpdatedAt());
         }
@@ -82,10 +79,7 @@ public class MembershipRealmDataMapper {
             membershipRealm = new MembershipRealm();
             membershipRealm.setId(membership.getId());
             membershipRealm.setGroup(groupRealmDataMapper.transform(membership.getGroup()));
-            membershipRealm.setIsAdmin(membership.isAdmin());
             membershipRealm.setMute(membership.isMute());
-            membershipRealm.setLink(membership.getLink());
-            membershipRealm.setLink_expires_at(membership.getLink_expires_at());
             membershipRealm.setCreatedAt(membership.getCreatedAt());
             membershipRealm.setUpdatedAt(membership.getUpdatedAt());
         }

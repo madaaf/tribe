@@ -12,7 +12,7 @@
         android:background="@null"
         app:pulseCount="3"
         app:pulseDuration="3500"
-        app:pulseColor="@color/live">
+        app:pulseColor="@android:color/white">
 
         <com.tribe.app.presentation.view.widget.avatar.AvatarLiveView
             android:id="@+id/avatar"

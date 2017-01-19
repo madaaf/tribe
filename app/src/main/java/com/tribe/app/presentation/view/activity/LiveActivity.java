@@ -7,28 +7,28 @@ import android.view.ViewGroup;
 
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.mvp.presenter.LivePresenter;
+import com.tribe.app.presentation.mvp.view.LiveMVPView;
 import com.tribe.app.presentation.utils.PermissionUtils;
+import com.tribe.app.presentation.view.component.live.LiveContainer;
+import com.tribe.app.presentation.view.component.live.LiveInviteView;
+import com.tribe.app.presentation.view.component.live.LiveView;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import rx.Subscriber;
 import rx.subscriptions.CompositeSubscription;
 
-public class LiveActivity extends BaseActivity {
-
-    private static final int MAX_NUM_SUBSCRIBERS = 3;
+public class LiveActivity extends BaseActivity implements LiveMVPView {
 
     public static Intent getCallingIntent(Context context, Recipient recipient) {
         Intent intent = new Intent(context, LiveActivity.class);
@@ -36,18 +36,25 @@ public class LiveActivity extends BaseActivity {
     }
 
     @Inject
+    ScreenUtils screenUtils;
+
+    @Inject
     User user;
 
-    @BindView(R.id.layoutTop)
-    ViewGroup layoutTop;
+    @Inject
+    LivePresenter livePresenter;
 
-    @BindView(R.id.layoutBottom)
-    ViewGroup layoutBottom;
+    @BindView(R.id.viewLive)
+    LiveView viewLive;
+
+    @BindView(R.id.viewInviteLive)
+    LiveInviteView viewInviteLive;
+
+    @BindView(R.id.viewLiveContainer)
+    LiveContainer viewLiveContainer;
 
     // VARIABLES
     private Unbinder unbinder;
-    private List<Subscriber> subscriberList = new ArrayList<>();
-    private Map<Stream, Subscriber> subscriberStreamList = new HashMap<>();
 
     // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -63,6 +70,18 @@ public class LiveActivity extends BaseActivity {
         init();
         initResources();
         initPermissions();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        livePresenter.onViewAttached(this);
+    }
+
+    @Override
+    protected void onStop() {
+        livePresenter.onViewDetached();
+        super.onStop();
     }
 
     @Override
@@ -83,7 +102,10 @@ public class LiveActivity extends BaseActivity {
     }
 
     private void init() {
-
+        ViewGroup.LayoutParams params = viewInviteLive.getLayoutParams();
+        params.width = screenUtils.getWidthPx() / 3;
+        viewInviteLive.setLayoutParams(params);
+        viewInviteLive.requestLayout();
     }
 
     private void initDependencyInjector() {
@@ -110,5 +132,10 @@ public class LiveActivity extends BaseActivity {
     public void finish() {
         super.finish();
         overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
+    }
+
+    @Override
+    public void renderFriendshipList(List<Friendship> friendshipList) {
+        viewInviteLive.renderFriendshipList(friendshipList);
     }
 }

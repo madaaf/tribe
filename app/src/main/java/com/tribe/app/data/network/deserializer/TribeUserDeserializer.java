@@ -41,14 +41,11 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
 
         JsonObject result = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("user");
         if (result == null) result = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("updateUser");
-        if (result == null) result = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("updateScore");
 
         userRealm.setId(result.get("id").getAsString());
         userRealm.setPhone(result.get("phone").getAsString());
         userRealm.setFbid(result.get("fbid") != null && !result.get("fbid").isJsonNull() ? result.get("fbid").getAsString() : "");
         userRealm.setInvisibleMode(result.get("invisible_mode").getAsBoolean());
-        userRealm.setTribeSave(result.get("tribe_save").getAsBoolean());
-        userRealm.setScore(result.get("score").getAsInt());
         userRealm.setUsername(result.get("username") != null && !result.get("username").isJsonNull() ? result.get("username").getAsString() : null);
         userRealm.setDisplayName(result.get("display_name").getAsString());
         userRealm.setProfilePicture(result.get("picture") != null && !result.get("picture").isJsonNull() ? result.get("picture").getAsString() : null);

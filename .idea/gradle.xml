@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/AdapterDelegates" />
             <option value="$PROJECT_DIR$/ViewNavigator" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/tribelivesdk" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

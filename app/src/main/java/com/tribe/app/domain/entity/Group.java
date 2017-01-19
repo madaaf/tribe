@@ -18,9 +18,7 @@ public class Group implements Serializable {
     private String id;
     private String picture;
     private String name;
-    private String groupLink;
     private List<User> members;
-    private List<User> admins;
 
     public String getId() {
         return id;
@@ -46,28 +44,12 @@ public class Group implements Serializable {
         this.name = name;
     }
 
-    public String getGroupLink() {
-        return groupLink;
-    }
-
-    public void setGroupLink(String groupLink) {
-        this.groupLink = groupLink;
-    }
-
     public List<User> getMembers() {
         return members;
     }
 
     public void setMembers(List<User> members) {
         this.members = members;
-    }
-
-    public List<User> getAdmins() {
-        return admins;
-    }
-
-    public void setAdmins(List<User> admins) {
-        this.admins = admins;
     }
 
     public List<String> getMembersPics() {
@@ -100,17 +82,6 @@ public class Group implements Serializable {
                         }
                     }
                 }
-
-                if (admins != null) {
-                    for (User admin : admins) {
-                        if (groupMember.getUser().getId().equals(admin.getId())) {
-                            groupMember.setMember(true);
-                            groupMember.setOgMember(true);
-                            groupMember.setAdmin(true);
-                            break;
-                        }
-                    }
-                }
             }
         }
     }
@@ -122,26 +93,11 @@ public class Group implements Serializable {
             GroupMember groupMember = new GroupMember(member);
             groupMember.setMember(true);
             groupMember.setOgMember(true);
-
-            for (User admin : admins) {
-                if (member.equals(admin)) groupMember.setAdmin(true);
-            }
-
             groupMemberList.add(groupMember);
         }
 
         //Collections.sort(groupMemberList, (o1, o2) -> GroupMember.nullSafeComparator(o1, o2));
 
         return groupMemberList;
-    }
-
-    public boolean isUserAdmin(User user) {
-        for (User admin : admins) {
-            if (admin.equals(user)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

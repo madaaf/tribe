@@ -38,11 +38,7 @@ public class PaletteGrid {
                 ContextCompat.getColor(context, R.color.classic_5),
                 ContextCompat.getColor(context, R.color.classic_6),
                 ContextCompat.getColor(context, R.color.classic_7),
-                ContextCompat.getColor(context, R.color.classic_8),
-                ContextCompat.getColor(context, R.color.classic_9),
-                ContextCompat.getColor(context, R.color.classic_10),
-                ContextCompat.getColor(context, R.color.classic_11),
-                ContextCompat.getColor(context, R.color.classic_12)
+                ContextCompat.getColor(context, R.color.classic_8)
         };
 
         paletteTwo = new Integer[] {

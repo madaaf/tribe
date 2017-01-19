@@ -273,7 +273,7 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         subscriptions.add(homeGridAdapter.onClick()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .subscribe(recipient -> {
-                    navigator.navigateToLiveTest(this, recipient);
+                    navigator.navigateToLive(this, recipient);
                 })
         );
     }

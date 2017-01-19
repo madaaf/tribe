@@ -52,32 +52,14 @@
             phone
             fbid
             invisible_mode
-            score
             username
             display_name
             picture
             created_at
-            tribe_save
             push_notif
         }
     </string>
 
-    <string name="userfragment.score" translatable="false">
-        fragment UserInfos on User {
-            score
-        }
-    </string>
-
-    <!-- installs {
-        gcm_id
-        user {
-            ...UserInfos
-        }
-
-        members {
-            ...UserInfos
-        }
-    } -->
     <string name="user.mutate" translatable="false">
         mutation {
             updateUser(user: {
@@ -219,7 +201,6 @@
             id
             name
             picture
-            link
             created_at
         }
     </string>
@@ -229,12 +210,8 @@
             id
             name
             picture
-            link
             created_at
             members {
-                ...UserInfos
-            }
-            admins {
                 ...UserInfos
             }
         }
@@ -247,9 +224,6 @@
                 ...GroupInfo
             }
             mute
-            is_admin
-            link
-            link_expires_at
             created_at
             updated_at
         }
@@ -259,9 +233,6 @@
         fragment MembershipInfo on Membership {
             id
             mute
-            is_admin
-            link
-            link_expires_at
             created_at
             updated_at
         }
@@ -284,10 +255,6 @@
                 ...GroupInfo
 
                 members {
-                    ...UserInfos
-                }
-
-                admins {
                     ...UserInfos
                 }
             }
@@ -354,22 +321,6 @@
         }
     </string>
 
-    <string name="add.admins.group" translatable="false">
-        mutation {
-            addAdminsToGroup(id : \"%1$s\", admins: [%2$s]) {
-                id
-            }
-        }
-    </string>
-
-    <string name="remove.admins.group" translatable="false">
-        mutation {
-            removeAdminsFromGroup(id : \"%1$s\", admins: [%2$s]) {
-                id
-            }
-        }
-    </string>
-
     <string name="remove.group" translatable="false">
         mutation {
             removeGroup(id : \"%1$s\")
@@ -392,18 +343,6 @@
         %2$s
         %3$s
         %4$s
-    </string>
-    
-    <string name="user.mutate.score" translatable="false">
-        mutation {
-            %1$s
-        }
-    </string>
-
-    <string name="user.mutate.score.core" translatable="false">
-        updateScore%1$d : updateScore(action: %2$s) {
-            score
-        }
     </string>
 
     <string name="boostrap.support" translatable="false">

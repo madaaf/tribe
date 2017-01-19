@@ -53,7 +53,9 @@ public class LauncherActivity extends BaseActivity {
 
         Uri deepLink = getIntent().getData();
         if (currentUser == null || StringUtils.isEmpty(currentUser.getUsername())) {
+            //navigator.navigateToLive(this, null);
             navigator.navigateToLogin(this, deepLink);
+            // TODO CHANGE BACK
         } else {
             navigator.navigateToHome(this, true, deepLink);
         }

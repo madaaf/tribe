@@ -329,7 +329,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
             subscriptions.add(viewAddMembersGroup.onClickShareLink()
                     .subscribe(aVoid -> {
                         tagManager.trackEvent(TagManagerConstants.KPI_GROUP_LINK_SHARED);
-                        navigator.shareGenericText(membership.getGroup().getGroupLink(), this);
+                        navigator.shareGenericText("", this);
                     })
             );
         }
@@ -368,27 +368,8 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
                 })
         );
 
-        subscriptions.add(viewMembersGroup.onClickAddAdmin()
-                .map(groupMember -> {
-                    membership.getGroup().getAdmins().add(groupMember.getUser());
-                    updateGroup(membership.getGroup(), true);
-                    return groupMember.getUser();
-                })
-                .subscribe(user -> groupPresenter.addAdminsToGroup(membership.getSubId(), user))
-        );
-
-        subscriptions.add(viewMembersGroup.onClickRemoveAdmin()
-                .map(groupMember -> {
-                    membership.getGroup().getAdmins().remove(groupMember.getUser());
-                    updateGroup(membership.getGroup(), true);
-                    return groupMember.getUser();
-                })
-                .subscribe(user -> groupPresenter.removeAdminsFromGroup(membership.getSubId(), user))
-        );
-
         subscriptions.add(viewMembersGroup.onClickRemoveFromGroup()
                 .map(groupMember -> {
-                    membership.getGroup().getAdmins().remove(groupMember.getUser());
                     membership.getGroup().getMembers().remove(groupMember.getUser());
                     if (viewStack.getTopView() instanceof MembersGroupView) currentTitle.setText(getTitleForMembers());
                     updateGroup(membership.getGroup(), true);

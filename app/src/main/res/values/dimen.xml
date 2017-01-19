@@ -72,6 +72,7 @@
 
     <!-- THRESHOLDS -->
     <dimen name="threshold_dismiss">100dp</dimen>
+    <dimen name="threshold_open_live_invite">100dp</dimen>
     <dimen name="threshold_open_notification">50dp</dimen>
 
     <!-- TRANSLATIONS -->

@@ -14,6 +14,7 @@ import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.User;
 
@@ -53,6 +54,12 @@ public interface UserDataStore {
      *
      */
     Observable<UserRealm> userInfos(final String userId);
+
+    /**
+     * Get an {@link Observable} which will emit a {@link List<Friendship>}
+     *
+     */
+    Observable<List<FriendshipRealm>> friendships();
 
     /**
      * Get an {@link Observable} which will emit a {@link User}
@@ -148,15 +155,9 @@ public interface UserDataStore {
 
     Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds);
 
-    Observable<Void> addAdminsToGroup(String groupId, List<String> memberIds);
-
-    Observable<Void> removeAdminsFromGroup(String groupId, List<String> memberIds);
-
     Observable<Void> removeGroup(String groupId);
 
     Observable<Void> leaveGroup(String membershipId);
-
-    Observable<MembershipRealm> modifyPrivateGroupLink(String membershipId, boolean create);
 
     Observable<Void> bootstrapSupport();
 

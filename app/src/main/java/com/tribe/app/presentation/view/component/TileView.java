@@ -38,7 +38,8 @@ public class TileView extends SquareFrameLayout {
 
     public final static int TYPE_GRID_LIVE = 0;
     public final static int TYPE_GRID_CONNECTED = 1;
-    public final static int TYPE_GRID = 2;
+    public final static int TYPE_GRID_INVITE = 2;
+    public final static int TYPE_GRID = 3;
 
     @Inject
     ScreenUtils screenUtils;

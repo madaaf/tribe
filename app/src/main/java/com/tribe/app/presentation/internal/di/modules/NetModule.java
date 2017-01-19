@@ -102,9 +102,7 @@ public class NetModule {
     @Provides
     @PerApplication
     Gson provideGson(@Named("utcSimpleDate") SimpleDateFormat utcSimpleDate,
-                     @Named("utcSimpleDateFull") SimpleDateFormat utcSimpleDateFull,
-                     UserCache userCache,
-                     AccessToken accessToken) {
+                     @Named("utcSimpleDateFull") SimpleDateFormat utcSimpleDateFull) {
 
         GroupDeserializer groupDeserializer = new GroupDeserializer();
 

@@ -23,10 +23,10 @@ public class MemberListAdapter extends RecyclerView.Adapter {
 
     private List<GroupMember> items;
 
-    public MemberListAdapter(Context context, boolean currentUserAdmin) {
+    public MemberListAdapter(Context context) {
         delegatesManager = new RxAdapterDelegatesManager<>();
 
-        memberListAdapterDelegate = new MemberListAdapterDelegate(context, currentUserAdmin);
+        memberListAdapterDelegate = new MemberListAdapterDelegate(context);
         delegatesManager.addDelegate(memberListAdapterDelegate);
 
         items = new ArrayList<>();

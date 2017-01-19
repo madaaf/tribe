@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import io.realm.Realm;
 import io.realm.RealmList;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by tiago on 06/05/2016.
@@ -182,6 +183,16 @@ public class UserCacheImpl implements UserCache {
     }
 
     @Override
+    public Observable<List<FriendshipRealm>> friendships() {
+        return realm.where(FriendshipRealm.class)
+                .findAll()
+                .asObservable()
+                .filter(friendshipList -> friendshipList.isLoaded())
+                .map(friendshipList -> realm.copyFromRealm(friendshipList))
+                .unsubscribeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
     public UserRealm userInfosNoObs(String userId) {
         Realm obsRealm = Realm.getDefaultInstance();
         UserRealm userRealm = obsRealm.where(UserRealm.class).equalTo("id", userId).findFirst();
@@ -252,7 +263,6 @@ public class UserCacheImpl implements UserCache {
                     GroupRealm groupRealmDB = realm1.where(GroupRealm.class).equalTo("id", groupRealm.getId()).findFirst();
                     groupRealmDB.setName(groupRealm.getName());
                     groupRealmDB.setPicture(groupRealm.getPicture());
-                    groupRealmDB.setLink(groupRealm.getLink());
                 }
             });
         } finally {
@@ -280,58 +290,6 @@ public class UserCacheImpl implements UserCache {
 
     @Override
     public void removeMembersFromGroup(String groupId, List<String> memberIds) {
-        Realm realm = Realm.getDefaultInstance();
-
-        try {
-            realm.beginTransaction();
-            RealmList<UserRealm> usersToRemove = new RealmList<>();
-
-            for (String memberId : memberIds) {
-                usersToRemove.add(realm.where(UserRealm.class).equalTo("id", memberId).findFirst());
-            }
-
-            GroupRealm groupRealm = realm.where(GroupRealm.class).equalTo("id", groupId).findFirst();
-            for (UserRealm user : usersToRemove) {
-                groupRealm.getMembers().remove(user);
-            }
-
-            realm.commitTransaction();
-        } catch (IllegalStateException ex) {
-            ex.printStackTrace();
-            if (realm.isInTransaction()) realm.cancelTransaction();
-        } finally {
-            realm.close();
-        }
-    }
-
-    @Override
-    public void addAdminsToGroup(String groupId, List<String> memberIds) {
-        Realm realm = Realm.getDefaultInstance();
-
-        try {
-            realm.beginTransaction();
-
-            RealmList<UserRealm> usersToAdd = new RealmList<>();
-            for (String memberId : memberIds) {
-                usersToAdd.add(realm.where(UserRealm.class).equalTo("id", memberId).findFirst());
-            }
-
-            GroupRealm groupRealm = realm.where(GroupRealm.class).equalTo("id", groupId).findFirst();
-            for (UserRealm user : usersToAdd) {
-                groupRealm.getAdmins().add(new GroupMemberRealm(user));
-            }
-
-            realm.commitTransaction();
-        } catch (IllegalStateException ex) {
-            ex.printStackTrace();
-            if (realm.isInTransaction()) realm.cancelTransaction();
-        } finally {
-            realm.close();
-        }
-    }
-
-    @Override
-    public void removeAdminsFromGroup(String groupId, List<String> memberIds) {
         Realm realm = Realm.getDefaultInstance();
 
         try {

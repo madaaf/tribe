@@ -677,6 +677,7 @@
 	<string name="tutorial_message_tap_to_cancel">Tap to cancel if needed</string>
 	<string name="tutorial_message_filter_grid">Filter your friends</string>
 	<string name="tutorial_message_invite_friends">Give access to your 3 best friends</string>
+	<string name="tutorial_message_live_add_friends">Add guests in the live!</string>
 	
 	<!-- NewLevelPopup -->
 	<string name="newlevel_title">%1$s pts!</string>
@@ -762,4 +763,20 @@
 	<!-- Camera -->
 	<string name="camera_permission">Enable\ncamera</string>
 	<string name="camera_recording">REC</string>
+	
+	<!-- Live -->
+	<string name="live_drag_friends">Drag friends!</string>
+	<string name="live_invite_link">Invite\nlink</string>
+	<string name="live_drop_friend">Drop in the live!</string>
+	<string name="live_drop_friend_impossible">Only %1$d friends at the same time!</string>
+	<string name="live_join_impossible">Only %1$d friends at the same time!</string>
+	<string name="live_event_added">%1$s added!</string>
+	<string name="live_event_joined">%1$s joined!</string>
+	<string name="live_event_left">%1$s left!</string>
+	<string name="live_friend_buzzed">%1$s buzzed!</string>
+	<string name="live_friends_buzzed">%1$s buzzed!</string>
+	<string name="live_friends_more_buzzed">%1$s &amp; %2$d more buzzed!</string>
+	
+	<!-- Blur Popup -->
+	<string name="blur_popup_dismiss">Swipe to dismiss</string>
 </resources>

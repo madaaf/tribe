@@ -60,6 +60,12 @@ public interface UserRepository {
     Observable<User> userInfos(final String userId);
 
     /**
+     * Get an {@link Observable} which will emit a {@link List<Friendship>}
+     *
+     */
+    Observable<List<Friendship>> friendships();
+
+    /**
      * Get an {@link Observable} which will emit a {@link User}
      * @param token the token of the user for which we get the info
      *
@@ -147,10 +153,6 @@ public interface UserRepository {
     Observable<Void> addMembersToGroup(String groupId, List<String> memberIds);
 
     Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds);
-
-    Observable<Void> addAdminsToGroup(String groupId, List<String> memberIds);
-
-    Observable<Void> removeAdminsFromGroup(String groupId, List<String> memberIds);
 
     Observable<Void> removeGroup(String groupId);
 

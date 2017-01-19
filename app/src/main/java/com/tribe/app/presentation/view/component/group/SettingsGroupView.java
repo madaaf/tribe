@@ -110,16 +110,6 @@ public class SettingsGroupView extends FrameLayout {
 
         subscriptions.add(
                 viewActionLeaveGroup.onClick()
-                        .doOnNext(aVoid -> {
-                            if (isCurrentUserAdmin && membership.getGroup().getAdmins().size() == 1) {
-                                Toast.makeText(
-                                        getContext(),
-                                        EmojiParser.demojizedText(getContext().getString(R.string.group_infos_error_cannot_leave)),
-                                        Toast.LENGTH_SHORT
-                                ).show();
-                            }
-                        })
-                        .filter(aVoid -> !isCurrentUserAdmin || membership.getGroup().getAdmins().size() > 1)
                         .flatMap(x -> DialogFactory.dialog(
                                 getContext(),
                                 membership.getDisplayName(),
@@ -148,8 +138,6 @@ public class SettingsGroupView extends FrameLayout {
     }
 
     private void updateInfos() {
-        isCurrentUserAdmin = membership.isAdmin();
-
         viewActionInfos.setTitle(membership.getDisplayName());
         viewActionInfos.setRecipient(membership);
         viewActionNotifications.setValue(!membership.isMute());
