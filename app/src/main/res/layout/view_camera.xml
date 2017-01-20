@@ -106,7 +106,7 @@
             android:layout_marginTop="4dp"
             android:text="+ 50 pts"
             android:gravity="center"
-            style="@style/Caption.Black.40"
+            style="@style/Caption.One.Black40"
             />
     </LinearLayout>
 

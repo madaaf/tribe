@@ -40,7 +40,7 @@ public class WebSocketConnection {
 
     public static final String JOIN = "joinR";
     public static final String OFFER = "exchangeSdp";
-    public static final String CANDIDATE = "exchangeFrom";
+    public static final String CANDIDATE = "exchangeCandidateFrom";
     public static final String LEAVE = "leave";
 
     private @WebSocketState String state;

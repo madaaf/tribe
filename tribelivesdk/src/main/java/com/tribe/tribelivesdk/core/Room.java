@@ -201,7 +201,7 @@ public class Room {
 
     private JSONObject getSendSdpPayload(String id, SessionDescription sessionDescription) {
         JSONObject a = new JSONObject();
-        jsonPut(a, "a", "exchangeSdp");
+        jsonPut(a, "a", "exchangeSdpFrom");
         JSONObject d = new JSONObject();
         jsonPut(d, "to", id);
         JSONObject sdp = new JSONObject();
@@ -214,7 +214,7 @@ public class Room {
 
     private JSONObject getCandidatePayload(String peerId, IceCandidate iceCandidate) {
         JSONObject a = new JSONObject();
-        jsonPut(a, "a", "exchange");
+        jsonPut(a, "a", "exchangeCandidate");
         JSONObject d = new JSONObject();
         jsonPut(d, "to", peerId);
         JSONObject candidateJSON = new JSONObject();

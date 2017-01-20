@@ -190,7 +190,7 @@
         <activity
             android:name=".presentation.view.activity.LiveActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.BlackLight"
+            android:theme="@style/AppTheme.Black"
             />
 
         <activity

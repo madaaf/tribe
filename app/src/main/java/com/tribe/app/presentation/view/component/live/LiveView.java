@@ -23,9 +23,6 @@ public class LiveView extends FrameLayout {
     @Inject
     ScreenUtils screenUtils;
 
-
-
-
     // RESOURCES
 
     // OBSERVABLES

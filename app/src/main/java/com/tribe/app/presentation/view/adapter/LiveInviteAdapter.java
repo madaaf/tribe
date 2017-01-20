@@ -8,10 +8,9 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyGridAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyHeaderGridAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.grid.UserConnectedGridAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.grid.UserLiveGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.UserInviteAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.UserInviteHeaderAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.UserLiveCoInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.interfaces.RecyclerViewItemEnabler;
 import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -23,19 +22,18 @@ import javax.inject.Inject;
 
 import rx.subscriptions.CompositeSubscription;
 
-import static com.tribe.app.presentation.view.adapter.HomeGridAdapter.EMPTY_HEADER_VIEW_TYPE;
-
 /**
  * Created by tiago on 01/18/2017.
  */
 public class LiveInviteAdapter extends RecyclerView.Adapter implements RecyclerViewItemEnabler {
 
+    public static final int EMPTY_HEADER_VIEW_TYPE = 99;
+
     private ScreenUtils screenUtils;
 
     protected RxAdapterDelegatesManager delegatesManager;
-    private UserGridAdapterDelegate userGridAdapterDelegate;
-    private UserLiveGridAdapterDelegate userLiveGridAdapterDelegate;
-    private UserConnectedGridAdapterDelegate userConnectedGridAdapterDelegate;
+    private UserInviteAdapterDelegate userInviteAdapterDelegate;
+    private UserLiveCoInviteAdapterDelegate userLiveCoInviteAdapterDelegate;
 
     // VARIABLES
     private List<Recipient> items;
@@ -48,17 +46,15 @@ public class LiveInviteAdapter extends RecyclerView.Adapter implements RecyclerV
     public LiveInviteAdapter(Context context) {
         screenUtils = ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().screenUtils();
         delegatesManager = new RxAdapterDelegatesManager<>();
+
+        delegatesManager.addDelegate(EMPTY_HEADER_VIEW_TYPE, new UserInviteHeaderAdapterDelegate(context));
         delegatesManager.addDelegate(new EmptyGridAdapterDelegate(context));
-        delegatesManager.addDelegate(EMPTY_HEADER_VIEW_TYPE, new EmptyHeaderGridAdapterDelegate(context));
 
-        userGridAdapterDelegate = new UserGridAdapterDelegate(context);
-        delegatesManager.addDelegate(userGridAdapterDelegate);
+        userInviteAdapterDelegate = new UserInviteAdapterDelegate(context);
+        delegatesManager.addDelegate(userInviteAdapterDelegate);
 
-        userLiveGridAdapterDelegate = new UserLiveGridAdapterDelegate(context);
-        delegatesManager.addDelegate(userLiveGridAdapterDelegate);
-
-        userConnectedGridAdapterDelegate = new UserConnectedGridAdapterDelegate(context);
-        delegatesManager.addDelegate(userConnectedGridAdapterDelegate);
+        userLiveCoInviteAdapterDelegate = new UserLiveCoInviteAdapterDelegate(context);
+        delegatesManager.addDelegate(userLiveCoInviteAdapterDelegate);
 
         items = new ArrayList<>();
 

@@ -11,11 +11,11 @@ import com.tribe.app.presentation.view.utils.Constants;
 import java.util.List;
 
 /**
- * Created by tiago on 18/05/2016.
+ * Created by tiago on 01/18/2017.
  */
-public class UserConnectedGridAdapterDelegate extends RecipientGridAdapterDelegate {
+public class UserLiveCoGridAdapterDelegate extends RecipientGridAdapterDelegate {
 
-    public UserConnectedGridAdapterDelegate(Context context) {
+    public UserLiveCoGridAdapterDelegate(Context context) {
         super(context);
     }
 
@@ -25,12 +25,12 @@ public class UserConnectedGridAdapterDelegate extends RecipientGridAdapterDelega
                 && !items.get(position).getSubId().equals(Constants.SUPPORT_ID)
                 && !items.get(position).getSubId().equals(Recipient.ID_HEADER)
                 && !items.get(position).getSubId().equals(Recipient.ID_EMPTY)
-                && items.get(position).isConnected();
+                && (items.get(position).isLive() || items.get(position).isConnected());
     }
 
 
     @Override
     protected int getLayoutId() {
-        return R.layout.item_user_connected_grid;
+        return R.layout.item_user_live_co_grid;
     }
 }

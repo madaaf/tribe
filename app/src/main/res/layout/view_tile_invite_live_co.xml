@@ -5,15 +5,7 @@
 
     <include layout="@layout/view_tile_background" />
 
-    <View
-        android:id="@+id/viewShadowAvatar"
-        android:layout_height="@dimen/avatar_size_with_shadow"
-        android:layout_width="@dimen/avatar_size_with_shadow"
-        android:layout_gravity="center"
-        android:background="@drawable/bg_avatar_shadow"
-        />
-
-    <com.tribe.app.presentation.view.widget.avatar.AvatarView
+    <com.tribe.app.presentation.view.widget.avatar.AvatarLiveView
         android:id="@+id/avatar"
         android:layout_width="@dimen/avatar_size"
         android:layout_height="@dimen/avatar_size"
@@ -21,6 +13,13 @@
         android:background="@null"
         />
 
-    <include layout="@layout/view_tile_grid_base" />
+    <include layout="@layout/view_tile_invite_base" />
 
+    <View
+        android:id="@+id/viewShadowLeft"
+        android:layout_width="10dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="left"
+        android:background="@drawable/shadow_right"
+        />
 </merge>

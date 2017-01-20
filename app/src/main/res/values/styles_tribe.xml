@@ -70,25 +70,34 @@
 
     <style name="Caption">
         <item name="android:textSize">11sp</item>
+    </style>
+
+    <style name="Caption.One">
         <item name="customFont">Roboto-Regular.ttf</item>
     </style>
 
-    <style name="Caption.White" parent="@style/Caption">
+    <style name="Caption.Two">
+        <item name="customFont">Roboto-Bold.ttf</item>
     </style>
 
-    <style name="Caption.Black" parent="@style/Caption">
-    </style>
-
-    <style name="Caption.White.40">
+    <style name="Caption.One.White40" parent="Caption.One">
         <item name="android:textColor">@color/white.opacity.40</item>
     </style>
 
-    <style name="Caption.Black.40">
+    <style name="Caption.One.Black40" parent="Caption.One">
         <item name="android:textColor">@color/black.opacity.40</item>
     </style>
 
-    <style name="Caption.White.1">
+    <style name="Caption.One.White" parent="Caption.One">
         <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="Caption.Two.White" parent="Caption.Two">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="Caption.Two.White40" parent="Caption.Two">
+        <item name="android:textColor">@color/white.opacity.40</item>
     </style>
 
     <style name="Title">

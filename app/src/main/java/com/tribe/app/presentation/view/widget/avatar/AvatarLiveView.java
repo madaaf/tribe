@@ -63,10 +63,7 @@ public class AvatarLiveView extends RelativeLayout implements Avatar {
         ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AvatarLiveView);
-        type = a.getInt(R.styleable.AvatarLiveView_avatarLiveType, LIVE);
-
-        if (type == LIVE) imgInd.setImageResource(R.drawable.picto_live);
-        else imgInd.setImageResource(R.drawable.picto_online);
+        setType(a.getInt(R.styleable.AvatarLiveView_avatarLiveType, LIVE));
 
         getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -96,6 +93,13 @@ public class AvatarLiveView extends RelativeLayout implements Avatar {
     @Override
     public void load(String url) {
         avatar.load(url);
+    }
+
+    public void setType(int type) {
+        this.type = type;
+
+        if (type == LIVE) imgInd.setImageResource(R.drawable.picto_live);
+        else imgInd.setImageResource(R.drawable.picto_online);
     }
 
     private void refactorSize() {

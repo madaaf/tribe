@@ -213,8 +213,8 @@
 	<string name="grid_support_status_loading">Chargement</string>
 	<string name="grid_support_status_reply">Répondez à l’Équipe</string>
 	<string name="grid_support_status_error">Non envoyé</string>
-	<string name="grid_status_live">En direct</string>
-	<string name="grid_status_connected">Connecté</string>
+	<string name="grid_status_live">Live</string>
+	<string name="grid_status_connected">En ligne</string>
 	<string name="grid_status_last_seen">Last seen %1$s</string>
 	<string name="grid_ghost">Pas encore inscrit</string>
 	<string name="grid_friendship_recording_message">%1$d message</string>

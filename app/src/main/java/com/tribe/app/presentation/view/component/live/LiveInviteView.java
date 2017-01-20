@@ -91,7 +91,6 @@ public class LiveInviteView extends FrameLayout {
     }
 
     private void initUI() {
-        setBackgroundResource(R.color.blue_facebook);
     }
 
     private void initResources() {

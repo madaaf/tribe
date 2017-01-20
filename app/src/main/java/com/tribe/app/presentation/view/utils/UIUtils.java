@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.utils;
 
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.support.v7.widget.CardView;
 import android.view.View;
 
 /**
@@ -30,5 +31,10 @@ public class UIUtils {
             gradientDrawable.setColor(color);
             if (hasCorners) gradientDrawable.setCornerRadii(radiusMatrix);
         }
+    }
+
+    public static void setBackgroundCard(CardView v, int position) {
+        int color = PaletteGrid.get(position);
+        v.setCardBackgroundColor(color);
     }
 }

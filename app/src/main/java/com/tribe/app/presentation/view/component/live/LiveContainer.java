@@ -6,7 +6,6 @@ import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
-import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -32,7 +31,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class LiveContainer extends FrameLayout {
 
-    private static final SpringConfig ORIGAMI_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(0f, 20f);
+    private static final SpringConfig ORIGAMI_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(0f, 100f);
     private static final float DRAG_RATE = 0.1f;
     private static final int DRAG_THRESHOLD = 20;
     private static final int INVALID_POINTER = -1;
@@ -42,9 +41,6 @@ public class LiveContainer extends FrameLayout {
 
     @BindView(R.id.viewLive)
     LiveView liveView;
-
-    @BindView(R.id.viewShadowRight)
-    View viewShadowRight;
 
     @BindView(R.id.viewInviteLive)
     LiveInviteView liveInviteView;
@@ -125,8 +121,6 @@ public class LiveContainer extends FrameLayout {
         springRightListener = new RightSpringListener();
         touchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
 
-        setBackgroundResource(R.color.grey_background_profile_info);
-
 //        liveView.setOnTouchListener((v, event) -> {
 //            int dy = recyclerView.computeVerticalScrollOffset();
 //            if (event.getY() < topBarView.getHeight() && dy < (topBarView.getHeight() >> 1)) return true;
@@ -154,8 +148,8 @@ public class LiveContainer extends FrameLayout {
     ///////////////////////
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (!isEnabled()) {
-            // TODO CONTROL IF TOUCH IS IN LIVEINVITEVIEW
+        boolean isTouchInInviteView = ev.getRawX() >= screenUtils.getWidthPx() - liveInviteView.getWidth();
+        if (!isEnabled() || (isOpened && isTouchInInviteView)) {
             return false;
         }
 
@@ -234,6 +228,7 @@ public class LiveContainer extends FrameLayout {
                 final int pointerIndex = event.findPointerIndex(activePointerId);
 
                 activePointerId = INVALID_POINTER;
+                beingDragged = false;
 
                 if (pointerIndex != INVALID_POINTER && velocityTracker != null) {
                     velocityTracker.addMovement(event);
@@ -289,7 +284,6 @@ public class LiveContainer extends FrameLayout {
         params.width = (int) (screenUtils.getWidthPx() + value);
         liveView.setLayoutParams(params);
         liveView.requestLayout();
-        viewShadowRight.setTranslationX(value);
     }
 
     private boolean applyOffsetRightWithTension(float offsetX) {
