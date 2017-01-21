@@ -37,4 +37,12 @@ public class UIUtils {
         int color = PaletteGrid.get(position);
         v.setCardBackgroundColor(color);
     }
+
+    public static void setBackgroundInd(View v, int position) {
+        int color = PaletteGrid.get(position);
+        GradientDrawable gradientDrawable = new GradientDrawable();
+        gradientDrawable.setShape(GradientDrawable.OVAL);
+        gradientDrawable.setColor(color);
+        v.setBackground(gradientDrawable);
+    }
 }

@@ -225,7 +225,7 @@ public class TopBarView extends FrameLayout {
         hideView(btnNew, false);
         hideView(viewAvatar, true);
 
-        AnimationUtils.animateLeftMargin(btnSearch, marginSmall, DURATION);
+        AnimationUtils.animateLeftMargin(btnSearch, marginSmall, DURATION, null);
         AnimationUtils.animateRightMargin(btnSearch, imgClose.getWidth() + 2 * marginSmall, DURATION);
     }
 
@@ -243,7 +243,7 @@ public class TopBarView extends FrameLayout {
         hideView(imgClose, false);
         showView(viewAvatar, null);
 
-        AnimationUtils.animateLeftMargin(btnSearch, viewAvatar.getWidth() + 2 * marginSmall, DURATION);
+        AnimationUtils.animateLeftMargin(btnSearch, viewAvatar.getWidth() + 2 * marginSmall, DURATION, null);
         AnimationUtils.animateRightMargin(btnSearch, btnNew.getWidth() + 2 * marginSmall, DURATION);
     }
 

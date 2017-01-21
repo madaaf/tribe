@@ -43,6 +43,7 @@ public class LocalPeerView extends PeerView {
                 frameRotation = 0;
                 frameWidth = 0;
             }
+
             requestSurfaceViewRendererLayout();
         }
     }

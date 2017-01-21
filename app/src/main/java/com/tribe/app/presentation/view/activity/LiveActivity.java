@@ -70,6 +70,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
         init();
         initResources();
         initPermissions();
+        initSubscriptions();
     }
 
     @Override
@@ -117,7 +118,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
     }
 
     private void initResources() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
 
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+
+        viewLiveContainer.setStatusBarHeight(result);
     }
 
     private void initPermissions() {
@@ -126,6 +134,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
                 .subscribe(granted -> {
 
                 }));
+    }
+
+    private void initSubscriptions() {
+
     }
 
     @Override

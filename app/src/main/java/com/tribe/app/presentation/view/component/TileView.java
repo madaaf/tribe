@@ -8,14 +8,16 @@ import android.support.v4.view.ViewCompat;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
+import com.facebook.rebound.SpringUtil;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
@@ -29,7 +31,6 @@ import com.tribe.app.presentation.view.widget.avatar.Avatar;
 import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
 
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -37,17 +38,18 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 10/06/2016.
  */
 public class TileView extends SquareCardView {
+
+    public final static int TYPE_GRID_LIVE_CO = 0;
+    public final static int TYPE_INVITE_LIVE_CO = 1;
+    public final static int TYPE_NORMAL = 2;
+    public final static int TYPE_INVITE = 3;
 
     private final float DIFF_DOWN = 20f;
     private final int LONG_PRESS = 100;
@@ -56,11 +58,8 @@ public class TileView extends SquareCardView {
     private final int RADIUS_MAX = 5;
     private final int ELEVATION_MIN = 0;
     private final int ELEVATION_MAX = 5;
-
-    public final static int TYPE_GRID_LIVE_CO = 0;
-    public final static int TYPE_INVITE_LIVE_CO = 1;
-    public final static int TYPE_NORMAL = 2;
-    public final static int TYPE_INVITE = 3;
+    private final int ROTATION_MIN = 0;
+    private final int ROTATION_MAX = 6;
 
     private static final float BOUNCINESS_DOWN = 10f;
     private static final float SPEED_DOWN = 5f;
@@ -98,46 +97,49 @@ public class TileView extends SquareCardView {
     @BindView(R.id.viewShadowLeft)
     View viewShadowLeft;
 
+    @Nullable
+    @BindView(R.id.imgInd)
+    ImageView imgInd;
+
     // OBSERVABLES
     private CompositeSubscription subscriptions;
-    private Subscription timer;
 
     // RX SUBSCRIPTIONS / SUBJECTS
     private final PublishSubject<View> clickMoreView = PublishSubject.create();
     private final PublishSubject<View> click = PublishSubject.create();
 
     // RESOURCES
-    private int diffDown, cardRadiusMin, cardRadiusMax, diffCardRadius,
-            cardElevationMin, cardElevationMax, diffCardElevation;
+    private int cardRadiusMin, cardRadiusMax, diffCardRadius,
+            cardElevationMin, cardElevationMax, diffCardElevation,
+            rotationMin, rotationMax, diffRotation;
 
     // VARIABLES
     private Unbinder unbinder;
     private Recipient recipient;
-    private int type;
-    private boolean isDown = false;
-    private long longDown = 0L;
-    private float downX, downY, currentX, currentY;
+    private int type, position;
     private int sizeAvatar, sizeAvatarScaled, diffSizeAvatar;
 
     // SPRINGS
     private SpringSystem springSystem = null;
     private Spring springInside;
 
-    public TileView(Context context) {
+    public TileView(Context context, int type) {
         super(context);
-        init(context, null);
+        this.type = type;
+        init(true);
     }
 
     public TileView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context, attrs);
-    }
 
-    public void init(Context context, AttributeSet attrs) {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TileView);
         type = a.getInt(R.styleable.TileView_tileType, TYPE_NORMAL);
         a.recycle();
 
+        init(false);
+    }
+
+    public void init(boolean isDragging) {
         subscriptions = new CompositeSubscription();
 
         int resLayout = 0;
@@ -163,23 +165,27 @@ public class TileView extends SquareCardView {
         LayoutInflater.from(getContext()).inflate(resLayout, this);
         unbinder = ButterKnife.bind(this);
 
-        if (type == TYPE_GRID_LIVE_CO)
-            layoutPulse.start();
-
-        setCardElevation(0);
-        ViewCompat.setElevation(this, 0);
-        setUseCompatPadding(false);
-        setPreventCornerOverlap(true);
-        setRadius(0);
-
-        if (isGrid()) {
-            setBackground(null);
-            setCardBackgroundColor(Color.TRANSPARENT);
-        }
-
         initDependencyInjector();
         initResources();
         initSprings();
+        initSize();
+
+        setCardElevation(0);
+        ViewCompat.setElevation(this, 0);
+        setRadius(0);
+
+        if (!isDragging) {
+            setUseCompatPadding(false);
+            setPreventCornerOverlap(true);
+
+            if (type == TYPE_GRID_LIVE_CO)
+                layoutPulse.start();
+
+            if (isGrid()) {
+                setBackground(null);
+                setCardBackgroundColor(Color.TRANSPARENT);
+            }
+        }
     }
 
     @Override
@@ -188,37 +194,37 @@ public class TileView extends SquareCardView {
     }
 
     private void initResources() {
-        diffDown = screenUtils.dpToPx(DIFF_DOWN);
         cardRadiusMax = screenUtils.dpToPx(RADIUS_MAX);
         cardRadiusMin = screenUtils.dpToPx(RADIUS_MIN);
         diffCardRadius = cardRadiusMax - cardRadiusMin;
         cardElevationMax = screenUtils.dpToPx(ELEVATION_MAX);
         cardElevationMin = screenUtils.dpToPx(ELEVATION_MIN);
         diffCardElevation = cardElevationMax - cardElevationMin;
+        rotationMax = ROTATION_MAX;
+        rotationMin = ROTATION_MIN;
+        diffRotation = rotationMax - rotationMin;
     }
 
     private void initSprings() {
         springSystem = SpringSystem.create();
         springInside = springSystem.createSpring();
-        springInside.setSpringConfig(SPRING_BOUNCE);
+        springInside.setSpringConfig(SPRING_NO_BOUNCE);
         springInside.addListener(new SimpleSpringListener() {
+
             @Override
             public void onSpringUpdate(Spring spring) {
                 float value = (float) spring.getCurrentValue();
 
                 float alpha = 1 - value;
                 txtName.setAlpha(alpha);
+                if (imgInd != null) imgInd.setAlpha((float) SpringUtil.mapValueFromRangeToRange(alpha, 1, 0, 1, -10)); // Should disappear faster ^^
 
                 if (viewShadowLeft != null) viewShadowLeft.setAlpha(alpha);
 
-                int scaleUp = Math.max((int) (sizeAvatar + (diffSizeAvatar * value)), sizeAvatar);
-                ViewGroup.LayoutParams paramsAvatar = avatar.getLayoutParams();
-
-                paramsAvatar.height = scaleUp;
-                paramsAvatar.width = scaleUp;
-                avatar.setLayoutParams(paramsAvatar);
-
                 float scale = 1f + (value * (((float) sizeAvatarScaled / sizeAvatar) - 1));
+
+                avatar.setScaleX(scale);
+                avatar.setScaleY(scale);
 
                 if (viewShadowAvatar != null) {
                     viewShadowAvatar.setScaleX(scale);
@@ -230,6 +236,9 @@ public class TileView extends SquareCardView {
 
                 int cardElevation = Math.max((int) (cardElevationMin + (diffCardElevation * value)), cardElevationMin);
                 setCardElevation(cardElevation);
+
+                int rotation = Math.max((int) (rotationMin + (diffRotation * value)), rotationMin);
+                setRotation(rotation);
             }
         });
 
@@ -258,6 +267,18 @@ public class TileView extends SquareCardView {
             viewShadowAvatar.setLayoutParams(params);
         }
 
+        if (type == TYPE_INVITE_LIVE_CO) {
+            FrameLayout.LayoutParams imgIndParams = (FrameLayout.LayoutParams) imgInd.getLayoutParams();
+            imgIndParams.leftMargin = sizeAvatar / 3;
+            imgIndParams.topMargin = imgIndParams.leftMargin;
+            imgIndParams.height = sizeAvatar / 2;
+            imgIndParams.width = imgIndParams.height;
+            int padding = screenUtils.dpToPx(1);
+            imgInd.setPadding(padding, padding, padding, padding);
+            imgInd.setLayoutParams(imgIndParams);
+            imgInd.requestLayout();
+        }
+
         avatar.invalidate();
         avatar.requestLayout();
     }
@@ -265,10 +286,6 @@ public class TileView extends SquareCardView {
     public void initClicks() {
         prepareTouchesMore();
         prepareClickOnView();
-
-        if (!isGrid()) {
-            prepareTouches();
-        }
     }
 
     private void prepareTouchesMore() {
@@ -279,58 +296,13 @@ public class TileView extends SquareCardView {
         setOnClickListener(v -> click.onNext(v));
     }
 
-    private void prepareTouches() {
-        setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                if (isDown) return false;
+    private void reset() {
+        springInside.setSpringConfig(SPRING_NO_BOUNCE);
+        springInside.setEndValue(0f);
+    }
 
-                Timber.d("DOWN");
-
-                longDown = System.currentTimeMillis();
-                downX = currentX = event.getRawX();
-                downY = currentY = event.getRawY();
-                isDown = true;
-                timer = Observable.timer(LONG_PRESS, TimeUnit.MILLISECONDS)
-                        .onBackpressureDrop()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(time -> {
-                            if ((System.currentTimeMillis() - longDown) >= LONG_PRESS && isDown
-                                    && Math.abs(currentX - downX) < diffDown
-                                    && Math.abs(currentY - downY) < diffDown) {
-                                Timber.d("LONG PRESS");
-                                springInside.setSpringConfig(SPRING_BOUNCE);
-                                springInside.setEndValue(1f);
-                            }
-                        });
-                return true;
-            } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-                if (isDown) {
-                    currentX = event.getRawX();
-                    currentY = event.getRawY();
-                }
-            } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                if (isDown) {
-                    if (timer != null) timer.unsubscribe();
-                }
-
-                springInside.setSpringConfig(SPRING_NO_BOUNCE);
-                springInside.setEndValue(0f);
-
-                isDown = false;
-            } else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
-                if (isDown) {
-                    if (timer != null) timer.unsubscribe();
-                }
-
-                springInside.setSpringConfig(SPRING_NO_BOUNCE);
-                springInside.setEndValue(0f);
-
-                isDown = false;
-            }
-
-            return false;
-        });
+    private boolean isGrid() {
+        return type == TYPE_GRID_LIVE_CO || type == TYPE_NORMAL;
     }
 
     public void setInfo(Recipient recipient) {
@@ -345,44 +317,79 @@ public class TileView extends SquareCardView {
 
         txtName.setText(recipient.getDisplayName());
 
-        if (recipient.isLive()) {
-            ((AvatarLiveView) avatar).setType(AvatarLiveView.LIVE);
-            if (isGrid()) txtStatus.setText(R.string.grid_status_live);
-        } else if (recipient.isConnected()) {
-            ((AvatarLiveView) avatar).setType(AvatarLiveView.CONNECTED);
-            if (isGrid()) txtStatus.setText(R.string.grid_status_connected);
-        } else if (isGrid()) {
-            if (recipient.getLastOnline() != null) {
-                txtStatus.setText(
-                        getContext().getString(
-                                R.string.grid_status_last_seen,
-                                DateUtils.getRelativeTimeSpanString(
-                                        recipient.getLastOnline().getTime(),
-                                        new Date().getTime(),
-                                        DateUtils.MINUTE_IN_MILLIS
-                                ).toString().toLowerCase()
-                        )
-                );
+        if (isGrid()) {
+            if (recipient.isLive()) {
+                ((AvatarLiveView) avatar).setType(AvatarLiveView.LIVE);
+                txtStatus.setText(R.string.grid_status_live);
+            } else if (recipient.isConnected()) {
+                ((AvatarLiveView) avatar).setType(AvatarLiveView.CONNECTED);
+                txtStatus.setText(R.string.grid_status_connected);
+            } else {
+                if (recipient.getLastOnline() != null) {
+                    txtStatus.setText(
+                            getContext().getString(
+                                    R.string.grid_status_last_seen,
+                                    DateUtils.getRelativeTimeSpanString(
+                                            recipient.getLastOnline().getTime(),
+                                            new Date().getTime(),
+                                            DateUtils.MINUTE_IN_MILLIS
+                                    ).toString().toLowerCase()
+                            )
+                    );
+                }
+            }
+        } else {
+            if (recipient.isLive()) {
+                imgInd.setVisibility(View.VISIBLE);
+                imgInd.setImageResource(R.drawable.picto_live);
+            } else if (recipient.isConnected()) {
+                imgInd.setVisibility(View.VISIBLE);
+                imgInd.setImageResource(R.drawable.picto_online);
+            } else {
+                imgInd.setVisibility(View.GONE);
             }
         }
     }
 
-    private boolean isGrid() {
-        return type == TYPE_GRID_LIVE_CO || type == TYPE_NORMAL;
+    public int getType() {
+        return type;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public Recipient getRecipient() {
+        return recipient;
     }
 
     public void setBackground(int position) {
-        if (isGrid())
+        this.position = position;
+
+        if (isGrid()) {
             UIUtils.setBackgroundGrid(screenUtils, viewBG, position, true);
-        else
+        } else {
             UIUtils.setBackgroundCard(this, position);
+            UIUtils.setBackgroundInd(imgInd, position);
+        }
+    }
+
+    public void startDrag(boolean animated) {
+        if (animated) springInside.setEndValue(1);
+        else springInside.setCurrentValue(1, true);
+    }
+
+    public void endDrag() {
+        springInside.setEndValue(0);
     }
 
     public Observable<View> onClickMore() {
         return clickMoreView;
     }
 
-    public Observable<View> onClick() { return click; }
+    public Observable<View> onClick() {
+        return click;
+    }
 
     private void initDependencyInjector() {
         ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);

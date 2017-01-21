@@ -13,6 +13,8 @@
 	<string name="action_next">Suivant</string>
 	<string name="action_enter">Entrer</string>
 	<string name="action_start">Commencer</string>
+	<string name="action_add_friend">Ajouter en ami</string>
+	<string name="action_hang_live">Démarre live</string>
 	
 	<!-- User -->
 	<string name="user_friend">amis</string>
@@ -723,6 +725,7 @@
 	<string name="search_user_placeholder">Entrez un nom d\'utilisateur</string>
 	<string name="search_usernames">Résultat</string>
 	<string name="search_searching">Recherche en cours</string>
+	<string name="search_already_friends">Vos amis</string>
 	<string name="search_add_friends">Ils sont déjà connectés sur Tribe</string>
 	<string name="search_invite_friends">Ils sont en train de manquer leurs amis</string>
 	<string name="search_suggest_friends">Vous connaissez peut-être</string>

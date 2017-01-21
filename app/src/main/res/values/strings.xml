@@ -13,6 +13,8 @@
 	<string name="action_next">Next</string>
 	<string name="action_enter">Enter</string>
 	<string name="action_start">Start</string>
+	<string name="action_add_friend">Add Friend</string>
+	<string name="action_hang_live">Hang live</string>
 	
 	<!-- User -->
 	<string name="user_friend">friend</string>
@@ -723,6 +725,7 @@
 	<string name="search_user_placeholder">Enter a username</string>
 	<string name="search_usernames">Result</string>
 	<string name="search_searching">Searching</string>
+	<string name="search_already_friends">People you know</string>
 	<string name="search_add_friends">They are already connected on Tribe</string>
 	<string name="search_invite_friends">Your friends are missing out!</string>
 	<string name="search_suggest_friends">People you may know</string>

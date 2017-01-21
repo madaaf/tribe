@@ -216,10 +216,11 @@ public class AnimationUtils {
     }
 
 
-    public static void animateLeftMargin(View view, int margin, int duration) {
+    public static void animateLeftMargin(View view, int margin, int duration, Interpolator interpolator) {
         ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         ValueAnimator animator = ValueAnimator.ofInt(lp.leftMargin, margin);
         animator.setDuration(duration);
+        animator.setInterpolator(interpolator);
         animator.addUpdateListener(animation -> {
             lp.leftMargin = (Integer) animation.getAnimatedValue();
             view.setLayoutParams(lp);

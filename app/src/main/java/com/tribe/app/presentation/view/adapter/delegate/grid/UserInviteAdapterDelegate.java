@@ -2,6 +2,8 @@ package com.tribe.app.presentation.view.adapter.delegate.grid;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
+import android.view.ViewGroup;
 
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
@@ -28,6 +30,12 @@ public class UserInviteAdapterDelegate extends RecipientGridAdapterDelegate {
                 && !items.get(position).isLive() && !items.get(position).isConnected();
     }
 
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
+        RecipientGridViewHolder vh = (RecipientGridViewHolder) super.onCreateViewHolder(parent);
+        return vh;
+    }
 
     @Override
     protected int getLayoutId() {

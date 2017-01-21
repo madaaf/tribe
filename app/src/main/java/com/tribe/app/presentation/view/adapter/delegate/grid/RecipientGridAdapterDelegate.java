@@ -43,7 +43,6 @@ public abstract class RecipientGridAdapterDelegate extends RxAdapterDelegate<Lis
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
         RecipientGridViewHolder recipientGridViewHolder = new RecipientGridViewHolder(layoutInflater.inflate(getLayoutId(), parent, false));
 
-        recipientGridViewHolder.viewTile.initSize();
         recipientGridViewHolder.viewTile.initClicks();
         recipientGridViewHolder.viewTile.onClickMore().subscribe(clickMoreView);
         recipientGridViewHolder.viewTile.onClick().subscribe(click);
