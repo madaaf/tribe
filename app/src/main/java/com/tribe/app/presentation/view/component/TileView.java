@@ -51,9 +51,8 @@ public class TileView extends SquareCardView {
     public final static int TYPE_NORMAL = 2;
     public final static int TYPE_INVITE = 3;
 
-    private final float DIFF_DOWN = 20f;
-    private final int LONG_PRESS = 100;
     private final float SCALE_FACTOR = 1.75f;
+    private final float SCALE_TILE_FACTOR = 1.3f;
     private final int RADIUS_MIN = 0;
     private final int RADIUS_MAX = 5;
     private final int ELEVATION_MIN = 0;
@@ -94,6 +93,14 @@ public class TileView extends SquareCardView {
     View viewBG;
 
     @Nullable
+    @BindView(R.id.viewBGTransparent1)
+    View viewBGTransparent1;
+
+    @Nullable
+    @BindView(R.id.viewBGTransparent2)
+    View viewBGTransparent2;
+
+    @Nullable
     @BindView(R.id.viewShadowLeft)
     View viewShadowLeft;
 
@@ -111,7 +118,8 @@ public class TileView extends SquareCardView {
     // RESOURCES
     private int cardRadiusMin, cardRadiusMax, diffCardRadius,
             cardElevationMin, cardElevationMax, diffCardElevation,
-            rotationMin, rotationMax, diffRotation;
+            rotationMin, rotationMax, diffRotation,
+            minSize, maxSize, sizeDiff;
 
     // VARIABLES
     private Unbinder unbinder;
@@ -173,6 +181,8 @@ public class TileView extends SquareCardView {
         setCardElevation(0);
         ViewCompat.setElevation(this, 0);
         setRadius(0);
+        setBackground(null);
+        setCardBackgroundColor(Color.TRANSPARENT);
 
         if (!isDragging) {
             setUseCompatPadding(false);
@@ -180,11 +190,12 @@ public class TileView extends SquareCardView {
 
             if (type == TYPE_GRID_LIVE_CO)
                 layoutPulse.start();
+        }
 
-            if (isGrid()) {
-                setBackground(null);
-                setCardBackgroundColor(Color.TRANSPARENT);
-            }
+        if (!isGrid()) {
+            minSize = screenUtils.getWidthPx() / 3;
+            maxSize = (int) (minSize * SCALE_TILE_FACTOR);
+            sizeDiff = maxSize - minSize;
         }
     }
 
@@ -215,6 +226,8 @@ public class TileView extends SquareCardView {
             public void onSpringUpdate(Spring spring) {
                 float value = (float) spring.getCurrentValue();
 
+                if (Math.abs(value - spring.getEndValue()) < 0.01) value = (float) spring.getEndValue();
+
                 float alpha = 1 - value;
                 txtName.setAlpha(alpha);
                 if (imgInd != null) imgInd.setAlpha((float) SpringUtil.mapValueFromRangeToRange(alpha, 1, 0, 1, -10)); // Should disappear faster ^^
@@ -238,7 +251,16 @@ public class TileView extends SquareCardView {
                 setCardElevation(cardElevation);
 
                 int rotation = Math.max((int) (rotationMin + (diffRotation * value)), rotationMin);
-                setRotation(rotation);
+                viewBG.setRotation(rotation);
+                avatar.setRotation(rotation);
+
+                int sizeOfTile = Math.max((int) (minSize + (sizeDiff * value)), minSize);
+                UIUtils.changeSizeOfView(TileView.this, sizeOfTile);
+
+                int size = Math.max((int) (minSize + ((sizeDiff / 3) * value)), minSize);
+                UIUtils.changeSizeOfView(viewBG, size);
+                UIUtils.changeSizeOfView(viewBGTransparent2, size);
+                UIUtils.changeSizeOfView(viewBGTransparent1, size);
             }
         });
 
@@ -366,21 +388,29 @@ public class TileView extends SquareCardView {
     public void setBackground(int position) {
         this.position = position;
 
-        if (isGrid()) {
-            UIUtils.setBackgroundGrid(screenUtils, viewBG, position, true);
-        } else {
-            UIUtils.setBackgroundCard(this, position);
+        UIUtils.setBackgroundGrid(screenUtils, viewBG, position, isGrid());
+
+        if (!isGrid()) {
+            UIUtils.setBackgroundMultiple(screenUtils, viewBGTransparent1, position);
+            UIUtils.setBackgroundMultiple(screenUtils, viewBGTransparent2, position);
             UIUtils.setBackgroundInd(imgInd, position);
         }
     }
 
     public void startDrag(boolean animated) {
+        UIUtils.setBackgroundMultiple(screenUtils, viewBG, position);
+        viewBGTransparent1.setVisibility(View.VISIBLE);
+        viewBGTransparent2.setVisibility(View.VISIBLE);
+
         if (animated) springInside.setEndValue(1);
         else springInside.setCurrentValue(1, true);
     }
 
     public void endDrag() {
+        UIUtils.setBackgroundGrid(screenUtils, viewBG, position, isGrid());
         springInside.setEndValue(0);
+        viewBGTransparent1.setVisibility(View.GONE);
+        viewBGTransparent2.setVisibility(View.GONE);
     }
 
     public Observable<View> onClickMore() {

@@ -48,9 +48,14 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
+import com.tribe.tribelivesdk.back.IceConfig;
+import com.tribe.tribelivesdk.back.TribeLiveOptions;
+import com.tribe.tribelivesdk.stream.TribeAudioManager;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -331,6 +336,23 @@ public class ApplicationModule {
     @Singleton
     RxImagePicker provideRxImagePicker(Context context) {
         return new RxImagePicker(context);
+    }
+
+    @Provides
+    public TribeLiveOptions provideTribeLiveOptions(Context context) {
+        List<IceConfig> configList = new ArrayList<>();
+        configList.add(new IceConfig("turn:coturn.tribe.pm:7001", "gorst", "hero"));
+
+        return new TribeLiveOptions.TribeLiveOptionsBuilder(context)
+                .wsUrl("wss://wssdev.tribe.pm:6001/api")
+                .iceServers(configList)
+                .build();
+    }
+
+    @Provides
+    @Singleton
+    public TribeAudioManager provideTribeAudioManager(Context context) {
+        return TribeAudioManager.create(context);
     }
 
     // DATES

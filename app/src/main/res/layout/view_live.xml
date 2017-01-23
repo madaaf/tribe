@@ -3,5 +3,39 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <com.tribe.app.presentation.view.component.live.LiveWaitingView
+        android:id="@+id/viewWaitingLive"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
 
+    <ImageView
+        android:id="@+id/btnLeave"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_gravity="left|bottom"
+        android:layout_margin="@dimen/horizontal_margin_small"
+        android:src="@drawable/picto_leave_live"
+        android:scaleType="centerInside"
+        />
+
+    <ImageView
+        android:id="@+id/btnNotify"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_margin="@dimen/horizontal_margin_small"
+        android:src="@drawable/picto_notify"
+        android:scaleType="centerInside"
+        />
+
+    <ImageView
+        android:id="@+id/btnInviteLive"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_gravity="right|bottom"
+        android:layout_margin="@dimen/horizontal_margin_small"
+        android:src="@drawable/picto_open_invite"
+        android:scaleType="centerInside"
+        />
 </merge>

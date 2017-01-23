@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     >
 
-    <include layout="@layout/view_tile_background" />
+    <include layout="@layout/view_tile_background_invite" />
 
     <View
         android:id="@+id/viewShadowAvatar"

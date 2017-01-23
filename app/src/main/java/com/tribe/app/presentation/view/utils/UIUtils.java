@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v7.widget.CardView;
 import android.view.View;
+import android.view.ViewGroup;
 
 /**
  * Created by tiago on 14/11/2016.
@@ -24,12 +25,29 @@ public class UIUtils {
             gradientDrawable.setColor(color);
             if (hasCorners) gradientDrawable.setCornerRadii(radiusMatrix);
             v.setBackground(gradientDrawable);
-        }
-
-        if (background instanceof GradientDrawable) {
+        } else if (background instanceof GradientDrawable) {
             GradientDrawable gradientDrawable = (GradientDrawable) background;
             gradientDrawable.setColor(color);
             if (hasCorners) gradientDrawable.setCornerRadii(radiusMatrix);
+        }
+    }
+
+    public static void setBackgroundMultiple(ScreenUtils screenUtils, View v, int position) {
+        Drawable background = v.getBackground();
+        int color = PaletteGrid.get(position);
+        int radius = screenUtils.dpToPx(5);
+        float [] radiusMatrix = new float[] { radius, radius, radius, radius, radius, radius, radius, radius };
+
+        if (background == null) {
+            GradientDrawable gradientDrawable = new GradientDrawable();
+            gradientDrawable.setShape(GradientDrawable.RECTANGLE);
+            gradientDrawable.setColor(color);
+            gradientDrawable.setCornerRadii(radiusMatrix);
+            v.setBackground(gradientDrawable);
+        } else if (background instanceof GradientDrawable) {
+            GradientDrawable gradientDrawable = (GradientDrawable) background;
+            gradientDrawable.setColor(color);
+            gradientDrawable.setCornerRadii(radiusMatrix);
         }
     }
 
@@ -44,5 +62,19 @@ public class UIUtils {
         gradientDrawable.setShape(GradientDrawable.OVAL);
         gradientDrawable.setColor(color);
         v.setBackground(gradientDrawable);
+    }
+
+    public static void changeSizeOfView(View v, int size) {
+        ViewGroup.LayoutParams params = v.getLayoutParams();
+        params.width = params.height = size;
+        v.setLayoutParams(params);
+        v.requestLayout();
+    }
+
+    public static void changeHeightOfView(View v, int size) {
+        ViewGroup.LayoutParams params = v.getLayoutParams();
+        params.height = size;
+        v.setLayoutParams(params);
+        v.requestLayout();
     }
 }

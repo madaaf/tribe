@@ -24,7 +24,7 @@ public class CircleView extends View {
         super.onDraw(canvas);
 
         if (rect != null) {
-            canvas.drawCircle(getWidth() / 2, getHeight() / 2, (int) (getWidth() / 2), paint);
+            canvas.drawCircle(getWidth() / 2, getHeight() / 2, radius, paint);
         }
     }
 
@@ -34,6 +34,7 @@ public class CircleView extends View {
 
     public void setRadius(float radius) {
         this.radius = radius;
+        invalidate();
     }
 
     public Rect getRect() {

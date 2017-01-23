@@ -8,6 +8,8 @@ import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.presentation.utils.preferences.Theme;
 
+import java.util.Random;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -132,5 +134,35 @@ public class PaletteGrid {
             return paletteSix[position % paletteSix.length];
 
         return Color.BLACK;
+    }
+
+    public static int getLength() {
+        if (theme.get() == 0)
+            return paletteOne.length;
+        else if (theme.get() == 1)
+            return paletteTwo.length;
+        else if (theme.get() == 2)
+            return paletteThree.length;
+        else if (theme.get() == 3)
+            return paletteFour.length;
+        else if (theme.get() == 4)
+            return paletteFive.length;
+        else if (theme.get() == 5)
+            return paletteSix.length;
+
+        return Color.BLACK;
+    }
+
+    public static int getRandomColorExcluding(int excludeColor) {
+        Random r = new Random();
+        int randomPosition = 1;
+
+        int color = excludeColor;
+        while (color == excludeColor) {
+            color = get(randomPosition);
+            randomPosition = r.nextInt(getLength() - 0) + 0;
+        }
+
+        return color;
     }
 }

@@ -78,6 +78,7 @@ import com.tribe.app.presentation.view.component.group.UpdateGroupView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveView;
+import com.tribe.app.presentation.view.component.live.LiveWaitingView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
@@ -96,6 +97,9 @@ import com.tribe.app.presentation.view.widget.SyncView;
 import com.tribe.app.presentation.view.widget.TextViewAnimatedDots;
 import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.tribelivesdk.back.TribeLiveOptions;
+import com.tribe.tribelivesdk.di.LiveModule;
+import com.tribe.tribelivesdk.stream.TribeAudioManager;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -113,7 +117,7 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
  */
 @Singleton
 @PerApplication
-@Component(modules = {ApplicationModule.class, NetModule.class})
+@Component(modules = {ApplicationModule.class, NetModule.class, LiveModule.class})
 public interface ApplicationComponent {
 
     void inject(Navigator navigator);
@@ -161,6 +165,7 @@ public interface ApplicationComponent {
     void inject(LiveContainer liveContainer);
     void inject(LiveInviteView liveInviteView);
     void inject(UserInviteHeaderAdapterDelegate userInviteHeaderAdapterDelegate);
+    void inject(LiveWaitingView liveWaitingView);
 
     // JOBS
     void inject(BaseJob baseJob);
@@ -253,6 +258,10 @@ public interface ApplicationComponent {
     TagManager tagManager();
 
     ReactiveLocationProvider reactiveLocationProvider();
+
+    TribeAudioManager tribeAudioManager();
+
+    TribeLiveOptions tribeLiveOptions();
 
     @ShareProfile
     Preference<Boolean> shareProfile();

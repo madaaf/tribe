@@ -406,7 +406,9 @@ public class LiveContainer extends FrameLayout {
         public void onSpringUpdate(Spring spring) {
             if (ViewCompat.isAttachedToWindow(LiveContainer.this)) {
                 float value = (float) spring.getCurrentValue();
-                applyRight(Math.min(Math.max(value, -liveInviteView.getWidth()), 0));
+                float appliedValue = Math.min(Math.max(value, -liveInviteView.getWidth()), 0);
+                if (appliedValue > -screenUtils.dpToPx(1) && appliedValue < 0) appliedValue = 0;
+                applyRight(appliedValue);
             }
         }
 
