@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.FrameLayout;
@@ -78,6 +79,11 @@ public class LiveWaitingView extends FrameLayout {
 
         addView(circleView, circleViewParams);
         addView(viewAvatar, imageAvatarParams);
+
+        circleView.setVisibility(View.GONE);
+        viewAvatar.setVisibility(View.GONE);
+
+        setBackground(null);
     }
 
     @Override
@@ -89,12 +95,14 @@ public class LiveWaitingView extends FrameLayout {
 
             circleView.setRect(rect);
             circleView.setPaint(circlePaint);
-
-            startAnimator();
         }
     }
 
-    private void startAnimator() {
+    private int getAvatarSize() {
+        return Math.max(getMeasuredWidth() / 3, screenUtils.getWidthPx() / 3);
+    }
+
+    public void startPulse() {
         int finalHeight = getMeasuredHeight();
 
         circleAnimator = ValueAnimator.ofInt(0, finalHeight);
@@ -117,8 +125,9 @@ public class LiveWaitingView extends FrameLayout {
         circleAnimator.start();
     }
 
-    private int getAvatarSize() {
-        return Math.max(getMeasuredWidth() / 3, screenUtils.getWidthPx() / 3);
+    public void stopPulse() {
+        circleAnimator.cancel();
+        circleAnimator.removeAllListeners();
     }
 
     public void setColor(int color) {

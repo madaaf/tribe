@@ -30,5 +30,14 @@
             android:background="@null"
             />
 
+        <View
+            android:id="@+id/viewShadowRight"
+            android:layout_width="10dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="-10dp"
+            android:layout_gravity="right"
+            android:background="@drawable/shadow_right"
+            />
+
     </com.tribe.app.presentation.view.component.live.LiveContainer>
 </LinearLayout>

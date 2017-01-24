@@ -23,12 +23,4 @@
 
     <include layout="@layout/view_tile_invite_base" />
 
-    <View
-        android:id="@+id/viewShadowLeft"
-        android:layout_width="10dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="left"
-        android:background="@drawable/shadow_right"
-        />
-
 </merge>

@@ -30,8 +30,11 @@ import rx.subscriptions.CompositeSubscription;
 
 public class LiveActivity extends BaseActivity implements LiveMVPView {
 
+    private static final String EXTRA_RECIPIENT = "EXTRA_RECIPIENT";
+
     public static Intent getCallingIntent(Context context, Recipient recipient) {
         Intent intent = new Intent(context, LiveActivity.class);
+        intent.putExtra(EXTRA_RECIPIENT, recipient);
         return intent;
     }
 
@@ -55,6 +58,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
     // VARIABLES
     private Unbinder unbinder;
+    private Recipient recipient;
 
     // OBSERVABLES
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -67,6 +71,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
         unbinder = ButterKnife.bind(this);
 
         initDependencyInjector();
+        if (getIntent().hasExtra(EXTRA_RECIPIENT)) initParams();
         init();
         initResources();
         initPermissions();
@@ -102,11 +107,17 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
         super.onDestroy();
     }
 
+    private void initParams() {
+        this.recipient = (Recipient) getIntent().getSerializableExtra(EXTRA_RECIPIENT);
+    }
+
     private void init() {
         ViewGroup.LayoutParams params = viewInviteLive.getLayoutParams();
         params.width = screenUtils.getWidthPx() / 3;
         viewInviteLive.setLayoutParams(params);
         viewInviteLive.requestLayout();
+
+        viewLive.setRecipient(recipient);
     }
 
     private void initDependencyInjector() {
@@ -137,7 +148,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
     }
 
     private void initSubscriptions() {
-
     }
 
     @Override
@@ -145,6 +155,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
         super.finish();
         overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
     }
+
+    ////////////////
+    //   PUBLIC   //
+    ////////////////
 
     @Override
     public void renderFriendshipList(List<Friendship> friendshipList) {

@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.component.live;
 
 import android.content.Context;
+import android.support.annotation.IntDef;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
@@ -17,6 +18,7 @@ import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
+import com.facebook.rebound.SpringUtil;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -35,13 +37,19 @@ import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 01/18/2017.
  */
 public class LiveContainer extends FrameLayout {
+
+    @IntDef({EVENT_CLOSED, EVENT_OPENED})
+    public @interface Event {}
+
+    public static final int EVENT_CLOSED = 0;
+    public static final int EVENT_OPENED = 1;
 
     private final int DIFF_DOWN = 20;
     private final int SCROLL_TOLERANCE = 10;
@@ -57,10 +65,13 @@ public class LiveContainer extends FrameLayout {
     ScreenUtils screenUtils;
 
     @BindView(R.id.viewLive)
-    LiveView liveView;
+    LiveView viewLive;
 
     @BindView(R.id.viewInviteLive)
-    LiveInviteView liveInviteView;
+    LiveInviteView viewInviteLive;
+
+    @BindView(R.id.viewShadowRight)
+    View viewShadowRight;
 
     // SPRINGS
     private SpringSystem springSystem = null;
@@ -84,6 +95,7 @@ public class LiveContainer extends FrameLayout {
     private TileView currentTileView, draggedTileView;
     private int [] tileLocationStart = new int[2];
     private int statusBarHeight = 0;
+    private boolean hasNotifiedAtRest = false;
 
     // DIMENS
     private int thresholdEnd;
@@ -92,6 +104,10 @@ public class LiveContainer extends FrameLayout {
     private Unbinder unbinder;
     private Subscription timerLongPress, timerEndDrag;
     private CompositeSubscription subscriptions = new CompositeSubscription();
+    private PublishSubject<Integer> onEvent = PublishSubject.create();
+    private PublishSubject<TileView> onStartDrag = PublishSubject.create();
+    private PublishSubject<Void> onEndDrag = PublishSubject.create();
+    private PublishSubject<Float> onAlpha = PublishSubject.create();
 
     public LiveContainer(Context context) {
         super(context);
@@ -146,23 +162,6 @@ public class LiveContainer extends FrameLayout {
 
         diffDown = screenUtils.dpToPx(DIFF_DOWN);
         scrollTolerance = screenUtils.dpToPx(SCROLL_TOLERANCE);
-
-        subscriptions.add(
-                liveInviteView.onScroll()
-                        .subscribe(dy -> {
-                            overallScrollY += dy;
-                        })
-        );
-
-        subscriptions.add(
-                liveInviteView.onScrollStateChanged()
-                        .subscribe(newState -> {
-                            Timber.d("newState : " + newState);
-
-                            if (newState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) overallScrollY = 0;
-                            else if (timerLongPress != null) timerLongPress.unsubscribe();
-                        })
-        );
     }
 
     private void initDimen() {
@@ -170,7 +169,33 @@ public class LiveContainer extends FrameLayout {
     }
 
     private void initSubscriptions() {
+        subscriptions.add(
+                viewInviteLive.onScroll()
+                        .subscribe(dy -> {
+                            overallScrollY += dy;
+                        })
+        );
 
+        subscriptions.add(
+                viewInviteLive.onScrollStateChanged()
+                        .subscribe(newState -> {
+                            if (newState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) overallScrollY = 0;
+                            else if (timerLongPress != null) timerLongPress.unsubscribe();
+                        })
+        );
+
+        subscriptions.add(
+                viewLive.onOpenInvite()
+                        .subscribe(aVoid -> {
+                            if (!isOpened) openInviteView();
+                            else closeInviteView();
+                        })
+        );
+
+        viewLive.initInviteOpenSubscription(onEvent());
+        viewLive.initOnStartDragSubscription(onStartDrag());
+        viewLive.initOnEndDragSubscription(onEndDrag());
+        viewLive.initOnAlphaSubscription(onAlpha());
     }
 
     public void setStatusBarHeight(int height) {
@@ -189,7 +214,7 @@ public class LiveContainer extends FrameLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        boolean isTouchInInviteView = ev.getRawX() >= screenUtils.getWidthPx() - liveInviteView.getWidth();
+        boolean isTouchInInviteView = ev.getRawX() >= screenUtils.getWidthPx() - viewInviteLive.getWidth();
         if (!isEnabled()) {
             return false;
         }
@@ -225,7 +250,7 @@ public class LiveContainer extends FrameLayout {
                                         && Math.abs(currentX - downX) < diffDown
                                         && Math.abs(currentY - downY) < diffDown
                                         && overallScrollY < scrollTolerance) {
-                                    currentTileView = liveInviteView.findViewByCoords(downX, downY);
+                                    currentTileView = viewInviteLive.findViewByCoords(downX, downY);
                                     if (currentTileView != null) {
                                         createTileForDrag();
                                     }
@@ -344,7 +369,7 @@ public class LiveContainer extends FrameLayout {
 
         if (currentTileView != null) {
             if (draggedTileView != null) {
-                draggedTileView.endDrag();
+                endTileDrag();
                 AnimationUtils.animateLeftMargin(draggedTileView, tileLocationStart[0], DRAG_END_DELAY, new DecelerateInterpolator());
                 AnimationUtils.animateTopMargin(draggedTileView, tileLocationStart[1] - statusBarHeight, DRAG_END_DELAY, new DecelerateInterpolator());
 
@@ -381,7 +406,17 @@ public class LiveContainer extends FrameLayout {
         addView(draggedTileView, params);
 
         currentTileView.setVisibility(View.GONE);
+        startTileDrag();
+    }
+
+    private void startTileDrag() {
         draggedTileView.startDrag(true);
+        onStartDrag.onNext(draggedTileView);
+    }
+
+    private void endTileDrag() {
+        draggedTileView.endDrag();
+        onEndDrag.onNext(null);
     }
 
     private void removeTileForDrag() {
@@ -406,23 +441,37 @@ public class LiveContainer extends FrameLayout {
         public void onSpringUpdate(Spring spring) {
             if (ViewCompat.isAttachedToWindow(LiveContainer.this)) {
                 float value = (float) spring.getCurrentValue();
-                float appliedValue = Math.min(Math.max(value, -liveInviteView.getWidth()), 0);
-                if (appliedValue > -screenUtils.dpToPx(1) && appliedValue < 0) appliedValue = 0;
+                float appliedValue = Math.min(Math.max(value, -viewInviteLive.getWidth()), 0);
+
+                if (Math.abs(appliedValue - spring.getEndValue()) < screenUtils.dpToPx(2.5f)) {
+                    appliedValue = (float) spring.getEndValue();
+
+                    if (!hasNotifiedAtRest) {
+                        if (spring.getEndValue() == 0) onEvent.onNext(EVENT_CLOSED);
+                        else onEvent.onNext(EVENT_OPENED);
+                        hasNotifiedAtRest = true;
+                    }
+                }
+
                 applyRight(appliedValue);
             }
         }
 
         @Override
-        public void onSpringAtRest(Spring spring) {
-            super.onSpringAtRest(spring);
+        public void onSpringActivate(Spring spring) {
+            hasNotifiedAtRest = false;
         }
     }
 
     private void applyRight(float value) {
-        ViewGroup.LayoutParams params = liveView.getLayoutParams();
+        onAlpha.onNext((float) SpringUtil.mapValueFromRangeToRange(value, -viewInviteLive.getWidth(), 0, 0, 1));
+
+        ViewGroup.LayoutParams params = viewLive.getLayoutParams();
         params.width = (int) (screenUtils.getWidthPx() + value);
-        liveView.setLayoutParams(params);
-        liveView.requestLayout();
+        viewLive.setLayoutParams(params);
+        viewLive.requestLayout();
+
+        viewShadowRight.setTranslationX(value);
     }
 
     private boolean applyOffsetRightWithTension(float offsetX) {
@@ -442,7 +491,7 @@ public class LiveContainer extends FrameLayout {
 
     private void openInviteView() {
         isOpened = true;
-        springRight.setVelocity(velocityTracker.getXVelocity()).setEndValue(-liveInviteView.getWidth());
+        springRight.setVelocity(velocityTracker.getXVelocity()).setEndValue(-viewInviteLive.getWidth());
     }
 
     private void closeInviteView() {
@@ -469,4 +518,20 @@ public class LiveContainer extends FrameLayout {
     ///////////////////////
     //    OBSERVABLES    //
     ///////////////////////
+
+    public Observable<Integer> onEvent() {
+        return onEvent;
+    }
+
+    public Observable<TileView> onStartDrag() {
+        return onStartDrag;
+    }
+
+    public Observable<Void> onEndDrag() {
+        return onEndDrag;
+    }
+
+    public Observable<Float> onAlpha() {
+        return onAlpha;
+    }
 }

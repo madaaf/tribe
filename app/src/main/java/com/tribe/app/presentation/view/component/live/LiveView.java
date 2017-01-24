@@ -4,15 +4,18 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Membership;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.view.utils.PaletteGrid;
+import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.utils.UIUtils;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.core.Room;
 import com.tribe.tribelivesdk.view.LocalPeerView;
@@ -21,7 +24,10 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
@@ -39,18 +45,33 @@ public class LiveView extends FrameLayout {
     @Inject
     TribeLiveSDK tribeLiveSDK;
 
-    @BindView(R.id.viewWaitingLive)
-    LiveWaitingView viewWaitingLive;
+    @BindView(R.id.viewRoom)
+    LiveRoomView viewRoom;
+
+    @BindView(R.id.btnInviteLive)
+    View btnInviteLive;
+
+    @BindView(R.id.btnLeave)
+    View btnLeave;
+
+    @BindView(R.id.btnNotify)
+    View btnNotify;
+
+    @BindView(R.id.txtName)
+    TextViewFont txtName;
 
     // VARIABLES
+    private Recipient recipient;
     private LocalPeerView viewLocalPeer;
     private Room room;
+    private LiveRowView latestView;
 
     // RESOURCES
 
     // OBSERVABLES
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
+    private PublishSubject<Void> onOpenInvite = PublishSubject.create();
 
     public LiveView(Context context) {
         super(context);
@@ -97,15 +118,16 @@ public class LiveView extends FrameLayout {
     private void initUI() {
         setBackgroundColor(Color.BLACK);
 
-        viewWaitingLive.setColor(PaletteGrid.get(0));
-        viewWaitingLive.setAvatarPicture(user.getProfilePicture());
-        UIUtils.changeHeightOfView(viewWaitingLive, screenUtils.getHeightPx() >> 1);
-
-//        viewLocalPeer = new LocalPeerView(getContext());
-//        FrameLayout.LayoutParams params =
-//                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, screenUtils.getHeightPx() >> 1);
-//        params.gravity = Gravity.BOTTOM;
-//        addView(viewLocalPeer, params);
+//        ObjectAnimator a = ObjectAnimator.ofFloat(null, View.SCALE_Y, 0, 1);
+//
+//        AnimatorSet animator = new AnimatorSet();
+//        animator.setStartDelay(0);
+//
+//        animator.playTogether(a);
+//
+//        LayoutTransition transition = new LayoutTransition();
+//        transition.setAnimator(LayoutTransition.APPEARING, animator);
+//        viewRoom.setLayoutTransition(transition);
     }
 
     private void initResources() {
@@ -156,9 +178,76 @@ public class LiveView extends FrameLayout {
         room.joinRoom(roomName);
     }
 
+    ///////////////////
+    //    CLICKS     //
+    ///////////////////
+
+    @OnClick(R.id.btnInviteLive)
+    void openInvite() {
+        onOpenInvite.onNext(null);
+    }
+
+    ///////////////////
+    //    PUBLIC     //
+    ///////////////////
+
+    public void initInviteOpenSubscription(Observable<Integer> obs) {
+        subscriptions.add(
+                obs.subscribe(event -> {
+                    viewRoom.setType(event == LiveContainer.EVENT_OPENED ? LiveRoomView.LINEAR : LiveRoomView.GRID);
+                })
+        );
+    }
+
+    public void initOnStartDragSubscription(Observable<TileView> obs) {
+        subscriptions.add(
+                obs.subscribe(tileView -> {
+                    latestView = new LiveRowView(getContext());
+                    latestView.setBackgroundColor(tileView.getBackgroundColor());
+                    ViewGroup.LayoutParams params =
+                            new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                    viewRoom.addView(latestView, params);
+
+                })
+        );
+    }
+
+    public void initOnEndDragSubscription(Observable<Void> obs) {
+        subscriptions.add(
+                obs.subscribe(aVoid -> {
+                    viewRoom.removeView(latestView);
+                })
+        );
+    }
+
+    public void initOnAlphaSubscription(Observable<Float> obs) {
+        subscriptions.add(
+                obs.subscribe(alpha -> {
+                    btnNotify.setAlpha(alpha);
+                    btnInviteLive.setAlpha(alpha);
+                    btnLeave.setAlpha(alpha);
+                })
+        );
+    }
+
+    public void setRecipient(Recipient recipient) {
+        this.recipient = recipient;
+
+        if (recipient instanceof Membership) {
+            txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small, 0, 0, 0);
+        } else {
+            txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+        }
+
+        txtName.setText(recipient.getDisplayName());
+    }
+
     //////////////////////
     //   OBSERVABLES    //
     //////////////////////
 
+    public Observable<Void> onOpenInvite() {
+        return onOpenInvite;
+    }
 }
 

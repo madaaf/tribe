@@ -22,6 +22,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.PulseLayout;
@@ -99,10 +100,6 @@ public class TileView extends SquareCardView {
     @Nullable
     @BindView(R.id.viewBGTransparent2)
     View viewBGTransparent2;
-
-    @Nullable
-    @BindView(R.id.viewShadowLeft)
-    View viewShadowLeft;
 
     @Nullable
     @BindView(R.id.imgInd)
@@ -232,8 +229,6 @@ public class TileView extends SquareCardView {
                 txtName.setAlpha(alpha);
                 if (imgInd != null) imgInd.setAlpha((float) SpringUtil.mapValueFromRangeToRange(alpha, 1, 0, 1, -10)); // Should disappear faster ^^
 
-                if (viewShadowLeft != null) viewShadowLeft.setAlpha(alpha);
-
                 float scale = 1f + (value * (((float) sizeAvatarScaled / sizeAvatar) - 1));
 
                 avatar.setScaleX(scale);
@@ -257,10 +252,10 @@ public class TileView extends SquareCardView {
                 int sizeOfTile = Math.max((int) (minSize + (sizeDiff * value)), minSize);
                 UIUtils.changeSizeOfView(TileView.this, sizeOfTile);
 
-                int size = Math.max((int) (minSize + ((sizeDiff / 3) * value)), minSize);
+                int size = Math.max((int) (minSize + ((sizeDiff / 1.75f) * value)), minSize);
                 UIUtils.changeSizeOfView(viewBG, size);
-                UIUtils.changeSizeOfView(viewBGTransparent2, size);
-                UIUtils.changeSizeOfView(viewBGTransparent1, size);
+                //UIUtils.changeSizeOfView(viewBGTransparent2, size);
+                //UIUtils.changeSizeOfView(viewBGTransparent1, size);
             }
         });
 
@@ -397,10 +392,14 @@ public class TileView extends SquareCardView {
         }
     }
 
+    public int getBackgroundColor() {
+        return PaletteGrid.get(position);
+    }
+
     public void startDrag(boolean animated) {
         UIUtils.setBackgroundMultiple(screenUtils, viewBG, position);
-        viewBGTransparent1.setVisibility(View.VISIBLE);
-        viewBGTransparent2.setVisibility(View.VISIBLE);
+        //viewBGTransparent1.setVisibility(View.VISIBLE);
+        //viewBGTransparent2.setVisibility(View.VISIBLE);
 
         if (animated) springInside.setEndValue(1);
         else springInside.setCurrentValue(1, true);
@@ -409,8 +408,8 @@ public class TileView extends SquareCardView {
     public void endDrag() {
         UIUtils.setBackgroundGrid(screenUtils, viewBG, position, isGrid());
         springInside.setEndValue(0);
-        viewBGTransparent1.setVisibility(View.GONE);
-        viewBGTransparent2.setVisibility(View.GONE);
+        //viewBGTransparent1.setVisibility(View.GONE);
+        //viewBGTransparent2.setVisibility(View.GONE);
     }
 
     public Observable<View> onClickMore() {

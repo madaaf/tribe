@@ -1,41 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <com.tribe.app.presentation.view.component.live.LiveWaitingView
-        android:id="@+id/viewWaitingLive"
+    <com.tribe.app.presentation.view.component.live.LiveRoomView
+        android:id="@+id/viewRoom"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        />
+        android:animateLayoutChanges="true"
+        >
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/confetti.1"
+            />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/confetti.2"
+            />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/confetti.3"
+            />
+    </com.tribe.app.presentation.view.component.live.LiveRoomView>
 
     <ImageView
         android:id="@+id/btnLeave"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
+        android:layout_height="@dimen/nav_icon_size"
+        android:layout_width="@dimen/nav_icon_size"
         android:layout_gravity="left|bottom"
-        android:layout_margin="@dimen/horizontal_margin_small"
+        android:layout_margin="5dp"
         android:src="@drawable/picto_leave_live"
         android:scaleType="centerInside"
+        android:clickable="true"
+        android:background="@drawable/selectable_button_oval_light"
         />
 
     <ImageView
         android:id="@+id/btnNotify"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
+        android:layout_height="@dimen/nav_icon_size"
+        android:layout_width="@dimen/nav_icon_size"
         android:layout_gravity="center_horizontal|bottom"
-        android:layout_margin="@dimen/horizontal_margin_small"
+        android:layout_marginBottom="5dp"
         android:src="@drawable/picto_notify"
         android:scaleType="centerInside"
+        android:clickable="true"
+        android:background="@drawable/selectable_button_oval_light"
         />
 
     <ImageView
         android:id="@+id/btnInviteLive"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
+        android:layout_height="@dimen/nav_icon_size"
+        android:layout_width="@dimen/nav_icon_size"
         android:layout_gravity="right|bottom"
-        android:layout_margin="@dimen/horizontal_margin_small"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="10dp"
         android:src="@drawable/picto_open_invite"
         android:scaleType="centerInside"
+        android:clickable="true"
+        android:background="@drawable/selectable_button_oval_light"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Body.Two.White"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_margin="@dimen/horizontal_margin_small"
+        android:background="@null"
+        android:singleLine="true"
+        android:drawablePadding="8.6dp"
+        android:shadowColor="@color/black.opacity.50"
+        android:shadowRadius="5"
         />
 </merge>

@@ -77,6 +77,7 @@ import com.tribe.app.presentation.view.component.group.SettingsGroupView;
 import com.tribe.app.presentation.view.component.group.UpdateGroupView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
+import com.tribe.app.presentation.view.component.live.LiveRowView;
 import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.component.live.LiveWaitingView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
@@ -166,6 +167,7 @@ public interface ApplicationComponent {
     void inject(LiveInviteView liveInviteView);
     void inject(UserInviteHeaderAdapterDelegate userInviteHeaderAdapterDelegate);
     void inject(LiveWaitingView liveWaitingView);
+    void inject(LiveRowView liveRowView);
 
     // JOBS
     void inject(BaseJob baseJob);
