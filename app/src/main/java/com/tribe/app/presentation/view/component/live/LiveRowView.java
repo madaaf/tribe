@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
@@ -14,8 +15,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-
-import static io.fabric.sdk.android.services.concurrency.AsyncTask.init;
 
 /**
  * Created by tiago on 01/22/17.
@@ -30,6 +29,8 @@ public class LiveRowView extends FrameLayout {
 
     // VARIABLES
     private Unbinder unbinder;
+    private Recipient recipient;
+    private int color;
 
     public LiveRowView(Context context) {
         super(context);
@@ -46,18 +47,32 @@ public class LiveRowView extends FrameLayout {
         init();
     }
 
-    @Override
-    protected void onFinishInflate() {
+    public void init() {
         ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
 
         LayoutInflater.from(getContext()).inflate(R.layout.view_row_live, this);
         unbinder = ButterKnife.bind(this);
         ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
 
-        super.onFinishInflate();
+        if (recipient != null) viewWaiting.setRecipient(recipient);
+        viewWaiting.setColor(color);
     }
 
-    private void setColor(int color) {
-        viewWaiting.setColor(color);
+    public void setColor(int color) {
+        this.color = color;
+        if (viewWaiting != null) viewWaiting.setColor(color);
+    }
+
+    public void setRecipient(Recipient recipient) {
+        this.recipient = recipient;
+        if (viewWaiting != null) viewWaiting.setRecipient(recipient);
+    }
+
+    public void setRoomType(@LiveRoomView.TribeRoomViewType int type) {
+        if (viewWaiting != null) viewWaiting.setRoomType(type);
+    }
+
+    public void startPulse() {
+        if (viewWaiting != null) viewWaiting.startPulse();
     }
 }

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.support.v4.widget.TextViewCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -14,14 +15,18 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.FrameLayout;
 
+import com.tribe.app.R;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.CircleView;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 
 import javax.inject.Inject;
+
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by tiago on 01/22/17.
@@ -34,6 +39,12 @@ public class LiveWaitingView extends FrameLayout {
     private FrameLayout.LayoutParams circleViewParams;
     private AvatarView viewAvatar;
     private ValueAnimator circleAnimator;
+    private Recipient recipient;
+    private Boolean isMeasuring = false;
+    private @LiveRoomView.TribeRoomViewType int type = LiveRoomView.GRID;
+    private TextViewFont txtDropInTheLive;
+
+    private CompositeSubscription subscriptions = new CompositeSubscription();
 
     @Inject
     ScreenUtils screenUtils;
@@ -56,9 +67,6 @@ public class LiveWaitingView extends FrameLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        int avatarSize = getAvatarSize();
-        UIUtils.changeSizeOfView(viewAvatar, avatarSize);
     }
 
     private void init() {
@@ -70,8 +78,11 @@ public class LiveWaitingView extends FrameLayout {
         circleViewParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         circleViewParams.gravity = Gravity.CENTER;
 
-        int avatarSize = getAvatarSize();
-        LayoutParams imageAvatarParams = new LayoutParams(avatarSize, avatarSize);
+        int avatarSize = getContext().getResources().getDimensionPixelSize(R.dimen.avatar_size_medium);
+        int margin = getContext().getResources().getDimensionPixelSize(R.dimen.horizontal_margin_smaller);
+        FrameLayout.LayoutParams imageAvatarParams = new FrameLayout.LayoutParams(avatarSize, avatarSize);
+        imageAvatarParams.leftMargin = imageAvatarParams.topMargin
+                = imageAvatarParams.bottomMargin = imageAvatarParams.rightMargin = margin;
         imageAvatarParams.gravity = Gravity.CENTER;
 
         circleView = new CircleView(getContext());
@@ -80,10 +91,20 @@ public class LiveWaitingView extends FrameLayout {
         addView(circleView, circleViewParams);
         addView(viewAvatar, imageAvatarParams);
 
-        circleView.setVisibility(View.GONE);
         viewAvatar.setVisibility(View.GONE);
 
         setBackground(null);
+
+        txtDropInTheLive = new TextViewFont(getContext());
+        FrameLayout.LayoutParams txtLayoutParams = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        txtLayoutParams.gravity = Gravity.CENTER;
+        TextViewCompat.setTextAppearance(txtDropInTheLive, R.style.Caption_Two_Black40);
+        txtDropInTheLive.setCustomFont(getContext(), "Roboto-Bold.ttf");
+        txtDropInTheLive.setText(R.string.live_drop_friend);
+        addView(txtDropInTheLive, txtLayoutParams);
     }
 
     @Override
@@ -98,11 +119,24 @@ public class LiveWaitingView extends FrameLayout {
         }
     }
 
-    private int getAvatarSize() {
-        return Math.max(getMeasuredWidth() / 3, screenUtils.getWidthPx() / 3);
-    }
+//    private int getAvatarSize() {
+//        if (type == LiveRoomView.LINEAR) {
+//            Timber.d("getAvatarSize : " + getMeasuredHeight() / 3);
+//            Timber.d("getMeasureHeight : " + getMeasuredHeight());
+//            if (getMeasuredHeight() != 0) return (getMeasuredHeight() / 3);
+//            else return 0;
+//        } else {
+//            Timber.d("getAvatarSize : " + getMeasuredWidth() / 3);
+//            Timber.d("getMeasureWidth : " + getMeasuredWidth());
+//            if (getMeasuredHeight() != 0) return (getMeasuredHeight() / 3);
+//            else return 0;
+//        }
+//    }
 
     public void startPulse() {
+        txtDropInTheLive.setVisibility(View.GONE);
+        viewAvatar.setVisibility(View.VISIBLE);
+
         int finalHeight = getMeasuredHeight();
 
         circleAnimator = ValueAnimator.ofInt(0, finalHeight);
@@ -135,8 +169,13 @@ public class LiveWaitingView extends FrameLayout {
         circlePaint.setColor(PaletteGrid.getRandomColorExcluding(color));
     }
 
-    public void setAvatarPicture(String url) {
-        viewAvatar.load(url);
+    public void setRecipient(Recipient recipient) {
+        this.recipient = recipient;
+        viewAvatar.load(recipient.getProfilePicture());
+    }
+
+    public void setRoomType(@LiveRoomView.TribeRoomViewType int type) {
+        this.type = type;
     }
 
     public void release() {

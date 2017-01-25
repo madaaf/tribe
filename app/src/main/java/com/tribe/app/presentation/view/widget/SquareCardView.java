@@ -7,6 +7,8 @@ import android.util.AttributeSet;
 /** A FrameLayout that will always be square (based out of its width) */
 public class SquareCardView extends CardView {
 
+    private boolean shouldSquare = true;
+
     public SquareCardView(Context context) {
         super(context);
     }
@@ -21,6 +23,11 @@ public class SquareCardView extends CardView {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, widthMeasureSpec);
+        if (shouldSquare) super.onMeasure(widthMeasureSpec, widthMeasureSpec);
+        else super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    protected void setShouldSquare(boolean value) {
+        shouldSquare = value;
     }
 }

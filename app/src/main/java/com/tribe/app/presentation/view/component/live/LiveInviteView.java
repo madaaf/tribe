@@ -142,6 +142,10 @@ public class LiveInviteView extends FrameLayout {
         adapter.setItems(new ArrayList<>(friendshipList));
     }
 
+    public void removeItemAtPosition(int position) {
+        adapter.removeItem(position);
+    }
+
     //////////////////////
     //   OBSERVABLES    //
     //////////////////////

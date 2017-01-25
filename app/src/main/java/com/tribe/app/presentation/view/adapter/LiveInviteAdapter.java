@@ -12,7 +12,6 @@ import com.tribe.app.presentation.view.adapter.delegate.grid.UserInviteAdapterDe
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserInviteHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserLiveCoInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.interfaces.RecyclerViewItemEnabler;
-import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 import java.util.ArrayList;
@@ -48,7 +47,7 @@ public class LiveInviteAdapter extends RecyclerView.Adapter implements RecyclerV
         delegatesManager = new RxAdapterDelegatesManager<>();
 
         delegatesManager.addDelegate(EMPTY_HEADER_VIEW_TYPE, new UserInviteHeaderAdapterDelegate(context));
-        delegatesManager.addDelegate(new EmptyGridAdapterDelegate(context));
+        delegatesManager.addDelegate(new EmptyGridAdapterDelegate(context, false));
 
         userInviteAdapterDelegate = new UserInviteAdapterDelegate(context);
         delegatesManager.addDelegate(userInviteAdapterDelegate);
@@ -97,8 +96,6 @@ public class LiveInviteAdapter extends RecyclerView.Adapter implements RecyclerV
         this.items.clear();
         this.items.add(new Friendship(Recipient.ID_HEADER));
         this.items.addAll(items);
-
-        ListUtils.addEmptyItems(screenUtils, this.items);
     }
 
     public Recipient getItemAtPosition(int position) {
@@ -126,5 +123,11 @@ public class LiveInviteAdapter extends RecyclerView.Adapter implements RecyclerV
     @Override
     public boolean getItemEnabled(int position) {
         return true;
+    }
+
+    public void removeItem(int position) {
+        items.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, items.size());
     }
 }

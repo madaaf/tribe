@@ -55,7 +55,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
     public HomeGridAdapter(Context context) {
         screenUtils = ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().screenUtils();
         delegatesManager = new RxAdapterDelegatesManager<>();
-        delegatesManager.addDelegate(new EmptyGridAdapterDelegate(context));
+        delegatesManager.addDelegate(new EmptyGridAdapterDelegate(context, true));
         delegatesManager.addDelegate(EMPTY_HEADER_VIEW_TYPE, new EmptyHeaderGridAdapterDelegate(context));
 
         userGridAdapterDelegate = new UserGridAdapterDelegate(context);

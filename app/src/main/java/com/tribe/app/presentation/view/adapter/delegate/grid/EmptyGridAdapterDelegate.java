@@ -27,11 +27,13 @@ public class EmptyGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>>
     private LayoutInflater layoutInflater;
     private Context context;
     private ScreenUtils screenUtils;
+    private boolean shouldRoundCorners = false;
 
-    public EmptyGridAdapterDelegate(Context context) {
+    public EmptyGridAdapterDelegate(Context context, boolean shouldRoundCorners) {
         this.context = context;
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.screenUtils = ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().screenUtils();
+        this.shouldRoundCorners = shouldRoundCorners;
     }
 
     @Override
@@ -48,7 +50,7 @@ public class EmptyGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>>
     @Override
     public void onBindViewHolder(@NonNull List<Recipient> items, int position, @NonNull RecyclerView.ViewHolder holder) {
         EmptyGridViewHolder vh = (EmptyGridViewHolder) holder;
-        UIUtils.setBackgroundGrid(screenUtils, vh.layoutContent, position, true);
+        UIUtils.setBackgroundGrid(screenUtils, vh.layoutContent, position, shouldRoundCorners);
     }
 
     static class EmptyGridViewHolder extends RecyclerView.ViewHolder {

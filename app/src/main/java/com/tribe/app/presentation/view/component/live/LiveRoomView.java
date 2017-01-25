@@ -38,8 +38,21 @@ public class LiveRoomView extends ViewGroup {
         if (this.type == type) return;
 
         this.type = type;
-        invalidate();
-        requestLayout();
+
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+
+            if (child instanceof LiveRowView) {
+                LiveRowView liveRowView = (LiveRowView) child;
+                liveRowView.setRoomType(type);
+            }
+        }
+
+        //requestLayout();
+    }
+
+    public @TribeRoomViewType int getType() {
+        return type;
     }
 
     @Override

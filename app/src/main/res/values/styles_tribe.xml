@@ -100,6 +100,10 @@
         <item name="android:textColor">@color/white.opacity.40</item>
     </style>
 
+    <style name="Caption.Two.Black40" parent="Caption.Two">
+        <item name="android:textColor">@color/black.opacity.40</item>
+    </style>
+
     <style name="Title">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">15sp</item>

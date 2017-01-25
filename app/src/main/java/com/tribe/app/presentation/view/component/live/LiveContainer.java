@@ -25,6 +25,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.ViewUtils;
 
 import java.util.concurrent.TimeUnit;
 
@@ -39,6 +40,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 01/18/2017.
@@ -55,6 +57,7 @@ public class LiveContainer extends FrameLayout {
     private final int SCROLL_TOLERANCE = 10;
     private final int LONG_PRESS = 100;
     private final int DRAG_END_DELAY = 300;
+    private final int DURATION = 300;
 
     private static final SpringConfig ORIGAMI_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(0f, 100f);
     private static final float DRAG_RATE = 0.1f;
@@ -96,6 +99,8 @@ public class LiveContainer extends FrameLayout {
     private int [] tileLocationStart = new int[2];
     private int statusBarHeight = 0;
     private boolean hasNotifiedAtRest = false;
+    private boolean dropEnabled = false;
+    private int initialTileHeight = 0;
 
     // DIMENS
     private int thresholdEnd;
@@ -108,6 +113,8 @@ public class LiveContainer extends FrameLayout {
     private PublishSubject<TileView> onStartDrag = PublishSubject.create();
     private PublishSubject<Void> onEndDrag = PublishSubject.create();
     private PublishSubject<Float> onAlpha = PublishSubject.create();
+    private PublishSubject<Boolean> onDropEnabled = PublishSubject.create();
+    private PublishSubject<TileView> onDropped = PublishSubject.create();
 
     public LiveContainer(Context context) {
         super(context);
@@ -196,6 +203,7 @@ public class LiveContainer extends FrameLayout {
         viewLive.initOnStartDragSubscription(onStartDrag());
         viewLive.initOnEndDragSubscription(onEndDrag());
         viewLive.initOnAlphaSubscription(onAlpha());
+        viewLive.initDropSubscription(onDropped());
     }
 
     public void setStatusBarHeight(int height) {
@@ -317,6 +325,14 @@ public class LiveContainer extends FrameLayout {
                                 (int) (tileLocationStart[0] + offsetX),
                                 (int) (tileLocationStart[1] + offsetY) - statusBarHeight
                         );
+
+                        boolean isIn = ViewUtils.isIn(viewLive, (int) x, (int) y);
+
+                        if (isIn && !dropEnabled) {
+                            startTileDrop();
+                        } else if (!isIn && dropEnabled) {
+                            endTileDrop();
+                        }
                     }
                 }
 
@@ -360,6 +376,22 @@ public class LiveContainer extends FrameLayout {
     }
 
     private void clearTouch() {
+        if (currentTileView != null) {
+            if (draggedTileView != null) {
+                if (!dropEnabled) {
+                    endTileDrag();
+                    AnimationUtils.animateLeftMargin(draggedTileView, tileLocationStart[0], DRAG_END_DELAY, new DecelerateInterpolator());
+                    AnimationUtils.animateTopMargin(draggedTileView, tileLocationStart[1] - statusBarHeight, DRAG_END_DELAY, new DecelerateInterpolator());
+                    prepareRemoveTileForDrag();
+                } else {
+                    onDropped.onNext(draggedTileView);
+                    prepareRemoveTileForDrag();
+                }
+            } else {
+                clearCurrentTile();
+            }
+        }
+
         beingDragged = false;
         activePointerId = INVALID_POINTER;
         overallScrollY = 0;
@@ -367,25 +399,7 @@ public class LiveContainer extends FrameLayout {
 
         if (timerLongPress != null) timerLongPress.unsubscribe();
 
-        if (currentTileView != null) {
-            if (draggedTileView != null) {
-                endTileDrag();
-                AnimationUtils.animateLeftMargin(draggedTileView, tileLocationStart[0], DRAG_END_DELAY, new DecelerateInterpolator());
-                AnimationUtils.animateTopMargin(draggedTileView, tileLocationStart[1] - statusBarHeight, DRAG_END_DELAY, new DecelerateInterpolator());
-
-                timerEndDrag = Observable.timer(DRAG_END_DELAY, TimeUnit.MILLISECONDS)
-                        .onBackpressureDrop()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(time -> {
-                            clearCurrentTile();
-                            removeTileForDrag();
-                            timerEndDrag.unsubscribe();
-                        });
-            } else {
-                clearCurrentTile();
-            }
-        }
+        dropEnabled = false;
     }
 
     private void clearCurrentTile() {
@@ -410,7 +424,7 @@ public class LiveContainer extends FrameLayout {
     }
 
     private void startTileDrag() {
-        draggedTileView.startDrag(true);
+        draggedTileView.startDrag();
         onStartDrag.onNext(draggedTileView);
     }
 
@@ -419,9 +433,38 @@ public class LiveContainer extends FrameLayout {
         onEndDrag.onNext(null);
     }
 
+    private void prepareRemoveTileForDrag() {
+        timerEndDrag = Observable.timer(DRAG_END_DELAY, TimeUnit.MILLISECONDS)
+                .onBackpressureDrop()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(time -> {
+                    Timber.d("Remove tile");
+                    clearCurrentTile();
+                    removeTileForDrag();
+                    timerEndDrag.unsubscribe();
+                });
+    }
+
     private void removeTileForDrag() {
+        Timber.d("Removed tile");
         removeView(draggedTileView);
         draggedTileView = null;
+    }
+
+    private void startTileDrop() {
+        dropEnabled = true;
+        onDropEnabled.onNext(true);
+        initialTileHeight = currentTileView.getHeight();
+        AnimationUtils.animateSize(currentTileView, initialTileHeight, 0, DURATION);
+        draggedTileView.startDrop();
+    }
+
+    private void endTileDrop() {
+        dropEnabled = false;
+        onDropEnabled.onNext(false);
+        AnimationUtils.animateSize(currentTileView, 0, initialTileHeight, DURATION);
+        draggedTileView.endDrop();
     }
 
     private void positionViewAt(View view, int x, int y) {
@@ -533,5 +576,13 @@ public class LiveContainer extends FrameLayout {
 
     public Observable<Float> onAlpha() {
         return onAlpha;
+    }
+
+    public Observable<Boolean> onDropEnabled() {
+        return onDropEnabled;
+    }
+
+    public Observable<TileView> onDropped() {
+        return onDropped;
     }
 }

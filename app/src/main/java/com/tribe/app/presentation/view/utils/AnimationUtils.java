@@ -12,7 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ShapeDrawable;
-import android.support.design.widget.CoordinatorLayout;
+import android.support.v7.widget.CardView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
@@ -22,9 +22,7 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.ScaleAnimation;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.tribe.app.R;
@@ -251,53 +249,71 @@ public class AnimationUtils {
         animator.start();
     }
 
-    public static void animateHeightFrameLayout(View view, int startHeight, int endHeight, int duration) {
-        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) view.getLayoutParams();
-        ValueAnimator animator = ValueAnimator.ofInt(startHeight, endHeight);
+    public static void animateSize(View view, int startSize, int endSize, int duration) {
+        ValueAnimator animator = ValueAnimator.ofInt(startSize, endSize);
         animator.setDuration(duration);
+        animator.setInterpolator(new DecelerateInterpolator());
+        animator.addUpdateListener(animation -> UIUtils.changeSizeOfView(view, (int) animation.getAnimatedValue()));
+        animator.start();
+    }
+
+    public static Animator getSizeAnimator(View view, int size) {
+        ValueAnimator animator = ValueAnimator.ofInt(view.getWidth(), size);
+        animator.addUpdateListener(animation -> UIUtils.changeSizeOfView(view, (int) animation.getAnimatedValue()));
+        return animator;
+    }
+
+    public static Animator getScaleAnimator(View view, float scale) {
+        ValueAnimator animator = ValueAnimator.ofFloat(view.getScaleX(), scale);
         animator.addUpdateListener(animation -> {
-            lp.height = (Integer) animation.getAnimatedValue();
+            view.setScaleX((float) animation.getAnimatedValue());
+            view.setScaleY((float) animation.getAnimatedValue());
+        });
+        return animator;
+    }
+
+    public static Animator getWidthAnimator(View view, int startWidth, int endWidth) {
+        ValueAnimator animator = ValueAnimator.ofInt(startWidth, endWidth);
+        animator.addUpdateListener(animation -> UIUtils.changeWidthOfView(view, (int) animation.getAnimatedValue()));
+        return animator;
+    }
+
+    public static Animator getHeightAnimator(View view, int startHeight, int endHeight) {
+        ValueAnimator animator = ValueAnimator.ofInt(startHeight, endHeight);
+        animator.addUpdateListener(animation -> UIUtils.changeHeightOfView(view, (int) animation.getAnimatedValue()));
+        return animator;
+    }
+
+    public static Animator getLeftMarginAnimator(View view, int margin) {
+        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        ValueAnimator animator = ValueAnimator.ofInt(lp.leftMargin, margin);
+        animator.addUpdateListener(animation -> {
+            lp.leftMargin = (Integer) animation.getAnimatedValue();
             view.setLayoutParams(lp);
         });
-        animator.start();
+        return animator;
     }
 
-    public static void animateHeightCoordinatorLayout(View view, int startHeight, int endHeight, int duration) {
-        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) view.getLayoutParams();
-        ValueAnimator animator = ValueAnimator.ofInt(startHeight, endHeight);
-        animator.setDuration(duration);
+    public static Animator getTopMarginAnimator(View view, int margin) {
+        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        ValueAnimator animator = ValueAnimator.ofInt(lp.topMargin, margin);
         animator.addUpdateListener(animation -> {
-            lp.height = (Integer) animation.getAnimatedValue();
-            view.getLayoutParams().height = lp.height;
-            view.requestLayout();
+            lp.topMargin = (Integer) animation.getAnimatedValue();
+            view.setLayoutParams(lp);
         });
-        animator.start();
+        return animator;
     }
 
-    public static void animateHeightLinearLayout(View view, int startHeight, int endHeight, int duration) {
-        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) view.getLayoutParams();
-        ValueAnimator animator = ValueAnimator.ofInt(startHeight, endHeight);
-        animator.setDuration(duration);
-        animator.addUpdateListener(animation -> {
-            lp.height = (Integer) animation.getAnimatedValue();
-            view.getLayoutParams().height = lp.height;
-            view.requestLayout();
-        });
-        animator.start();
+    public static Animator getRotationAnimator(View view, int rotation) {
+        ValueAnimator animator = ValueAnimator.ofFloat(view.getRotation(), rotation);
+        animator.addUpdateListener(animation -> view.setRotation((float) animation.getAnimatedValue()));
+        return animator;
     }
 
-    public static void animateSizeFrameLayout(View view, int endHeight, int duration) {
-        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) view.getLayoutParams();
-        ValueAnimator animator = ValueAnimator.ofInt(view.getWidth(), endHeight);
-        animator.setDuration(duration);
-        animator.addUpdateListener(animation -> {
-            lp.height = (Integer) animation.getAnimatedValue();
-            lp.width = (Integer) animation.getAnimatedValue();
-            view.getLayoutParams().height = lp.height;
-            view.getLayoutParams().width = lp.width;
-            view.requestLayout();
-        });
-        animator.start();
+    public static Animator getRadiusAnimator(CardView view, int radius) {
+        ValueAnimator animator = ValueAnimator.ofFloat(view.getRadius(), radius);
+        animator.addUpdateListener(animation -> view.setRadius((float) animation.getAnimatedValue()));
+        return animator;
     }
 
     public static void scaleOldImageOutNewImageIn(ImageView imageView, Drawable oldDrawable, Drawable newDrawable) {

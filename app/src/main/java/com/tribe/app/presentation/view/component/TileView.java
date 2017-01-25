@@ -1,5 +1,9 @@
 package com.tribe.app.presentation.view.component;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -10,6 +14,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -22,6 +27,8 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.component.live.LiveRowView;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
@@ -54,12 +61,21 @@ public class TileView extends SquareCardView {
 
     private final float SCALE_FACTOR = 1.75f;
     private final float SCALE_TILE_FACTOR = 1.3f;
+    private final float SCALE_DOWN_BG_FACTOR = 1.75f;
+    private final float SCALE_DOWN_MASTER_BG_FACTOR_LOW = 0.9f;
+    private final float SCALE_DOWN_BG_FACTOR_LOW = 0.8f;
     private final int RADIUS_MIN = 0;
     private final int RADIUS_MAX = 5;
     private final int ELEVATION_MIN = 0;
     private final int ELEVATION_MAX = 5;
     private final int ROTATION_MIN = 0;
     private final int ROTATION_MAX = 6;
+    private final float ALPHA_TILES_MAX = 0.4f;
+    private final float ALPHA_TILES_MIN = 0f;
+    private final int ROTATION_BG_1_MIN = ROTATION_MAX;
+    private final int ROTATION_BG_1_MAX = ROTATION_MIN;
+    private final int ROTATION_BG_2_MIN = 0;
+    private final int ROTATION_BG_2_MAX = 12;
 
     private static final float BOUNCINESS_DOWN = 10f;
     private static final float SPEED_DOWN = 5f;
@@ -111,12 +127,16 @@ public class TileView extends SquareCardView {
     // RX SUBSCRIPTIONS / SUBJECTS
     private final PublishSubject<View> clickMoreView = PublishSubject.create();
     private final PublishSubject<View> click = PublishSubject.create();
+    private final PublishSubject<Void> onEndDrop = PublishSubject.create();
 
     // RESOURCES
     private int cardRadiusMin, cardRadiusMax, diffCardRadius,
             cardElevationMin, cardElevationMax, diffCardElevation,
             rotationMin, rotationMax, diffRotation,
-            minSize, maxSize, sizeDiff;
+            minSize, maxSize, sizeDiff,
+            rotationBG1Min, rotationBG1Max, diffRotationBG1,
+            rotationBG2Min, rotationBG2Max, diffRotationBG2, smallAvatarSize;
+    private float alphaTilesMin, alphaTilesMax, alphaTilesDiff;
 
     // VARIABLES
     private Unbinder unbinder;
@@ -211,6 +231,16 @@ public class TileView extends SquareCardView {
         rotationMax = ROTATION_MAX;
         rotationMin = ROTATION_MIN;
         diffRotation = rotationMax - rotationMin;
+        alphaTilesMin = ALPHA_TILES_MIN;
+        alphaTilesMax = ALPHA_TILES_MAX;
+        alphaTilesDiff = alphaTilesMax - alphaTilesMin;
+        rotationBG1Max = ROTATION_BG_1_MAX;
+        rotationBG1Min = ROTATION_BG_1_MIN;
+        diffRotationBG1 = rotationBG1Max - rotationBG1Min;
+        rotationBG2Min = ROTATION_BG_2_MIN;
+        rotationBG2Max = ROTATION_BG_2_MAX;
+        diffRotationBG2 = rotationBG2Max - rotationBG2Min;
+        smallAvatarSize = getContext().getResources().getDimensionPixelSize(R.dimen.avatar_size_medium);
     }
 
     private void initSprings() {
@@ -223,7 +253,7 @@ public class TileView extends SquareCardView {
             public void onSpringUpdate(Spring spring) {
                 float value = (float) spring.getCurrentValue();
 
-                if (Math.abs(value - spring.getEndValue()) < 0.01) value = (float) spring.getEndValue();
+                if (Math.abs(value - spring.getEndValue()) < 0.05) value = (float) spring.getEndValue();
 
                 float alpha = 1 - value;
                 txtName.setAlpha(alpha);
@@ -252,14 +282,12 @@ public class TileView extends SquareCardView {
                 int sizeOfTile = Math.max((int) (minSize + (sizeDiff * value)), minSize);
                 UIUtils.changeSizeOfView(TileView.this, sizeOfTile);
 
-                int size = Math.max((int) (minSize + ((sizeDiff / 1.75f) * value)), minSize);
+                int size = Math.max((int) (minSize + ((sizeDiff / SCALE_DOWN_BG_FACTOR) * value)), minSize);
                 UIUtils.changeSizeOfView(viewBG, size);
-                //UIUtils.changeSizeOfView(viewBGTransparent2, size);
-                //UIUtils.changeSizeOfView(viewBGTransparent1, size);
             }
         });
 
-        springInside.setEndValue(0f);
+        springInside.setEndValue(0f).setAtRest();
     }
 
     public void initSize() {
@@ -396,20 +424,108 @@ public class TileView extends SquareCardView {
         return PaletteGrid.get(position);
     }
 
-    public void startDrag(boolean animated) {
+    public void startDrag() {
         UIUtils.setBackgroundMultiple(screenUtils, viewBG, position);
-        //viewBGTransparent1.setVisibility(View.VISIBLE);
-        //viewBGTransparent2.setVisibility(View.VISIBLE);
-
-        if (animated) springInside.setEndValue(1);
-        else springInside.setCurrentValue(1, true);
+        springInside.setEndValue(1);
     }
 
     public void endDrag() {
         UIUtils.setBackgroundGrid(screenUtils, viewBG, position, isGrid());
         springInside.setEndValue(0);
-        //viewBGTransparent1.setVisibility(View.GONE);
-        //viewBGTransparent2.setVisibility(View.GONE);
+    }
+
+    public void startDrop() {
+        getDropAnimator(true).start();
+    }
+
+    public void endDrop() {
+        getDropAnimator(false).start();
+    }
+
+    private AnimatorSet getDropAnimator(boolean start) {
+        AnimatorSet animatorSet = new AnimatorSet();
+
+        ValueAnimator animatorAlpha = ValueAnimator.ofFloat(start ? alphaTilesMin : alphaTilesMax, start ? alphaTilesMax : alphaTilesMin);
+        animatorAlpha.addUpdateListener(animation -> {
+            float value = (float) animation.getAnimatedValue();
+            viewBGTransparent1.setAlpha(value);
+            viewBGTransparent2.setAlpha(value);
+        });
+
+        ValueAnimator animatorRotationBG1 = ValueAnimator.ofInt(start ? rotationBG1Min : rotationBG1Max, start ? rotationBG1Max : rotationBG1Min);
+        animatorRotationBG1.addUpdateListener(animation -> {
+            int value = (int) animation.getAnimatedValue();
+            viewBGTransparent1.setRotation(value);
+        });
+
+        ValueAnimator animatorRotationBG2 = ValueAnimator.ofInt(start ? rotationBG2Min : rotationBG2Max, start ? rotationBG2Max : rotationBG2Min);
+        animatorRotationBG2.addUpdateListener(animation -> {
+            int value = (int) animation.getAnimatedValue();
+            viewBGTransparent2.setRotation(value);
+        });
+
+        ValueAnimator animatorSizeBG = ValueAnimator.ofFloat(start ? 1 : SCALE_DOWN_BG_FACTOR_LOW, start ? SCALE_DOWN_BG_FACTOR_LOW : 1);
+        animatorSizeBG.addUpdateListener(animation -> {
+            float value = (float) animation.getAnimatedValue();
+            viewBGTransparent1.setScaleX(value);
+            viewBGTransparent1.setScaleY(value);
+            viewBGTransparent2.setScaleX(value);
+            viewBGTransparent2.setScaleY(value);
+        });
+
+        ValueAnimator animatorSizeMasterBG = ValueAnimator.ofFloat(start ? 1 : SCALE_DOWN_MASTER_BG_FACTOR_LOW, start ? SCALE_DOWN_MASTER_BG_FACTOR_LOW : 1);
+        animatorSizeMasterBG.addUpdateListener(animation -> {
+            float value = (float) animation.getAnimatedValue();
+            viewBG.setScaleX(value);
+            viewBG.setScaleY(value);
+        });
+
+        animatorSet.setInterpolator(new DecelerateInterpolator());
+        animatorSet.setDuration(300);
+        animatorSet.setStartDelay(0);
+        animatorSet.playTogether(animatorAlpha, animatorRotationBG1, animatorRotationBG2, animatorSizeBG, animatorSizeMasterBG);
+
+        return animatorSet;
+    }
+
+    public void onDrop(LiveRowView viewLiveRow) {
+        UIUtils.setBackgroundGrid(screenUtils, viewBG, position, isGrid());
+        setShouldSquare(false);
+
+        AnimatorSet animatorFinal = new AnimatorSet();
+        animatorFinal.setDuration(300);
+        animatorFinal.setInterpolator(new DecelerateInterpolator());
+        AnimatorSet animatorFirst = getDropAnimator(false);
+
+        AnimatorSet animatorSecond = new AnimatorSet();
+        animatorSecond.playTogether(
+                AnimationUtils.getHeightAnimator(this, getHeight(), viewLiveRow.getHeight()),
+                AnimationUtils.getWidthAnimator(this, getWidth(), viewLiveRow.getWidth()),
+                AnimationUtils.getHeightAnimator(viewBG, viewBG.getHeight(), viewLiveRow.getHeight()),
+                AnimationUtils.getWidthAnimator(viewBG, viewBG.getWidth(), viewLiveRow.getWidth()),
+                AnimationUtils.getLeftMarginAnimator(this, viewLiveRow.getLeft()),
+                AnimationUtils.getTopMarginAnimator(this, viewLiveRow.getTop()),
+                AnimationUtils.getRotationAnimator(viewBG, 0),
+                AnimationUtils.getRotationAnimator(avatar, 0),
+                AnimationUtils.getRadiusAnimator(this, 0),
+                AnimationUtils.getSizeAnimator(avatar, smallAvatarSize),
+                AnimationUtils.getScaleAnimator(avatar, 1)
+        );
+
+        if (viewShadowAvatar != null) {
+            animatorSecond.playTogether(
+                    AnimationUtils.getScaleAnimator(viewShadowAvatar, 1.2f)
+            );
+        }
+
+        animatorFinal.playTogether(animatorFirst, animatorSecond);
+        animatorFinal.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                onEndDrop.onNext(null);
+            }
+        });
+        animatorFinal.start();
     }
 
     public Observable<View> onClickMore() {
@@ -418,6 +534,10 @@ public class TileView extends SquareCardView {
 
     public Observable<View> onClick() {
         return click;
+    }
+
+    public Observable<Void> onEndDrop() {
+        return onEndDrop;
     }
 
     private void initDependencyInjector() {

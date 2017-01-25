@@ -53,6 +53,7 @@
     <!-- CHANGE AVATAR_SIZE_INTERMEDIATE_HALF ACCORDINGLY -->
     <dimen name="avatar_size_small">41dp</dimen>
     <dimen name="avatar_size_smaller">35dp</dimen>
+    <dimen name="avatar_size_medium">60dp</dimen>
     <dimen name="camera_height_settings">111.5dp</dimen>
     <dimen name="camera_width_settings">80dp</dimen>
     <dimen name="camera_stroke_width">8dp</dimen>

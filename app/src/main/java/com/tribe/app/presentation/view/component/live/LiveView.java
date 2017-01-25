@@ -203,11 +203,12 @@ public class LiveView extends FrameLayout {
         subscriptions.add(
                 obs.subscribe(tileView -> {
                     latestView = new LiveRowView(getContext());
-                    latestView.setBackgroundColor(tileView.getBackgroundColor());
+                    latestView.setColor(tileView.getBackgroundColor());
+                    latestView.setRecipient(tileView.getRecipient());
+                    latestView.setRoomType(viewRoom.getType());
                     ViewGroup.LayoutParams params =
                             new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                     viewRoom.addView(latestView, params);
-
                 })
         );
     }
@@ -226,6 +227,25 @@ public class LiveView extends FrameLayout {
                     btnNotify.setAlpha(alpha);
                     btnInviteLive.setAlpha(alpha);
                     btnLeave.setAlpha(alpha);
+                })
+        );
+    }
+
+    public void initDropEnabledSubscription(Observable<Boolean> obs) {
+        subscriptions.add(
+                obs.subscribe(enabled -> {
+                    // TODO DO SOMETHING WITH THIS ?
+                })
+        );
+    }
+
+    public void initDropSubscription(Observable<TileView> obs) {
+        subscriptions.add(
+                obs.subscribe(tileView -> {
+                    tileView.onDrop(latestView);
+
+                    subscriptions.add(tileView.onEndDrop()
+                            .subscribe(aVoid -> latestView.startPulse()));
                 })
         );
     }

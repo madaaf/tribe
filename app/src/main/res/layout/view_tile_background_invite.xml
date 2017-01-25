@@ -9,8 +9,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:background="@null"
-        android:visibility="gone"
-        android:alpha="0.4"
+        android:alpha="0"
         />
 
     <View
@@ -19,9 +18,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:background="@null"
-        android:visibility="gone"
-        android:alpha="0.4"
-        android:rotation="12"
+        android:alpha="0"
         />
 
     <View

@@ -30,7 +30,7 @@ public class ViewUtils {
         return null;
     }
 
-    private static boolean isIn(View child, int x, int y) {
+    public static boolean isIn(View child, int x, int y) {
         int[] location = new int[2];
         child.getLocationOnScreen(location);
         Rect rect = new Rect(location[0], location[1], location[0] + child.getWidth(), location[1] + child.getHeight());

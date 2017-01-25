@@ -24,11 +24,13 @@ public class UIUtils {
             gradientDrawable.setShape(GradientDrawable.RECTANGLE);
             gradientDrawable.setColor(color);
             if (hasCorners) gradientDrawable.setCornerRadii(radiusMatrix);
+            else gradientDrawable.setCornerRadius(0);
             v.setBackground(gradientDrawable);
         } else if (background instanceof GradientDrawable) {
             GradientDrawable gradientDrawable = (GradientDrawable) background;
             gradientDrawable.setColor(color);
             if (hasCorners) gradientDrawable.setCornerRadii(radiusMatrix);
+            else gradientDrawable.setCornerRadius(0);
         }
     }
 
@@ -68,13 +70,17 @@ public class UIUtils {
         ViewGroup.LayoutParams params = v.getLayoutParams();
         params.width = params.height = size;
         v.setLayoutParams(params);
-        v.requestLayout();
     }
 
-    public static void changeHeightOfView(View v, int size) {
+    public static void changeHeightOfView(View v, int height) {
         ViewGroup.LayoutParams params = v.getLayoutParams();
-        params.height = size;
+        params.height = height;
         v.setLayoutParams(params);
-        v.requestLayout();
+    }
+
+    public static void changeWidthOfView(View v, int width) {
+        ViewGroup.LayoutParams params = v.getLayoutParams();
+        params.width = width;
+        v.setLayoutParams(params);
     }
 }
