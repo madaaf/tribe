@@ -189,6 +189,9 @@
 	<!-- Live -->
 	<string name="live_notification_online">%1$s est connecté</string>
 	<string name="live_notification_jam">%1$s (%2$s) veut discuter en direct avec vous !</string>
+	<string name="live_notification_add_as_guest">Ajouter en tant qu\'invité</string>
+	<string name="live_notification_leave">Quitter pour rejoindre %1$s</string>
+	<string name="live_notification_swipe_dismiss">Glisser pour enlever</string>
 	
 	<!-- Tribe Recipients -->
 	<string name="tribe_recipients_title">Vu par</string>
@@ -217,7 +220,7 @@
 	<string name="grid_support_status_error">Non envoyé</string>
 	<string name="grid_status_live">Live</string>
 	<string name="grid_status_connected">En ligne</string>
-	<string name="grid_status_last_seen">Last seen %1$s</string>
+	<string name="grid_status_last_seen">Il y a %1$s</string>
 	<string name="grid_ghost">Pas encore inscrit</string>
 	<string name="grid_friendship_recording_message">%1$d message</string>
 	<string name="grid_friendship_recording_messages">%1$d messages</string>
@@ -299,6 +302,7 @@
 	
 	<!-- Group Details -->
 	<string name="group_details_send_link">Lien de partage du groupe</string>
+	<string name="group_details_invite_link">Lien d\'invitation</string>
 	<string name="group_details_notifications_title">Notifications</string>
 	<string name="group_details_notifications_subtitle">Soyez notifié pour les nouveaux\nmessages dans ce groupe</string>
 	<string name="group_details_leave_title">Quitter le groupe</string>
@@ -525,7 +529,7 @@
 	<string name="topbar_create_group">Groupe</string>
 	<string name="topbar_invite_friend">Invites</string>
 	<string name="topbar_new_friend">Ami</string>
-	<string name="topbar_new_live">Nouveau</string>
+	<string name="topbar_new_live">Nouveau groupe</string>
 	<string name="topbar_search">Rechercher</string>
 	<string name="topbar_invite_friend_toast">Quels amis souhaitez-vous inviter à discuter aujourd\'hui ? :tada:</string>
 	<string name="topbar_invite_search_action">:mag: Trouver des amis sur Tribe</string>
@@ -725,11 +729,11 @@
 	<string name="search_user_placeholder">Entrez un nom d\'utilisateur</string>
 	<string name="search_usernames">Résultat</string>
 	<string name="search_searching">Recherche en cours</string>
-	<string name="search_already_friends">Vos amis</string>
+	<string name="search_already_friends">Vos amis :purple_heart:</string>
 	<string name="search_add_friends">Ils sont déjà connectés sur Tribe</string>
 	<string name="search_invite_friends">Ils sont en train de manquer leurs amis</string>
-	<string name="search_suggest_friends">Vous connaissez peut-être</string>
-	<string name="search_invite_contacts">Vous devriez inviter...</string>
+	<string name="search_suggest_friends">Vous connaissez peut-être :bee:</string>
+	<string name="search_invite_contacts">Vous devriez inviter... :love_letter:</string>
 	<string name="search_no_friends_to_add">Aucun ami actuellement connectés</string>
 	<string name="search_no_friends_to_invite">Aucun ami actuellement connectés</string>
 	<string name="search_no_friends_to_suggest">Aucun ami actuellement connectés</string>
@@ -772,7 +776,7 @@
 	<string name="live_invite_link">Lien pour\ninviter</string>
 	<string name="live_drop_friend">Inviter dans le live !</string>
 	<string name="live_drop_friend_impossible">Seulement %1$d amis en live en même temps !</string>
-	<string name="live_join_impossible">Seulement %1$d amis en live en même temps !</string>
+	<string name="live_join_impossible">:lock: Seulement %1$d amis en live en même temps !</string>
 	<string name="live_event_added">%1$s ajouté !</string>
 	<string name="live_event_joined">%1$s est entré !</string>
 	<string name="live_event_left">%1$s est parti !</string>
@@ -782,4 +786,12 @@
 	
 	<!-- Blur Popup -->
 	<string name="blur_popup_dismiss">Faire glisser pour fermer</string>
+	
+	<!-- Profile -->
+	<string name="profile_title">Profile</string>
+	<string name="profile_user_infos">Name, avatar and more :pencil2:</string>
+	<string name="profile_invisible_mode">Allow people to add me :ghost:</string>
+	<string name="profile_rate_us">Rate us :star2:</string>
+	<string name="profile_follow_us">Follow us :metal:</string>
+	<string name="profile_logout">Logout :skull:</string>
 </resources>

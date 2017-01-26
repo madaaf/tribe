@@ -39,4 +39,13 @@
             />
 
     </com.tribe.app.presentation.view.component.TopBarContainer>
+
+    <com.tribe.app.presentation.view.widget.LiveNotificationContainer
+        android:id="@+id/layoutNotifications"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="top"
+        android:visibility="gone">
+
+    </com.tribe.app.presentation.view.widget.LiveNotificationContainer>
 </FrameLayout>

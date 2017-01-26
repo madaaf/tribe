@@ -47,6 +47,7 @@ import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
+import com.tribe.app.presentation.view.widget.LiveNotificationContainer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -110,6 +111,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     @BindView(R.id.topBarContainer)
     TopBarContainer topBarContainer;
+
+    @BindView(R.id.layoutNotifications)
+    LiveNotificationContainer layoutNotifications;
 
     // OBSERVABLES
     private UserComponent userComponent;
@@ -273,6 +277,25 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         subscriptions.add(homeGridAdapter.onClick()
                 .map(view -> homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view)))
                 .subscribe(recipient -> {
+//                    LiveNotificationView notificationView = new LiveNotificationView.Builder(this)
+//                            .imgUrl(getCurrentUser().getProfilePicture())
+//                            .title(getString(R.string.live_notification_online, getCurrentUser().getDisplayName()))
+//                            .addAction("HEY", getString(R.string.live_notification_add_as_guest))
+//                            .addAction("HEY1", getString(R.string.live_notification_leave, getCurrentUser().getDisplayName()))
+//                            .build();
+
+//                    LiveNotificationView notificationView = new LiveNotificationView.Builder(this, LiveNotificationView.ERROR)
+//                            .imgUrl(getCurrentUser().getProfilePicture())
+//                            .title(getString(R.string.live_notification_online, getCurrentUser().getDisplayName()))
+//                            .addAction("HEY", getString(R.string.live_notification_add_as_guest))
+//                            .addAction("HEY1", getString(R.string.live_notification_leave, getCurrentUser().getDisplayName()))
+//                            .build();
+//
+//                    subscriptions.add(notificationView.onClickAction().subscribe(s -> {
+//                        layoutNotifications.dismissNotification();
+//                    }));
+
+//                    notificationView.show(this, layoutNotifications);
                     navigator.navigateToLive(this, recipient);
                 })
         );

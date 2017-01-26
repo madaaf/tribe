@@ -34,6 +34,9 @@ android {
     }
 
     defaultConfig {
+        renderscriptTargetApi globalConfiguration.getAt("androidTargetSdkVersion")
+        renderscriptSupportModeEnabled true
+
         minSdkVersion globalConfiguration.getAt("androidMinSdkVersion")
         targetSdkVersion globalConfiguration.getAt("androidTargetSdkVersion")
 
@@ -89,7 +92,7 @@ android {
 
     buildTypes {
         debug {
-            //generateStrings()
+            generateStrings()
             
             signingConfig signingConfigs.debug
             testCoverageEnabled true
@@ -195,6 +198,7 @@ dependencies {
     compile presentationDependencies.firebaseRemote
     compile presentationDependencies.branchIo
     compile presentationDependencies.timber
+    compile presentationDependencies.blurKit
 
     androidTestCompile presentationTestDependencies.mockito
     androidTestCompile presentationTestDependencies.dexmaker

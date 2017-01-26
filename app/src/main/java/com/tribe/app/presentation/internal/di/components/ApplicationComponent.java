@@ -92,6 +92,7 @@ import com.tribe.app.presentation.view.video.LegacyMediaPlayer;
 import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.LabelButton;
+import com.tribe.app.presentation.view.widget.LiveNotificationContainer;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.PlayerView;
 import com.tribe.app.presentation.view.widget.SyncView;
@@ -168,6 +169,7 @@ public interface ApplicationComponent {
     void inject(UserInviteHeaderAdapterDelegate userInviteHeaderAdapterDelegate);
     void inject(LiveWaitingView liveWaitingView);
     void inject(LiveRowView liveRowView);
+    void inject(LiveNotificationContainer liveNotificationContainer);
 
     // JOBS
     void inject(BaseJob baseJob);

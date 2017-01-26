@@ -137,10 +137,10 @@ public class LiveWaitingView extends FrameLayout {
         txtDropInTheLive.setVisibility(View.GONE);
         viewAvatar.setVisibility(View.VISIBLE);
 
-        int finalHeight = getMeasuredHeight();
+        int finalHeight = screenUtils.getHeightPx() >> 1;
 
         circleAnimator = ValueAnimator.ofInt(0, finalHeight);
-        circleAnimator.setDuration(1500);
+        circleAnimator.setDuration(3000);
         circleAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
         circleAnimator.setRepeatMode(ValueAnimator.RESTART);
         circleAnimator.setRepeatCount(ValueAnimator.INFINITE);

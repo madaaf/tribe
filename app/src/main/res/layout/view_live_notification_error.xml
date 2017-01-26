@@ -9,14 +9,14 @@
         android:layout_height="@dimen/live_notification_item_height"
         >
 
-        <com.tribe.app.presentation.view.widget.avatar.AvatarLiveView
-            android:id="@+id/avatar"
-            android:layout_width="@dimen/avatar_size_smaller"
-            android:layout_height="@dimen/avatar_size_smaller"
+        <ImageView
+            android:id="@+id/imgIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_margin="@dimen/horizontal_margin_small"
             android:background="@null"
-            app:avatarLiveType="connected"
+            android:src="@drawable/picto_lock"
             />
 
         <com.tribe.app.presentation.view.widget.TextViewFont

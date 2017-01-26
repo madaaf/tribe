@@ -189,6 +189,9 @@
 	<!-- Live -->
 	<string name="live_notification_online">%1$s is online</string>
 	<string name="live_notification_jam">%1$s (%2$s) wants to jam live with you!</string>
+	<string name="live_notification_add_as_guest">Drag as guest here</string>
+	<string name="live_notification_leave">Leave to hang live with %1$s</string>
+	<string name="live_notification_swipe_dismiss">Swipe to dismiss</string>
 	
 	<!-- Tribe Recipients -->
 	<string name="tribe_recipients_title">Viewed by</string>
@@ -217,7 +220,7 @@
 	<string name="grid_support_status_error">Not sent</string>
 	<string name="grid_status_live">Live</string>
 	<string name="grid_status_connected">Online</string>
-	<string name="grid_status_last_seen">Last seen %1$s</string>
+	<string name="grid_status_last_seen">%1$s ago</string>
 	<string name="grid_ghost">Has not joined yet</string>
 	<string name="grid_friendship_recording_message">%1$d message</string>
 	<string name="grid_friendship_recording_messages">%1$d messages</string>
@@ -299,16 +302,17 @@
 	
 	<!-- Group Details -->
 	<string name="group_details_send_link">Shareable group link</string>
-	<string name="group_details_notifications_title">Notifications</string>
+	<string name="group_details_invite_link">Invite link</string>
+	<string name="group_details_notifications_title">Group notifications :bell:</string>
 	<string name="group_details_notifications_subtitle">Get notified for new\nmessages in this group</string>
-	<string name="group_details_leave_title">Leave group</string>
+	<string name="group_details_leave_title">Leave group :skull:</string>
 	<string name="group_details_leave_subtitle">You’ll need to be invited again by group members to send and receive messages in this group.</string>
 	<string name="group_details_delete_title">Delete group</string>
 	<string name="group_details_delete_subtitle">The group will disappear from every member\'s grid including unread messages.</string>
 	<string name="group_details_lang_title">Subtitles language</string>
-	<string name="group_details_settings_title">Settings</string>
+	<string name="group_details_settings_title">Group settings :pencil2:</string>
 	<string name="group_details_settings_subtitle">Identity, subtitles &amp; push notifications</string>
-	<string name="group_details_add_members_title">Add new members</string>
+	<string name="group_details_add_members_title">Add members :fire:</string>
 	<string name="group_details_add_members_subtitle">Search friends and send shareable link</string>
 	
 	<!-- Group Settings -->
@@ -525,7 +529,7 @@
 	<string name="topbar_create_group">Group</string>
 	<string name="topbar_invite_friend">Invites</string>
 	<string name="topbar_new_friend">Friend</string>
-	<string name="topbar_new_live">New</string>
+	<string name="topbar_new_live">New group</string>
 	<string name="topbar_search">Search</string>
 	<string name="topbar_invite_friend_toast">Which friend would you like to invite to chat today? :tada:</string>
 	<string name="topbar_invite_search_action">:mag: Find friends already on Tribe</string>
@@ -725,11 +729,11 @@
 	<string name="search_user_placeholder">Enter a username</string>
 	<string name="search_usernames">Result</string>
 	<string name="search_searching">Searching</string>
-	<string name="search_already_friends">People you know</string>
+	<string name="search_already_friends">People you know :purple_heart:</string>
 	<string name="search_add_friends">They are already connected on Tribe</string>
 	<string name="search_invite_friends">Your friends are missing out!</string>
-	<string name="search_suggest_friends">People you may know</string>
-	<string name="search_invite_contacts">People you should invite</string>
+	<string name="search_suggest_friends">People you may know :bee:</string>
+	<string name="search_invite_contacts">People you should invite :love_letter:</string>
 	<string name="search_no_friends_to_add">No friends connected on Tribe</string>
 	<string name="search_no_friends_to_invite">No friends connected on Tribe</string>
 	<string name="search_no_friends_to_suggest">No friends connected on Tribe</string>
@@ -772,7 +776,7 @@
 	<string name="live_invite_link">Invite\nlink</string>
 	<string name="live_drop_friend">Drop in the live!</string>
 	<string name="live_drop_friend_impossible">Only %1$d friends at the same time!</string>
-	<string name="live_join_impossible">Only %1$d friends at the same time!</string>
+	<string name="live_join_impossible">:lock: Only %1$d friends at the same time!</string>
 	<string name="live_event_added">%1$s added!</string>
 	<string name="live_event_joined">%1$s joined!</string>
 	<string name="live_event_left">%1$s left!</string>
@@ -782,4 +786,12 @@
 	
 	<!-- Blur Popup -->
 	<string name="blur_popup_dismiss">Swipe to dismiss</string>
+	
+	<!-- Profile -->
+	<string name="profile_title">Profile</string>
+	<string name="profile_user_infos">Name, avatar and more :pencil2:</string>
+	<string name="profile_invisible_mode">Allow people to add me :ghost:</string>
+	<string name="profile_rate_us">Rate us :star2:</string>
+	<string name="profile_follow_us">Follow us :metal:</string>
+	<string name="profile_logout">Logout :skull:</string>
 </resources>

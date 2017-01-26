@@ -55,7 +55,7 @@ public class LiveContainer extends FrameLayout {
 
     private final int DIFF_DOWN = 20;
     private final int SCROLL_TOLERANCE = 10;
-    private final int LONG_PRESS = 100;
+    private final int LONG_PRESS = 80;
     private final int DRAG_END_DELAY = 300;
     private final int DURATION = 300;
 
@@ -480,6 +480,7 @@ public class LiveContainer extends FrameLayout {
     ///////////////////////
 
     private class RightSpringListener extends SimpleSpringListener {
+
         @Override
         public void onSpringUpdate(Spring spring) {
             if (ViewCompat.isAttachedToWindow(LiveContainer.this)) {

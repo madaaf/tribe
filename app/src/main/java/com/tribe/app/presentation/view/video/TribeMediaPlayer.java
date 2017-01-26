@@ -74,6 +74,7 @@ public abstract class TribeMediaPlayer {
     public abstract boolean isPlaying();
 
     public static class TribeMediaPlayerBuilder {
+
         private final Context context;
         private final String media;
         private boolean mute = false;

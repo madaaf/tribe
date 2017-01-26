@@ -436,6 +436,10 @@ public class TileView extends SquareCardView {
 
     public void startDrop() {
         getDropAnimator(true).start();
+        ViewCompat.setElevation(avatar, 10);
+        ViewCompat.setElevation(viewBG, 10);
+        ViewCompat.setElevation(viewBGTransparent1, 10);
+        ViewCompat.setElevation(viewBGTransparent2, 10);
     }
 
     public void endDrop() {

@@ -17,7 +17,6 @@ import com.tribe.app.presentation.view.adapter.LiveGridAdapter;
 import com.tribe.app.presentation.view.adapter.manager.LiveLayoutManager;
 import com.tribe.app.presentation.view.adapter.viewmodel.UserLive;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 import java.util.ArrayList;
@@ -58,9 +57,6 @@ public class LiveTestActivity extends BaseActivity {
 
     @BindView(R.id.txtName)
     TextViewFont txtName;
-
-    @BindView(R.id.viewLiveNotification)
-    LiveNotificationView viewLiveNotification;
 
     // VARIABLES
     private Unbinder unbinder;
@@ -122,9 +118,6 @@ public class LiveTestActivity extends BaseActivity {
         }
 
         txtName.setText(name);
-
-        viewLiveNotification.setTitle(getString(R.string.live_notification_online, name));
-        viewLiveNotification.loadAvatar(picture);
     }
 
     private void initRecyclerView() {

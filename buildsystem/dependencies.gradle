@@ -49,16 +49,14 @@ ext {
     confettiVersion = '1.0.0'
     amplitudeVersion = '2.9.2'
     imageCropperVersion = '2.3.1'
-    appBoyVersion = '1.14+'
     firebaseRemoteVersion = '9.4.0'
     firebaseMessagingVersion = '9.4.0'
     firebaseCrashReportingVersion = '9.4.0'
     firebaseInvitesVersion = '9.4.0'
     recyclerViewAnimatorsVersion = '2.2.4'
     branchIoVersion = '2.5.2'
-    openTokVersion = '2.9.+'
     timberVersion = '4.4.0'
-    libjingleVersion = '11139@aar'
+    blurKitVersion = '1.0.0'
 
     //Testing
     robolectricVersion = '3.0'
@@ -116,13 +114,11 @@ ext {
             amplitude               : "com.amplitude:android-sdk:${amplitudeVersion}",
             imageCropper            : "com.theartofdev.edmodo:android-image-cropper:${imageCropperVersion}",
             firebaseInvites         : "com.google.firebase:firebase-invites:${firebaseInvitesVersion}",
-            appBoy                  : "com.appboy:android-sdk-ui:${appBoyVersion}",
             firebaseRemote          : "com.google.firebase:firebase-config:${firebaseRemoteVersion}",
             recyclerViewAnimators   : "jp.wasabeef:recyclerview-animators:${recyclerViewAnimatorsVersion}",
             branchIo                : "io.branch.sdk.android:library:${branchIoVersion}",
-            openTok                 : "com.opentok.android:opentok-android-sdk:${openTokVersion}",
             timber                  : "com.jakewharton.timber:timber:${timberVersion}",
-            libjingle               : "io.pristine:libjingle:${libjingleVersion}"
+            blurKit                 : "com.wonderkiln:blurkit:${blurKitVersion}"
     ]
 
     presentationTestDependencies = [
