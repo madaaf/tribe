@@ -26,22 +26,15 @@ public class WebSocketConnection {
 
     private static final int CLOSE_TIMEOUT = 1000;
 
-    @StringDef({NEW, CONNECTING, CONNECTED, DISCONNECTED, ERROR})
+    @StringDef({STATE_NEW, STATE_CONNECTING, STATE_CONNECTED, STATE_READY, STATE_DISCONNECTED, STATE_ERROR})
     public @interface WebSocketState {}
 
-    public static final String NEW = "new";
-    public static final String CONNECTING = "connecting";
-    public static final String CONNECTED = "connected";
-    public static final String DISCONNECTED = "disconnected";
-    public static final String ERROR = "error";
-
-    @StringDef({JOIN, OFFER, CANDIDATE, LEAVE})
-    public @interface WebSocketMessageType {}
-
-    public static final String JOIN = "joinR";
-    public static final String OFFER = "exchangeSdp";
-    public static final String CANDIDATE = "exchangeCandidateFrom";
-    public static final String LEAVE = "leave";
+    public static final String STATE_NEW = "new";
+    public static final String STATE_CONNECTING = "connecting";
+    public static final String STATE_CONNECTED = "connected";
+    public static final String STATE_READY = "ready";
+    public static final String STATE_DISCONNECTED = "disconnected";
+    public static final String STATE_ERROR = "error";
 
     private @WebSocketState String state;
     private WebSocketClient webSocketClient;
@@ -54,11 +47,11 @@ public class WebSocketConnection {
 
     @Inject
     public WebSocketConnection() {
-        state = NEW;
+        state = STATE_NEW;
     }
 
     public void connect(final String url) {
-        if (state == CONNECTED) {
+        if (state == STATE_CONNECTED) {
             LogUtil.e(getClass(), "WebSocket is already connected.");
             return;
         }
@@ -79,13 +72,13 @@ public class WebSocketConnection {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
                 LogUtil.d(getClass(), "WebSocket connection opened to: " + url);
-                state = CONNECTED;
+                state = STATE_CONNECTED;
                 onStateChanged.onNext(state);
             }
 
             @Override
             public void onMessage(String s) {
-                if (state == CONNECTED) {
+                if (state == STATE_CONNECTED || state == STATE_READY) {
                     onMessage.onNext(s);
                 }
             }
@@ -99,8 +92,8 @@ public class WebSocketConnection {
                     closeLock.notify();
                 }
 
-                if (state != DISCONNECTED) {
-                    state = DISCONNECTED;
+                if (state != STATE_DISCONNECTED) {
+                    state = STATE_DISCONNECTED;
                     onStateChanged.onNext(state);
                 }
             }
@@ -109,7 +102,7 @@ public class WebSocketConnection {
             public void onError(Exception e) {
                 LogUtil.e(getClass(), "Error " + e.getMessage());
 
-                state = ERROR;
+                state = STATE_ERROR;
                 onError.onNext(e.getMessage());
             }
 
@@ -137,14 +130,14 @@ public class WebSocketConnection {
     }
 
     private boolean isConnected() {
-        return state == CONNECTED;
+        return state == STATE_CONNECTED;
     }
 
     void disconnect(boolean waitForComplete) {
         LogUtil.e(getClass(), "Disconnect");
 
         if (webSocketClient != null) {
-            state = DISCONNECTED;
+            state = STATE_DISCONNECTED;
             webSocketClient.close();
 
             // Wait for WebSocket close event to prevent WS library from
@@ -178,18 +171,6 @@ public class WebSocketConnection {
 
     public @WebSocketState String getState() {
         return state;
-    }
-
-    public static @WebSocketMessageType String getWebSocketMessageType(String a) {
-        if (a.equals(JOIN)) {
-            return JOIN;
-        } else if (a.equals(OFFER)) {
-            return OFFER;
-        } else if (a.equals(CANDIDATE)) {
-            return CANDIDATE;
-        } else {
-            return LEAVE;
-        }
     }
 
     /////////////////

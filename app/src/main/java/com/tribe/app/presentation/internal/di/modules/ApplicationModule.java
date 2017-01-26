@@ -339,13 +339,14 @@ public class ApplicationModule {
     }
 
     @Provides
-    public TribeLiveOptions provideTribeLiveOptions(Context context) {
+    public TribeLiveOptions provideTribeLiveOptions(Context context, AccessToken accessToken) {
         List<IceConfig> configList = new ArrayList<>();
         configList.add(new IceConfig("turn:coturn.tribe.pm:7001", "gorst", "hero"));
 
         return new TribeLiveOptions.TribeLiveOptionsBuilder(context)
                 .wsUrl("wss://wssdev.tribe.pm:6001/api")
                 .iceServers(configList)
+                .tokenId(accessToken.getAccessToken())
                 .build();
     }
 

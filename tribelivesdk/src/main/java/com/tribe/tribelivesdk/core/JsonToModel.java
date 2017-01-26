@@ -1,10 +1,10 @@
 package com.tribe.tribelivesdk.core;
 
-import com.tribe.tribelivesdk.back.WebSocketConnection;
 import com.tribe.tribelivesdk.model.TribeCandidate;
-import com.tribe.tribelivesdk.model.TribeChallenge;
-import com.tribe.tribelivesdk.model.TribeNewPeers;
+import com.tribe.tribelivesdk.model.TribeJoinRoom;
 import com.tribe.tribelivesdk.model.TribeOffer;
+import com.tribe.tribelivesdk.model.TribeSession;
+import com.tribe.tribelivesdk.model.error.WebSocketError;
 import com.tribe.tribelivesdk.util.LogUtil;
 
 import org.json.JSONArray;
@@ -26,15 +26,15 @@ public class JsonToModel {
 
     // OBSERVABLES
     private PublishSubject<TribeOffer> onReceivedOffer = PublishSubject.create();
-    private PublishSubject<TribeChallenge> onReceivedChallenge = PublishSubject.create();
-    private PublishSubject<TribeNewPeers> onNewPeers = PublishSubject.create();
+    private PublishSubject<TribeJoinRoom> onJoinRoom = PublishSubject.create();
     private PublishSubject<TribeCandidate> onCandidate = PublishSubject.create();
+    private PublishSubject<WebSocketError> onError = PublishSubject.create();
 
     private void convertToModel(String json) throws IOException {
-        @WebSocketConnection.WebSocketMessageType String localWebSocketType = getWebSocketMessageFromJson(json);
+        @Room.WebSocketMessageType String localWebSocketType = getWebSocketMessageFromJson(json);
 
         if (localWebSocketType == null) {
-            LogUtil.e(getClass(), "WebSocket frame unhandled");
+            LogUtil.e(getClass(), "WebSocket message unhandled");
             return;
         }
 
@@ -42,7 +42,7 @@ public class JsonToModel {
         try {
             object = new JSONObject(json);
 
-            if (localWebSocketType.equals(WebSocketConnection.OFFER)) {
+            if (localWebSocketType.equals(Room.MESSAGE_OFFER)) {
                 JSONObject data = object.getJSONObject("d");
                 LogUtil.d(getClass(), "Received challenge : " + data);
                 JSONObject sdpJSON = data.getJSONObject("sdp");
@@ -50,7 +50,7 @@ public class JsonToModel {
                         SessionDescription.Type.fromCanonicalForm(sdpJSON.getString("type")),
                         sdpJSON.getString("sdp"));
                 onReceivedOffer.onNext(new TribeOffer(data.getString("from"), sdp));
-            } else if (localWebSocketType.equals(WebSocketConnection.CANDIDATE)) {
+            } else if (localWebSocketType.equals(Room.MESSAGE_CANDIDATE)) {
                 JSONObject data = object.getJSONObject("d");
                 LogUtil.d(getClass(), "Exchange candidate : " + data.toString());
                 JSONObject candidate = data.getJSONObject("candidate");
@@ -59,27 +59,35 @@ public class JsonToModel {
                         new IceCandidate(candidate.getString("sdpMid"), candidate.getInt("sdpMLineIndex"), candidate.getString("candidate"))
                 );
                 onCandidate.onNext(tribeCandidate);
-            } else if (localWebSocketType.equals(WebSocketConnection.LEAVE)) {
+            } else if (localWebSocketType.equals(Room.MESSAGE_LEAVE)) {
 
-            } else if (localWebSocketType.equals(WebSocketConnection.JOIN)) {
+            } else if (localWebSocketType.equals(Room.MESSAGE_JOIN)) {
                 JSONObject r = object.getJSONObject("r");
                 LogUtil.d(getClass(), "Join response received : " + r.toString());
-                JSONArray jsonArray = r.getJSONArray("socketIds");
-                List<String> peerIds = new ArrayList<>();
+                JSONArray jsonArray = r.getJSONArray("sessions");
+                int roomSize = r.getInt("roomSize");
+                List<TribeSession> sessionList = new ArrayList<>();
 
                 for (int i = 0; i < jsonArray.length(); i++) {
-                    String peerId = jsonArray.getString(i);
-                    peerIds.add(peerId);
+                    JSONObject session = jsonArray.getJSONObject(i);
+                    sessionList.add(new TribeSession(session.getString("socketId"), session.getString("userId")));
                 }
 
-                onNewPeers.onNext(new TribeNewPeers(peerIds));
+                onJoinRoom.onNext(new TribeJoinRoom(sessionList, roomSize));
+            } else if (localWebSocketType.equals(Room.MESSAGE_ERROR)) {
+                boolean success = object.getBoolean("success");
+
+                if (!success) {
+                    String error = object.getString("error");
+                    onError.onNext(new WebSocketError(error, "Can't connect"));
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    private @WebSocketConnection.WebSocketMessageType String getWebSocketMessageFromJson(String json) {
+    private @Room.WebSocketMessageType String getWebSocketMessageFromJson(String json) {
         JSONObject object = null;
 
         try {
@@ -87,7 +95,9 @@ public class JsonToModel {
 
             if (object.has("a")) {
                 String a = object.getString("a");
-                return WebSocketConnection.getWebSocketMessageType(a);
+                return Room.getWebSocketMessageType(a);
+            } else if (object.has("error")) {
+                return Room.MESSAGE_ERROR;
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -109,8 +119,8 @@ public class JsonToModel {
     // OBSERVABLES //
     /////////////////
 
-    public Observable<TribeNewPeers> onNewPeers() {
-        return onNewPeers;
+    public Observable<TribeJoinRoom> onJoinRoom() {
+        return onJoinRoom;
     }
 
     public Observable<TribeOffer> onReceivedOffer() {
@@ -119,5 +129,9 @@ public class JsonToModel {
 
     public Observable<TribeCandidate> onCandidate() {
         return onCandidate;
+    }
+
+    public Observable<WebSocketError> onError() {
+        return onError;
     }
 }

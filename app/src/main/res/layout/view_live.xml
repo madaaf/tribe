@@ -15,17 +15,6 @@
             android:background="@color/confetti.1"
             />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/confetti.2"
-            />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/confetti.3"
-            />
     </com.tribe.app.presentation.view.component.live.LiveRoomView>
 
     <ImageView

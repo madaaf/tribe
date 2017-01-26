@@ -6,6 +6,8 @@ import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.back.WebRTCClient;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
 import com.tribe.tribelivesdk.model.RemotePeer;
+import com.tribe.tribelivesdk.model.TribeSession;
+import com.tribe.tribelivesdk.model.error.WebSocketError;
 import com.tribe.tribelivesdk.util.LogUtil;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import com.tribe.tribelivesdk.view.PeerView;
@@ -27,15 +29,27 @@ import rx.subscriptions.CompositeSubscription;
 
 public class Room {
 
-    @StringDef({NEW, CONNECTING, CONNECTED, DISCONNECTED, ERROR})
+    @StringDef({STATE_NEW, STATE_CONNECTING, STATE_CONNECTED, STATE_READY, STATE_DISCONNECTED, STATE_ERROR})
     public @interface RoomState {}
 
-    public static final String NEW = "new";
-    public static final String CONNECTING = "connecting";
-    public static final String CONNECTED = "connected";
-    public static final String DISCONNECTED = "disconnected";
-    public static final String ERROR = "error";
+    public static final String STATE_NEW = "new";
+    public static final String STATE_CONNECTING = "connecting";
+    public static final String STATE_CONNECTED = "connected";
+    public static final String STATE_READY = "ready";
+    public static final String STATE_DISCONNECTED = "disconnected";
+    public static final String STATE_ERROR = "error";
 
+    @StringDef({MESSAGE_ERROR, MESSAGE_AUTH, MESSAGE_JOIN, MESSAGE_OFFER, MESSAGE_CANDIDATE, MESSAGE_LEAVE})
+    public @interface WebSocketMessageType {}
+
+    public static final String MESSAGE_ERROR = "error";
+    public static final String MESSAGE_AUTH = "authR";
+    public static final String MESSAGE_JOIN = "joinR";
+    public static final String MESSAGE_OFFER = "exchangeSdp";
+    public static final String MESSAGE_CANDIDATE = "exchangeCandidate";
+    public static final String MESSAGE_LEAVE = "leave";
+
+    private String roomId;
     private WebSocketConnection webSocketConnection;
     private WebRTCClient webRTCClient;
     private TribeLiveOptions options;
@@ -48,12 +62,13 @@ public class Room {
     private PublishSubject<RemotePeer> onRemotePeerAdded = PublishSubject.create();
     private PublishSubject<RemotePeer> onRemotePeerRemoved = PublishSubject.create();
     private PublishSubject<RemotePeer> onRemotePeerUpdated = PublishSubject.create();
+    private PublishSubject<WebSocketError> onError = PublishSubject.create();
 
     public Room(WebSocketConnection webSocketConnection, WebRTCClient webRTCClient, TribeLiveOptions options) {
         this.webSocketConnection = webSocketConnection;
         this.webRTCClient = webRTCClient;
         this.options = options;
-        this.state = NEW;
+        this.state = STATE_NEW;
 
         initJsonToModel();
     }
@@ -62,10 +77,10 @@ public class Room {
         jsonToModel = new JsonToModel();
 
         subscriptions.add(
-                jsonToModel.onNewPeers()
-                        .subscribe(tribeNewPeers -> {
-                            for (String peerId : tribeNewPeers.getPeerIds()) {
-                                webRTCClient.addPeerConnection(peerId, true);
+                jsonToModel.onJoinRoom()
+                        .subscribe(joinedRoom -> {
+                            for (TribeSession session : joinedRoom.getSessionList()) {
+                                webRTCClient.addPeerConnection(session, true);
                             }
                         })
         );
@@ -91,21 +106,27 @@ public class Room {
 
     public void connect() {
         webSocketConnection.connect(options.getWsUrl());
+
         subscriptions.add(webSocketConnection.onStateChanged()
                 .map(state -> {
                     LogUtil.d(getClass(), "On room state changed : " + state);
 
-                    if (state.equals(WebSocketConnection.CONNECTED)) {
-                        return CONNECTED;
-                    } else if (state.equals(WebSocketConnection.CONNECTING)) {
-                        return CONNECTING;
-                    } else if (state.equals(WebSocketConnection.DISCONNECTED)) {
-                        return DISCONNECTED;
-                    } else if (state.equals(WebSocketConnection.ERROR)) {
-                        return ERROR;
+                    if (state.equals(WebSocketConnection.STATE_CONNECTED)) {
+                        return STATE_CONNECTED;
+                    } else if (state.equals(WebSocketConnection.STATE_READY)) {
+                        return STATE_READY;
+                    } else if (state.equals(WebSocketConnection.STATE_CONNECTING)) {
+                        return STATE_CONNECTING;
+                    } else if (state.equals(WebSocketConnection.STATE_DISCONNECTED)) {
+                        return STATE_DISCONNECTED;
+                    } else if (state.equals(WebSocketConnection.STATE_ERROR)) {
+                        return STATE_ERROR;
                     }
 
-                    return CONNECTED;
+                    return STATE_CONNECTED;
+                })
+                .doOnNext(newState -> {
+                    if (newState == STATE_CONNECTED) webSocketConnection.send(getAuthPayload(options.getTokenId()).toString());
                 })
                 .subscribe(onRoomStateChanged)
         );
@@ -113,7 +134,7 @@ public class Room {
         subscriptions.add(
                 webSocketConnection.onMessage()
                         .subscribe(message -> {
-                            if (!webSocketConnection.getState().equals(WebSocketConnection.CONNECTED)) {
+                            if (!webSocketConnection.getState().equals(WebSocketConnection.STATE_CONNECTED)) {
                                 LogUtil.e(getClass(), "Got WebSocket message in non registered state.");
                             }
 
@@ -125,6 +146,8 @@ public class Room {
     }
 
     public void joinRoom(String roomId) {
+        this.roomId = roomId;
+
         webSocketConnection.send(getJoinPayload(roomId).toString());
 
         subscriptions.add(
@@ -179,6 +202,7 @@ public class Room {
     }
 
     public void leaveRoom() {
+        roomId = null;
         webRTCClient.leaveRoom();
     }
 
@@ -188,6 +212,29 @@ public class Room {
 
     public @RoomState String getState() {
         return state;
+    }
+
+    public static @WebSocketMessageType String getWebSocketMessageType(String a) {
+        if (a.equals(MESSAGE_AUTH)) {
+            return MESSAGE_AUTH;
+        } else if (a.equals(MESSAGE_JOIN)) {
+            return MESSAGE_JOIN;
+        } else if (a.equals(MESSAGE_OFFER)) {
+            return MESSAGE_OFFER;
+        } else if (a.equals(MESSAGE_CANDIDATE)) {
+            return MESSAGE_CANDIDATE;
+        } else {
+            return MESSAGE_LEAVE;
+        }
+    }
+
+    private JSONObject getAuthPayload(String tokenId) {
+        JSONObject a = new JSONObject();
+        jsonPut(a, "a", "auth");
+        JSONObject d = new JSONObject();
+        jsonPut(d, "bearer", tokenId);
+        jsonPut(a, "d", d);
+        return a;
     }
 
     private JSONObject getJoinPayload(String roomId) {
@@ -201,7 +248,7 @@ public class Room {
 
     private JSONObject getSendSdpPayload(String id, SessionDescription sessionDescription) {
         JSONObject a = new JSONObject();
-        jsonPut(a, "a", "exchangeSdpFrom");
+        jsonPut(a, "a", "exchangeSdp");
         JSONObject d = new JSONObject();
         jsonPut(d, "to", id);
         JSONObject sdp = new JSONObject();
@@ -252,5 +299,9 @@ public class Room {
 
     public Observable<RemotePeer> onRemotePeerUpdated() {
         return onRemotePeerUpdated;
+    }
+
+    public Observable<WebSocketError> onError() {
+        return onError;
     }
 }

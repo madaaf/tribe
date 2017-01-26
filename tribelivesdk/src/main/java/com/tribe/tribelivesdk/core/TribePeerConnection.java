@@ -4,6 +4,7 @@ import com.tribe.tribelivesdk.model.TribeAnswer;
 import com.tribe.tribelivesdk.model.TribeCandidate;
 import com.tribe.tribelivesdk.model.TribeMediaStream;
 import com.tribe.tribelivesdk.model.TribeOffer;
+import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.util.LogUtil;
 
 import org.webrtc.IceCandidate;
@@ -25,6 +26,7 @@ import rx.subscriptions.CompositeSubscription;
 public class TribePeerConnection {
 
     private String id;
+    private String userId;
     private PeerConnection peerConnection;
     private TribeSdpObserver sdpObserver;
     private TribePeerConnectionObserver peerConnectionObserver;
@@ -36,8 +38,9 @@ public class TribePeerConnection {
     private PublishSubject<TribeCandidate> onReceivedTribeCandidate = PublishSubject.create();
     private PublishSubject<TribeMediaStream> onReceivedMediaStream = PublishSubject.create();
 
-    public TribePeerConnection(String id, PeerConnectionFactory peerConnectionFactory, List<PeerConnection.IceServer> iceServerList, boolean isOffer) {
-        this.id = id;
+    public TribePeerConnection(TribeSession session, PeerConnectionFactory peerConnectionFactory, List<PeerConnection.IceServer> iceServerList, boolean isOffer) {
+        this.id = session.getPeerId();
+        this.userId = session.getUserId();
         this.iceServerList = iceServerList;
         this.pendingIceCandidateList = new ArrayList<>();
 

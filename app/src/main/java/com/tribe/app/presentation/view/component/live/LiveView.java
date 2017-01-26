@@ -117,17 +117,8 @@ public class LiveView extends FrameLayout {
 
     private void initUI() {
         setBackgroundColor(Color.BLACK);
-
-//        ObjectAnimator a = ObjectAnimator.ofFloat(null, View.SCALE_Y, 0, 1);
-//
-//        AnimatorSet animator = new AnimatorSet();
-//        animator.setStartDelay(0);
-//
-//        animator.playTogether(a);
-//
-//        LayoutTransition transition = new LayoutTransition();
-//        transition.setAnimator(LayoutTransition.APPEARING, animator);
-//        viewRoom.setLayoutTransition(transition);
+        //viewLocalPeer = new LocalPeerView(getContext());
+        //viewRoom.addView(viewLocalPeer);
     }
 
     private void initResources() {
@@ -143,7 +134,7 @@ public class LiveView extends FrameLayout {
                 .subscribe(state -> {
                     Timber.d("Room state change : " + state);
 
-                    if (state.equals(Room.CONNECTED)) {
+                    if (state.equals(Room.STATE_READY)) {
                         joinRoom(roomName);
                     }
                 })

@@ -15,16 +15,19 @@ public class TribeLiveOptions {
 
     private String wsUrl;
     private List<PeerConnection.IceServer> iceServers;
+    private String tokenId;
 
     private TribeLiveOptions(TribeLiveOptionsBuilder builder) {
         this.wsUrl = builder.wsUrl;
         this.iceServers = builder.iceServers;
+        this.tokenId = builder.tokenId;
     }
 
     public static class TribeLiveOptionsBuilder {
         private final Context context;
         private String wsUrl;
         private List<PeerConnection.IceServer> iceServers;
+        private String tokenId;
 
         public TribeLiveOptionsBuilder(Context context) {
             this.context = context;
@@ -42,6 +45,11 @@ public class TribeLiveOptions {
                 iceServers.add(new PeerConnection.IceServer(iceConfig.getUrl(), iceConfig.getUsername(), iceConfig.getCredentials()));
             }
 
+            return this;
+        }
+
+        public TribeLiveOptionsBuilder tokenId(String tokenId) {
+            this.tokenId = tokenId;
             return this;
         }
 
@@ -64,5 +72,13 @@ public class TribeLiveOptions {
 
     public void setIceServers(List<PeerConnection.IceServer> iceServers) {
         this.iceServers = iceServers;
+    }
+
+    public String getTokenId() {
+        return tokenId;
+    }
+
+    public void setTokenId(String tokenId) {
+        this.tokenId = tokenId;
     }
 }

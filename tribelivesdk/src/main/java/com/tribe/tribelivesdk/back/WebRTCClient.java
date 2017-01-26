@@ -8,6 +8,7 @@ import com.tribe.tribelivesdk.model.TribeAnswer;
 import com.tribe.tribelivesdk.model.TribeCandidate;
 import com.tribe.tribelivesdk.model.TribeMediaStream;
 import com.tribe.tribelivesdk.model.TribeOffer;
+import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.stream.StreamManager;
 import com.tribe.tribelivesdk.util.LogUtil;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
@@ -73,19 +74,19 @@ public class WebRTCClient {
         return peerConnectionFactory;
     }
 
-    public void addPeerConnection(String peerId, boolean isOffer) {
-        if (peerId == null) {
+    public void addPeerConnection(TribeSession session, boolean isOffer) {
+        if (session == null) {
             LogUtil.e(getClass(), "Attempt to addPeerConnection with null peerId");
             return;
         }
 
-        if (peerConnections.get(peerId) != null) {
+        if (peerConnections.get(session.getPeerId()) != null) {
             LogUtil.i(getClass(), "Client already exists - not adding client again. " + id);
             return;
         }
 
-        TribePeerConnection remotePeer = createPeerConnection(peerId, isOffer);
-        peerConnections.put(peerId, remotePeer);
+        TribePeerConnection remotePeer = createPeerConnection(session, isOffer);
+        peerConnections.put(session.getPeerId(), remotePeer);
         remotePeer.getPeerConnection().addStream(localMediaStream);
 
         subscriptions.add(remotePeer.onReadyToSendSdpOffer().subscribe(onReadyToSendSdpOffer));
@@ -95,13 +96,13 @@ public class WebRTCClient {
                 remotePeer.onReceivedMediaStream()
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnNext(tribeMediaStream -> streamManager.generateNewRemotePeer(tribeMediaStream.getId()))
-                        .doOnNext(tribeMediaStream -> streamManager.setMediaStreamForClient(peerId, tribeMediaStream.getMediaStream()))
+                        .doOnNext(tribeMediaStream -> streamManager.setMediaStreamForClient(session.getPeerId(), tribeMediaStream.getMediaStream()))
                         .subscribe(onReceivedPeer)
         );
     }
 
-    private TribePeerConnection createPeerConnection(String id, boolean isOffer) {
-        return new TribePeerConnection(id, peerConnectionFactory, iceServers, isOffer);
+    private TribePeerConnection createPeerConnection(TribeSession session, boolean isOffer) {
+        return new TribePeerConnection(session, peerConnectionFactory, iceServers, isOffer);
     }
 
     //
@@ -182,7 +183,7 @@ public class WebRTCClient {
 
         if (tribePeerConnection == null) {
             LogUtil.d(getClass(), "Peer is null, creating it");
-            addPeerConnection(peerId, false);
+            addPeerConnection(new TribeSession(peerId, peerId), false);
             tribePeerConnection = peerConnections.get(peerId);
         }
 
