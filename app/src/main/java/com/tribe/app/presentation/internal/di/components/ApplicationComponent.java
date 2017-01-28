@@ -5,7 +5,9 @@ import android.content.SharedPreferences;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.f2prateek.rx.preferences.Preference;
+import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
+import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.job.BaseJob;
 import com.tribe.app.data.network.job.DeleteContactsABJob;
@@ -15,7 +17,6 @@ import com.tribe.app.data.network.job.SynchroContactsJob;
 import com.tribe.app.data.network.job.UpdateFriendshipJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.data.realm.AccessToken;
-import com.tribe.app.data.repository.tribe.LiveDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.domain.entity.User;
@@ -181,6 +182,7 @@ public interface ApplicationComponent {
     void inject(DeleteContactsFBJob deleteContactsFBJob);
 
     // SERVICES
+    void inject(WSService wsService);
 
     //Exposed to sub-graphs.
     Context context();
@@ -193,8 +195,6 @@ public interface ApplicationComponent {
 
     DiskUserDataRepository diskUserRepository();
 
-    LiveDataRepository cloudTribeRepository();
-
     TribeAuthorizer tribeAuthorizer();
 
     PhoneUtils phoneUtils();
@@ -206,6 +206,8 @@ public interface ApplicationComponent {
     User currentUser();
 
     UserCache userCache();
+
+    LiveCache liveCache();
 
     JobManager jobManager();
 

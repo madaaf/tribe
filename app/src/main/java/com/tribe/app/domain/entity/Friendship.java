@@ -18,6 +18,7 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
     private boolean isSelected;
     private boolean shouldAnimateAdd;
     private String status;
+    private boolean is_live;
 
     public Friendship(String id) {
         this.id = id;
@@ -101,16 +102,6 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
     }
 
     @Override
-    public boolean isLive() {
-        return friend.isLive();
-    }
-
-    @Override
-    public boolean isConnected() {
-        return friend.isConnected();
-    }
-
-    @Override
     public Date getLastOnline() {
         return friend.getLastOnline();
     }
@@ -133,6 +124,20 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
 
     public boolean isBlockedOrHidden() {
         return status != null && !status.equals(FriendshipRealm.DEFAULT);
+    }
+
+    @Override
+    public boolean isLive() {
+        return is_live;
+    }
+
+    @Override
+    public boolean isOnline() {
+        return friend != null && friend.isOnline();
+    }
+
+    public void setIsLive(boolean isLive) {
+        this.is_live = isLive;
     }
 
     @Override

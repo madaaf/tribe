@@ -363,10 +363,11 @@ public class TileView extends SquareCardView {
         txtName.setText(recipient.getDisplayName());
 
         if (isGrid()) {
-            if (recipient.isLive()) {
-                ((AvatarLiveView) avatar).setType(AvatarLiveView.LIVE);
-                txtStatus.setText(R.string.grid_status_live);
-            } else if (recipient.isConnected()) {
+//            if (recipient.isLive()) {
+//                ((AvatarLiveView) avatar).setType(AvatarLiveView.LIVE);
+//                txtStatus.setText(R.string.grid_status_live);
+//            } else
+            if (recipient.isOnline()) {
                 ((AvatarLiveView) avatar).setType(AvatarLiveView.CONNECTED);
                 txtStatus.setText(R.string.grid_status_connected);
             } else {
@@ -384,10 +385,11 @@ public class TileView extends SquareCardView {
                 }
             }
         } else {
-            if (recipient.isLive()) {
-                imgInd.setVisibility(View.VISIBLE);
-                imgInd.setImageResource(R.drawable.picto_live);
-            } else if (recipient.isConnected()) {
+//            if (recipient.isLive()) {
+//                imgInd.setVisibility(View.VISIBLE);
+//                imgInd.setImageResource(R.drawable.picto_live);
+//            } else
+            if (recipient.isOnline()) {
                 imgInd.setVisibility(View.VISIBLE);
                 imgInd.setImageResource(R.drawable.picto_online);
             } else {

@@ -29,6 +29,7 @@ public class FriendshipRealm extends RealmObject implements RecipientRealmInterf
     private UserRealm friend;
     private Date created_at;
     private Date updated_at;
+    private boolean is_live;
 
     public String getId() {
         return id;
@@ -105,5 +106,13 @@ public class FriendshipRealm extends RealmObject implements RecipientRealmInterf
 
     public boolean isHidden() {
         return status != null && status.equals(FriendshipRealm.HIDDEN);
+    }
+
+    public boolean isLive() {
+        return is_live;
+    }
+
+    public void setLive(boolean isLive) {
+        this.is_live = isLive;
     }
 }

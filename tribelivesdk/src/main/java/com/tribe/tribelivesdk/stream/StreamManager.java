@@ -96,7 +96,7 @@ public final class StreamManager {
         localStreamView.dispose();
     }
 
-    public Observable<ObservableRxHashMap.RxHashMap<RemotePeer>> onRemotePeersChanged() {
+    public Observable<ObservableRxHashMap.RxHashMap<String, RemotePeer>> onRemotePeersChanged() {
         return remotePeerMap.getObservable();
     }
 }

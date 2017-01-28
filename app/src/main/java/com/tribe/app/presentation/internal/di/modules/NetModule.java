@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.ConditionVariable;
 import android.util.Base64;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
@@ -19,6 +20,7 @@ import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.FileApi;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
+import com.tribe.app.data.network.authorizer.Draft_Graphql;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.deserializer.CollectionAdapter;
 import com.tribe.app.data.network.deserializer.CreateFriendshipDeserializer;
@@ -52,6 +54,9 @@ import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
+import com.tribe.tribelivesdk.back.WebSocketConnection;
+
+import org.java_websocket.client.DefaultSSLWebSocketClientFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,19 +65,25 @@ import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Named;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 import dagger.Module;
 import dagger.Provides;
@@ -81,6 +92,7 @@ import okhttp3.Cache;
 import okhttp3.CertificatePinner;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -89,6 +101,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 @Module(
     includes = DataModule.class
@@ -98,6 +111,26 @@ public class NetModule {
     static final int DISK_CACHE_SIZE = (int) DecimalByteUnit.MEGABYTES.toBytes(50);
     static final ConditionVariable LOCK = new ConditionVariable(true);
     static final AtomicBoolean isRefreshing = new AtomicBoolean(false);
+
+    @Provides
+    @PerApplication
+    @Named("simpleGson")
+    Gson provideSimpleGson(@Named("utcSimpleDate") SimpleDateFormat utcSimpleDate) {
+        return new GsonBuilder()
+                .setExclusionStrategies(new ExclusionStrategy() {
+                    @Override
+                    public boolean shouldSkipField(FieldAttributes f) {
+                        return f.getDeclaringClass().equals(RealmObject.class);
+                    }
+
+                    @Override
+                    public boolean shouldSkipClass(Class<?> clazz) {
+                        return false;
+                    }
+                })
+                .registerTypeAdapter(Date.class, new DateDeserializer(utcSimpleDate))
+                .create();
+    }
 
     @Provides
     @PerApplication
@@ -286,12 +319,12 @@ public class NetModule {
             }
         });
 
-//        if (BuildConfig.DEBUG) {
-//            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-//            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-//            httpClientBuilder.addInterceptor(loggingInterceptor);
-//            httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
-//        }
+        if (BuildConfig.DEBUG) {
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+            httpClientBuilder.addInterceptor(loggingInterceptor);
+            httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+        }
 
         return new Retrofit.Builder()
                 .baseUrl(BuildConfig.TRIBE_API)
@@ -312,12 +345,12 @@ public class NetModule {
                 .readTimeout(5, TimeUnit.MINUTES)
                 .writeTimeout(5, TimeUnit.MINUTES);
 
-//        if (BuildConfig.DEBUG) {
-//            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-//            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-//            httpClientBuilder.addInterceptor(loggingInterceptor);
-//            httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
-//        }
+        if (BuildConfig.DEBUG) {
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+            httpClientBuilder.addInterceptor(loggingInterceptor);
+            httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+        }
 
         return new Retrofit.Builder()
             .baseUrl(BuildConfig.TRIBE_API)
@@ -354,12 +387,12 @@ public class NetModule {
             return chain.proceed(request);
         });
 
-//        if (BuildConfig.DEBUG) {
-//            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-//            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-//            httpClientBuilder.addInterceptor(loggingInterceptor);
-//            httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
-//        }
+        if (BuildConfig.DEBUG) {
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+            httpClientBuilder.addInterceptor(loggingInterceptor);
+            httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+        }
 
         return new Retrofit.Builder()
                 .baseUrl(BuildConfig.TRIBE_AUTH)
@@ -381,9 +414,52 @@ public class NetModule {
     }
 
     private void appendUserAgent(Context context, Request.Builder requestBuilder) {
+        requestBuilder.header("User-Agent", getUserAgent(context));
+    }
+
+    private String getUserAgent(Context context) {
         String agent = FirebaseRemoteConfig.getInstance() != null ? FirebaseRemoteConfig.getInstance().getString(Constants.FIREBASE_AGENT_VERSION) : "";
-        requestBuilder.header("User-Agent", context.getPackageName() + "/"
+        return context.getPackageName() + "/"
                 + DeviceUtils.getVersionCode(context) + " android/" + Build.VERSION.RELEASE + " okhttp/3.2"
-                + " Agent/" + agent);
+                + " Agent/" + agent;
+    }
+
+    @Provides
+    @Named("webSocketApi")
+    @PerApplication
+    WebSocketConnection provideWebSocketApi(Context context, TribeAuthorizer tribeAuthorizer) {
+        SSLContext sslContext = null;
+
+        try {
+            sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, new TrustManager[] { new X509TrustManager() {
+                public X509Certificate[] getAcceptedIssuers() {
+                    Timber.d("getAcceptedIssuers =============");
+                    return null;
+                }
+
+                public void checkClientTrusted(X509Certificate[] certs,
+                                               String authType) {
+                    Timber.d("checkClientTrusted =============");
+                }
+
+                public void checkServerTrusted(X509Certificate[] certs,
+                                               String authType) {
+                    Timber.d("checkServerTrusted =============");
+                }
+            } }, new SecureRandom());
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-type", "application/json");
+        headers.put("User-Agent", getUserAgent(context));
+        headers.put("Authorization", tribeAuthorizer.getAccessToken().getTokenType()
+                + " " + tribeAuthorizer.getAccessToken().getAccessToken());
+
+        return new WebSocketConnection(new DefaultSSLWebSocketClientFactory(sslContext), new Draft_Graphql(), headers);
     }
 }

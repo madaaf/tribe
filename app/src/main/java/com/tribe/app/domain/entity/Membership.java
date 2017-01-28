@@ -56,7 +56,7 @@ public class Membership extends Recipient {
     }
 
     @Override
-    public boolean isConnected() {
+    public boolean isOnline() {
         return false;
     }
 

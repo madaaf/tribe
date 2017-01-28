@@ -57,6 +57,7 @@
             picture
             created_at
             push_notif
+            is_online
         }
     </string>
 
@@ -370,6 +371,22 @@
     <string name="online.notification" translatable="false">
         mutation {
             runOnlinePush
+        }
+    </string>
+
+    <string name="subscription" translatable="false">
+        subscription { %1$s }
+    </string>
+
+    <string name="subscription.updatedUser" translatable="false">
+        %1$s : userUpdated ( id : \"%2$s\" ) {
+            ...UserInfos
+        }
+    </string>
+
+    <string name="subscription.updatedGroup" translatable="false">
+        %1$s : groupUpdated ( id : \"%2$s\" ) {
+            ...GroupInfos
         }
     </string>
 </resources>

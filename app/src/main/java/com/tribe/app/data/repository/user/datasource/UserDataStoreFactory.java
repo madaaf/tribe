@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.data.cache.ContactCache;
+import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
@@ -29,6 +30,7 @@ public class UserDataStoreFactory {
 
     private final Context context;
     private final UserCache userCache;
+    private final LiveCache liveCache;
     private final ContactCache contactCache;
     private final RxContacts rxContacts;
     private final RxFacebook rxFacebook;
@@ -41,7 +43,7 @@ public class UserDataStoreFactory {
     private final SimpleDateFormat utcSimpleDate;
 
     @Inject
-    public UserDataStoreFactory(Context context, UserCache userCache,
+    public UserDataStoreFactory(Context context, UserCache userCache, LiveCache liveCache,
                                 ContactCache contactCache, RxContacts rxContacts, RxFacebook rxFacebook,
                                 TribeApi tribeApi, LoginApi loginApi, AccessToken accessToken,
                                 Installation installation, ReactiveLocationProvider reactiveLocationProvider,
@@ -54,6 +56,7 @@ public class UserDataStoreFactory {
 
         this.context = context.getApplicationContext();
         this.userCache = userCache;
+        this.liveCache = liveCache;
         this.contactCache = contactCache;
         this.rxContacts = rxContacts;
         this.rxFacebook = rxFacebook;
@@ -69,7 +72,7 @@ public class UserDataStoreFactory {
     /**
      * Create {@link UserDataStore}
      */
-    public UserDataStore createDiskDataStore() { return new DiskUserDataStore(userCache, accessToken, contactCache); }
+    public UserDataStore createDiskDataStore() { return new DiskUserDataStore(userCache, liveCache, accessToken, contactCache); }
 
     /**
      * Create {@link UserDataStore} to retrieve data from the Cloud.

@@ -41,6 +41,7 @@ public class FriendshipRealmDataMapper {
             friendship.setStatus(friendshipRealm.getStatus());
             friendship.setCreatedAt(friendshipRealm.getCreatedAt());
             friendship.setUpdatedAt(friendshipRealm.getUpdatedAt());
+            friendship.setIsLive(friendshipRealm.isLive());
         }
 
         return friendship;
@@ -84,6 +85,7 @@ public class FriendshipRealmDataMapper {
             friendshipRealm.setStatus(friendship.getStatus());
             friendshipRealm.setCreatedAt(friendship.getCreatedAt());
             friendshipRealm.setUpdatedAt(friendship.getUpdatedAt());
+            friendshipRealm.setLive(friendship.isLive());
         }
 
         return friendshipRealm;

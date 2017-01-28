@@ -20,6 +20,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
+import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
@@ -143,6 +144,8 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         initTopBar();
         initRemoteConfig();
         manageDeepLink(getIntent());
+
+        startService(WSService.getCallingIntent(this));
     }
 
     @Override
@@ -204,6 +207,9 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
         recyclerViewFriends.setAdapter(null);
 
         if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+
+        Intent i = new Intent(this, WSService.class);
+        stopService(i);
 
         super.onDestroy();
     }

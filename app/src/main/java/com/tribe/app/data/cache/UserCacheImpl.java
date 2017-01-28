@@ -64,8 +64,7 @@ public class UserCacheImpl implements UserCache {
                 userDB.setTribeSave(userRealm.isTribeSave());
                 userDB.setInvisibleMode(userRealm.isInvisibleMode());
                 userDB.setPushNotif(userRealm.isPushNotif());
-                userDB.setLive(userRealm.isLive());
-                userDB.setConnected(userRealm.isConnected());
+                userDB.setIsOnline(userRealm.isOnline());
                 userDB.setLastOnline(userRealm.getLastOnline());
 
                 if (userRealm.getLocation() != null) {

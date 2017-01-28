@@ -42,20 +42,10 @@ public abstract class Recipient implements Serializable {
         int res = ((Boolean) two.isLive()).compareTo(one.isLive());
         if (res != 0) return res;
 
-        res = ((Boolean) two.isConnected()).compareTo(one.isConnected());
-        if (res != 0) return res;
+        //res = ((Boolean) two.isConnected()).compareTo(one.isConnected());
+        //if (res != 0) return res;
 
         return DateUtils.compareDateNullSafe(two.getLastOnline(), one.getLastOnline());
-
-//        if (one.getUpdatedAt() == null ^ two.getUpdatedAt() == null) {
-//            return (one.getUpdatedAt() == null) ? 1 : -1;
-//        }
-//
-//        if (one.getUpdatedAt() == null && two.getUpdatedAt() == null) {
-//            return 0;
-//        }
-//
-//        return two.getUpdatedAt().compareTo(one.getUpdatedAt());
     }
 
     public abstract String getDisplayName();
@@ -66,7 +56,7 @@ public abstract class Recipient implements Serializable {
     public abstract String getId();
     public abstract Date getUpdatedAt();
     public abstract boolean isLive();
-    public abstract boolean isConnected();
+    public abstract boolean isOnline();
     public abstract Date getLastOnline();
 
     @Override

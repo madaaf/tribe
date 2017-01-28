@@ -219,7 +219,7 @@ public class WebRTCClient {
         return onReceivedTribeCandidate;
     }
 
-    public Observable<ObservableRxHashMap.RxHashMap<RemotePeer>> onRemotePeersChanged() {
+    public Observable<ObservableRxHashMap.RxHashMap<String, RemotePeer>> onRemotePeersChanged() {
         return streamManager.onRemotePeersChanged();
     }
 }

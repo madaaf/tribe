@@ -7,6 +7,8 @@ import com.birbit.android.jobqueue.config.Configuration;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.ContactCacheImpl;
+import com.tribe.app.data.cache.LiveCache;
+import com.tribe.app.data.cache.LiveCacheImpl;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.cache.UserCacheImpl;
 import com.tribe.app.data.executor.JobExecutor;
@@ -15,7 +17,6 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
-import com.tribe.app.data.repository.tribe.LiveDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.data.repository.user.contact.RxContacts;
@@ -23,7 +24,6 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
-import com.tribe.app.domain.interactor.tribe.LiveRepository;
 import com.tribe.app.domain.interactor.user.CloudUpdateFriendship;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.RefreshHowManyFriends;
@@ -31,9 +31,6 @@ import com.tribe.app.domain.interactor.user.SynchroContactList;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.UIThread;
-import com.tribe.app.presentation.utils.preferences.AddressBook;
-import com.tribe.app.presentation.utils.preferences.Theme;
-import com.tribe.app.presentation.utils.preferences.TutorialState;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.FileUtils;
@@ -41,6 +38,9 @@ import com.tribe.app.presentation.utils.analytics.AnalyticsManager;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
+import com.tribe.app.presentation.utils.preferences.AddressBook;
+import com.tribe.app.presentation.utils.preferences.Theme;
+import com.tribe.app.presentation.utils.preferences.TutorialState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
 import com.tribe.app.presentation.view.utils.ImageUtils;
@@ -119,6 +119,12 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
+    LiveCache provideLiveCache(LiveCacheImpl liveCache) {
+        return liveCache;
+    }
+
+    @Provides
+    @Singleton
     ContactCache provideContactCache(ContactCacheImpl contactCache) {
         return contactCache;
     }
@@ -127,12 +133,6 @@ public class ApplicationModule {
     @Singleton
     RxContacts provideRxContacts(Context context, User user, PhoneUtils phoneUtils, @AddressBook Preference<Boolean> addressBook) {
         return new RxContacts(context, user, phoneUtils, addressBook);
-    }
-
-    @Provides
-    @Singleton
-    LiveRepository provideCloudTribeRepository(LiveDataRepository tribeDataRepository) {
-        return tribeDataRepository;
     }
 
     @Provides

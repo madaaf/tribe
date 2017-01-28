@@ -32,8 +32,7 @@ public class User implements Serializable {
     private boolean invisible_mode;
     private boolean push_notif;
 
-    private boolean live = false;
-    private boolean connected = false;
+    private boolean is_online = false;
     private Date last_online;
 
     private boolean isFriend = false;
@@ -198,20 +197,12 @@ public class User implements Serializable {
         return friendshipList;
     }
 
-    public boolean isLive() {
-        return live;
+    public boolean isOnline() {
+        return is_online;
     }
 
-    public void setLive(boolean live) {
-        this.live = live;
-    }
-
-    public boolean isConnected() {
-        return connected;
-    }
-
-    public void setConnected(boolean connected) {
-        this.connected = connected;
+    public void setIsOnline(boolean isOnline) {
+        this.is_online = isOnline;
     }
 
     public Date getLastOnline() {

@@ -199,6 +199,11 @@
             android:theme="@style/AppTheme.BlackLight"
             />
 
+        <service
+            android:name=".data.network.WSService"
+            >
+        </service>
+
         <service android:name=".presentation.service.TribeFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

@@ -27,7 +27,8 @@ public class UserLiveCoInviteAdapterDelegate extends RecipientGridAdapterDelegat
                 && !items.get(position).getSubId().equals(Constants.SUPPORT_ID)
                 && !items.get(position).getSubId().equals(Recipient.ID_HEADER)
                 && !items.get(position).getSubId().equals(Recipient.ID_EMPTY)
-                && (items.get(position).isLive() || items.get(position).isConnected());
+                && (items.get(position).isOnline());
+                //|| items.get(position).isConnected());
     }
 
     @NonNull

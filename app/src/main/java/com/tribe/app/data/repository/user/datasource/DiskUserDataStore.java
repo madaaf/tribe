@@ -3,6 +3,7 @@ package com.tribe.app.data.repository.user.datasource;
 import android.util.Pair;
 
 import com.tribe.app.data.cache.ContactCache;
+import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
@@ -20,15 +21,17 @@ import com.tribe.app.domain.entity.GroupEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import rx.Observable;
 
 /**
  * {@link UserDataStore} implementation based on connections to the database.
  */
-public class DiskUserDataStore implements UserDataStore {
+public class DiskUserDataStore implements UserDataStore, LiveDataStore {
 
     private final UserCache userCache;
+    private final LiveCache liveCache;
     private final ContactCache contactCache;
     private final AccessToken accessToken;
 
@@ -38,8 +41,9 @@ public class DiskUserDataStore implements UserDataStore {
      * @param accessToken A {@link AccessToken} that contains the current user id.
      * @param contactCache A {@link ContactCache} that contains the cached data of the user's possible contacts
      */
-    public DiskUserDataStore(UserCache userCache, AccessToken accessToken, ContactCache contactCache) {
+    public DiskUserDataStore(UserCache userCache, LiveCache liveCache, AccessToken accessToken, ContactCache contactCache) {
         this.userCache = userCache;
+        this.liveCache = liveCache;
         this.accessToken = accessToken;
         this.contactCache = contactCache;
     }
@@ -215,5 +219,15 @@ public class DiskUserDataStore implements UserDataStore {
     @Override
     public Observable<Void> sendOnlineNotification() {
         return null;
+    }
+
+    @Override
+    public Observable<Map<String, Boolean>> onlineMap() {
+        return liveCache.onlineMap();
+    }
+
+    @Override
+    public Observable<Map<String, Boolean>> liveMap() {
+        return liveCache.liveMap();
     }
 }

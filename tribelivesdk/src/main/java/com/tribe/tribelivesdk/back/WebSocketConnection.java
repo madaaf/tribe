@@ -4,19 +4,17 @@ import android.support.annotation.StringDef;
 
 import com.tribe.tribelivesdk.util.LogUtil;
 
-import org.java_websocket.client.DefaultSSLWebSocketClientFactory;
 import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.drafts.Draft;
 import org.java_websocket.drafts.Draft_17;
 import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.net.ssl.SSLContext;
 
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -24,6 +22,7 @@ import rx.subjects.PublishSubject;
 @Singleton
 public class WebSocketConnection {
 
+    private static final int CONNECT_TIMEOUT = 1000;
     private static final int CLOSE_TIMEOUT = 1000;
 
     @StringDef({STATE_NEW, STATE_CONNECTING, STATE_CONNECTED, STATE_READY, STATE_DISCONNECTED, STATE_ERROR})
@@ -38,6 +37,9 @@ public class WebSocketConnection {
 
     private @WebSocketState String state;
     private WebSocketClient webSocketClient;
+    private WebSocketClient.WebSocketClientFactory clientFactory;
+    private Draft draft;
+    private Map<String, String> headers;
     private final Object closeLock = new Object();
     private boolean close;
 
@@ -46,8 +48,11 @@ public class WebSocketConnection {
     private PublishSubject<String> onError = PublishSubject.create();
 
     @Inject
-    public WebSocketConnection() {
+    public WebSocketConnection(WebSocketClient.WebSocketClientFactory clientFactory, Draft draft, Map<String, String> headers) {
         state = STATE_NEW;
+        this.draft = draft;
+        this.clientFactory = clientFactory;
+        this.headers = headers;
     }
 
     public void connect(final String url) {
@@ -68,7 +73,9 @@ public class WebSocketConnection {
 
         LogUtil.d(getClass(), "Connecting WebSocket to: " + url);
 
-        webSocketClient = new WebSocketClient(uri, new Draft_17()) {
+        if (draft == null) draft = new Draft_17();
+
+        webSocketClient = new WebSocketClient(uri, draft, this.headers, CONNECT_TIMEOUT) {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
                 LogUtil.d(getClass(), "WebSocket connection opened to: " + url);
@@ -112,20 +119,7 @@ public class WebSocketConnection {
             }
         };
 
-        SSLContext sslContext = null;
-
-        try {
-            // Will use java's default key and trust store which
-            // is sufficient unless you deal with self-signed certificates
-            sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(null, null, null);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (KeyManagementException e) {
-            e.printStackTrace();
-        }
-
-        webSocketClient.setWebSocketFactory(new DefaultSSLWebSocketClientFactory(sslContext));
+        webSocketClient.setWebSocketFactory(clientFactory);
         webSocketClient.connect();
     }
 
@@ -133,8 +127,8 @@ public class WebSocketConnection {
         return state == STATE_CONNECTED;
     }
 
-    void disconnect(boolean waitForComplete) {
-        LogUtil.e(getClass(), "Disconnect");
+    public void disconnect(boolean waitForComplete) {
+        LogUtil.d(getClass(), "Disconnect");
 
         if (webSocketClient != null) {
             state = STATE_DISCONNECTED;

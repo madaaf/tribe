@@ -153,10 +153,10 @@ public class AvatarView extends RoundedCornerLayout implements Avatar {
         if (!StringUtils.isEmpty(url) && !url.equals(getContext().getString(R.string.no_profile_picture_url))) {
             setTag(R.id.profile_picture, url);
 
-            // TODO RESET .load(url)
             Glide.with(getContext())
-                    .load(R.drawable.nicolascage)
+                    .load(url)
                     .override(avatarSize, avatarSize)
+                    .error(R.drawable.picto_placeholder_avatar)
                     .centerCrop()
                     .crossFade()
                     .into(imgAvatar);

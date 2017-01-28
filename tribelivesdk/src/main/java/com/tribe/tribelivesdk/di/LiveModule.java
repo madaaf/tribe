@@ -8,7 +8,13 @@ import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.back.WebRTCClient;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
 
+import org.java_websocket.client.DefaultSSLWebSocketClientFactory;
+
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+
 import javax.inject.Singleton;
+import javax.net.ssl.SSLContext;
 
 import dagger.Module;
 import dagger.Provides;
@@ -23,7 +29,20 @@ public class LiveModule {
     @Provides
     @Singleton
     public WebSocketConnection provideWebSocketConnection() {
-        return new WebSocketConnection();
+        SSLContext sslContext = null;
+
+        try {
+            // Will use java's default key and trust store which
+            // is sufficient unless you deal with self-signed certificates
+            sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, null, null);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        }
+
+        return new WebSocketConnection(new DefaultSSLWebSocketClientFactory(sslContext), null, null);
     }
 
     @Provides
