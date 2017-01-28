@@ -8,9 +8,9 @@ import java.util.regex.Pattern;
 public class EmojiParser {
 
     private static final Map<String, String> IEmojiMap;
-    static
-    {
-    	IEmojiMap = new HashMap<>();
+
+    static {
+        IEmojiMap = new HashMap<>();
         IEmojiMap.put(":airplane:", "\u2708");
         IEmojiMap.put(":briefcase:", "\uD83D\uDCBC");
         IEmojiMap.put(":family:", "\uD83D\uDC6A");
@@ -45,26 +45,33 @@ public class EmojiParser {
         IEmojiMap.put(":wave:", "\uD83D\uDC4B");
         IEmojiMap.put(":heart:", "\u2764");
         IEmojiMap.put(":broken_heart:", "\uD83D\uDC94");
+        // TODO TIAGO
+        IEmojiMap.put(":pencil2:", "\uD83D\uDC94");
+        IEmojiMap.put(":ghost:", "\uD83D\uDD17");
+        IEmojiMap.put(":star2:", "\uD83D\uDCAB");
+        IEmojiMap.put(":metal:", "\uD83D\uDCAA");
+        IEmojiMap.put(":skull:", "\uD83D\uDE14");
     }
 
     /**
      * Return the text with emoticons changed to android code
+     *
      * @param text
      * @return
      */
-    public static String demojizedText(String text){
-    	String returnTextString = text;
+    public static String demojizedText(String text) {
+        String returnTextString = text;
 
         // Pattern to match
-    	Pattern pattern = Pattern.compile("(\\:[^\\:]+\\:)");
+        Pattern pattern = Pattern.compile("(\\:[^\\:]+\\:)");
         Matcher matcher = pattern.matcher(text);
         while (matcher.find()) {
-        	String found = matcher.group();
-        	if (IEmojiMap.get(found) == null) continue;
-        	returnTextString = returnTextString.replace(found, IEmojiMap.get(found));
+            String found = matcher.group();
+            if (IEmojiMap.get(found) == null) continue;
+            returnTextString = returnTextString.replace(found, IEmojiMap.get(found));
         }
 
-    	// Returning text
-    	return returnTextString;
+        // Returning text
+        return returnTextString;
     }
 }

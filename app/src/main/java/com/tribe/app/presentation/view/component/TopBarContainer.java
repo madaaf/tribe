@@ -42,6 +42,7 @@ public class TopBarContainer extends FrameLayout {
     private PublishSubject<Void> clickSettings = PublishSubject.create();
     private PublishSubject<Void> clickNew = PublishSubject.create();
     private PublishSubject<String> onSearch = PublishSubject.create();
+    private PublishSubject<Void> onClickProfile = PublishSubject.create();
 
     public TopBarContainer(Context context) {
         super(context);
@@ -86,7 +87,8 @@ public class TopBarContainer extends FrameLayout {
     private void initUI() {
         recyclerView.setOnTouchListener((v, event) -> {
             int dy = recyclerView.computeVerticalScrollOffset();
-            if (event.getY() < topBarView.getHeight() && dy < (topBarView.getHeight() >> 1)) return true;
+            if (event.getY() < topBarView.getHeight() && dy < (topBarView.getHeight() >> 1))
+                return true;
 
             return super.onTouchEvent(event);
         });
@@ -110,6 +112,11 @@ public class TopBarContainer extends FrameLayout {
         subscriptions.add(
                 topBarView.onSearch()
                         .subscribe(onSearch)
+        );
+
+        subscriptions.add(
+                topBarView.onClickProfile()
+                        .subscribe(onClickProfile)
         );
     }
 
@@ -158,5 +165,10 @@ public class TopBarContainer extends FrameLayout {
         return clickNew;
     }
 
-    public Observable<String> onSearch() { return onSearch; }
+    public Observable<String> onSearch() {
+        return onSearch;
+    }
+    public Observable<Void> onClickProfile() {
+        return onClickProfile;
+    }
 }

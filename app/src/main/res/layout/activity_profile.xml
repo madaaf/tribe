@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/shape_rect_white_rounded_top"
+    tools:context=".presentation.view.activity.GroupActivity">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_bar_height_small">
+
+        <com.github.rahatarmanahmed.cpv.CircularProgressView
+            android:id="@+id/progressView"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginEnd="@dimen/horizontal_margin_small"
+            android:visibility="gone"
+            app:cpv_animAutostart="true"
+            app:cpv_color="@color/blue.text"
+            app:cpv_indeterminate="true"
+            app:cpv_thickness="2dp" />
+
+    </FrameLayout>
+
+
+    <com.solera.defrag.ViewStack
+        android:id="@+id/viewNavigatorStack"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/top_bar_height" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_size"
+        android:layout_marginTop="@dimen/top_bar_height"
+        android:background="@color/grey.light" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_bar_height">
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtTitle"
+            style="@style/Title.1.Black"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center" />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtTitleTwo"
+            style="@style/Title.1.Black"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/txtBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|center_vertical"
+            android:layout_marginStart="@dimen/horizontal_margin"
+            android:clickable="true"
+            android:gravity="center"
+            android:src="@drawable/picto_back"
+            android:text="@string/action_back" />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtAction"
+            style="@style/Title.2.Blue"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginRight="@dimen/horizontal_margin"
+            android:gravity="right|center_vertical"
+            android:visibility="gone" />
+
+    </FrameLayout>
+</FrameLayout>

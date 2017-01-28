@@ -339,7 +339,13 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
         subscriptions.add(
                 topBarContainer.onSearch()
-                    .subscribe(s -> homeGridAdapter.filterList(s))
+                        .subscribe(s -> homeGridAdapter.filterList(s)));
+
+        subscriptions.add(
+                topBarContainer.onClickProfile()
+                        .subscribe(aVoid -> {
+                            navigateToProfile();
+                        })
         );
     }
 
@@ -469,6 +475,10 @@ public class HomeActivity extends BaseActivity implements HasComponent<UserCompo
 
     private void navigateToSettings() {
         navigator.navigateToSettings(HomeActivity.this, SETTINGS_RESULT);
+    }
+
+    private void navigateToProfile() {
+        navigator.navigateToProfile(HomeActivity.this);
     }
 
     private void navigateToSearch(String username) {

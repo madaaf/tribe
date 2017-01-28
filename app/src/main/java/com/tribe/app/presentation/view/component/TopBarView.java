@@ -83,6 +83,7 @@ public class TopBarView extends FrameLayout {
     private PublishSubject<Void> clickSettings = PublishSubject.create();
     private PublishSubject<Void> clickNew = PublishSubject.create();
     private PublishSubject<String> onSearch = PublishSubject.create();
+    private PublishSubject<Void> clickProfile = PublishSubject.create();
 
     public TopBarView(Context context) {
         super(context);
@@ -204,6 +205,11 @@ public class TopBarView extends FrameLayout {
         clickSettings.onNext(null);
     }
 
+    @OnClick(R.id.viewAvatar)
+    void launchProfileSettings() {
+        clickProfile.onNext(null);
+    }
+
     @OnClick(R.id.btnNew)
     void launchInvites() {
         clickNew.onNext(null);
@@ -315,8 +321,16 @@ public class TopBarView extends FrameLayout {
         return clickSettings;
     }
 
-    public Observable<Void> onClickNew() { return clickNew; }
+    public Observable<Void> onClickNew() {
+        return clickNew;
+    }
 
-    public Observable<String> onSearch() { return onSearch; }
+    public Observable<String> onSearch() {
+        return onSearch;
+    }
+
+    public Observable<Void> onClickProfile() {
+        return clickProfile;
+    }
 }
 

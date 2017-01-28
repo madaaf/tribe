@@ -18,6 +18,7 @@ import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.LiveTestActivity;
 import com.tribe.app.presentation.view.activity.PickYourFriendsActivity;
+import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.SearchUserActivity;
 import com.tribe.app.presentation.view.activity.SettingsActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
@@ -28,6 +29,7 @@ import com.tribe.app.presentation.view.component.onboarding.AccessView;
 import com.tribe.app.presentation.view.component.onboarding.CodeView;
 import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
 import com.tribe.app.presentation.view.component.onboarding.StatusView;
+import com.tribe.app.presentation.view.component.profile.ProfileView;
 import com.tribe.app.presentation.view.component.settings.SettingsBlockedHiddenView;
 import com.tribe.app.presentation.view.component.settings.SettingsFilterThemeView;
 import com.tribe.app.presentation.view.component.settings.SettingsFilterView;
@@ -70,6 +72,10 @@ public interface UserComponent extends ActivityComponent {
     void inject(SettingsFilterThemeView settingsFilterThemeView);
     void inject(SettingsParametersView settingsParametersView);
     void inject(SettingsBlockedHiddenView settingsBlockedHiddenView);
+
+
+    void inject(ProfileActivity profileActivity);
+    void inject(ProfileView profileView);
 
     void inject(AuthActivity authActivity);
     void inject(PhoneNumberView phoneNumberView);
