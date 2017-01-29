@@ -31,7 +31,6 @@ public class GroupMemberRealm extends RealmObject {
         this.display_name = userRealm.getDisplayName();
         this.username = userRealm.getUsername();
         this.picture = userRealm.getProfilePicture();
-        this.score = userRealm.getScore();
         this.invisible_mode = userRealm.isInvisibleMode();
     }
 

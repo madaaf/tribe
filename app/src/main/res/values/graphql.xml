@@ -386,7 +386,7 @@
 
     <string name="subscription.updatedGroup" translatable="false">
         %1$s : groupUpdated ( id : \"%2$s\" ) {
-            ...GroupInfos
+            ...GroupInfo
         }
     </string>
 </resources>

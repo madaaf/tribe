@@ -31,7 +31,6 @@ import com.tribe.app.data.network.deserializer.InstallsDeserializer;
 import com.tribe.app.data.network.deserializer.LookupDeserializer;
 import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
 import com.tribe.app.data.network.deserializer.NewMembershipDeserializer;
-import com.tribe.app.data.network.deserializer.ScoreEntityDeserializer;
 import com.tribe.app.data.network.deserializer.SearchResultDeserializer;
 import com.tribe.app.data.network.deserializer.TribeAccessTokenDeserializer;
 import com.tribe.app.data.network.deserializer.TribeUserDeserializer;
@@ -39,7 +38,6 @@ import com.tribe.app.data.network.deserializer.UserListDeserializer;
 import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.network.entity.RefreshEntity;
-import com.tribe.app.data.network.entity.ScoreEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
@@ -163,7 +161,6 @@ public class NetModule {
                 .registerTypeAdapter(SearchResultRealm.class, new SearchResultDeserializer())
                 .registerTypeAdapter(MembershipRealm.class, new NewMembershipDeserializer())
                 .registerTypeAdapter(new TypeToken<List<Installation>>(){}.getType(), new InstallsDeserializer())
-                .registerTypeAdapter(ScoreEntity.class, new ScoreEntityDeserializer())
                 .registerTypeHierarchyAdapter(Collection.class, new CollectionAdapter())
                 .create();
     }

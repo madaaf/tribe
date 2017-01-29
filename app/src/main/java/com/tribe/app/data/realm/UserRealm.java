@@ -2,6 +2,8 @@ package com.tribe.app.data.realm;
 
 import android.support.annotation.StringDef;
 
+import com.google.gson.JsonObject;
+
 import java.util.Date;
 
 import io.realm.RealmList;
@@ -36,7 +38,6 @@ public class UserRealm extends RealmObject {
     private String phone;
     private String fbid;
     private String picture;
-    private int score;
     private LocationRealm location;
     private boolean tribe_save = false;
     private RealmList<FriendshipRealm> friendships;
@@ -48,6 +49,9 @@ public class UserRealm extends RealmObject {
 
     @Ignore
     private RealmList<GroupRealm> groups;
+
+    @Ignore
+    private JsonObject jsonPayloadUpdate;
 
     public UserRealm() {
         memberships = new RealmList<>();
@@ -92,14 +96,6 @@ public class UserRealm extends RealmObject {
 
     public void setProfilePicture(String profilePicture) {
         this.picture = profilePicture;
-    }
-
-    public int getScore() {
-        return score;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
     }
 
     public LocationRealm getLocation() {
@@ -196,6 +192,14 @@ public class UserRealm extends RealmObject {
 
     public void setLastOnline(Date lastOnline) {
         this.last_online = lastOnline;
+    }
+
+    public void setJsonPayloadUpdate(JsonObject jsonPayloadUpdate) {
+        this.jsonPayloadUpdate = jsonPayloadUpdate;
+    }
+
+    public JsonObject getJsonPayloadUpdate() {
+        return jsonPayloadUpdate;
     }
 
     @Override

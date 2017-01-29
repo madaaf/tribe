@@ -92,7 +92,7 @@ public class DiskUserDataRepository implements UserRepository {
 
                         for (FriendshipRealm fr : userRealm.getFriendships()) {
                             if (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus().equals(FriendshipRealm.DEFAULT) && !fr.getFriend().getId().equals(Constants.SUPPORT_ID)) {
-                                fr.getFriend().setIsOnline(onlineMap.containsKey(fr.getSubId()));
+                                if (onlineMap.containsKey(fr.getSubId())) fr.getFriend().setIsOnline(onlineMap.get(fr.getSubId()));
                                 resultFr.add(fr);
                             }
                         }

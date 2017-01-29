@@ -1,5 +1,6 @@
 package com.tribe.app.data.realm;
 
+import com.google.gson.JsonObject;
 import com.tribe.app.presentation.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.List;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -29,6 +31,9 @@ public class GroupRealm extends RealmObject {
     private Date updated_at;
 
     private RealmList<GroupMemberRealm> members;
+
+    @Ignore
+    private JsonObject jsonPayloadUpdate;
 
     public GroupRealm() {
         this.members = new RealmList<>();
@@ -98,5 +103,13 @@ public class GroupRealm extends RealmObject {
         }
 
         return pics;
+    }
+
+    public JsonObject getJsonPayloadUpdate() {
+        return jsonPayloadUpdate;
+    }
+
+    public void setJsonPayloadUpdate(JsonObject jsonPayloadUpdate) {
+        this.jsonPayloadUpdate = jsonPayloadUpdate;
     }
 }

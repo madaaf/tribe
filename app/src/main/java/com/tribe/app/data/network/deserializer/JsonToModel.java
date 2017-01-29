@@ -3,6 +3,7 @@ package com.tribe.app.data.network.deserializer;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.tribe.app.data.network.entity.SubscriptionResponse;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.UserRealm;
@@ -45,16 +46,28 @@ public class JsonToModel {
 
             for (Map.Entry<String, JsonElement> entry : results.entrySet()) {
                 if (!entry.getValue().isJsonNull()) {
-                    if (entry.getKey().contains("___u")) {
-                        UserRealm userRealm = gson.fromJson(entry.getValue().toString(), UserRealm.class);
+                    String payload = entry.getValue().toString();
+                    JsonParser jsonParser = new JsonParser();
+                    JsonObject jo = jsonParser.parse(payload).getAsJsonObject();
 
-                        if (userRealm.isOnline()) {
-                            // We remove the online to not persist it in REALM
+                    if (entry.getKey().contains("___u")) {
+                        boolean shouldUpdateOnlineStatus = false;
+
+                        if (jo.has("is_online")) shouldUpdateOnlineStatus = true;
+
+                        UserRealm userRealm = gson.fromJson(entry.getValue().toString(), UserRealm.class);
+                        userRealm.setJsonPayloadUpdate(jo);
+
+                        if (shouldUpdateOnlineStatus) {
+                            onlineMap.put(userRealm.getId(), userRealm.isOnline());
                             userRealm.setIsOnline(false);
-                            onlineMap.put(userRealm.getId(), true);
                         }
 
                         updatedUserList.add(userRealm);
+                    } else if (entry.getKey().contains("___g")) {
+                        GroupRealm groupRealm = gson.fromJson(entry.getValue().toString(), GroupRealm.class);
+                        groupRealm.setJsonPayloadUpdate(jo);
+                        updatedGroupList.add(groupRealm);
                     }
                 }
             }

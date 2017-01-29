@@ -111,7 +111,13 @@ public class WSService extends Service {
 
                             SubscriptionResponse subscriptionResponse = jsonToModel.convertToSubscriptionResponse(message);
 
-                            if (subscriptionResponse != null) liveCache.putOnlineMap(subscriptionResponse.getOnlineMap());
+                            if (subscriptionResponse != null) {
+                                liveCache.putOnlineMap(subscriptionResponse.getOnlineMap());
+                                userCache.updateUsersAndGroups(
+                                        subscriptionResponse.getUserUpdatedList(),
+                                        subscriptionResponse.getGroupUpdatedList()
+                                );
+                            }
                         })
         );
     }
@@ -128,16 +134,18 @@ public class WSService extends Service {
                             int count = 0;
 
                             for (FriendshipRealm friendshipRealm : friendshipList) {
-                                subscriptionsBuffer.append(
-                                        getApplicationContext().getString(
-                                                R.string.subscription_updatedUser,
-                                                hash + "___u" + count,
-                                                friendshipRealm.getFriend().getId()
-                                        )
-                                );
-                                subscriptionsBuffer.append(System.getProperty("line.separator"));
+                                if (!friendshipRealm.getSubId().equals(accessToken.getUserId())) {
+                                        subscriptionsBuffer.append(
+                                                getApplicationContext().getString(
+                                                        R.string.subscription_updatedUser,
+                                                        hash + "___u" + count,
+                                                        friendshipRealm.getFriend().getId()
+                                                )
+                                        );
+                                    subscriptionsBuffer.append(System.getProperty("line.separator"));
 
-                                count++;
+                                    count++;
+                                }
                             }
                         }),
                 Observable.just(userRealm.getMemberships())
@@ -161,7 +169,7 @@ public class WSService extends Service {
                     String body = subscriptionsBuffer.toString();
                     String req = getApplicationContext().getString(R.string.subscription, subscriptionsBuffer.toString())
                             + (body.contains("UserInfos") ? "\n" + getApplicationContext().getString(R.string.userfragment_infos) : "")
-                            + (body.contains("GroupInfos") ? "\n" + getApplicationContext().getString(R.string.groupfragment_info_members) : "");
+                            + (body.contains("GroupInfo") ? "\n" + getApplicationContext().getString(R.string.groupfragment_info_members) : "");
 
                     webSocketConnection.send(req);
                 });

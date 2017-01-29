@@ -44,7 +44,6 @@ public class UserRealmDataMapper {
             user.setDisplayName(userRealm.getDisplayName());
             user.setUsername(userRealm.getUsername());
             user.setProfilePicture(userRealm.getProfilePicture());
-            user.setScore(userRealm.getScore());
             user.setInvisibleMode(userRealm.isInvisibleMode());
             user.setPhone(userRealm.getPhone());
             user.setFbid(userRealm.getFbid());
@@ -102,7 +101,6 @@ public class UserRealmDataMapper {
             userRealm.setDisplayName(user.getDisplayName());
             userRealm.setUsername(user.getUsername());
             userRealm.setProfilePicture(user.getProfilePicture());
-            userRealm.setScore(user.getScore());
             userRealm.setInvisibleMode(user.isInvisibleMode());
             userRealm.setFbid(user.getFbid());
             userRealm.setPhone(user.getPhone());

@@ -42,8 +42,8 @@ public abstract class Recipient implements Serializable {
         int res = ((Boolean) two.isLive()).compareTo(one.isLive());
         if (res != 0) return res;
 
-        //res = ((Boolean) two.isConnected()).compareTo(one.isConnected());
-        //if (res != 0) return res;
+        res = ((Boolean) two.isOnline()).compareTo(one.isOnline());
+        if (res != 0) return res;
 
         return DateUtils.compareDateNullSafe(two.getLastOnline(), one.getLastOnline());
     }

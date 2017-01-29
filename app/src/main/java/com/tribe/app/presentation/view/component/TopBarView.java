@@ -35,8 +35,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
-import static com.tribe.app.R.id.imgAvatar;
-
 /**
  * Created by tiago on 11/15/2016.
  */
@@ -199,7 +197,7 @@ public class TopBarView extends FrameLayout {
         return false;
     }
 
-    @OnClick(imgAvatar)
+    @OnClick(R.id.viewAvatar)
     void launchSettings() {
         clickSettings.onNext(null);
     }
