@@ -44,7 +44,6 @@
 
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtTitle"
-            style="@style/Title.1.Black"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -52,14 +51,13 @@
 
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtTitleTwo"
-            style="@style/Title.1.Black"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center" />
 
-        <TextView
-            android:id="@+id/txtBack"
+        <ImageView
+            android:id="@+id/imgBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left|center_vertical"

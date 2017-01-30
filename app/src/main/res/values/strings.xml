@@ -14,7 +14,11 @@
 	<string name="action_enter">Enter</string>
 	<string name="action_start">Start</string>
 	<string name="action_add_friend">Add Friend</string>
+	<string name="action_adding_friend">Loading...</string>
 	<string name="action_hang_live">Hang live</string>
+	<string name="action_add_member">Add</string>
+	<string name="action_member_added">Added</string>
+	<string name="action_group_member">Member</string>
 	
 	<!-- User -->
 	<string name="user_friend">friend</string>
@@ -33,9 +37,6 @@
 	<string name="image_picker_title">Add an avatar</string>
 	<string name="image_picker_camera">Take a selfie</string>
 	<string name="image_picker_library">Open camera roll</string>
-	
-	<!-- Points -->
-	<string name="points_suffix">%1$s pts</string>
 	
 	<!-- Contacts -->
 	<string name="contacts_search_placeholder">Search for a friend</string>
@@ -247,48 +248,6 @@
 	<string name="grid_menu_group_hide">Hide group</string>
 	<string name="grid_menu_group_unhide">Add group</string>
 	
-	<!-- Chat -->
-	<string name="chat_tutorial_statuses_title">Message statuses</string>
-	<string name="chat_status_sending">Sending</string>
-	<string name="chat_status_sent">Sent</string>
-	<string name="chat_status_read_partly">Read by part of the recipients</string>
-	<string name="chat_status_read">Read by everyone</string>
-	<string name="chat_status_error">No network</string>
-	<string name="chat_text_placeholder">Message...</string>
-	<string name="chat_date_today">Today</string>
-	<string name="chat_author_you">You</string>
-	<string name="chat_erase_conversation_title">Erase this conversation</string>
-	<string name="chat_erase_conversation_message">Are you sure ?</string>
-	<string name="chat_is_typing">is typing</string>
-	<string name="chat_are_typing">are typing</string>
-	<string name="chat_and">and</string>
-	<string name="chat_copied_to_clipboard">Copied to clipboard!</string>
-	<string name="chat_attachment_more_save">Save in camera roll</string>
-	<string name="chat_attachment_more_save_success">Saved!</string>
-	<string name="chat_more_erase_conversation">Erase this conversation</string>
-	
-	<!-- Private Group -->
-	<string name="group_family_title">Family</string>
-	<string name="group_roomies_title">Roomies</string>
-	<string name="group_bffs_title">Best friends</string>
-	<string name="group_abroad_title">Friends abroad</string>
-	<string name="group_work_title">Work team</string>
-	<string name="group_classmates_title">Classmates</string>
-	<string name="group_teammates_title">Teammates</string>
-	<string name="group_baddest_title">Squad goals</string>
-	<string name="group_not_allowed_title">The Girls</string>
-	
-	<!-- Public Group -->
-	<string name="group_public_family_title">:loudspeaker: Election 2016</string>
-	<string name="group_public_roomies_title">:kimono: Yoga lovers</string>
-	<string name="group_public_bffs_title">:baseball: Major League Baseball Playoffs</string>
-	<string name="group_public_abroad_title">:football: NFL Fantasy Football</string>
-	<string name="group_public_work_title">:jack_o_lantern: Halloween costumes</string>
-	<string name="group_public_classmates_title">:nail_care: Celeb Gossip</string>
-	<string name="group_public_teammates_title">:muscle: Dab All Day</string>
-	<string name="group_public_baddest_title">:skull: Skate Or Die</string>
-	<string name="group_public_not_allowed_title">:key: Life hacks</string>
-	
 	<!-- Group Identification -->
 	<string name="group_identification_title">New group</string>
 	<string name="group_identification_custom_name_placeholder">Group name</string>
@@ -345,10 +304,6 @@
 	<string name="group_share_description">Send group link in other apps</string>
 	<string name="group_share_description_expiration">This sharing link will be deleted in %1$s</string>
 	<string name="group_button_creating">Creating group...</string>
-	
-	<!-- Group Infos -->
-	<string name="group_infos_error_edit_not_admin">:lock: Only admins can edit the group</string>
-	<string name="group_infos_error_cannot_leave">:lock: You\'re the only admin of the group, you can\'t leave</string>
 	
 	<!-- Group Members -->
 	<string name="group_members_search_placeholder">Search a member</string>
@@ -441,12 +396,6 @@
 	<string name="settings_intro_video_title">Demo video</string>
 	<string name="settings_intro_video_subtitle">See how the app works in 30”!</string>
 	
-	<!-- HiddenBlocked -->
-	<string name="hiddenblocked_title">%1$d blocked or hidden</string>
-	<string name="hiddenblocked_empty_title">Nobody blocked or hidden</string>
-	<string name="hidden_title">%1$d hidden</string>
-	<string name="hidden_empty_title">Nobody hidden</string>
-	
 	<!-- Onboarding -->
 	<string name="onboarding_step_phone">Use your phone number to connect</string>
 	<string name="onboarding_phone_disclaimer">By registering, I agree to the Terms of Service &amp; Privacy Policy</string>
@@ -538,58 +487,6 @@
 	<string name="topbar_invite_messenger_action">:link: Invite friends on Messenger</string>
 	<string name="topbar_invite_whatsapp_action">:link: Invite friends on WhatsApp</string>
 	
-	<!-- Ear Mode -->
-	<string name="earmode_title">“Ear” mode.</string>
-	<string name="earmode_description">Camera is hidden. Put your phone against your hear to listen or remove it to go back to “Speaker” mode.</string>
-	
-	<!-- Score -->
-	<string name="score_title">Score</string>
-	<string name="score_current_level">Your current level</string>
-	<string name="score_next_level">Next level in</string>
-	<string name="score_points_system_button">Rules</string>
-	<string name="score_share_level_button">Share your score</string>
-	
-	<!-- Points System -->
-	<string name="points_system_title">Rules</string>
-	<string name="points_Subtitles_title">Set subtitles</string>
-	<string name="points_Subtitles_description">For each friend</string>
-	<string name="points_SendReceiveChat_title">Send or receive</string>
-	<string name="points_SendReceiveChat_description">Text message</string>
-	<string name="points_SendReceiveTribe_title">Send or receive</string>
-	<string name="points_SendReceiveTribe_description">Video or voice message</string>
-	<string name="points_NewFriendship_title">New friendship</string>
-	<string name="points_NewFriendship_description">Swipe left on the grid</string>
-	<string name="points_InviteTribe_title">Invite a friend</string>
-	<string name="points_InviteTribe_description">Swipe left on the grid</string>
-	<string name="points_CreateGroup_title">Create a group</string>
-	<string name="points_CreateGroup_description">Swipe right on the grid</string>
-	<string name="points_RateApp_title">Rate the app</string>
-	<string name="points_RateApp_description">Go to the App Store</string>
-	<string name="points_ShareProfile_title">Share your profile</string>
-	<string name="points_ShareProfile_description">Swipe left on the grid</string>
-	<string name="points_LocationPermission_title">Location</string>
-	<string name="points_LocationPermission_description">Enable it in the settings</string>
-	<string name="points_PushPermission_title">Notifications</string>
-	<string name="points_PushPermission_description">Enable it in the settings</string>
-	<string name="points_ConnectFacebook_title">Connect with Facebook</string>
-	<string name="points_ConnectFacebook_description">Auto-sync your contacts</string>
-	<string name="points_InviteFacebookFriends_title">Invite Facebook friends</string>
-	<string name="points_InviteFacebookFriends_description">Swipe left on the grid</string>
-	<string name="points_Camera_title">Camera</string>
-	<string name="points_Camera_description">Enable it in the settings</string>
-	
-	<!-- Level -->
-	<string name="level_rookie_title">Rookie</string>
-	<string name="level_heating_up_title">Heating up</string>
-	<string name="level_rising_star_title">Rising star</string>
-	<string name="level_on_fire_title">On fire</string>
-	<string name="level_rockstar_title">Rockstar</string>
-	<string name="level_champ_title">Champ</string>
-	<string name="level_icon_title">Icon</string>
-	<string name="level_greatness_title">Greatness</string>
-	<string name="level_royalty_title">Royalty</string>
-	<string name="level_unicorn_title">Unicorn</string>
-	
 	<!-- Notification -->
 	<string name="notification_pending">A pending message. Swipe to resend :arrow_left:</string>
 	<string name="notification_pending_plural">%1$d pending messages. Swipe to resend :arrow_left:</string>
@@ -615,6 +512,73 @@
 	<string name="share_snapchat_story_explanation_title">Snapchat</string>
 	<string name="share_snapchat_story_explanation_msg">Please import the image from the Snapchat memories library.</string>
 	<string name="share_snapchat_story_explanation_ok">OK</string>
+	
+	<!-- Search -->
+	<string name="search_title">Search a user</string>
+	<string name="search_user_placeholder">Enter a username</string>
+	<string name="search_usernames">Result</string>
+	<string name="search_searching">Searching</string>
+	<string name="search_already_friends">People you know :purple_heart:</string>
+	<string name="search_add_friends">They are already connected on Tribe</string>
+	<string name="search_invite_friends">Your friends are missing out!</string>
+	<string name="search_suggest_friends">People you may know :bee:</string>
+	<string name="search_invite_contacts">People you should invite :love_letter:</string>
+	<string name="search_no_friends_to_add">No friends connected on Tribe</string>
+	<string name="search_no_friends_to_invite">No friends connected on Tribe</string>
+	<string name="search_no_friends_to_suggest">No friends connected on Tribe</string>
+	<string name="search_add_facebook_title">Load friends from facebook</string>
+	<string name="search_add_facebook_subtitle">Don’t miss people you talk to often.</string>
+	<string name="search_add_addressbook_title">Load friends from address book</string>
+	<string name="search_add_addressbook_subtitle">Don’t miss people you talk to often.</string>
+	
+	<!-- Spring Cleaning -->
+	<string name="spring_cleaning_friendship_title">%1$s</string>
+	<string name="spring_cleaning_friendship_description">You will be able to add back\n%1$s from the Settings.</string>
+	<string name="spring_cleaning_friendship_hide">Hide friend</string>
+	<string name="spring_cleaning_friendship_block">Block friend</string>
+	<string name="spring_cleaning_membership_title">%1$s</string>
+	<string name="spring_cleaning_membership_description">You will need to be invited\nto joined the group.</string>
+	<string name="spring_cleaning_membership_hide">Hide group</string>
+	<string name="spring_cleaning_membership_leave">Leave group</string>
+	<string name="spring_cleaning_group_delete">Delete group</string>
+	
+	<!-- Live -->
+	<string name="live_drag_friends">Drag friends!</string>
+	<string name="live_invite_link">Invite\nlink</string>
+	<string name="live_drop_friend">Drop in the live!</string>
+	<string name="live_drop_friend_impossible">Only %1$d friends at the same time!</string>
+	<string name="live_join_impossible">:lock: Only %1$d friends at the same time!</string>
+	<string name="live_event_added">%1$s added!</string>
+	<string name="live_event_joined">%1$s joined!</string>
+	<string name="live_event_left">%1$s left!</string>
+	<string name="live_friend_buzzed">%1$s buzzed!</string>
+	<string name="live_friends_buzzed">%1$s buzzed!</string>
+	<string name="live_friends_more_buzzed">%1$s &amp; %2$d more buzzed!</string>
+	
+	<!-- Blur Popup -->
+	<string name="blur_popup_dismiss">Swipe to dismiss</string>
+	
+	<!-- Profile -->
+	<string name="profile_title">Profile</string>
+	<string name="profile_user_infos">Name, avatar and more :pencil2:</string>
+	<string name="profile_invisible_mode">Allow people to add me :ghost:</string>
+	<string name="profile_rate_us">Rate us :star2:</string>
+	<string name="profile_follow_us">Follow us :metal:</string>
+	<string name="profile_logout">Logout :skull:</string>
+	
+	<!-- Carousel -->
+	<string name="carousel_friend_title">Give access to %1$s?</string>
+	<string name="carousel_friend_subtitle">Would have %1$d friends on Tribe</string>
+	<string name="carousel_friend_validate">Yes! :heart:</string>
+	<string name="carousel_friend_later">Not now :broken_heart:</string>
+	<string name="carousel_facebook_title">Fill your grid with your Facebook friends?</string>
+	<string name="carousel_facebook_subtitle">Connect your grid with Facebook!</string>
+	<string name="carousel_facebook_validate">Sure! :tada:</string>
+	<string name="carousel_facebook_later">Stay alone</string>
+	<string name="carousel_address_book_title">Fill your grid with your contacts?</string>
+	<string name="carousel_address_book_subtitle">Connect your grid with your address book!</string>
+	<string name="carousel_address_book_validate">Of course! :v:</string>
+	<string name="carousel_address_book_later">Stay alone</string>
 	
 	<!-- TribeDistancePopup -->
 	<string name="tribe_distance_popup_description">Sent %1$s away from you</string>
@@ -724,74 +688,114 @@
 	<string name="support_popup_lang">Lang</string>
 	<string name="support_popup_created_at">Member since</string>
 	
-	<!-- Search -->
-	<string name="search_title">Search a user</string>
-	<string name="search_user_placeholder">Enter a username</string>
-	<string name="search_usernames">Result</string>
-	<string name="search_searching">Searching</string>
-	<string name="search_already_friends">People you know :purple_heart:</string>
-	<string name="search_add_friends">They are already connected on Tribe</string>
-	<string name="search_invite_friends">Your friends are missing out!</string>
-	<string name="search_suggest_friends">People you may know :bee:</string>
-	<string name="search_invite_contacts">People you should invite :love_letter:</string>
-	<string name="search_no_friends_to_add">No friends connected on Tribe</string>
-	<string name="search_no_friends_to_invite">No friends connected on Tribe</string>
-	<string name="search_no_friends_to_suggest">No friends connected on Tribe</string>
-	<string name="search_add_facebook_title">Load friends from facebook</string>
-	<string name="search_add_facebook_subtitle">Don’t miss people you talk to often.</string>
-	<string name="search_add_addressbook_title">Load friends from address book</string>
-	<string name="search_add_addressbook_subtitle">Don’t miss people you talk to often.</string>
-	
-	<!-- Spring Cleaning -->
-	<string name="spring_cleaning_friendship_title">%1$s</string>
-	<string name="spring_cleaning_friendship_description">You will be able to add back\n%1$s from the Settings.</string>
-	<string name="spring_cleaning_friendship_hide">Hide friend</string>
-	<string name="spring_cleaning_friendship_block">Block friend</string>
-	<string name="spring_cleaning_membership_title">%1$s</string>
-	<string name="spring_cleaning_membership_description">You will need to be invited\nto joined the group.</string>
-	<string name="spring_cleaning_membership_hide">Hide group</string>
-	<string name="spring_cleaning_membership_leave">Leave group</string>
-	<string name="spring_cleaning_group_delete">Delete group</string>
-	
-	<!-- Carousel -->
-	<string name="carousel_friend_title">Give access to %1$s?</string>
-	<string name="carousel_friend_subtitle">Would have %1$d friends on Tribe</string>
-	<string name="carousel_friend_validate">Yes! :heart:</string>
-	<string name="carousel_friend_later">Not now :broken_heart:</string>
-	<string name="carousel_facebook_title">Fill your grid with your Facebook friends?</string>
-	<string name="carousel_facebook_subtitle">Connect your grid with Facebook!</string>
-	<string name="carousel_facebook_validate">Sure! :tada:</string>
-	<string name="carousel_facebook_later">Stay alone</string>
-	<string name="carousel_address_book_title">Fill your grid with your contacts?</string>
-	<string name="carousel_address_book_subtitle">Connect your grid with your address book!</string>
-	<string name="carousel_address_book_validate">Of course! :v:</string>
-	<string name="carousel_address_book_later">Stay alone</string>
-	
 	<!-- Camera -->
 	<string name="camera_permission">Enable\ncamera</string>
 	<string name="camera_recording">REC</string>
 	
-	<!-- Live -->
-	<string name="live_drag_friends">Drag friends!</string>
-	<string name="live_invite_link">Invite\nlink</string>
-	<string name="live_drop_friend">Drop in the live!</string>
-	<string name="live_drop_friend_impossible">Only %1$d friends at the same time!</string>
-	<string name="live_join_impossible">:lock: Only %1$d friends at the same time!</string>
-	<string name="live_event_added">%1$s added!</string>
-	<string name="live_event_joined">%1$s joined!</string>
-	<string name="live_event_left">%1$s left!</string>
-	<string name="live_friend_buzzed">%1$s buzzed!</string>
-	<string name="live_friends_buzzed">%1$s buzzed!</string>
-	<string name="live_friends_more_buzzed">%1$s &amp; %2$d more buzzed!</string>
+	<!-- Ear Mode -->
+	<string name="earmode_title">“Ear” mode.</string>
+	<string name="earmode_description">Camera is hidden. Put your phone against your hear to listen or remove it to go back to “Speaker” mode.</string>
 	
-	<!-- Blur Popup -->
-	<string name="blur_popup_dismiss">Swipe to dismiss</string>
+	<!-- Score -->
+	<string name="score_title">Score</string>
+	<string name="score_current_level">Your current level</string>
+	<string name="score_next_level">Next level in</string>
+	<string name="score_points_system_button">Rules</string>
+	<string name="score_share_level_button">Share your score</string>
 	
-	<!-- Profile -->
-	<string name="profile_title">Profile</string>
-	<string name="profile_user_infos">Name, avatar and more :pencil2:</string>
-	<string name="profile_invisible_mode">Allow people to add me :ghost:</string>
-	<string name="profile_rate_us">Rate us :star2:</string>
-	<string name="profile_follow_us">Follow us :metal:</string>
-	<string name="profile_logout">Logout :skull:</string>
+	<!-- Points System -->
+	<string name="points_system_title">Rules</string>
+	<string name="points_Subtitles_title">Set subtitles</string>
+	<string name="points_Subtitles_description">For each friend</string>
+	<string name="points_SendReceiveChat_title">Send or receive</string>
+	<string name="points_SendReceiveChat_description">Text message</string>
+	<string name="points_SendReceiveTribe_title">Send or receive</string>
+	<string name="points_SendReceiveTribe_description">Video or voice message</string>
+	<string name="points_NewFriendship_title">New friendship</string>
+	<string name="points_NewFriendship_description">Swipe left on the grid</string>
+	<string name="points_InviteTribe_title">Invite a friend</string>
+	<string name="points_InviteTribe_description">Swipe left on the grid</string>
+	<string name="points_CreateGroup_title">Create a group</string>
+	<string name="points_CreateGroup_description">Swipe right on the grid</string>
+	<string name="points_RateApp_title">Rate the app</string>
+	<string name="points_RateApp_description">Go to the App Store</string>
+	<string name="points_ShareProfile_title">Share your profile</string>
+	<string name="points_ShareProfile_description">Swipe left on the grid</string>
+	<string name="points_LocationPermission_title">Location</string>
+	<string name="points_LocationPermission_description">Enable it in the settings</string>
+	<string name="points_PushPermission_title">Notifications</string>
+	<string name="points_PushPermission_description">Enable it in the settings</string>
+	<string name="points_ConnectFacebook_title">Connect with Facebook</string>
+	<string name="points_ConnectFacebook_description">Auto-sync your contacts</string>
+	<string name="points_InviteFacebookFriends_title">Invite Facebook friends</string>
+	<string name="points_InviteFacebookFriends_description">Swipe left on the grid</string>
+	<string name="points_Camera_title">Camera</string>
+	<string name="points_Camera_description">Enable it in the settings</string>
+	
+	<!-- Level -->
+	<string name="level_rookie_title">Rookie</string>
+	<string name="level_heating_up_title">Heating up</string>
+	<string name="level_rising_star_title">Rising star</string>
+	<string name="level_on_fire_title">On fire</string>
+	<string name="level_rockstar_title">Rockstar</string>
+	<string name="level_champ_title">Champ</string>
+	<string name="level_icon_title">Icon</string>
+	<string name="level_greatness_title">Greatness</string>
+	<string name="level_royalty_title">Royalty</string>
+	<string name="level_unicorn_title">Unicorn</string>
+	
+	<!-- Chat -->
+	<string name="chat_tutorial_statuses_title">Message statuses</string>
+	<string name="chat_status_sending">Sending</string>
+	<string name="chat_status_sent">Sent</string>
+	<string name="chat_status_read_partly">Read by part of the recipients</string>
+	<string name="chat_status_read">Read by everyone</string>
+	<string name="chat_status_error">No network</string>
+	<string name="chat_text_placeholder">Message...</string>
+	<string name="chat_date_today">Today</string>
+	<string name="chat_author_you">You</string>
+	<string name="chat_erase_conversation_title">Erase this conversation</string>
+	<string name="chat_erase_conversation_message">Are you sure ?</string>
+	<string name="chat_is_typing">is typing</string>
+	<string name="chat_are_typing">are typing</string>
+	<string name="chat_and">and</string>
+	<string name="chat_copied_to_clipboard">Copied to clipboard!</string>
+	<string name="chat_attachment_more_save">Save in camera roll</string>
+	<string name="chat_attachment_more_save_success">Saved!</string>
+	<string name="chat_more_erase_conversation">Erase this conversation</string>
+	
+	<!-- Private Group -->
+	<string name="group_family_title">Family</string>
+	<string name="group_roomies_title">Roomies</string>
+	<string name="group_bffs_title">Best friends</string>
+	<string name="group_abroad_title">Friends abroad</string>
+	<string name="group_work_title">Work team</string>
+	<string name="group_classmates_title">Classmates</string>
+	<string name="group_teammates_title">Teammates</string>
+	<string name="group_baddest_title">Squad goals</string>
+	<string name="group_not_allowed_title">The Girls</string>
+	
+	<!-- Public Group -->
+	<string name="group_public_family_title">:loudspeaker: Election 2016</string>
+	<string name="group_public_roomies_title">:kimono: Yoga lovers</string>
+	<string name="group_public_bffs_title">:baseball: Major League Baseball Playoffs</string>
+	<string name="group_public_abroad_title">:football: NFL Fantasy Football</string>
+	<string name="group_public_work_title">:jack_o_lantern: Halloween costumes</string>
+	<string name="group_public_classmates_title">:nail_care: Celeb Gossip</string>
+	<string name="group_public_teammates_title">:muscle: Dab All Day</string>
+	<string name="group_public_baddest_title">:skull: Skate Or Die</string>
+	<string name="group_public_not_allowed_title">:key: Life hacks</string>
+	
+	<!-- Group Infos -->
+	<string name="group_infos_error_edit_not_admin">:lock: Only admins can edit the group</string>
+	<string name="group_infos_error_cannot_leave">:lock: You\'re the only admin of the group, you can\'t leave</string>
+	
+	<!-- Points -->
+	<string name="points_suffix">%1$s pts</string>
+	
+	<!-- HiddenBlocked -->
+	<string name="hiddenblocked_title">%1$d blocked or hidden</string>
+	<string name="hiddenblocked_empty_title">Nobody blocked or hidden</string>
+	<string name="hidden_title">%1$d hidden</string>
+	<string name="hidden_empty_title">Nobody hidden</string>
 </resources>
