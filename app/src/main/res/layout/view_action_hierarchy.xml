@@ -14,10 +14,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|right"
-        android:src="@drawable/picto_back"
+        android:src="@drawable/picto_return"
         android:scaleType="centerInside"
-        android:scaleX="-1"
-        android:scaleY="-1"
         />
 
 </merge>

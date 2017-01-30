@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -40,17 +40,26 @@
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:host="dev.tribe.pm" android:scheme="http" />
-                <data android:host="dev.tribe.pm" android:scheme="https" />
+
+                <data
+                    android:host="dev.tribe.pm"
+                    android:scheme="http" />
+                <data
+                    android:host="dev.tribe.pm"
+                    android:scheme="https" />
                 <data android:pathPrefix="/g" />
                 <data android:pathPrefix="/" />
             </intent-filter>
 
             <intent-filter>
-                <data android:scheme="tribe://" android:host="open" />
+                <data
+                    android:host="open"
+                    android:scheme="tribe://" />
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
@@ -58,44 +67,39 @@
 
         <activity
             android:name=".presentation.view.activity.AuthActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize"
             android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme"
-            />
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name=".presentation.view.activity.AuthProfileActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation|screenSize"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme"
-            />
+            android:windowSoftInputMode="adjustPan" />
 
         <activity
             android:name=".presentation.view.activity.AuthAccessActivity"
-            android:screenOrientation="portrait"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme"
-            />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
 
         <activity
             android:name=".presentation.view.activity.PickYourFriendsActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation|screenSize"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme"
-            />
+            android:windowSoftInputMode="adjustPan" />
 
         <activity
             android:name=".presentation.view.activity.HomeActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="stateHidden"
-            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Black"
-            >
+            android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="tribe" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -140,64 +144,63 @@
         <activity
             android:name=".presentation.view.activity.CountryActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            />
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".presentation.utils.facebook.FacebookHiddenActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Transparent.Dummy"
             android:launchMode="singleTop"
-            />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Transparent.Dummy" />
 
         <activity
             android:name=".presentation.utils.mediapicker.MediaHiddenActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Transparent.Dummy"
             android:launchMode="singleTop"
-            />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Transparent.Dummy" />
 
-        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
-            android:theme="@style/CropTheme"
-            />
+        <activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/CropTheme" />
 
         <activity
             android:name=".presentation.view.activity.DummyActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Transparent.Dummy"
-            />
+            android:theme="@style/AppTheme.Transparent.Dummy" />
 
-        <activity android:name=".presentation.view.activity.DebugActivity"
+        <activity
+            android:name=".presentation.view.activity.DebugActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"
-            />
+            android:theme="@style/AppTheme" />
 
-        <activity android:name=".presentation.view.activity.GroupActivity"
+        <activity
+            android:name=".presentation.view.activity.GroupActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"
-            />
+            android:theme="@style/AppTheme" />
 
-        <activity android:name=".presentation.view.activity.SearchUserActivity"
+        <activity
+            android:name=".presentation.view.activity.SearchUserActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"
-            />
+            android:theme="@style/AppTheme" />
 
-        <activity android:name=".presentation.view.activity.SettingsActivity"
+        <activity
+            android:name=".presentation.view.activity.SettingsActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"
-            />
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".presentation.view.activity.ProfileActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
 
         <activity
             android:name=".presentation.view.activity.LiveActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Black"
-            />
+            android:theme="@style/AppTheme.Black" />
 
         <activity
             android:name=".presentation.view.activity.LiveTestActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.BlackLight"
-            />
+            android:theme="@style/AppTheme.BlackLight" />
 
         <service
             android:name=".data.network.WSService"
@@ -222,7 +225,9 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="io.branch.referral.InstallListener" android:exported="true">
+        <receiver
+            android:name="io.branch.referral.InstallListener"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>
@@ -230,23 +235,19 @@
 
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="6ff047393eaba0fd6ab74f8e7d16f6d3faed7ad8"
-            />
+            android:value="6ff047393eaba0fd6ab74f8e7d16f6d3faed7ad8" />
 
         <meta-data
             android:name="io.branch.sdk.BranchKey"
-            android:value="@string/branch_io"
-            />
+            android:value="@string/branch_io" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id"
-            />
+            android:value="@string/facebook_app_id" />
 
         <meta-data
             android:name="com.tribe.app.presentation.view.utils.TribeGlideModule"
-            android:value="GlideModule"
-            />
+            android:value="GlideModule" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

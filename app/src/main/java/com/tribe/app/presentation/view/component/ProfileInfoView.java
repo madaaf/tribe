@@ -208,7 +208,7 @@ public class ProfileInfoView extends LinearLayout {
 
         ArrayList<InputFilter> inputFilters = new ArrayList<InputFilter>(Arrays.asList(editUsername.getFilters()));
         inputFilters.add(0, filterAlphanumeric);
-        inputFilters.add(1, filterSpace); 
+        inputFilters.add(1, filterSpace);
         inputFilters.add(2, filterLowercase);
         InputFilter[] newInputFilters = inputFilters.toArray(new InputFilter[inputFilters.size()]);
         editUsername.setFilters(newInputFilters);
@@ -265,8 +265,10 @@ public class ProfileInfoView extends LinearLayout {
                 RxView.clicks(imgAvatar)
                         .doOnNext(aVoid -> {
                             imgAvatar.setEnabled(false);
-                            if (editDisplayName.hasFocus()) screenUtils.hideKeyboard(editDisplayName);
-                            else if (editUsername.hasFocus()) screenUtils.hideKeyboard(editUsername);
+                            if (editDisplayName.hasFocus())
+                                screenUtils.hideKeyboard(editDisplayName);
+                            else if (editUsername.hasFocus())
+                                screenUtils.hideKeyboard(editUsername);
                         })
                         .delay(200, TimeUnit.MILLISECONDS)
                         .observeOn(AndroidSchedulers.mainThread())
@@ -381,11 +383,13 @@ public class ProfileInfoView extends LinearLayout {
     }
 
     public void showDisplayNameInd() {
-        if (imgDisplayNameInd.getScaleX() == 0) AnimationUtils.scaleUp(imgDisplayNameInd, DURATION, new DecelerateInterpolator());
+        if (imgDisplayNameInd.getScaleX() == 0)
+            AnimationUtils.scaleUp(imgDisplayNameInd, DURATION, new DecelerateInterpolator());
     }
 
     public void hideDisplayNameInd() {
-        if (imgDisplayNameInd.getScaleX() == 1) AnimationUtils.scaleDown(imgDisplayNameInd, DURATION, new DecelerateInterpolator());
+        if (imgDisplayNameInd.getScaleX() == 1)
+            AnimationUtils.scaleDown(imgDisplayNameInd, DURATION, new DecelerateInterpolator());
     }
 
     public String getImgUri() {
