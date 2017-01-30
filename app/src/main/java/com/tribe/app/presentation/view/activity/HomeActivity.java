@@ -343,9 +343,6 @@ public class HomeActivity extends BaseActivity
 
 
     private void initTopBar() {
-        subscriptions.add(topBarContainer.onClickSettings().subscribe(aVoid -> {
-            navigateToSettings();
-        }));
 
         subscriptions.add(topBarContainer.onClickNew()
                 .flatMap(aVoid -> DialogFactory.showBottomSheetForInvites(this), ((aVoid, labelType) -> {
@@ -365,11 +362,9 @@ public class HomeActivity extends BaseActivity
 
         subscriptions.add(topBarContainer.onSearch().subscribe());
 
-        subscriptions.add(
-                topBarContainer.onClickProfile()
-                        .subscribe(aVoid -> {
-                            navigateToProfile();
-                        }));
+        subscriptions.add(topBarContainer.onClickProfile().subscribe(aVoid -> {
+            navigateToProfile();
+        }));
     }
 
     private void initRemoteConfig() {

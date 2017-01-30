@@ -78,7 +78,6 @@ public class TopBarView extends FrameLayout {
     // OBSERVABLES
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
-    private PublishSubject<Void> clickSettings = PublishSubject.create();
     private PublishSubject<Void> clickNew = PublishSubject.create();
     private PublishSubject<String> onSearch = PublishSubject.create();
     private PublishSubject<Void> clickProfile = PublishSubject.create();
@@ -199,11 +198,6 @@ public class TopBarView extends FrameLayout {
     }
 
     @OnClick(R.id.viewAvatar)
-    void launchSettings() {
-        clickSettings.onNext(null);
-    }
-
-    @OnClick(R.id.viewAvatar)
     void launchProfileSettings() {
         clickProfile.onNext(null);
     }
@@ -314,10 +308,6 @@ public class TopBarView extends FrameLayout {
     //////////////////////
     //   OBSERVABLES    //
     //////////////////////
-
-    public Observable<Void> onClickSettings() {
-        return clickSettings;
-    }
 
     public Observable<Void> onClickNew() {
         return clickNew;

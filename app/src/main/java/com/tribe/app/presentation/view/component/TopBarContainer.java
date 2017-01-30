@@ -39,7 +39,6 @@ public class TopBarContainer extends FrameLayout {
     // BINDERS / SUBSCRIPTIONS
     private Unbinder unbinder;
     private CompositeSubscription subscriptions = new CompositeSubscription();
-    private PublishSubject<Void> clickSettings = PublishSubject.create();
     private PublishSubject<Void> clickNew = PublishSubject.create();
     private PublishSubject<String> onSearch = PublishSubject.create();
     private PublishSubject<Void> onClickProfile = PublishSubject.create();
@@ -105,11 +104,6 @@ public class TopBarContainer extends FrameLayout {
         );
 
         subscriptions.add(
-                topBarView.onClickSettings()
-                        .subscribe(clickSettings)
-        );
-
-        subscriptions.add(
                 topBarView.onSearch()
                         .subscribe(onSearch)
         );
@@ -157,10 +151,6 @@ public class TopBarContainer extends FrameLayout {
     //    OBSERVABLES    //
     ///////////////////////
 
-    public Observable<Void> onClickSettings() {
-        return clickSettings;
-    }
-
     public Observable<Void> onClickNew() {
         return clickNew;
     }
@@ -168,6 +158,7 @@ public class TopBarContainer extends FrameLayout {
     public Observable<String> onSearch() {
         return onSearch;
     }
+
     public Observable<Void> onClickProfile() {
         return onClickProfile;
     }
