@@ -18,6 +18,6 @@ public class TribeFirebaseMessagingService extends FirebaseMessagingService {
   }
 
   @Override public void onMessageReceived(RemoteMessage remoteMessage) {
-    Timber.d("Received : " + remoteMessage);
+    Timber.d("Received : " + remoteMessage.getData());
   }
 }

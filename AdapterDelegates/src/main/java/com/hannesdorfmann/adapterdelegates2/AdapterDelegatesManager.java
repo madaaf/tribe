@@ -21,6 +21,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.util.SparseArrayCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
+import java.util.List;
 
 /**
  * This class is the element that ties {@link RecyclerView.Adapter} together with {@link
@@ -276,6 +277,20 @@ public class AdapterDelegatesManager<T> {
     }
 
     delegate.onBindViewHolder(items, position, viewHolder);
+  }
+
+  public void onBindViewHolder(@NonNull T items, @NonNull RecyclerView.ViewHolder viewHolder, int position, List<Object> payloads) {
+    AdapterDelegate<T> delegate = delegates.get(viewHolder.getItemViewType());
+    if (delegate == null) {
+      if (fallbackDelegate == null) {
+        throw new NullPointerException(
+            "No AdapterDelegate added for ViewType " + viewHolder.getItemViewType());
+      } else {
+        delegate = fallbackDelegate;
+      }
+    }
+
+    delegate.onBindViewHolder(items, viewHolder, position, payloads);
   }
 
   /**

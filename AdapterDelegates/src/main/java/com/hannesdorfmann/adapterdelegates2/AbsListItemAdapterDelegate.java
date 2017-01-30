@@ -55,6 +55,12 @@ public abstract class AbsListItemAdapterDelegate<I extends T, T, VH extends Recy
     onBindViewHolder((I) items.get(position), (VH) holder);
   }
 
+  @Override
+  public void onBindViewHolder(@NonNull List<T> items, @NonNull RecyclerView.ViewHolder holder,
+      int position, List<Object> payloads) {
+    onBindViewHolder(items, holder, position, payloads);
+  }
+
   /**
    * Called to determine whether this AdapterDelegate is the responsible for the given item in the list or not
    * element
@@ -78,4 +84,6 @@ public abstract class AbsListItemAdapterDelegate<I extends T, T, VH extends Recy
    * @param viewHolder The ViewHolder
    */
   protected abstract void onBindViewHolder(@NonNull I item, @NonNull VH viewHolder);
+
+
 }

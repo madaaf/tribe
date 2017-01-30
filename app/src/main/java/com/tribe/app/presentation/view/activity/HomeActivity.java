@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.util.DiffUtil;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -40,21 +42,28 @@ import com.tribe.app.presentation.utils.preferences.LastOnlineNotification;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
+import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 import com.tribe.app.presentation.view.component.TopBarContainer;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
 import com.tribe.app.presentation.view.utils.DialogFactory;
+import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationContainer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.Scheduler;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 public class HomeActivity extends BaseActivity
     implements HasComponent<UserComponent>, HomeGridMVPView,
@@ -99,6 +108,7 @@ public class HomeActivity extends BaseActivity
   // OBSERVABLES
   private UserComponent userComponent;
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private Scheduler singleThreadExecutor;
   private PublishSubject<List<Recipient>> onRecipientUpdates = PublishSubject.create();
 
   // VARIABLES
@@ -183,6 +193,7 @@ public class HomeActivity extends BaseActivity
   }
 
   private void init() {
+    singleThreadExecutor = Schedulers.from(Executors.newSingleThreadExecutor());
     latestRecipientList = new ArrayList<>();
   }
 
@@ -195,19 +206,20 @@ public class HomeActivity extends BaseActivity
   }
 
   private void initRecyclerView() {
-    this.layoutManager = new HomeLayoutManager(context());
-    this.recyclerViewFriends.setLayoutManager(layoutManager);
-    this.recyclerViewFriends.setItemAnimator(null);
+    layoutManager = new HomeLayoutManager(context());
+    layoutManager.setAutoMeasureEnabled(false);
+    recyclerViewFriends.setLayoutManager(layoutManager);
+    recyclerViewFriends.setItemAnimator(null);
     homeGridAdapter.setItems(new ArrayList<>());
-    this.recyclerViewFriends.setAdapter(homeGridAdapter);
+    recyclerViewFriends.setAdapter(homeGridAdapter);
 
     // TODO HACK FIND ANOTHER WAY OF OPTIMIZING THE VIEW?
-    this.recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(0, 50);
-    this.recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(1, 50);
-    this.recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(2, 50);
-    this.recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(3, 50);
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(0, 50);
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(1, 50);
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(2, 50);
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(3, 50);
 
-    this.layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+    layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
       @Override public int getSpanSize(int position) {
         switch (homeGridAdapter.getItemViewType(position)) {
           case HomeGridAdapter.EMPTY_HEADER_VIEW_TYPE:
@@ -256,8 +268,34 @@ public class HomeActivity extends BaseActivity
           navigator.navigateToLive(this, recipient);
         }));
 
-    subscriptions.add(onRecipientUpdates.subscribe(recipientList -> {
-          homeGridAdapter.setItems(recipientList);
+    subscriptions.add(onRecipientUpdates
+        .subscribeOn(singleThreadExecutor)
+        .map(recipientList -> {
+          DiffUtil.DiffResult diffResult = null;
+
+          List<Recipient> temp = new ArrayList<>();
+          temp.add(new Friendship(Recipient.ID_HEADER));
+          temp.addAll(recipientList);
+          ListUtils.addEmptyItems(screenUtils, temp);
+
+          if (latestRecipientList.size() != 0) {
+            diffResult =
+                DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
+            homeGridAdapter.setItems(temp);
+          }
+
+          latestRecipientList.clear();
+          latestRecipientList.addAll(temp);
+          return diffResult;
+        })
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(diffResult -> {
+          if (diffResult != null) {
+            diffResult.dispatchUpdatesTo(homeGridAdapter);
+          } else {
+            homeGridAdapter.setItems(latestRecipientList);
+            homeGridAdapter.notifyDataSetChanged();
+          }
     }));
   }
 
@@ -295,7 +333,7 @@ public class HomeActivity extends BaseActivity
         }))
         .subscribe());
 
-    subscriptions.add(topBarContainer.onSearch().subscribe(s -> homeGridAdapter.filterList(s)));
+    subscriptions.add(topBarContainer.onSearch().subscribe());
   }
 
   private void initRemoteConfig() {

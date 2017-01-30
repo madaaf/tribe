@@ -19,6 +19,7 @@ package com.hannesdorfmann.adapterdelegates2;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
+import java.util.List;
 
 /**
  * This delegate provide method to hook in this delegate to {@link RecyclerView.Adapter} lifecycle.
@@ -58,4 +59,6 @@ public interface AdapterDelegate<T> {
    * @param holder The {@link RecyclerView.ViewHolder} to bind
    */
   public void onBindViewHolder(@NonNull T items, int position, @NonNull RecyclerView.ViewHolder holder);
+
+  public void onBindViewHolder(@NonNull T items, @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads);
 }

@@ -19,6 +19,7 @@ package com.hannesdorfmann.adapterdelegates2;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
+import java.util.List;
 
 /**
  * An implementation of an Adapter that already uses a {@link AdapterDelegatesManager} and calls
@@ -75,6 +76,11 @@ public abstract class AbsDelegationAdapter<T> extends RecyclerView.Adapter {
 
   @Override public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
     delegatesManager.onBindViewHolder(items, position, holder);
+  }
+
+  @Override
+  public void onBindViewHolder(RecyclerView.ViewHolder holder, int position, List payloads) {
+    delegatesManager.onBindViewHolder(items, holder, position, payloads);
   }
 
   @Override public int getItemViewType(int position) {
