@@ -51,45 +51,75 @@ import dagger.Component;
 public interface UserComponent extends ActivityComponent {
 
     void inject(DebugActivity debugActivity);
+
     void inject(FacebookHiddenActivity facebookHiddenActivity);
+
     void inject(CountryActivity countryActivity);
+
     void inject(HomeActivity homeActivity);
+
     void inject(ProfileInfoView profileInfoView);
+
     void inject(GroupPresenter groupPresenter);
+
     void inject(MediaHiddenActivity mediaHiddenActivity);
+
     void inject(AuthenticationDialogFragment authenticationDialogFragment);
+
     void inject(ShareDialogProfileFragment shareDialogProfileFragment);
+
     void inject(GroupActivity groupActivity);
+
     void inject(SearchUserActivity searchUserActivity);
+
     void inject(SearchPresenter searchPresenter);
 
     void inject(SettingsActivity settingsActivity);
+
     void inject(SettingsPresenter settingsPresenter);
+
     void inject(SettingsThemeView settingsThemeView);
+
     void inject(SettingsFilterView settingsFilterView);
+
     void inject(SettingsView settingsView);
+
     void inject(SettingsProfileView settingsProfileView);
+
     void inject(SettingsFilterThemeView settingsFilterThemeView);
+
     void inject(SettingsParametersView settingsParametersView);
+
     void inject(SettingsBlockedHiddenView settingsBlockedHiddenView);
 
 
     void inject(ProfileActivity profileActivity);
+
     void inject(ProfileView profileView);
 
     void inject(AuthActivity authActivity);
+
     void inject(PhoneNumberView phoneNumberView);
+
     void inject(StatusView statusView);
+
     void inject(CodeView codeView);
+
     void inject(AuthProfileActivity authProfileActivity);
+
     void inject(AuthAccessActivity authAccessActivity);
+
     void inject(AccessView accessView);
+
     void inject(PickYourFriendsActivity pickYourFriendsActivity);
+
     void inject(LoadFriendsView loadFriendsView);
+
     void inject(PickAllView pickAllView);
 
     void inject(TileView tileView);
 
     void inject(LiveActivity liveActivity);
+
     void inject(LiveTestActivity liveTestActivity);
 }

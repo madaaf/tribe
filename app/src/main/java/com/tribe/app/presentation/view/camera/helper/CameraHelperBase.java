@@ -194,7 +194,8 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
                 camera.setPreviewCallback(null);
                 try {
                     camera.stopPreview();
-                } catch (final Exception e) {}	// ignore: tried to stop a non-existent preview
+                } catch (final Exception e) {
+                }    // ignore: tried to stop a non-existent preview
             }
         }
     }
@@ -310,7 +311,8 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
 
         try {
             getCamera().setParameters(params);
-        } catch (final RuntimeException  e) {}
+        } catch (final RuntimeException e) {
+        }
     }
 
     @Override
@@ -320,7 +322,8 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
 
         try {
             getCamera().setParameters(params);
-        } catch (final RuntimeException  e) {}
+        } catch (final RuntimeException e) {
+        }
     }
 
     @Override
@@ -332,6 +335,7 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
     public String switchFlashMode(final String... values) {
         return switchFlashMode(getSupportedFlashModes(values));
     }
+
     private String switchFlashMode(final List<String> list) {
         final String value = getNextValue(list, getFlashMode());
         if (value != null) {
@@ -574,10 +578,18 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
         int rotation = display.getRotation();
         int degrees = 0;
         switch (rotation) {
-            case Surface.ROTATION_0: degrees = 0; break;
-            case Surface.ROTATION_90: degrees = 90; break;
-            case Surface.ROTATION_180: degrees = 180; break;
-            case Surface.ROTATION_270: degrees = 270; break;
+            case Surface.ROTATION_0:
+                degrees = 0;
+                break;
+            case Surface.ROTATION_90:
+                degrees = 90;
+                break;
+            case Surface.ROTATION_180:
+                degrees = 180;
+                break;
+            case Surface.ROTATION_270:
+                degrees = 270;
+                break;
         }
         camera.setDisplayOrientation(degrees);
     }
@@ -592,7 +604,8 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
                 parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
                 try {
                     getCamera().setParameters(parameters);
-                } catch (final RuntimeException e) {}
+                } catch (final RuntimeException e) {
+                }
             } else {
                 if (supportedFocusModes != null) {
                     final Camera.Parameters parameters = getCamera().getParameters();
@@ -600,12 +613,14 @@ public class CameraHelperBase implements CameraHelper, Camera.PictureCallback, C
                         parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
                         try {
                             getCamera().setParameters(parameters);
-                        } catch (final RuntimeException e) {}
+                        } catch (final RuntimeException e) {
+                        }
                     } else if (supportedFocusModes.contains(Camera.Parameters.FOCUS_MODE_INFINITY)) {
                         parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_INFINITY);
                         try {
                             getCamera().setParameters(parameters);
-                        } catch (final RuntimeException e) {}
+                        } catch (final RuntimeException e) {
+                        }
                     }
                 }
             }

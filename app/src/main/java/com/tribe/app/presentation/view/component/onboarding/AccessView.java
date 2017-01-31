@@ -50,7 +50,8 @@ public class AccessView extends LinearLayout {
     private final static int PULSATING_DURATION = 1200;
 
     @IntDef({NONE, LOADING, DONE})
-    public @interface StatusType{}
+    public @interface StatusType {
+    }
 
     public static final int NONE = 0;
     public static final int LOADING = 1;
@@ -88,7 +89,9 @@ public class AccessView extends LinearLayout {
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
     // VARIABLES
-    private @StatusType int status;
+    private
+    @StatusType
+    int status;
     private boolean isEnd = true;
     private int nbFriends = 0;
 
@@ -223,7 +226,9 @@ public class AccessView extends LinearLayout {
         animation.start();
     }
 
-    public @StatusType int getStatus() {
+    public
+    @StatusType
+    int getStatus() {
         return status;
     }
 

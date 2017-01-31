@@ -19,6 +19,7 @@ public class ContactAB extends Contact {
 
     /**
      * Get first phone if available
+     *
      * @return
      */
     @Nullable

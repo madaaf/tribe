@@ -13,7 +13,8 @@ import java.io.InputStream;
 
 public class BitmapFactoryUtils {
 
-    private BitmapFactoryUtils() {}
+    private BitmapFactoryUtils() {
+    }
 
     public static Bitmap decodeFile(final String filename, final int maxSize, final boolean square) throws IOException {
         final int angle = ExifUtils.getAngle(filename);
@@ -50,6 +51,7 @@ public class BitmapFactoryUtils {
         }
         return bitmap;
     }
+
     public static Bitmap decodeStream(final InputStream is) {
         return decodeStream(is, 1, 0, 2);
     }
@@ -91,7 +93,7 @@ public class BitmapFactoryUtils {
     }
 
     public static Bitmap scale(Bitmap realImage, float maxImageSize,
-                                   boolean filter) {
+                               boolean filter) {
         float ratio = Math.max(
                 (float) maxImageSize / realImage.getWidth(),
                 (float) maxImageSize / realImage.getHeight());
@@ -124,7 +126,8 @@ public class BitmapFactoryUtils {
         } finally {
             try {
                 in.close();
-            } catch (final IOException e) {}	// 無視する
+            } catch (final IOException e) {
+            }    // 無視する
         }
     }
 

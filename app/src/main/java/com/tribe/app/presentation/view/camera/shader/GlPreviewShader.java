@@ -57,7 +57,7 @@ public class GlPreviewShader extends GlShader {
         useProgram();
 
         glUniformMatrix4fv(getHandle("uMVPMatrix"), 1, false, mvpMatrix, 0);
-        glUniformMatrix4fv(getHandle("uSTMatrix"),  1, false, stMatrix,  0);
+        glUniformMatrix4fv(getHandle("uSTMatrix"), 1, false, stMatrix, 0);
         glUniform1f(getHandle("uCRatio"), aspectRatio);
 
         glBindBuffer(GL_ARRAY_BUFFER, getVertexBufferName());

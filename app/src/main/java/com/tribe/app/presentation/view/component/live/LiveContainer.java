@@ -48,7 +48,8 @@ import timber.log.Timber;
 public class LiveContainer extends FrameLayout {
 
     @IntDef({EVENT_CLOSED, EVENT_OPENED})
-    public @interface Event {}
+    public @interface Event {
+    }
 
     public static final int EVENT_CLOSED = 0;
     public static final int EVENT_OPENED = 1;
@@ -96,7 +97,7 @@ public class LiveContainer extends FrameLayout {
     private float downX, downY, currentX, currentY, diffDown, scrollTolerance;
     private int overallScrollY = 0;
     private TileView currentTileView, draggedTileView;
-    private int [] tileLocationStart = new int[2];
+    private int[] tileLocationStart = new int[2];
     private int statusBarHeight = 0;
     private boolean hasNotifiedAtRest = false;
     private boolean dropEnabled = false;
@@ -186,7 +187,8 @@ public class LiveContainer extends FrameLayout {
         subscriptions.add(
                 viewInviteLive.onScrollStateChanged()
                         .subscribe(newState -> {
-                            if (newState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) overallScrollY = 0;
+                            if (newState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE)
+                                overallScrollY = 0;
                             else if (timerLongPress != null) timerLongPress.unsubscribe();
                         })
         );
@@ -214,7 +216,9 @@ public class LiveContainer extends FrameLayout {
         return beingDragged;
     }
 
-    public boolean isOpened() { return isOpened; }
+    public boolean isOpened() {
+        return isOpened;
+    }
 
     ///////////////////////
     //    TOUCH EVENTS   //
@@ -303,7 +307,7 @@ public class LiveContainer extends FrameLayout {
         getLocationOnScreen(location);
 
         switch (action & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_MOVE : {
+            case MotionEvent.ACTION_MOVE: {
                 final int pointerIndex = event.findPointerIndex(activePointerId);
 
                 if (pointerIndex != INVALID_POINTER) {
@@ -339,7 +343,8 @@ public class LiveContainer extends FrameLayout {
                 break;
             }
 
-            case MotionEvent.ACTION_UP: case MotionEvent.ACTION_CANCEL: {
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL: {
                 final int pointerIndex = event.findPointerIndex(activePointerId);
 
                 if (currentTileView == null && pointerIndex != INVALID_POINTER && velocityTracker != null) {

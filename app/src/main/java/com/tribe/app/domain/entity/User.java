@@ -262,8 +262,10 @@ public class User implements Serializable {
             setTribeSave(user.isTribeSave());
             setPushNotif(user.isPushNotif());
             if (user.getLocation() != null) setLocation(user.getLocation());
-            if (user.getMembershipList() != null && user.getMembershipList().size() > 0) setMembershipList(user.getMembershipList());
-            if (user.getFriendships() != null && user.getFriendshipList().size() > 0) setFriendships(user.getFriendships());
+            if (user.getMembershipList() != null && user.getMembershipList().size() > 0)
+                setMembershipList(user.getMembershipList());
+            if (user.getFriendships() != null && user.getFriendshipList().size() > 0)
+                setFriendships(user.getFriendships());
         }
     }
 

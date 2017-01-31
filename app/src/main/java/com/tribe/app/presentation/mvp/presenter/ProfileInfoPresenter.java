@@ -105,7 +105,8 @@ public class ProfileInfoPresenter extends UpdateUserPresenter {
     private class FacebookInfosSubscriber extends DefaultSubscriber<FacebookEntity> {
 
         @Override
-        public void onCompleted() { }
+        public void onCompleted() {
+        }
 
         @Override
         public void onError(Throwable e) {

@@ -55,7 +55,8 @@ public class RefreshHowManyFriendsJob extends BaseJob {
     private final class HowManyFriendsSubscriber extends DefaultSubscriber<Void> {
 
         @Override
-        public void onCompleted() {}
+        public void onCompleted() {
+        }
 
         @Override
         public void onError(Throwable e) {

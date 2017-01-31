@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".presentation.view.activity.GroupActivity"
-    android:background="@drawable/shape_rect_white_rounded_top"
-    >
+    android:background="@drawable/shape_rect_white_rounded_top">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -19,8 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:gravity="center"
-            />
+            android:gravity="center" />
 
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtTitleTwo"
@@ -28,8 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:gravity="center"
-            />
+            android:gravity="center" />
 
         <ImageView
             android:id="@+id/imgBack"
@@ -39,8 +35,7 @@
             android:src="@drawable/picto_back"
             android:scaleType="centerInside"
             android:background="@drawable/selectable_button_oval"
-            android:clickable="true"
-            />
+            android:clickable="true" />
 
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtAction"
@@ -50,8 +45,7 @@
             android:layout_gravity="right|center_vertical"
             android:layout_marginRight="@dimen/horizontal_margin"
             android:gravity="right|center_vertical"
-            android:visibility="gone"
-            />
+            android:visibility="gone" />
 
         <com.github.rahatarmanahmed.cpv.CircularProgressView
             android:id="@+id/progressView"
@@ -63,8 +57,7 @@
             app:cpv_animAutostart="true"
             app:cpv_indeterminate="true"
             app:cpv_color="@color/blue.text"
-            app:cpv_thickness="2dp"
-            />
+            app:cpv_thickness="2dp" />
 
     </FrameLayout>
 
@@ -72,13 +65,11 @@
         android:id="@+id/viewNavigatorStack"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/top_bar_height_small"
-        />
+        android:layout_marginTop="@dimen/top_bar_height_small" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_size"
         android:layout_marginTop="@dimen/top_bar_height_small"
-        android:background="@color/grey.light"
-        />
+        android:background="@color/grey.light" />
 </FrameLayout>

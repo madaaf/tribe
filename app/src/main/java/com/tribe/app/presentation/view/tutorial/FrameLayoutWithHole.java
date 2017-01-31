@@ -41,7 +41,9 @@ public class FrameLayoutWithHole extends FrameLayout {
     private ScreenUtils screenUtils;
     private TextPaint textPaint;
     private Activity activity;
-    private @Tutorial.MotionType int motionType;
+    private
+    @Tutorial.MotionType
+    int motionType;
     private Paint eraser;
 
     private Bitmap eraserBitmap;

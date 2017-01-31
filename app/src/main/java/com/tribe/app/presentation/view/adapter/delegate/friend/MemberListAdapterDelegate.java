@@ -6,8 +6,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
 import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.GroupMember;
@@ -18,8 +20,11 @@ import com.tribe.app.presentation.view.adapter.delegate.base.AddAnimationAdapter
 import com.tribe.app.presentation.view.adapter.viewholder.AddAnimationViewHolder;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+
 import java.util.List;
+
 import javax.inject.Inject;
+
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
@@ -28,111 +33,122 @@ import rx.subjects.PublishSubject;
  */
 public class MemberListAdapterDelegate extends AddAnimationAdapterDelegate<List<GroupMember>> {
 
-  @Inject User user;
+    @Inject
+    User user;
 
-  // VARIABLES
-  private int avatarSize;
+    // VARIABLES
+    private int avatarSize;
 
-  // RX SUBSCRIPTIONS / SUBJECTS
-  private PublishSubject<View> longClick = PublishSubject.create();
+    // RX SUBSCRIPTIONS / SUBJECTS
+    private PublishSubject<View> longClick = PublishSubject.create();
 
-  public MemberListAdapterDelegate(Context context) {
-    super(context);
-    this.avatarSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
-    ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
-  }
-
-  @Override public boolean isForViewType(@NonNull List<GroupMember> items, int position) {
-    return true;
-  }
-
-  @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
-    RecyclerView.ViewHolder vh =
-        new GroupMemberViewHolder(layoutInflater.inflate(R.layout.item_member_list, parent, false));
-
-    vh.itemView.setOnLongClickListener(v -> {
-      longClick.onNext(v);
-      return true;
-    });
-
-    return vh;
-  }
-
-  @Override public void onBindViewHolder(@NonNull List<GroupMember> items, int position,
-      @NonNull RecyclerView.ViewHolder holder) {
-    GroupMemberViewHolder vh = (GroupMemberViewHolder) holder;
-    GroupMember groupMember = items.get(position);
-
-    if (animations.containsKey(holder)) {
-      animations.get(holder).cancel();
+    public MemberListAdapterDelegate(Context context) {
+        super(context);
+        this.avatarSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
+        ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
     }
 
-    vh.btnAdd.setVisibility(View.VISIBLE);
-    vh.imgGhost.setVisibility(View.GONE);
-
-    if (groupMember.isAnimateAdd()) {
-      animateAddSuccessful(vh);
-      groupMember.setAnimateAdd(false);
-    } else if (groupMember.isFriend()) {
-      vh.imgPicto.setVisibility(View.VISIBLE);
-      vh.imgPicto.setImageResource(R.drawable.picto_done_white);
-      vh.btnAddBG.setVisibility(View.VISIBLE);
-      vh.progressBarAdd.setVisibility(View.GONE);
-    } else if (groupMember.getUser().isInvisibleMode()) {
-      vh.btnAdd.setVisibility(View.GONE);
-      vh.imgGhost.setVisibility(View.VISIBLE);
+    @Override
+    public boolean isForViewType(@NonNull List<GroupMember> items, int position) {
+        return true;
     }
 
-    vh.txtName.setText(groupMember.getUser().getDisplayName());
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
+        RecyclerView.ViewHolder vh =
+                new GroupMemberViewHolder(layoutInflater.inflate(R.layout.item_member_list, parent, false));
 
-    if (!StringUtils.isEmpty(groupMember.getUser().getUsername())) {
-      vh.txtUsername.setText("@" + groupMember.getUser().getUsername());
-    } else {
-      vh.txtUsername.setText("");
+        vh.itemView.setOnLongClickListener(v -> {
+            longClick.onNext(v);
+            return true;
+        });
+
+        return vh;
     }
 
-    vh.imgMemberBadge.setVisibility(View.GONE);
+    @Override
+    public void onBindViewHolder(@NonNull List<GroupMember> items, int position,
+                                 @NonNull RecyclerView.ViewHolder holder) {
+        GroupMemberViewHolder vh = (GroupMemberViewHolder) holder;
+        GroupMember groupMember = items.get(position);
 
-    if (!StringUtils.isEmpty(groupMember.getUser().getProfilePicture())) {
-      Glide.with(context)
-          .load(groupMember.getUser().getProfilePicture())
-          .thumbnail(0.25f)
-          .override(avatarSize, avatarSize)
-          .bitmapTransform(new CropCircleTransformation(context))
-          .crossFade()
-          .into(vh.imgAvatar);
+        if (animations.containsKey(holder)) {
+            animations.get(holder).cancel();
+        }
+
+        vh.btnAdd.setVisibility(View.VISIBLE);
+        vh.imgGhost.setVisibility(View.GONE);
+
+        if (groupMember.isAnimateAdd()) {
+            animateAddSuccessful(vh);
+            groupMember.setAnimateAdd(false);
+        } else if (groupMember.isFriend()) {
+            vh.imgPicto.setVisibility(View.VISIBLE);
+            vh.imgPicto.setImageResource(R.drawable.picto_done_white);
+            vh.btnAddBG.setVisibility(View.VISIBLE);
+            vh.progressBarAdd.setVisibility(View.GONE);
+        } else if (groupMember.getUser().isInvisibleMode()) {
+            vh.btnAdd.setVisibility(View.GONE);
+            vh.imgGhost.setVisibility(View.VISIBLE);
+        }
+
+        vh.txtName.setText(groupMember.getUser().getDisplayName());
+
+        if (!StringUtils.isEmpty(groupMember.getUser().getUsername())) {
+            vh.txtUsername.setText("@" + groupMember.getUser().getUsername());
+        } else {
+            vh.txtUsername.setText("");
+        }
+
+        vh.imgMemberBadge.setVisibility(View.GONE);
+
+        if (!StringUtils.isEmpty(groupMember.getUser().getProfilePicture())) {
+            Glide.with(context)
+                    .load(groupMember.getUser().getProfilePicture())
+                    .thumbnail(0.25f)
+                    .override(avatarSize, avatarSize)
+                    .bitmapTransform(new CropCircleTransformation(context))
+                    .crossFade()
+                    .into(vh.imgAvatar);
+        }
+
+        if (!user.equals(groupMember.getUser()) && !groupMember.isFriend() && !groupMember.getUser()
+                .isInvisibleMode()) {
+            vh.btnAdd.setOnClickListener(v -> onClick(vh));
+        }
     }
 
-    if (!user.equals(groupMember.getUser()) && !groupMember.isFriend() && !groupMember.getUser()
-        .isInvisibleMode()) {
-      vh.btnAdd.setOnClickListener(v -> onClick(vh));
+    @Override
+    public void onBindViewHolder(@NonNull List<GroupMember> items,
+                                 @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
+
     }
-  }
 
-  @Override public void onBindViewHolder(@NonNull List<GroupMember> items,
-      @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
-
-  }
-
-  public Observable<View> onLongClick() {
-    return longClick;
-  }
-
-  static class GroupMemberViewHolder extends AddAnimationViewHolder {
-
-    @BindView(R.id.imgAvatar) ImageView imgAvatar;
-
-    @BindView(R.id.txtName) TextViewFont txtName;
-
-    @BindView(R.id.txtUsername) TextViewFont txtUsername;
-
-    @BindView(R.id.imgGhost) ImageView imgGhost;
-
-    @BindView(R.id.imgMemberBadge) ImageView imgMemberBadge;
-
-    public GroupMemberViewHolder(View itemView) {
-      super(itemView);
-      ButterKnife.bind(this, itemView);
+    public Observable<View> onLongClick() {
+        return longClick;
     }
-  }
+
+    static class GroupMemberViewHolder extends AddAnimationViewHolder {
+
+        @BindView(R.id.imgAvatar)
+        ImageView imgAvatar;
+
+        @BindView(R.id.txtName)
+        TextViewFont txtName;
+
+        @BindView(R.id.txtUsername)
+        TextViewFont txtUsername;
+
+        @BindView(R.id.imgGhost)
+        ImageView imgGhost;
+
+        @BindView(R.id.imgMemberBadge)
+        ImageView imgMemberBadge;
+
+        public GroupMemberViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+    }
 }

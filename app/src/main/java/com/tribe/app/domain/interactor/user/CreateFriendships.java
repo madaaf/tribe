@@ -23,7 +23,7 @@ public class CreateFriendships extends UseCase {
         this.userRepository = userRepository;
     }
 
-    public void setUserIds(String ...userIds) {
+    public void setUserIds(String... userIds) {
         this.userIds = userIds;
     }
 

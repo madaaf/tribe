@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.camera.renderer;
 
 import android.graphics.Bitmap;
+
 import com.tribe.app.presentation.view.camera.utils.OpenGlUtils;
 
 import java.nio.IntBuffer;
@@ -49,9 +50,11 @@ public class GLES20FramebufferObject {
     public int getWidth() {
         return mWidth;
     }
+
     public int getHeight() {
         return mHeight;
     }
+
     public int getTexName() {
         return mTexName;
     }

@@ -135,6 +135,7 @@ public class MediaVideoEncoder extends MediaEncoder {
 
     /**
      * select the first codec that match a specific MIME type
+     *
      * @param mimeType
      * @return null if no codec matched
      */
@@ -147,7 +148,7 @@ public class MediaVideoEncoder extends MediaEncoder {
         for (int i = 0; i < numCodecs; i++) {
             final MediaCodecInfo codecInfo = MediaCodecList.getCodecInfoAt(i);
 
-            if (!codecInfo.isEncoder() && !codecInfo.getName().equals("OMX.google.h264.encoder")) {	// skipp decoder
+            if (!codecInfo.isEncoder() && !codecInfo.getName().equals("OMX.google.h264.encoder")) {    // skipp decoder
                 continue;
             }
             // select first codec that match a specific MIME type and color format
@@ -167,6 +168,7 @@ public class MediaVideoEncoder extends MediaEncoder {
 
     /**
      * select color format available on specific codec and we can use.
+     *
      * @return 0 if no colorFormat is matched
      */
     protected static final int selectColorFormat(final MediaCodecInfo codecInfo, final String mimeType) {
@@ -189,7 +191,8 @@ public class MediaVideoEncoder extends MediaEncoder {
             }
         }
         if (result == 0)
-            if (DEBUG) Log.e(TAG, "couldn't find a good color format for " + codecInfo.getName() + " / " + mimeType);
+            if (DEBUG)
+                Log.e(TAG, "couldn't find a good color format for " + codecInfo.getName() + " / " + mimeType);
         return result;
     }
 
@@ -197,8 +200,9 @@ public class MediaVideoEncoder extends MediaEncoder {
      * color formats that we can use in this class
      */
     protected static int[] recognizedFormats;
+
     static {
-        recognizedFormats = new int[] {
+        recognizedFormats = new int[]{
 //        	MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar,
 //        	MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar,
 //        	MediaCodecInfo.CodecCapabilities.COLOR_QCOM_FormatYUV420SemiPlanar,

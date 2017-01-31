@@ -49,12 +49,18 @@ public class Tutorial {
     public static final int CLICK_ONLY = 1;
     public static final int SWIPE_ONLY = 2;
 
-    private @TutorialManager.TutorialKey String key;
-    private @Technique int technique;
+    private
+    @TutorialManager.TutorialKey
+    String key;
+    private
+    @Technique
+    int technique;
     private View highlightedView;
     private Activity activity;
     private ScreenUtils screenUtils;
-    private @MotionType int motionType;
+    private
+    @MotionType
+    int motionType;
     private FrameLayoutWithHole frameLayout;
     private View toolTipViewGroup;
     private ToolTip toolTip;
@@ -110,10 +116,12 @@ public class Tutorial {
                 }
 
                 @Override
-                public void onAnimationEnd(Animation animation) {}
+                public void onAnimationEnd(Animation animation) {
+                }
 
                 @Override
-                public void onAnimationRepeat(Animation animation) {}
+                public void onAnimationRepeat(Animation animation) {
+                }
             });
             toolTipViewGroup.startAnimation(toolTip.exitAnimation);
         } else {

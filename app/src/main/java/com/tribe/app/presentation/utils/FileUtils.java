@@ -35,7 +35,8 @@ import javax.inject.Singleton;
 public class FileUtils {
 
     @StringDef({VIDEO, PHOTO})
-    public @interface Type {}
+    public @interface Type {
+    }
 
     public static final String VIDEO = "video";
     public static final String PHOTO = "photo";
@@ -234,7 +235,8 @@ public class FileUtils {
 
     /**
      * get uri to drawable or any other resource type if u wish
-     * @param context - context
+     *
+     * @param context    - context
      * @param drawableId - drawable res id
      * @return - uri
      */
@@ -242,7 +244,7 @@ public class FileUtils {
         Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
                 "://" + context.getResources().getResourcePackageName(drawableId)
                 + '/' + context.getResources().getResourceTypeName(drawableId)
-                + '/' + context.getResources().getResourceEntryName(drawableId) );
+                + '/' + context.getResources().getResourceEntryName(drawableId));
         return imageUri;
     }
 }

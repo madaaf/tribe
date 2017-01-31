@@ -11,7 +11,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * 
  * Created by tiago on 2016/06/13.
  */
 public class AudioRecorder {
@@ -19,7 +18,7 @@ public class AudioRecorder {
     private static String TAG = "AudioRecorder";
 
     private static final int BLOCK_SIZE = 256;
-    private static int[] sampleRates = new int[] { 44100, 8000, 11025, 22050 };
+    private static int[] sampleRates = new int[]{44100, 8000, 11025, 22050};
     public static final int SAMPLING_INTERVAL = 1;
 
     private AudioRecord audioRecord;
@@ -44,8 +43,8 @@ public class AudioRecorder {
 
     private void initAudioRecord() {
         for (int rate : sampleRates) {
-            for (short audioFormat : new short[] { AudioFormat.ENCODING_PCM_16BIT, AudioFormat.ENCODING_PCM_8BIT }) {
-                for (short channelConfig : new short[] { AudioFormat.CHANNEL_IN_MONO, AudioFormat.CHANNEL_IN_STEREO }) {
+            for (short audioFormat : new short[]{AudioFormat.ENCODING_PCM_16BIT, AudioFormat.ENCODING_PCM_8BIT}) {
+                for (short channelConfig : new short[]{AudioFormat.CHANNEL_IN_MONO, AudioFormat.CHANNEL_IN_STEREO}) {
                     try {
                         bufferSize = AudioRecord.getMinBufferSize(
                                 rate,

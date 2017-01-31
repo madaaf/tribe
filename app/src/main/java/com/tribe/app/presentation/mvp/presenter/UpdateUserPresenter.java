@@ -136,7 +136,8 @@ public abstract class UpdateUserPresenter implements Presenter {
     private class LookupUsernameSubscriber extends DefaultSubscriber<Boolean> {
 
         @Override
-        public void onCompleted() { }
+        public void onCompleted() {
+        }
 
         @Override
         public void onError(Throwable e) {

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@null">
@@ -12,8 +11,7 @@
         android:layout_gravity="center_vertical"
         android:background="@drawable/shape_oval_grey_lighter"
         android:src="@drawable/img_group_0"
-        android:scaleType="centerCrop"
-        />
+        android:scaleType="centerCrop" />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtLabel"
@@ -23,9 +21,8 @@
         android:layout_marginLeft="55dp"
         android:singleLine="true"
         android:text="Best friends"
-        style="@style/Title.1.Black"
-        />
-    
+        style="@style/Title.1.Black" />
+
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -33,6 +30,5 @@
         android:src="@drawable/picto_back"
         android:scaleType="centerInside"
         android:scaleX="-1"
-        android:scaleY="-1"
-        />
+        android:scaleY="-1" />
 </merge>

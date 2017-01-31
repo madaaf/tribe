@@ -47,7 +47,8 @@ public class UserRealmDataMapper {
             user.setInvisibleMode(userRealm.isInvisibleMode());
             user.setPhone(userRealm.getPhone());
             user.setFbid(userRealm.getFbid());
-            if (userRealm.getLocation() != null) user.setLocation(locationRealmDataMapper.transform(userRealm.getLocation()));
+            if (userRealm.getLocation() != null)
+                user.setLocation(locationRealmDataMapper.transform(userRealm.getLocation()));
             user.setTribeSave(userRealm.isTribeSave());
             user.setPushNotif(userRealm.isPushNotif());
             user.setIsOnline(userRealm.isOnline());
@@ -105,7 +106,8 @@ public class UserRealmDataMapper {
             userRealm.setFbid(user.getFbid());
             userRealm.setPhone(user.getPhone());
             userRealm.setPushNotif(user.isPushNotif());
-            if (user.getLocation() != null) userRealm.setLocation(locationRealmDataMapper.transform(user.getLocation()));
+            if (user.getLocation() != null)
+                userRealm.setLocation(locationRealmDataMapper.transform(user.getLocation()));
             userRealm.setTribeSave(user.isTribeSave());
             userRealm.setIsOnline(user.isOnline());
             userRealm.setLastOnline(user.getLastOnline());

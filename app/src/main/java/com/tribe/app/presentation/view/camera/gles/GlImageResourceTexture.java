@@ -50,6 +50,7 @@ public class GlImageResourceTexture extends GlImageTexture {
     public boolean isAutoClose() {
         return autoClose;
     }
+
     @Override
     public void setup() {
         final int[] args = new int[1];
@@ -92,7 +93,8 @@ public class GlImageResourceTexture extends GlImageTexture {
         if (imageStream != null) {
             try {
                 imageStream.close();
-            } catch (final IOException e) {}
+            } catch (final IOException e) {
+            }
         }
 
         imageStream = null;

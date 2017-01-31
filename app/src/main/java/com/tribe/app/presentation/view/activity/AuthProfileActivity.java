@@ -102,9 +102,12 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
         unbinder = ButterKnife.bind(this);
 
         if (savedInstanceState != null) {
-            if (savedInstanceState.get(LOGIN_ENTITY) != null) loginEntity = (LoginEntity) savedInstanceState.getSerializable(LOGIN_ENTITY);
-            if (savedInstanceState.get(FACEBOOK_ENTITY) != null) facebookEntity = (FacebookEntity) savedInstanceState.getSerializable(FACEBOOK_ENTITY);
-            if (savedInstanceState.get(DEEPLINK) != null) deepLink = savedInstanceState.getParcelable(DEEPLINK);
+            if (savedInstanceState.get(LOGIN_ENTITY) != null)
+                loginEntity = (LoginEntity) savedInstanceState.getSerializable(LOGIN_ENTITY);
+            if (savedInstanceState.get(FACEBOOK_ENTITY) != null)
+                facebookEntity = (FacebookEntity) savedInstanceState.getSerializable(FACEBOOK_ENTITY);
+            if (savedInstanceState.get(DEEPLINK) != null)
+                deepLink = savedInstanceState.getParcelable(DEEPLINK);
             if (savedInstanceState.get(URI_PICTURE) != null) {
                 uriPicture = savedInstanceState.getParcelable(URI_PICTURE);
             }

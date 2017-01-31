@@ -16,7 +16,7 @@ public class ScaleManager {
         switch (scalableType) {
             case CENTER_CROP:
                 return getCropScale(PivotPoint.CENTER);
-            
+
             default:
                 return null;
         }

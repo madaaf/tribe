@@ -125,7 +125,7 @@ public class ContactCacheImpl implements ContactCache {
     @Override
     public Observable<List<ContactABRealm>> contacts() {
         return realm.where(ContactABRealm.class)
-                .findAllSorted(new String[] {"howManyFriends", "name"}, new Sort[] {Sort.DESCENDING, Sort.ASCENDING})
+                .findAllSorted(new String[]{"howManyFriends", "name"}, new Sort[]{Sort.DESCENDING, Sort.ASCENDING})
                 .asObservable()
                 .filter(contactABRealms -> contactABRealms.isLoaded())
                 .map(contactABRealms -> realm.copyFromRealm(contactABRealms));
@@ -134,10 +134,10 @@ public class ContactCacheImpl implements ContactCache {
     @Override
     public Observable<List<ContactFBRealm>> contactsFB() {
         return realm.where(ContactFBRealm.class)
-                    .findAllSorted(new String[] {"name"}, new Sort[] {Sort.ASCENDING})
-                    .asObservable()
-                    .filter(contactFBRealms -> contactFBRealms.isLoaded())
-                    .map(contactFBRealms -> realm.copyFromRealm(contactFBRealms));
+                .findAllSorted(new String[]{"name"}, new Sort[]{Sort.ASCENDING})
+                .asObservable()
+                .filter(contactFBRealms -> contactFBRealms.isLoaded())
+                .map(contactFBRealms -> realm.copyFromRealm(contactFBRealms));
     }
 
     @Override
@@ -167,7 +167,7 @@ public class ContactCacheImpl implements ContactCache {
             @Override
             public void call(final Subscriber<? super List<ContactABRealm>> subscriber) {
                 Realm realmObs = Realm.getDefaultInstance();
-                RealmResults<ContactABRealm> contactABRealmList = realmObs.where(ContactABRealm.class).findAllSorted(new String[] {"name"}, new Sort[] {Sort.ASCENDING});
+                RealmResults<ContactABRealm> contactABRealmList = realmObs.where(ContactABRealm.class).findAllSorted(new String[]{"name"}, new Sort[]{Sort.ASCENDING});
                 if (contactABRealmList != null)
                     subscriber.onNext(realmObs.copyFromRealm(contactABRealmList));
                 realmObs.close();
@@ -180,7 +180,7 @@ public class ContactCacheImpl implements ContactCache {
         return realm.where(ContactABRealm.class)
                 .greaterThanOrEqualTo("howManyFriends", 1)
                 .isEmpty("userList")
-                .findAllSorted(new String[] {"howManyFriends", "name"}, new Sort[] {Sort.DESCENDING, Sort.ASCENDING})
+                .findAllSorted(new String[]{"howManyFriends", "name"}, new Sort[]{Sort.DESCENDING, Sort.ASCENDING})
                 .asObservable()
                 .filter(contactABRealms -> contactABRealms.isLoaded())
                 .map(contactABRealms -> realm.copyFromRealm(contactABRealms));
@@ -189,16 +189,16 @@ public class ContactCacheImpl implements ContactCache {
     @Override
     public Observable<List<ContactABRealm>> findContactsByValue(String value) {
         return realm.where(ContactABRealm.class)
-                    .beginGroup()
-                        .equalTo("userList.username", value)
-                        .or()
-                        .beginsWith("name", value, Case.INSENSITIVE)
-                    .endGroup()
-                    .findAllSorted(new String[] {"howManyFriends", "name"}, new Sort[] {Sort.DESCENDING, Sort.ASCENDING})
-                    .asObservable()
-                    .filter(contacts -> contacts.isLoaded())
-                    .map(contacts -> realm.copyFromRealm(contacts))
-                    .unsubscribeOn(AndroidSchedulers.mainThread());
+                .beginGroup()
+                .equalTo("userList.username", value)
+                .or()
+                .beginsWith("name", value, Case.INSENSITIVE)
+                .endGroup()
+                .findAllSorted(new String[]{"howManyFriends", "name"}, new Sort[]{Sort.DESCENDING, Sort.ASCENDING})
+                .asObservable()
+                .filter(contacts -> contacts.isLoaded())
+                .map(contacts -> realm.copyFromRealm(contacts))
+                .unsubscribeOn(AndroidSchedulers.mainThread());
     }
 
     @Override

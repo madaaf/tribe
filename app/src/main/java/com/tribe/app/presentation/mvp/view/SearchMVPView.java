@@ -11,10 +11,16 @@ import java.util.List;
 public interface SearchMVPView extends LoadDataMVPView {
 
     void renderSearchResult(SearchResult searchResult);
+
     void renderContactList(List<Object> contactList);
+
     void onAddSuccess(Friendship friendship);
+
     void onAddError();
+
     void syncDone();
+
     void successFacebookLogin();
+
     void errorFacebookLogin();
 }

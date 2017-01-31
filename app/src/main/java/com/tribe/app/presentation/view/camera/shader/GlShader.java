@@ -52,10 +52,10 @@ public class GlShader {
                     "gl_FragColor = texture2D(sTexture, vTextureCoord);\n" +
                     "}\n";
 
-    private static final float[] VERTICES_DATA = new float[] {
+    private static final float[] VERTICES_DATA = new float[]{
             // X, Y, Z, U, V
-            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
-            1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+            -1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+            1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
             -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
             1.0f, -1.0f, 0.0f, 1.0f, 0.0f
     };
@@ -91,9 +91,9 @@ public class GlShader {
 
     public void setup() {
         release();
-        vertexShader     = OpenGlUtils.loadShader(vertexShaderSource, GL_VERTEX_SHADER);
-        fragmentShader   = OpenGlUtils.loadShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
-        program          = OpenGlUtils.createProgram(vertexShader, fragmentShader);
+        vertexShader = OpenGlUtils.loadShader(vertexShaderSource, GL_VERTEX_SHADER);
+        fragmentShader = OpenGlUtils.loadShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
+        program = OpenGlUtils.createProgram(vertexShader, fragmentShader);
         vertexBufferName = OpenGlUtils.createBuffer(VERTICES_DATA);
     }
 
@@ -107,7 +107,7 @@ public class GlShader {
         vertexShader = 0;
         glDeleteShader(fragmentShader);
         fragmentShader = 0;
-        glDeleteBuffers(1, new int[]{ vertexBufferName }, 0);
+        glDeleteBuffers(1, new int[]{vertexBufferName}, 0);
         vertexBufferName = 0;
         handleMap.clear();
     }
@@ -135,7 +135,8 @@ public class GlShader {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
-    protected void onDraw() {}
+    protected void onDraw() {
+    }
 
     protected final void useProgram() {
         glUseProgram(program);
@@ -165,7 +166,7 @@ public class GlShader {
         return location;
     }
 
-    protected final int[] getHandles(final String...names) {
+    protected final int[] getHandles(final String... names) {
         if (names == null) {
             return null;
         }

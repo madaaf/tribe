@@ -88,5 +88,7 @@ public class MemberListAdapter extends RecyclerView.Adapter {
         return memberListAdapterDelegate.clickAdd();
     }
 
-    public Observable<View> longClick() { return memberListAdapterDelegate.onLongClick(); }
+    public Observable<View> longClick() {
+        return memberListAdapterDelegate.onLongClick();
+    }
 }

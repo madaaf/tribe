@@ -182,19 +182,19 @@ public class SettingsFilterView extends FrameLayout {
 
     public void onResume() {
         subscriptions.add(Observable.
-            from(PermissionUtils.PERMISSIONS_CAMERA)
-            .map(permission -> RxPermissions.getInstance(getContext()).isGranted(permission))
-            .toList()
-            .subscribe(grantedList -> {
-                boolean areAllGranted = true;
+                from(PermissionUtils.PERMISSIONS_CAMERA)
+                .map(permission -> RxPermissions.getInstance(getContext()).isGranted(permission))
+                .toList()
+                .subscribe(grantedList -> {
+                    boolean areAllGranted = true;
 
-                for (Boolean granted : grantedList) {
-                    if (!granted) areAllGranted = false;
-                }
+                    for (Boolean granted : grantedList) {
+                        if (!granted) areAllGranted = false;
+                    }
 
-                if (areAllGranted) cameraWrapper.onResume(false);
-                else cameraWrapper.showPermissions();
-            }));
+                    if (areAllGranted) cameraWrapper.onResume(false);
+                    else cameraWrapper.showPermissions();
+                }));
     }
 
     public void onPause() {

@@ -149,10 +149,9 @@ public class AnimationUtils {
     }
 
     /**
-     *
      * @param context
-     * @param v1 the view that will be animated out of the screen
-     * @param v2 the view coming in to the screen
+     * @param v1      the view that will be animated out of the screen
+     * @param v2      the view coming in to the screen
      */
     public static void replaceView(Context context, View v1, View v2, Animator.AnimatorListener listener) {
         int translateOut = context.getResources().getDimensionPixelSize(R.dimen.transition_replace);
@@ -163,7 +162,7 @@ public class AnimationUtils {
     public static void scaleIn(View view, int duration) {
         view.animate()
                 .scaleY((float) 1.2).scaleX((float) 1.2)
-                .setDuration(duration/2)
+                .setDuration(duration / 2)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {

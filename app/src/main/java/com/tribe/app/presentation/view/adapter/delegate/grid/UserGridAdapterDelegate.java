@@ -26,7 +26,7 @@ public class UserGridAdapterDelegate extends RecipientGridAdapterDelegate {
                 && !items.get(position).getSubId().equals(Recipient.ID_HEADER)
                 && !items.get(position).getSubId().equals(Recipient.ID_EMPTY)
                 && !items.get(position).isOnline();
-                //&& !items.get(position).isConnected();
+        //&& !items.get(position).isConnected();
     }
 
 

@@ -17,7 +17,8 @@ import io.realm.annotations.PrimaryKey;
 public class UserRealm extends RealmObject {
 
     @StringDef({UPDATED_AT})
-    public @interface UserRealmAttributes {}
+    public @interface UserRealmAttributes {
+    }
 
     public static final String DISPLAY_NAME = "display_name";
     public static final String USERNAME = "username";

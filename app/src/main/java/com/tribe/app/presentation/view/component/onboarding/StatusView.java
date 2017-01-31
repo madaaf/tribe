@@ -37,7 +37,8 @@ public class StatusView extends FrameLayout {
     public static final int RESEND = 3;
 
     @IntDef({DISCLAIMER, SENDING, SENT, RESEND})
-    public @interface StatusType{}
+    public @interface StatusType {
+    }
 
     @BindView(R.id.txtStatus)
     TextViewFont txtStatus;
@@ -46,7 +47,9 @@ public class StatusView extends FrameLayout {
     View viewBG;
 
     // VARIABLES
-    private @StatusType int status;
+    private
+    @StatusType
+    int status;
     private LayerDrawable background;
 
     // OBSERVABLES
@@ -98,7 +101,9 @@ public class StatusView extends FrameLayout {
         background.getDrawable(2).setAlpha(255);
     }
 
-    public @StatusType int getStatus() {
+    public
+    @StatusType
+    int getStatus() {
         return status;
     }
 
@@ -134,15 +139,16 @@ public class StatusView extends FrameLayout {
         int drawableFrom = 0;
 
         switch (status) {
-            case RESEND :
+            case RESEND:
                 drawableFrom = 0;
                 break;
 
-            case SENDING : case SENT :
+            case SENDING:
+            case SENT:
                 drawableFrom = 1;
                 break;
 
-            case DISCLAIMER :
+            case DISCLAIMER:
                 drawableFrom = 2;
                 break;
         }

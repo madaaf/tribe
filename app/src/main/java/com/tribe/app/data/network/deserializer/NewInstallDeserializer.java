@@ -13,8 +13,10 @@ public class NewInstallDeserializer<T> implements JsonDeserializer<T> {
     @Override
     public T deserialize(JsonElement je, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonElement results = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("createInstall");
-        if (results == null) results = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("updateInstall");
-        if (results == null) results = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("updateI");
+        if (results == null)
+            results = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("updateInstall");
+        if (results == null)
+            results = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("updateI");
 
         return new Gson().fromJson(results, typeOfT);
     }

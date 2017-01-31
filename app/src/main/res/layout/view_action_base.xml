@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtTitle"
         style="@style/Title.1.Black"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
+        android:layout_height="wrap_content" />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtBody"
@@ -15,6 +13,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:maxLines="2"
-        />
+        android:maxLines="2" />
 </merge>

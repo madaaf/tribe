@@ -3,8 +3,9 @@
     android:interpolator="@android:interpolator/decelerate_quad"
     android:zAdjustment="top">
     <translate
-        android:fromXDelta="100%p" android:toXDelta="0"
-        android:fromYDelta="0%" android:toYDelta="0%"
-        android:duration="@integer/fast_anim"
-        />
+        android:fromXDelta="100%p"
+        android:toXDelta="0"
+        android:fromYDelta="0%"
+        android:toYDelta="0%"
+        android:duration="@integer/fast_anim" />
 </set>

@@ -23,7 +23,6 @@ import java.util.Random;
 import javax.inject.Inject;
 
 /**
- *
  * Created by tiago on 2016/06/13.
  */
 public class HistogramVisualizerView extends LinearLayout implements AudioVisualizerCallback {
@@ -102,12 +101,14 @@ public class HistogramVisualizerView extends LinearLayout implements AudioVisual
 
                     for (int i = 0; i < i1; i++) {
                         if (i == i1 - 1) layoutBar(viewColumnList.get(i), null, max, true, i);
-                        else layoutBar(viewColumnList.get(i), viewColumnList.get(i + 1), 0, true, i);
+                        else
+                            layoutBar(viewColumnList.get(i), viewColumnList.get(i + 1), 0, true, i);
                     }
 
                     for (int i = viewColumnList.size() - 1; i >= i1; i--) {
                         if (i == i1) layoutBar(viewColumnList.get(i), null, max, true, i);
-                        else layoutBar(viewColumnList.get(i), viewColumnList.get(i - 1), 0, true, i);
+                        else
+                            layoutBar(viewColumnList.get(i), viewColumnList.get(i - 1), 0, true, i);
                     }
 
                     lastValue = max;
@@ -130,8 +131,10 @@ public class HistogramVisualizerView extends LinearLayout implements AudioVisual
 
         vaLastValueArray[viewColumnList.indexOf(bar)] = newHeight;
 
-        if (hasReturn) va = ValueAnimator.ofInt(vaLastAnimationValueArray[viewColumnList.indexOf(bar)], newHeight, 0);
-        else va =  ValueAnimator.ofInt(vaLastAnimationValueArray[viewColumnList.indexOf(bar)], newHeight);
+        if (hasReturn)
+            va = ValueAnimator.ofInt(vaLastAnimationValueArray[viewColumnList.indexOf(bar)], newHeight, 0);
+        else
+            va = ValueAnimator.ofInt(vaLastAnimationValueArray[viewColumnList.indexOf(bar)], newHeight);
 
         va.setDuration(DURATION_LONG);
         va.setInterpolator(new LinearInterpolator());

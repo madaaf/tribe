@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.tribe.app.presentation.view.component.settings.SettingsFilterThemeView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.tribe.app.presentation.view.component.settings.SettingsFilterThemeView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".presentation.view.activity.SettingsActivity"
-    android:background="@color/grey.background.profile_info"
-    >
+    android:background="@color/grey.background.profile_info">
 
     <com.tribe.app.presentation.view.component.settings.SettingsFilterView
         android:id="@+id/viewFilterSettings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        />
+        android:background="@android:color/white" />
 
     <include layout="@layout/view_separator_no_bg" />
 
@@ -22,8 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/section_button_vertical_padding"
-        android:background="@android:color/white"
-        />
+        android:background="@android:color/white" />
 
     <include layout="@layout/view_separator_simple" />
 

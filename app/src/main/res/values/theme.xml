@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@android:color/black</item>
         <item name="colorPrimaryDark">@android:color/black</item>
@@ -63,7 +64,7 @@
         <item name="android:windowExitAnimation">@anim/base_dialog_fragment_exit_animation</item>
     </style>
 
-    <style name="Custom.Dialog" parent="@style/Theme.AppCompat.Light.Dialog" >
+    <style name="Custom.Dialog" parent="@style/Theme.AppCompat.Light.Dialog">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowIsFloating">false</item>

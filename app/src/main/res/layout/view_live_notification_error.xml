@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    >
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/live_notification_item_height"
-        >
+        android:layout_height="@dimen/live_notification_item_height">
 
         <ImageView
             android:id="@+id/imgIcon"
@@ -16,8 +13,7 @@
             android:layout_gravity="center_vertical"
             android:layout_margin="@dimen/horizontal_margin_small"
             android:background="@null"
-            android:src="@drawable/picto_lock"
-            />
+            android:src="@drawable/picto_lock" />
 
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtTitle"
@@ -26,7 +22,6 @@
             style="@style/Body.Two.White"
             android:layout_gravity="center"
             android:layout_marginLeft="50dp"
-            android:layout_marginRight="50dp"
-            />
+            android:layout_marginRight="50dp" />
     </FrameLayout>
 </merge>

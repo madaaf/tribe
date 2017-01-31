@@ -280,7 +280,8 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
     }
 
     private void refactorDone() {
-        if (newFriends.size() > 0 || countFriends > 0 || contactList.size() == 0) TextViewCompat.setTextAppearance(txtAction, R.style.Title_2_Blue);
+        if (newFriends.size() > 0 || countFriends > 0 || contactList.size() == 0)
+            TextViewCompat.setTextAppearance(txtAction, R.style.Title_2_Blue);
         else TextViewCompat.setTextAppearance(txtAction, R.style.Title_2_Grey);
         txtAction.setCustomFont(this, "Roboto-Bold.ttf");
     }

@@ -39,10 +39,12 @@ public class TribeFirebaseInstanceIDService extends FirebaseInstanceIdService {
     private final class SendTokenSubscriber extends DefaultSubscriber<Installation> {
 
         @Override
-        public void onCompleted() {}
+        public void onCompleted() {
+        }
 
         @Override
-        public void onError(Throwable e) {}
+        public void onError(Throwable e) {
+        }
 
         @Override
         public void onNext(Installation installation) {

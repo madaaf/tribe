@@ -33,7 +33,7 @@ import rx.subjects.PublishSubject;
  */
 public class ActionView extends FrameLayout {
 
-    @IntDef({ HIERARCHY, HIERARCHY_WITH_IMAGE, SHARING, TOGGLE, CRITICAL, REGULAR })
+    @IntDef({HIERARCHY, HIERARCHY_WITH_IMAGE, SHARING, TOGGLE, CRITICAL, REGULAR})
     public @interface ActionViewType {
     }
 
@@ -206,5 +206,7 @@ public class ActionView extends FrameLayout {
         return onClick;
     }
 
-    public Observable<Boolean> onChecked() { return onChecked; }
+    public Observable<Boolean> onChecked() {
+        return onChecked;
+    }
 }

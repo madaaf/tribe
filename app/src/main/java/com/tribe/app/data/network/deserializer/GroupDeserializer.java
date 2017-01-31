@@ -48,7 +48,8 @@ public class GroupDeserializer implements JsonDeserializer<GroupRealm> {
         }
 
         if (members != null && members.size() > 0) {
-            RealmList<GroupMemberRealm> memberRealmList = new GsonBuilder().create().fromJson(members, new TypeToken<RealmList<GroupMemberRealm>>() {}.getType());
+            RealmList<GroupMemberRealm> memberRealmList = new GsonBuilder().create().fromJson(members, new TypeToken<RealmList<GroupMemberRealm>>() {
+            }.getType());
             groupRealm.setMembers(memberRealmList);
         }
 

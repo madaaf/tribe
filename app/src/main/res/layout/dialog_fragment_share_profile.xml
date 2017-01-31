@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_marginTop="0dp"
     android:layout_marginBottom="0dp"
-    android:background="@drawable/shape_rect_white_rounded_corners"
-    >
+    android:background="@drawable/shape_rect_white_rounded_corners">
 
     <com.tribe.app.presentation.view.widget.SquareFrameLayout
         android:id="@+id/layoutContent"
@@ -20,14 +18,12 @@
             android:id="@+id/layoutDiagonal"
             android:layout_width="match_parent"
             android:layout_height="145dp"
-            android:clickable="true"
-            >
+            android:clickable="true">
 
             <View
                 android:id="@+id/viewShapeAngle"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                />
+                android:layout_height="match_parent" />
 
         </com.tribe.app.presentation.view.widget.DiagonalLayout>
 
@@ -38,8 +34,7 @@
             android:layout_marginLeft="@dimen/horizontal_margin_small"
             android:layout_marginTop="@dimen/horizontal_margin_small"
             android:src="@drawable/picto_sharing_card_logo"
-            android:scaleType="centerInside"
-            />
+            android:scaleType="centerInside" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -48,8 +43,7 @@
             android:layout_marginLeft="@dimen/horizontal_margin_small"
             android:layout_marginTop="@dimen/horizontal_margin_small"
             android:src="@drawable/picto_sharing_card_logo_text"
-            android:scaleType="centerInside"
-            />
+            android:scaleType="centerInside" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -58,8 +52,7 @@
             android:layout_marginRight="@dimen/horizontal_margin_small"
             android:layout_marginTop="@dimen/horizontal_margin_small"
             android:src="@drawable/picto_android_ios"
-            android:scaleType="fitEnd"
-            />
+            android:scaleType="fitEnd" />
 
         <ImageView
             android:id="@+id/avatar"
@@ -67,8 +60,7 @@
             android:layout_height="@dimen/avatar_size_scaled"
             android:layout_gravity="center"
             android:padding="1dp"
-            android:background="@drawable/bg_oval_onboarding"
-            />
+            android:background="@drawable/bg_oval_onboarding" />
 
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtUsername"
@@ -77,8 +69,7 @@
             android:layout_marginBottom="@dimen/vertical_margin_small"
             android:layout_gravity="bottom"
             android:gravity="center"
-            style="@style/Headline.White.2"
-            />
+            style="@style/Headline.White.2" />
 
     </com.tribe.app.presentation.view.widget.SquareFrameLayout>
 
@@ -86,8 +77,7 @@
         android:id="@+id/layoutBottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/imgInstagram"
@@ -98,8 +88,7 @@
             android:foreground="@drawable/selectable_button_light"
             android:clickable="true"
             android:scaleType="centerInside"
-            android:src="@drawable/picto_instagram"
-            />
+            android:src="@drawable/picto_instagram" />
 
         <ImageView
             android:id="@+id/imgTwitter"
@@ -110,8 +99,7 @@
             android:foreground="@drawable/selectable_button_light"
             android:clickable="true"
             android:scaleType="centerInside"
-            android:src="@drawable/picto_twitter"
-            />
+            android:src="@drawable/picto_twitter" />
 
         <ImageView
             android:id="@+id/imgSnapchat"
@@ -122,8 +110,7 @@
             android:foreground="@drawable/selectable_button_light"
             android:clickable="true"
             android:scaleType="centerInside"
-            android:src="@drawable/picto_snapchat_white"
-            />
+            android:src="@drawable/picto_snapchat_white" />
 
         <ImageView
             android:id="@+id/imgMore"
@@ -133,7 +120,6 @@
             android:background="@drawable/selectable_button"
             android:clickable="true"
             android:scaleType="centerInside"
-            android:src="@drawable/picto_more_black"
-            />
+            android:src="@drawable/picto_more_black" />
     </LinearLayout>
 </LinearLayout>

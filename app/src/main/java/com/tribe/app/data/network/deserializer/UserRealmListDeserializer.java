@@ -21,7 +21,8 @@ public class UserRealmListDeserializer implements JsonDeserializer<RealmList<Use
         RealmList<UserRealm> realmUsers = new RealmList<>();
         JsonArray ja = json.getAsJsonArray();
         for (JsonElement je : ja) {
-            if (!(je instanceof JsonNull) && je != null) realmUsers.add(context.deserialize(je, UserRealm.class));
+            if (!(je instanceof JsonNull) && je != null)
+                realmUsers.add(context.deserialize(je, UserRealm.class));
         }
 
         return realmUsers;

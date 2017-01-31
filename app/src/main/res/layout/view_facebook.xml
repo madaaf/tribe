@@ -1,20 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    >
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/onboarding_user_facebook_button_title"
-        style="@style/Headline.White.2"
-        />
+        style="@style/Headline.White.2" />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="7dp"
         android:text="@string/onboarding_user_facebook_button_subtitle"
-        style="@style/Body.One.White40"
-        />
+        style="@style/Body.One.White40" />
 </merge>

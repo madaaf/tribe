@@ -235,7 +235,7 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
         txtAction.setText(R.string.action_next);
         txtAction.setVisibility(View.VISIBLE);
 
-        CommonConfetti.rainingConfetti(layoutConfettis, new int[] {
+        CommonConfetti.rainingConfetti(layoutConfettis, new int[]{
                 ContextCompat.getColor(this, R.color.confetti_1),
                 ContextCompat.getColor(this, R.color.confetti_2),
                 ContextCompat.getColor(this, R.color.confetti_3),

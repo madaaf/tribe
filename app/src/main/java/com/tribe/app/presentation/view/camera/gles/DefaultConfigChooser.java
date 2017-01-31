@@ -26,7 +26,7 @@ public class DefaultConfigChooser implements GLSurfaceView.EGLConfigChooser {
     private final int mDepthSize;
     private final int mStencilSize;
 
-        public DefaultConfigChooser(final int version) {
+    public DefaultConfigChooser(final int version) {
         this(true, version);
     }
 
@@ -77,7 +77,7 @@ public class DefaultConfigChooser implements GLSurfaceView.EGLConfigChooser {
         if (version != 2) {
             return configSpec;
         }
-		/*
+        /*
 		 * We know none of the subclasses define EGL_RENDERABLE_TYPE.
 		 * And we know the configSpec is well formed.
 		 */

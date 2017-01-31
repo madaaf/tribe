@@ -35,7 +35,8 @@ public class RxFacebook {
     public static final int FACEBOOK_GET_FRIENDS = 1;
 
     @IntDef({FACEBOOK_LOGIN, FACEBOOK_GET_FRIENDS})
-    public @interface FacebookAccessType{}
+    public @interface FacebookAccessType {
+    }
 
     private Context context;
     private PublishSubject<LoginResult> loginSubject;

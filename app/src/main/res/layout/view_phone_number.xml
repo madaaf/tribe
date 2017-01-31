@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    >
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:focusableInTouchMode="true"
         android:focusable="true"
-        android:clickable="true"
-        >
+        android:clickable="true">
+
         <requestFocus />
     </LinearLayout>
 
@@ -25,8 +23,7 @@
         android:clickable="true"
         android:background="@drawable/selectable_button_oval"
         android:gravity="center"
-        android:src="@drawable/picto_us_flag"
-        />
+        android:src="@drawable/picto_us_flag" />
 
     <com.tribe.app.presentation.view.widget.EditTextFont
         android:id="@+id/editTxtPhoneNumber"
@@ -39,8 +36,7 @@
         android:background="@null"
         android:gravity="center"
         android:hint="@string/onboarding_phone_number"
-        android:inputType="phone"
-        />
+        android:inputType="phone" />
 
     <ImageView
         android:id="@+id/btnNext"
@@ -52,8 +48,7 @@
         android:background="@drawable/bg_skip_transition"
         android:foreground="@drawable/selectable_button_oval_light"
         android:scaleType="centerInside"
-        android:src="@drawable/picto_skip"
-        />
+        android:src="@drawable/picto_skip" />
 
     <com.github.rahatarmanahmed.cpv.CircularProgressView
         android:id="@+id/progressView"
@@ -65,7 +60,6 @@
         app:cpv_animAutostart="true"
         app:cpv_color="@android:color/black"
         app:cpv_indeterminate="true"
-        app:cpv_thickness="2dp"
-        />
+        app:cpv_thickness="2dp" />
 
 </merge>

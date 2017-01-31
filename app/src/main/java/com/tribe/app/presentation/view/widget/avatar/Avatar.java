@@ -9,5 +9,6 @@ import com.tribe.app.domain.entity.Recipient;
 public interface Avatar {
 
     public void load(Recipient recipient);
+
     public void load(String url);
 }

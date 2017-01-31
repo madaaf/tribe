@@ -21,7 +21,9 @@ public class FilterEntity implements Serializable {
     public static final String ICON = "icon";
     public static final String LETTER = "letter";
 
-    private @FilterType String type;
+    private
+    @FilterType
+    String type;
     private boolean activated = false;
     private String letter;
     private int drawable;

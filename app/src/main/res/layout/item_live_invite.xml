@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.tribe.app.presentation.view.widget.SquareFrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.tribe.app.presentation.view.widget.SquareFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@null"
-    >
+    android:background="@null">
 
     <FrameLayout
         android:id="@+id/btnInvite"
@@ -23,15 +21,13 @@
             android:layout_marginLeft="11dp"
             android:maxLines="2"
             android:text="@string/live_invite_link"
-            style="@style/Body.Two.White"
-            />
+            style="@style/Body.Two.White" />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right|bottom"
-            android:src="@drawable/picto_magic_wand"
-            />
+            android:src="@drawable/picto_magic_wand" />
 
     </FrameLayout>
 
@@ -42,7 +38,6 @@
         android:layout_marginBottom="11dp"
         android:maxLines="1"
         android:text="@string/live_drag_friends"
-        style="@style/Caption.Two.White40"
-        />
+        style="@style/Caption.Two.White40" />
 
 </com.tribe.app.presentation.view.widget.SquareFrameLayout>

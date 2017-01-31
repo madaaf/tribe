@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <FrameLayout
@@ -15,8 +14,7 @@
             android:layout_marginTop="@dimen/horizontal_margin"
             android:text="@string/pull_to_search_title"
             android:singleLine="true"
-            style="@style/Title.2.Black"
-            />
+            style="@style/Title.2.Black" />
 
         <ImageView
             android:id="@+id/btnClose"
@@ -28,8 +26,7 @@
             android:src="@drawable/picto_exit"
             android:scaleType="centerInside"
             android:background="@drawable/selectable_button_oval"
-            android:clickable="true"
-            />
+            android:clickable="true" />
 
     </FrameLayout>
 
@@ -43,14 +40,12 @@
         android:layout_marginBottom="@dimen/horizontal_margin"
         android:layout_marginLeft="@dimen/horizontal_margin_xsmall"
         android:layout_marginRight="@dimen/horizontal_margin_xsmall"
-        android:background="@null"
-        />
+        android:background="@null" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_size"
-        android:background="@color/grey.light"
-        />
+        android:background="@color/grey.light" />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:layout_width="wrap_content"
@@ -60,15 +55,13 @@
         android:layout_marginTop="@dimen/horizontal_margin"
         android:text="@string/grid_manage_title"
         android:singleLine="true"
-        style="@style/Title.2.Black"
-        />
+        style="@style/Title.2.Black" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_margin="@dimen/horizontal_margin"
-        >
+        android:layout_margin="@dimen/horizontal_margin">
 
         <com.tribe.app.presentation.view.widget.SyncView
             android:id="@+id/viewSyncFB"
@@ -76,8 +69,7 @@
             android:layout_height="wrap_content"
             app:syncBackground="@drawable/bg_fb_transition"
             app:syncIcon="@drawable/picto_facebook_f"
-            app:syncType="fb"
-            />
+            app:syncType="fb" />
 
         <com.tribe.app.presentation.view.widget.SyncView
             android:id="@+id/viewSyncAB"
@@ -86,12 +78,10 @@
             android:layout_marginLeft="@dimen/horizontal_margin_xsmall"
             app:syncBackground="@drawable/bg_addressbook_transition"
             app:syncIcon="@drawable/picto_contacts"
-            app:syncType="addressbook"
-            />
+            app:syncType="addressbook" />
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="@dimen/horizontal_margin_small"
-        />
+        android:layout_height="@dimen/horizontal_margin_small" />
 </merge>

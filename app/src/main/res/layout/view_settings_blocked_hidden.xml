@@ -10,8 +10,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/top_bar_height"
-        android:background="@drawable/shape_white_rect_grey_border"
-        >
+        android:background="@drawable/shape_white_rect_grey_border">
 
         <ImageView
             android:id="@+id/searchIconImageView"
@@ -19,8 +18,7 @@
             android:layout_height="@dimen/icons_end"
             android:layout_gravity="center_vertical"
             android:scaleType="centerInside"
-            android:src="@drawable/picto_search_icon"
-            />
+            android:src="@drawable/picto_search_icon" />
 
         <com.tribe.app.presentation.view.widget.EditTextFont
             android:id="@+id/editTextSearch"
@@ -35,8 +33,7 @@
             android:singleLine="true"
             android:gravity="center_vertical"
             android:imeOptions="actionDone"
-            style="@style/Text.Input.Search"
-            />
+            style="@style/Text.Input.Search" />
 
     </FrameLayout>
 
@@ -44,7 +41,6 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/top_bar_height"
-        />
+        android:layout_marginTop="@dimen/top_bar_height" />
 
 </com.tribe.app.presentation.view.component.settings.SettingsBlockedHiddenView>

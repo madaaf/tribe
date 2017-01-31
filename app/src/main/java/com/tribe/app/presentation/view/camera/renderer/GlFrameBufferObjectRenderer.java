@@ -77,8 +77,8 @@ public abstract class GlFrameBufferObjectRenderer implements GLSurfaceView.Rende
 
     @Override
     public final void onDrawFrame(final GL10 gl) {
-        synchronized(runOnDraw) {
-            while(!runOnDraw.isEmpty()) {
+        synchronized (runOnDraw) {
+            while (!runOnDraw.isEmpty()) {
                 runOnDraw.poll().run();
             }
         }
@@ -136,9 +136,9 @@ public abstract class GlFrameBufferObjectRenderer implements GLSurfaceView.Rende
     public void deleteImage() {
         runOnDraw(() -> {
             try {
-                GLES20.glDeleteTextures(1, new int[] { gLTextureId }, 0);
+                GLES20.glDeleteTextures(1, new int[]{gLTextureId}, 0);
                 gLTextureId = -1;
-            } catch (Exception e){
+            } catch (Exception e) {
                 Log.d("DEBUG", "", e);
             }
         });

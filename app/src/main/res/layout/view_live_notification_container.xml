@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    >
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
     <View
         android:id="@+id/viewBG"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/black.opacity.80"
-        android:alpha="0"
-        />
+        android:alpha="0" />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtSwipe"
@@ -18,6 +16,5 @@
         android:layout_gravity="center_horizontal"
         android:layout_margin="@dimen/horizontal_margin_small"
         android:gravity="center_horizontal"
-        android:text="@string/live_notification_swipe_dismiss"
-        />
+        android:text="@string/live_notification_swipe_dismiss" />
 </merge>

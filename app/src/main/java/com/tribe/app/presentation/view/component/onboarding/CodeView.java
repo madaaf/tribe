@@ -323,7 +323,7 @@ public class CodeView extends FrameLayout {
     public void showConnectedEnd() {
         imgConnected.animate()
                 .translationX(
-                        - screenUtils.getWidthPx()
+                        -screenUtils.getWidthPx()
                                 + 2 * getContext().getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small)
                                 + imgConnected.getWidth()
                 )
@@ -341,7 +341,7 @@ public class CodeView extends FrameLayout {
                 .start();
 
         imgBack.animate()
-                .translationX(- screenUtils.getWidthPx())
+                .translationX(-screenUtils.getWidthPx())
                 .setDuration(DURATION)
                 .setStartDelay(DELAY)
                 .setInterpolator(new DecelerateInterpolator())
@@ -349,7 +349,7 @@ public class CodeView extends FrameLayout {
                 .start();
 
         layoutPin.animate()
-                .translationX(- screenUtils.getWidthPx())
+                .translationX(-screenUtils.getWidthPx())
                 .setDuration(DURATION)
                 .setStartDelay(DELAY)
                 .setInterpolator(new DecelerateInterpolator())

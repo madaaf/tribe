@@ -9,9 +9,8 @@ import java.io.Serializable;
 
 /**
  * Created by tiago on 04/05/2016.
- *
+ * <p>
  * Class that represents a Location in the domain layer.
- *
  */
 public class Location implements Serializable {
 
@@ -76,8 +75,7 @@ public class Location implements Serializable {
     }
 
     /***
-     *
-     * @param distanceUnits the type of distance to display
+     * @param distanceUnits      the type of distance to display
      * @param locationDestDomain the location destination
      * @return formatted string to display
      */

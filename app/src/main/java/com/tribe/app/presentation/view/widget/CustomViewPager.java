@@ -26,13 +26,18 @@ public class CustomViewPager extends ViewPager {
     public static final int SWIPE_MODE_UNKNOWN = -1;
 
     @IntDef({SWIPE_MODE_ALL, SWIPE_MODE_LEFT, SWIPE_MODE_RIGHT, SWIPE_MODE_DOWN, SWIPE_MODE_UP, SWIPE_MODE_NONE, SWIPE_MODE_UNKNOWN})
-    public @interface SwipeDirection {}
+    public @interface SwipeDirection {
+    }
 
     // VARIABLES
     private ScreenUtils screenUtils;
     private ScrollerCustomDuration scroller = null;
-    private @SwipeDirection int swipeDirection;
-    protected @SwipeDirection int currentSwipeDirection;
+    private
+    @SwipeDirection
+    int swipeDirection;
+    protected
+    @SwipeDirection
+    int currentSwipeDirection;
     protected boolean isInMotion = false;
     private float downX, downY;
     private boolean swipeable = true;

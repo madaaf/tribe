@@ -1,24 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/shape_rect_white_rounded_top_new"
-    >
+    android:background="@drawable/shape_rect_white_rounded_top_new">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/top_bar_height"
-        android:background="@null"
-        >
+        android:background="@null">
 
         <ImageView
             android:id="@+id/searchIconImageView"
             android:layout_width="@dimen/icons_end"
             android:layout_height="@dimen/icons_end"
             android:scaleType="centerInside"
-            android:src="@drawable/picto_search_icon"
-            />
+            android:src="@drawable/picto_search_icon" />
 
         <com.tribe.app.presentation.view.widget.EditTextFont
             android:id="@+id/countrySearchView"
@@ -29,8 +25,7 @@
             android:backgroundTint="@android:color/white"
             android:textColor="@android:color/black"
             android:singleLine="true"
-            android:imeOptions="actionDone"
-            />
+            android:imeOptions="actionDone" />
 
     </FrameLayout>
 
@@ -41,14 +36,12 @@
         android:layout_marginTop="@dimen/icons_end"
         android:divider="@color/grey.light"
         android:dividerHeight="0.5dp"
-        android:listSelector="@null"
-        />
+        android:listSelector="@null" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_size"
         android:layout_marginTop="@dimen/icons_end"
-        android:background="@color/grey.light"
-        />
+        android:background="@color/grey.light" />
 
 </FrameLayout>

@@ -282,9 +282,9 @@ public class Camera2Helper implements CameraHelper {
 
     /**
      * Starts a capture session for camera preview.
-     *
+     * <p>
      * <p>This rewrites {@link #previewRequestBuilder}.</p>
-     *
+     * <p>
      * <p>The result will be continuously processed in {@link #sessionCallback}.</p>
      */
     private void startCaptureSession() {
@@ -640,7 +640,7 @@ public class Camera2Helper implements CameraHelper {
 
     /**
      * Chooses a camera ID by the specified camera facing ({@link #mFacing}).
-     *
+     * <p>
      * <p>This rewrites {@link #cameraId}, {@link #cameraCharacteristics}, and optionally
      * {@link #mFacing}.</p>
      */
@@ -683,7 +683,7 @@ public class Camera2Helper implements CameraHelper {
 
     /**
      * Collects some information from {@link #cameraCharacteristics}.
-     *
+     * <p>
      * <p>This rewrites {@link #previewSizes}, {@link #pictureSizes}, and optionally,
      * {@link #aspectRatio}.</p>
      */
@@ -728,7 +728,7 @@ public class Camera2Helper implements CameraHelper {
 
     /**
      * Starts opening a camera device.
-     *
+     * <p>
      * <p>The result will be processed in {@link #mCameraDeviceCallback}.</p>
      */
     private void startOpeningCamera() {

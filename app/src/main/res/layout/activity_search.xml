@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".presentation.view.activity.SearchUserActivity"
-    android:background="@drawable/shape_rect_white_rounded_top"
-    >
+    android:background="@drawable/shape_rect_white_rounded_top">
 
     <LinearLayout
         android:id="@+id/layoutFocus"
@@ -15,8 +13,7 @@
         android:clickable="true"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:orientation="vertical"
-        />
+        android:orientation="vertical" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -29,8 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/search_title"
-            android:gravity="center"
-            />
+            android:gravity="center" />
 
         <ImageView
             android:id="@+id/imgBack"
@@ -40,8 +36,7 @@
             android:src="@drawable/picto_back"
             android:scaleType="centerInside"
             android:background="@drawable/selectable_button_oval"
-            android:clickable="true"
-            />
+            android:clickable="true" />
 
     </FrameLayout>
 
@@ -55,8 +50,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/top_bar_height"
-            android:background="@android:color/white"
-            >
+            android:background="@android:color/white">
 
             <ImageView
                 android:id="@+id/imgSearch"
@@ -64,8 +58,7 @@
                 android:layout_height="@dimen/icons_end"
                 android:layout_gravity="center_vertical"
                 android:scaleType="centerInside"
-                android:src="@drawable/picto_search_icon"
-                />
+                android:src="@drawable/picto_search_icon" />
 
             <com.tribe.app.presentation.view.widget.EditTextFont
                 android:id="@+id/editTextSearchContact"
@@ -81,8 +74,7 @@
                 android:gravity="center_vertical"
                 android:inputType="text|textVisiblePassword"
                 android:imeOptions="actionDone"
-                style="@style/Text.Input.Search"
-                />
+                style="@style/Text.Input.Search" />
 
         </FrameLayout>
 
@@ -93,8 +85,7 @@
             android:scrollbars="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/white"
-            />
+            android:background="@android:color/white" />
     </LinearLayout>
 
     <LinearLayout
@@ -124,6 +115,5 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_size"
         android:layout_marginTop="@dimen/top_bar_height_small"
-        android:background="@color/grey.light"
-        />
+        android:background="@color/grey.light" />
 </FrameLayout>

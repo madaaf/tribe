@@ -121,10 +121,12 @@ public class SettingsPresenter extends UpdateUserPresenter {
     private final class RemoveInstallSubscriber extends DefaultSubscriber<User> {
 
         @Override
-        public void onCompleted() {}
+        public void onCompleted() {
+        }
 
         @Override
-        public void onError(Throwable e) {}
+        public void onError(Throwable e) {
+        }
 
         @Override
         public void onNext(User user) {
@@ -135,7 +137,8 @@ public class SettingsPresenter extends UpdateUserPresenter {
     private class LookupContactsSubscriber extends DefaultSubscriber<List<Contact>> {
 
         @Override
-        public void onCompleted() { }
+        public void onCompleted() {
+        }
 
         @Override
         public void onError(Throwable e) {
@@ -207,7 +210,8 @@ public class SettingsPresenter extends UpdateUserPresenter {
     }
 
     public void loadBlockedFriendshipList() {
-        if (getBlockedFriendshipListSubscriber != null) getBlockedFriendshipListSubscriber.unsubscribe();
+        if (getBlockedFriendshipListSubscriber != null)
+            getBlockedFriendshipListSubscriber.unsubscribe();
 
         getBlockedFriendshipListSubscriber = new GetBlockedFriendshipListSubscriber();
         getBlockedFriendshipList.execute(getBlockedFriendshipListSubscriber);
@@ -216,10 +220,12 @@ public class SettingsPresenter extends UpdateUserPresenter {
     private class GetBlockedFriendshipListSubscriber extends DefaultSubscriber<List<Friendship>> {
 
         @Override
-        public void onCompleted() {}
+        public void onCompleted() {
+        }
 
         @Override
-        public void onError(Throwable e) {}
+        public void onError(Throwable e) {
+        }
 
         @Override
         public void onNext(List<Friendship> friendshipList) {
@@ -236,10 +242,12 @@ public class SettingsPresenter extends UpdateUserPresenter {
     private class UpdateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
 
         @Override
-        public void onCompleted() {}
+        public void onCompleted() {
+        }
 
         @Override
-        public void onError(Throwable e) {}
+        public void onError(Throwable e) {
+        }
 
         @Override
         public void onNext(Friendship friendship) {

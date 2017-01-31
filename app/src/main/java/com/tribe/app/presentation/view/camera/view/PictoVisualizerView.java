@@ -19,7 +19,6 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import javax.inject.Inject;
 
 /**
- *
  * Created by tiago on 2016/06/13.
  */
 public class PictoVisualizerView extends LinearLayout implements AudioVisualizerCallback {
@@ -97,7 +96,7 @@ public class PictoVisualizerView extends LinearLayout implements AudioVisualizer
         if (valueAnimator != null && valueAnimator.isRunning()) valueAnimator.cancel();
 
         if (hasReturn) valueAnimator = ValueAnimator.ofInt(vaLastAnimationValue, size, endSize);
-        else valueAnimator =  ValueAnimator.ofInt(vaLastAnimationValue, size);
+        else valueAnimator = ValueAnimator.ofInt(vaLastAnimationValue, size);
 
         valueAnimator.setDuration(DURATION_LONG);
         valueAnimator.setInterpolator(new LinearInterpolator());

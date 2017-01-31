@@ -6,8 +6,7 @@
         android:layout_width="@dimen/avatar_size_small"
         android:layout_height="@dimen/avatar_size_small"
         android:layout_gravity="center_vertical"
-        android:background="@null"
-        />
+        android:background="@null" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,6 +15,7 @@
         android:layout_marginLeft="56dp"
         android:layout_marginEnd="@dimen/margin_end_action_view"
         android:orientation="vertical">
+
         <include layout="@layout/view_action_base" />
     </LinearLayout>
 
@@ -26,7 +26,6 @@
         android:src="@drawable/picto_back"
         android:scaleType="centerInside"
         android:scaleX="-1"
-        android:scaleY="-1"
-        />
+        android:scaleY="-1" />
 
 </merge>

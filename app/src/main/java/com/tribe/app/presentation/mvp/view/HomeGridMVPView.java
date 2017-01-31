@@ -9,10 +9,16 @@ import java.util.List;
 public interface HomeGridMVPView extends LoadDataMVPView {
 
     void onMembershipCreated(Membership membership);
+
     void onDeepLink(String url);
+
     void renderRecipientList(List<Recipient> recipientCollection);
+
     void refreshGrid();
+
     void onFriendshipUpdated(Friendship friendship);
+
     void successFacebookLogin();
+
     void errorFacebookLogin();
 }

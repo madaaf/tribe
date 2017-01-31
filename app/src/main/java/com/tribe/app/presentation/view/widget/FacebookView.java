@@ -12,7 +12,7 @@ import com.tribe.app.R;
  * Created by horatiothomas on 8/17/16.
  * Last modified by tiago on 12/13/16
  */
-public class FacebookView  extends LinearLayout {
+public class FacebookView extends LinearLayout {
 
     public FacebookView(Context context) {
         this(context, null);

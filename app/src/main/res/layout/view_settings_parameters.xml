@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.tribe.app.presentation.view.component.settings.SettingsParametersView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.tribe.app.presentation.view.component.settings.SettingsParametersView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
     tools:context=".presentation.view.activity.SettingsActivity"
-    android:background="@color/grey.background.profile_info"
-    >
+    android:background="@color/grey.background.profile_info">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,8 +20,7 @@
             android:background="@android:color/white"
             app:actionTitle="@string/settings_notifications_title"
             app:actionBody="@string/settings_notifications_subtitle"
-            app:actionType="toggle"
-            />
+            app:actionType="toggle" />
 
         <include layout="@layout/view_separator" />
 
@@ -34,8 +31,7 @@
             android:background="@android:color/white"
             app:actionTitle="@string/settings_geolocation_title"
             app:actionBody="@string/settings_geolocation_subtitle"
-            app:actionType="toggle"
-            />
+            app:actionType="toggle" />
 
         <include layout="@layout/view_separator" />
 
@@ -46,8 +42,7 @@
             android:background="@android:color/white"
             app:actionTitle="@string/settings_invisible_title"
             app:actionBody="@string/settings_invisible_subtitle"
-            app:actionType="toggle"
-            />
+            app:actionType="toggle" />
 
         <include layout="@layout/view_separator" />
 
@@ -58,8 +53,7 @@
             android:background="@android:color/white"
             app:actionTitle="@string/settings_audio_title"
             app:actionBody="@string/settings_audio_subtitle"
-            app:actionType="toggle"
-            />
+            app:actionType="toggle" />
 
         <include layout="@layout/view_separator" />
 
@@ -70,8 +64,7 @@
             android:background="@android:color/white"
             app:actionTitle="@string/settings_tribesave_title"
             app:actionBody="@string/settings_tribesave_subtitle"
-            app:actionType="toggle"
-            />
+            app:actionType="toggle" />
 
         <include layout="@layout/view_separator" />
 
@@ -82,8 +75,7 @@
             android:background="@android:color/white"
             app:actionTitle="@string/settings_mute_sounds_title"
             app:actionBody="@string/settings_mute_sounds_subtitle"
-            app:actionType="toggle"
-            />
+            app:actionType="toggle" />
 
         <include layout="@layout/view_separator" />
 
@@ -94,8 +86,7 @@
             android:background="@android:color/white"
             app:actionTitle="@string/settings_weatherunits_title"
             app:actionBody="@string/settings_weatherunits_subtitle"
-            app:actionType="toggle"
-            />
+            app:actionType="toggle" />
 
         <include layout="@layout/view_separator_simple" />
     </LinearLayout>

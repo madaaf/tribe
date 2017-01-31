@@ -14,7 +14,8 @@ import javax.inject.Singleton;
 public class WeatherRealmDataMapper {
 
     @Inject
-    public WeatherRealmDataMapper() {}
+    public WeatherRealmDataMapper() {
+    }
 
     /**
      * Transform a {@link com.tribe.app.data.realm.WeatherRealm} into an {@link com.tribe.app.domain.entity.Weather}.

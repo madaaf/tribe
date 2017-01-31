@@ -21,7 +21,8 @@ public abstract class ScalableTextureView extends TextureView {
     public static final int CENTER_CROP_FILL = 4;
 
     @IntDef({TOP, BOTTOM, FILL, CENTER_CROP, CENTER_CROP_FILL})
-    public @interface ScaleVideoType{}
+    public @interface ScaleVideoType {
+    }
 
     private static final boolean SHOW_LOGS = false;
     private static final String TAG = ScalableTextureView.class.getSimpleName();
@@ -70,7 +71,8 @@ public abstract class ScalableTextureView extends TextureView {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        if (SHOW_LOGS) Log.v(TAG, "onMeasure, mContentWidth " + mContentWidth + ", mContentHeight " + mContentHeight);
+        if (SHOW_LOGS)
+            Log.v(TAG, "onMeasure, mContentWidth " + mContentWidth + ", mContentHeight " + mContentHeight);
 
         if (mContentWidth != null && mContentHeight != null) {
             updateTextureViewSize();
@@ -189,13 +191,15 @@ public abstract class ScalableTextureView extends TextureView {
     }
 
     private void updateMatrixScaleRotate() {
-        if (SHOW_LOGS) Log.d(TAG, ">> updateMatrixScaleRotate, mContentRotation " + mContentRotation + ", mContentScaleMultiplier " + mContentScaleMultiplier + ", mPivotPointX " + mPivotPointX + ", mPivotPointY " + mPivotPointY);
+        if (SHOW_LOGS)
+            Log.d(TAG, ">> updateMatrixScaleRotate, mContentRotation " + mContentRotation + ", mContentScaleMultiplier " + mContentScaleMultiplier + ", mPivotPointX " + mPivotPointX + ", mPivotPointY " + mPivotPointY);
 
         mTransformMatrix.reset();
         mTransformMatrix.setScale(mContentScaleX * mContentScaleMultiplier, mContentScaleY * mContentScaleMultiplier, mPivotPointX, mPivotPointY);
         mTransformMatrix.postRotate(mContentRotation, mPivotPointX, mPivotPointY);
         setTransform(mTransformMatrix);
-        if (SHOW_LOGS) Log.d(TAG, "<< updateMatrixScaleRotate, mContentRotation " + mContentRotation + ", mContentScaleMultiplier " + mContentScaleMultiplier + ", mPivotPointX " + mPivotPointX + ", mPivotPointY " + mPivotPointY);
+        if (SHOW_LOGS)
+            Log.d(TAG, "<< updateMatrixScaleRotate, mContentRotation " + mContentRotation + ", mContentScaleMultiplier " + mContentScaleMultiplier + ", mPivotPointX " + mPivotPointX + ", mPivotPointY " + mPivotPointY);
     }
 
     private void updateMatrixTranslate() {
@@ -259,6 +263,7 @@ public abstract class ScalableTextureView extends TextureView {
 
     /**
      * Use it to animate TextureView content x position
+     *
      * @param x
      */
     public final void setContentX(float x) {
@@ -268,6 +273,7 @@ public abstract class ScalableTextureView extends TextureView {
 
     /**
      * Use it to animate TextureView content x position
+     *
      * @param y
      */
     public final void setContentY(float y) {
@@ -292,12 +298,14 @@ public abstract class ScalableTextureView extends TextureView {
         int scaledContentWidth = getScaledContentWidth();
         int scaledContentHeight = getScaledContentHeight();
 
-        if (SHOW_LOGS) Log.d(TAG, "centralizeContent, measuredWidth " + measuredWidth + ", measuredHeight " + measuredHeight + ", scaledContentWidth " + scaledContentWidth + ", scaledContentHeight " + scaledContentHeight);
+        if (SHOW_LOGS)
+            Log.d(TAG, "centralizeContent, measuredWidth " + measuredWidth + ", measuredHeight " + measuredHeight + ", scaledContentWidth " + scaledContentWidth + ", scaledContentHeight " + scaledContentHeight);
 
         mContentX = 0;
         mContentY = 0;
 
-        if (SHOW_LOGS) Log.d(TAG, "centerVideo, mContentX " + mContentX + ", mContentY " + mContentY);
+        if (SHOW_LOGS)
+            Log.d(TAG, "centerVideo, mContentX " + mContentX + ", mContentY " + mContentY);
 
         updateMatrixScaleRotate();
     }

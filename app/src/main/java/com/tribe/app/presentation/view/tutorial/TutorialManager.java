@@ -101,7 +101,7 @@ public class TutorialManager {
     }
 
     public Tutorial showNext(Activity activity, View target, int toolTipOffsetX, int toolTipOffsetY,
-                                        int holeRadius, int holeRadiusPulsePadding, Bitmap overlayImage, int overlayImageSize) {
+                             int holeRadius, int holeRadiusPulsePadding, Bitmap overlayImage, int overlayImageSize) {
         if (activity != null) {
             return Tutorial.init(activity, screenUtils, NEXT).with(Tutorial.CLICK)
                     .setToolTip(new ToolTip(activity, screenUtils)
@@ -127,7 +127,7 @@ public class TutorialManager {
     }
 
     public Tutorial showClose(Activity activity, View target, int toolTipOffsetX, int toolTipOffsetY,
-                             int holeRadius, int holeRadiusPulsePadding, Bitmap overlayImage, int overlayImageSize) {
+                              int holeRadius, int holeRadiusPulsePadding, Bitmap overlayImage, int overlayImageSize) {
         if (activity != null) {
             return Tutorial.init(activity, screenUtils, CLOSE).with(Tutorial.CLICK)
                     .setToolTip(new ToolTip(activity, screenUtils)

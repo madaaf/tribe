@@ -32,7 +32,7 @@ public class PaletteGrid {
     public PaletteGrid(Context context, @Theme Preference<Integer> theme) {
         this.theme = theme;
 
-        paletteOne = new Integer[] {
+        paletteOne = new Integer[]{
                 ContextCompat.getColor(context, R.color.classic_1),
                 ContextCompat.getColor(context, R.color.classic_2),
                 ContextCompat.getColor(context, R.color.classic_3),
@@ -43,7 +43,7 @@ public class PaletteGrid {
                 ContextCompat.getColor(context, R.color.classic_8)
         };
 
-        paletteTwo = new Integer[] {
+        paletteTwo = new Integer[]{
                 ContextCompat.getColor(context, R.color.blue_1),
                 ContextCompat.getColor(context, R.color.blue_2),
                 ContextCompat.getColor(context, R.color.blue_3),
@@ -58,7 +58,7 @@ public class PaletteGrid {
                 ContextCompat.getColor(context, R.color.blue_12)
         };
 
-        paletteThree = new Integer[] {
+        paletteThree = new Integer[]{
                 ContextCompat.getColor(context, R.color.red_1),
                 ContextCompat.getColor(context, R.color.red_2),
                 ContextCompat.getColor(context, R.color.red_3),
@@ -73,7 +73,7 @@ public class PaletteGrid {
                 ContextCompat.getColor(context, R.color.red_12)
         };
 
-        paletteFour = new Integer[] {
+        paletteFour = new Integer[]{
                 ContextCompat.getColor(context, R.color.violet_1),
                 ContextCompat.getColor(context, R.color.violet_2),
                 ContextCompat.getColor(context, R.color.violet_3),
@@ -88,7 +88,7 @@ public class PaletteGrid {
                 ContextCompat.getColor(context, R.color.violet_12)
         };
 
-        paletteFive = new Integer[] {
+        paletteFive = new Integer[]{
                 ContextCompat.getColor(context, R.color.orange_1),
                 ContextCompat.getColor(context, R.color.orange_2),
                 ContextCompat.getColor(context, R.color.orange_3),
@@ -103,7 +103,7 @@ public class PaletteGrid {
                 ContextCompat.getColor(context, R.color.orange_12)
         };
 
-        paletteSix = new Integer[] {
+        paletteSix = new Integer[]{
                 ContextCompat.getColor(context, R.color.black_1),
                 ContextCompat.getColor(context, R.color.black_2),
                 ContextCompat.getColor(context, R.color.black_3),

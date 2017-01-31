@@ -10,8 +10,12 @@ import io.realm.RealmList;
 public interface ContactInterface {
 
     void setHowManyFriends(int friends);
+
     int getHowManyFriends();
+
     void addUser(UserRealm userRealm);
+
     void setUserList(RealmList<UserRealm> userRealmList);
+
     List<UserRealm> getUsers();
 }
