@@ -13,25 +13,22 @@ import com.bumptech.glide.module.GlideModule;
 
 public class TribeGlideModule implements GlideModule {
 
-    @Override public void applyOptions(Context context, GlideBuilder builder) {
-        MemorySizeCalculator calculator = new MemorySizeCalculator(context);
-        int defaultMemoryCacheSize = calculator.getMemoryCacheSize();
-        int defaultBitmapPoolSize = calculator.getBitmapPoolSize();
+  @Override public void applyOptions(Context context, GlideBuilder builder) {
+    MemorySizeCalculator calculator = new MemorySizeCalculator(context);
+    int defaultMemoryCacheSize = calculator.getMemoryCacheSize();
+    int defaultBitmapPoolSize = calculator.getBitmapPoolSize();
 
-        int cacheSize100MegaBytes = 104857600;
-        int customMemoryCacheSize = (int) (1.2 * defaultMemoryCacheSize);
-        int customBitmapPoolSize = (int) (1.2 * defaultBitmapPoolSize);
+    int cacheSize100MegaBytes = 104857600;
+    int customMemoryCacheSize = (int) (1.2 * defaultMemoryCacheSize);
+    int customBitmapPoolSize = (int) (1.2 * defaultBitmapPoolSize);
 
-        builder.setMemoryCache(new LruResourceCache(customMemoryCacheSize));
-        builder.setBitmapPool(new LruBitmapPool(customBitmapPoolSize));
-        builder.setDecodeFormat(DecodeFormat.PREFER_ARGB_8888);
-        builder.setDiskCache(
-                new InternalCacheDiskCacheFactory(context, cacheSize100MegaBytes)
-        );
-    }
+    builder.setMemoryCache(new LruResourceCache(customMemoryCacheSize));
+    builder.setBitmapPool(new LruBitmapPool(customBitmapPoolSize));
+    builder.setDecodeFormat(DecodeFormat.PREFER_ARGB_8888);
+    builder.setDiskCache(new InternalCacheDiskCacheFactory(context, cacheSize100MegaBytes));
+  }
 
-    @Override
-    public void registerComponents(Context context, Glide glide) {
+  @Override public void registerComponents(Context context, Glide glide) {
 
-    }
+  }
 }

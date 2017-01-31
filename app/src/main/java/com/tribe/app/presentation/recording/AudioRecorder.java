@@ -11,108 +11,106 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * 
  * Created by tiago on 2016/06/13.
  */
 public class AudioRecorder {
 
-    private static String TAG = "AudioRecorder";
+  private static String TAG = "AudioRecorder";
 
-    private static final int BLOCK_SIZE = 256;
-    private static int[] sampleRates = new int[] { 44100, 8000, 11025, 22050 };
-    public static final int SAMPLING_INTERVAL = 1;
+  private static final int BLOCK_SIZE = 256;
+  private static int[] sampleRates = new int[] { 44100, 8000, 11025, 22050 };
+  public static final int SAMPLING_INTERVAL = 1;
 
-    private AudioRecord audioRecord;
-    private boolean isRecording;
-    private int bufferSize;
-    private RealDoubleFFT transformer;
+  private AudioRecord audioRecord;
+  private boolean isRecording;
+  private int bufferSize;
+  private RealDoubleFFT transformer;
 
-    private Timer timer;
+  private Timer timer;
 
-    private AudioVisualizerCallback visualizerView = null;
+  private AudioVisualizerCallback visualizerView = null;
 
-    public AudioRecorder() {
-    }
+  public AudioRecorder() {
+  }
 
-    public void link(AudioVisualizerCallback visualizerView) {
-        this.visualizerView = visualizerView;
-    }
+  public void link(AudioVisualizerCallback visualizerView) {
+    this.visualizerView = visualizerView;
+  }
 
-    public boolean isRecording() {
-        return isRecording;
-    }
+  public boolean isRecording() {
+    return isRecording;
+  }
 
-    private void initAudioRecord() {
-        for (int rate : sampleRates) {
-            for (short audioFormat : new short[] { AudioFormat.ENCODING_PCM_16BIT, AudioFormat.ENCODING_PCM_8BIT }) {
-                for (short channelConfig : new short[] { AudioFormat.CHANNEL_IN_MONO, AudioFormat.CHANNEL_IN_STEREO }) {
-                    try {
-                        bufferSize = AudioRecord.getMinBufferSize(
-                                rate,
-                                channelConfig,
-                                audioFormat
-                        );
+  private void initAudioRecord() {
+    for (int rate : sampleRates) {
+      for (short audioFormat : new short[] {
+          AudioFormat.ENCODING_PCM_16BIT, AudioFormat.ENCODING_PCM_8BIT
+      }) {
+        for (short channelConfig : new short[] {
+            AudioFormat.CHANNEL_IN_MONO, AudioFormat.CHANNEL_IN_STEREO
+        }) {
+          try {
+            bufferSize = AudioRecord.getMinBufferSize(rate, channelConfig, audioFormat);
 
-                        if (bufferSize != AudioRecord.ERROR_BAD_VALUE) {
-                            audioRecord = new AudioRecord(MediaRecorder.AudioSource.DEFAULT, rate, channelConfig, audioFormat, bufferSize);
+            if (bufferSize != AudioRecord.ERROR_BAD_VALUE) {
+              audioRecord = new AudioRecord(MediaRecorder.AudioSource.DEFAULT, rate, channelConfig,
+                  audioFormat, bufferSize);
 
-                            if (audioRecord.getState() == AudioRecord.STATE_INITIALIZED)
-                                return;
-                        }
-                    } catch (Exception e) {
-                        Log.e(TAG, "Exception, keep trying : " + e.getMessage());
-                    }
-                }
+              if (audioRecord.getState() == AudioRecord.STATE_INITIALIZED) return;
             }
+          } catch (Exception e) {
+            Log.e(TAG, "Exception, keep trying : " + e.getMessage());
+          }
         }
+      }
     }
+  }
 
-    public void startRecording() {
-        timer = new Timer();
-        initAudioRecord();
-        audioRecord.startRecording();
-        isRecording = true;
-        runRecording();
-    }
+  public void startRecording() {
+    timer = new Timer();
+    initAudioRecord();
+    audioRecord.startRecording();
+    isRecording = true;
+    runRecording();
+  }
 
-    public void stopRecording() {
-        isRecording = false;
-        timer.cancel();
-        audioRecord.release();
-    }
+  public void stopRecording() {
+    isRecording = false;
+    timer.cancel();
+    audioRecord.release();
+  }
 
-    private void runRecording() {
-        short[] buffer = new short[BLOCK_SIZE];
-        double[] toTransform = new double[BLOCK_SIZE];
-        transformer = new RealDoubleFFT(BLOCK_SIZE);
+  private void runRecording() {
+    short[] buffer = new short[BLOCK_SIZE];
+    double[] toTransform = new double[BLOCK_SIZE];
+    transformer = new RealDoubleFFT(BLOCK_SIZE);
 
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (!isRecording) {
-                    audioRecord.stop();
-                    return;
-                }
+    timer.schedule(new TimerTask() {
+      @Override public void run() {
+        if (!isRecording) {
+          audioRecord.stop();
+          return;
+        }
 
-                int bufferReadResult = audioRecord.read(buffer, 0, BLOCK_SIZE);
+        int bufferReadResult = audioRecord.read(buffer, 0, BLOCK_SIZE);
 
-                for (int i = 0; i < BLOCK_SIZE && i < bufferReadResult; i++) {
-                    toTransform[i] = (double) buffer[i] / 32768.0;
-                }
+        for (int i = 0; i < BLOCK_SIZE && i < bufferReadResult; i++) {
+          toTransform[i] = (double) buffer[i] / 32768.0;
+        }
 
-                transformer.ft(toTransform);
+        transformer.ft(toTransform);
 
-                if (visualizerView != null) {
-                    visualizerView.receive(toTransform);
-                }
-            }
-        }, 100, SAMPLING_INTERVAL);
-    }
+        if (visualizerView != null) {
+          visualizerView.receive(toTransform);
+        }
+      }
+    }, 100, SAMPLING_INTERVAL);
+  }
 
-    public void release() {
-        stopRecording();
-        audioRecord.release();
-        audioRecord = null;
-        timer = null;
-    }
+  public void release() {
+    stopRecording();
+    audioRecord.release();
+    audioRecord = null;
+    timer = null;
+  }
 }

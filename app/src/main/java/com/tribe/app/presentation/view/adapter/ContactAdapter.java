@@ -28,126 +28,120 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class ContactAdapter extends RecyclerView.Adapter {
 
-    public static final int HEADER_TYPE = 99;
+  public static final int HEADER_TYPE = 99;
 
-    // DELEGATES
-    protected RxAdapterDelegatesManager delegatesManager;
-    private SearchResultGridAdapterDelegate searchResultGridAdapterDelegate;
-    private ContactsGridAdapterDelegate contactsGridAdapterDelegate;
-    private UserListAdapterDelegate userListAdapterDelegate;
+  // DELEGATES
+  protected RxAdapterDelegatesManager delegatesManager;
+  private SearchResultGridAdapterDelegate searchResultGridAdapterDelegate;
+  private ContactsGridAdapterDelegate contactsGridAdapterDelegate;
+  private UserListAdapterDelegate userListAdapterDelegate;
 
-    // VARIABLES
-    private List<Object> items;
+  // VARIABLES
+  private List<Object> items;
 
-    // OBSERVABLES
-    private CompositeSubscription subscriptions = new CompositeSubscription();
+  // OBSERVABLES
+  private CompositeSubscription subscriptions = new CompositeSubscription();
 
-    @Inject
-    public ContactAdapter(Context context) {
-        items = new ArrayList<>();
+  @Inject public ContactAdapter(Context context) {
+    items = new ArrayList<>();
 
-        delegatesManager = new RxAdapterDelegatesManager();
+    delegatesManager = new RxAdapterDelegatesManager();
 
-        searchResultGridAdapterDelegate = new SearchResultGridAdapterDelegate(context);
-        delegatesManager.addDelegate(searchResultGridAdapterDelegate);
+    searchResultGridAdapterDelegate = new SearchResultGridAdapterDelegate(context);
+    delegatesManager.addDelegate(searchResultGridAdapterDelegate);
 
-        contactsGridAdapterDelegate = new ContactsGridAdapterDelegate(context);
-        delegatesManager.addDelegate(contactsGridAdapterDelegate);
+    contactsGridAdapterDelegate = new ContactsGridAdapterDelegate(context);
+    delegatesManager.addDelegate(contactsGridAdapterDelegate);
 
-        userListAdapterDelegate = new UserListAdapterDelegate(context);
-        delegatesManager.addDelegate(userListAdapterDelegate);
+    userListAdapterDelegate = new UserListAdapterDelegate(context);
+    delegatesManager.addDelegate(userListAdapterDelegate);
 
-        delegatesManager.addDelegate(new SeparatorAdapterDelegate(context));
-        delegatesManager.addDelegate(HEADER_TYPE, new ContactsHeaderAdapterDelegate(context));
+    delegatesManager.addDelegate(new SeparatorAdapterDelegate(context));
+    delegatesManager.addDelegate(HEADER_TYPE, new ContactsHeaderAdapterDelegate(context));
 
-        setHasStableIds(true);
+    setHasStableIds(true);
+  }
+
+  @Override public long getItemId(int position) {
+    Object obj = getItemAtPosition(position);
+    return obj.hashCode();
+  }
+
+  @Override public int getItemViewType(int position) {
+    return delegatesManager.getItemViewType(items, position);
+  }
+
+  @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    return delegatesManager.onCreateViewHolder(parent, viewType);
+  }
+
+  @Override public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    delegatesManager.onBindViewHolder(items, position, holder);
+  }
+
+  public void releaseSubscriptions() {
+    if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+    delegatesManager.releaseSubscriptions();
+  }
+
+  @Override public int getItemCount() {
+    return items.size();
+  }
+
+  public Object getItemAtPosition(int position) {
+    if (items.size() > 0 && position < items.size()) {
+      return items.get(position);
+    } else {
+      return null;
+    }
+  }
+
+  public List<Object> getItems() {
+    return items;
+  }
+
+  public void setItems(List<Object> items) {
+    this.items.clear();
+    this.items.addAll(items);
+
+    this.notifyDataSetChanged();
+  }
+
+  public void updateSearch(SearchResult searchResult, List<Object> contactList) {
+    this.items.clear();
+    this.items.add(R.string.search_usernames);
+    this.items.add(searchResult);
+    this.items.add(new String());
+
+    if (contactList != null && contactList.size() > 0) {
+      this.items.addAll(contactList);
     }
 
-    @Override
-    public long getItemId(int position) {
-        Object obj = getItemAtPosition(position);
-        return obj.hashCode();
-    }
+    this.notifyDataSetChanged();
+  }
 
-    @Override
-    public int getItemViewType(int position) {
-        return delegatesManager.getItemViewType(items, position);
-    }
-
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return delegatesManager.onCreateViewHolder(parent, viewType);
-    }
-
-    @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        delegatesManager.onBindViewHolder(items, position, holder);
-    }
-
-    public void releaseSubscriptions() {
-        if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
-        delegatesManager.releaseSubscriptions();
-    }
-
-    @Override
-    public int getItemCount() {
-        return items.size();
-    }
-
-    public Object getItemAtPosition(int position) {
-        if (items.size() > 0 && position < items.size()) {
-            return items.get(position);
-        } else {
-            return null;
+  public void updateAdd(User user) {
+    for (Object obj : items) {
+      if (obj instanceof Contact) {
+        Contact c = (Contact) obj;
+        User oldUser = c.getUserList().get(0);
+        if (oldUser.equals(user)) {
+          oldUser.setAnimateAdd(true);
+          oldUser.setFriend(true);
+          notifyDataSetChanged();
+          break;
         }
+      }
     }
+  }
 
-    public List<Object> getItems() {
-        return items;
-    }
+  // OBSERVABLES
+  public Observable<View> onClickAdd() {
+    return Observable.merge(searchResultGridAdapterDelegate.clickAdd(),
+        userListAdapterDelegate.clickAdd());
+  }
 
-    public void setItems(List<Object> items) {
-        this.items.clear();
-        this.items.addAll(items);
-
-        this.notifyDataSetChanged();
-    }
-
-    public void updateSearch(SearchResult searchResult, List<Object> contactList) {
-        this.items.clear();
-        this.items.add(R.string.search_usernames);
-        this.items.add(searchResult);
-        this.items.add(new String());
-
-        if (contactList != null && contactList.size() > 0) {
-            this.items.addAll(contactList);
-        }
-
-        this.notifyDataSetChanged();
-    }
-
-    public void updateAdd(User user) {
-        for (Object obj : items) {
-            if (obj instanceof Contact) {
-                Contact c = (Contact) obj;
-                User oldUser = c.getUserList().get(0);
-                if (oldUser.equals(user)) {
-                    oldUser.setAnimateAdd(true);
-                    oldUser.setFriend(true);
-                    notifyDataSetChanged();
-                    break;
-                }
-            }
-        }
-    }
-
-    // OBSERVABLES
-    public Observable<View> onClickAdd() {
-        return Observable.merge(searchResultGridAdapterDelegate.clickAdd(),
-                userListAdapterDelegate.clickAdd());
-    }
-
-    public Observable<View> onClickInvite() {
-        return contactsGridAdapterDelegate.onClickInvite();
-    }
+  public Observable<View> onClickInvite() {
+    return contactsGridAdapterDelegate.onClickInvite();
+  }
 }

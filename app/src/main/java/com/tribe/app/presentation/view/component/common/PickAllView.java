@@ -33,138 +33,134 @@ import butterknife.Unbinder;
  */
 public class PickAllView extends FrameLayout {
 
-    @Inject
-    ScreenUtils screenUtils;
+  @Inject ScreenUtils screenUtils;
 
-    @Inject
-    User user;
+  @Inject User user;
 
-    @BindView(R.id.txtTitle)
-    TextViewFont txtTitle;
+  @BindView(R.id.txtTitle) TextViewFont txtTitle;
 
-    @BindView(R.id.txtBody)
-    TextViewFont txtBody;
+  @BindView(R.id.txtBody) TextViewFont txtBody;
 
-    @BindView(R.id.viewAvatar)
-    AvatarView viewAvatar;
+  @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
-    @BindView(R.id.viewAvatarBis)
-    AvatarView viewAvatarBis;
+  @BindView(R.id.viewAvatarBis) AvatarView viewAvatarBis;
 
-    @BindView(R.id.layoutBG)
-    ViewGroup layoutBG;
+  @BindView(R.id.layoutBG) ViewGroup layoutBG;
 
-    // VARIABLES
-    private Unbinder unbinder;
-    private String body;
-    private String title;
-    private String imageUrl;
-    private String imageUrlBis;
+  // VARIABLES
+  private Unbinder unbinder;
+  private String body;
+  private String title;
+  private String imageUrl;
+  private String imageUrlBis;
 
-    public PickAllView(Context context) {
-        super(context);
-        init(context, null);
+  public PickAllView(Context context) {
+    super(context);
+    init(context, null);
+  }
+
+  public PickAllView(Context context, AttributeSet attrs) {
+    super(context, attrs);
+    init(context, attrs);
+  }
+
+  @Override protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+  }
+
+  private void init(Context context, AttributeSet attrs) {
+    initDependencyInjector();
+
+    TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.PickAllView);
+
+    int layout = R.layout.view_pick_all;
+
+    LayoutInflater.from(getContext()).inflate(layout, this);
+    unbinder = ButterKnife.bind(this);
+
+    if (a.hasValue(R.styleable.PickAllView_pickAllTitle)) {
+      setTitle(getResources().getString(a.getResourceId(R.styleable.PickAllView_pickAllTitle,
+          R.string.search_add_addressbook_title)));
     }
 
-    public PickAllView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context, attrs);
+    if (a.hasValue(R.styleable.PickAllView_pickAllBody)) {
+      setBody(getResources().getString(a.getResourceId(R.styleable.PickAllView_pickAllBody,
+          R.string.search_add_addressbook_subtitle)));
+    } else {
+      computeBody();
     }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
+    if (a.hasValue(R.styleable.PickAllView_pickAllBGColor)) {
+      setLayoutBGColor(a.getColor(R.styleable.PickAllView_pickAllBGColor, Color.BLACK));
     }
 
-    private void init(Context context, AttributeSet attrs) {
-        initDependencyInjector();
+    a.recycle();
 
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.PickAllView);
+    setMinimumHeight(screenUtils.dpToPx(72.5f));
+  }
 
-        int layout = R.layout.view_pick_all;
+  protected ApplicationComponent getApplicationComponent() {
+    return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
+  }
 
-        LayoutInflater.from(getContext()).inflate(layout, this);
-        unbinder = ButterKnife.bind(this);
+  protected ActivityModule getActivityModule() {
+    return new ActivityModule(((Activity) getContext()));
+  }
 
-        if (a.hasValue(R.styleable.PickAllView_pickAllTitle)) {
-            setTitle(getResources().getString(a.getResourceId(R.styleable.PickAllView_pickAllTitle, R.string.search_add_addressbook_title)));
-        }
+  private void initDependencyInjector() {
+    DaggerUserComponent.builder()
+        .activityModule(getActivityModule())
+        .applicationComponent(getApplicationComponent())
+        .build()
+        .inject(this);
+  }
 
-        if (a.hasValue(R.styleable.PickAllView_pickAllBody)) {
-            setBody(getResources().getString(a.getResourceId(R.styleable.PickAllView_pickAllBody, R.string.search_add_addressbook_subtitle)));
-        } else {
-            computeBody();
-        }
+  public void setTitle(String str) {
+    title = str;
+    computeTitle();
+  }
 
-        if (a.hasValue(R.styleable.PickAllView_pickAllBGColor))
-            setLayoutBGColor(a.getColor(R.styleable.PickAllView_pickAllBGColor, Color.BLACK));
+  public void setBody(String str) {
+    body = str;
+    computeBody();
+  }
 
-        a.recycle();
+  public void setAvatars(String url, String urlBis) {
+    this.imageUrl = url;
+    this.imageUrlBis = urlBis;
+    computeAvatars();
+  }
 
-        setMinimumHeight(screenUtils.dpToPx(72.5f));
+  public void setLayoutBGColor(int colorId) {
+    GradientDrawable shape = new GradientDrawable();
+    shape.setShape(GradientDrawable.OVAL);
+    shape.setColor(colorId);
+    layoutBG.setBackground(shape);
+    setBackgroundColor(colorId);
+  }
+
+  private void computeTitle() {
+    if (txtTitle != null && !StringUtils.isEmpty(title)) {
+      txtTitle.setText(title);
+    }
+  }
+
+  private void computeBody() {
+    if (txtBody != null && !StringUtils.isEmpty(body)) {
+      txtBody.setVisibility(View.VISIBLE);
+      txtBody.setText(body);
+    } else {
+      txtBody.setVisibility(View.GONE);
+    }
+  }
+
+  private void computeAvatars() {
+    if (viewAvatar != null && !StringUtils.isEmpty(imageUrl)) {
+      viewAvatar.load(imageUrl);
     }
 
-    protected ApplicationComponent getApplicationComponent() {
-        return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
+    if (viewAvatarBis != null && !StringUtils.isEmpty(imageUrlBis)) {
+      viewAvatarBis.load(imageUrlBis);
     }
-
-    protected ActivityModule getActivityModule() {
-        return new ActivityModule(((Activity) getContext()));
-    }
-
-    private void initDependencyInjector() {
-        DaggerUserComponent.builder()
-                .activityModule(getActivityModule())
-                .applicationComponent(getApplicationComponent())
-                .build().inject(this);
-    }
-
-    public void setTitle(String str) {
-        title = str;
-        computeTitle();
-    }
-
-    public void setBody(String str) {
-        body = str;
-        computeBody();
-    }
-
-    public void setAvatars(String url, String urlBis) {
-        this.imageUrl = url;
-        this.imageUrlBis = urlBis;
-        computeAvatars();
-    }
-
-    public void setLayoutBGColor(int colorId) {
-        GradientDrawable shape = new GradientDrawable();
-        shape.setShape(GradientDrawable.OVAL);
-        shape.setColor(colorId);
-        layoutBG.setBackground(shape);
-        setBackgroundColor(colorId);
-    }
-
-    private void computeTitle() {
-        if (txtTitle != null && !StringUtils.isEmpty(title)) {
-            txtTitle.setText(title);
-        }
-    }
-
-    private void computeBody() {
-        if (txtBody != null && !StringUtils.isEmpty(body)) {
-            txtBody.setVisibility(View.VISIBLE);
-            txtBody.setText(body);
-        } else {
-            txtBody.setVisibility(View.GONE);
-        }
-    }
-
-    private void computeAvatars() {
-        if (viewAvatar != null && !StringUtils.isEmpty(imageUrl)) {
-            viewAvatar.load(imageUrl);
-        }
-
-        if (viewAvatarBis != null && !StringUtils.isEmpty(imageUrlBis)) {
-            viewAvatarBis.load(imageUrlBis);
-        }
-    }
+  }
 }

@@ -23,207 +23,190 @@ import javax.inject.Named;
 
 public class SearchPresenter implements Presenter {
 
-    // VIEW ATTACHED
-    private SearchMVPView searchView;
+  // VIEW ATTACHED
+  private SearchMVPView searchView;
 
-    // USECASES
-    private JobManager jobManager;
-    private FindByUsername findByUsername;
-    private DiskSearchResults searchResults;
-    private CreateFriendship createFriendship;
-    private GetDiskContactInviteList diskContactInviteList;
-    private UseCase synchroContactList;
-    private RxFacebook rxFacebook;
-    private UseCase refreshHowManyFriends;
+  // USECASES
+  private JobManager jobManager;
+  private FindByUsername findByUsername;
+  private DiskSearchResults searchResults;
+  private CreateFriendship createFriendship;
+  private GetDiskContactInviteList diskContactInviteList;
+  private UseCase synchroContactList;
+  private RxFacebook rxFacebook;
+  private UseCase refreshHowManyFriends;
 
-    // SUBSCRIBERS
-    private CreateFriendshipSubscriber createFriendshipSubscriber;
-    private DefaultSubscriber findByUsernameSubscriber;
-    private ContactListSubscriber contactListSubscriber;
-    private LookupContactsSubscriber lookupContactsSubscriber;
-    private RefreshHowManyFriendsSubscriber refreshHowManyFriendsSubscriber;
+  // SUBSCRIBERS
+  private CreateFriendshipSubscriber createFriendshipSubscriber;
+  private DefaultSubscriber findByUsernameSubscriber;
+  private ContactListSubscriber contactListSubscriber;
+  private LookupContactsSubscriber lookupContactsSubscriber;
+  private RefreshHowManyFriendsSubscriber refreshHowManyFriendsSubscriber;
 
-    @Inject
-    public SearchPresenter(JobManager jobManager,
-                           @Named("cloudFindByUsername") FindByUsername findByUsername,
-                           @Named("diskSearchResults") DiskSearchResults diskSearchResults,
-                           CreateFriendship createFriendship,
-                           GetDiskContactInviteList diskContactInviteList,
-                           @Named("synchroContactList") UseCase synchroContactList,
-                           RxFacebook rxFacebook,
-                           @Named("refreshHowManyFriends") UseCase refreshHowManyFriends) {
-        super();
-        this.jobManager = jobManager;
-        this.findByUsername = findByUsername;
-        this.searchResults = diskSearchResults;
-        this.createFriendship = createFriendship;
-        this.diskContactInviteList = diskContactInviteList;
-        this.synchroContactList = synchroContactList;
-        this.rxFacebook = rxFacebook;
-        this.refreshHowManyFriends = refreshHowManyFriends;
+  @Inject public SearchPresenter(JobManager jobManager,
+      @Named("cloudFindByUsername") FindByUsername findByUsername,
+      @Named("diskSearchResults") DiskSearchResults diskSearchResults,
+      CreateFriendship createFriendship, GetDiskContactInviteList diskContactInviteList,
+      @Named("synchroContactList") UseCase synchroContactList, RxFacebook rxFacebook,
+      @Named("refreshHowManyFriends") UseCase refreshHowManyFriends) {
+    super();
+    this.jobManager = jobManager;
+    this.findByUsername = findByUsername;
+    this.searchResults = diskSearchResults;
+    this.createFriendship = createFriendship;
+    this.diskContactInviteList = diskContactInviteList;
+    this.synchroContactList = synchroContactList;
+    this.rxFacebook = rxFacebook;
+    this.refreshHowManyFriends = refreshHowManyFriends;
+  }
+
+  @Override public void onViewDetached() {
+    findByUsername.unsubscribe();
+    searchResults.unsubscribe();
+    createFriendship.unsubscribe();
+    diskContactInviteList.unsubscribe();
+    synchroContactList.unsubscribe();
+  }
+
+  @Override public void onViewAttached(MVPView v) {
+    searchView = (SearchMVPView) v;
+    initSearchResult();
+    loadContacts();
+  }
+
+  public void findByUsername(String username) {
+    if (findByUsernameSubscriber != null) findByUsernameSubscriber.unsubscribe();
+
+    findByUsernameSubscriber = new DefaultSubscriber();
+    findByUsername.setUsername(username);
+    findByUsername.execute(findByUsernameSubscriber);
+  }
+
+  public void initSearchResult() {
+    searchResults.execute(new SearchResultSubscriber());
+  }
+
+  public void createFriendship(String userId) {
+    if (createFriendshipSubscriber != null) createFriendshipSubscriber.unsubscribe();
+
+    createFriendshipSubscriber = new CreateFriendshipSubscriber();
+    createFriendship.setUserId(userId);
+    createFriendship.execute(createFriendshipSubscriber);
+  }
+
+  private final class SearchResultSubscriber extends DefaultSubscriber<SearchResult> {
+
+    @Override public void onCompleted() {
     }
 
-    @Override
-    public void onViewDetached() {
-        findByUsername.unsubscribe();
-        searchResults.unsubscribe();
-        createFriendship.unsubscribe();
-        diskContactInviteList.unsubscribe();
-        synchroContactList.unsubscribe();
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
     }
 
-    @Override
-    public void onViewAttached(MVPView v) {
-        searchView = (SearchMVPView) v;
-        initSearchResult();
-        loadContacts();
+    @Override public void onNext(SearchResult searchResult) {
+      searchView.renderSearchResult(searchResult);
+    }
+  }
+
+  private final class CreateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
+
+    @Override public void onCompleted() {
     }
 
-    public void findByUsername(String username) {
-        if (findByUsernameSubscriber != null)
-            findByUsernameSubscriber.unsubscribe();
-
-        findByUsernameSubscriber = new DefaultSubscriber();
-        findByUsername.setUsername(username);
-        findByUsername.execute(findByUsernameSubscriber);
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
     }
 
-    public void initSearchResult() {
-        searchResults.execute(new SearchResultSubscriber());
+    @Override public void onNext(Friendship friendship) {
+      if (friendship == null) {
+        searchView.onAddError();
+      } else {
+        searchView.onAddSuccess(friendship);
+      }
+    }
+  }
+
+  public void loadContacts() {
+    if (contactListSubscriber != null) {
+      contactListSubscriber.unsubscribe();
     }
 
-    public void createFriendship(String userId) {
-        if (createFriendshipSubscriber != null) createFriendshipSubscriber.unsubscribe();
+    contactListSubscriber = new ContactListSubscriber();
+    diskContactInviteList.execute(contactListSubscriber);
+  }
 
-        createFriendshipSubscriber = new CreateFriendshipSubscriber();
-        createFriendship.setUserId(userId);
-        createFriendship.execute(createFriendshipSubscriber);
+  private final class ContactListSubscriber extends DefaultSubscriber<List<Contact>> {
+
+    @Override public void onCompleted() {
     }
 
-    private final class SearchResultSubscriber extends DefaultSubscriber<SearchResult> {
+    @Override public void onError(Throwable e) {
 
-        @Override
-        public void onCompleted() {}
-
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-
-        @Override
-        public void onNext(SearchResult searchResult) {
-            searchView.renderSearchResult(searchResult);
-        }
     }
 
-    private final class CreateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
+    @Override public void onNext(List<Contact> contactList) {
+      if (contactList != null && contactList.size() > 0) {
+        searchView.renderContactList(new ArrayList<>(contactList));
+      }
 
-        @Override
-        public void onCompleted() {}
+      diskContactInviteList.unsubscribe();
+      contactListSubscriber.unsubscribe();
+    }
+  }
 
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
+  public void lookupContacts() {
+    if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
+    lookupContactsSubscriber = new LookupContactsSubscriber();
+    synchroContactList.execute(lookupContactsSubscriber);
+  }
 
-        @Override
-        public void onNext(Friendship friendship) {
-            if (friendship == null) {
-                searchView.onAddError();
-            } else {
-                searchView.onAddSuccess(friendship);
-            }
-        }
+  private class LookupContactsSubscriber extends DefaultSubscriber<List<Contact>> {
+
+    @Override public void onCompleted() {
     }
 
-    public void loadContacts() {
-        if (contactListSubscriber != null) {
-            contactListSubscriber.unsubscribe();
-        }
-
-        contactListSubscriber = new ContactListSubscriber();
-        diskContactInviteList.execute(contactListSubscriber);
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+      searchView.syncDone();
     }
 
-    private final class ContactListSubscriber extends DefaultSubscriber<List<Contact>> {
-
-        @Override
-        public void onCompleted() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-
-        }
-
-        @Override
-        public void onNext(List<Contact> contactList) {
-            if (contactList != null && contactList.size() > 0) {
-                searchView.renderContactList(new ArrayList<>(contactList));
-            }
-
-            diskContactInviteList.unsubscribe();
-            contactListSubscriber.unsubscribe();
-        }
+    @Override public void onNext(List<Contact> contactList) {
+      refreshHowManyFriends();
     }
+  }
 
-    public void lookupContacts() {
-        if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
-        lookupContactsSubscriber = new LookupContactsSubscriber();
-        synchroContactList.execute(lookupContactsSubscriber);
-    }
-
-    private class LookupContactsSubscriber extends DefaultSubscriber<List<Contact>> {
-
-        @Override
-        public void onCompleted() { }
-
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-            searchView.syncDone();
-        }
-
-        @Override
-        public void onNext(List<Contact> contactList) {
-            refreshHowManyFriends();
-        }
-    }
-
-    public void loginFacebook() {
-        if (!FacebookUtils.isLoggedIn()) {
-            rxFacebook.requestLogin().subscribe(loginResult -> {
-                if (FacebookUtils.isLoggedIn()) {
-                    searchView.successFacebookLogin();
-                } else {
-                    searchView.errorFacebookLogin();
-                }
-            });
+  public void loginFacebook() {
+    if (!FacebookUtils.isLoggedIn()) {
+      rxFacebook.requestLogin().subscribe(loginResult -> {
+        if (FacebookUtils.isLoggedIn()) {
+          searchView.successFacebookLogin();
         } else {
-            searchView.successFacebookLogin();
+          searchView.errorFacebookLogin();
         }
+      });
+    } else {
+      searchView.successFacebookLogin();
+    }
+  }
+
+  public void refreshHowManyFriends() {
+    if (refreshHowManyFriendsSubscriber != null) refreshHowManyFriendsSubscriber.unsubscribe();
+    refreshHowManyFriendsSubscriber = new RefreshHowManyFriendsSubscriber();
+    refreshHowManyFriends.execute(refreshHowManyFriendsSubscriber);
+  }
+
+  private class RefreshHowManyFriendsSubscriber extends DefaultSubscriber<List<Void>> {
+
+    @Override public void onCompleted() {
     }
 
-    public void refreshHowManyFriends() {
-        if (refreshHowManyFriendsSubscriber != null) refreshHowManyFriendsSubscriber.unsubscribe();
-        refreshHowManyFriendsSubscriber = new RefreshHowManyFriendsSubscriber();
-        refreshHowManyFriends.execute(refreshHowManyFriendsSubscriber);
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+      searchView.syncDone();
     }
 
-    private class RefreshHowManyFriendsSubscriber extends DefaultSubscriber<List<Void>> {
-
-        @Override
-        public void onCompleted() { }
-
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-            searchView.syncDone();
-        }
-
-        @Override
-        public void onNext(List<Void> contactList) {
-            searchView.syncDone();
-        }
+    @Override public void onNext(List<Void> contactList) {
+      searchView.syncDone();
     }
+  }
 }

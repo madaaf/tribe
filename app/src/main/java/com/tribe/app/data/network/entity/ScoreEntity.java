@@ -5,13 +5,13 @@ package com.tribe.app.data.network.entity;
  */
 public class ScoreEntity {
 
-    private int score = 0;
+  private int score = 0;
 
-    public int getScore() {
-        return score;
-    }
+  public int getScore() {
+    return score;
+  }
 
-    public void setScore(int score) {
-        this.score = score;
-    }
+  public void setScore(int score) {
+    this.score = score;
+  }
 }

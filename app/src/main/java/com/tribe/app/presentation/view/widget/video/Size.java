@@ -6,19 +6,19 @@ package com.tribe.app.presentation.view.widget.video;
 
 public class Size {
 
-    private int width;
-    private int height;
+  private int width;
+  private int height;
 
-    public Size(int width, int height) {
-        this.width = width;
-        this.height = height;
-    }
+  public Size(int width, int height) {
+    this.width = width;
+    this.height = height;
+  }
 
-    public int getHeight() {
-        return height;
-    }
+  public int getHeight() {
+    return height;
+  }
 
-    public int getWidth() {
-        return width;
-    }
+  public int getWidth() {
+    return width;
+  }
 }

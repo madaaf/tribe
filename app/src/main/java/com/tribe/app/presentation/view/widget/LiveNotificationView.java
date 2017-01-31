@@ -48,377 +48,366 @@ import rx.subscriptions.CompositeSubscription;
 
 public class LiveNotificationView extends LinearLayout {
 
+  @IntDef({ LIVE, ERROR }) public @interface LiveNotificationType {
+  }
 
-    @IntDef({LIVE, ERROR})
-    public @interface LiveNotificationType {}
+  public static final int LIVE = 0;
+  public static final int ERROR = 1;
 
-    public static final int LIVE = 0;
-    public static final int ERROR = 1;
+  private static final int TIME_TO_DISMISS = 3000;
+  private static final int DURATION = 500;
+  private static final float OVERSHOOT = 0.45f;
+  private static final int INVALID_POINTER = -1;
+  private static final SpringConfig ORIGAMI_SPRING_CONFIG =
+      SpringConfig.fromBouncinessAndSpeed(5f, 20f);
 
-    private static final int TIME_TO_DISMISS = 3000;
-    private static final int DURATION = 500;
-    private static final float OVERSHOOT = 0.45f;
-    private static final int INVALID_POINTER = -1;
-    private static final SpringConfig ORIGAMI_SPRING_CONFIG = SpringConfig.fromBouncinessAndSpeed(5f, 20f);
+  @Inject ScreenUtils screenUtils;
 
-    @Inject
-    ScreenUtils screenUtils;
+  @BindView(R.id.txtTitle) TextViewFont txtTitle;
 
-    @BindView(R.id.txtTitle)
-    TextViewFont txtTitle;
+  @Nullable @BindView(R.id.avatar) AvatarLiveView avatarLiveView;
 
-    @Nullable
-    @BindView(R.id.avatar)
-    AvatarLiveView avatarLiveView;
+  @Nullable @BindView(R.id.imgIcon) ImageView imgIcon;
 
-    @Nullable
-    @BindView(R.id.imgIcon)
-    ImageView imgIcon;
+  // SPRINGS
+  private SpringSystem springSystem = null;
+  private Spring springHeight;
+  private HeightSpringListener springHeightListener;
 
-    // SPRINGS
-    private SpringSystem springSystem = null;
-    private Spring springHeight;
-    private HeightSpringListener springHeightListener;
+  // RESOURCES
+  private int minHeight = 0, maxHeight = 0, thresholdOpen = 0, margin = 0;
 
-    // RESOURCES
-    private int minHeight = 0, maxHeight = 0, thresholdOpen = 0, margin = 0;
+  // VARIABLES
+  private @LiveNotificationType int type;
+  private Unbinder unbinder;
+  private boolean expandable;
+  private FrameLayout.LayoutParams params;
+  private int currentHeight;
+  private float startX, startY;
+  private int activePointerId;
+  private VelocityTracker velocityTracker;
+  private int touchSlop;
+  private boolean expanded = false;
 
-    // VARIABLES
+  // OBSERVABLES
+  private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Float> onExpandChange = PublishSubject.create();
+  private PublishSubject<Void> onExpanded = PublishSubject.create();
+  private PublishSubject<Void> onDismissed = PublishSubject.create();
+  private PublishSubject<String> onClickAction = PublishSubject.create();
+  private Subscription timerToDismiss;
+
+  private LiveNotificationView(Context context, @LiveNotificationType int type) {
+    super(context);
+    this.type = type;
+    init(context, null);
+  }
+
+  private LiveNotificationView(Context context, AttributeSet attrs) {
+    super(context, attrs);
+    init(context, attrs);
+  }
+
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    setTimerToDismiss();
+    springHeight.addListener(springHeightListener);
+  }
+
+  @Override protected void onDetachedFromWindow() {
+    springHeight.removeAllListeners();
+    if (subscriptions.hasSubscriptions()) subscriptions.clear();
+    clearTimerToDismiss();
+    super.onDetachedFromWindow();
+  }
+
+  private void initResources() {
+    minHeight = getResources().getDimensionPixelSize(R.dimen.live_notification_min_height);
+    maxHeight = getResources().getDimensionPixelSize(R.dimen.live_notification_max_height);
+    thresholdOpen = getResources().getDimensionPixelSize(R.dimen.threshold_open_notification);
+    margin = getContext().getResources().getDimensionPixelSize(R.dimen.horizontal_margin_xsmall);
+  }
+
+  public static class Builder {
+
+    private final Context context;
+    private String imgUrl;
+    private String title;
+    private boolean expandable = true;
+    private List<Pair<String, String>> pairActions;
     private @LiveNotificationType int type;
-    private Unbinder unbinder;
-    private boolean expandable;
-    private FrameLayout.LayoutParams params;
-    private int currentHeight;
-    private float startX, startY;
-    private int activePointerId;
-    private VelocityTracker velocityTracker;
-    private int touchSlop;
-    private boolean expanded = false;
 
-    // OBSERVABLES
-    private CompositeSubscription subscriptions = new CompositeSubscription();
-    private PublishSubject<Float> onExpandChange = PublishSubject.create();
-    private PublishSubject<Void> onExpanded = PublishSubject.create();
-    private PublishSubject<Void> onDismissed = PublishSubject.create();
-    private PublishSubject<String> onClickAction = PublishSubject.create();
-    private Subscription timerToDismiss;
-
-    private LiveNotificationView(Context context, @LiveNotificationType int type) {
-        super(context);
-        this.type = type;
-        init(context, null);
+    public Builder(Context context, @LiveNotificationType int type) {
+      this.context = context;
+      this.type = type;
+      pairActions = new ArrayList<>();
     }
 
-    private LiveNotificationView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context, attrs);
+    public Builder imgUrl(String imgUrl) {
+      this.imgUrl = imgUrl;
+      return this;
     }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        setTimerToDismiss();
-        springHeight.addListener(springHeightListener);
+    public Builder title(String title) {
+      this.title = title;
+      return this;
     }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        springHeight.removeAllListeners();
-        if (subscriptions.hasSubscriptions()) subscriptions.clear();
-        clearTimerToDismiss();
-        super.onDetachedFromWindow();
+    public Builder expandable(boolean expandable) {
+      this.expandable = expandable;
+      return this;
     }
 
-    private void initResources() {
-        minHeight = getResources().getDimensionPixelSize(R.dimen.live_notification_min_height);
-        maxHeight = getResources().getDimensionPixelSize(R.dimen.live_notification_max_height);
-        thresholdOpen = getResources().getDimensionPixelSize(R.dimen.threshold_open_notification);
-        margin = getContext().getResources().getDimensionPixelSize(R.dimen.horizontal_margin_xsmall);
+    public Builder addAction(String id, String title) {
+      this.pairActions.add(new Pair<>(id, title));
+      return this;
     }
 
-    public static class Builder {
+    public LiveNotificationView build() {
+      LiveNotificationView view = new LiveNotificationView(context, type);
+      view.setImgUrl(imgUrl);
+      view.setTitle(title);
 
-        private final Context context;
-        private String imgUrl;
-        private String title;
-        private boolean expandable = true;
-        private List<Pair<String, String>> pairActions;
-        private @LiveNotificationType int type;
+      if (type != ERROR) {
+        view.setExpandable(expandable);
 
-        public Builder(Context context, @LiveNotificationType int type) {
-            this.context = context;
-            this.type = type;
-            pairActions = new ArrayList<>();
+        int count = 0;
+
+        for (Pair<String, String> action : pairActions) {
+          view.addAction(action.first, action.second, (count == (pairActions.size() - 1)));
+
+          count++;
         }
+      } else {
+        view.setExpandable(false);
+      }
 
-        public Builder imgUrl(String imgUrl) {
-            this.imgUrl = imgUrl;
-            return this;
-        }
+      return view;
+    }
+  }
 
-        public Builder title(String title) {
-            this.title = title;
-            return this;
-        }
+  private void init(Context context, AttributeSet attrs) {
+    initResources();
+    initUI();
 
-        public Builder expandable(boolean expandable) {
-            this.expandable = expandable;
-            return this;
-        }
+    LayoutInflater inflater =
+        (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    inflater.inflate(
+        type == LIVE ? R.layout.view_live_notification : R.layout.view_live_notification_error,
+        this, true);
 
-        public Builder addAction(String id, String title) {
-            this.pairActions.add(new Pair<>(id, title));
-            return this;
-        }
+    ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
 
-        public LiveNotificationView build() {
-            LiveNotificationView view = new LiveNotificationView(context, type);
-            view.setImgUrl(imgUrl);
-            view.setTitle(title);
+    unbinder = ButterKnife.bind(this);
 
-            if (type != ERROR) {
-                view.setExpandable(expandable);
+    setOrientation(VERTICAL);
+    setClickable(false);
+    setMinimumHeight(minHeight);
+    setBackgroundResource(
+        type == LIVE ? R.drawable.bg_notifications_live : R.drawable.bg_notifications_live_error);
+  }
 
-                int count = 0;
+  private void initUI() {
+    springSystem = SpringSystem.create();
+    springHeight = springSystem.createSpring();
+    springHeight.setSpringConfig(ORIGAMI_SPRING_CONFIG);
+    springHeightListener = new HeightSpringListener();
+    touchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+  }
 
-                for (Pair<String, String> action : pairActions) {
-                    view.addAction(
-                            action.first,
-                            action.second,
-                            (count == (pairActions.size() - 1))
-                    );
+  public void setTitle(String title) {
+    txtTitle.setText(title);
+  }
 
-                    count ++;
-                }
-            } else {
-                view.setExpandable(false);
-            }
+  public void setImgUrl(String url) {
+    if (type == ERROR) {
+      imgIcon.setImageResource(R.drawable.picto_lock);
+    } else {
+      avatarLiveView.load(url);
+    }
+  }
 
-            return view;
-        }
+  public void setExpandable(boolean expandable) {
+    this.expandable = expandable;
+  }
+
+  @SuppressLint("NewApi") public void addAction(String id, String title, boolean isLast) {
+    int sizeActionItem =
+        getResources().getDimensionPixelSize(R.dimen.live_notification_item_height);
+
+    LiveNotificationActionView actionView =
+        new LiveNotificationActionView.Builder(getContext(), id, title).isLast(isLast).build();
+
+    ViewGroup.LayoutParams params =
+        new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, sizeActionItem);
+
+    addView(actionView, params);
+
+    maxHeight = minHeight + (getChildCount() - 1) * sizeActionItem;
+
+    subscriptions.add(actionView.onClick().subscribe(onClickAction));
+  }
+
+  public void show(Activity activity, LiveNotificationContainer container) {
+    if (getParent() == null) {
+      params = (FrameLayout.LayoutParams) getLayoutParams();
+
+      if (params == null) {
+        params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, minHeight);
+        params.setMargins(margin, margin, margin, margin);
+      }
+
+      setLayoutParams(params);
+
+      if (activity == null || activity.isFinishing()) {
+        return;
+      }
+
+      container.addView(this, params);
+      container.addSubscriptionNotification(onExpandChange, this);
+      container.addSubscriptionExpanded(onExpanded);
+      container.addSubscriptionDismissed(onDismissed);
     }
 
-    private void init(Context context, AttributeSet attrs) {
-        initResources();
-        initUI();
+    setTranslationY(-screenUtils.getHeightPx());
+    requestLayout();
 
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(type == LIVE ? R.layout.view_live_notification : R.layout.view_live_notification_error, this, true);
+    getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+      @Override public void onGlobalLayout() {
+        getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        // TODO specify custom animation when there's more time ^^
 
-        ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
+        animate().translationY(0)
+            .setInterpolator(new OvershootInterpolator(OVERSHOOT))
+            .setDuration(DURATION)
+            .start();
+      }
+    });
+  }
 
-        unbinder = ButterKnife.bind(this);
+  public void dismiss() {
+    animate().translationY(-screenUtils.getHeightPx() >> 1)
+        .setInterpolator(new OvershootInterpolator(OVERSHOOT))
+        .setDuration(DURATION)
+        .setListener(new AnimatorListenerAdapter() {
+          @Override public void onAnimationEnd(Animator animation) {
+            onDismissed.onNext(null);
+          }
+        })
+        .start();
+  }
 
-        setOrientation(VERTICAL);
-        setClickable(false);
-        setMinimumHeight(minHeight);
-        setBackgroundResource(type == LIVE ? R.drawable.bg_notifications_live : R.drawable.bg_notifications_live_error);
-    }
-
-    private void initUI() {
-        springSystem = SpringSystem.create();
-        springHeight = springSystem.createSpring();
-        springHeight.setSpringConfig(ORIGAMI_SPRING_CONFIG);
-        springHeightListener = new HeightSpringListener();
-        touchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
-    }
-
-    public void setTitle(String title) {
-        txtTitle.setText(title);
-    }
-
-    public void setImgUrl(String url) {
-        if (type == ERROR) imgIcon.setImageResource(R.drawable.picto_lock);
-        else avatarLiveView.load(url);
-    }
-
-    public void setExpandable(boolean expandable) {
-        this.expandable = expandable;
-    }
-
-    @SuppressLint("NewApi")
-    public void addAction(String id, String title, boolean isLast) {
-        int sizeActionItem = getResources().getDimensionPixelSize(R.dimen.live_notification_item_height);
-
-        LiveNotificationActionView actionView = new LiveNotificationActionView.Builder(getContext(), id, title)
-                .isLast(isLast)
-                .build();
-
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                sizeActionItem
-        );
-
-        addView(actionView, params);
-
-        maxHeight = minHeight + (getChildCount() - 1) * sizeActionItem;
-
-        subscriptions.add(actionView.onClick().subscribe(onClickAction));
-    }
-
-    public void show(Activity activity, LiveNotificationContainer container) {
-        if (getParent() == null) {
-            params = (FrameLayout.LayoutParams) getLayoutParams();
-
-            if (params == null) {
-                params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, minHeight);
-                params.setMargins(margin, margin, margin, margin);
-            }
-
-            setLayoutParams(params);
-
-            if (activity == null || activity.isFinishing()) {
-                return;
-            }
-
-            container.addView(this, params);
-            container.addSubscriptionNotification(onExpandChange, this);
-            container.addSubscriptionExpanded(onExpanded);
-            container.addSubscriptionDismissed(onDismissed);
-        }
-
-        setTranslationY(-screenUtils.getHeightPx());
-        requestLayout();
-
-        getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                // TODO specify custom animation when there's more time ^^
-
-                animate().translationY(0)
-                        .setInterpolator(new OvershootInterpolator(OVERSHOOT))
-                        .setDuration(DURATION)
-                        .start();
-            }
+  private void setTimerToDismiss() {
+    timerToDismiss = Observable.timer(TIME_TO_DISMISS, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          if (!expanded) dismiss();
         });
+  }
+
+  private void clearTimerToDismiss() {
+    if (timerToDismiss != null) {
+      timerToDismiss.unsubscribe();
+      timerToDismiss = null;
     }
+  }
 
-    public void dismiss() {
-        animate().translationY(-screenUtils.getHeightPx() >> 1)
-                .setInterpolator(new OvershootInterpolator(OVERSHOOT))
-                .setDuration(DURATION)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        onDismissed.onNext(null);
-                    }
-                })
-                .start();
-    }
+  /////////////
+  //  TOUCH  //
+  /////////////
 
-    private void setTimerToDismiss() {
-        timerToDismiss = Observable.timer(TIME_TO_DISMISS, TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(aLong -> {
-                    if (!expanded) dismiss();
-                });
-    }
+  @Override public boolean onTouchEvent(MotionEvent event) {
+    int action = event.getAction();
 
-    private void clearTimerToDismiss() {
-        if (timerToDismiss != null) {
-            timerToDismiss.unsubscribe();
-            timerToDismiss = null;
-        }
-    }
+    if (expanded || !expandable) return false;
 
-    /////////////
-    //  TOUCH  //
-    /////////////
+    final int location[] = { 0, 0 };
+    getLocationOnScreen(location);
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        int action = event.getAction();
+    switch (action & MotionEvent.ACTION_MASK) {
+      case MotionEvent.ACTION_DOWN: {
+        activePointerId = event.getPointerId(0);
 
-        if (expanded || !expandable) return false;
+        startY = event.getRawY();
 
-        final int location[] = {0, 0};
-        getLocationOnScreen(location);
+        velocityTracker = VelocityTracker.obtain();
+        velocityTracker.addMovement(event);
 
-        switch (action & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_DOWN : {
-                activePointerId = event.getPointerId(0);
+        clearTimerToDismiss();
 
-                startY = event.getRawY();
+        break;
+      }
 
-                velocityTracker = VelocityTracker.obtain();
-                velocityTracker.addMovement(event);
+      case MotionEvent.ACTION_MOVE: {
+        final int pointerIndex = event.findPointerIndex(activePointerId);
 
-                clearTimerToDismiss();
-
-                break;
-            }
-
-            case MotionEvent.ACTION_MOVE : {
-                final int pointerIndex = event.findPointerIndex(activePointerId);
-
-                if (pointerIndex != INVALID_POINTER) {
-                    float y = event.getY(pointerIndex) + location[1];
-                    float offsetY = y - startY;
-                    currentHeight = Math.max(Math.min(minHeight + (int) offsetY, maxHeight), minHeight);
-                    changeHeight(currentHeight);
-                    velocityTracker.addMovement(event);
-                }
-
-                break;
-            }
-
-            case MotionEvent.ACTION_UP: case MotionEvent.ACTION_CANCEL: {
-                final int pointerIndex = event.findPointerIndex(activePointerId);
-
-                if (pointerIndex != INVALID_POINTER && velocityTracker != null) {
-                    velocityTracker.addMovement(event);
-                    velocityTracker.computeCurrentVelocity(1000);
-
-                    float y = event.getY(pointerIndex) + location[1];
-                    float offsetY = y - startY;
-
-                    if (offsetY >= 0) {
-                        springHeight.setCurrentValue(currentHeight).setAtRest();
-
-                        if (offsetY > thresholdOpen) {
-                            openNotification();
-                        } else {
-                            setTimerToDismiss();
-                            springHeight.setVelocity(velocityTracker.getYVelocity()).setEndValue(minHeight);
-                        }
-                    }
-                }
-
-                break;
-            }
+        if (pointerIndex != INVALID_POINTER) {
+          float y = event.getY(pointerIndex) + location[1];
+          float offsetY = y - startY;
+          currentHeight = Math.max(Math.min(minHeight + (int) offsetY, maxHeight), minHeight);
+          changeHeight(currentHeight);
+          velocityTracker.addMovement(event);
         }
 
-        return true;
-    }
+        break;
+      }
 
-    private class HeightSpringListener extends SimpleSpringListener {
+      case MotionEvent.ACTION_UP:
+      case MotionEvent.ACTION_CANCEL: {
+        final int pointerIndex = event.findPointerIndex(activePointerId);
 
-        @Override
-        public void onSpringUpdate(Spring spring) {
-            if (ViewCompat.isAttachedToWindow(LiveNotificationView.this)) {
-                int value = (int) spring.getCurrentValue();
-                changeHeight(value);
+        if (pointerIndex != INVALID_POINTER && velocityTracker != null) {
+          velocityTracker.addMovement(event);
+          velocityTracker.computeCurrentVelocity(1000);
+
+          float y = event.getY(pointerIndex) + location[1];
+          float offsetY = y - startY;
+
+          if (offsetY >= 0) {
+            springHeight.setCurrentValue(currentHeight).setAtRest();
+
+            if (offsetY > thresholdOpen) {
+              openNotification();
+            } else {
+              setTimerToDismiss();
+              springHeight.setVelocity(velocityTracker.getYVelocity()).setEndValue(minHeight);
             }
+          }
         }
+
+        break;
+      }
     }
 
-    private void openNotification() {
-        onExpanded.onNext(null);
-        expanded = true;
-        springHeight.setEndValue(maxHeight);
-    }
+    return true;
+  }
 
-    private void changeHeight(int value) {
-        onExpandChange.onNext((float) (value - minHeight) / (maxHeight - minHeight));
-        UIUtils.changeHeightOfView(this, value);
-    }
+  private class HeightSpringListener extends SimpleSpringListener {
 
-    ///////////////////////
-    //    OBSERVABLES    //
-    ///////////////////////
-
-    public Observable<String> onClickAction() {
-        return onClickAction;
+    @Override public void onSpringUpdate(Spring spring) {
+      if (ViewCompat.isAttachedToWindow(LiveNotificationView.this)) {
+        int value = (int) spring.getCurrentValue();
+        changeHeight(value);
+      }
     }
+  }
+
+  private void openNotification() {
+    onExpanded.onNext(null);
+    expanded = true;
+    springHeight.setEndValue(maxHeight);
+  }
+
+  private void changeHeight(int value) {
+    onExpandChange.onNext((float) (value - minHeight) / (maxHeight - minHeight));
+    UIUtils.changeHeightOfView(this, value);
+  }
+
+  ///////////////////////
+  //    OBSERVABLES    //
+  ///////////////////////
+
+  public Observable<String> onClickAction() {
+    return onClickAction;
+  }
 }

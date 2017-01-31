@@ -46,202 +46,156 @@ import dagger.Provides;
 /**
  * Created by tiago on 19/05/2016.
  */
-@Module
-public class UserModule {
+@Module public class UserModule {
 
-    public UserModule() {
-    }
+  public UserModule() {
+  }
 
-    @Provides
-    @PerActivity
-    UseCase provideGetRequestCodeUseCase(GetRequestCode getRequestCode) {
-        return getRequestCode;
-    }
+  @Provides @PerActivity UseCase provideGetRequestCodeUseCase(GetRequestCode getRequestCode) {
+    return getRequestCode;
+  }
 
-    @Provides
-    @PerActivity
-    UseCase provideDoLoginWithUsernameUseCase(DoLoginWithPhoneNumber doLoginWithPhoneNumber) {
-        return doLoginWithPhoneNumber;
-    }
+  @Provides @PerActivity UseCase provideDoLoginWithUsernameUseCase(
+      DoLoginWithPhoneNumber doLoginWithPhoneNumber) {
+    return doLoginWithPhoneNumber;
+  }
 
-    @Provides
-    @PerActivity
-    DoRegister provideDoRegister(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        return new DoRegister(userRepository, threadExecutor, postExecutionThread);
-    }
+  @Provides @PerActivity DoRegister provideDoRegister(CloudUserDataRepository userRepository,
+      ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+    return new DoRegister(userRepository, threadExecutor, postExecutionThread);
+  }
 
-    @Provides
-    @PerActivity
-    UseCase provideUpdateUser(UpdateUser updateUser) {
-        return updateUser;
-    }
+  @Provides @PerActivity UseCase provideUpdateUser(UpdateUser updateUser) {
+    return updateUser;
+  }
 
-    @Provides
-    @PerActivity
-    UseCase provideGetGroupMembers(GetGroupMembers getGroupMembers) {
-        return getGroupMembers;
-    }
+  @Provides @PerActivity UseCase provideGetGroupMembers(GetGroupMembers getGroupMembers) {
+    return getGroupMembers;
+  }
 
-    @Provides
-    @PerActivity
-    UseCase provideUpdateGroup(UpdateGroup updateGroup) {
-        return updateGroup;
-    }
+  @Provides @PerActivity UseCase provideUpdateGroup(UpdateGroup updateGroup) {
+    return updateGroup;
+  }
 
-    @Provides
-    @PerActivity
-    UseCase provideUpdateMembership(UpdateMembership updateMembership) {
-        return updateMembership;
-    }
+  @Provides @PerActivity UseCase provideUpdateMembership(UpdateMembership updateMembership) {
+    return updateMembership;
+  }
 
-    @Provides
-    @PerActivity
-    UseCase provideAddMembersToGroup(AddMembersToGroup addMembersToGroup) {
-        return addMembersToGroup;
-    }
+  @Provides @PerActivity UseCase provideAddMembersToGroup(AddMembersToGroup addMembersToGroup) {
+    return addMembersToGroup;
+  }
 
-    @Provides
-    @PerActivity
-    @Named("cloudUserInfos")
-    UseCase provideCloudGetUserInfos(GetCloudUserInfos getCloudUserInfos) {
-        return getCloudUserInfos;
-    }
+  @Provides @PerActivity @Named("cloudUserInfos") UseCase provideCloudGetUserInfos(
+      GetCloudUserInfos getCloudUserInfos) {
+    return getCloudUserInfos;
+  }
 
-    @Provides
-    @PerActivity
-    @Named("diskUserInfos")
-    GetDiskUserInfos provideDiskGetUserInfos(GetDiskUserInfos getDiskUserInfos) {
-        return getDiskUserInfos;
-    }
+  @Provides @PerActivity @Named("diskUserInfos") GetDiskUserInfos provideDiskGetUserInfos(
+      GetDiskUserInfos getDiskUserInfos) {
+    return getDiskUserInfos;
+  }
 
-    @Provides
-    @PerActivity
-    @Named("sendToken")
-    SendToken provideSendToken(SendToken sendToken) {
-        return sendToken;
-    }
+  @Provides @PerActivity @Named("sendToken") SendToken provideSendToken(SendToken sendToken) {
+    return sendToken;
+  }
 
-    @Provides
-    @PerActivity
-    UseCase providesRemoveInstall(RemoveInstall removeInstall) {
-        return removeInstall;
-    }
+  @Provides @PerActivity UseCase providesRemoveInstall(RemoveInstall removeInstall) {
+    return removeInstall;
+  }
 
-    @Provides
-    @PerActivity
-    @Named("synchroContactList")
-    UseCase provideSynchroContactList(SynchroContactList synchroContactList) {
-        return synchroContactList;
-    }
+  @Provides @PerActivity @Named("synchroContactList") UseCase provideSynchroContactList(
+      SynchroContactList synchroContactList) {
+    return synchroContactList;
+  }
 
-    @Provides
-    @PerActivity
-    @Named("diskContactList")
-    UseCaseDisk provideGetContactList(GetDiskContactList getDiskContactList) {
-        return getDiskContactList;
-    }
+  @Provides @PerActivity @Named("diskContactList") UseCaseDisk provideGetContactList(
+      GetDiskContactList getDiskContactList) {
+    return getDiskContactList;
+  }
 
-    @Provides
-    @PerActivity
-    @Named("diskContactOnAppList")
-    UseCaseDisk provideGetContactOnAppList(GetDiskContactOnAppList getDiskContactOnAppList) {
-        return getDiskContactOnAppList;
-    }
+  @Provides @PerActivity @Named("diskContactOnAppList") UseCaseDisk provideGetContactOnAppList(
+      GetDiskContactOnAppList getDiskContactOnAppList) {
+    return getDiskContactOnAppList;
+  }
 
-    @Provides
-    @PerActivity
-    @Named("diskFBContactList")
-    UseCaseDisk provideGetFBContactList(GetDiskFBContactList getDiskFBContactList) {
-        return getDiskFBContactList;
-    }
+  @Provides @PerActivity @Named("diskFBContactList") UseCaseDisk provideGetFBContactList(
+      GetDiskFBContactList getDiskFBContactList) {
+    return getDiskFBContactList;
+  }
 
-    @Provides
-    @PerActivity
-    @Named("cloudFindByUsername")
-    FindByUsername provideFindByUsername(FindByUsername findByUsername) {
-        return findByUsername;
-    }
+  @Provides @PerActivity @Named("cloudFindByUsername") FindByUsername provideFindByUsername(
+      FindByUsername findByUsername) {
+    return findByUsername;
+  }
 
-    @Provides
-    @PerActivity
-    @Named("diskSearchResults")
-    DiskSearchResults provideDiskSearchResults(DiskSearchResults diskSearchResults) {
-        return diskSearchResults;
-    }
+  @Provides @PerActivity @Named("diskSearchResults") DiskSearchResults provideDiskSearchResults(
+      DiskSearchResults diskSearchResults) {
+    return diskSearchResults;
+  }
 
-    @Provides
-    @PerActivity
-    @Named("diskFindContactByValue")
-    DiskFindContactByValue provideDiskFindContactByValue(DiskFindContactByValue diskFindContactByValue) {
-        return diskFindContactByValue;
-    }
+  @Provides @PerActivity @Named("diskFindContactByValue")
+  DiskFindContactByValue provideDiskFindContactByValue(
+      DiskFindContactByValue diskFindContactByValue) {
+    return diskFindContactByValue;
+  }
 
-    @Provides
-    @PerActivity
-    @Named("removeFriendship")
-    RemoveFriendship provideRemoveFriendship(RemoveFriendship removeFriendship) {
-        return removeFriendship;
-    }
+  @Provides @PerActivity @Named("removeFriendship") RemoveFriendship provideRemoveFriendship(
+      RemoveFriendship removeFriendship) {
+    return removeFriendship;
+  }
 
-    @Provides
-    @PerActivity
-    CreateFriendship provideCreateFriendship(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        return new CreateFriendship(userRepository, threadExecutor, postExecutionThread);
-    }
+  @Provides @PerActivity CreateFriendship provideCreateFriendship(
+      CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
+      PostExecutionThread postExecutionThread) {
+    return new CreateFriendship(userRepository, threadExecutor, postExecutionThread);
+  }
 
-    @Provides
-    @PerActivity
-    CreateFriendships provideCreateFriendships(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        return new CreateFriendships(userRepository, threadExecutor, postExecutionThread);
-    }
+  @Provides @PerActivity CreateFriendships provideCreateFriendships(
+      CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
+      PostExecutionThread postExecutionThread) {
+    return new CreateFriendships(userRepository, threadExecutor, postExecutionThread);
+  }
 
-    @Provides
-    @PerActivity
-    @Named("notifyFBFriends")
-    UseCase provideNotifyFBFriends(NotifyFBFriends notifyFBFriends) {
-        return notifyFBFriends;
-    }
+  @Provides @PerActivity @Named("notifyFBFriends") UseCase provideNotifyFBFriends(
+      NotifyFBFriends notifyFBFriends) {
+    return notifyFBFriends;
+  }
 
-    @Provides
-    @PerActivity
-    @Named("lookupByUsername")
-    LookupUsername provideLookupUsername(LookupUsername lookupUsername) {
-        return lookupUsername;
-    }
+  @Provides @PerActivity @Named("lookupByUsername") LookupUsername provideLookupUsername(
+      LookupUsername lookupUsername) {
+    return lookupUsername;
+  }
 
-    @Provides
-    @PerActivity
-    DiskUpdateFriendship provideDiskBlockHide(DiskUserDataRepository diskUserDataRepository, PostExecutionThread postExecutionThread) {
-        return new DiskUpdateFriendship(diskUserDataRepository, postExecutionThread);
-    }
+  @Provides @PerActivity DiskUpdateFriendship provideDiskBlockHide(
+      DiskUserDataRepository diskUserDataRepository, PostExecutionThread postExecutionThread) {
+    return new DiskUpdateFriendship(diskUserDataRepository, postExecutionThread);
+  }
 
-    @Provides
-    @PerActivity
-    GetBlockedFriendshipList provideGetBlockedFriendshipList(DiskUserDataRepository diskUserDataRepository, PostExecutionThread postExecutionThread) {
-        return new GetBlockedFriendshipList(diskUserDataRepository, postExecutionThread);
-    }
+  @Provides @PerActivity GetBlockedFriendshipList provideGetBlockedFriendshipList(
+      DiskUserDataRepository diskUserDataRepository, PostExecutionThread postExecutionThread) {
+    return new GetBlockedFriendshipList(diskUserDataRepository, postExecutionThread);
+  }
 
-    @Provides
-    @PerActivity
-    GetHeadDeepLink provideGetHeadDeepLink(CloudUserDataRepository cloudUserDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        return new GetHeadDeepLink(cloudUserDataRepository, threadExecutor, postExecutionThread);
-    }
+  @Provides @PerActivity GetHeadDeepLink provideGetHeadDeepLink(
+      CloudUserDataRepository cloudUserDataRepository, ThreadExecutor threadExecutor,
+      PostExecutionThread postExecutionThread) {
+    return new GetHeadDeepLink(cloudUserDataRepository, threadExecutor, postExecutionThread);
+  }
 
-    @Provides
-    @PerActivity
-    CreateMembership provideCreateMembership(CloudUserDataRepository cloudUserDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        return new CreateMembership(cloudUserDataRepository, threadExecutor, postExecutionThread);
-    }
+  @Provides @PerActivity CreateMembership provideCreateMembership(
+      CloudUserDataRepository cloudUserDataRepository, ThreadExecutor threadExecutor,
+      PostExecutionThread postExecutionThread) {
+    return new CreateMembership(cloudUserDataRepository, threadExecutor, postExecutionThread);
+  }
 
-    @Provides
-    @PerActivity
-    SendOnlineNotification provideSendOnlineNotification(CloudUserDataRepository cloudUserDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        return new SendOnlineNotification(cloudUserDataRepository, threadExecutor, postExecutionThread);
-    }
+  @Provides @PerActivity SendOnlineNotification provideSendOnlineNotification(
+      CloudUserDataRepository cloudUserDataRepository, ThreadExecutor threadExecutor,
+      PostExecutionThread postExecutionThread) {
+    return new SendOnlineNotification(cloudUserDataRepository, threadExecutor, postExecutionThread);
+  }
 
-    @Provides
-    @Named("refreshHowManyFriends")
-    UseCase provideRefreshHowManyFriends(RefreshHowManyFriends refreshHowManyFriends) {
-        return refreshHowManyFriends;
-    }
+  @Provides @Named("refreshHowManyFriends") UseCase provideRefreshHowManyFriends(
+      RefreshHowManyFriends refreshHowManyFriends) {
+    return refreshHowManyFriends;
+  }
 }

@@ -5,6 +5,5 @@ import java.lang.annotation.RetentionPolicy;
 
 import javax.inject.Scope;
 
-@Scope
-@Retention(RetentionPolicy.RUNTIME)
-public @interface PerApplication {}
+@Scope @Retention(RetentionPolicy.RUNTIME) public @interface PerApplication {
+}

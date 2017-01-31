@@ -13,21 +13,20 @@ import rx.Observable;
  */
 public class DiskFindContactByValue extends UseCaseDisk {
 
-    private String value;
-    private UserRepository userRepository;
+  private String value;
+  private UserRepository userRepository;
 
-    @Inject
-    public DiskFindContactByValue(DiskUserDataRepository userRepository, PostExecutionThread postExecutionThread) {
-        super(postExecutionThread);
-        this.userRepository = userRepository;
-    }
+  @Inject public DiskFindContactByValue(DiskUserDataRepository userRepository,
+      PostExecutionThread postExecutionThread) {
+    super(postExecutionThread);
+    this.userRepository = userRepository;
+  }
 
-    public void setValue(String value) {
-        this.value = value;
-    }
+  public void setValue(String value) {
+    this.value = value;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return this.userRepository.findByValue(value);
-    }
+  @Override protected Observable buildUseCaseObservable() {
+    return this.userRepository.findByValue(value);
+  }
 }

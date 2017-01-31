@@ -22,73 +22,67 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class FilterViewAdapter extends RecyclerView.Adapter {
 
-    // DELEGATES
-    private RxAdapterDelegatesManager<List<FilterEntity>> delegatesManager;
-    private LetterAdapterDelegate letterAdapterDelegate;
+  // DELEGATES
+  private RxAdapterDelegatesManager<List<FilterEntity>> delegatesManager;
+  private LetterAdapterDelegate letterAdapterDelegate;
 
-    private List<FilterEntity> items;
+  private List<FilterEntity> items;
 
-    // OBSERVABLES
-    private CompositeSubscription subscriptions = new CompositeSubscription();
+  // OBSERVABLES
+  private CompositeSubscription subscriptions = new CompositeSubscription();
 
-    @Inject
-    public FilterViewAdapter(Context context) {
-        delegatesManager = new RxAdapterDelegatesManager<>();
-        delegatesManager.addDelegate(new IconAdapterDelegate(context));
+  @Inject public FilterViewAdapter(Context context) {
+    delegatesManager = new RxAdapterDelegatesManager<>();
+    delegatesManager.addDelegate(new IconAdapterDelegate(context));
 
-        letterAdapterDelegate = new LetterAdapterDelegate(context);
-        delegatesManager.addDelegate(letterAdapterDelegate);
+    letterAdapterDelegate = new LetterAdapterDelegate(context);
+    delegatesManager.addDelegate(letterAdapterDelegate);
 
-        items = new ArrayList<>();
+    items = new ArrayList<>();
 
-        setHasStableIds(true);
-    }
+    setHasStableIds(true);
+  }
 
-    @Override
-    public int getItemViewType(int position) {
-        return delegatesManager.getItemViewType(items, position);
-    }
+  @Override public int getItemViewType(int position) {
+    return delegatesManager.getItemViewType(items, position);
+  }
 
-    @Override
-    public long getItemId(int position) {
-        FilterEntity filterEntity = getPTSEntity(position);
-        return filterEntity.hashCode();
-    }
+  @Override public long getItemId(int position) {
+    FilterEntity filterEntity = getPTSEntity(position);
+    return filterEntity.hashCode();
+  }
 
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return delegatesManager.onCreateViewHolder(parent, viewType);
-    }
+  @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    return delegatesManager.onCreateViewHolder(parent, viewType);
+  }
 
-    @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        delegatesManager.onBindViewHolder(items, position, holder);
-    }
+  @Override public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    delegatesManager.onBindViewHolder(items, position, holder);
+  }
 
-    @Override
-    public int getItemCount() {
-        return items.size();
-    }
+  @Override public int getItemCount() {
+    return items.size();
+  }
 
-    public void releaseSubscriptions() {
-        if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
-        delegatesManager.releaseSubscriptions();
-    }
+  public void releaseSubscriptions() {
+    if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+    delegatesManager.releaseSubscriptions();
+  }
 
-    public void setItems(List<FilterEntity> filterEntityList) {
-        items.clear();
-        items.addAll(filterEntityList);
-        notifyDataSetChanged();
-    }
+  public void setItems(List<FilterEntity> filterEntityList) {
+    items.clear();
+    items.addAll(filterEntityList);
+    notifyDataSetChanged();
+  }
 
-    public FilterEntity getPTSEntity(int position) {
-        return items.get(position);
-    }
+  public FilterEntity getPTSEntity(int position) {
+    return items.get(position);
+  }
 
-    ///////////////////////
-    //    OBSERVABLES    //
-    ///////////////////////
-    public Observable<TextViewFont> onClickLetter() {
-        return letterAdapterDelegate.onClickLetter();
-    }
+  ///////////////////////
+  //    OBSERVABLES    //
+  ///////////////////////
+  public Observable<TextViewFont> onClickLetter() {
+    return letterAdapterDelegate.onClickLetter();
+  }
 }

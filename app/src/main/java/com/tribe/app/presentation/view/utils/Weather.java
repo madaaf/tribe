@@ -10,14 +10,13 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class Weather {
 
-    @StringDef({FAHRENHEIT, CELSIUS})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface WeatherUnits {
-    }
+  @StringDef({ FAHRENHEIT, CELSIUS }) @Retention(RetentionPolicy.SOURCE)
+  public @interface WeatherUnits {
+  }
 
-    public static final String FAHRENHEIT = "fahrenheit";
-    public static final String CELSIUS = "celsius";
+  public static final String FAHRENHEIT = "fahrenheit";
+  public static final String CELSIUS = "celsius";
 
-    private Weather() {
-    }
+  private Weather() {
+  }
 }

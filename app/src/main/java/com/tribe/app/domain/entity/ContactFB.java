@@ -5,7 +5,7 @@ package com.tribe.app.domain.entity;
  */
 public class ContactFB extends Contact {
 
-    public ContactFB(String id) {
-        super(id);
-    }
+  public ContactFB(String id) {
+    super(id);
+  }
 }

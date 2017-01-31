@@ -16,51 +16,52 @@ import java.util.List;
 
 public class LookupDeserializer implements JsonDeserializer<LookupEntity> {
 
-    @Override
-    public LookupEntity deserialize(JsonElement je, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        JsonObject results = je.getAsJsonObject().getAsJsonObject("data");
+  @Override
+  public LookupEntity deserialize(JsonElement je, Type typeOfT, JsonDeserializationContext context)
+      throws JsonParseException {
+    JsonObject results = je.getAsJsonObject().getAsJsonObject("data");
 
-        Gson gson = new Gson();
-        int count = 0;
-        LookupEntity lookupEntity = new LookupEntity();
-        List<UserRealm> lookup = new ArrayList<>();
-        boolean hasResult = true;
+    Gson gson = new Gson();
+    int count = 0;
+    LookupEntity lookupEntity = new LookupEntity();
+    List<UserRealm> lookup = new ArrayList<>();
+    boolean hasResult = true;
 
-        while (hasResult) {
-            JsonArray array = results.getAsJsonArray("lookupPhone" + count);
-            if (array != null) {
-                for (final JsonElement jsonElement : array) {
-                    if (!jsonElement.isJsonNull()) {
-                        lookup.add(gson.fromJson(jsonElement, UserRealm.class));
-                    }
-                }
-            } else {
-                hasResult = false;
-            }
-
-            count++;
+    while (hasResult) {
+      JsonArray array = results.getAsJsonArray("lookupPhone" + count);
+      if (array != null) {
+        for (final JsonElement jsonElement : array) {
+          if (!jsonElement.isJsonNull()) {
+            lookup.add(gson.fromJson(jsonElement, UserRealm.class));
+          }
         }
+      } else {
+        hasResult = false;
+      }
 
-        hasResult = true;
-        count = 0;
-
-        while (hasResult) {
-            JsonArray array = results.getAsJsonArray("lookupFB" + count);
-            if (array != null) {
-                for (final JsonElement jsonElement : array) {
-                    if (!jsonElement.isJsonNull()) {
-                        lookup.add(gson.fromJson(jsonElement, UserRealm.class));
-                    }
-                }
-            } else {
-                hasResult = false;
-            }
-
-            count++;
-        }
-
-        lookupEntity.setLookup(lookup);
-
-        return lookupEntity;
+      count++;
     }
+
+    hasResult = true;
+    count = 0;
+
+    while (hasResult) {
+      JsonArray array = results.getAsJsonArray("lookupFB" + count);
+      if (array != null) {
+        for (final JsonElement jsonElement : array) {
+          if (!jsonElement.isJsonNull()) {
+            lookup.add(gson.fromJson(jsonElement, UserRealm.class));
+          }
+        }
+      } else {
+        hasResult = false;
+      }
+
+      count++;
+    }
+
+    lookupEntity.setLookup(lookup);
+
+    return lookupEntity;
+  }
 }

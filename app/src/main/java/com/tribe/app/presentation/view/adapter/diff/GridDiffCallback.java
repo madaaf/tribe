@@ -3,8 +3,10 @@ package com.tribe.app.presentation.view.adapter.diff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.util.DiffUtil;
+
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.view.utils.ObjectUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +48,8 @@ public class GridDiffCallback extends DiffUtil.Callback {
       diffBundle.putString(Recipient.DISPLAY_NAME, newRecipient.getDisplayName());
     }
 
-    if (!ObjectUtils.nullSafeEquals(newRecipient.getProfilePicture(), oldRecipient.getProfilePicture())) {
+    if (!ObjectUtils.nullSafeEquals(newRecipient.getProfilePicture(),
+        oldRecipient.getProfilePicture())) {
       diffBundle.putString(Recipient.PROFILE_PICTURE, newRecipient.getProfilePicture());
     }
 

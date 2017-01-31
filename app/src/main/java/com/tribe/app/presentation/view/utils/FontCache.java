@@ -10,21 +10,21 @@ import java.util.HashMap;
  */
 public class FontCache {
 
-    private static HashMap<String, Typeface> fontCache = new HashMap<>();
+  private static HashMap<String, Typeface> fontCache = new HashMap<>();
 
-    public static Typeface getTypeface(String name, Context context) {
-        Typeface typeface = fontCache.get(name);
+  public static Typeface getTypeface(String name, Context context) {
+    Typeface typeface = fontCache.get(name);
 
-        if (typeface == null) {
-            try {
-                typeface = Typeface.createFromAsset(context.getAssets(), name);
-            } catch (Exception e) {
-                return null;
-            }
+    if (typeface == null) {
+      try {
+        typeface = Typeface.createFromAsset(context.getAssets(), name);
+      } catch (Exception e) {
+        return null;
+      }
 
-            fontCache.put(name, typeface);
-        }
-
-        return typeface;
+      fontCache.put(name, typeface);
     }
+
+    return typeface;
+  }
 }

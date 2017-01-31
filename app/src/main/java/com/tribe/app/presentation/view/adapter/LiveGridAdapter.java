@@ -5,12 +5,16 @@ import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.tribe.app.presentation.view.adapter.delegate.live.LiveGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.diff.UserLiveDiffCallback;
 import com.tribe.app.presentation.view.adapter.viewmodel.UserLive;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.inject.Inject;
+
 import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
 

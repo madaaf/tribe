@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,34 +9,35 @@
     android:animateLayoutChanges="true"
     >
 
-    <com.tribe.app.presentation.view.component.live.LiveContainer
-        android:id="@+id/viewLiveContainer"
+  <com.tribe.app.presentation.view.component.live.LiveContainer
+      android:id="@+id/viewLiveContainer"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@null"
+      >
+
+    <com.tribe.app.presentation.view.component.live.LiveInviteView
+        android:id="@+id/viewInviteLive"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@null">
+        android:layout_gravity="right"
+        />
 
-        <com.tribe.app.presentation.view.component.live.LiveInviteView
-            android:id="@+id/viewInviteLive"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="right"
-            />
+    <com.tribe.app.presentation.view.component.live.LiveView
+        android:id="@+id/viewLive"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@null"
+        />
 
-        <com.tribe.app.presentation.view.component.live.LiveView
-            android:id="@+id/viewLive"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null"
-            />
+    <View
+        android:id="@+id/viewShadowRight"
+        android:layout_width="10dp"
+        android:layout_height="match_parent"
+        android:layout_marginRight="-10dp"
+        android:layout_gravity="right"
+        android:background="@drawable/shadow_right"
+        />
 
-        <View
-            android:id="@+id/viewShadowRight"
-            android:layout_width="10dp"
-            android:layout_height="match_parent"
-            android:layout_marginRight="-10dp"
-            android:layout_gravity="right"
-            android:background="@drawable/shadow_right"
-            />
-
-    </com.tribe.app.presentation.view.component.live.LiveContainer>
+  </com.tribe.app.presentation.view.component.live.LiveContainer>
 </LinearLayout>

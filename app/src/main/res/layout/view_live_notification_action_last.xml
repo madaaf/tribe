@@ -1,25 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    >
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider_size"
-        android:background="@color/white.opacity.20"
-        />
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/divider_size"
+      android:background="@color/white.opacity.20"
+      />
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtTitle"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        style="@style/Body.Two.White"
-        android:layout_gravity="center"
-        android:background="@drawable/shape_rect_white_10_rounded_bottom"
-        android:foreground="@drawable/selectable_button"
-        android:paddingStart="50dp"
-        android:paddingEnd="50dp"
-        android:gravity="center"
-        android:clickable="true"
-        />
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtTitle"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      style="@style/Body.Two.White"
+      android:layout_gravity="center"
+      android:background="@drawable/shape_rect_white_10_rounded_bottom"
+      android:foreground="@drawable/selectable_button"
+      android:paddingStart="50dp"
+      android:paddingEnd="50dp"
+      android:gravity="center"
+      android:clickable="true"
+      />
 </merge>

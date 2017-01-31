@@ -27,95 +27,90 @@ import rx.subscriptions.CompositeSubscription;
 
 public class SettingsProfileView extends FrameLayout {
 
-    @Inject
-    User user;
+  @Inject User user;
 
-    @Inject
-    Navigator navigator;
+  @Inject Navigator navigator;
 
-    @BindView(R.id.viewInfoProfile)
-    ProfileInfoView viewInfoProfile;
+  @BindView(R.id.viewInfoProfile) ProfileInfoView viewInfoProfile;
 
-    // VARIABLES
+  // VARIABLES
 
-    // OBSERVABLES
-    private CompositeSubscription subscriptions;
+  // OBSERVABLES
+  private CompositeSubscription subscriptions;
 
-    public SettingsProfileView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
+  public SettingsProfileView(Context context, AttributeSet attrs) {
+    super(context, attrs);
+  }
 
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        ButterKnife.bind(this);
+  @Override protected void onFinishInflate() {
+    super.onFinishInflate();
+    ButterKnife.bind(this);
 
-        initDependencyInjector();
-        initSubscriptions();
-        initUI();
-    }
+    initDependencyInjector();
+    initSubscriptions();
+    initUI();
+  }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-    }
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+  }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-    }
+  @Override protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+  }
 
-    public void onDestroy() {
-        if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
-    }
+  public void onDestroy() {
+    if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+  }
 
-    private void initSubscriptions() {
-        subscriptions = new CompositeSubscription();
-    }
+  private void initSubscriptions() {
+    subscriptions = new CompositeSubscription();
+  }
 
-    private void initUI() {
-    }
+  private void initUI() {
+  }
 
-    public String getUsername() {
-        return viewInfoProfile.getUsername();
-    }
+  public String getUsername() {
+    return viewInfoProfile.getUsername();
+  }
 
-    public String getDisplayName() {
-        return viewInfoProfile.getDisplayName();
-    }
+  public String getDisplayName() {
+    return viewInfoProfile.getDisplayName();
+  }
 
-    public String getImgUri() {
-        return viewInfoProfile.getImgUri();
-    }
+  public String getImgUri() {
+    return viewInfoProfile.getImgUri();
+  }
 
-    public void setUsernameValid(boolean valid) {
-        viewInfoProfile.setUsernameValid(valid);
-    }
+  public void setUsernameValid(boolean valid) {
+    viewInfoProfile.setUsernameValid(valid);
+  }
 
-    protected ApplicationComponent getApplicationComponent() {
-        return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
-    }
+  protected ApplicationComponent getApplicationComponent() {
+    return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
+  }
 
-    protected ActivityModule getActivityModule() {
-        return new ActivityModule(((Activity) getContext()));
-    }
+  protected ActivityModule getActivityModule() {
+    return new ActivityModule(((Activity) getContext()));
+  }
 
-    private void initDependencyInjector() {
-        DaggerUserComponent.builder()
-                .activityModule(getActivityModule())
-                .applicationComponent(getApplicationComponent())
-                .build().inject(this);
-    }
+  private void initDependencyInjector() {
+    DaggerUserComponent.builder()
+        .activityModule(getActivityModule())
+        .applicationComponent(getApplicationComponent())
+        .build()
+        .inject(this);
+  }
 
-    /**
-     * OBSERVABLES
-     */
+  /**
+   * OBSERVABLES
+   */
 
-    public Observable<Boolean> onInfoValid() {
-        return viewInfoProfile.onInfoValid();
-    }
+  public Observable<Boolean> onInfoValid() {
+    return viewInfoProfile.onInfoValid();
+  }
 
-    public Observable<String> onUsernameInput() {
-        return viewInfoProfile.onUsernameInput();
-    }
+  public Observable<String> onUsernameInput() {
+    return viewInfoProfile.onUsernameInput();
+  }
 }

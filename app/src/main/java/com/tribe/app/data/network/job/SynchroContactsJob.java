@@ -19,56 +19,50 @@ import javax.inject.Named;
  */
 public class SynchroContactsJob extends BaseJob {
 
-    private static final String TAG = "SynchroContactsJob";
+  private static final String TAG = "SynchroContactsJob";
 
-    @Inject
-    @Named("synchroContactList")
-    UseCase synchroContactList;
+  @Inject @Named("synchroContactList") UseCase synchroContactList;
 
-    public SynchroContactsJob() {
-        super(new Params(Priority.LOW).delayInMs(1000).requireNetwork().singleInstanceBy(TAG).groupBy(TAG));
+  public SynchroContactsJob() {
+    super(new Params(Priority.LOW).delayInMs(1000)
+        .requireNetwork()
+        .singleInstanceBy(TAG)
+        .groupBy(TAG));
+  }
+
+  @Override public void onAdded() {
+
+  }
+
+  @Override public void onRun() throws Throwable {
+    synchroContactList.execute(new ContactListSubscriber());
+  }
+
+  @Override protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
+    throwable.printStackTrace();
+  }
+
+  @Override protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount,
+      int maxRunCount) {
+    return RetryConstraint.CANCEL;
+  }
+
+  @Override public void inject(ApplicationComponent appComponent) {
+    super.inject(appComponent);
+    appComponent.inject(this);
+  }
+
+  private final class ContactListSubscriber extends DefaultSubscriber<List<Contact>> {
+
+    @Override public void onCompleted() {
+      if (synchroContactList != null) synchroContactList.unsubscribe();
     }
 
-    @Override
-    public void onAdded() {
-
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
     }
 
-    @Override
-    public void onRun() throws Throwable {
-        synchroContactList.execute(new ContactListSubscriber());
+    @Override public void onNext(List<Contact> contactList) {
     }
-
-    @Override
-    protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
-        throwable.printStackTrace();
-    }
-
-    @Override
-    protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount, int maxRunCount) {
-        return RetryConstraint.CANCEL;
-    }
-
-    @Override
-    public void inject(ApplicationComponent appComponent) {
-        super.inject(appComponent);
-        appComponent.inject(this);
-    }
-
-    private final class ContactListSubscriber extends DefaultSubscriber<List<Contact>> {
-
-        @Override
-        public void onCompleted() {
-            if (synchroContactList != null) synchroContactList.unsubscribe();
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-
-        @Override
-        public void onNext(List<Contact> contactList) {
-        }
-    }
+  }
 }

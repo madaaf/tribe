@@ -9,37 +9,37 @@ import javax.inject.Singleton;
 /**
  * Created by tiago on 06/05/2016.
  */
-@Singleton
-public class
-SearchResultRealmDataMapper {
+@Singleton public class SearchResultRealmDataMapper {
 
-    FriendshipRealmDataMapper friendshipRealmDataMapper;
+  FriendshipRealmDataMapper friendshipRealmDataMapper;
 
-    @Inject
-    public SearchResultRealmDataMapper(FriendshipRealmDataMapper friendshipRealmDataMapper) {
-        this.friendshipRealmDataMapper = friendshipRealmDataMapper;
+  @Inject public SearchResultRealmDataMapper(FriendshipRealmDataMapper friendshipRealmDataMapper) {
+    this.friendshipRealmDataMapper = friendshipRealmDataMapper;
+  }
+
+  /**
+   * Transform a {@link com.tribe.app.data.realm.SearchResultRealm} into an {@link
+   * com.tribe.app.domain.entity.SearchResult}.
+   *
+   * @param searchResultRealm Object to be transformed.
+   * @return {@link com.tribe.app.domain.entity.SearchResult} if valid {@link
+   * com.tribe.app.data.realm.SearchResultRealm} otherwise null.
+   */
+  public SearchResult transform(SearchResultRealm searchResultRealm) {
+    SearchResult searchResult = null;
+
+    if (searchResultRealm != null) {
+      searchResult = new SearchResult();
+      searchResult.setUsername(searchResultRealm.getUsername());
+      searchResult.setDisplayName(searchResultRealm.getDisplayName());
+      searchResult.setPicture(searchResultRealm.getPicture());
+      searchResult.setInvisibleMode(searchResultRealm.isInvisibleMode());
+      searchResult.setFriendship(
+          friendshipRealmDataMapper.transform(searchResultRealm.getFriendshipRealm()));
+      searchResult.setSearchDone(searchResultRealm.isSearchDone());
+      searchResult.setId(searchResultRealm.getId());
     }
 
-    /**
-     * Transform a {@link com.tribe.app.data.realm.SearchResultRealm} into an {@link com.tribe.app.domain.entity.SearchResult}.
-     *
-     * @param searchResultRealm Object to be transformed.
-     * @return {@link com.tribe.app.domain.entity.SearchResult} if valid {@link com.tribe.app.data.realm.SearchResultRealm} otherwise null.
-     */
-    public SearchResult transform(SearchResultRealm searchResultRealm) {
-        SearchResult searchResult = null;
-
-        if (searchResultRealm != null) {
-            searchResult = new SearchResult();
-            searchResult.setUsername(searchResultRealm.getUsername());
-            searchResult.setDisplayName(searchResultRealm.getDisplayName());
-            searchResult.setPicture(searchResultRealm.getPicture());
-            searchResult.setInvisibleMode(searchResultRealm.isInvisibleMode());
-            searchResult.setFriendship(friendshipRealmDataMapper.transform(searchResultRealm.getFriendshipRealm()));
-            searchResult.setSearchDone(searchResultRealm.isSearchDone());
-            searchResult.setId(searchResultRealm.getId());
-        }
-
-        return searchResult;
-    }
+    return searchResult;
+  }
 }

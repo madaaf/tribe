@@ -14,23 +14,22 @@ import rx.Observable;
  */
 public class DiskUpdateFriendship extends UseCaseDisk {
 
-    private String friendshipId;
-    private @FriendshipRealm.FriendshipStatus String status;
-    private UserRepository userRepository;
+  private String friendshipId;
+  private @FriendshipRealm.FriendshipStatus String status;
+  private UserRepository userRepository;
 
-    @Inject
-    public DiskUpdateFriendship(DiskUserDataRepository userRepository, PostExecutionThread postExecutionThread) {
-        super(postExecutionThread);
-        this.userRepository = userRepository;
-    }
+  @Inject public DiskUpdateFriendship(DiskUserDataRepository userRepository,
+      PostExecutionThread postExecutionThread) {
+    super(postExecutionThread);
+    this.userRepository = userRepository;
+  }
 
-    public void prepare(String friendshipId, @FriendshipRealm.FriendshipStatus String status) {
-        this.friendshipId = friendshipId;
-        this.status = status;
-    }
+  public void prepare(String friendshipId, @FriendshipRealm.FriendshipStatus String status) {
+    this.friendshipId = friendshipId;
+    this.status = status;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return this.userRepository.updateFriendship(friendshipId, status);
-    }
+  @Override protected Observable buildUseCaseObservable() {
+    return this.userRepository.updateFriendship(friendshipId, status);
+  }
 }

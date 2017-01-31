@@ -2,50 +2,53 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@null">
+    android:background="@null"
+    >
 
-    <LinearLayout
-        android:id="@+id/layoutFocus"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:orientation="vertical"
+  <LinearLayout
+      android:id="@+id/layoutFocus"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:clickable="true"
+      android:focusable="true"
+      android:focusableInTouchMode="true"
+      android:orientation="vertical"
+      />
+
+  <com.tribe.app.presentation.view.component.TopBarContainer
+      android:id="@+id/topBarContainer"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@null"
+      >
+
+    <com.tribe.app.presentation.view.component.TopBarView
+        android:id="@+id/topBarView"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_bar_height"
+        android:background="@null"
         />
 
-    <com.tribe.app.presentation.view.component.TopBarContainer
-        android:id="@+id/topBarContainer"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerViewFriends"
+        android:scrollbars="none"
+        android:requiresFadingEdge="none"
+        android:fadingEdgeLength="0dp"
+        android:overScrollMode="never"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@null">
-        
-        <com.tribe.app.presentation.view.component.TopBarView
-            android:id="@+id/topBarView"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/top_bar_height"
-            android:background="@null"
-            />
+        android:background="@null"
+        />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerViewFriends"
-            android:scrollbars="none"
-            android:requiresFadingEdge="none"
-            android:fadingEdgeLength="0dp"
-            android:overScrollMode="never"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null"
-            />
+  </com.tribe.app.presentation.view.component.TopBarContainer>
 
-    </com.tribe.app.presentation.view.component.TopBarContainer>
+  <com.tribe.app.presentation.view.widget.LiveNotificationContainer
+      android:id="@+id/layoutNotifications"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_gravity="top"
+      android:visibility="gone"
+      >
 
-    <com.tribe.app.presentation.view.widget.LiveNotificationContainer
-        android:id="@+id/layoutNotifications"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="top"
-        android:visibility="gone">
-
-    </com.tribe.app.presentation.view.widget.LiveNotificationContainer>
+  </com.tribe.app.presentation.view.widget.LiveNotificationContainer>
 </FrameLayout>

@@ -33,180 +33,175 @@ import rx.subjects.PublishSubject;
  */
 public class ActionView extends FrameLayout {
 
-    @IntDef({HIERARCHY, HIERARCHY_WITH_IMAGE, SHARING, TOGGLE, CRITICAL, REGULAR})
-    public @interface ActionViewType {
+  @IntDef({ HIERARCHY, HIERARCHY_WITH_IMAGE, SHARING, TOGGLE, CRITICAL, REGULAR })
+  public @interface ActionViewType {
+  }
+
+  public static final int HIERARCHY = 0;
+  public static final int HIERARCHY_WITH_IMAGE = 1;
+  public static final int SHARING = 2;
+  public static final int TOGGLE = 3;
+  public static final int CRITICAL = 4;
+  public static final int REGULAR = 5;
+
+  @Inject ScreenUtils screenUtils;
+
+  @BindView(R.id.txtTitle) TextViewFont txtTitle;
+
+  @BindView(R.id.txtBody) TextViewFont txtBody;
+
+  @Nullable @BindView(R.id.avatarView) AvatarView avatarView;
+
+  @Nullable @BindView(R.id.viewSwitch) SwitchCompat viewSwitch;
+
+  // VARIABLES
+  private Unbinder unbinder;
+  private int type;
+  private String imageUrl;
+  private String body;
+  private String title;
+  private Recipient recipient;
+
+  // OBSERVABLES
+  private PublishSubject<Void> onClick = PublishSubject.create();
+  private PublishSubject<Boolean> onChecked = PublishSubject.create();
+
+  public ActionView(Context context) {
+    super(context);
+    init(context, null);
+  }
+
+  public ActionView(Context context, AttributeSet attrs) {
+    super(context, attrs);
+    init(context, attrs);
+  }
+
+  @Override protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+  }
+
+  private void init(Context context, AttributeSet attrs) {
+    ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
+        .inject(this);
+
+    TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ActionView);
+
+    setType(a.getInt(R.styleable.ActionView_actionType, HIERARCHY));
+
+    int layout = 0;
+
+    if (type == HIERARCHY) {
+      layout = R.layout.view_action_hierarchy;
+    } else if (type == HIERARCHY_WITH_IMAGE) {
+      layout = R.layout.view_action_hierarchy_with_image;
+    } else if (type == SHARING) {
+      layout = R.layout.view_action_share;
+    } else if (type == TOGGLE) {
+      layout = R.layout.view_action_toggle;
+    } else if (type == CRITICAL) {
+      layout = R.layout.view_action_critical;
+    } else if (type == REGULAR) {
+      layout = R.layout.view_action_regular;
     }
 
-    public static final int HIERARCHY = 0;
-    public static final int HIERARCHY_WITH_IMAGE = 1;
-    public static final int SHARING = 2;
-    public static final int TOGGLE = 3;
-    public static final int CRITICAL = 4;
-    public static final int REGULAR = 5;
+    LayoutInflater.from(getContext()).inflate(layout, this);
+    unbinder = ButterKnife.bind(this);
 
-    @Inject
-    ScreenUtils screenUtils;
-
-    @BindView(R.id.txtTitle)
-    TextViewFont txtTitle;
-
-    @BindView(R.id.txtBody)
-    TextViewFont txtBody;
-
-    @Nullable
-    @BindView(R.id.avatarView)
-    AvatarView avatarView;
-
-    @Nullable
-    @BindView(R.id.viewSwitch)
-    SwitchCompat viewSwitch;
-
-    // VARIABLES
-    private Unbinder unbinder;
-    private int type;
-    private String imageUrl;
-    private String body;
-    private String title;
-    private Recipient recipient;
-
-    // OBSERVABLES
-    private PublishSubject<Void> onClick = PublishSubject.create();
-    private PublishSubject<Boolean> onChecked = PublishSubject.create();
-
-    public ActionView(Context context) {
-        super(context);
-        init(context, null);
+    if (a.hasValue(R.styleable.ActionView_actionTitle)) {
+      setTitle(getResources().getString(a.getResourceId(R.styleable.ActionView_actionTitle,
+          R.string.group_details_settings_title)));
     }
 
-    public ActionView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context, attrs);
+    if (a.hasValue(R.styleable.ActionView_actionBody)) {
+      setBody(getResources().getString(a.getResourceId(R.styleable.ActionView_actionBody,
+          R.string.group_details_settings_subtitle)));
+    } else {
+      computeBody();
     }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
+    a.recycle();
+
+    int paddingStart = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
+    int paddingEnd =
+        type == TOGGLE ? getResources().getDimensionPixelSize(R.dimen.horizontal_margin_smaller)
+            : getResources().getDimensionPixelSize(R.dimen.horizontal_margin);
+    setPadding(paddingStart, paddingStart, paddingEnd, paddingStart);
+
+    setClickable(true);
+    setForeground(ContextCompat.getDrawable(context, R.drawable.selectable_button));
+    setMinimumHeight(screenUtils.dpToPx(72));
+
+    if (type != TOGGLE) {
+      setOnClickListener(v -> onClick.onNext(null));
+    } else {
+      viewSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> onChecked.onNext(isChecked));
     }
 
-    private void init(Context context, AttributeSet attrs) {
-        ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
+    if (type == HIERARCHY_WITH_IMAGE) computeImageView();
+  }
 
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ActionView);
+  public void setType(int type) {
+    this.type = type;
+  }
 
-        setType(a.getInt(R.styleable.ActionView_actionType, HIERARCHY));
+  public void setTitle(String str) {
+    title = str;
+    computeTitle();
+  }
 
-        int layout = 0;
+  public void setBody(String str) {
+    body = str;
+    computeBody();
+  }
 
-        if (type == HIERARCHY) {
-            layout = R.layout.view_action_hierarchy;
-        } else if (type == HIERARCHY_WITH_IMAGE) {
-            layout = R.layout.view_action_hierarchy_with_image;
-        } else if (type == SHARING) {
-            layout = R.layout.view_action_share;
-        } else if (type == TOGGLE) {
-            layout = R.layout.view_action_toggle;
-        } else if (type == CRITICAL) {
-            layout = R.layout.view_action_critical;
-        } else if (type == REGULAR) {
-            layout = R.layout.view_action_regular;
-        }
+  public void setImage(String url) {
+    imageUrl = url;
+    computeImageView();
+  }
 
-        LayoutInflater.from(getContext()).inflate(layout, this);
-        unbinder = ButterKnife.bind(this);
+  public void setRecipient(Recipient recipient) {
+    this.recipient = recipient;
+    computeImageView();
+  }
 
-        if (a.hasValue(R.styleable.ActionView_actionTitle)) {
-            setTitle(getResources().getString(a.getResourceId(R.styleable.ActionView_actionTitle, R.string.group_details_settings_title)));
-        }
+  public void setValue(boolean value) {
+    viewSwitch.setChecked(value);
+    viewSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> onChecked.onNext(isChecked));
+  }
 
-        if (a.hasValue(R.styleable.ActionView_actionBody)) {
-            setBody(getResources().getString(a.getResourceId(R.styleable.ActionView_actionBody, R.string.group_details_settings_subtitle)));
-        } else {
-            computeBody();
-        }
+  private void computeTitle() {
+    if (txtTitle != null && !StringUtils.isEmpty(title)) {
+      txtTitle.setText(title);
 
-        a.recycle();
-
-        int paddingStart = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
-        int paddingEnd =
-                type == TOGGLE ?
-                        getResources().getDimensionPixelSize(R.dimen.horizontal_margin_smaller)
-                        : getResources().getDimensionPixelSize(R.dimen.horizontal_margin);
-        setPadding(paddingStart, paddingStart, paddingEnd, paddingStart);
-
-        setClickable(true);
-        setForeground(ContextCompat.getDrawable(context, R.drawable.selectable_button));
-        setMinimumHeight(screenUtils.dpToPx(72));
-
-        if (type != TOGGLE)
-            setOnClickListener(v -> onClick.onNext(null));
-        else
-            viewSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> onChecked.onNext(isChecked));
-
-        if (type == HIERARCHY_WITH_IMAGE) computeImageView();
+      if (type == CRITICAL) {
+        TextViewCompat.setTextAppearance(txtTitle, R.style.Title_1_Red);
+      }
     }
+  }
 
-    public void setType(int type) {
-        this.type = type;
+  private void computeBody() {
+    if (txtBody != null && !StringUtils.isEmpty(body)) {
+      txtBody.setVisibility(View.VISIBLE);
+      txtBody.setText(body);
+    } else {
+      txtBody.setVisibility(View.GONE);
     }
+  }
 
-    public void setTitle(String str) {
-        title = str;
-        computeTitle();
+  private void computeImageView() {
+    if (avatarView != null && !StringUtils.isEmpty(imageUrl)) {
+      avatarView.load(imageUrl);
+    } else if (avatarView != null && recipient != null) {
+      avatarView.load(recipient);
     }
+  }
 
-    public void setBody(String str) {
-        body = str;
-        computeBody();
-    }
+  // OBSERVABLES
+  public Observable<Void> onClick() {
+    return onClick;
+  }
 
-    public void setImage(String url) {
-        imageUrl = url;
-        computeImageView();
-    }
-
-    public void setRecipient(Recipient recipient) {
-        this.recipient = recipient;
-        computeImageView();
-    }
-
-    public void setValue(boolean value) {
-        viewSwitch.setChecked(value);
-        viewSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> onChecked.onNext(isChecked));
-    }
-
-    private void computeTitle() {
-        if (txtTitle != null && !StringUtils.isEmpty(title)) {
-            txtTitle.setText(title);
-
-            if (type == CRITICAL) {
-                TextViewCompat.setTextAppearance(txtTitle, R.style.Title_1_Red);
-            }
-        }
-    }
-
-    private void computeBody() {
-        if (txtBody != null && !StringUtils.isEmpty(body)) {
-            txtBody.setVisibility(View.VISIBLE);
-            txtBody.setText(body);
-        } else {
-            txtBody.setVisibility(View.GONE);
-        }
-    }
-
-    private void computeImageView() {
-        if (avatarView != null && !StringUtils.isEmpty(imageUrl)) {
-            avatarView.load(imageUrl);
-        } else if (avatarView != null && recipient != null) {
-            avatarView.load(recipient);
-        }
-    }
-
-    // OBSERVABLES
-    public Observable<Void> onClick() {
-        return onClick;
-    }
-
-    public Observable<Boolean> onChecked() {
-        return onChecked;
-    }
+  public Observable<Boolean> onChecked() {
+    return onChecked;
+  }
 }

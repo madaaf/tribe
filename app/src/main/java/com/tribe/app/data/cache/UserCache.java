@@ -16,30 +16,53 @@ import rx.Observable;
 /**
  * Created by tiago on 05/05/2016.
  */
-@Singleton
-public interface UserCache {
+@Singleton public interface UserCache {
 
-    boolean isExpired();
-    boolean isCached(int userId);
-    void put(UserRealm userRealm);
-    void put(AccessToken accessToken);
-    void put(Installation installation);
-    Observable<UserRealm> userInfos(String userId);
-    Observable<List<FriendshipRealm>> friendships();
-    UserRealm userInfosNoObs(String userId);
-    MembershipRealm membershipForGroupId(String groupId);
-    FriendshipRealm friendshipForUserId(String userId);
-    void removeFriendship(String friendshipId);
-    void insertGroup(GroupRealm groupRealm);
-    void updateGroup(GroupRealm groupRealm, boolean isFull);
-    void addMembersToGroup(String groupId, List<String> memberIds);
-    void removeMembersFromGroup(String groupId, List<String> memberIds);
-    void removeGroup(String groupId);
-    void removeGroupFromMembership(String membershipId);
-    void insertMembership(String userId, MembershipRealm membershipRealm);
-    void updateMembership(MembershipRealm membershipRealm);
-    Observable<FriendshipRealm> updateFriendship(String friendshipId, @FriendshipRealm.FriendshipStatus String status);
-    FriendshipRealm updateFriendshipNoObs(String friendshipId, @FriendshipRealm.FriendshipStatus String moreType);
-    MembershipRealm membershipInfos(String membershipId);
-    void updateUsersAndGroups(List<UserRealm> userRealm, List<GroupRealm> groupRealmList);
+  boolean isExpired();
+
+  boolean isCached(int userId);
+
+  void put(UserRealm userRealm);
+
+  void put(AccessToken accessToken);
+
+  void put(Installation installation);
+
+  Observable<UserRealm> userInfos(String userId);
+
+  Observable<List<FriendshipRealm>> friendships();
+
+  UserRealm userInfosNoObs(String userId);
+
+  MembershipRealm membershipForGroupId(String groupId);
+
+  FriendshipRealm friendshipForUserId(String userId);
+
+  void removeFriendship(String friendshipId);
+
+  void insertGroup(GroupRealm groupRealm);
+
+  void updateGroup(GroupRealm groupRealm, boolean isFull);
+
+  void addMembersToGroup(String groupId, List<String> memberIds);
+
+  void removeMembersFromGroup(String groupId, List<String> memberIds);
+
+  void removeGroup(String groupId);
+
+  void removeGroupFromMembership(String membershipId);
+
+  void insertMembership(String userId, MembershipRealm membershipRealm);
+
+  void updateMembership(MembershipRealm membershipRealm);
+
+  Observable<FriendshipRealm> updateFriendship(String friendshipId,
+      @FriendshipRealm.FriendshipStatus String status);
+
+  FriendshipRealm updateFriendshipNoObs(String friendshipId,
+      @FriendshipRealm.FriendshipStatus String moreType);
+
+  MembershipRealm membershipInfos(String membershipId);
+
+  void updateUsersAndGroups(List<UserRealm> userRealm, List<GroupRealm> groupRealmList);
 }

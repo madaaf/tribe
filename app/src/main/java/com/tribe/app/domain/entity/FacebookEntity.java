@@ -7,40 +7,40 @@ import java.io.Serializable;
  */
 public class FacebookEntity implements Serializable {
 
-    private String id;
-    private String profilePicture;
-    private String username;
-    private String name;
+  private String id;
+  private String profilePicture;
+  private String username;
+  private String name;
 
-    public void setProfilePicture(String profilePicture) {
-        this.profilePicture = profilePicture;
-    }
+  public void setProfilePicture(String profilePicture) {
+    this.profilePicture = profilePicture;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-    public String getProfilePicture() {
-        return profilePicture;
-    }
+  public String getProfilePicture() {
+    return profilePicture;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public String getUsername() {
-        return username;
-    }
+  public String getUsername() {
+    return username;
+  }
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 }

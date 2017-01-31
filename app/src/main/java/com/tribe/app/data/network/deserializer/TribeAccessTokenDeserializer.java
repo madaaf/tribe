@@ -11,19 +11,18 @@ import java.lang.reflect.Type;
 
 public class TribeAccessTokenDeserializer implements JsonDeserializer<AccessToken> {
 
-    @Override
-    public AccessToken deserialize(JsonElement je, Type typeOfT,
-                               JsonDeserializationContext context) throws JsonParseException {
+  @Override
+  public AccessToken deserialize(JsonElement je, Type typeOfT, JsonDeserializationContext context)
+      throws JsonParseException {
 
-        JsonObject results = je.getAsJsonObject();
-        AccessToken accessToken = new AccessToken();
-        accessToken.setAccessToken(results.get("access_token").getAsString());
-        accessToken.setRefreshToken(results.get("refresh_token").getAsString());
+    JsonObject results = je.getAsJsonObject();
+    AccessToken accessToken = new AccessToken();
+    accessToken.setAccessToken(results.get("access_token").getAsString());
+    accessToken.setRefreshToken(results.get("refresh_token").getAsString());
 
-        if (results.has("user_id"))
-            accessToken.setUserId(results.get("user_id").getAsString());
+    if (results.has("user_id")) accessToken.setUserId(results.get("user_id").getAsString());
 
-        accessToken.setTokenType("Bearer");
-        return accessToken;
-    }
+    accessToken.setTokenType("Bearer");
+    return accessToken;
+  }
 }

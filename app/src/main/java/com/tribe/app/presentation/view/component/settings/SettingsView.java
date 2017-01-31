@@ -29,152 +29,141 @@ import rx.subscriptions.CompositeSubscription;
 
 public class SettingsView extends FrameLayout {
 
-    @Inject
-    User user;
+  @Inject User user;
 
-    @Inject
-    Navigator navigator;
+  @Inject Navigator navigator;
 
-    @BindView(R.id.viewActionProfile)
-    ActionView viewActionProfile;
+  @BindView(R.id.viewActionProfile) ActionView viewActionProfile;
 
-    @BindView(R.id.viewActionShareProfile)
-    ActionView viewActionShareProfile;
+  @BindView(R.id.viewActionShareProfile) ActionView viewActionShareProfile;
 
-    @BindView(R.id.viewActionFilters)
-    ActionView viewActionFilters;
+  @BindView(R.id.viewActionFilters) ActionView viewActionFilters;
 
-    @BindView(R.id.viewActionParameters)
-    ActionView viewActionParameters;
+  @BindView(R.id.viewActionParameters) ActionView viewActionParameters;
 
-    //@BindView(R.id.viewActionPermissions)
-    //ActionView viewActionPermissions;
+  //@BindView(R.id.viewActionPermissions)
+  //ActionView viewActionPermissions;
 
-    //@BindView(R.id.viewActionHideBlock)
-    //ActionView viewActionHideBlock;
+  //@BindView(R.id.viewActionHideBlock)
+  //ActionView viewActionHideBlock;
 
-    @BindView(R.id.viewActionContact)
-    ActionView viewActionContact;
+  @BindView(R.id.viewActionContact) ActionView viewActionContact;
 
-    @BindView(R.id.viewActionFollow)
-    ActionView viewActionFollow;
+  @BindView(R.id.viewActionFollow) ActionView viewActionFollow;
 
-    @BindView(R.id.viewActionBlockedHidden)
-    ActionView viewActionBlockedHidden;
+  @BindView(R.id.viewActionBlockedHidden) ActionView viewActionBlockedHidden;
 
-    @BindView(R.id.viewActionRateUs)
-    ActionView viewActionRateUs;
+  @BindView(R.id.viewActionRateUs) ActionView viewActionRateUs;
 
-    @BindView(R.id.viewActionLogout)
-    ActionView viewActionLogout;
+  @BindView(R.id.viewActionLogout) ActionView viewActionLogout;
 
-    @BindView(R.id.txtVersion)
-    TextViewFont txtVersion;
+  @BindView(R.id.txtVersion) TextViewFont txtVersion;
 
-    // VARIABLES
+  // VARIABLES
 
-    // OBSERVABLES
-    private CompositeSubscription subscriptions;
+  // OBSERVABLES
+  private CompositeSubscription subscriptions;
 
-    public SettingsView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
+  public SettingsView(Context context, AttributeSet attrs) {
+    super(context, attrs);
+  }
 
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        ButterKnife.bind(this);
+  @Override protected void onFinishInflate() {
+    super.onFinishInflate();
+    ButterKnife.bind(this);
 
-        initDependencyInjector();
-        initSubscriptions();
-        initUI();
-    }
+    initDependencyInjector();
+    initSubscriptions();
+    initUI();
+  }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-    }
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+  }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-    }
+  @Override protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+  }
 
-    public void onDestroy() {
-        if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
-    }
+  public void onDestroy() {
+    if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+  }
 
-    private void initSubscriptions() {
-        subscriptions = new CompositeSubscription();
-    }
+  private void initSubscriptions() {
+    subscriptions = new CompositeSubscription();
+  }
 
-    private void initUI() {
-        viewActionShareProfile.setTitle(getContext().getString(R.string.settings_profile_share_title, "@" + user.getUsername()));
-        viewActionShareProfile.setBody(getContext().getString(R.string.settings_profile_share_title, BuildConfig.TRIBE_URL + "/@" + user.getUsername()));
+  private void initUI() {
+    viewActionShareProfile.setTitle(
+        getContext().getString(R.string.settings_profile_share_title, "@" + user.getUsername()));
+    viewActionShareProfile.setBody(getContext().getString(R.string.settings_profile_share_title,
+        BuildConfig.TRIBE_URL + "/@" + user.getUsername()));
 
-        txtVersion.setText(getContext().getString(R.string.settings_version, BuildConfig.VERSION_NAME, String.valueOf(BuildConfig.VERSION_CODE)));
-    }
+    txtVersion.setText(getContext().getString(R.string.settings_version, BuildConfig.VERSION_NAME,
+        String.valueOf(BuildConfig.VERSION_CODE)));
+  }
 
-    protected ApplicationComponent getApplicationComponent() {
-        return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
-    }
+  protected ApplicationComponent getApplicationComponent() {
+    return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
+  }
 
-    protected ActivityModule getActivityModule() {
-        return new ActivityModule(((Activity) getContext()));
-    }
+  protected ActivityModule getActivityModule() {
+    return new ActivityModule(((Activity) getContext()));
+  }
 
-    private void initDependencyInjector() {
-        DaggerUserComponent.builder()
-                .activityModule(getActivityModule())
-                .applicationComponent(getApplicationComponent())
-                .build().inject(this);
-    }
+  private void initDependencyInjector() {
+    DaggerUserComponent.builder()
+        .activityModule(getActivityModule())
+        .applicationComponent(getApplicationComponent())
+        .build()
+        .inject(this);
+  }
 
-    /**
-     * OBSERVABLES
-     */
+  /**
+   * OBSERVABLES
+   */
 
-    public Observable<Void> onProfileClick() {
-        return viewActionProfile.onClick();
-    }
+  public Observable<Void> onProfileClick() {
+    return viewActionProfile.onClick();
+  }
 
-    public Observable<Void> onShareProfileClick() {
-        return viewActionShareProfile.onClick();
-    }
+  public Observable<Void> onShareProfileClick() {
+    return viewActionShareProfile.onClick();
+  }
 
-    public Observable<Void> onFiltersClick() {
-        return viewActionFilters.onClick();
-    }
+  public Observable<Void> onFiltersClick() {
+    return viewActionFilters.onClick();
+  }
 
-    public Observable<Void> onParametersClick() {
-        return viewActionParameters.onClick();
-    }
+  public Observable<Void> onParametersClick() {
+    return viewActionParameters.onClick();
+  }
 
-//    public Observable<Void> onPermissionsClick() {
-//        return viewActionPermissions.onClick();
-//    }
+  //    public Observable<Void> onPermissionsClick() {
+  //        return viewActionPermissions.onClick();
+  //    }
 
-//    public Observable<Void> onHideBlockClick() {
-//        return viewActionHideBlock.onClick();
-//    }
+  //    public Observable<Void> onHideBlockClick() {
+  //        return viewActionHideBlock.onClick();
+  //    }
 
-    public Observable<Void> onContactClick() {
-        return viewActionContact.onClick();
-    }
+  public Observable<Void> onContactClick() {
+    return viewActionContact.onClick();
+  }
 
-    public Observable<Void> onFollowClick() {
-        return viewActionFollow.onClick();
-    }
+  public Observable<Void> onFollowClick() {
+    return viewActionFollow.onClick();
+  }
 
-    public Observable<Void> onBlockedHiddenClick() {
-        return viewActionBlockedHidden.onClick();
-    }
+  public Observable<Void> onBlockedHiddenClick() {
+    return viewActionBlockedHidden.onClick();
+  }
 
-    public Observable<Void> onRateClick() {
-        return viewActionRateUs.onClick();
-    }
+  public Observable<Void> onRateClick() {
+    return viewActionRateUs.onClick();
+  }
 
-    public Observable<Void> onLogoutClick() {
-        return viewActionLogout.onClick();
-    }
+  public Observable<Void> onLogoutClick() {
+    return viewActionLogout.onClick();
+  }
 }

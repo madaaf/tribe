@@ -14,9 +14,8 @@ import dagger.Component;
  * Subtypes of ActivityComponent should be decorated with annotation:
  * {@link PerActivity}
  */
-@PerActivity
-@Component(dependencies = ApplicationComponent.class, modules = ActivityModule.class)
+@PerActivity @Component(dependencies = ApplicationComponent.class, modules = ActivityModule.class)
 public interface ActivityComponent {
-    //Exposed to sub-graphs.
-    Activity activity();
+  //Exposed to sub-graphs.
+  Activity activity();
 }

@@ -6,14 +6,14 @@ import java.io.IOException;
 
 public class PreviewSurfaceHelperBase implements PreviewSurfaceHelper {
 
-    private CameraHelper cameraHelper;
+  private CameraHelper cameraHelper;
 
-    public PreviewSurfaceHelperBase(final CameraHelper camera) {
-        cameraHelper = camera;
-    }
+  public PreviewSurfaceHelperBase(final CameraHelper camera) {
+    cameraHelper = camera;
+  }
 
-    @Override
-    public void setPreviewTexture(SurfaceTexture surfaceTexture, int width, int height) throws IOException {
-        cameraHelper.setPreviewTexture(surfaceTexture, width, height);
-    }
+  @Override public void setPreviewTexture(SurfaceTexture surfaceTexture, int width, int height)
+      throws IOException {
+    cameraHelper.setPreviewTexture(surfaceTexture, width, height);
+  }
 }

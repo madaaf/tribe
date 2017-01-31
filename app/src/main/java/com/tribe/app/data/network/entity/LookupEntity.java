@@ -9,13 +9,13 @@ import java.util.List;
  */
 public class LookupEntity {
 
-    private List<UserRealm> lookupList;
+  private List<UserRealm> lookupList;
 
-    public List<UserRealm> getLookup() {
-        return lookupList;
-    }
+  public List<UserRealm> getLookup() {
+    return lookupList;
+  }
 
-    public void setLookup(List<UserRealm> lookupList) {
-        this.lookupList = lookupList;
-    }
+  public void setLookup(List<UserRealm> lookupList) {
+    this.lookupList = lookupList;
+  }
 }

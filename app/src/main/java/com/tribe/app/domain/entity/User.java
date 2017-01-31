@@ -13,341 +13,341 @@ import java.util.List;
  */
 public class User implements Serializable {
 
-    public static final String ID_EMPTY = "EMPTY";
+  public static final String ID_EMPTY = "EMPTY";
 
-    private String id;
-    private String profilePicture;
-    private String displayName;
-    private Date created_at;
-    private Date updated_at;
-    private String username;
-    private String phone;
-    private int score = 0;
-    private Location location;
-    private boolean tribe_save;
-    private List<Friendship> friendships;
-    private List<Membership> membershipList;
-    private List<Recipient> friendshipList;
-    private String fbid;
-    private boolean invisible_mode;
-    private boolean push_notif;
+  private String id;
+  private String profilePicture;
+  private String displayName;
+  private Date created_at;
+  private Date updated_at;
+  private String username;
+  private String phone;
+  private int score = 0;
+  private Location location;
+  private boolean tribe_save;
+  private List<Friendship> friendships;
+  private List<Membership> membershipList;
+  private List<Recipient> friendshipList;
+  private String fbid;
+  private boolean invisible_mode;
+  private boolean push_notif;
 
-    private boolean is_online = false;
-    private Date last_online;
+  private boolean is_online = false;
+  private Date last_online;
 
-    private boolean isFriend = false;
-    private boolean isNewFriend = false;
-    private boolean animateAdd = false;
+  private boolean isFriend = false;
+  private boolean isNewFriend = false;
+  private boolean animateAdd = false;
 
-    public User(String id) {
-        this.id = id;
-    }
+  public User(String id) {
+    this.id = id;
+  }
 
-    public int getScore() {
-        return score;
-    }
+  public int getScore() {
+    return score;
+  }
 
-    public String getScoreStr() {
-        return "" + score;
-    }
+  public String getScoreStr() {
+    return "" + score;
+  }
 
-    public void setScore(int score) {
-        this.score = score;
-    }
+  public void setScore(int score) {
+    this.score = score;
+  }
 
-    public Location getLocation() {
-        return location;
-    }
+  public Location getLocation() {
+    return location;
+  }
 
-    public void setLocation(Location location) {
-        this.location = location;
-    }
+  public void setLocation(Location location) {
+    this.location = location;
+  }
 
-    public String getUsername() {
-        return username;
-    }
+  public String getUsername() {
+    return username;
+  }
 
-    public String getUsernameDisplay() {
-        return "@" + username;
-    }
+  public String getUsernameDisplay() {
+    return "@" + username;
+  }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-    public String getPhone() {
-        return phone;
-    }
+  public String getPhone() {
+    return phone;
+  }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+  public void setPhone(String phone) {
+    this.phone = phone;
+  }
 
-    public String getProfilePicture() {
-        return profilePicture;
-    }
+  public String getProfilePicture() {
+    return profilePicture;
+  }
 
-    public void setProfilePicture(String profilePicture) {
-        this.profilePicture = profilePicture;
-    }
+  public void setProfilePicture(String profilePicture) {
+    this.profilePicture = profilePicture;
+  }
 
-    public String getDisplayName() {
-        return displayName;
-    }
+  public String getDisplayName() {
+    return displayName;
+  }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;
+  }
 
-    public Date getCreatedAt() {
-        return created_at;
-    }
+  public Date getCreatedAt() {
+    return created_at;
+  }
 
-    public void setCreatedAt(Date created_at) {
-        this.created_at = created_at;
-    }
+  public void setCreatedAt(Date created_at) {
+    this.created_at = created_at;
+  }
 
-    public Date getUpdatedAt() {
-        return updated_at;
-    }
+  public Date getUpdatedAt() {
+    return updated_at;
+  }
 
-    public void setUpdatedAt(Date updated_at) {
-        this.updated_at = updated_at;
-    }
+  public void setUpdatedAt(Date updated_at) {
+    this.updated_at = updated_at;
+  }
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public void setFriendships(List<Friendship> friendships) {
-        this.friendships = friendships;
-    }
+  public void setFriendships(List<Friendship> friendships) {
+    this.friendships = friendships;
+  }
 
-    public List<Friendship> getFriendships() {
-        if (friendships == null) return new ArrayList<>();
+  public List<Friendship> getFriendships() {
+    if (friendships == null) return new ArrayList<>();
 
-        return friendships;
-    }
+    return friendships;
+  }
 
-    public void setMembershipList(List<Membership> membershipList) {
-        this.membershipList = membershipList;
-    }
+  public void setMembershipList(List<Membership> membershipList) {
+    this.membershipList = membershipList;
+  }
 
-    public List<Membership> getMembershipList() {
-        if (friendships == null) return new ArrayList<>();
+  public List<Membership> getMembershipList() {
+    if (friendships == null) return new ArrayList<>();
 
-        return membershipList;
-    }
+    return membershipList;
+  }
 
-    public String getFbid() {
-        return fbid;
-    }
+  public String getFbid() {
+    return fbid;
+  }
 
-    public void setFbid(String fbid) {
-        this.fbid = fbid;
-    }
+  public void setFbid(String fbid) {
+    this.fbid = fbid;
+  }
 
-    public boolean isTribeSave() {
-        return tribe_save;
-    }
+  public boolean isTribeSave() {
+    return tribe_save;
+  }
 
-    public void setTribeSave(boolean tribeSave) {
-        this.tribe_save = tribeSave;
-    }
+  public void setTribeSave(boolean tribeSave) {
+    this.tribe_save = tribeSave;
+  }
 
-    public boolean isInvisibleMode() {
-        return invisible_mode;
-    }
+  public boolean isInvisibleMode() {
+    return invisible_mode;
+  }
 
-    public void setInvisibleMode(boolean invisibleMode) {
-        this.invisible_mode = invisibleMode;
-    }
+  public void setInvisibleMode(boolean invisibleMode) {
+    this.invisible_mode = invisibleMode;
+  }
 
-    public void setPushNotif(boolean pushNotif) {
-        this.push_notif = pushNotif;
-    }
+  public void setPushNotif(boolean pushNotif) {
+    this.push_notif = pushNotif;
+  }
 
-    public boolean isPushNotif() {
-        return push_notif;
-    }
+  public boolean isPushNotif() {
+    return push_notif;
+  }
 
-    public List<Recipient> getFriendshipList() {
-        friendshipList = new ArrayList<>();
+  public List<Recipient> getFriendshipList() {
+    friendshipList = new ArrayList<>();
 
-        List<Friendship> friendshipWithoutMe = new ArrayList<>();
+    List<Friendship> friendshipWithoutMe = new ArrayList<>();
 
-        if (friendships != null) {
-            for (Friendship fr : friendships) {
-                if (!id.equals(fr.getSubId())) {
-                    friendshipWithoutMe.add(fr);
-                }
-            }
-
-            friendshipList.addAll(friendshipWithoutMe);
+    if (friendships != null) {
+      for (Friendship fr : friendships) {
+        if (!id.equals(fr.getSubId())) {
+          friendshipWithoutMe.add(fr);
         }
+      }
 
-        if (membershipList != null) friendshipList.addAll(membershipList);
-
-        Collections.sort(friendshipList, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
-
-        return friendshipList;
+      friendshipList.addAll(friendshipWithoutMe);
     }
 
-    public boolean isOnline() {
-        return is_online;
+    if (membershipList != null) friendshipList.addAll(membershipList);
+
+    Collections.sort(friendshipList, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
+
+    return friendshipList;
+  }
+
+  public boolean isOnline() {
+    return is_online;
+  }
+
+  public void setIsOnline(boolean isOnline) {
+    this.is_online = isOnline;
+  }
+
+  public Date getLastOnline() {
+    return last_online;
+  }
+
+  public void setLastOnline(Date lastOnline) {
+    this.last_online = lastOnline;
+  }
+
+  public boolean isFriend() {
+    return isFriend;
+  }
+
+  public void setFriend(boolean friend) {
+    isFriend = friend;
+  }
+
+  public boolean isNewFriend() {
+    return isNewFriend;
+  }
+
+  public void setNewFriend(boolean newFriend) {
+    isNewFriend = newFriend;
+  }
+
+  public boolean isAnimateAdd() {
+    return animateAdd;
+  }
+
+  public void setAnimateAdd(boolean animateAdd) {
+    this.animateAdd = animateAdd;
+  }
+
+  @Override public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || !(o instanceof User)) return false;
+
+    User that = (User) o;
+
+    return id != null ? id.equals(that.id) : that.id == null;
+  }
+
+  public void copy(User user) {
+    if (user != null) {
+      setId(user.getId());
+      setCreatedAt(user.getCreatedAt());
+      setUpdatedAt(user.getUpdatedAt());
+      setDisplayName(user.getDisplayName());
+      setUsername(user.getUsername());
+      setProfilePicture(user.getProfilePicture());
+      setScore(user.getScore());
+      setPhone(user.getPhone());
+      setFbid(user.getFbid());
+      setInvisibleMode(user.isInvisibleMode());
+      setTribeSave(user.isTribeSave());
+      setPushNotif(user.isPushNotif());
+      if (user.getLocation() != null) setLocation(user.getLocation());
+      if (user.getMembershipList() != null && user.getMembershipList().size() > 0) {
+        setMembershipList(user.getMembershipList());
+      }
+      if (user.getFriendships() != null && user.getFriendshipList().size() > 0) {
+        setFriendships(user.getFriendships());
+      }
     }
+  }
 
-    public void setIsOnline(boolean isOnline) {
-        this.is_online = isOnline;
-    }
+  public void clear() {
+    setId(null);
+    setCreatedAt(null);
+    setUpdatedAt(null);
+    setDisplayName(null);
+    setUsername(null);
+    setProfilePicture(null);
+    setScore(0);
+    setPhone(null);
+    setFbid(null);
+    setInvisibleMode(false);
+    setPushNotif(false);
+    setTribeSave(false);
+    setLocation(null);
+    setMembershipList(null);
+    setFriendships(null);
+  }
 
-    public Date getLastOnline() {
-        return last_online;
-    }
+  public boolean hasOnlySupport() {
+    boolean hasOnlySupport = false;
 
-    public void setLastOnline(Date lastOnline) {
-        this.last_online = lastOnline;
-    }
-
-    public boolean isFriend() {
-        return isFriend;
-    }
-
-    public void setFriend(boolean friend) {
-        isFriend = friend;
-    }
-
-    public boolean isNewFriend() {
-        return isNewFriend;
-    }
-
-    public void setNewFriend(boolean newFriend) {
-        isNewFriend = newFriend;
-    }
-
-    public boolean isAnimateAdd() {
-        return animateAdd;
-    }
-
-    public void setAnimateAdd(boolean animateAdd) {
-        this.animateAdd = animateAdd;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || !(o instanceof User)) return false;
-
-        User that = (User) o;
-
-        return id != null ? id.equals(that.id) : that.id == null;
-    }
-
-    public void copy(User user) {
-        if (user != null) {
-            setId(user.getId());
-            setCreatedAt(user.getCreatedAt());
-            setUpdatedAt(user.getUpdatedAt());
-            setDisplayName(user.getDisplayName());
-            setUsername(user.getUsername());
-            setProfilePicture(user.getProfilePicture());
-            setScore(user.getScore());
-            setPhone(user.getPhone());
-            setFbid(user.getFbid());
-            setInvisibleMode(user.isInvisibleMode());
-            setTribeSave(user.isTribeSave());
-            setPushNotif(user.isPushNotif());
-            if (user.getLocation() != null) setLocation(user.getLocation());
-            if (user.getMembershipList() != null && user.getMembershipList().size() > 0) setMembershipList(user.getMembershipList());
-            if (user.getFriendships() != null && user.getFriendshipList().size() > 0) setFriendships(user.getFriendships());
+    List<Recipient> result = getFriendshipList();
+    if (result != null && result.size() == 1) {
+      for (Recipient fr : result) {
+        if (fr.getSubId() != null && fr.getSubId().equals(Constants.SUPPORT_ID)) {
+          hasOnlySupport = true;
         }
+      }
     }
 
-    public void clear() {
-        setId(null);
-        setCreatedAt(null);
-        setUpdatedAt(null);
-        setDisplayName(null);
-        setUsername(null);
-        setProfilePicture(null);
-        setScore(0);
-        setPhone(null);
-        setFbid(null);
-        setInvisibleMode(false);
-        setPushNotif(false);
-        setTribeSave(false);
-        setLocation(null);
-        setMembershipList(null);
-        setFriendships(null);
+    return hasOnlySupport;
+  }
+
+  public List<GroupMember> getUserList() {
+    List<GroupMember> userList = new ArrayList<>();
+
+    Collections.sort(friendships, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
+
+    for (Friendship friendship : friendships) {
+      if (!friendship.getSubId().equals(Constants.SUPPORT_ID) && !friendship.getSubId()
+          .equals(Recipient.ID_EMPTY) && !friendship.getSubId().equals(this.id)) {
+        userList.add(new GroupMember(friendship.getFriend()));
+      }
     }
 
-    public boolean hasOnlySupport() {
-        boolean hasOnlySupport = false;
+    return userList;
+  }
 
-        List<Recipient> result = getFriendshipList();
-        if (result != null && result.size() == 1) {
-            for (Recipient fr : result) {
-                if (fr.getSubId() != null && fr.getSubId().equals(Constants.SUPPORT_ID)) {
-                    hasOnlySupport = true;
-                }
-            }
+  public void computeMemberFriends(List<GroupMember> groupMemberList) {
+    for (GroupMember groupMember : groupMemberList) {
+      for (Friendship friendship : friendships) {
+        if (friendship.getFriend().equals(groupMember.getUser())) {
+          groupMember.setFriend(true);
         }
-
-        return hasOnlySupport;
+      }
     }
+  }
 
-    public List<GroupMember> getUserList() {
-        List<GroupMember> userList = new ArrayList<>();
+  public int computeUserFriends(List<User> userList) {
+    int count = 0;
 
-        Collections.sort(friendships, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
-
+    if (friendships != null) {
+      for (User user : userList) {
         for (Friendship friendship : friendships) {
-            if (!friendship.getSubId().equals(Constants.SUPPORT_ID)
-                    && !friendship.getSubId().equals(Recipient.ID_EMPTY)
-                    && !friendship.getSubId().equals(this.id)) {
-                userList.add(new GroupMember(friendship.getFriend()));
-            }
+          if (friendship.getFriend().equals(user)) {
+            user.setFriend(true);
+            count++;
+          }
         }
-
-        return userList;
+      }
     }
 
-    public void computeMemberFriends(List<GroupMember> groupMemberList) {
-        for (GroupMember groupMember : groupMemberList) {
-            for (Friendship friendship : friendships) {
-                if (friendship.getFriend().equals(groupMember.getUser())) {
-                    groupMember.setFriend(true);
-                }
-            }
-        }
+    return count;
+  }
 
-    }
-
-    public int computeUserFriends(List<User> userList) {
-        int count = 0;
-
-        if (friendships != null) {
-            for (User user : userList) {
-                for (Friendship friendship : friendships) {
-                    if (friendship.getFriend().equals(user)) {
-                        user.setFriend(true);
-                        count++;
-                    }
-                }
-            }
-        }
-
-        return count;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (getId() != null ? getId().hashCode() : 0);
-        return result;
-    }
+  @Override public int hashCode() {
+    int result = super.hashCode();
+    result = 31 * result + (getId() != null ? getId().hashCode() : 0);
+    return result;
+  }
 }

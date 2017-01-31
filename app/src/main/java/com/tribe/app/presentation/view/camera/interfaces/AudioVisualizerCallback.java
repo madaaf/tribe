@@ -5,9 +5,13 @@ package com.tribe.app.presentation.view.camera.interfaces;
  */
 public interface AudioVisualizerCallback {
 
-    void receive(final double[]... toTransform);
-    void activate();
-    void deactivate();
-    void startRecording();
-    void stopRecording();
+  void receive(final double[]... toTransform);
+
+  void activate();
+
+  void deactivate();
+
+  void startRecording();
+
+  void stopRecording();
 }

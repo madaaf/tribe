@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:id="@+id/layoutContent"
+<LinearLayout android:id="@+id/layoutContent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -10,50 +9,51 @@
     android:padding="@dimen/horizontal_margin_small"
     >
 
-    <ImageView
-        android:id="@+id/imgPicto"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:background="@drawable/shape_oval_yellow"
-        android:src="@drawable/picto_lock_white"
-        android:scaleType="centerInside"
+  <ImageView
+      android:id="@+id/imgPicto"
+      android:layout_width="45dp"
+      android:layout_height="45dp"
+      android:background="@drawable/shape_oval_yellow"
+      android:src="@drawable/picto_lock_white"
+      android:scaleType="centerInside"
+      />
+
+  <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      >
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/horizontal_margin_small"
+        android:singleLine="true"
+        style="@style/Title.1.Black"
+        android:text="ddd"
         />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="@dimen/horizontal_margin_small"
+        android:layout_below="@id/txtTitle"
+        android:singleLine="true"
+        style="@style/Body.One.Black40"
+        android:text="dijidjie"
+        />
 
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/horizontal_margin_small"
-            android:singleLine="true"
-            style="@style/Title.1.Black"
-            android:text="ddd"
-            />
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="@dimen/horizontal_margin_small"
-            android:layout_below="@id/txtTitle"
-            android:singleLine="true"
-            style="@style/Body.One.Black40"
-            android:text="dijidjie"
-            />
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtPoints"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@id/txtTitle"
-            android:singleLine="true"
-            style="@style/Points.Reg.Yellow"
-            />
-    </RelativeLayout>
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtPoints"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@id/txtTitle"
+        android:singleLine="true"
+        style="@style/Points.Reg.Yellow"
+        />
+  </RelativeLayout>
 
 </LinearLayout>

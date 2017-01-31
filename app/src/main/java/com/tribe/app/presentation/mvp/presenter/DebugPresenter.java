@@ -7,24 +7,21 @@ import javax.inject.Inject;
 
 public class DebugPresenter implements Presenter {
 
-    // VIEW ATTACHED
-    private DebugMVPView debugView;
+  // VIEW ATTACHED
+  private DebugMVPView debugView;
 
-    // USECASES
+  // USECASES
 
-    // SUBSCRIBERS
+  // SUBSCRIBERS
 
-    @Inject
-    public DebugPresenter() {
-    }
+  @Inject public DebugPresenter() {
+  }
 
-    @Override
-    public void onViewDetached() {
+  @Override public void onViewDetached() {
 
-    }
+  }
 
-    @Override
-    public void onViewAttached(MVPView v) {
-        debugView = (DebugMVPView) v;
-    }
+  @Override public void onViewAttached(MVPView v) {
+    debugView = (DebugMVPView) v;
+  }
 }

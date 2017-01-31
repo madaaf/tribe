@@ -15,21 +15,20 @@ import rx.Observable;
  */
 public class DoLoginWithPhoneNumber extends UseCase {
 
-    private LoginEntity loginEntity;
-    private UserRepository userRepository;
+  private LoginEntity loginEntity;
+  private UserRepository userRepository;
 
-    @Inject
-    public DoLoginWithPhoneNumber(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        super(threadExecutor, postExecutionThread);
-        this.userRepository = userRepository;
-    }
+  @Inject public DoLoginWithPhoneNumber(CloudUserDataRepository userRepository,
+      ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+    super(threadExecutor, postExecutionThread);
+    this.userRepository = userRepository;
+  }
 
-    public void prepare(LoginEntity loginEntity) {
-        this.loginEntity = loginEntity;
-    }
+  public void prepare(LoginEntity loginEntity) {
+    this.loginEntity = loginEntity;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return this.userRepository.loginWithPhoneNumber(loginEntity);
-    }
+  @Override protected Observable buildUseCaseObservable() {
+    return this.userRepository.loginWithPhoneNumber(loginEntity);
+  }
 }

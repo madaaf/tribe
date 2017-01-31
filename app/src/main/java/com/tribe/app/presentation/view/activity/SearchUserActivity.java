@@ -51,423 +51,402 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class SearchUserActivity extends BaseActivity implements SearchMVPView {
 
-    private static final String USERNAME = "USERNAME";
+  private static final String USERNAME = "USERNAME";
 
-    public static Intent getCallingIntent(Context context, String username) {
-        Intent intent = new Intent(context, SearchUserActivity.class);
-        if (!StringUtils.isEmpty(username)) intent.putExtra(USERNAME, username);
-        return intent;
+  public static Intent getCallingIntent(Context context, String username) {
+    Intent intent = new Intent(context, SearchUserActivity.class);
+    if (!StringUtils.isEmpty(username)) intent.putExtra(USERNAME, username);
+    return intent;
+  }
+
+  @Inject ScreenUtils screenUtils;
+
+  @Inject SearchPresenter searchPresenter;
+
+  @Inject ContactAdapter contactAdapter;
+
+  @Inject User currentUser;
+
+  @Inject @AddressBook Preference<Boolean> addressBook;
+
+  @BindView(R.id.recyclerViewContacts) RecyclerView recyclerViewContacts;
+
+  @BindView(R.id.editTextSearchContact) EditTextFont editTextSearchContact;
+
+  @BindView(R.id.layoutFocus) ViewGroup layoutFocus;
+
+  @BindView(R.id.layoutContent) ViewGroup layoutContent;
+
+  @BindView(R.id.layoutBottom) ViewGroup layoutBottom;
+
+  @BindView(R.id.layoutTop) ViewGroup layoutTop;
+
+  LoadFriendsView viewFriendsFBLoad;
+  LoadFriendsView viewFriendsAddressBookLoad;
+  View viewSeparatorAddressBook;
+  View viewSeparatorFBTop;
+  View viewSeparatorFBBottom;
+
+  // OBSERVABLES
+  private CompositeSubscription subscriptions = new CompositeSubscription();
+
+  // VARIABLES
+  private boolean isSearchMode = false;
+  private Unbinder unbinder;
+  private ContactsLayoutManager layoutManager;
+  private List<Object> filteredContactList;
+  private List<Object> originalContactList;
+  private SearchResult searchResult;
+  private String username;
+  private boolean shouldOverridePendingTransactions = false;
+
+  @Override protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    initDependencyInjector();
+    initUI();
+    initRecyclerView();
+    initParams(getIntent());
+  }
+
+  @Override protected void onResume() {
+    super.onResume();
+    if (shouldOverridePendingTransactions) {
+      overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
+      shouldOverridePendingTransactions = false;
     }
+  }
 
-    @Inject
-    ScreenUtils screenUtils;
+  @Override protected void onStart() {
+    super.onStart();
+    searchPresenter.onViewAttached(this);
+  }
 
-    @Inject
-    SearchPresenter searchPresenter;
+  @Override protected void onStop() {
+    searchPresenter.onViewDetached();
+    super.onStop();
+  }
 
-    @Inject
-    ContactAdapter contactAdapter;
+  @Override protected void onDestroy() {
+    recyclerViewContacts.setAdapter(null);
+    subscriptions.unsubscribe();
 
-    @Inject
-    User currentUser;
+    if (unbinder != null) unbinder.unbind();
 
-    @Inject
-    @AddressBook
-    Preference<Boolean> addressBook;
+    super.onDestroy();
+  }
 
-    @BindView(R.id.recyclerViewContacts)
-    RecyclerView recyclerViewContacts;
+  private void initUI() {
+    setContentView(R.layout.activity_search);
+    unbinder = ButterKnife.bind(this);
 
-    @BindView(R.id.editTextSearchContact)
-    EditTextFont editTextSearchContact;
+    filteredContactList = new ArrayList<>();
+    originalContactList = new ArrayList<>();
 
-    @BindView(R.id.layoutFocus)
-    ViewGroup layoutFocus;
+    refactorActions();
 
-    @BindView(R.id.layoutContent)
-    ViewGroup layoutContent;
+    subscriptions.add(
+        RxTextView.textChanges(editTextSearchContact).map(CharSequence::toString).doOnNext(s -> {
+          if (StringUtils.isEmpty(s)) {
+            isSearchMode = false;
+            filter();
+            showContactList();
+          }
+        }).filter(s -> !StringUtils.isEmpty(s)).doOnNext(s -> {
+          isSearchMode = true;
+          searchResult = new SearchResult();
+          searchResult.setUsername(s);
+          updateSearch();
+        }).debounce(500, TimeUnit.MILLISECONDS).subscribe(s -> searchPresenter.findByUsername(s)));
+  }
 
-    @BindView(R.id.layoutBottom)
-    ViewGroup layoutBottom;
+  private void initDependencyInjector() {
+    DaggerUserComponent.builder()
+        .applicationComponent(getApplicationComponent())
+        .activityModule(getActivityModule())
+        .build()
+        .inject(this);
+  }
 
-    @BindView(R.id.layoutTop)
-    ViewGroup layoutTop;
+  private void initRecyclerView() {
+    this.layoutManager = new ContactsLayoutManager(context());
+    this.recyclerViewContacts.setLayoutManager(layoutManager);
+    this.recyclerViewContacts.setItemAnimator(null);
+    this.recyclerViewContacts.addItemDecoration(
+        new DividerHeadersItemDecoration(screenUtils.dpToPx(10), screenUtils.dpToPx(10)));
+    this.recyclerViewContacts.setAdapter(contactAdapter);
 
-    LoadFriendsView viewFriendsFBLoad;
-    LoadFriendsView viewFriendsAddressBookLoad;
-    View viewSeparatorAddressBook;
-    View viewSeparatorFBTop;
-    View viewSeparatorFBBottom;
+    contactAdapter.setItems(new ArrayList<>());
 
-    // OBSERVABLES
-    private CompositeSubscription subscriptions = new CompositeSubscription();
-
-    // VARIABLES
-    private boolean isSearchMode = false;
-    private Unbinder unbinder;
-    private ContactsLayoutManager layoutManager;
-    private List<Object> filteredContactList;
-    private List<Object> originalContactList;
-    private SearchResult searchResult;
-    private String username;
-    private boolean shouldOverridePendingTransactions = false;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        initDependencyInjector();
-        initUI();
-        initRecyclerView();
-        initParams(getIntent());
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (shouldOverridePendingTransactions) {
-            overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
-            shouldOverridePendingTransactions = false;
-        }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        searchPresenter.onViewAttached(this);
-    }
-
-    @Override
-    protected void onStop() {
-        searchPresenter.onViewDetached();
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        recyclerViewContacts.setAdapter(null);
-        subscriptions.unsubscribe();
-
-        if (unbinder != null) unbinder.unbind();
-
-        super.onDestroy();
-    }
-
-    private void initUI() {
-        setContentView(R.layout.activity_search);
-        unbinder = ButterKnife.bind(this);
-
-        filteredContactList = new ArrayList<>();
-        originalContactList = new ArrayList<>();
-
-        refactorActions();
-
-        subscriptions.add(RxTextView.textChanges(editTextSearchContact).map(CharSequence::toString)
-                .doOnNext(s -> {
-                    if (StringUtils.isEmpty(s)) {
-                        isSearchMode = false;
-                        filter();
-                        showContactList();
-                    }
-                })
-                .filter(s -> !StringUtils.isEmpty(s))
-                .doOnNext(s -> {
-                    isSearchMode = true;
-                    searchResult = new SearchResult();
-                    searchResult.setUsername(s);
-                    updateSearch();
-                })
-                .debounce(500, TimeUnit.MILLISECONDS)
-                .subscribe(s -> searchPresenter.findByUsername(s))
-        );
-    }
-
-    private void initDependencyInjector() {
-        DaggerUserComponent.builder()
-                .applicationComponent(getApplicationComponent())
-                .activityModule(getActivityModule())
-                .build()
-                .inject(this);
-    }
-
-    private void initRecyclerView() {
-        this.layoutManager = new ContactsLayoutManager(context());
-        this.recyclerViewContacts.setLayoutManager(layoutManager);
-        this.recyclerViewContacts.setItemAnimator(null);
-        this.recyclerViewContacts.addItemDecoration(new DividerHeadersItemDecoration(screenUtils.dpToPx(10), screenUtils.dpToPx(10)));
-        this.recyclerViewContacts.setAdapter(contactAdapter);
-
-        contactAdapter.setItems(new ArrayList<>());
-
-        subscriptions.add(contactAdapter.onClickAdd()
-                .map(view -> contactAdapter.getItemAtPosition(recyclerViewContacts.getChildLayoutPosition(view)))
-                .doOnError(throwable -> throwable.printStackTrace())
-                .subscribe(o -> {
-                    if (o instanceof SearchResult) {
-                        SearchResult searchResult = (SearchResult) o;
-                        if (searchResult.getUsername() != null && !searchResult.getUsername().equals(currentUser.getUsername()))
-                            searchPresenter.createFriendship(searchResult.getId());
-                    } else {
-                        Contact contact = (Contact) o;
-                        searchPresenter.createFriendship(contact.getUserList().get(0).getId());
-                    }
-                }));
-
-        subscriptions.add(contactAdapter.onClickInvite()
-                .map(view -> contactAdapter.getItemAtPosition(recyclerViewContacts.getChildLayoutPosition(view)))
-                .doOnError(throwable -> throwable.printStackTrace())
-                .subscribe(o -> {
-                    if (o instanceof ContactAB) {
-                        ContactAB contact = (ContactAB) o;
-                        shouldOverridePendingTransactions = true;
-                        navigator.invite(contact.getPhone(), contact.getHowManyFriends(), this);
-                    }
-                }));
-    }
-
-    private void initParams(Intent intent) {
-        if (intent != null && intent.hasExtra(USERNAME)) {
-            username = intent.getStringExtra(USERNAME);
-            editTextSearchContact.setText(username);
-        }
-    }
-
-    private void updateSearch() {
-        filter();
-        this.contactAdapter.updateSearch(searchResult, filteredContactList);
-    }
-
-    private void refactorActions() {
-        boolean permissionsFB = FacebookUtils.isLoggedIn();
-        boolean permissionsContact = PermissionUtils.hasPermissionsContact(this) && addressBook.get();
-
-        layoutBottom.removeAllViews();
-        layoutTop.removeAllViews();
-
-        if (permissionsContact && permissionsFB) {
-            recyclerViewContacts.setPadding(0, 0, 0, 0);
-            searchPresenter.loadContacts();
-            return;
-        }
-
-        if (!permissionsContact && !permissionsFB) {
-            layoutContent.setVisibility(View.GONE);
-            layoutTop.setVisibility(View.VISIBLE);
-            initLoadView(getLayoutInflater().inflate(R.layout.view_load_ab_fb_friends, layoutTop));
-        } else if (!permissionsContact || !permissionsFB) {
-            layoutContent.setVisibility(View.VISIBLE);
-            layoutBottom.setVisibility(View.VISIBLE);
-            recyclerViewContacts.setPadding(0, 0, 0, getResources().getDimensionPixelSize(R.dimen.load_friends_height));
-            initLoadView(getLayoutInflater().inflate(R.layout.view_load_ab_fb_friends, layoutBottom));
-        }
-
-        if (permissionsContact || permissionsFB) {
-            searchPresenter.loadContacts();
-        }
-
-        if (!permissionsContact) {
-            viewFriendsAddressBookLoad.setOnClickListener(v -> {
-                lookupContacts();
-                viewFriendsAddressBookLoad.showLoading();
-            });
-        } else if (!permissionsFB) {
-            viewFriendsAddressBookLoad.setVisibility(View.GONE);
-            viewSeparatorAddressBook.setVisibility(View.GONE);
-        }
-
-        if (!permissionsFB) {
-            if (permissionsContact) viewSeparatorFBBottom.setVisibility(View.GONE);
-            viewFriendsFBLoad.setOnClickListener(v -> {
-                searchPresenter.loginFacebook();
-                viewFriendsFBLoad.showLoading();
-            });
-        } else if (!permissionsContact) {
-            viewFriendsFBLoad.setVisibility(View.GONE);
-            viewSeparatorFBTop.setVisibility(View.GONE);
-            viewSeparatorFBBottom.setVisibility(View.GONE);
-        }
-    }
-
-    private void initLoadView(View v) {
-        viewFriendsFBLoad = ButterKnife.findById(v, R.id.viewFriendsFBLoad);
-        viewFriendsAddressBookLoad = ButterKnife.findById(v, R.id.viewFriendsAddressBookLoad);
-        viewSeparatorAddressBook = ButterKnife.findById(v, R.id.viewSeparatorAddressBook);
-        viewSeparatorFBTop = ButterKnife.findById(v, R.id.viewSeparatorFBTop);
-        viewSeparatorFBBottom = ButterKnife.findById(v, R.id.viewSeparatorFBBottom);
-    }
-
-    private void lookupContacts() {
-        RxPermissions.getInstance(this)
-                .request(PermissionUtils.PERMISSIONS_CONTACTS)
-                .subscribe(hasPermission -> {
-                    Bundle bundle = new Bundle();
-                    bundle.putBoolean(TagManagerConstants.ADDRESS_BOOK_ENABLED, hasPermission);
-                    tagManager.setProperty(bundle);
-
-                    if (hasPermission) {
-                        addressBook.set(true);
-                        sync();
-                    } else {
-                        viewFriendsAddressBookLoad.hideLoading();
-                    }
-                });
-    }
-
-    private void sync() {
-        tagManager.trackEvent(TagManagerConstants.ONBOARDING_CONTACTS_SYNC);
-        searchPresenter.lookupContacts();
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            if (editTextSearchContact.hasFocus()) {
-                Rect outRect = new Rect();
-                editTextSearchContact.getGlobalVisibleRect(outRect);
-
-                if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
-                    editTextSearchContact.clearFocus();
-                    screenUtils.hideKeyboard(editTextSearchContact);
-                    layoutFocus.requestFocus();
-                }
+    subscriptions.add(contactAdapter.onClickAdd()
+        .map(view -> contactAdapter.getItemAtPosition(
+            recyclerViewContacts.getChildLayoutPosition(view)))
+        .doOnError(throwable -> throwable.printStackTrace())
+        .subscribe(o -> {
+          if (o instanceof SearchResult) {
+            SearchResult searchResult = (SearchResult) o;
+            if (searchResult.getUsername() != null && !searchResult.getUsername()
+                .equals(currentUser.getUsername())) {
+              searchPresenter.createFriendship(searchResult.getId());
             }
+          } else {
+            Contact contact = (Contact) o;
+            searchPresenter.createFriendship(contact.getUserList().get(0).getId());
+          }
+        }));
+
+    subscriptions.add(contactAdapter.onClickInvite()
+        .map(view -> contactAdapter.getItemAtPosition(
+            recyclerViewContacts.getChildLayoutPosition(view)))
+        .doOnError(throwable -> throwable.printStackTrace())
+        .subscribe(o -> {
+          if (o instanceof ContactAB) {
+            ContactAB contact = (ContactAB) o;
+            shouldOverridePendingTransactions = true;
+            navigator.invite(contact.getPhone(), contact.getHowManyFriends(), this);
+          }
+        }));
+  }
+
+  private void initParams(Intent intent) {
+    if (intent != null && intent.hasExtra(USERNAME)) {
+      username = intent.getStringExtra(USERNAME);
+      editTextSearchContact.setText(username);
+    }
+  }
+
+  private void updateSearch() {
+    filter();
+    this.contactAdapter.updateSearch(searchResult, filteredContactList);
+  }
+
+  private void refactorActions() {
+    boolean permissionsFB = FacebookUtils.isLoggedIn();
+    boolean permissionsContact = PermissionUtils.hasPermissionsContact(this) && addressBook.get();
+
+    layoutBottom.removeAllViews();
+    layoutTop.removeAllViews();
+
+    if (permissionsContact && permissionsFB) {
+      recyclerViewContacts.setPadding(0, 0, 0, 0);
+      searchPresenter.loadContacts();
+      return;
+    }
+
+    if (!permissionsContact && !permissionsFB) {
+      layoutContent.setVisibility(View.GONE);
+      layoutTop.setVisibility(View.VISIBLE);
+      initLoadView(getLayoutInflater().inflate(R.layout.view_load_ab_fb_friends, layoutTop));
+    } else if (!permissionsContact || !permissionsFB) {
+      layoutContent.setVisibility(View.VISIBLE);
+      layoutBottom.setVisibility(View.VISIBLE);
+      recyclerViewContacts.setPadding(0, 0, 0,
+          getResources().getDimensionPixelSize(R.dimen.load_friends_height));
+      initLoadView(getLayoutInflater().inflate(R.layout.view_load_ab_fb_friends, layoutBottom));
+    }
+
+    if (permissionsContact || permissionsFB) {
+      searchPresenter.loadContacts();
+    }
+
+    if (!permissionsContact) {
+      viewFriendsAddressBookLoad.setOnClickListener(v -> {
+        lookupContacts();
+        viewFriendsAddressBookLoad.showLoading();
+      });
+    } else if (!permissionsFB) {
+      viewFriendsAddressBookLoad.setVisibility(View.GONE);
+      viewSeparatorAddressBook.setVisibility(View.GONE);
+    }
+
+    if (!permissionsFB) {
+      if (permissionsContact) viewSeparatorFBBottom.setVisibility(View.GONE);
+      viewFriendsFBLoad.setOnClickListener(v -> {
+        searchPresenter.loginFacebook();
+        viewFriendsFBLoad.showLoading();
+      });
+    } else if (!permissionsContact) {
+      viewFriendsFBLoad.setVisibility(View.GONE);
+      viewSeparatorFBTop.setVisibility(View.GONE);
+      viewSeparatorFBBottom.setVisibility(View.GONE);
+    }
+  }
+
+  private void initLoadView(View v) {
+    viewFriendsFBLoad = ButterKnife.findById(v, R.id.viewFriendsFBLoad);
+    viewFriendsAddressBookLoad = ButterKnife.findById(v, R.id.viewFriendsAddressBookLoad);
+    viewSeparatorAddressBook = ButterKnife.findById(v, R.id.viewSeparatorAddressBook);
+    viewSeparatorFBTop = ButterKnife.findById(v, R.id.viewSeparatorFBTop);
+    viewSeparatorFBBottom = ButterKnife.findById(v, R.id.viewSeparatorFBBottom);
+  }
+
+  private void lookupContacts() {
+    RxPermissions.getInstance(this)
+        .request(PermissionUtils.PERMISSIONS_CONTACTS)
+        .subscribe(hasPermission -> {
+          Bundle bundle = new Bundle();
+          bundle.putBoolean(TagManagerConstants.ADDRESS_BOOK_ENABLED, hasPermission);
+          tagManager.setProperty(bundle);
+
+          if (hasPermission) {
+            addressBook.set(true);
+            sync();
+          } else {
+            viewFriendsAddressBookLoad.hideLoading();
+          }
+        });
+  }
+
+  private void sync() {
+    tagManager.trackEvent(TagManagerConstants.ONBOARDING_CONTACTS_SYNC);
+    searchPresenter.lookupContacts();
+  }
+
+  @Override public boolean dispatchTouchEvent(MotionEvent event) {
+    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+      if (editTextSearchContact.hasFocus()) {
+        Rect outRect = new Rect();
+        editTextSearchContact.getGlobalVisibleRect(outRect);
+
+        if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
+          editTextSearchContact.clearFocus();
+          screenUtils.hideKeyboard(editTextSearchContact);
+          layoutFocus.requestFocus();
         }
-
-        return super.dispatchTouchEvent(event);
+      }
     }
 
-    @OnClick(R.id.imgBack)
-    void clickBack() {
-        onBackPressed();
+    return super.dispatchTouchEvent(event);
+  }
+
+  @OnClick(R.id.imgBack) void clickBack() {
+    onBackPressed();
+  }
+
+  @Override public void finish() {
+    super.finish();
+    overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
+  }
+
+  @Override public void onAddSuccess(Friendship friendship) {
+    contactAdapter.updateAdd(friendship.getFriend());
+  }
+
+  @Override public void onAddError() {
+    updateSearch();
+  }
+
+  @Override public void successFacebookLogin() {
+    sync();
+  }
+
+  @Override public void errorFacebookLogin() {
+    viewFriendsFBLoad.hideLoading();
+  }
+
+  @Override public void syncDone() {
+    refactorActions();
+    viewFriendsFBLoad.hideLoading();
+    viewFriendsAddressBookLoad.hideLoading();
+  }
+
+  @Override public void renderSearchResult(SearchResult searchResult) {
+    if (isSearchMode) {
+      if (this.searchResult != null
+          && this.searchResult.getFriendship() == null
+          && searchResult.getFriendship() != null
+          && this.searchResult.getUsername().equals(searchResult.getUsername())
+          && this.searchResult.isSearchDone()) {
+        searchResult.setShouldAnimateAdd(true);
+      }
+
+      this.searchResult = searchResult;
+      this.searchResult.setMyself(searchResult.getUsername() != null && searchResult.getUsername()
+          .equals(currentUser.getUsername()));
+      updateSearch();
     }
+  }
 
-    @Override
-    public void finish() {
-        super.finish();
-        overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
-    }
+  @Override public void renderContactList(List<Object> contactList) {
+    this.originalContactList.clear();
+    this.originalContactList.addAll(contactList);
+    refactorContacts(contactList);
+    showContactList();
+  }
 
-    @Override
-    public void onAddSuccess(Friendship friendship) {
-        contactAdapter.updateAdd(friendship.getFriend());
-    }
+  private void showContactList() {
+    if (!isSearchMode) contactAdapter.setItems(this.filteredContactList);
+  }
 
-    @Override
-    public void onAddError() {
-        updateSearch();
-    }
+  private void filter() {
+    refactorContacts(originalContactList);
+  }
 
-    @Override
-    public void successFacebookLogin() {
-        sync();
-    }
+  private void refactorContacts(List<Object> contactList) {
+    this.filteredContactList.clear();
 
-    @Override
-    public void errorFacebookLogin() {
-        viewFriendsFBLoad.hideLoading();
-    }
+    int count = 0;
+    boolean headerOnAppDone = false;
+    boolean headerInviteDone = false;
 
-    @Override
-    public void syncDone() {
-        refactorActions();
-        viewFriendsFBLoad.hideLoading();
-        viewFriendsAddressBookLoad.hideLoading();
-    }
+    Contact contact = null;
 
-    @Override
-    public void renderSearchResult(SearchResult searchResult) {
-        if (isSearchMode) {
-            if (this.searchResult != null && this.searchResult.getFriendship() == null && searchResult.getFriendship() != null
-                    && this.searchResult.getUsername().equals(searchResult.getUsername()) && this.searchResult.isSearchDone())
-                searchResult.setShouldAnimateAdd(true);
+    for (Object obj : contactList) {
+      contact = (Contact) obj;
 
-            this.searchResult = searchResult;
-            this.searchResult.setMyself(searchResult.getUsername() != null && searchResult.getUsername().equals(currentUser.getUsername()));
-            updateSearch();
-        }
-    }
+      if (!isSearchMode || (isSearchMode && contact.getName()
+          .toLowerCase()
+          .startsWith(searchResult.getUsername().toString().toLowerCase()))) {
+        if (count == 0
+            && (contact.getUserList() != null && contact.getUserList().size() > 0)
+            && !headerOnAppDone) {
+          this.filteredContactList.add(R.string.search_suggest_friends);
 
-    @Override
-    public void renderContactList(List<Object> contactList) {
-        this.originalContactList.clear();
-        this.originalContactList.addAll(contactList);
-        refactorContacts(contactList);
-        showContactList();
-    }
+          User user = contact.getUserList().get(0);
 
-    private void showContactList() {
-        if (!isSearchMode)
-            contactAdapter.setItems(this.filteredContactList);
-    }
-
-    private void filter() {
-        refactorContacts(originalContactList);
-    }
-
-    private void refactorContacts(List<Object> contactList) {
-        this.filteredContactList.clear();
-
-        int count = 0;
-        boolean headerOnAppDone = false;
-        boolean headerInviteDone = false;
-
-
-        Contact contact = null;
-
-        for (Object obj : contactList) {
-            contact = (Contact) obj;
-
-            if (!isSearchMode || (isSearchMode && contact.getName().toLowerCase().startsWith(searchResult.getUsername().toString().toLowerCase()))) {
-                if (count == 0 && (contact.getUserList() != null && contact.getUserList().size() > 0) && !headerOnAppDone) {
-                    this.filteredContactList.add(R.string.search_suggest_friends);
-
-                    User user = contact.getUserList().get(0);
-
-                    for (Friendship friendship : currentUser.getFriendships()) {
-                        if (friendship.getFriend().equals(user)) {
-                            user.setAnimateAdd(true);
-                            user.setFriend(true);
-                        }
-                    }
-
-                    headerOnAppDone = true;
-                } else if ((contact.getUserList() == null || contact.getUserList().size() == 0) && !headerInviteDone) {
-                    this.filteredContactList.add(new String());
-                    this.filteredContactList.add(R.string.search_invite_contacts);
-                    headerInviteDone = true;
-                }
-
-                this.filteredContactList.add(contact);
+          for (Friendship friendship : currentUser.getFriendships()) {
+            if (friendship.getFriend().equals(user)) {
+              user.setAnimateAdd(true);
+              user.setFriend(true);
             }
+          }
+
+          headerOnAppDone = true;
+        } else if ((contact.getUserList() == null || contact.getUserList().size() == 0)
+            && !headerInviteDone) {
+          this.filteredContactList.add(new String());
+          this.filteredContactList.add(R.string.search_invite_contacts);
+          headerInviteDone = true;
         }
+
+        this.filteredContactList.add(contact);
+      }
     }
+  }
 
-    public void search(String username) {
-        editTextSearchContact.postDelayed(() -> {
-            editTextSearchContact.requestFocus();
-            InputMethodManager imm = (InputMethodManager) context().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(editTextSearchContact, InputMethodManager.SHOW_IMPLICIT);
-            editTextSearchContact.setText(username);
-        }, 750);
-    }
+  public void search(String username) {
+    editTextSearchContact.postDelayed(() -> {
+      editTextSearchContact.requestFocus();
+      InputMethodManager imm =
+          (InputMethodManager) context().getSystemService(Context.INPUT_METHOD_SERVICE);
+      imm.showSoftInput(editTextSearchContact, InputMethodManager.SHOW_IMPLICIT);
+      editTextSearchContact.setText(username);
+    }, 750);
+  }
 
-    @Override
-    public void showLoading() {
+  @Override public void showLoading() {
 
-    }
+  }
 
-    @Override
-    public void hideLoading() {
+  @Override public void hideLoading() {
 
-    }
+  }
 
-    @Override
-    public void showError(String message) {
+  @Override public void showError(String message) {
 
-    }
+  }
 
-    @Override
-    public Context context() {
-        return this;
-    }
+  @Override public Context context() {
+    return this;
+  }
 }

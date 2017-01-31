@@ -8,7 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
  */
 public class FriendMembersLayoutManager extends LinearLayoutManager {
 
-    public FriendMembersLayoutManager(Context context) {
-        super(context);
-    }
+  public FriendMembersLayoutManager(Context context) {
+    super(context);
+  }
 }

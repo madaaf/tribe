@@ -9,7 +9,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Created by tiago on 10/11/16.
  */
-@Qualifier
-@Retention(RUNTIME)
-public @interface ShareProfile {
+@Qualifier @Retention(RUNTIME) public @interface ShareProfile {
 }

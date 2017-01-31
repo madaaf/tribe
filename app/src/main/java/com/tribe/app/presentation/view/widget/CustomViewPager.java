@@ -15,134 +15,141 @@ import java.lang.reflect.Field;
 
 public class CustomViewPager extends ViewPager {
 
-    public static final int SWIPING_THRESHOLD = 20;
+  public static final int SWIPING_THRESHOLD = 20;
 
-    public static final int SWIPE_MODE_ALL = 0;
-    public static final int SWIPE_MODE_LEFT = 1;
-    public static final int SWIPE_MODE_RIGHT = 2;
-    public static final int SWIPE_MODE_DOWN = 3;
-    public static final int SWIPE_MODE_UP = 4;
-    public static final int SWIPE_MODE_NONE = 5;
-    public static final int SWIPE_MODE_UNKNOWN = -1;
+  public static final int SWIPE_MODE_ALL = 0;
+  public static final int SWIPE_MODE_LEFT = 1;
+  public static final int SWIPE_MODE_RIGHT = 2;
+  public static final int SWIPE_MODE_DOWN = 3;
+  public static final int SWIPE_MODE_UP = 4;
+  public static final int SWIPE_MODE_NONE = 5;
+  public static final int SWIPE_MODE_UNKNOWN = -1;
 
-    @IntDef({SWIPE_MODE_ALL, SWIPE_MODE_LEFT, SWIPE_MODE_RIGHT, SWIPE_MODE_DOWN, SWIPE_MODE_UP, SWIPE_MODE_NONE, SWIPE_MODE_UNKNOWN})
-    public @interface SwipeDirection {}
+  @IntDef({
+      SWIPE_MODE_ALL, SWIPE_MODE_LEFT, SWIPE_MODE_RIGHT, SWIPE_MODE_DOWN, SWIPE_MODE_UP,
+      SWIPE_MODE_NONE, SWIPE_MODE_UNKNOWN
+  }) public @interface SwipeDirection {
+  }
 
-    // VARIABLES
-    private ScreenUtils screenUtils;
-    private ScrollerCustomDuration scroller = null;
-    private @SwipeDirection int swipeDirection;
-    protected @SwipeDirection int currentSwipeDirection;
-    protected boolean isInMotion = false;
-    private float downX, downY;
-    private boolean swipeable = true;
-    private int swipingThreshold;
+  // VARIABLES
+  private ScreenUtils screenUtils;
+  private ScrollerCustomDuration scroller = null;
+  private @SwipeDirection int swipeDirection;
+  protected @SwipeDirection int currentSwipeDirection;
+  protected boolean isInMotion = false;
+  private float downX, downY;
+  private boolean swipeable = true;
+  private int swipingThreshold;
 
-    public CustomViewPager(Context context) {
-        super(context);
+  public CustomViewPager(Context context) {
+    super(context);
+  }
+
+  public CustomViewPager(Context context, AttributeSet attrs) {
+    super(context, attrs);
+    postInitViewPager();
+  }
+
+  @Override public boolean onTouchEvent(MotionEvent ev) {
+    return swipeable && super.onTouchEvent(ev);
+  }
+
+  @Override public boolean onInterceptTouchEvent(MotionEvent event) {
+    return swipeable && super.onInterceptTouchEvent(event);
+  }
+
+  public boolean computeSwipeDirection(MotionEvent event) {
+    if (this.swipeDirection == SWIPE_MODE_NONE) return false;
+
+    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+      downX = event.getX();
+      downY = event.getY();
+      isInMotion = false;
+      currentSwipeDirection = SWIPE_MODE_UNKNOWN;
+      return true;
     }
 
-    public CustomViewPager(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        postInitViewPager();
-    }
+    if (event.getAction() == MotionEvent.ACTION_MOVE) {
+      try {
+        float diffY = event.getY() - downY;
+        float diffX = event.getX() - downX;
 
-    @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        return swipeable && super.onTouchEvent(ev);
-    }
+        final boolean isSwipingHorizontally =
+            Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > swipingThreshold;
+        final boolean isSwipingVertically = Math.abs(diffY) > Math.abs(diffX);
 
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent event) {
-        return swipeable && super.onInterceptTouchEvent(event);
-    }
-
-    public boolean computeSwipeDirection(MotionEvent event) {
-        if (this.swipeDirection == SWIPE_MODE_NONE) return false;
-
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            downX = event.getX();
-            downY = event.getY();
-            isInMotion = false;
-            currentSwipeDirection = SWIPE_MODE_UNKNOWN;
-            return true;
+        if (isSwipingHorizontally && (!isInMotion
+            || currentSwipeDirection == SWIPE_MODE_RIGHT
+            || currentSwipeDirection == SWIPE_MODE_LEFT)) {
+          if (diffX < 0) {
+            return setCurrentSwipeDirection(SWIPE_MODE_RIGHT);
+          } else {
+            return setCurrentSwipeDirection(SWIPE_MODE_LEFT);
+          }
         }
 
-        if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            try {
-                float diffY = event.getY() - downY;
-                float diffX = event.getX() - downX;
-
-                final boolean isSwipingHorizontally = Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > swipingThreshold;
-                final boolean isSwipingVertically = Math.abs(diffY) > Math.abs(diffX);
-
-                if (isSwipingHorizontally && (!isInMotion || currentSwipeDirection == SWIPE_MODE_RIGHT || currentSwipeDirection == SWIPE_MODE_LEFT)) {
-                    if (diffX < 0) {
-                        return setCurrentSwipeDirection(SWIPE_MODE_RIGHT);
-                    } else {
-                        return setCurrentSwipeDirection(SWIPE_MODE_LEFT);
-                    }
-                }
-
-                if (isSwipingVertically && (!isInMotion || currentSwipeDirection == SWIPE_MODE_DOWN || currentSwipeDirection == SWIPE_MODE_UP)) {
-                    if (diffY > 0) {
-                        return setCurrentSwipeDirection(SWIPE_MODE_DOWN);
-                    } else {
-                        return setCurrentSwipeDirection(SWIPE_MODE_UP);
-                    }
-                }
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
+        if (isSwipingVertically && (!isInMotion
+            || currentSwipeDirection == SWIPE_MODE_DOWN
+            || currentSwipeDirection == SWIPE_MODE_UP)) {
+          if (diffY > 0) {
+            return setCurrentSwipeDirection(SWIPE_MODE_DOWN);
+          } else {
+            return setCurrentSwipeDirection(SWIPE_MODE_UP);
+          }
         }
-
-        return true;
+      } catch (Exception exception) {
+        exception.printStackTrace();
+      }
     }
 
-    private boolean setCurrentSwipeDirection(@SwipeDirection int newSwipeDirection) {
-        isInMotion = true;
-        currentSwipeDirection = newSwipeDirection;
-        return true;
+    return true;
+  }
+
+  private boolean setCurrentSwipeDirection(@SwipeDirection int newSwipeDirection) {
+    isInMotion = true;
+    currentSwipeDirection = newSwipeDirection;
+    return true;
+  }
+
+  public void setAllowedSwipeDirection(@SwipeDirection int direction) {
+    this.swipeDirection = direction;
+  }
+
+  /**
+   * Override the Scroller instance with our own class so we can change the
+   * duration
+   */
+  protected void postInitViewPager() {
+    screenUtils =
+        ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
+            .screenUtils();
+    swipingThreshold = screenUtils.dpToPx(SWIPING_THRESHOLD);
+
+    try {
+      Field rScroller = ViewPager.class.getDeclaredField("mScroller");
+      rScroller.setAccessible(true);
+      Field interpolator = ViewPager.class.getDeclaredField("sInterpolator");
+      interpolator.setAccessible(true);
+
+      scroller = new ScrollerCustomDuration(getContext(), (Interpolator) interpolator.get(null));
+      rScroller.set(this, scroller);
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+  }
 
-    public void setAllowedSwipeDirection(@SwipeDirection int direction) {
-        this.swipeDirection = direction;
-    }
+  /**
+   * Set the factor by which the duration will change
+   */
+  public void setScrollDurationFactor(double scrollFactor) {
+    scroller.setScrollDurationFactor(scrollFactor);
+  }
 
-    /**
-     * Override the Scroller instance with our own class so we can change the
-     * duration
-     */
-    protected void postInitViewPager() {
-        screenUtils = ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().screenUtils();
-        swipingThreshold = screenUtils.dpToPx(SWIPING_THRESHOLD);
+  public int getCurrentSwipeDirection() {
+    return currentSwipeDirection;
+  }
 
-        try {
-            Field rScroller = ViewPager.class.getDeclaredField("mScroller");
-            rScroller.setAccessible(true);
-            Field interpolator = ViewPager.class.getDeclaredField("sInterpolator");
-            interpolator.setAccessible(true);
-
-            scroller = new ScrollerCustomDuration(getContext(),
-                    (Interpolator) interpolator.get(null));
-            rScroller.set(this, scroller);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Set the factor by which the duration will change
-     */
-    public void setScrollDurationFactor(double scrollFactor) {
-        scroller.setScrollDurationFactor(scrollFactor);
-    }
-
-    public int getCurrentSwipeDirection() {
-        return currentSwipeDirection;
-    }
-
-    public void setSwipeable(boolean swipeable) {
-        this.swipeable = swipeable;
-    }
+  public void setSwipeable(boolean swipeable) {
+    this.swipeable = swipeable;
+  }
 }

@@ -17,56 +17,46 @@ import javax.inject.Named;
  */
 public class UpdateUserJob extends BaseJob {
 
-    private static final String TAG = "UpdateUserJob";
+  private static final String TAG = "UpdateUserJob";
 
-    @Inject
-    @Named("cloudUserInfos")
-    UseCase cloudUserInfos;
+  @Inject @Named("cloudUserInfos") UseCase cloudUserInfos;
 
+  public UpdateUserJob() {
+    super(new Params(Priority.HIGH).requireNetwork().singleInstanceBy(TAG).groupBy(TAG));
+  }
 
-    public UpdateUserJob() {
-        super(new Params(Priority.HIGH).requireNetwork().singleInstanceBy(TAG).groupBy(TAG));
+  @Override public void onAdded() {
+
+  }
+
+  @Override public void onRun() throws Throwable {
+    cloudUserInfos.execute(new FriendListSubscriber());
+  }
+
+  @Override protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
+    throwable.printStackTrace();
+  }
+
+  @Override protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount,
+      int maxRunCount) {
+    return RetryConstraint.createExponentialBackoff(runCount, 1000);
+  }
+
+  @Override public void inject(ApplicationComponent appComponent) {
+    super.inject(appComponent);
+    appComponent.inject(this);
+  }
+
+  private final class FriendListSubscriber extends DefaultSubscriber<User> {
+
+    @Override public void onCompleted() {
+      if (cloudUserInfos != null) cloudUserInfos.unsubscribe();
     }
 
-    @Override
-    public void onAdded() {
-
+    @Override public void onError(Throwable e) {
     }
 
-    @Override
-    public void onRun() throws Throwable {
-        cloudUserInfos.execute(new FriendListSubscriber());
+    @Override public void onNext(User user) {
     }
-
-    @Override
-    protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
-        throwable.printStackTrace();
-    }
-
-    @Override
-    protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount, int maxRunCount) {
-        return RetryConstraint.createExponentialBackoff(runCount, 1000);
-    }
-
-    @Override
-    public void inject(ApplicationComponent appComponent) {
-        super.inject(appComponent);
-        appComponent.inject(this);
-    }
-
-    private final class FriendListSubscriber extends DefaultSubscriber<User> {
-
-        @Override
-        public void onCompleted() {
-            if (cloudUserInfos != null) cloudUserInfos.unsubscribe();
-        }
-
-        @Override
-        public void onError(Throwable e) {
-        }
-
-        @Override
-        public void onNext(User user) {
-        }
-    }
+  }
 }

@@ -14,21 +14,21 @@ import rx.Observable;
  */
 public class GetCloudUserInfos extends UseCase {
 
-    private String userId;
-    private UserRepository userRepository;
+  private String userId;
+  private UserRepository userRepository;
 
-    @Inject
-    public GetCloudUserInfos(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        super(threadExecutor, postExecutionThread);
-        this.userRepository = userRepository;
-    }
+  @Inject
+  public GetCloudUserInfos(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
+      PostExecutionThread postExecutionThread) {
+    super(threadExecutor, postExecutionThread);
+    this.userRepository = userRepository;
+  }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
+  public void setUserId(String userId) {
+    this.userId = userId;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return this.userRepository.userInfos(userId);
-    }
+  @Override protected Observable buildUseCaseObservable() {
+    return this.userRepository.userInfos(userId);
+  }
 }

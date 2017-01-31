@@ -12,53 +12,48 @@ import javax.inject.Inject;
 
 public class LivePresenter implements Presenter {
 
-    // VIEW ATTACHED
-    private LiveMVPView liveMVPView;
+  // VIEW ATTACHED
+  private LiveMVPView liveMVPView;
 
-    // USECASES
-    private GetDiskFriendshipList diskFriendshipList;
+  // USECASES
+  private GetDiskFriendshipList diskFriendshipList;
 
-    // SUBSCRIBERS
-    private FriendshipListSubscriber diskFriendListSubscriber;
+  // SUBSCRIBERS
+  private FriendshipListSubscriber diskFriendListSubscriber;
 
-    @Inject
-    public LivePresenter(GetDiskFriendshipList diskFriendshipList) {
-        this.diskFriendshipList = diskFriendshipList;
+  @Inject public LivePresenter(GetDiskFriendshipList diskFriendshipList) {
+    this.diskFriendshipList = diskFriendshipList;
+  }
+
+  @Override public void onViewDetached() {
+    diskFriendshipList.unsubscribe();
+  }
+
+  @Override public void onViewAttached(MVPView v) {
+    liveMVPView = (LiveMVPView) v;
+    loadFriendshipList();
+  }
+
+  public void loadFriendshipList() {
+    if (diskFriendListSubscriber != null) {
+      diskFriendListSubscriber.unsubscribe();
     }
 
-    @Override
-    public void onViewDetached() {
-        diskFriendshipList.unsubscribe();
+    diskFriendListSubscriber = new FriendshipListSubscriber();
+    diskFriendshipList.execute(diskFriendListSubscriber);
+  }
+
+  private final class FriendshipListSubscriber extends DefaultSubscriber<List<Friendship>> {
+
+    @Override public void onCompleted() {
     }
 
-    @Override
-    public void onViewAttached(MVPView v) {
-        liveMVPView = (LiveMVPView) v;
-        loadFriendshipList();
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
     }
 
-    public void loadFriendshipList() {
-        if (diskFriendListSubscriber != null) {
-            diskFriendListSubscriber.unsubscribe();
-        }
-
-        diskFriendListSubscriber = new FriendshipListSubscriber();
-        diskFriendshipList.execute(diskFriendListSubscriber);
+    @Override public void onNext(List<Friendship> friendshipList) {
+      liveMVPView.renderFriendshipList(friendshipList);
     }
-
-    private final class FriendshipListSubscriber extends DefaultSubscriber<List<Friendship>> {
-
-        @Override
-        public void onCompleted() {}
-
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-
-        @Override
-        public void onNext(List<Friendship> friendshipList) {
-            liveMVPView.renderFriendshipList(friendshipList);
-        }
-    }
+  }
 }

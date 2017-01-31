@@ -21,58 +21,52 @@ import butterknife.Unbinder;
  */
 public class DebugActivity extends BaseActivity implements DebugMVPView {
 
-    public static Intent getCallingIntent(Context context) {
-        return new Intent(context, DebugActivity.class);
-    }
+  public static Intent getCallingIntent(Context context) {
+    return new Intent(context, DebugActivity.class);
+  }
 
-    @Inject
-    TutorialManager tutorialManager;
+  @Inject TutorialManager tutorialManager;
 
-    @Inject
-    DebugPresenter debugPresenter;
+  @Inject DebugPresenter debugPresenter;
 
-    private Unbinder unbinder;
+  private Unbinder unbinder;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+  @Override protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-        initUI();
-        initDependencyInjector();
-        initPresenter();
-    }
+    initUI();
+    initDependencyInjector();
+    initPresenter();
+  }
 
-    @Override
-    protected void onDestroy() {
-        if (unbinder != null) unbinder.unbind();
-        super.onDestroy();
-    }
+  @Override protected void onDestroy() {
+    if (unbinder != null) unbinder.unbind();
+    super.onDestroy();
+  }
 
-    private void initUI() {
-        setContentView(R.layout.activity_debug);
-        unbinder = ButterKnife.bind(this);
-    }
+  private void initUI() {
+    setContentView(R.layout.activity_debug);
+    unbinder = ButterKnife.bind(this);
+  }
 
-    private void initDependencyInjector() {
-        DaggerUserComponent.builder()
-                .applicationComponent(getApplicationComponent())
-                .activityModule(getActivityModule())
-                .build()
-                .inject(this);
-    }
+  private void initDependencyInjector() {
+    DaggerUserComponent.builder()
+        .applicationComponent(getApplicationComponent())
+        .activityModule(getActivityModule())
+        .build()
+        .inject(this);
+  }
 
-    private void initPresenter() {
-        this.debugPresenter.onViewAttached(this);
-    }
+  private void initPresenter() {
+    this.debugPresenter.onViewAttached(this);
+  }
 
-    @OnClick(R.id.viewClearTutorial)
-    void clickClearTutorial() {
-        tutorialManager.clearTutorial();
-    }
+  @OnClick(R.id.viewClearTutorial) void clickClearTutorial() {
+    tutorialManager.clearTutorial();
+  }
 
-    @Override
-    public void finish() {
-        super.finish();
-        overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
-    }
+  @Override public void finish() {
+    super.finish();
+    overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
+  }
 }

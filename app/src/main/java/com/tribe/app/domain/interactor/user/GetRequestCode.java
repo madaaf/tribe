@@ -14,21 +14,21 @@ import rx.Observable;
  */
 public class GetRequestCode extends UseCase {
 
-    private String phoneNumber;
-    private UserRepository userRepository;
+  private String phoneNumber;
+  private UserRepository userRepository;
 
-    @Inject
-    public GetRequestCode(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        super(threadExecutor, postExecutionThread);
-        this.userRepository = userRepository;
-    }
+  @Inject
+  public GetRequestCode(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
+      PostExecutionThread postExecutionThread) {
+    super(threadExecutor, postExecutionThread);
+    this.userRepository = userRepository;
+  }
 
-    public void prepare(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
+  public void prepare(String phoneNumber) {
+    this.phoneNumber = phoneNumber;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return this.userRepository.requestCode(phoneNumber);
-    }
+  @Override protected Observable buildUseCaseObservable() {
+    return this.userRepository.requestCode(phoneNumber);
+  }
 }

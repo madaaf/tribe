@@ -37,111 +37,103 @@ import rx.subscriptions.CompositeSubscription;
 
 public class SettingsBlockedHiddenView extends FrameLayout {
 
-    @Inject
-    User user;
+  @Inject User user;
 
-    @Inject
-    ScreenUtils screenUtils;
+  @Inject ScreenUtils screenUtils;
 
-    @BindView(R.id.editTextSearch)
-    EditTextFont editTextSearch;
+  @BindView(R.id.editTextSearch) EditTextFont editTextSearch;
 
-    @BindView(R.id.recyclerView)
-    RecyclerView recyclerView;
+  @BindView(R.id.recyclerView) RecyclerView recyclerView;
 
-    // VARIABLES
-    private LinearLayoutManager layoutManager;
-    private BlockedFriendAdapter friendAdapter;
+  // VARIABLES
+  private LinearLayoutManager layoutManager;
+  private BlockedFriendAdapter friendAdapter;
 
-    // OBSERVABLES
-    private CompositeSubscription subscriptions;
-    private PublishSubject<String> onUpdateFriendship = PublishSubject.create();
+  // OBSERVABLES
+  private CompositeSubscription subscriptions;
+  private PublishSubject<String> onUpdateFriendship = PublishSubject.create();
 
-    public SettingsBlockedHiddenView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
+  public SettingsBlockedHiddenView(Context context, AttributeSet attrs) {
+    super(context, attrs);
+  }
 
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        ButterKnife.bind(this);
+  @Override protected void onFinishInflate() {
+    super.onFinishInflate();
+    ButterKnife.bind(this);
 
-        initDependencyInjector();
-        init();
-        initSearchView();
-    }
+    initDependencyInjector();
+    init();
+    initSearchView();
+  }
 
-    public void onDestroy() {
-        if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
-        if (friendAdapter != null) friendAdapter.releaseSubscriptions();
-    }
+  public void onDestroy() {
+    if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+    if (friendAdapter != null) friendAdapter.releaseSubscriptions();
+  }
 
-    private void init() {
-        subscriptions = new CompositeSubscription();
+  private void init() {
+    subscriptions = new CompositeSubscription();
 
-        friendAdapter = new BlockedFriendAdapter(getContext());
+    friendAdapter = new BlockedFriendAdapter(getContext());
 
-        layoutManager = new MemberListLayoutManager(getContext());
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(null);
-        recyclerView.setAdapter(friendAdapter);
+    layoutManager = new MemberListLayoutManager(getContext());
+    recyclerView.setLayoutManager(layoutManager);
+    recyclerView.setItemAnimator(null);
+    recyclerView.setAdapter(friendAdapter);
 
-        subscriptions.add(
-                friendAdapter
-                        .clickAdd()
-                        .map(view -> friendAdapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view)).getId())
-                        .subscribe(onUpdateFriendship));
-    }
+    subscriptions.add(friendAdapter.clickAdd()
+        .map(view -> friendAdapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view))
+            .getId())
+        .subscribe(onUpdateFriendship));
+  }
 
-    private void initSearchView() {
-        editTextSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+  private void initSearchView() {
+    editTextSearch.addTextChangedListener(new TextWatcher() {
+      @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            }
+      }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+      @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-            }
+      }
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                filter(s.toString());
-            }
-        });
-    }
+      @Override public void afterTextChanged(Editable s) {
+        filter(s.toString());
+      }
+    });
+  }
 
-    private void filter(String text) {
-        friendAdapter.filterList(text);
-    }
+  private void filter(String text) {
+    friendAdapter.filterList(text);
+  }
 
-    public void friendshipUpdated(Friendship friendship) {
-        friendAdapter.updateFriendship(friendship);
-    }
+  public void friendshipUpdated(Friendship friendship) {
+    friendAdapter.updateFriendship(friendship);
+  }
 
-    public void renderBlockedFriendshipList(List<Friendship> friendshipList) {
-        friendAdapter.setItems(friendshipList);
-    }
+  public void renderBlockedFriendshipList(List<Friendship> friendshipList) {
+    friendAdapter.setItems(friendshipList);
+  }
 
-    protected ApplicationComponent getApplicationComponent() {
-        return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
-    }
+  protected ApplicationComponent getApplicationComponent() {
+    return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
+  }
 
-    protected ActivityModule getActivityModule() {
-        return new ActivityModule(((Activity) getContext()));
-    }
+  protected ActivityModule getActivityModule() {
+    return new ActivityModule(((Activity) getContext()));
+  }
 
-    private void initDependencyInjector() {
-        DaggerUserComponent.builder()
-                .activityModule(getActivityModule())
-                .applicationComponent(getApplicationComponent())
-                .build().inject(this);
-    }
+  private void initDependencyInjector() {
+    DaggerUserComponent.builder()
+        .activityModule(getActivityModule())
+        .applicationComponent(getApplicationComponent())
+        .build()
+        .inject(this);
+  }
 
-    // OBSERVABLES
+  // OBSERVABLES
 
-    public Observable<String> onUpdateFriendship() {
-        return onUpdateFriendship;
-    }
+  public Observable<String> onUpdateFriendship() {
+    return onUpdateFriendship;
+  }
 }

@@ -8,7 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
  */
 public class MemberListLayoutManager extends LinearLayoutManager {
 
-    public MemberListLayoutManager(Context context) {
-        super(context);
-    }
+  public MemberListLayoutManager(Context context) {
+    super(context);
+  }
 }

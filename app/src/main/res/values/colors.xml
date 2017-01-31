@@ -1,182 +1,182 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- BLACKS -->
-    <color name="black.opacity.3">#08000000</color>
-    <color name="black.opacity.5">#0D000000</color>
-    <color name="black.opacity.15">#26000000</color>
-    <color name="black.opacity.20">#33000000</color>
-    <color name="black.opacity.30">#4D000000</color>
-    <color name="black.opacity.40">#66000000</color>
-    <color name="black.opacity.50">#80000000</color>
-    <color name="black.opacity.70">#B3000000</color>
-    <color name="black.opacity.80">#CC000000</color>
-    <color name="black.infos">#1A14181A</color>
-    <color name="black.light">#1F2125</color>
+  <!-- BLACKS -->
+  <color name="black.opacity.3">#08000000</color>
+  <color name="black.opacity.5">#0D000000</color>
+  <color name="black.opacity.15">#26000000</color>
+  <color name="black.opacity.20">#33000000</color>
+  <color name="black.opacity.30">#4D000000</color>
+  <color name="black.opacity.40">#66000000</color>
+  <color name="black.opacity.50">#80000000</color>
+  <color name="black.opacity.70">#B3000000</color>
+  <color name="black.opacity.80">#CC000000</color>
+  <color name="black.infos">#1A14181A</color>
+  <color name="black.light">#1F2125</color>
 
-    <!-- WHITES -->
-    <color name="white.opacity.5">#0DFFFFFF</color>
-    <color name="white.opacity.10">#1AFFFFFF</color>
-    <color name="white.opacity.15">#26FFFFFF</color>
-    <color name="white.opacity.20">#33FFFFFF</color>
-    <color name="white.opacity.30">#4DFFFFFF</color>
-    <color name="white.opacity.40">#66FFFFFF</color>
-    <color name="white.opacity.50">#80FFFFFF</color>
+  <!-- WHITES -->
+  <color name="white.opacity.5">#0DFFFFFF</color>
+  <color name="white.opacity.10">#1AFFFFFF</color>
+  <color name="white.opacity.15">#26FFFFFF</color>
+  <color name="white.opacity.20">#33FFFFFF</color>
+  <color name="white.opacity.30">#4DFFFFFF</color>
+  <color name="white.opacity.40">#66FFFFFF</color>
+  <color name="white.opacity.50">#80FFFFFF</color>
 
-    <!-- VIOLETS -->
-    <color name="violet">#6643C1</color>
+  <!-- VIOLETS -->
+  <color name="violet">#6643C1</color>
 
-    <!-- ME -->
+  <!-- ME -->
 
-    <!-- PALETTE ONE -->
+  <!-- PALETTE ONE -->
 
-    <!-- PALETTE TWO -->
+  <!-- PALETTE TWO -->
 
-    <!-- GREYS -->
-    <color name="grey.light">#D9E0E9</color>
-    <color name="grey.action.tint">#98aab4</color>
-    <color name="grey.permissions">#93AAB5</color>
-    <color name="grey.dark">#666666</color>
-    <color name="grey.background.profile_info">#F7F7F7</color>
-    <color name="grey.text.profile_info">#949494</color>
-    <color name="grey.text.friends_verify">#999999</color>
-    <color name="grey.authentication">#393939</color>
-    <color name="grey.blue">#DBE0E9</color>
+  <!-- GREYS -->
+  <color name="grey.light">#D9E0E9</color>
+  <color name="grey.action.tint">#98aab4</color>
+  <color name="grey.permissions">#93AAB5</color>
+  <color name="grey.dark">#666666</color>
+  <color name="grey.background.profile_info">#F7F7F7</color>
+  <color name="grey.text.profile_info">#949494</color>
+  <color name="grey.text.friends_verify">#999999</color>
+  <color name="grey.authentication">#393939</color>
+  <color name="grey.blue">#DBE0E9</color>
 
-    <!-- BLUE -->
-    <color name="blue.text">#02ADF2</color>
-    <color name="blue.facebook">#007FFF</color>
-    <color name="blue.facebook.dark">#4460A0</color>
-    <color name="blue.opaque">#0099E4</color>
+  <!-- BLUE -->
+  <color name="blue.text">#02ADF2</color>
+  <color name="blue.facebook">#007FFF</color>
+  <color name="blue.facebook.dark">#4460A0</color>
+  <color name="blue.opaque">#0099E4</color>
 
-    <!-- VIOLET -->
-    <color name="purple.group">#8161DA</color>
+  <!-- VIOLET -->
+  <color name="purple.group">#8161DA</color>
 
-    <!-- YELLOWS -->
-    <color name="yellow">#FEBE00</color>
-    <color name="yellow.opacity.40">#66FEBE00</color>
+  <!-- YELLOWS -->
+  <color name="yellow">#FEBE00</color>
+  <color name="yellow.opacity.40">#66FEBE00</color>
 
-    <!-- GREENS -->
-    <color name="green.status">#2ECC4C</color>
-    <color name="green.group">#3FDA8D</color>
+  <!-- GREENS -->
+  <color name="green.status">#2ECC4C</color>
+  <color name="green.group">#3FDA8D</color>
 
-    <!-- REDS -->
-    <color name="red">#F9474C</color>
-    <color name="red.circle">#F22936</color>
+  <!-- REDS -->
+  <color name="red">#F9474C</color>
+  <color name="red.circle">#F22936</color>
 
-    <!-- ORANGES -->
+  <!-- ORANGES -->
 
-    <!-- BROWNS -->
-    <color name="brown">#9B6A51</color>
+  <!-- BROWNS -->
+  <color name="brown">#9B6A51</color>
 
-    <!-- APPS COLORS -->
-    <color name="snapchat">#FFE400</color>
-    <color name="twitter">#00AAEC</color>
-    <color name="instagram">#275A85</color>
+  <!-- APPS COLORS -->
+  <color name="snapchat">#FFE400</color>
+  <color name="twitter">#00AAEC</color>
+  <color name="instagram">#275A85</color>
 
-    <!-- SHARE HANDLE -->
-    <color name="tribe.profile.1">#007BFF</color>
-    <color name="tribe.profile.2">#22D5F1</color>
-    <color name="tribe.profile.3">#F362AD</color>
-    <color name="tribe.profile.4">#FFA496</color>
-    <color name="tribe.profile.5">#3C7692</color>
-    <color name="tribe.profile.6">#3DE9DA</color>
-    <color name="tribe.profile.7">#FFC352</color>
-    <color name="tribe.profile.8">#FF6F00</color>
-    <color name="tribe.profile.9">#272E38</color>
-    <color name="tribe.profile.10">#6C7F97</color>
-    <color name="tribe.profile.11">#9013FE</color>
-    <color name="tribe.profile.12">#8161DA</color>
+  <!-- SHARE HANDLE -->
+  <color name="tribe.profile.1">#007BFF</color>
+  <color name="tribe.profile.2">#22D5F1</color>
+  <color name="tribe.profile.3">#F362AD</color>
+  <color name="tribe.profile.4">#FFA496</color>
+  <color name="tribe.profile.5">#3C7692</color>
+  <color name="tribe.profile.6">#3DE9DA</color>
+  <color name="tribe.profile.7">#FFC352</color>
+  <color name="tribe.profile.8">#FF6F00</color>
+  <color name="tribe.profile.9">#272E38</color>
+  <color name="tribe.profile.10">#6C7F97</color>
+  <color name="tribe.profile.11">#9013FE</color>
+  <color name="tribe.profile.12">#8161DA</color>
 
-    <!-- Confetti -->
-    <color name="confetti.1">#68CFC5</color>
-    <color name="confetti.2">#654AF7</color>
-    <color name="confetti.3">#8F61CC</color>
-    <color name="confetti.4">#FDE175</color>
-    <color name="confetti.5">#97D3EF</color>
-    <color name="confetti.6">#F9474C</color>
+  <!-- Confetti -->
+  <color name="confetti.1">#68CFC5</color>
+  <color name="confetti.2">#654AF7</color>
+  <color name="confetti.3">#8F61CC</color>
+  <color name="confetti.4">#FDE175</color>
+  <color name="confetti.5">#97D3EF</color>
+  <color name="confetti.6">#F9474C</color>
 
-    <!-- Themes -->
+  <!-- Themes -->
 
-    <!-- Classic -->
-    <color name="classic.1">#63F2FF</color>
-    <color name="classic.2">#722BFF</color>
-    <color name="classic.3">#E469FF</color>
-    <color name="classic.4">#3BDBCE</color>
-    <color name="classic.5">#FFA497</color>
-    <color name="classic.6">#007FFF</color>
-    <color name="classic.7">#B379FF</color>
-    <color name="classic.8">#9EEEFF</color>
+  <!-- Classic -->
+  <color name="classic.1">#63F2FF</color>
+  <color name="classic.2">#722BFF</color>
+  <color name="classic.3">#E469FF</color>
+  <color name="classic.4">#3BDBCE</color>
+  <color name="classic.5">#FFA497</color>
+  <color name="classic.6">#007FFF</color>
+  <color name="classic.7">#B379FF</color>
+  <color name="classic.8">#9EEEFF</color>
 
-    <!-- Blue -->
-    <color name="blue.1">#20B8FC</color>
-    <color name="blue.2">#31C0FA</color>
-    <color name="blue.3">#46C8FC</color>
-    <color name="blue.4">#56CEFD</color>
-    <color name="blue.5">#6CD4FD</color>
-    <color name="blue.6">#77D7FC</color>
-    <color name="blue.7">#86DCFD</color>
-    <color name="blue.8">#90DFFD</color>
-    <color name="blue.9">#6CD4FD</color>
-    <color name="blue.10">#77D7FC</color>
-    <color name="blue.11">#46C8FC</color>
-    <color name="blue.12">#56CEFD</color>
+  <!-- Blue -->
+  <color name="blue.1">#20B8FC</color>
+  <color name="blue.2">#31C0FA</color>
+  <color name="blue.3">#46C8FC</color>
+  <color name="blue.4">#56CEFD</color>
+  <color name="blue.5">#6CD4FD</color>
+  <color name="blue.6">#77D7FC</color>
+  <color name="blue.7">#86DCFD</color>
+  <color name="blue.8">#90DFFD</color>
+  <color name="blue.9">#6CD4FD</color>
+  <color name="blue.10">#77D7FC</color>
+  <color name="blue.11">#46C8FC</color>
+  <color name="blue.12">#56CEFD</color>
 
-    <!-- Red -->
-    <color name="red.1">#F9868E</color>
-    <color name="red.2">#FD9199</color>
-    <color name="red.3">#FDA4AA</color>
-    <color name="red.4">#FCAEB4</color>
-    <color name="red.5">#FEBABF</color>
-    <color name="red.6">#FEC5C9</color>
-    <color name="red.7">#FED0D3</color>
-    <color name="red.8">#FED7DA</color>
-    <color name="red.9">#FEBABF</color>
-    <color name="red.10">#FEC5C9</color>
-    <color name="red.11">#FDA4AA</color>
-    <color name="red.12">#FCAEB4</color>
+  <!-- Red -->
+  <color name="red.1">#F9868E</color>
+  <color name="red.2">#FD9199</color>
+  <color name="red.3">#FDA4AA</color>
+  <color name="red.4">#FCAEB4</color>
+  <color name="red.5">#FEBABF</color>
+  <color name="red.6">#FEC5C9</color>
+  <color name="red.7">#FED0D3</color>
+  <color name="red.8">#FED7DA</color>
+  <color name="red.9">#FEBABF</color>
+  <color name="red.10">#FEC5C9</color>
+  <color name="red.11">#FDA4AA</color>
+  <color name="red.12">#FCAEB4</color>
 
-    <!-- Violet -->
-    <color name="violet.1">#A571FC</color>
-    <color name="violet.2">#AC7BFC</color>
-    <color name="violet.3">#B387FC</color>
-    <color name="violet.4">#B88EFC</color>
-    <color name="violet.5">#BB93FC</color>
-    <color name="violet.6">#C09BFC</color>
-    <color name="violet.7">#C8A7FD</color>
-    <color name="violet.8">#CEB1FD</color>
-    <color name="violet.9">#BB93FC</color>
-    <color name="violet.10">#C09BFC</color>
-    <color name="violet.11">#B387FC</color>
-    <color name="violet.12">#B88EFC</color>
+  <!-- Violet -->
+  <color name="violet.1">#A571FC</color>
+  <color name="violet.2">#AC7BFC</color>
+  <color name="violet.3">#B387FC</color>
+  <color name="violet.4">#B88EFC</color>
+  <color name="violet.5">#BB93FC</color>
+  <color name="violet.6">#C09BFC</color>
+  <color name="violet.7">#C8A7FD</color>
+  <color name="violet.8">#CEB1FD</color>
+  <color name="violet.9">#BB93FC</color>
+  <color name="violet.10">#C09BFC</color>
+  <color name="violet.11">#B387FC</color>
+  <color name="violet.12">#B88EFC</color>
 
-    <!-- Orange -->
-    <color name="orange.1">#F4B066</color>
-    <color name="orange.2">#FAB86F</color>
-    <color name="orange.3">#FCBC76</color>
-    <color name="orange.4">#FEC07D</color>
-    <color name="orange.5">#FEC68A</color>
-    <color name="orange.6">#FECB95</color>
-    <color name="orange.7">#FECF9D</color>
-    <color name="orange.8">#FED3A6</color>
-    <color name="orange.9">#FEC68A</color>
-    <color name="orange.10">#FECB95</color>
-    <color name="orange.11">#FCBC76</color>
-    <color name="orange.12">#FEC07D</color>
+  <!-- Orange -->
+  <color name="orange.1">#F4B066</color>
+  <color name="orange.2">#FAB86F</color>
+  <color name="orange.3">#FCBC76</color>
+  <color name="orange.4">#FEC07D</color>
+  <color name="orange.5">#FEC68A</color>
+  <color name="orange.6">#FECB95</color>
+  <color name="orange.7">#FECF9D</color>
+  <color name="orange.8">#FED3A6</color>
+  <color name="orange.9">#FEC68A</color>
+  <color name="orange.10">#FECB95</color>
+  <color name="orange.11">#FCBC76</color>
+  <color name="orange.12">#FEC07D</color>
 
-    <!-- Blacks -->
-    <color name="black.1">#4D4C4C</color>
-    <color name="black.2">#525252</color>
-    <color name="black.3">#5C5C5C</color>
-    <color name="black.4">#616161</color>
-    <color name="black.5">#727272</color>
-    <color name="black.6">#7B7B7B</color>
-    <color name="black.7">#8B8B8B</color>
-    <color name="black.8">#989898</color>
-    <color name="black.9">#727272</color>
-    <color name="black.10">#7B7B7B</color>
-    <color name="black.11">#5C5C5C</color>
-    <color name="black.12">#616161</color>
+  <!-- Blacks -->
+  <color name="black.1">#4D4C4C</color>
+  <color name="black.2">#525252</color>
+  <color name="black.3">#5C5C5C</color>
+  <color name="black.4">#616161</color>
+  <color name="black.5">#727272</color>
+  <color name="black.6">#7B7B7B</color>
+  <color name="black.7">#8B8B8B</color>
+  <color name="black.8">#989898</color>
+  <color name="black.9">#727272</color>
+  <color name="black.10">#7B7B7B</color>
+  <color name="black.11">#5C5C5C</color>
+  <color name="black.12">#616161</color>
 
-    <!-- Pulses -->
-    <color name="live">#BE38B0</color>
+  <!-- Pulses -->
+  <color name="live">#BE38B0</color>
 </resources>

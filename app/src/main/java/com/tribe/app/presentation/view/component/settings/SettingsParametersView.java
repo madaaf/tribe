@@ -39,181 +39,166 @@ import rx.subscriptions.CompositeSubscription;
 
 public class SettingsParametersView extends ScrollView {
 
-    @Inject
-    User user;
+  @Inject User user;
 
-    @Inject
-    TagManager tagManager;
+  @Inject TagManager tagManager;
 
-    @Inject
-    ReactiveLocationProvider reactiveLocationProvider;
+  @Inject ReactiveLocationProvider reactiveLocationProvider;
 
-    @Inject
-    @LocationContext
-    Preference<Boolean> locationContext;
+  @Inject @LocationContext Preference<Boolean> locationContext;
 
-    @Inject
-    @AudioDefault
-    Preference<Boolean> audioDefault;
+  @Inject @AudioDefault Preference<Boolean> audioDefault;
 
-    @Inject
-    @UISounds
-    Preference<Boolean> uiSounds;
+  @Inject @UISounds Preference<Boolean> uiSounds;
 
-    @Inject
-    @WeatherUnits
-    Preference<String> weatherUnits;
+  @Inject @WeatherUnits Preference<String> weatherUnits;
 
-    @BindView(R.id.viewActionNotifications)
-    ActionView viewActionNotifications;
+  @BindView(R.id.viewActionNotifications) ActionView viewActionNotifications;
 
-    @BindView(R.id.viewActionLocation)
-    ActionView viewActionLocation;
+  @BindView(R.id.viewActionLocation) ActionView viewActionLocation;
 
-    @BindView(R.id.viewActionInvisible)
-    ActionView viewActionInvisible;
+  @BindView(R.id.viewActionInvisible) ActionView viewActionInvisible;
 
-    @BindView(R.id.viewActionAudioDefaults)
-    ActionView viewActionAudioDefaults;
+  @BindView(R.id.viewActionAudioDefaults) ActionView viewActionAudioDefaults;
 
-    @BindView(R.id.viewActionMemories)
-    ActionView viewActionMemories;
+  @BindView(R.id.viewActionMemories) ActionView viewActionMemories;
 
-    @BindView(R.id.viewActionUISounds)
-    ActionView viewActionUISounds;
+  @BindView(R.id.viewActionUISounds) ActionView viewActionUISounds;
 
-    @BindView(R.id.viewActionWeatherUnits)
-    ActionView viewActionWeatherUnits;
+  @BindView(R.id.viewActionWeatherUnits) ActionView viewActionWeatherUnits;
 
-    // VARIABLES
+  // VARIABLES
 
-    // OBSERVABLES
-    private CompositeSubscription subscriptions;
-    private PublishSubject<Boolean> onChangeMemories = PublishSubject.create();
-    private PublishSubject<Boolean> onChangeInvisible = PublishSubject.create();
-    private PublishSubject<Boolean> onChangeLocation = PublishSubject.create();
-    private PublishSubject<Boolean> onChangeNotifications = PublishSubject.create();
+  // OBSERVABLES
+  private CompositeSubscription subscriptions;
+  private PublishSubject<Boolean> onChangeMemories = PublishSubject.create();
+  private PublishSubject<Boolean> onChangeInvisible = PublishSubject.create();
+  private PublishSubject<Boolean> onChangeLocation = PublishSubject.create();
+  private PublishSubject<Boolean> onChangeNotifications = PublishSubject.create();
 
-    public SettingsParametersView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
+  public SettingsParametersView(Context context, AttributeSet attrs) {
+    super(context, attrs);
+  }
 
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        ButterKnife.bind(this);
+  @Override protected void onFinishInflate() {
+    super.onFinishInflate();
+    ButterKnife.bind(this);
 
-        initDependencyInjector();
-        initUI();
-        initSubscriptions();
-    }
+    initDependencyInjector();
+    initUI();
+    initSubscriptions();
+  }
 
-    public void onDestroy() {
-        if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
-    }
+  public void onDestroy() {
+    if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+  }
 
-    private void initUI() {
-        viewActionNotifications.setValue(user.isPushNotif());
-        viewActionMemories.setValue(user.isTribeSave());
-        viewActionLocation.setValue(locationContext.get());
-        viewActionAudioDefaults.setValue(audioDefault.get());
-        viewActionWeatherUnits.setValue(weatherUnits.get().equals(Weather.FAHRENHEIT));
-        viewActionInvisible.setValue(user.isInvisibleMode());
-        viewActionUISounds.setValue(uiSounds.get());
-    }
+  private void initUI() {
+    viewActionNotifications.setValue(user.isPushNotif());
+    viewActionMemories.setValue(user.isTribeSave());
+    viewActionLocation.setValue(locationContext.get());
+    viewActionAudioDefaults.setValue(audioDefault.get());
+    viewActionWeatherUnits.setValue(weatherUnits.get().equals(Weather.FAHRENHEIT));
+    viewActionInvisible.setValue(user.isInvisibleMode());
+    viewActionUISounds.setValue(uiSounds.get());
+  }
 
-    private void initSubscriptions() {
-        subscriptions = new CompositeSubscription();
+  private void initSubscriptions() {
+    subscriptions = new CompositeSubscription();
 
-        subscriptions.add(viewActionNotifications.onChecked().subscribe(isChecked -> {
-            Bundle bundle = new Bundle();
-            bundle.putBoolean(TagManagerConstants.PUSH_ENABLED, isChecked);
-            tagManager.setProperty(bundle);
-            onChangeNotifications.onNext(isChecked);
-        }));
+    subscriptions.add(viewActionNotifications.onChecked().subscribe(isChecked -> {
+      Bundle bundle = new Bundle();
+      bundle.putBoolean(TagManagerConstants.PUSH_ENABLED, isChecked);
+      tagManager.setProperty(bundle);
+      onChangeNotifications.onNext(isChecked);
+    }));
 
-        subscriptions.add(viewActionMemories.onChecked().subscribe(isChecked -> {
-            Bundle bundle = new Bundle();
-            bundle.putBoolean(TagManagerConstants.MEMORIES_ENABLED, isChecked);
-            tagManager.setProperty(bundle);
-            onChangeMemories.onNext(isChecked);
-        }));
+    subscriptions.add(viewActionMemories.onChecked().subscribe(isChecked -> {
+      Bundle bundle = new Bundle();
+      bundle.putBoolean(TagManagerConstants.MEMORIES_ENABLED, isChecked);
+      tagManager.setProperty(bundle);
+      onChangeMemories.onNext(isChecked);
+    }));
 
-        subscriptions.add(viewActionLocation.onChecked().subscribe(isChecked -> {
-            if (isChecked && !PermissionUtils.hasPermissionsLocation(getContext())) {
-                RxPermissions.getInstance(getContext())
-                        .request(PermissionUtils.PERMISSIONS_LOCATION)
-                        .subscribe(granted -> {
-                            if (granted) {
-                                onChangeLocation.onNext(isChecked);
-                            } else {
-                                viewActionLocation.setValue(false);
-                            }
-                        });
-            }
+    subscriptions.add(viewActionLocation.onChecked().subscribe(isChecked -> {
+      if (isChecked && !PermissionUtils.hasPermissionsLocation(getContext())) {
+        RxPermissions.getInstance(getContext())
+            .request(PermissionUtils.PERMISSIONS_LOCATION)
+            .subscribe(granted -> {
+              if (granted) {
+                onChangeLocation.onNext(isChecked);
+              } else {
+                viewActionLocation.setValue(false);
+              }
+            });
+      }
 
-            Bundle bundle = new Bundle();
-            bundle.putBoolean(TagManagerConstants.LOCATION_ENABLED, isChecked);
-            tagManager.setProperty(bundle);
-            locationContext.set(isChecked);
-        }));
+      Bundle bundle = new Bundle();
+      bundle.putBoolean(TagManagerConstants.LOCATION_ENABLED, isChecked);
+      tagManager.setProperty(bundle);
+      locationContext.set(isChecked);
+    }));
 
-        subscriptions.add(viewActionAudioDefaults.onChecked().subscribe(isChecked -> {
-            Bundle bundle = new Bundle();
-            bundle.putBoolean(TagManagerConstants.AUDIO_ONLY_ENABLED, isChecked);
-            tagManager.setProperty(bundle);
-            audioDefault.set(isChecked);
-        }));
+    subscriptions.add(viewActionAudioDefaults.onChecked().subscribe(isChecked -> {
+      Bundle bundle = new Bundle();
+      bundle.putBoolean(TagManagerConstants.AUDIO_ONLY_ENABLED, isChecked);
+      tagManager.setProperty(bundle);
+      audioDefault.set(isChecked);
+    }));
 
-        subscriptions.add(viewActionWeatherUnits.onChecked().subscribe(isChecked -> {
-            if (isChecked) weatherUnits.set(Weather.FAHRENHEIT);
-            else weatherUnits.set(Weather.CELSIUS);
-        }));
+    subscriptions.add(viewActionWeatherUnits.onChecked().subscribe(isChecked -> {
+      if (isChecked) {
+        weatherUnits.set(Weather.FAHRENHEIT);
+      } else {
+        weatherUnits.set(Weather.CELSIUS);
+      }
+    }));
 
-        subscriptions.add(viewActionInvisible.onChecked().subscribe(isChecked -> {
-            Bundle bundle = new Bundle();
-            bundle.putBoolean(TagManagerConstants.INVISIBLE_MODE_ENABLED, isChecked);
-            tagManager.setProperty(bundle);
-            onChangeInvisible.onNext(isChecked);
-        }));
+    subscriptions.add(viewActionInvisible.onChecked().subscribe(isChecked -> {
+      Bundle bundle = new Bundle();
+      bundle.putBoolean(TagManagerConstants.INVISIBLE_MODE_ENABLED, isChecked);
+      tagManager.setProperty(bundle);
+      onChangeInvisible.onNext(isChecked);
+    }));
 
-        subscriptions.add(viewActionUISounds.onChecked().subscribe(isChecked -> {
-            uiSounds.set(isChecked);
-        }));
-    }
+    subscriptions.add(viewActionUISounds.onChecked().subscribe(isChecked -> {
+      uiSounds.set(isChecked);
+    }));
+  }
 
-    protected ApplicationComponent getApplicationComponent() {
-        return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
-    }
+  protected ApplicationComponent getApplicationComponent() {
+    return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
+  }
 
-    protected ActivityModule getActivityModule() {
-        return new ActivityModule(((Activity) getContext()));
-    }
+  protected ActivityModule getActivityModule() {
+    return new ActivityModule(((Activity) getContext()));
+  }
 
-    private void initDependencyInjector() {
-        DaggerUserComponent.builder()
-                .activityModule(getActivityModule())
-                .applicationComponent(getApplicationComponent())
-                .build().inject(this);
-    }
+  private void initDependencyInjector() {
+    DaggerUserComponent.builder()
+        .activityModule(getActivityModule())
+        .applicationComponent(getApplicationComponent())
+        .build()
+        .inject(this);
+  }
 
-    /**
-     * OBSERVABLES
-     */
+  /**
+   * OBSERVABLES
+   */
 
-    public Observable<Boolean> onChangeMemories() {
-        return onChangeMemories;
-    }
+  public Observable<Boolean> onChangeMemories() {
+    return onChangeMemories;
+  }
 
-    public Observable<Boolean> onChangeInvisible() {
-        return onChangeInvisible;
-    }
+  public Observable<Boolean> onChangeInvisible() {
+    return onChangeInvisible;
+  }
 
-    public Observable<Boolean> onChangeLocation() {
-        return onChangeLocation;
-    }
+  public Observable<Boolean> onChangeLocation() {
+    return onChangeLocation;
+  }
 
-    public Observable<Boolean> onChangeNotifications() {
-        return onChangeNotifications;
-    }
+  public Observable<Boolean> onChangeNotifications() {
+    return onChangeNotifications;
+  }
 }

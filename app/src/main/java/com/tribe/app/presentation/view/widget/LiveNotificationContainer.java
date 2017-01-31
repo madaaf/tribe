@@ -27,175 +27,163 @@ import rx.subscriptions.CompositeSubscription;
 
 public class LiveNotificationContainer extends FrameLayout {
 
-    private final static int DURATION = 300;
+  private final static int DURATION = 300;
 
-    @Inject
-    ScreenUtils screenUtils;
+  @Inject ScreenUtils screenUtils;
 
-    @BindView(R.id.viewBG)
-    View viewBG;
+  @BindView(R.id.viewBG) View viewBG;
 
-    @BindView(R.id.txtSwipe)
-    TextViewFont txtSwipe;
+  @BindView(R.id.txtSwipe) TextViewFont txtSwipe;
 
-    // RESOURCES
-    private int margin;
+  // RESOURCES
+  private int margin;
 
-    // VARIABLES
-    private Unbinder unbinder;
-    private LiveNotificationView currentNotificationView;
-    private boolean expanded = false;
-    private GestureDetector gestureDetector;
+  // VARIABLES
+  private Unbinder unbinder;
+  private LiveNotificationView currentNotificationView;
+  private boolean expanded = false;
+  private GestureDetector gestureDetector;
 
-    // OBSERVABLES
-    private CompositeSubscription subscriptions = new CompositeSubscription();
+  // OBSERVABLES
+  private CompositeSubscription subscriptions = new CompositeSubscription();
 
-    public LiveNotificationContainer(Context context) {
-        super(context);
-        init(context, null);
+  public LiveNotificationContainer(Context context) {
+    super(context);
+    init(context, null);
+  }
+
+  public LiveNotificationContainer(Context context, AttributeSet attrs) {
+    super(context, attrs);
+    init(context, attrs);
+  }
+
+  private void init(Context context, AttributeSet attrs) {
+    LayoutInflater inflater =
+        (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    inflater.inflate(R.layout.view_live_notification_container, this, true);
+
+    ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
+
+    unbinder = ButterKnife.bind(this);
+
+    gestureDetector = new GestureDetector(getContext(), new GestureListener());
+    margin = screenUtils.dpToPx(40);
+    txtSwipe.setTranslationY(-getTxtTranslationY());
+  }
+
+  public void addView(LiveNotificationView child, ViewGroup.LayoutParams params) {
+    setVisibility(View.VISIBLE);
+    currentNotificationView = child;
+    super.addView(child, params);
+  }
+
+  public void addSubscriptionNotification(Observable<Float> obs, View viewNotification) {
+    subscriptions.add(obs.subscribe(percent -> {
+      viewBG.setAlpha(percent);
+      txtSwipe.setTranslationY(-(1 - percent) * getTxtTranslationY());
+      viewNotification.setTranslationY(percent * margin);
+    }));
+  }
+
+  public void addSubscriptionExpanded(Observable<Void> obs) {
+    subscriptions.add(obs.subscribe(aVoid -> {
+      expanded = true;
+    }));
+  }
+
+  public void addSubscriptionDismissed(Observable<Void> obs) {
+    subscriptions.add(obs.subscribe(aVoid -> {
+      cleanUp();
+    }));
+  }
+
+  private void cleanUp() {
+    setVisibility(View.GONE);
+    removeView(currentNotificationView);
+    currentNotificationView = null;
+    subscriptions.clear();
+  }
+
+  ///////////////
+  //   TOUCH   //
+  ///////////////
+
+  @Override public boolean onInterceptTouchEvent(MotionEvent ev) {
+    if (expanded) {
+      boolean intercept = true;
+
+      if (ViewUtils.isIn(currentNotificationView, (int) ev.getX(), (int) ev.getY())) {
+        intercept = false;
+      }
+
+      return intercept;
+    } else {
+      return super.onInterceptTouchEvent(ev);
     }
+  }
 
-    public LiveNotificationContainer(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context, attrs);
+  @Override public boolean onTouchEvent(MotionEvent ev) {
+    if (expanded) {
+      return gestureDetector.onTouchEvent(ev);
+    } else {
+      return super.onTouchEvent(ev);
     }
+  }
 
-    private void init(Context context, AttributeSet attrs) {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.view_live_notification_container, this, true);
+  private final class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
-        ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
+    private static final int SWIPE_THRESHOLD = 100;
+    private static final int SWIPE_VELOCITY_THRESHOLD = 100;
 
-        unbinder = ButterKnife.bind(this);
-
-        gestureDetector = new GestureDetector(getContext(), new GestureListener());
-        margin = screenUtils.dpToPx(40);
-        txtSwipe.setTranslationY(-getTxtTranslationY());
+    @Override public boolean onDown(MotionEvent e) {
+      return true;
     }
-
-    public void addView(LiveNotificationView child, ViewGroup.LayoutParams params) {
-        setVisibility(View.VISIBLE);
-        currentNotificationView = child;
-        super.addView(child, params);
-    }
-
-    public void addSubscriptionNotification(Observable<Float> obs, View viewNotification) {
-        subscriptions.add(
-                obs.subscribe(percent -> {
-                    viewBG.setAlpha(percent);
-                    txtSwipe.setTranslationY(- (1 - percent) * getTxtTranslationY());
-                    viewNotification.setTranslationY(percent * margin);
-                })
-        );
-    }
-
-    public void addSubscriptionExpanded(Observable<Void> obs) {
-        subscriptions.add(
-                obs.subscribe(aVoid -> {
-                    expanded = true;
-                })
-        );
-    }
-
-    public void addSubscriptionDismissed(Observable<Void> obs) {
-        subscriptions.add(
-                obs.subscribe(aVoid -> {
-                    cleanUp();
-                })
-        );
-    }
-
-    private void cleanUp() {
-        setVisibility(View.GONE);
-        removeView(currentNotificationView);
-        currentNotificationView = null;
-        subscriptions.clear();
-    }
-
-    ///////////////
-    //   TOUCH   //
-    ///////////////
 
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (expanded) {
-            boolean intercept = true;
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+      boolean result = false;
 
-            if (ViewUtils.isIn(currentNotificationView, (int) ev.getX(), (int) ev.getY())) {
-                intercept = false;
-            }
+      try {
+        float diffY = e2.getY() - e1.getY();
 
-            return intercept;
-        } else {
-            return super.onInterceptTouchEvent(ev);
+        if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+          if (diffY < 0) {
+            dismissNotification();
+            result = true;
+          }
         }
+      } catch (Exception exception) {
+        exception.printStackTrace();
+      }
+
+      return result;
     }
+  }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        if (expanded) {
-            return gestureDetector.onTouchEvent(ev);
-        } else {
-            return super.onTouchEvent(ev);
-        }
-    }
+  private int getTxtTranslationY() {
+    return screenUtils.getHeightPx() / 3;
+  }
 
-    private final class GestureListener extends GestureDetector.SimpleOnGestureListener {
+  public void dismissNotification() {
+    expanded = false;
 
-        private static final int SWIPE_THRESHOLD = 100;
-        private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+    viewBG.animate()
+        .alpha(0)
+        .setDuration(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .setListener(new AnimatorListenerAdapter() {
+          @Override public void onAnimationEnd(Animator animation) {
+            animate().setListener(null).start();
+          }
+        })
+        .start();
 
-        @Override
-        public boolean onDown(MotionEvent e) {
-            return true;
-        }
+    txtSwipe.animate()
+        .translationY(-getTxtTranslationY())
+        .setDuration(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
 
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            boolean result = false;
-
-            try {
-                float diffY = e2.getY() - e1.getY();
-
-                if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
-                    if (diffY < 0) {
-                        dismissNotification();
-                        result = true;
-                    }
-                }
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
-
-            return result;
-        }
-    }
-
-    private int getTxtTranslationY() {
-        return screenUtils.getHeightPx() / 3;
-    }
-
-    public void dismissNotification() {
-        expanded = false;
-
-        viewBG.animate()
-                .alpha(0)
-                .setDuration(DURATION)
-                .setInterpolator(new DecelerateInterpolator())
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        animate().setListener(null).start();
-                    }
-                })
-                .start();
-
-        txtSwipe.animate()
-                .translationY(-getTxtTranslationY())
-                .setDuration(DURATION)
-                .setInterpolator(new DecelerateInterpolator())
-                .start();
-
-        currentNotificationView.dismiss();
-    }
+    currentNotificationView.dismiss();
+  }
 }

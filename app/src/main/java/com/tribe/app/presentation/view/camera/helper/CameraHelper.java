@@ -10,91 +10,91 @@ import java.util.List;
 
 public interface CameraHelper {
 
-    int DEFAULT_CAMERA_ID = 1;
+  int DEFAULT_CAMERA_ID = 1;
 
-    int getNumberOfCameras();
+  int getNumberOfCameras();
 
-    class CameraInfoCompat {
-        public static final int CAMERA_FACING_BACK = 0;
-        public static final int CAMERA_FACING_FRONT = 1;
+  class CameraInfoCompat {
+    public static final int CAMERA_FACING_BACK = 0;
+    public static final int CAMERA_FACING_FRONT = 1;
 
-        public int facing;
-        public int orientation;
-    }
+    public int facing;
+    public int orientation;
+  }
 
-    CameraInfoCompat getCameraInfo();
+  CameraInfoCompat getCameraInfo();
 
-    boolean isFaceCamera();
+  boolean isFaceCamera();
 
-    boolean isOpened();
+  boolean isOpened();
 
-    void openCamera(int cameraId);
+  void openCamera(int cameraId);
 
-    void nextCamera();
+  void nextCamera();
 
-    int getNextCamera();
+  int getNextCamera();
 
-    void initializeFocusMode();
+  void initializeFocusMode();
 
-    void releaseCamera();
+  void releaseCamera();
 
-    void setErrorCallback(Camera.ErrorCallback cb);
+  void setErrorCallback(Camera.ErrorCallback cb);
 
-    void setupOptimalSizes(int measureWidth, int measureHeight, int maxSize);
+  void setupOptimalSizes(int measureWidth, int measureHeight, int maxSize);
 
-    int getOptimalOrientation();
+  int getOptimalOrientation();
 
-    int getOrientation();
+  int getOrientation();
 
-    void setDisplayOrientation(int degrees);
+  void setDisplayOrientation(int degrees);
 
-    void setRotation(int degrees);
+  void setRotation(int degrees);
 
-    int getPreviewOrientation();
+  int getPreviewOrientation();
 
-    void setPreviewCallback(Camera.PreviewCallback cb);
+  void setPreviewCallback(Camera.PreviewCallback cb);
 
-    void setPreviewTexture(SurfaceTexture surfaceTexture, int width, int height) throws IOException;
+  void setPreviewTexture(SurfaceTexture surfaceTexture, int width, int height) throws IOException;
 
-    void setPreviewTexture(SurfaceTexture surfaceTexture) throws IOException;
+  void setPreviewTexture(SurfaceTexture surfaceTexture) throws IOException;
 
-    void startPreview();
+  void startPreview();
 
-    void onPreviewFrame(Camera.PreviewCallback cb);
+  void onPreviewFrame(Camera.PreviewCallback cb);
 
-    void stopPreview();
+  void stopPreview();
 
-    void takePicture(Camera.PictureCallback callback);
+  void takePicture(Camera.PictureCallback callback);
 
-    void takePicture(Camera.PictureCallback callback, boolean autoFocus);
+  void takePicture(Camera.PictureCallback callback, boolean autoFocus);
 
-    void cancelAutoFocus();
+  void cancelAutoFocus();
 
-    void setPictureFormat(int format);
+  void setPictureFormat(int format);
 
-    Size getPreviewSize();
+  Size getPreviewSize();
 
-    String getFlashMode();
+  String getFlashMode();
 
-    String getFocusMode();
+  String getFocusMode();
 
-    List<String> getSupportedFlashModes();
+  List<String> getSupportedFlashModes();
 
-    List<String> getSupportedFocusModes();
+  List<String> getSupportedFocusModes();
 
-    List<String> getSupportedFlashModes(String... values);
+  List<String> getSupportedFlashModes(String... values);
 
-    List<String> getSupportedFocusModes(String... values);
+  List<String> getSupportedFocusModes(String... values);
 
-    void setFlashMode(String value);
+  void setFlashMode(String value);
 
-    void setFocusMode(String value);
+  void setFocusMode(String value);
 
-    String switchFlashMode();
+  String switchFlashMode();
 
-    String switchFocusMode();
+  String switchFocusMode();
 
-    String switchFlashMode(String... values);
+  String switchFlashMode(String... values);
 
-    String switchFocusMode(String... values);
+  String switchFocusMode(String... values);
 }

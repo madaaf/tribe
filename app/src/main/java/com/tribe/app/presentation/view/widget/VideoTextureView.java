@@ -8,19 +8,19 @@ import android.util.AttributeSet;
  */
 public class VideoTextureView extends ScalableTextureView {
 
-    public VideoTextureView(Context context) {
-        super(context);
-    }
+  public VideoTextureView(Context context) {
+    super(context);
+  }
 
-    public VideoTextureView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
+  public VideoTextureView(Context context, AttributeSet attrs) {
+    super(context, attrs);
+  }
 
-    public VideoTextureView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
+  public VideoTextureView(Context context, AttributeSet attrs, int defStyleAttr) {
+    super(context, attrs, defStyleAttr);
+  }
 
-    public VideoTextureView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
+  public VideoTextureView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    super(context, attrs, defStyleAttr, defStyleRes);
+  }
 }
