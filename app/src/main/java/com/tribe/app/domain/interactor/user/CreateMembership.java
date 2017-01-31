@@ -14,21 +14,21 @@ import rx.Observable;
  */
 public class CreateMembership extends UseCase {
 
-    private String groupId;
-    private UserRepository userRepository;
+  private String groupId;
+  private UserRepository userRepository;
 
-    @Inject
-    public CreateMembership(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        super(threadExecutor, postExecutionThread);
-        this.userRepository = userRepository;
-    }
+  @Inject
+  public CreateMembership(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
+      PostExecutionThread postExecutionThread) {
+    super(threadExecutor, postExecutionThread);
+    this.userRepository = userRepository;
+  }
 
-    public void setGroupId(String groupId) {
-        this.groupId = groupId;
-    }
+  public void setGroupId(String groupId) {
+    this.groupId = groupId;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return this.userRepository.createMembership(groupId);
-    }
+  @Override protected Observable buildUseCaseObservable() {
+    return this.userRepository.createMembership(groupId);
+  }
 }

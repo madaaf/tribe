@@ -35,118 +35,105 @@ import rx.subscriptions.CompositeSubscription;
 
 public class UpdateGroupView extends LinearLayout {
 
-    private int DURATION_FADE = 150;
+  private int DURATION_FADE = 150;
 
-    @Inject
-    RxImagePicker rxImagePicker;
+  @Inject RxImagePicker rxImagePicker;
 
-    @BindView(R.id.avatarView)
-    AvatarView avatarView;
+  @BindView(R.id.avatarView) AvatarView avatarView;
 
-    @BindView(R.id.editGroupName)
-    EditTextFont editGroupName;
+  @BindView(R.id.editGroupName) EditTextFont editGroupName;
 
-    // VARIABLES
-    private String imgUri;
-    private BottomSheetDialog dialogCamera;
-    private LabelSheetAdapter cameraTypeAdapter;
-    private Membership membership;
-    private GroupEntity groupEntity;
+  // VARIABLES
+  private String imgUri;
+  private BottomSheetDialog dialogCamera;
+  private LabelSheetAdapter cameraTypeAdapter;
+  private Membership membership;
+  private GroupEntity groupEntity;
 
-    // OBSERVABLES
-    private CompositeSubscription subscriptions;
+  // OBSERVABLES
+  private CompositeSubscription subscriptions;
 
-    public UpdateGroupView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+  public UpdateGroupView(Context context, AttributeSet attrs) {
+    super(context, attrs);
+  }
+
+  @Override protected void onFinishInflate() {
+    super.onFinishInflate();
+    ButterKnife.bind(this);
+  }
+
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+
+    if (membership == null) {
+      Serializable serializable = ViewStackHelper.getViewStack(getContext()).getParameter(this);
+
+      if (serializable instanceof Membership) {
+        membership = (Membership) serializable;
+      }
+
+      init();
     }
+  }
 
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        ButterKnife.bind(this);
-    }
+  @Override protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+  }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
+  public void onDestroy() {
+    if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+  }
 
-        if (membership == null) {
-            Serializable serializable = ViewStackHelper.getViewStack(getContext()).getParameter(this);
+  private void init() {
+    ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
+        .inject(this);
+    subscriptions = new CompositeSubscription();
 
-            if (serializable instanceof Membership) {
-                membership = (Membership) serializable;
-            }
+    groupEntity = new GroupEntity();
 
-            init();
-        }
-    }
+    subscriptions.add(
+        RxTextView.textChanges(editGroupName).map(CharSequence::toString).subscribe(s -> {
+          groupEntity.setName(s);
+        }));
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-    }
+    loadAvatar(membership);
+    editGroupName.setText(membership.getDisplayName());
+  }
 
-    public void onDestroy() {
-        if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
-    }
+  @OnClick(R.id.avatarView) void clickAvatar() {
+    subscriptions.add(DialogFactory.showBottomSheetForCamera(getContext()).subscribe(labelType -> {
+      if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
+        subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA).subscribe(uri -> {
+          loadUri(uri);
+        }));
+      } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
+        subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY).subscribe(uri -> {
+          loadUri(uri);
+        }));
+      }
+    }));
+  }
 
-    private void init() {
-        ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
-        subscriptions = new CompositeSubscription();
+  private void loadAvatar(Membership membership) {
+    avatarView.load(membership);
+  }
 
-        groupEntity = new GroupEntity();
+  private void loadAvatar(String url) {
+    avatarView.load(url);
+  }
 
-        subscriptions.add(
-                RxTextView.textChanges(editGroupName)
-                        .map(CharSequence::toString)
-                        .subscribe(s -> {
-                            groupEntity.setName(s);
-                        })
-        );
+  public void loadUri(Uri uri) {
+    imgUri = uri.toString();
+    groupEntity.setImgPath(uri.toString());
+    loadAvatar(uri.toString());
+  }
 
-        loadAvatar(membership);
-        editGroupName.setText(membership.getDisplayName());
-    }
+  public GroupEntity getGroupEntity() {
+    return groupEntity;
+  }
 
-    @OnClick(R.id.avatarView)
-    void clickAvatar() {
-        subscriptions.add(DialogFactory.showBottomSheetForCamera(getContext())
-                .subscribe(labelType -> {
-                    if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
-                        subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA)
-                                .subscribe(uri -> {
-                                    loadUri(uri);
-                                }));
-                    } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
-                        subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY)
-                                .subscribe(uri -> {
-                                    loadUri(uri);
-                                }));
-                    }
-                })
-        );
-    }
-
-    private void loadAvatar(Membership membership) {
-        avatarView.load(membership);
-    }
-
-    private void loadAvatar(String url) {
-        avatarView.load(url);
-    }
-
-    public void loadUri(Uri uri) {
-        imgUri = uri.toString();
-        groupEntity.setImgPath(uri.toString());
-        loadAvatar(uri.toString());
-    }
-
-    public GroupEntity getGroupEntity() {
-        return groupEntity;
-    }
-
-    /**
-     * OBSERVABLES
-     */
+  /**
+   * OBSERVABLES
+   */
 
 }

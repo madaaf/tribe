@@ -14,17 +14,16 @@ import rx.Observable;
  */
 public class RemoveInstall extends UseCase {
 
-    private UserRepository userRepository;
+  private UserRepository userRepository;
 
-    @Inject
-    public RemoveInstall(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        super(threadExecutor, postExecutionThread);
-        this.userRepository = userRepository;
-    }
+  @Inject
+  public RemoveInstall(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
+      PostExecutionThread postExecutionThread) {
+    super(threadExecutor, postExecutionThread);
+    this.userRepository = userRepository;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return this.userRepository.removeInstall();
-    }
-
+  @Override protected Observable buildUseCaseObservable() {
+    return this.userRepository.removeInstall();
+  }
 }

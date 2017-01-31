@@ -7,4 +7,5 @@ import java.util.concurrent.Executor;
  * execution, but every implementation will execute the
  * {@link com.tribe.app.domain.interactor.common.UseCase} out of the UI thread.
  */
-public interface ThreadExecutor extends Executor {}
+public interface ThreadExecutor extends Executor {
+}

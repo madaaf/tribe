@@ -15,34 +15,29 @@ import rx.Observable;
  */
 public class LiveCacheImpl implements LiveCache {
 
-    private Context context;
-    private ObservableRxHashMap<String, Boolean> onlineMap;
-    private ObservableRxHashMap<String, Boolean> liveMap;
+  private Context context;
+  private ObservableRxHashMap<String, Boolean> onlineMap;
+  private ObservableRxHashMap<String, Boolean> liveMap;
 
-    @Inject
-    public LiveCacheImpl(Context context) {
-        this.context = context;
-        onlineMap = new ObservableRxHashMap<>();
-        liveMap = new ObservableRxHashMap<>();
-    }
+  @Inject public LiveCacheImpl(Context context) {
+    this.context = context;
+    onlineMap = new ObservableRxHashMap<>();
+    liveMap = new ObservableRxHashMap<>();
+  }
 
-    @Override
-    public Observable<Map<String, Boolean>> onlineMap() {
-        return onlineMap.getMapObservable();
-    }
+  @Override public Observable<Map<String, Boolean>> onlineMap() {
+    return onlineMap.getMapObservable();
+  }
 
-    @Override
-    public Observable<Map<String, Boolean>> liveMap() {
-        return liveMap.getMapObservable();
-    }
+  @Override public Observable<Map<String, Boolean>> liveMap() {
+    return liveMap.getMapObservable();
+  }
 
-    @Override
-    public void putOnlineMap(Map<String, Boolean> onlineMap) {
-        this.onlineMap.putAll(onlineMap);
-    }
+  @Override public void putOnlineMap(Map<String, Boolean> onlineMap) {
+    this.onlineMap.putAll(onlineMap);
+  }
 
-    @Override
-    public void putLiveMap(Map<String, Boolean> liveMap) {
-        this.liveMap.putAll(liveMap);
-    }
+  @Override public void putLiveMap(Map<String, Boolean> liveMap) {
+    this.liveMap.putAll(liveMap);
+  }
 }

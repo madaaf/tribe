@@ -14,21 +14,20 @@ import rx.Observable;
  */
 public class LeaveGroup extends UseCase {
 
-    private UserRepository userRepository;
-    private String membershipId;
+  private UserRepository userRepository;
+  private String membershipId;
 
-    @Inject
-    LeaveGroup(CloudUserDataRepository userDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        super(threadExecutor, postExecutionThread);
-        this.userRepository = userDataRepository;
-    }
+  @Inject LeaveGroup(CloudUserDataRepository userDataRepository, ThreadExecutor threadExecutor,
+      PostExecutionThread postExecutionThread) {
+    super(threadExecutor, postExecutionThread);
+    this.userRepository = userDataRepository;
+  }
 
-    public void prepare(String membershipId) {
-        this.membershipId = membershipId;
-    }
+  public void prepare(String membershipId) {
+    this.membershipId = membershipId;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return this.userRepository.leaveGroup(membershipId);
-    }
+  @Override protected Observable buildUseCaseObservable() {
+    return this.userRepository.leaveGroup(membershipId);
+  }
 }

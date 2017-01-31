@@ -14,21 +14,20 @@ import rx.Observable;
  */
 public class SendToken extends UseCase {
 
-    private UserRepository userRepository;
-    private String token;
+  private UserRepository userRepository;
+  private String token;
 
-    @Inject
-    public SendToken(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        super(threadExecutor, postExecutionThread);
-        this.userRepository = userRepository;
-    }
+  @Inject public SendToken(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
+      PostExecutionThread postExecutionThread) {
+    super(threadExecutor, postExecutionThread);
+    this.userRepository = userRepository;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return this.userRepository.createOrUpdateInstall(token);
-    }
+  @Override protected Observable buildUseCaseObservable() {
+    return this.userRepository.createOrUpdateInstall(token);
+  }
 
-    public void setToken(String token) {
-        this.token = token;
-    }
+  public void setToken(String token) {
+    this.token = token;
+  }
 }

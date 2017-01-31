@@ -8,7 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
  */
 public class ContactsLayoutManager extends LinearLayoutManager {
 
-    public ContactsLayoutManager(Context context) {
-        super(context);
-    }
+  public ContactsLayoutManager(Context context) {
+    super(context);
+  }
 }

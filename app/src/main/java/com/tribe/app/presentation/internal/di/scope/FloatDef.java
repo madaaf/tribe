@@ -31,12 +31,15 @@ import java.lang.annotation.Target;
  *      value = &#123;NAVIGATION_MODE_STANDARD, NAVIGATION_MODE_LIST, NAVIGATION_MODE_TABS&#125;)
  * }</pre>
  */
-@Retention(RetentionPolicy.SOURCE)
-@Target({ElementType.ANNOTATION_TYPE})
+@Retention(RetentionPolicy.SOURCE) @Target({ ElementType.ANNOTATION_TYPE })
 public @interface FloatDef {
-    /** Defines the allowed constants for this element */
-    float[] value() default {};
+  /**
+   * Defines the allowed constants for this element
+   */
+  float[] value() default {};
 
-    /** Defines whether the constants can be used as a flag, or just as an enum (the default) */
-    boolean flag() default false;
+  /**
+   * Defines whether the constants can be used as a flag, or just as an enum (the default)
+   */
+  boolean flag() default false;
 }

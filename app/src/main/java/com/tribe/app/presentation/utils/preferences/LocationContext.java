@@ -9,7 +9,5 @@ import javax.inject.Qualifier;
  * Created by horatiothomas on 8/29/16.
  */
 
-@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-public @interface LocationContext {
+@Qualifier @Retention(RetentionPolicy.RUNTIME) public @interface LocationContext {
 }

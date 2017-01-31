@@ -1,104 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
-    <FrameLayout
-        android:id="@+id/layoutPulse"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+  <FrameLayout
+      android:id="@+id/layoutPulse"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      >
 
-        <View
-            android:id="@+id/viewPulse"
-            android:layout_width="175dp"
-            android:layout_height="175dp"
-            android:background="@drawable/shape_circle_black_3"
-            android:layout_gravity="center"
-            />
-
-        <ImageView
-            android:id="@+id/imgCircle"
-            android:layout_width="125dp"
-            android:layout_height="125dp"
-            android:layout_gravity="center"
-            android:background="@drawable/bg_oval_access" />
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="125dp"
-            android:layout_height="125dp"
-            android:layout_gravity="center"
-            android:max="@integer/time_synchro"
-            android:progressDrawable="@drawable/progress_circular_synchro" />
-
-        <LinearLayout
-            android:id="@+id/layoutFriends"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center"
-            android:background="@null"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextSwitcher
-                android:id="@+id/txtNumFriends"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="-15dp"
-                android:inAnimation="@anim/slide_in_likes_counter"
-                android:outAnimation="@anim/slide_out_likes_counter">
-
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Giant.1.Black"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top|center_horizontal"
-                    android:gravity="top|center_horizontal" />
-
-                <com.tribe.app.presentation.view.widget.TextViewFont
-                    style="@style/Giant.1.Black"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top|center_horizontal"
-                    android:gravity="top|center_horizontal" />
-            </TextSwitcher>
-
-            <com.tribe.app.presentation.view.widget.TextViewFont
-                android:id="@+id/txtFriends"
-                style="@style/Body.One.Black40"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|center_horizontal"
-                android:alpha="1"
-                android:text="@string/onboarding_queue_loading_friends"
-                />
-        </LinearLayout>
-
-        <ImageView
-            android:id="@+id/imgIcon"
-            android:layout_width="33dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:scaleType="centerInside"
-            android:src="@drawable/picto_search_access"
-            />
-
-    </FrameLayout>
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtStatus"
-        style="@style/Headline.Black.Regular"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|bottom"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="50dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="@dimen/horizontal_margin_small"
-        android:gravity="center"
-        android:lines="2"
-        android:text="@string/search_add_addressbook_subtitle"
+    <View
+        android:id="@+id/viewPulse"
+        android:layout_width="175dp"
+        android:layout_height="175dp"
+        android:background="@drawable/shape_circle_black_3"
+        android:layout_gravity="center"
         />
+
+    <ImageView
+        android:id="@+id/imgCircle"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_oval_access"
+        />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:layout_gravity="center"
+        android:max="@integer/time_synchro"
+        android:progressDrawable="@drawable/progress_circular_synchro"
+        />
+
+    <LinearLayout
+        android:id="@+id/layoutFriends"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:background="@null"
+        android:gravity="center"
+        android:orientation="vertical"
+        >
+
+      <TextSwitcher
+          android:id="@+id/txtNumFriends"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_horizontal"
+          android:layout_marginTop="-15dp"
+          android:inAnimation="@anim/slide_in_likes_counter"
+          android:outAnimation="@anim/slide_out_likes_counter"
+          >
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            style="@style/Giant.1.Black"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center_horizontal"
+            android:gravity="top|center_horizontal"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            style="@style/Giant.1.Black"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center_horizontal"
+            android:gravity="top|center_horizontal"
+            />
+      </TextSwitcher>
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/txtFriends"
+          style="@style/Body.One.Black40"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="bottom|center_horizontal"
+          android:alpha="1"
+          android:text="@string/onboarding_queue_loading_friends"
+          />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imgIcon"
+        android:layout_width="33dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_search_access"
+        />
+
+  </FrameLayout>
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtStatus"
+      style="@style/Headline.Black.Regular"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal|bottom"
+      android:layout_marginLeft="50dp"
+      android:layout_marginRight="50dp"
+      android:layout_marginTop="20dp"
+      android:layout_marginBottom="@dimen/horizontal_margin_small"
+      android:gravity="center"
+      android:lines="2"
+      android:text="@string/search_add_addressbook_subtitle"
+      />
 </merge>

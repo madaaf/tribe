@@ -9,11 +9,11 @@ import android.widget.TextView;
  */
 public class TextViewUtils {
 
-    public static void setTextAppearence(Context context, TextView textView, int resId) {
-        if (Build.VERSION.SDK_INT < 23) {
-            textView.setTextAppearance(context, resId);
-        } else {
-            textView.setTextAppearance(resId);
-        }
+  public static void setTextAppearence(Context context, TextView textView, int resId) {
+    if (Build.VERSION.SDK_INT < 23) {
+      textView.setTextAppearance(context, resId);
+    } else {
+      textView.setTextAppearance(resId);
     }
+  }
 }

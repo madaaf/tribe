@@ -1,71 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:focusableInTouchMode="true"
-        android:focusable="true"
-        android:clickable="true"
-        >
-        <requestFocus />
-    </LinearLayout>
+  <LinearLayout
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:focusableInTouchMode="true"
+      android:focusable="true"
+      android:clickable="true"
+      >
 
-    <ImageView
-        android:id="@+id/imgCountry"
-        android:layout_width="@dimen/nav_icon_size"
-        android:layout_height="@dimen/nav_icon_size"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="2.5dp"
-        android:scaleType="fitCenter"
-        android:padding="12.5dp"
-        android:clickable="true"
-        android:background="@drawable/selectable_button_oval"
-        android:gravity="center"
-        android:src="@drawable/picto_us_flag"
-        />
+    <requestFocus />
+  </LinearLayout>
 
-    <com.tribe.app.presentation.view.widget.EditTextFont
-        android:id="@+id/editTxtPhoneNumber"
-        style="@style/Text.Input.PhoneNumber"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginEnd="55dp"
-        android:layout_marginStart="55dp"
-        android:background="@null"
-        android:gravity="center"
-        android:hint="@string/onboarding_phone_number"
-        android:inputType="phone"
-        />
+  <ImageView
+      android:id="@+id/imgCountry"
+      android:layout_width="@dimen/nav_icon_size"
+      android:layout_height="@dimen/nav_icon_size"
+      android:layout_gravity="center_vertical"
+      android:layout_marginLeft="2.5dp"
+      android:scaleType="fitCenter"
+      android:padding="12.5dp"
+      android:clickable="true"
+      android:background="@drawable/selectable_button_oval"
+      android:gravity="center"
+      android:src="@drawable/picto_us_flag"
+      />
 
-    <ImageView
-        android:id="@+id/btnNext"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_gravity="end|center_vertical"
-        android:layout_marginEnd="@dimen/horizontal_margin_small"
-        android:paddingLeft="1dp"
-        android:background="@drawable/bg_skip_transition"
-        android:foreground="@drawable/selectable_button_oval_light"
-        android:scaleType="centerInside"
-        android:src="@drawable/picto_skip"
-        />
+  <com.tribe.app.presentation.view.widget.EditTextFont
+      android:id="@+id/editTxtPhoneNumber"
+      style="@style/Text.Input.PhoneNumber"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:layout_marginEnd="55dp"
+      android:layout_marginStart="55dp"
+      android:background="@null"
+      android:gravity="center"
+      android:hint="@string/onboarding_phone_number"
+      android:inputType="phone"
+      />
 
-    <com.github.rahatarmanahmed.cpv.CircularProgressView
-        android:id="@+id/progressView"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_gravity="end|center_vertical"
-        android:layout_marginEnd="@dimen/horizontal_margin_small"
-        android:visibility="invisible"
-        app:cpv_animAutostart="true"
-        app:cpv_color="@android:color/black"
-        app:cpv_indeterminate="true"
-        app:cpv_thickness="2dp"
-        />
+  <ImageView
+      android:id="@+id/btnNext"
+      android:layout_width="30dp"
+      android:layout_height="30dp"
+      android:layout_gravity="end|center_vertical"
+      android:layout_marginEnd="@dimen/horizontal_margin_small"
+      android:paddingLeft="1dp"
+      android:background="@drawable/bg_skip_transition"
+      android:foreground="@drawable/selectable_button_oval_light"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_skip"
+      />
+
+  <com.github.rahatarmanahmed.cpv.CircularProgressView
+      android:id="@+id/progressView"
+      android:layout_width="25dp"
+      android:layout_height="25dp"
+      android:layout_gravity="end|center_vertical"
+      android:layout_marginEnd="@dimen/horizontal_margin_small"
+      android:visibility="invisible"
+      app:cpv_animAutostart="true"
+      app:cpv_color="@android:color/black"
+      app:cpv_indeterminate="true"
+      app:cpv_thickness="2dp"
+      />
 
 </merge>

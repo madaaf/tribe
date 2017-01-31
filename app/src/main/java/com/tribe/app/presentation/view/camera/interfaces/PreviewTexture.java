@@ -6,17 +6,17 @@ import java.io.IOException;
 
 public interface PreviewTexture {
 
-    interface OnFrameAvailableListener {
-        void onFrameAvailable(PreviewTexture previewTexture);
-    }
+  interface OnFrameAvailableListener {
+    void onFrameAvailable(PreviewTexture previewTexture);
+  }
 
-    void setOnFrameAvailableListener(final OnFrameAvailableListener l);
+  void setOnFrameAvailableListener(final OnFrameAvailableListener l);
 
-    int getTextureTarget();
+  int getTextureTarget();
 
-    void setup(CameraHelper camera) throws IOException;
+  void setup(CameraHelper camera) throws IOException;
 
-    void updateTexImage();
+  void updateTexImage();
 
-    void getTransformMatrix(float[] mtx);
+  void getTransformMatrix(float[] mtx);
 }

@@ -13,21 +13,20 @@ import rx.Observable;
  */
 public class DiskGetMembership extends UseCaseDisk {
 
-    private UserRepository userRepository;
-    private String membershipId;
+  private UserRepository userRepository;
+  private String membershipId;
 
-    @Inject
-    public DiskGetMembership(DiskUserDataRepository userDataRepository, PostExecutionThread postExecutionThread) {
-        super(postExecutionThread);
-        this.userRepository = userDataRepository;
-    }
+  @Inject public DiskGetMembership(DiskUserDataRepository userDataRepository,
+      PostExecutionThread postExecutionThread) {
+    super(postExecutionThread);
+    this.userRepository = userDataRepository;
+  }
 
-    public void prepare(String membershipId) {
-        this.membershipId = membershipId;
-    }
+  public void prepare(String membershipId) {
+    this.membershipId = membershipId;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return this.userRepository.getMembershipInfos(membershipId);
-    }
+  @Override protected Observable buildUseCaseObservable() {
+    return this.userRepository.getMembershipInfos(membershipId);
+  }
 }

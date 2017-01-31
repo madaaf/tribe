@@ -32,218 +32,202 @@ import javax.inject.Named;
  */
 public class SettingsPresenter extends UpdateUserPresenter {
 
-    private SettingsMVPView settingsView;
+  private SettingsMVPView settingsView;
 
-    private final DiskUpdateFriendship diskUpdateFriendship;
-    private final GetBlockedFriendshipList getBlockedFriendshipList;
-    private final RemoveInstall removeInstall;
-    private final UseCase synchroContactList;
-    private UseCaseDisk getDiskContactList;
-    private UseCaseDisk getDiskFBContactList;
-    private JobManager jobManager;
+  private final DiskUpdateFriendship diskUpdateFriendship;
+  private final GetBlockedFriendshipList getBlockedFriendshipList;
+  private final RemoveInstall removeInstall;
+  private final UseCase synchroContactList;
+  private UseCaseDisk getDiskContactList;
+  private UseCaseDisk getDiskFBContactList;
+  private JobManager jobManager;
 
-    private LookupContactsSubscriber lookupContactsSubscriber;
-    private GetBlockedFriendshipListSubscriber getBlockedFriendshipListSubscriber;
+  private LookupContactsSubscriber lookupContactsSubscriber;
+  private GetBlockedFriendshipListSubscriber getBlockedFriendshipListSubscriber;
 
-    @Inject
-    SettingsPresenter(UpdateUser updateUser,
-                      @Named("lookupByUsername") LookupUsername lookupUsername,
-                      RxFacebook rxFacebook,
-                      RemoveInstall removeInstall,
-                      @Named("synchroContactList") UseCase synchroContactList,
-                      JobManager jobManager,
-                      @Named("diskContactList") UseCaseDisk getDiskContactList,
-                      @Named("diskFBContactList") UseCaseDisk getDiskFBContactList,
-                      DiskUpdateFriendship diskUpdateFriendship,
-                      GetBlockedFriendshipList getBlockedFriendshipList) {
-        super(updateUser, lookupUsername, rxFacebook);
-        this.removeInstall = removeInstall;
-        this.synchroContactList = synchroContactList;
-        this.jobManager = jobManager;
-        this.getDiskContactList = getDiskContactList;
-        this.getDiskFBContactList = getDiskFBContactList;
-        this.diskUpdateFriendship = diskUpdateFriendship;
-        this.getBlockedFriendshipList = getBlockedFriendshipList;
+  @Inject SettingsPresenter(UpdateUser updateUser,
+      @Named("lookupByUsername") LookupUsername lookupUsername, RxFacebook rxFacebook,
+      RemoveInstall removeInstall, @Named("synchroContactList") UseCase synchroContactList,
+      JobManager jobManager, @Named("diskContactList") UseCaseDisk getDiskContactList,
+      @Named("diskFBContactList") UseCaseDisk getDiskFBContactList,
+      DiskUpdateFriendship diskUpdateFriendship,
+      GetBlockedFriendshipList getBlockedFriendshipList) {
+    super(updateUser, lookupUsername, rxFacebook);
+    this.removeInstall = removeInstall;
+    this.synchroContactList = synchroContactList;
+    this.jobManager = jobManager;
+    this.getDiskContactList = getDiskContactList;
+    this.getDiskFBContactList = getDiskFBContactList;
+    this.diskUpdateFriendship = diskUpdateFriendship;
+    this.getBlockedFriendshipList = getBlockedFriendshipList;
+  }
+
+  @Override public void onViewDetached() {
+    removeInstall.unsubscribe();
+    synchroContactList.unsubscribe();
+    getDiskContactList.unsubscribe();
+    getDiskFBContactList.unsubscribe();
+    diskUpdateFriendship.unsubscribe();
+    getBlockedFriendshipList.unsubscribe();
+    super.onViewDetached();
+  }
+
+  @Override public void onViewAttached(MVPView v) {
+    settingsView = (SettingsMVPView) v;
+    loadBlockedFriendshipList();
+  }
+
+  public void logout() {
+    removeInstall.execute(new RemoveInstallSubscriber());
+  }
+
+  public void lookupContacts() {
+    if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
+    lookupContactsSubscriber = new LookupContactsSubscriber();
+    synchroContactList.execute(lookupContactsSubscriber);
+  }
+
+  public void loadContactsFB() {
+    getDiskContactList.execute(new ContactListSubscriber());
+  }
+
+  public void loadContactsAddressBook() {
+    getDiskFBContactList.execute(new ContactFBListSubscriber());
+  }
+
+  public void deleteABContacts() {
+    jobManager.addJobInBackground(new DeleteContactsABJob());
+  }
+
+  public void deleteFBContacts() {
+    jobManager.addJobInBackground(new DeleteContactsFBJob());
+  }
+
+  public void goToLauncher() {
+    this.settingsView.goToLauncher();
+  }
+
+  @Override protected UpdateUserMVPView getUpdateUserView() {
+    return settingsView;
+  }
+
+  private final class RemoveInstallSubscriber extends DefaultSubscriber<User> {
+
+    @Override public void onCompleted() {
     }
 
-    @Override
-    public void onViewDetached() {
-        removeInstall.unsubscribe();
-        synchroContactList.unsubscribe();
-        getDiskContactList.unsubscribe();
-        getDiskFBContactList.unsubscribe();
-        diskUpdateFriendship.unsubscribe();
-        getBlockedFriendshipList.unsubscribe();
-        super.onViewDetached();
+    @Override public void onError(Throwable e) {
     }
 
-    @Override
-    public void onViewAttached(MVPView v) {
-        settingsView = (SettingsMVPView) v;
-        loadBlockedFriendshipList();
+    @Override public void onNext(User user) {
+      goToLauncher();
+    }
+  }
+
+  private class LookupContactsSubscriber extends DefaultSubscriber<List<Contact>> {
+
+    @Override public void onCompleted() {
     }
 
-    public void logout() {
-        removeInstall.execute(new RemoveInstallSubscriber());
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
     }
 
-    public void lookupContacts() {
-        if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
-        lookupContactsSubscriber = new LookupContactsSubscriber();
-        synchroContactList.execute(lookupContactsSubscriber);
+    @Override public void onNext(List<Contact> contactList) {
+      jobManager.addJobInBackground(new RefreshHowManyFriendsJob());
+    }
+  }
+
+  private final class ContactListSubscriber extends DefaultSubscriber<List<Contact>> {
+
+    @Override public void onCompleted() {
+
     }
 
-    public void loadContactsFB() {
-        getDiskContactList.execute(new ContactListSubscriber());
+    @Override public void onError(Throwable e) {
     }
 
-    public void loadContactsAddressBook() {
-        getDiskFBContactList.execute(new ContactFBListSubscriber());
+    @Override public void onNext(List<Contact> contactList) {
+      //            int countInApp = 0;
+      //
+      //            if (contactList != null) {
+      //                for (Contact contact : contactList) {
+      //                    if (contact.getUserList() != null && contact.getUserList().size() > 0) {
+      //                        countInApp++;
+      //                    }
+      //                }
+      //            }
+
+      if (contactList != null) {
+        settingsView.onAddressBookContactSync(contactList.size());
+      }
+    }
+  }
+
+  private final class ContactFBListSubscriber extends DefaultSubscriber<List<Contact>> {
+
+    @Override public void onCompleted() {
+
     }
 
-    public void deleteABContacts() {
-        jobManager.addJobInBackground(new DeleteContactsABJob());
+    @Override public void onError(Throwable e) {
     }
 
-    public void deleteFBContacts() {
-        jobManager.addJobInBackground(new DeleteContactsFBJob());
+    @Override public void onNext(List<Contact> contactList) {
+      //            int countInApp = 0;
+      //
+      //            if (contactList != null) {
+      //                for (Contact contact : contactList) {
+      //                    if (contact.getUserList() != null && contact.getUserList().size() > 0) {
+      //                        countInApp++;
+      //                    }
+      //                }
+      //            }
+
+      if (contactList != null) {
+        settingsView.onFBContactsSync(contactList.size());
+      }
+    }
+  }
+
+  public void loadBlockedFriendshipList() {
+    if (getBlockedFriendshipListSubscriber != null) {
+      getBlockedFriendshipListSubscriber.unsubscribe();
     }
 
-    public void goToLauncher() {
-        this.settingsView.goToLauncher();
+    getBlockedFriendshipListSubscriber = new GetBlockedFriendshipListSubscriber();
+    getBlockedFriendshipList.execute(getBlockedFriendshipListSubscriber);
+  }
+
+  private class GetBlockedFriendshipListSubscriber extends DefaultSubscriber<List<Friendship>> {
+
+    @Override public void onCompleted() {
     }
 
-    @Override
-    protected UpdateUserMVPView getUpdateUserView() {
-        return settingsView;
+    @Override public void onError(Throwable e) {
     }
 
-    private final class RemoveInstallSubscriber extends DefaultSubscriber<User> {
+    @Override public void onNext(List<Friendship> friendshipList) {
+      settingsView.renderBlockedFriendshipList(friendshipList);
+    }
+  }
 
-        @Override
-        public void onCompleted() {}
+  public void updateFriendship(String friendshipId) {
+    diskUpdateFriendship.prepare(friendshipId, FriendshipRealm.DEFAULT);
+    diskUpdateFriendship.execute(new UpdateFriendshipSubscriber());
+    jobManager.addJobInBackground(new UpdateFriendshipJob(friendshipId, FriendshipRealm.DEFAULT));
+  }
 
-        @Override
-        public void onError(Throwable e) {}
+  private class UpdateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
 
-        @Override
-        public void onNext(User user) {
-            goToLauncher();
-        }
+    @Override public void onCompleted() {
     }
 
-    private class LookupContactsSubscriber extends DefaultSubscriber<List<Contact>> {
-
-        @Override
-        public void onCompleted() { }
-
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-
-        @Override
-        public void onNext(List<Contact> contactList) {
-            jobManager.addJobInBackground(new RefreshHowManyFriendsJob());
-        }
+    @Override public void onError(Throwable e) {
     }
 
-    private final class ContactListSubscriber extends DefaultSubscriber<List<Contact>> {
-
-        @Override
-        public void onCompleted() {
-
-        }
-
-        @Override
-        public void onError(Throwable e) {
-        }
-
-        @Override
-        public void onNext(List<Contact> contactList) {
-//            int countInApp = 0;
-//
-//            if (contactList != null) {
-//                for (Contact contact : contactList) {
-//                    if (contact.getUserList() != null && contact.getUserList().size() > 0) {
-//                        countInApp++;
-//                    }
-//                }
-//            }
-
-            if (contactList != null) {
-                settingsView.onAddressBookContactSync(contactList.size());
-            }
-        }
+    @Override public void onNext(Friendship friendship) {
+      settingsView.friendshipUpdated(friendship);
     }
-
-    private final class ContactFBListSubscriber extends DefaultSubscriber<List<Contact>> {
-
-        @Override
-        public void onCompleted() {
-
-        }
-
-        @Override
-        public void onError(Throwable e) {
-        }
-
-        @Override
-        public void onNext(List<Contact> contactList) {
-//            int countInApp = 0;
-//
-//            if (contactList != null) {
-//                for (Contact contact : contactList) {
-//                    if (contact.getUserList() != null && contact.getUserList().size() > 0) {
-//                        countInApp++;
-//                    }
-//                }
-//            }
-
-            if (contactList != null) {
-                settingsView.onFBContactsSync(contactList.size());
-            }
-        }
-    }
-
-    public void loadBlockedFriendshipList() {
-        if (getBlockedFriendshipListSubscriber != null) getBlockedFriendshipListSubscriber.unsubscribe();
-
-        getBlockedFriendshipListSubscriber = new GetBlockedFriendshipListSubscriber();
-        getBlockedFriendshipList.execute(getBlockedFriendshipListSubscriber);
-    }
-
-    private class GetBlockedFriendshipListSubscriber extends DefaultSubscriber<List<Friendship>> {
-
-        @Override
-        public void onCompleted() {}
-
-        @Override
-        public void onError(Throwable e) {}
-
-        @Override
-        public void onNext(List<Friendship> friendshipList) {
-            settingsView.renderBlockedFriendshipList(friendshipList);
-        }
-    }
-
-    public void updateFriendship(String friendshipId) {
-        diskUpdateFriendship.prepare(friendshipId, FriendshipRealm.DEFAULT);
-        diskUpdateFriendship.execute(new UpdateFriendshipSubscriber());
-        jobManager.addJobInBackground(new UpdateFriendshipJob(friendshipId, FriendshipRealm.DEFAULT));
-    }
-
-    private class UpdateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
-
-        @Override
-        public void onCompleted() {}
-
-        @Override
-        public void onError(Throwable e) {}
-
-        @Override
-        public void onNext(Friendship friendship) {
-            settingsView.friendshipUpdated(friendship);
-        }
-    }
+  }
 }

@@ -18,23 +18,22 @@ import rx.Observable;
  */
 public class UpdateMembership extends UseCase {
 
-    private UserRepository userRepository;
-    private String membershipId;
-    private List<Pair<String, String>> values;
+  private UserRepository userRepository;
+  private String membershipId;
+  private List<Pair<String, String>> values;
 
-    @Inject
-    UpdateMembership(CloudUserDataRepository userDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        super(threadExecutor, postExecutionThread);
-        this.userRepository = userDataRepository;
-    }
+  @Inject UpdateMembership(CloudUserDataRepository userDataRepository,
+      ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+    super(threadExecutor, postExecutionThread);
+    this.userRepository = userDataRepository;
+  }
 
-    public void prepare(String membershipId, List<Pair<String, String>> values) {
-        this.membershipId = membershipId;
-        this.values = values;
-    }
+  public void prepare(String membershipId, List<Pair<String, String>> values) {
+    this.membershipId = membershipId;
+    this.values = values;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return this.userRepository.updateMembership(membershipId, values);
-    }
+  @Override protected Observable buildUseCaseObservable() {
+    return this.userRepository.updateMembership(membershipId, values);
+  }
 }

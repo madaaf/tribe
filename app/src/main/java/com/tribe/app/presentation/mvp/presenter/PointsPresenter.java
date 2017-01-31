@@ -7,20 +7,17 @@ import javax.inject.Inject;
 
 public class PointsPresenter implements Presenter {
 
-    private PointsMVPView pointsView;
+  private PointsMVPView pointsView;
 
-    @Inject
-    public PointsPresenter() {
+  @Inject public PointsPresenter() {
 
-    }
+  }
 
-    @Override
-    public void onViewAttached(MVPView v) {
-        pointsView = (PointsMVPView) v;
-    }
+  @Override public void onViewAttached(MVPView v) {
+    pointsView = (PointsMVPView) v;
+  }
 
-    @Override
-    public void onViewDetached() {
+  @Override public void onViewDetached() {
 
-    }
+  }
 }

@@ -5,10 +5,13 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+
 import butterknife.ButterKnife;
+
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.adapter.delegate.base.AddAnimationAdapterDelegate;
+
 import java.util.List;
 
 /**

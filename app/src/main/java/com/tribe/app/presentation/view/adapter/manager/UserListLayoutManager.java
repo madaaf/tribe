@@ -8,7 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
  */
 public class UserListLayoutManager extends LinearLayoutManager {
 
-    public UserListLayoutManager(Context context) {
-        super(context);
-    }
+  public UserListLayoutManager(Context context) {
+    super(context);
+  }
 }

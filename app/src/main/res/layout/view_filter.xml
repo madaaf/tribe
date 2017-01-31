@@ -1,56 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginLeft="@dimen/horizontal_margin"
-            android:layout_marginTop="@dimen/horizontal_margin"
-            android:text="@string/pull_to_search_title"
-            android:singleLine="true"
-            style="@style/Title.2.Black"
-            />
-
-        <ImageView
-            android:id="@+id/btnClose"
-            android:layout_width="@dimen/button_size"
-            android:layout_height="@dimen/button_size"
-            android:layout_gravity="top|right"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="5dp"
-            android:src="@drawable/picto_exit"
-            android:scaleType="centerInside"
-            android:background="@drawable/selectable_button_oval"
-            android:clickable="true"
-            />
-
-    </FrameLayout>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerViewFilter"
-        android:scrollbars="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="@dimen/horizontal_margin"
-        android:layout_marginBottom="@dimen/horizontal_margin"
-        android:layout_marginLeft="@dimen/horizontal_margin_xsmall"
-        android:layout_marginRight="@dimen/horizontal_margin_xsmall"
-        android:background="@null"
-        />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider_size"
-        android:background="@color/grey.light"
-        />
+  <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      >
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:layout_width="wrap_content"
@@ -58,40 +14,85 @@
         android:layout_gravity="left"
         android:layout_marginLeft="@dimen/horizontal_margin"
         android:layout_marginTop="@dimen/horizontal_margin"
-        android:text="@string/grid_manage_title"
+        android:text="@string/pull_to_search_title"
         android:singleLine="true"
         style="@style/Title.2.Black"
         />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="@dimen/horizontal_margin"
-        >
-
-        <com.tribe.app.presentation.view.widget.SyncView
-            android:id="@+id/viewSyncFB"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:syncBackground="@drawable/bg_fb_transition"
-            app:syncIcon="@drawable/picto_facebook_f"
-            app:syncType="fb"
-            />
-
-        <com.tribe.app.presentation.view.widget.SyncView
-            android:id="@+id/viewSyncAB"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/horizontal_margin_xsmall"
-            app:syncBackground="@drawable/bg_addressbook_transition"
-            app:syncIcon="@drawable/picto_contacts"
-            app:syncType="addressbook"
-            />
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/horizontal_margin_small"
+    <ImageView
+        android:id="@+id/btnClose"
+        android:layout_width="@dimen/button_size"
+        android:layout_height="@dimen/button_size"
+        android:layout_gravity="top|right"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
+        android:src="@drawable/picto_exit"
+        android:scaleType="centerInside"
+        android:background="@drawable/selectable_button_oval"
+        android:clickable="true"
         />
+
+  </FrameLayout>
+
+  <android.support.v7.widget.RecyclerView
+      android:id="@+id/recyclerViewFilter"
+      android:scrollbars="vertical"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:layout_marginTop="@dimen/horizontal_margin"
+      android:layout_marginBottom="@dimen/horizontal_margin"
+      android:layout_marginLeft="@dimen/horizontal_margin_xsmall"
+      android:layout_marginRight="@dimen/horizontal_margin_xsmall"
+      android:background="@null"
+      />
+
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/divider_size"
+      android:background="@color/grey.light"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="left"
+      android:layout_marginLeft="@dimen/horizontal_margin"
+      android:layout_marginTop="@dimen/horizontal_margin"
+      android:text="@string/grid_manage_title"
+      android:singleLine="true"
+      style="@style/Title.2.Black"
+      />
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      android:layout_margin="@dimen/horizontal_margin"
+      >
+
+    <com.tribe.app.presentation.view.widget.SyncView
+        android:id="@+id/viewSyncFB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:syncBackground="@drawable/bg_fb_transition"
+        app:syncIcon="@drawable/picto_facebook_f"
+        app:syncType="fb"
+        />
+
+    <com.tribe.app.presentation.view.widget.SyncView
+        android:id="@+id/viewSyncAB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/horizontal_margin_xsmall"
+        app:syncBackground="@drawable/bg_addressbook_transition"
+        app:syncIcon="@drawable/picto_contacts"
+        app:syncType="addressbook"
+        />
+  </LinearLayout>
+
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/horizontal_margin_small"
+      />
 </merge>

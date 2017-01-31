@@ -28,45 +28,45 @@ import rx.subscriptions.Subscriptions;
  * Abstract class for a Use Case (Interactor in terms of Clean Architecture).
  * This interfaces represents a execution unit for different use cases (this means any use case
  * in the application should implement this contract).
- *
+ * <p>
  * By convention each UseCase implementation will return the result using a {@link Subscriber}
  * that will execute its job in a background thread and will post the result in the UI thread.
  */
 public abstract class UseCaseDisk implements Serializable {
 
-    private final PostExecutionThread postExecutionThread;
+  private final PostExecutionThread postExecutionThread;
 
-    private Subscription subscription = Subscriptions.empty();
+  private Subscription subscription = Subscriptions.empty();
 
-    protected UseCaseDisk(PostExecutionThread postExecutionThread) {
-        this.postExecutionThread = postExecutionThread;
+  protected UseCaseDisk(PostExecutionThread postExecutionThread) {
+    this.postExecutionThread = postExecutionThread;
+  }
+
+  /**
+   * Builds an {@link Observable} which will be used when executing the current {@link
+   * UseCaseDisk}.
+   */
+  protected abstract Observable buildUseCaseObservable();
+
+  /**
+   * Executes the current use case.
+   *
+   * @param UseCaseSubscriber The guy who will be listen to the observable build
+   * with {@link #buildUseCaseObservable()}.
+   */
+  @SuppressWarnings("unchecked") public void execute(Subscriber UseCaseSubscriber) {
+    this.subscription = this.buildUseCaseObservable()
+        .subscribeOn(postExecutionThread.getScheduler())
+        .observeOn(postExecutionThread.getScheduler())
+        .subscribe(UseCaseSubscriber);
+  }
+
+  /**
+   * Unsubscribes from current {@link Subscription}.
+   */
+  public void unsubscribe() {
+    if (!subscription.isUnsubscribed()) {
+      subscription.unsubscribe();
     }
-
-    /**
-     * Builds an {@link Observable} which will be used when executing the current {@link UseCaseDisk}.
-     */
-    protected abstract Observable buildUseCaseObservable();
-
-    /**
-     * Executes the current use case.
-     *
-     * @param UseCaseSubscriber The guy who will be listen to the observable build
-     * with {@link #buildUseCaseObservable()}.
-     */
-    @SuppressWarnings("unchecked")
-    public void execute(Subscriber UseCaseSubscriber) {
-        this.subscription = this.buildUseCaseObservable()
-                .subscribeOn(postExecutionThread.getScheduler())
-                .observeOn(postExecutionThread.getScheduler())
-                .subscribe(UseCaseSubscriber);
-    }
-
-    /**
-     * Unsubscribes from current {@link Subscription}.
-     */
-    public void unsubscribe() {
-        if (!subscription.isUnsubscribed()) {
-            subscription.unsubscribe();
-        }
-    }
+  }
 }

@@ -14,18 +14,13 @@ import rx.Observable;
 
 public interface LoginApi {
 
-    @POST("/pin")
-    Observable<PinRealm> requestCode(@Body LoginEntity loginEntity);
+  @POST("/pin") Observable<PinRealm> requestCode(@Body LoginEntity loginEntity);
 
-    @POST("/token")
-    Observable<AccessToken> loginWithUsername(@Body LoginEntity loginEntity);
+  @POST("/token") Observable<AccessToken> loginWithUsername(@Body LoginEntity loginEntity);
 
-    @POST("/refresh")
-    Call<AccessToken> refreshToken(@Body RefreshEntity loginEntity);
+  @POST("/refresh") Call<AccessToken> refreshToken(@Body RefreshEntity loginEntity);
 
-    @POST("/register")
-    Observable<AccessToken> register(@Body RegisterEntity registerEntity);
+  @POST("/register") Observable<AccessToken> register(@Body RegisterEntity registerEntity);
 
-    @POST("/username")
-    Observable<Boolean> lookupUsername(@Body UsernameEntity usernameEntity);
+  @POST("/username") Observable<Boolean> lookupUsername(@Body UsernameEntity usernameEntity);
 }

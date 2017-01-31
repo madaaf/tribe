@@ -7,20 +7,17 @@ import javax.inject.Inject;
 
 public class ScorePresenter implements Presenter {
 
-    private ScoreMVPView scoreView;
+  private ScoreMVPView scoreView;
 
-    @Inject
-    public ScorePresenter() {
+  @Inject public ScorePresenter() {
 
-    }
+  }
 
-    @Override
-    public void onViewAttached(MVPView v) {
-        scoreView = (ScoreMVPView) v;
-    }
+  @Override public void onViewAttached(MVPView v) {
+    scoreView = (ScoreMVPView) v;
+  }
 
-    @Override
-    public void onViewDetached() {
+  @Override public void onViewDetached() {
 
-    }
+  }
 }

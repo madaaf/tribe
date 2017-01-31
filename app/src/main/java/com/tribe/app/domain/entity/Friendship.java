@@ -1,6 +1,7 @@
 package com.tribe.app.domain.entity;
 
 import com.tribe.app.data.realm.FriendshipRealm;
+
 import java.text.Normalizer;
 import java.util.Date;
 

@@ -6,8 +6,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
 import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Contact;
@@ -18,7 +20,9 @@ import com.tribe.app.presentation.view.adapter.delegate.base.AddAnimationAdapter
 import com.tribe.app.presentation.view.adapter.viewholder.AddAnimationViewHolder;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+
 import java.util.List;
+
 import javax.inject.Inject;
 
 /**

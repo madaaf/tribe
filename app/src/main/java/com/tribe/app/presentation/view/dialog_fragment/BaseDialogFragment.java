@@ -20,44 +20,40 @@ import butterknife.Unbinder;
  */
 public class BaseDialogFragment extends DialogFragment {
 
-    private Unbinder unbinder;
+  private Unbinder unbinder;
 
-    @Override
-    public void onDestroy() {
-        unbinder.unbind();
+  @Override public void onDestroy() {
+    unbinder.unbind();
 
-        removeSubscriptions();
+    removeSubscriptions();
 
-        super.onDestroy();
-    }
+    super.onDestroy();
+  }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
+  @Override public void onStart() {
+    super.onStart();
+  }
 
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        return dialog;
-    }
+  @NonNull @Override public Dialog onCreateDialog(Bundle savedInstanceState) {
+    final Dialog dialog = super.onCreateDialog(savedInstanceState);
+    dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+    dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+    return dialog;
+  }
 
-    public void initUi(View view) {
-        unbinder = ButterKnife.bind(this, view);
-    }
+  public void initUi(View view) {
+    unbinder = ButterKnife.bind(this, view);
+  }
 
-    public void removeSubscriptions() {
+  public void removeSubscriptions() {
 
-    }
+  }
 
-    protected ApplicationComponent getApplicationComponent() {
-        return ((AndroidApplication) getActivity().getApplication()).getApplicationComponent();
-    }
+  protected ApplicationComponent getApplicationComponent() {
+    return ((AndroidApplication) getActivity().getApplication()).getApplicationComponent();
+  }
 
-    protected ActivityModule getActivityModule() {
-        return new ActivityModule(getActivity());
-    }
+  protected ActivityModule getActivityModule() {
+    return new ActivityModule(getActivity());
+  }
 }

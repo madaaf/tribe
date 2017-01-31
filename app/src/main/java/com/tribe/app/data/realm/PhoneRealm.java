@@ -8,23 +8,22 @@ import io.realm.annotations.PrimaryKey;
  */
 public class PhoneRealm extends RealmObject {
 
-    @PrimaryKey
-    private String phone;
-    private boolean isInternational = false;
+  @PrimaryKey private String phone;
+  private boolean isInternational = false;
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+  public void setPhone(String phone) {
+    this.phone = phone;
+  }
 
-    public String getPhone() {
-        return phone;
-    }
+  public String getPhone() {
+    return phone;
+  }
 
-    public void setInternational(boolean international) {
-        isInternational = international;
-    }
+  public void setInternational(boolean international) {
+    isInternational = international;
+  }
 
-    public boolean isInternational() {
-        return isInternational;
-    }
+  public boolean isInternational() {
+    return isInternational;
+  }
 }

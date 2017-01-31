@@ -16,23 +16,22 @@ import rx.Observable;
  */
 public class RemoveMembersFromGroup extends UseCase {
 
-    private UserRepository userRepository;
-    private String groupId;
-    private List<String> memberIds;
+  private UserRepository userRepository;
+  private String groupId;
+  private List<String> memberIds;
 
-    @Inject
-    RemoveMembersFromGroup(CloudUserDataRepository userDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        super(threadExecutor, postExecutionThread);
-        this.userRepository = userDataRepository;
-    }
+  @Inject RemoveMembersFromGroup(CloudUserDataRepository userDataRepository,
+      ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+    super(threadExecutor, postExecutionThread);
+    this.userRepository = userDataRepository;
+  }
 
-    public void prepare(String groupId, List<String> memberIds) {
-        this.groupId = groupId;
-        this.memberIds = memberIds;
-    }
+  public void prepare(String groupId, List<String> memberIds) {
+    this.groupId = groupId;
+    this.memberIds = memberIds;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return this.userRepository.removeMembersFromGroup(groupId, memberIds);
-    }
+  @Override protected Observable buildUseCaseObservable() {
+    return this.userRepository.removeMembersFromGroup(groupId, memberIds);
+  }
 }

@@ -9,5 +9,5 @@ import java.util.List;
  */
 public interface LiveMVPView extends MVPView {
 
-    void renderFriendshipList(List<Friendship> friendshipList);
+  void renderFriendshipList(List<Friendship> friendshipList);
 }

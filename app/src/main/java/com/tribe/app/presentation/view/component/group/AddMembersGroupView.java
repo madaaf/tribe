@@ -52,293 +52,268 @@ import rx.subscriptions.CompositeSubscription;
 
 public class AddMembersGroupView extends FrameLayout {
 
-    private int DURATION_FADE = 150;
-    private int RECYCLER_VIEW_ANIMATIONS_DURATION = 200;
-    private int RECYCLER_VIEW_ANIMATIONS_DURATION_LONG = 300;
+  private int DURATION_FADE = 150;
+  private int RECYCLER_VIEW_ANIMATIONS_DURATION = 200;
+  private int RECYCLER_VIEW_ANIMATIONS_DURATION_LONG = 300;
 
-    @Inject
-    User user;
+  @Inject User user;
 
-    @Inject
-    ScreenUtils screenUtils;
+  @Inject ScreenUtils screenUtils;
 
-    @BindView(R.id.recyclerView)
-    RecyclerView recyclerView;
+  @BindView(R.id.recyclerView) RecyclerView recyclerView;
 
-    @BindView(R.id.recyclerViewGroupMembers)
-    RecyclerView recyclerViewGroupMembers;
+  @BindView(R.id.recyclerViewGroupMembers) RecyclerView recyclerViewGroupMembers;
 
-    @BindView(R.id.appbar)
-    AppBarLayout appBarLayout;
+  @BindView(R.id.appbar) AppBarLayout appBarLayout;
 
-    @BindView(R.id.collapsingToolbar)
-    CollapsingToolbarLayout collapsingToolbarLayout;
+  @BindView(R.id.collapsingToolbar) CollapsingToolbarLayout collapsingToolbarLayout;
 
-    @BindView(R.id.viewActionSettings)
-    ActionView viewActionSettings;
+  @BindView(R.id.viewActionSettings) ActionView viewActionSettings;
 
-    @BindView(R.id.viewActionShareLink)
-    ActionView viewActionShareLink;
+  @BindView(R.id.viewActionShareLink) ActionView viewActionShareLink;
 
-    @BindView(R.id.txtGroupName)
-    TextViewFont txtGroupName;
+  @BindView(R.id.txtGroupName) TextViewFont txtGroupName;
 
-    @BindView(R.id.txtMembers)
-    TextViewFont txtMembers;
+  @BindView(R.id.txtMembers) TextViewFont txtMembers;
 
-    @BindView(R.id.editTextSearch)
-    EditTextFont editTextSearch;
+  @BindView(R.id.editTextSearch) EditTextFont editTextSearch;
 
-    @BindView(R.id.viewGroupFocus)
-    ViewGroup viewGroupFocus;
+  @BindView(R.id.viewGroupFocus) ViewGroup viewGroupFocus;
 
-    @BindView(R.id.layoutMembers)
-    ViewGroup layoutMembers;
+  @BindView(R.id.layoutMembers) ViewGroup layoutMembers;
 
-    // VARIABLES
-    private FriendMembersLayoutManager layoutManager;
-    private FriendMembersAdapter adapter;
-    private GroupEntity groupEntity;
-    private Membership membership;
-    private MembersLayoutManager layoutMembersManager;
-    private MembersAdapter membersAdapter;
-    private List<GroupMember> newMembers;
+  // VARIABLES
+  private FriendMembersLayoutManager layoutManager;
+  private FriendMembersAdapter adapter;
+  private GroupEntity groupEntity;
+  private Membership membership;
+  private MembersLayoutManager layoutMembersManager;
+  private MembersAdapter membersAdapter;
+  private List<GroupMember> newMembers;
 
-    // OBSERVABLES
-    private CompositeSubscription subscriptions;
-    private PublishSubject<List<GroupMember>> membersChanged = PublishSubject.create();
-    private PublishSubject<Void> clickShareLink = PublishSubject.create();
-    private PublishSubject<Void> clickSettings = PublishSubject.create();
-    private PublishSubject<Void> clickMembers = PublishSubject.create();
+  // OBSERVABLES
+  private CompositeSubscription subscriptions;
+  private PublishSubject<List<GroupMember>> membersChanged = PublishSubject.create();
+  private PublishSubject<Void> clickShareLink = PublishSubject.create();
+  private PublishSubject<Void> clickSettings = PublishSubject.create();
+  private PublishSubject<Void> clickMembers = PublishSubject.create();
 
-    public AddMembersGroupView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+  public AddMembersGroupView(Context context, AttributeSet attrs) {
+    super(context, attrs);
+  }
+
+  @Override protected void onFinishInflate() {
+    super.onFinishInflate();
+    ButterKnife.bind(this);
+  }
+
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+
+    if (membership == null && groupEntity == null) {
+      Serializable serializable = ViewStackHelper.getViewStack(getContext()).getParameter(this);
+
+      if (serializable instanceof GroupEntity) {
+        groupEntity = (GroupEntity) serializable;
+      } else {
+        membership = (Membership) serializable;
+      }
+
+      updateInfos();
+      initAppBar();
+      init();
     }
 
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        ButterKnife.bind(this);
-    }
+    viewGroupFocus.requestFocus();
+  }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
+  @Override protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+  }
 
-        if (membership == null && groupEntity == null) {
-            Serializable serializable = ViewStackHelper.getViewStack(getContext()).getParameter(this);
+  public void onDestroy() {
+    if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+  }
 
-            if (serializable instanceof GroupEntity) {
-                groupEntity = (GroupEntity) serializable;
-            } else {
-                membership = (Membership) serializable;
-            }
+  @Override public boolean dispatchTouchEvent(MotionEvent event) {
+    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+      if (editTextSearch.hasFocus()) {
+        Rect outRect = new Rect();
+        editTextSearch.getGlobalVisibleRect(outRect);
 
-            updateInfos();
-            initAppBar();
-            init();
+        if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
+          editTextSearch.clearFocus();
+          screenUtils.hideKeyboard(editTextSearch);
+          viewGroupFocus.requestFocus();
         }
-
-        viewGroupFocus.requestFocus();
+      }
     }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
+    return super.dispatchTouchEvent(event);
+  }
+
+  private void init() {
+    ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
+        .inject(this);
+    subscriptions = new CompositeSubscription();
+
+    newMembers = new ArrayList<>();
+
+    layoutManager = new FriendMembersLayoutManager(getContext());
+    recyclerView.setLayoutManager(layoutManager);
+    recyclerView.setItemAnimator(null);
+
+    adapter = new FriendMembersAdapter(getContext());
+
+    setupFriendList();
+
+    if (membership != null) {
+      subscriptions.add(viewActionSettings.onClick().subscribe(clickSettings));
+
+      subscriptions.add(viewActionShareLink.onClick().subscribe(clickShareLink));
+
+      layoutMembers.setOnClickListener(v -> clickMembers.onNext(null));
     }
 
-    public void onDestroy() {
-        if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+    recyclerView.setAdapter(adapter);
+    recyclerView.addItemDecoration(
+        new DividerFirstLastItemDecoration(screenUtils.dpToPx(2.5f), screenUtils.dpToPx(10), 0));
+    recyclerView.getRecycledViewPool().setMaxRecycledViews(0, 50);
+    recyclerView.setHasFixedSize(true);
+    recyclerView.setNestedScrollingEnabled(groupEntity == null);
+
+    subscriptions.add(
+        RxTextView.textChanges(editTextSearch).map(CharSequence::toString).subscribe(s -> {
+          filter(s);
+        }));
+
+    subscriptions.add(adapter.clickAdd()
+        .map(view -> adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view)))
+        .subscribe(groupMember -> {
+          boolean add = membersAdapter.compute(groupMember);
+          if (add) {
+            newMembers.add(groupMember);
+          } else {
+            newMembers.remove(groupMember);
+          }
+          membersChanged.onNext(newMembers);
+          refactorMembers();
+        }));
+
+    editTextSearch.setOnFocusChangeListener((v, hasFocus) -> {
+      if (hasFocus) {
+        appBarLayout.setExpanded(false, true);
+      }
+    });
+
+    setupMembers();
+    refactorMembers();
+  }
+
+  private void setupFriendList() {
+    List<GroupMember> userListTemp = new ArrayList<>(user.getUserList());
+    if (membership != null) membership.getGroup().computeGroupMembers(userListTemp);
+    adapter.setItems(userListTemp);
+  }
+
+  public void updateGroup(Group group, boolean full) {
+    if (full) {
+      membership.setGroup(group);
+      DiffUtil.DiffResult result = DiffUtil.calculateDiff(
+          new GroupMemberDiffCallback(membersAdapter.getItems(),
+              membership.getGroup().getGroupMembers()));
+      membersAdapter.setItems(membership.getGroup().getGroupMembers(), false);
+      result.dispatchUpdatesTo(membersAdapter);
+      refactorMembers();
+      setupFriendList();
+    } else {
+      membership.getGroup().setPicture(group.getPicture());
+      membership.getGroup().setName(group.getName());
     }
 
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            if (editTextSearch.hasFocus()) {
-                Rect outRect = new Rect();
-                editTextSearch.getGlobalVisibleRect(outRect);
+    updateInfos();
+  }
 
-                if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
-                    editTextSearch.clearFocus();
-                    screenUtils.hideKeyboard(editTextSearch);
-                    viewGroupFocus.requestFocus();
-                }
-            }
-        }
+  private void updateInfos() {
+    txtGroupName.setText(groupName());
 
-        return super.dispatchTouchEvent(event);
+    if (membership != null) {
+      viewActionShareLink.setBody("");
+    }
+  }
+
+  private void initAppBar() {
+    appBarLayout.setExpanded(groupEntity == null);
+
+    CoordinatorLayout.LayoutParams params =
+        (CoordinatorLayout.LayoutParams) appBarLayout.getLayoutParams();
+    AppBarLayout.Behavior behavior = new AppBarLayout.Behavior();
+    behavior.setDragCallback(new AppBarLayout.Behavior.DragCallback() {
+      @Override public boolean canDrag(AppBarLayout appBarLayout) {
+        return groupEntity == null;
+      }
+    });
+    params.setBehavior(behavior);
+    appBarLayout.setLayoutParams(params);
+  }
+
+  private void setupMembers() {
+    layoutMembersManager = new MembersLayoutManager(getContext());
+    recyclerViewGroupMembers.setLayoutManager(layoutMembersManager);
+    recyclerViewGroupMembers.setItemAnimator(new ScaleInAnimator(new OvershootInterpolator(1.5f)));
+    recyclerViewGroupMembers.getItemAnimator()
+        .setAddDuration(RECYCLER_VIEW_ANIMATIONS_DURATION_LONG);
+    recyclerViewGroupMembers.getItemAnimator().setRemoveDuration(RECYCLER_VIEW_ANIMATIONS_DURATION);
+    recyclerViewGroupMembers.getItemAnimator().setMoveDuration(RECYCLER_VIEW_ANIMATIONS_DURATION);
+    recyclerViewGroupMembers.getItemAnimator().setChangeDuration(RECYCLER_VIEW_ANIMATIONS_DURATION);
+
+    membersAdapter = new MembersAdapter(getContext());
+
+    if (groupEntity != null) {
+      GroupMember groupMember = new GroupMember(user);
+      groupMember.setOgMember(true);
+      groupMember.setMember(true);
+      membersAdapter.add(groupMember);
+    } else {
+      membersAdapter.setItems(membership.getGroup().getGroupMembers(), true);
     }
 
-    private void init() {
-        ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
-        subscriptions = new CompositeSubscription();
+    recyclerViewGroupMembers.setAdapter(membersAdapter);
+    recyclerViewGroupMembers.getRecycledViewPool().setMaxRecycledViews(0, 50);
+    recyclerViewGroupMembers.setHasFixedSize(true);
+    //recyclerViewGroupMembers.addItemDecoration(new MemberListLastItemDecoration(getContext().getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small)));
 
-        newMembers = new ArrayList<>();
+    subscriptions.add(membersAdapter.onClick().subscribe(clickMembers));
+  }
 
-        layoutManager = new FriendMembersLayoutManager(getContext());
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(null);
+  private void refactorMembers() {
+    txtMembers.setText(membersAdapter.getItemCount() + " " +
+        (membersAdapter.getItemCount() > 1 ? getResources().getString(R.string.group_members)
+            : getResources().getString(R.string.group_member)));
+  }
 
-        adapter = new FriendMembersAdapter(getContext());
+  private void filter(String text) {
+    adapter.filterList(text);
+  }
 
-        setupFriendList();
+  private String groupName() {
+    return groupEntity == null ? membership.getDisplayName() : groupEntity.getName();
+  }
 
-        if (membership != null) {
-            subscriptions.add(
-                    viewActionSettings.onClick()
-                            .subscribe(clickSettings)
-            );
+  // OBSERVABLES
+  public Observable<List<GroupMember>> onMembersChanged() {
+    return membersChanged;
+  }
 
-            subscriptions.add(
-                    viewActionShareLink.onClick()
-                            .subscribe(clickShareLink)
-            );
+  public Observable<Void> onClickSettings() {
+    return clickSettings;
+  }
 
-            layoutMembers.setOnClickListener(v -> clickMembers.onNext(null));
-        }
+  public Observable<Void> onClickShareLink() {
+    return clickShareLink;
+  }
 
-        recyclerView.setAdapter(adapter);
-        recyclerView.addItemDecoration(new DividerFirstLastItemDecoration(screenUtils.dpToPx(2.5f), screenUtils.dpToPx(10), 0));
-        recyclerView.getRecycledViewPool().setMaxRecycledViews(0, 50);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setNestedScrollingEnabled(groupEntity == null);
-
-        subscriptions.add(
-                RxTextView.textChanges(editTextSearch)
-                        .map(CharSequence::toString)
-                        .subscribe(s -> {
-                            filter(s);
-                        })
-        );
-
-        subscriptions.add(
-                adapter.clickAdd()
-                        .map(view -> adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view)))
-                        .subscribe(groupMember -> {
-                            boolean add = membersAdapter.compute(groupMember);
-                            if (add) newMembers.add(groupMember);
-                            else newMembers.remove(groupMember);
-                            membersChanged.onNext(newMembers);
-                            refactorMembers();
-                        })
-        );
-
-        editTextSearch.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                appBarLayout.setExpanded(false, true);
-            }
-        });
-
-        setupMembers();
-        refactorMembers();
-    }
-
-    private void setupFriendList() {
-        List<GroupMember> userListTemp = new ArrayList<>(user.getUserList());
-        if (membership != null) membership.getGroup().computeGroupMembers(userListTemp);
-        adapter.setItems(userListTemp);
-    }
-
-    public void updateGroup(Group group, boolean full) {
-        if (full) {
-            membership.setGroup(group);
-            DiffUtil.DiffResult result = DiffUtil.calculateDiff(
-                    new GroupMemberDiffCallback(
-                            membersAdapter.getItems(),
-                            membership.getGroup().getGroupMembers()
-                    ));
-            membersAdapter.setItems(membership.getGroup().getGroupMembers(), false);
-            result.dispatchUpdatesTo(membersAdapter);
-            refactorMembers();
-            setupFriendList();
-        } else {
-            membership.getGroup().setPicture(group.getPicture());
-            membership.getGroup().setName(group.getName());
-        }
-
-        updateInfos();
-    }
-
-    private void updateInfos() {
-        txtGroupName.setText(groupName());
-
-        if (membership != null) {
-            viewActionShareLink.setBody("");
-        }
-    }
-
-    private void initAppBar() {
-        appBarLayout.setExpanded(groupEntity == null);
-
-        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) appBarLayout.getLayoutParams();
-        AppBarLayout.Behavior behavior = new AppBarLayout.Behavior();
-        behavior.setDragCallback(new AppBarLayout.Behavior.DragCallback() {
-            @Override
-            public boolean canDrag(AppBarLayout appBarLayout) {
-                return groupEntity == null;
-            }
-        });
-        params.setBehavior(behavior);
-        appBarLayout.setLayoutParams(params);
-    }
-
-    private void setupMembers() {
-        layoutMembersManager = new MembersLayoutManager(getContext());
-        recyclerViewGroupMembers.setLayoutManager(layoutMembersManager);
-        recyclerViewGroupMembers.setItemAnimator(new ScaleInAnimator(new OvershootInterpolator(1.5f)));
-        recyclerViewGroupMembers.getItemAnimator().setAddDuration(RECYCLER_VIEW_ANIMATIONS_DURATION_LONG);
-        recyclerViewGroupMembers.getItemAnimator().setRemoveDuration(RECYCLER_VIEW_ANIMATIONS_DURATION);
-        recyclerViewGroupMembers.getItemAnimator().setMoveDuration(RECYCLER_VIEW_ANIMATIONS_DURATION);
-        recyclerViewGroupMembers.getItemAnimator().setChangeDuration(RECYCLER_VIEW_ANIMATIONS_DURATION);
-
-        membersAdapter = new MembersAdapter(getContext());
-
-        if (groupEntity != null) {
-            GroupMember groupMember = new GroupMember(user);
-            groupMember.setOgMember(true);
-            groupMember.setMember(true);
-            membersAdapter.add(groupMember);
-        } else {
-            membersAdapter.setItems(membership.getGroup().getGroupMembers(), true);
-        }
-
-        recyclerViewGroupMembers.setAdapter(membersAdapter);
-        recyclerViewGroupMembers.getRecycledViewPool().setMaxRecycledViews(0, 50);
-        recyclerViewGroupMembers.setHasFixedSize(true);
-        //recyclerViewGroupMembers.addItemDecoration(new MemberListLastItemDecoration(getContext().getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small)));
-
-        subscriptions.add(
-                membersAdapter.onClick()
-                        .subscribe(clickMembers));
-    }
-
-    private void refactorMembers() {
-        txtMembers.setText(membersAdapter.getItemCount() + " " +
-                (membersAdapter.getItemCount() > 1 ? getResources().getString(R.string.group_members) : getResources().getString(R.string.group_member)));
-    }
-
-    private void filter(String text) {
-        adapter.filterList(text);
-    }
-
-    private String groupName() {
-        return groupEntity == null ? membership.getDisplayName() : groupEntity.getName();
-    }
-
-    // OBSERVABLES
-    public Observable<List<GroupMember>> onMembersChanged() {
-        return membersChanged;
-    }
-
-    public Observable<Void> onClickSettings() {
-        return clickSettings;
-    }
-
-    public Observable<Void> onClickShareLink() {
-        return clickShareLink;
-    }
-
-    public Observable<Void> onClickMembers() {
-        return clickMembers;
-    }
+  public Observable<Void> onClickMembers() {
+    return clickMembers;
+  }
 }

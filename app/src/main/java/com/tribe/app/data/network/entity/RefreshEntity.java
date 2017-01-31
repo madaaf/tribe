@@ -5,17 +5,17 @@ package com.tribe.app.data.network.entity;
  */
 public class RefreshEntity {
 
-    private String refresh_token;
+  private String refresh_token;
 
-    public RefreshEntity(String refresh_token) {
-        this.refresh_token = refresh_token;
-    }
+  public RefreshEntity(String refresh_token) {
+    this.refresh_token = refresh_token;
+  }
 
-    public String getRefreshToken() {
-        return refresh_token;
-    }
+  public String getRefreshToken() {
+    return refresh_token;
+  }
 
-    public void setRefreshToken(String refreshToken) {
-        this.refresh_token = refreshToken;
-    }
+  public void setRefreshToken(String refreshToken) {
+    this.refresh_token = refreshToken;
+  }
 }

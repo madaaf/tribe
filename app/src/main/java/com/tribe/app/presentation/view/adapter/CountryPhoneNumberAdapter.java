@@ -21,57 +21,52 @@ import rx.Observable;
 
 public class CountryPhoneNumberAdapter extends RecyclerView.Adapter {
 
-    private RxAdapterDelegatesManager<List<Country>> delegatesManager;
-    private List<Country> items;
-    private CountryAdapterDelegate countryAdapterDelegate;
+  private RxAdapterDelegatesManager<List<Country>> delegatesManager;
+  private List<Country> items;
+  private CountryAdapterDelegate countryAdapterDelegate;
 
-    @Inject
-    public CountryPhoneNumberAdapter(Context context) {
-        delegatesManager = new RxAdapterDelegatesManager<>();
-        countryAdapterDelegate = new CountryAdapterDelegate(context);
-        delegatesManager.addDelegate(countryAdapterDelegate);
-        items = new ArrayList<>();
-    }
+  @Inject public CountryPhoneNumberAdapter(Context context) {
+    delegatesManager = new RxAdapterDelegatesManager<>();
+    countryAdapterDelegate = new CountryAdapterDelegate(context);
+    delegatesManager.addDelegate(countryAdapterDelegate);
+    items = new ArrayList<>();
+  }
 
-    @Override
-    public int getItemViewType(int position) {
-        return delegatesManager.getItemViewType(items, position);
-    }
+  @Override public int getItemViewType(int position) {
+    return delegatesManager.getItemViewType(items, position);
+  }
 
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return delegatesManager.onCreateViewHolder(parent, viewType);
-    }
+  @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    return delegatesManager.onCreateViewHolder(parent, viewType);
+  }
 
-    @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        delegatesManager.onBindViewHolder(items, position, holder);
-    }
+  @Override public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    delegatesManager.onBindViewHolder(items, position, holder);
+  }
 
-    @Override
-    public int getItemCount() {
-        return items.size();
-    }
+  @Override public int getItemCount() {
+    return items.size();
+  }
 
-    public Country getItemAtPosition(int position) {
-        if (items.size() > 0 && position < items.size()) {
-            return items.get(position);
-        } else {
-            return null;
-        }
+  public Country getItemAtPosition(int position) {
+    if (items.size() > 0 && position < items.size()) {
+      return items.get(position);
+    } else {
+      return null;
     }
+  }
 
-    public void releaseSubscriptions() {
-        delegatesManager.releaseSubscriptions();
-    }
+  public void releaseSubscriptions() {
+    delegatesManager.releaseSubscriptions();
+  }
 
-    public void setItems(List<Country> countryList) {
-        items.clear();
-        items.addAll(countryList);
-        notifyDataSetChanged();
-    }
+  public void setItems(List<Country> countryList) {
+    items.clear();
+    items.addAll(countryList);
+    notifyDataSetChanged();
+  }
 
-    public Observable<View> clickCountryItem() {
-        return countryAdapterDelegate.clickCountryItem();
-    }
+  public Observable<View> clickCountryItem() {
+    return countryAdapterDelegate.clickCountryItem();
+  }
 }

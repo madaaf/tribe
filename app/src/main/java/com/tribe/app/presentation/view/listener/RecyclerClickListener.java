@@ -10,5 +10,5 @@ import android.widget.ImageView;
 
 public interface RecyclerClickListener {
 
-    void onElementClick(int position, View sharedView, ImageView characterImageView);
+  void onElementClick(int position, View sharedView, ImageView characterImageView);
 }

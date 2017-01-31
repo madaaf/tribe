@@ -7,11 +7,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.FilterEntity;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
+
 import java.util.List;
 
 /**

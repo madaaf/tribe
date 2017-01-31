@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.tribe.app.presentation.view.component.group.MembersGroupView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.tribe.app.presentation.view.component.group.MembersGroupView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".presentation.view.activity.GroupActivity"
     android:background="@null"
     >
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="none"
-        android:clipToPadding="false"
-        android:background="@null"
-        />
 
-    <LinearLayout
-        android:id="@+id/viewGroupFocus"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:focusableInTouchMode="true"
-        android:focusable="true"
-        >
-        <requestFocus />
-    </LinearLayout>
+  <android.support.v7.widget.RecyclerView
+      android:id="@+id/recyclerView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:scrollbars="none"
+      android:clipToPadding="false"
+      android:background="@null"
+      />
+
+  <LinearLayout
+      android:id="@+id/viewGroupFocus"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:focusableInTouchMode="true"
+      android:focusable="true"
+      >
+
+    <requestFocus />
+  </LinearLayout>
 </com.tribe.app.presentation.view.component.group.MembersGroupView>

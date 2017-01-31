@@ -18,52 +18,46 @@ import javax.inject.Inject;
 
 public class ProfilePresenter extends UpdateUserPresenter {
 
-    private ProfileMVPView profileView;
-    private final RemoveInstall removeInstall;
+  private ProfileMVPView profileView;
+  private final RemoveInstall removeInstall;
 
-    @Inject
-    ProfilePresenter(UpdateUser updateUser, LookupUsername lookupUsername, RxFacebook rxFacebook, RemoveInstall removeInstall) {
-        super(updateUser, lookupUsername, rxFacebook);
-        this.removeInstall = removeInstall;
+  @Inject ProfilePresenter(UpdateUser updateUser, LookupUsername lookupUsername,
+      RxFacebook rxFacebook, RemoveInstall removeInstall) {
+    super(updateUser, lookupUsername, rxFacebook);
+    this.removeInstall = removeInstall;
+  }
+
+  @Override public void onViewDetached() {
+    removeInstall.unsubscribe();
+    super.onViewDetached();
+  }
+
+  @Override public void onViewAttached(MVPView v) {
+    profileView = (ProfileMVPView) v;
+  }
+
+  public void logout() {
+    removeInstall.execute(new ProfilePresenter.RemoveInstallSubscriber());
+  }
+
+  @Override protected UpdateUserMVPView getUpdateUserView() {
+    return profileView;
+  }
+
+  private final class RemoveInstallSubscriber extends DefaultSubscriber<User> {
+
+    @Override public void onCompleted() {
     }
 
-    @Override
-    public void onViewDetached() {
-        removeInstall.unsubscribe();
-        super.onViewDetached();
+    @Override public void onError(Throwable e) {
     }
 
-    @Override
-    public void onViewAttached(MVPView v) {
-        profileView = (ProfileMVPView) v;
+    @Override public void onNext(User user) {
+      goToLauncher();
     }
+  }
 
-    public void logout() {
-        removeInstall.execute(new ProfilePresenter.RemoveInstallSubscriber());
-    }
-
-    @Override
-    protected UpdateUserMVPView getUpdateUserView() {
-        return profileView;
-    }
-
-    private final class RemoveInstallSubscriber extends DefaultSubscriber<User> {
-
-        @Override
-        public void onCompleted() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-        }
-
-        @Override
-        public void onNext(User user) {
-            goToLauncher();
-        }
-    }
-
-    public void goToLauncher() {
-        this.profileView.goToLauncher();
-    }
+  public void goToLauncher() {
+    this.profileView.goToLauncher();
+  }
 }

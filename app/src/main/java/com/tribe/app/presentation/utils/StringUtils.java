@@ -16,76 +16,72 @@ import java.util.regex.Pattern;
  */
 public class StringUtils {
 
-    public static boolean isEmpty(String str) {
-        return str == null || str.isEmpty();
+  public static boolean isEmpty(String str) {
+    return str == null || str.isEmpty();
+  }
+
+  public static boolean isOnlyEmoji(String str) {
+    String messageStr = str;
+
+    try {
+      byte[] utf8Bytes = messageStr.getBytes("UTF-8");
+      messageStr = new String(utf8Bytes, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      e.printStackTrace();
+      return false;
     }
 
-    public static boolean isOnlyEmoji(String str) {
-        String messageStr = str;
+    Pattern unicodeOutliers =
+        Pattern.compile("[\ud83c\udc00-\ud83c\udfff]|[\ud83d\udc00-\ud83d\udfff]|[\u2600-\u27ff]",
+            Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
 
-        try {
-            byte[] utf8Bytes = messageStr.getBytes("UTF-8");
-            messageStr = new String(utf8Bytes, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return false;
-        }
+    Matcher unicodeOutlierMatcher = unicodeOutliers.matcher(messageStr);
 
-        Pattern unicodeOutliers = Pattern.compile(
-                "[\ud83c\udc00-\ud83c\udfff]|[\ud83d\udc00-\ud83d\udfff]|[\u2600-\u27ff]",
-                Pattern.UNICODE_CASE |
-                        Pattern.CASE_INSENSITIVE
-        );
+    messageStr = unicodeOutlierMatcher.replaceAll("").trim();
 
-        Matcher unicodeOutlierMatcher = unicodeOutliers.matcher(messageStr);
+    return messageStr.length() == 0;
+  }
 
-        messageStr = unicodeOutlierMatcher.replaceAll("").trim();
-
-        return messageStr.length() == 0;
+  public static boolean isUrl(String str) {
+    try {
+      URL url = new URL(str);
+    } catch (MalformedURLException e) {
+      return false;
     }
 
-    public static boolean isUrl(String str) {
-        try {
-            URL url = new URL(str);
-        } catch (MalformedURLException e) {
-            return false;
-        }
+    return true;
+  }
 
-        return true;
+  public static String[] extractLinks(String text) {
+    List<String> links = new ArrayList<String>();
+    Matcher m = Patterns.WEB_URL.matcher(text);
+
+    while (m.find()) {
+      String url = m.group();
+      links.add(url);
     }
 
-    public static String[] extractLinks(String text) {
-        List<String> links = new ArrayList<String>();
-        Matcher m = Patterns.WEB_URL.matcher(text);
+    return links.toArray(new String[links.size()]);
+  }
 
-        while (m.find()) {
-            String url = m.group();
-            links.add(url);
-        }
-
-        return links.toArray(new String[links.size()]);
+  public static String getFirstCharacter(String str) {
+    if (!StringUtils.isEmpty(str) && str.length() >= 1) {
+      String firstCharacter = str.substring(0, 1);
+      return firstCharacter;
     }
 
-    public static String getFirstCharacter(String str) {
-        if (!StringUtils.isEmpty(str) && str.length() >= 1) {
-            String firstCharacter = str.substring(0, 1);
-            return firstCharacter;
-        }
+    return "";
+  }
 
-        return "";
-    }
+  public static String millisecondsToHhMmSs(long millis) {
+    return String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis),
+        TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(
+            TimeUnit.MILLISECONDS.toHours(millis)),
+        TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(
+            TimeUnit.MILLISECONDS.toMinutes(millis)));
+  }
 
-    public static String millisecondsToHhMmSs(long millis) {
-        return String.format("%02d:%02d:%02d",
-                TimeUnit.MILLISECONDS.toHours(millis),
-                TimeUnit.MILLISECONDS.toMinutes(millis) -
-                        TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
-                TimeUnit.MILLISECONDS.toSeconds(millis) -
-                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
-    }
-
-    public static String getLastBitFromUrl(final String url) {
-        return url.replaceFirst(".*/([^/?]+).*", "$1");
-    }
-
+  public static String getLastBitFromUrl(final String url) {
+    return url.replaceFirst(".*/([^/?]+).*", "$1");
+  }
 }

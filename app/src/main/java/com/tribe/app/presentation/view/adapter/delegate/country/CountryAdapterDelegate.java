@@ -8,15 +8,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Country;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+
 import java.util.List;
+
 import rx.Observable;
 import rx.subjects.PublishSubject;
 

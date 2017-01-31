@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:orientation="vertical"
@@ -9,131 +8,132 @@
     android:background="@drawable/shape_rect_white_rounded_corners"
     >
 
-    <com.tribe.app.presentation.view.widget.SquareFrameLayout
-        android:id="@+id/layoutContent"
+  <com.tribe.app.presentation.view.widget.SquareFrameLayout
+      android:id="@+id/layoutContent"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_gravity="center"
+      android:clickable="true"
+      >
+
+    <com.tribe.app.presentation.view.widget.DiagonalLayout
+        android:id="@+id/layoutDiagonal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:clickable="true">
-
-        <com.tribe.app.presentation.view.widget.DiagonalLayout
-            android:id="@+id/layoutDiagonal"
-            android:layout_width="match_parent"
-            android:layout_height="145dp"
-            android:clickable="true"
-            >
-
-            <View
-                android:id="@+id/viewShapeAngle"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                />
-
-        </com.tribe.app.presentation.view.widget.DiagonalLayout>
-
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_gravity="top|left"
-            android:layout_marginLeft="@dimen/horizontal_margin_small"
-            android:layout_marginTop="@dimen/horizontal_margin_small"
-            android:src="@drawable/picto_sharing_card_logo"
-            android:scaleType="centerInside"
-            />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="18dp"
-            android:layout_gravity="top|left"
-            android:layout_marginLeft="@dimen/horizontal_margin_small"
-            android:layout_marginTop="@dimen/horizontal_margin_small"
-            android:src="@drawable/picto_sharing_card_logo_text"
-            android:scaleType="centerInside"
-            />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="20dp"
-            android:layout_gravity="top|right"
-            android:layout_marginRight="@dimen/horizontal_margin_small"
-            android:layout_marginTop="@dimen/horizontal_margin_small"
-            android:src="@drawable/picto_android_ios"
-            android:scaleType="fitEnd"
-            />
-
-        <ImageView
-            android:id="@+id/avatar"
-            android:layout_width="@dimen/avatar_size_scaled"
-            android:layout_height="@dimen/avatar_size_scaled"
-            android:layout_gravity="center"
-            android:padding="1dp"
-            android:background="@drawable/bg_oval_onboarding"
-            />
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtUsername"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/vertical_margin_small"
-            android:layout_gravity="bottom"
-            android:gravity="center"
-            style="@style/Headline.White.2"
-            />
-
-    </com.tribe.app.presentation.view.widget.SquareFrameLayout>
-
-    <LinearLayout
-        android:id="@+id/layoutBottom"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_height="145dp"
+        android:clickable="true"
         >
 
-        <ImageView
-            android:id="@+id/imgInstagram"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@color/instagram"
-            android:foreground="@drawable/selectable_button_light"
-            android:clickable="true"
-            android:scaleType="centerInside"
-            android:src="@drawable/picto_instagram"
-            />
+      <View
+          android:id="@+id/viewShapeAngle"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          />
 
-        <ImageView
-            android:id="@+id/imgTwitter"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@color/twitter"
-            android:foreground="@drawable/selectable_button_light"
-            android:clickable="true"
-            android:scaleType="centerInside"
-            android:src="@drawable/picto_twitter"
-            />
+    </com.tribe.app.presentation.view.widget.DiagonalLayout>
 
-        <ImageView
-            android:id="@+id/imgSnapchat"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@color/snapchat"
-            android:foreground="@drawable/selectable_button_light"
-            android:clickable="true"
-            android:scaleType="centerInside"
-            android:src="@drawable/picto_snapchat_white"
-            />
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="top|left"
+        android:layout_marginLeft="@dimen/horizontal_margin_small"
+        android:layout_marginTop="@dimen/horizontal_margin_small"
+        android:src="@drawable/picto_sharing_card_logo"
+        android:scaleType="centerInside"
+        />
 
-        <ImageView
-            android:id="@+id/imgMore"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/selectable_button"
-            android:clickable="true"
-            android:scaleType="centerInside"
-            android:src="@drawable/picto_more_black"
-            />
-    </LinearLayout>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="18dp"
+        android:layout_gravity="top|left"
+        android:layout_marginLeft="@dimen/horizontal_margin_small"
+        android:layout_marginTop="@dimen/horizontal_margin_small"
+        android:src="@drawable/picto_sharing_card_logo_text"
+        android:scaleType="centerInside"
+        />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_gravity="top|right"
+        android:layout_marginRight="@dimen/horizontal_margin_small"
+        android:layout_marginTop="@dimen/horizontal_margin_small"
+        android:src="@drawable/picto_android_ios"
+        android:scaleType="fitEnd"
+        />
+
+    <ImageView
+        android:id="@+id/avatar"
+        android:layout_width="@dimen/avatar_size_scaled"
+        android:layout_height="@dimen/avatar_size_scaled"
+        android:layout_gravity="center"
+        android:padding="1dp"
+        android:background="@drawable/bg_oval_onboarding"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtUsername"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/vertical_margin_small"
+        android:layout_gravity="bottom"
+        android:gravity="center"
+        style="@style/Headline.White.2"
+        />
+
+  </com.tribe.app.presentation.view.widget.SquareFrameLayout>
+
+  <LinearLayout
+      android:id="@+id/layoutBottom"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      >
+
+    <ImageView
+        android:id="@+id/imgInstagram"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/instagram"
+        android:foreground="@drawable/selectable_button_light"
+        android:clickable="true"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_instagram"
+        />
+
+    <ImageView
+        android:id="@+id/imgTwitter"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/twitter"
+        android:foreground="@drawable/selectable_button_light"
+        android:clickable="true"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_twitter"
+        />
+
+    <ImageView
+        android:id="@+id/imgSnapchat"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/snapchat"
+        android:foreground="@drawable/selectable_button_light"
+        android:clickable="true"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_snapchat_white"
+        />
+
+    <ImageView
+        android:id="@+id/imgMore"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@drawable/selectable_button"
+        android:clickable="true"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_more_black"
+        />
+  </LinearLayout>
 </LinearLayout>

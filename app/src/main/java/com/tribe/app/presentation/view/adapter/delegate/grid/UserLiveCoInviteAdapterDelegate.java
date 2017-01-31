@@ -17,29 +17,27 @@ import java.util.List;
  */
 public class UserLiveCoInviteAdapterDelegate extends RecipientGridAdapterDelegate {
 
-    public UserLiveCoInviteAdapterDelegate(Context context) {
-        super(context);
-    }
+  public UserLiveCoInviteAdapterDelegate(Context context) {
+    super(context);
+  }
 
-    @Override
-    public boolean isForViewType(@NonNull List<Recipient> items, int position) {
-        return items.get(position) instanceof Friendship
-                && !items.get(position).getSubId().equals(Constants.SUPPORT_ID)
-                && !items.get(position).getSubId().equals(Recipient.ID_HEADER)
-                && !items.get(position).getSubId().equals(Recipient.ID_EMPTY)
-                && (items.get(position).isOnline());
-                //|| items.get(position).isConnected());
-    }
+  @Override public boolean isForViewType(@NonNull List<Recipient> items, int position) {
+    return items.get(position) instanceof Friendship
+        && !items.get(position)
+        .getSubId()
+        .equals(Constants.SUPPORT_ID)
+        && !items.get(position).getSubId().equals(Recipient.ID_HEADER)
+        && !items.get(position).getSubId().equals(Recipient.ID_EMPTY)
+        && (items.get(position).isOnline());
+    //|| items.get(position).isConnected());
+  }
 
-    @NonNull
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
-        RecipientGridViewHolder vh = (RecipientGridViewHolder) super.onCreateViewHolder(parent);
-        return vh;
-    }
+  @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
+    RecipientGridViewHolder vh = (RecipientGridViewHolder) super.onCreateViewHolder(parent);
+    return vh;
+  }
 
-    @Override
-    protected int getLayoutId() {
-        return R.layout.item_user_live_co_invite;
-    }
+  @Override protected int getLayoutId() {
+    return R.layout.item_user_live_co_invite;
+  }
 }

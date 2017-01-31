@@ -8,20 +8,19 @@ import android.support.v7.widget.LinearLayoutManager;
  */
 public class LiveInviteLayoutManager extends LinearLayoutManager {
 
-    private boolean isScrollEnabled = true;
+  private boolean isScrollEnabled = true;
 
-    public LiveInviteLayoutManager(Context context) {
-        super(context);
-        setItemPrefetchEnabled(true);
-        setInitialPrefetchItemCount(8);
-    }
+  public LiveInviteLayoutManager(Context context) {
+    super(context);
+    setItemPrefetchEnabled(true);
+    setInitialPrefetchItemCount(8);
+  }
 
-    public void setScrollEnabled(boolean enabled) {
-        this.isScrollEnabled = enabled;
-    }
+  public void setScrollEnabled(boolean enabled) {
+    this.isScrollEnabled = enabled;
+  }
 
-    @Override
-    public boolean canScrollVertically() {
-        return isScrollEnabled && super.canScrollVertically();
-    }
+  @Override public boolean canScrollVertically() {
+    return isScrollEnabled && super.canScrollVertically();
+  }
 }

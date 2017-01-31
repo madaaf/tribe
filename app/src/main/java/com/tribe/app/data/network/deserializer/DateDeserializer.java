@@ -14,22 +14,21 @@ import javax.inject.Inject;
 
 public class DateDeserializer implements JsonDeserializer<Date> {
 
-    private SimpleDateFormat utcSimpleDate;
+  private SimpleDateFormat utcSimpleDate;
 
-    @Inject
-    public DateDeserializer(SimpleDateFormat utcSimpleDate) {
-        this.utcSimpleDate = utcSimpleDate;
+  @Inject public DateDeserializer(SimpleDateFormat utcSimpleDate) {
+    this.utcSimpleDate = utcSimpleDate;
+  }
+
+  @Override public Date deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2)
+      throws JsonParseException {
+    String date = element.getAsString();
+
+    try {
+      return utcSimpleDate.parse(date);
+    } catch (ParseException e) {
+      e.printStackTrace();
+      return null;
     }
-
-    @Override
-    public Date deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2) throws JsonParseException {
-        String date = element.getAsString();
-
-        try {
-            return utcSimpleDate.parse(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+  }
 }

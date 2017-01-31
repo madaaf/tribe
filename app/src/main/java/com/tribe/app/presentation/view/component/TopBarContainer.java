@@ -23,143 +23,126 @@ import rx.subscriptions.CompositeSubscription;
 
 public class TopBarContainer extends FrameLayout {
 
-    @Inject
-    SoundManager soundManager;
+  @Inject SoundManager soundManager;
 
-    @BindView(R.id.recyclerViewFriends)
-    RecyclerView recyclerView;
+  @BindView(R.id.recyclerViewFriends) RecyclerView recyclerView;
 
-    @BindView(R.id.topBarView)
-    TopBarView topBarView;
+  @BindView(R.id.topBarView) TopBarView topBarView;
 
-    // VARIABLES
+  // VARIABLES
 
-    // DIMENS
+  // DIMENS
 
-    // BINDERS / SUBSCRIPTIONS
-    private Unbinder unbinder;
-    private CompositeSubscription subscriptions = new CompositeSubscription();
-    private PublishSubject<Void> clickNew = PublishSubject.create();
-    private PublishSubject<String> onSearch = PublishSubject.create();
-    private PublishSubject<Void> onClickProfile = PublishSubject.create();
+  // BINDERS / SUBSCRIPTIONS
+  private Unbinder unbinder;
+  private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Void> clickNew = PublishSubject.create();
+  private PublishSubject<String> onSearch = PublishSubject.create();
+  private PublishSubject<Void> onClickProfile = PublishSubject.create();
 
-    public TopBarContainer(Context context) {
-        super(context);
+  public TopBarContainer(Context context) {
+    super(context);
+  }
+
+  public TopBarContainer(Context context, AttributeSet attrs) {
+    super(context, attrs);
+  }
+
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+  }
+
+  @Override protected void onDetachedFromWindow() {
+
+    unbinder.unbind();
+
+    if (subscriptions != null && subscriptions.hasSubscriptions()) {
+      subscriptions.unsubscribe();
+      subscriptions.clear();
     }
 
-    public TopBarContainer(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    super.onDetachedFromWindow();
+  }
+
+  @Override protected void onFinishInflate() {
+    super.onFinishInflate();
+
+    unbinder = ButterKnife.bind(this);
+
+    ApplicationComponent applicationComponent =
+        ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent();
+    applicationComponent.inject(this);
+
+    initDimen();
+    initUI();
+    initSubscriptions();
+  }
+
+  private void initUI() {
+    recyclerView.setOnTouchListener((v, event) -> {
+      int dy = recyclerView.computeVerticalScrollOffset();
+      if (event.getY() < topBarView.getHeight() && dy < (topBarView.getHeight() >> 1)) return true;
+
+      return super.onTouchEvent(event);
+    });
+  }
+
+  private void initDimen() {
+
+  }
+
+  private void initSubscriptions() {
+    subscriptions.add(topBarView.onClickNew().subscribe(clickNew));
+
+    subscriptions.add(topBarView.onSearch().subscribe(onSearch));
+
+    subscriptions.add(topBarView.onClickProfile().subscribe(onClickProfile));
+  }
+
+  public boolean isSearchMode() {
+    return topBarView.isSearchMode();
+  }
+
+  public void closeSearch() {
+    topBarView.closeSearch();
+  }
+
+  ///////////////////////
+  //    TOUCH EVENTS   //
+  ///////////////////////
+
+  @Override public boolean onInterceptTouchEvent(MotionEvent ev) {
+    boolean isTouchInTopBar = ev.getRawY() < topBarView.getHeight();
+    if (!isEnabled() || canChildScrollUp() || isTouchInTopBar) {
+      if (isTouchInTopBar) topBarView.onTouchEvent(ev);
+
+      return false;
     }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-    }
+    return false;
+  }
 
-    @Override
-    protected void onDetachedFromWindow() {
+  private boolean canChildScrollUp() {
+    return ViewCompat.canScrollVertically(recyclerView, -1);
+  }
 
-        unbinder.unbind();
+  ///////////////////////
+  //    ANIMATIONS     //
+  ///////////////////////
 
-        if (subscriptions != null && subscriptions.hasSubscriptions()) {
-            subscriptions.unsubscribe();
-            subscriptions.clear();
-        }
+  ///////////////////////
+  //    OBSERVABLES    //
+  ///////////////////////
 
-        super.onDetachedFromWindow();
-    }
+  public Observable<Void> onClickNew() {
+    return clickNew;
+  }
 
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
+  public Observable<String> onSearch() {
+    return onSearch;
+  }
 
-        unbinder = ButterKnife.bind(this);
-
-        ApplicationComponent applicationComponent = ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent();
-        applicationComponent.inject(this);
-
-        initDimen();
-        initUI();
-        initSubscriptions();
-    }
-
-    private void initUI() {
-        recyclerView.setOnTouchListener((v, event) -> {
-            int dy = recyclerView.computeVerticalScrollOffset();
-            if (event.getY() < topBarView.getHeight() && dy < (topBarView.getHeight() >> 1))
-                return true;
-
-            return super.onTouchEvent(event);
-        });
-    }
-
-    private void initDimen() {
-
-    }
-
-    private void initSubscriptions() {
-        subscriptions.add(
-                topBarView.onClickNew()
-                        .subscribe(clickNew)
-        );
-
-        subscriptions.add(
-                topBarView.onSearch()
-                        .subscribe(onSearch)
-        );
-
-        subscriptions.add(
-                topBarView.onClickProfile()
-                        .subscribe(onClickProfile)
-        );
-    }
-
-    public boolean isSearchMode() {
-        return topBarView.isSearchMode();
-    }
-
-    public void closeSearch() {
-        topBarView.closeSearch();
-    }
-
-    ///////////////////////
-    //    TOUCH EVENTS   //
-    ///////////////////////
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        boolean isTouchInTopBar = ev.getRawY() < topBarView.getHeight();
-        if (!isEnabled() || canChildScrollUp() || isTouchInTopBar) {
-            if (isTouchInTopBar)
-                topBarView.onTouchEvent(ev);
-
-            return false;
-        }
-
-        return false;
-    }
-
-    private boolean canChildScrollUp() {
-        return ViewCompat.canScrollVertically(recyclerView, -1);
-    }
-
-    ///////////////////////
-    //    ANIMATIONS     //
-    ///////////////////////
-
-    ///////////////////////
-    //    OBSERVABLES    //
-    ///////////////////////
-
-    public Observable<Void> onClickNew() {
-        return clickNew;
-    }
-
-    public Observable<String> onSearch() {
-        return onSearch;
-    }
-
-    public Observable<Void> onClickProfile() {
-        return onClickProfile;
-    }
+  public Observable<Void> onClickProfile() {
+    return onClickProfile;
+  }
 }

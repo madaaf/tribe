@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
@@ -15,9 +16,12 @@ import com.tribe.app.presentation.view.adapter.delegate.grid.UserLiveCoGridAdapt
 import com.tribe.app.presentation.view.adapter.interfaces.RecyclerViewItemEnabler;
 import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.inject.Inject;
+
 import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
 

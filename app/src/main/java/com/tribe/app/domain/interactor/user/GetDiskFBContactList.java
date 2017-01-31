@@ -13,16 +13,15 @@ import rx.Observable;
  */
 public class GetDiskFBContactList extends UseCaseDisk {
 
-    private UserRepository userRepository;
+  private UserRepository userRepository;
 
-    @Inject
-    public GetDiskFBContactList(DiskUserDataRepository userRepository, PostExecutionThread postExecutionThread) {
-        super(postExecutionThread);
-        this.userRepository = userRepository;
-    }
+  @Inject public GetDiskFBContactList(DiskUserDataRepository userRepository,
+      PostExecutionThread postExecutionThread) {
+    super(postExecutionThread);
+    this.userRepository = userRepository;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return this.userRepository.contactsFB();
-    }
+  @Override protected Observable buildUseCaseObservable() {
+    return this.userRepository.contactsFB();
+  }
 }

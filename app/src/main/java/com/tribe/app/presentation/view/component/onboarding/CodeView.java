@@ -42,334 +42,309 @@ import rx.subscriptions.CompositeSubscription;
  * CodeView.java
  * Created by tiago on 10/06/2016.
  * Last Modified by Horatio.
- * Component used in MVPView Pager in AuthViewFragment.java for a user to input their verification code.
+ * Component used in MVPView Pager in AuthViewFragment.java for a user to input their verification
+ * code.
  */
 public class CodeView extends FrameLayout {
 
-    private static final int DELAY = 300;
-    private static final int DURATION = 300;
-    private static final int DURATION_MEDIUM = 500;
-    private static final int DURATION_FAST = 150;
+  private static final int DELAY = 300;
+  private static final int DURATION = 300;
+  private static final int DURATION_MEDIUM = 500;
+  private static final int DURATION_FAST = 150;
 
-    @Inject
-    ScreenUtils screenUtils;
+  @Inject ScreenUtils screenUtils;
 
-    @BindView(R.id.editTxtCode)
-    EditTextFont editTxtCode;
+  @BindView(R.id.editTxtCode) EditTextFont editTxtCode;
 
-    @BindView(R.id.progressView)
-    CircularProgressView progressView;
+  @BindView(R.id.progressView) CircularProgressView progressView;
 
-    @BindView(R.id.progressBarCountdown)
-    ProgressBar progressBarCountdown;
+  @BindView(R.id.progressBarCountdown) ProgressBar progressBarCountdown;
 
-    @BindView(R.id.layoutCountdown)
-    ViewGroup layoutCountdown;
+  @BindView(R.id.layoutCountdown) ViewGroup layoutCountdown;
 
-    @BindView(R.id.txtCountdown)
-    TextViewFont txtCountdown;
+  @BindView(R.id.txtCountdown) TextViewFont txtCountdown;
 
-    @BindView(R.id.imgBack)
-    ImageView imgBack;
+  @BindView(R.id.imgBack) ImageView imgBack;
 
-    @BindView(R.id.layoutPin)
-    ViewGroup layoutPin;
+  @BindView(R.id.layoutPin) ViewGroup layoutPin;
 
-    @BindView(R.id.pinCircle1)
-    ImageView pinCircle1;
+  @BindView(R.id.pinCircle1) ImageView pinCircle1;
 
-    @BindView(R.id.pinCircle2)
-    ImageView pinCircle2;
+  @BindView(R.id.pinCircle2) ImageView pinCircle2;
 
-    @BindView(R.id.pinCircle3)
-    ImageView pinCircle3;
+  @BindView(R.id.pinCircle3) ImageView pinCircle3;
 
-    @BindView(R.id.pinCircle4)
-    ImageView pinCircle4;
+  @BindView(R.id.pinCircle4) ImageView pinCircle4;
 
-    @BindView(R.id.txtCode1)
-    TextViewFont txtCode1;
+  @BindView(R.id.txtCode1) TextViewFont txtCode1;
 
-    @BindView(R.id.txtCode2)
-    TextViewFont txtCode2;
+  @BindView(R.id.txtCode2) TextViewFont txtCode2;
 
-    @BindView(R.id.txtCode3)
-    TextViewFont txtCode3;
+  @BindView(R.id.txtCode3) TextViewFont txtCode3;
 
-    @BindView(R.id.txtCode4)
-    TextViewFont txtCode4;
+  @BindView(R.id.txtCode4) TextViewFont txtCode4;
 
-    @BindView(R.id.imgConnected)
-    ImageView imgConnected;
+  @BindView(R.id.imgConnected) ImageView imgConnected;
 
-    @BindView(R.id.txtConnected)
-    TextViewFont txtConnected;
+  @BindView(R.id.txtConnected) TextViewFont txtConnected;
 
-    // OBSERVABLES
-    private Unbinder unbinder;
-    private CompositeSubscription subscriptions = new CompositeSubscription();
-    private PublishSubject<Boolean> codeValid = PublishSubject.create();
-    private PublishSubject<Void> backClicked = PublishSubject.create();
-    private PublishSubject<Void> countdownExpired = PublishSubject.create();
+  // OBSERVABLES
+  private Unbinder unbinder;
+  private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Boolean> codeValid = PublishSubject.create();
+  private PublishSubject<Void> backClicked = PublishSubject.create();
+  private PublishSubject<Void> countdownExpired = PublishSubject.create();
 
-    // VARIABLES
-    private int timeCodeCountdown;
-    private int currentCountdown = 0;
-    private ObjectAnimator animator;
+  // VARIABLES
+  private int timeCodeCountdown;
+  private int currentCountdown = 0;
+  private ObjectAnimator animator;
 
-    public CodeView(Context context) {
-        super(context);
+  public CodeView(Context context) {
+    super(context);
+  }
+
+  public CodeView(Context context, AttributeSet attrs) {
+    super(context, attrs);
+  }
+
+  /**
+   * Lifecycle methods
+   */
+
+  @Override protected void onDetachedFromWindow() {
+    unbinder.unbind();
+    super.onDetachedFromWindow();
+
+    if (subscriptions.hasSubscriptions()) {
+      subscriptions.unsubscribe();
+      subscriptions.clear();
     }
 
-    public CodeView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
+    if (animator != null) animator.cancel();
+  }
 
+  @Override protected void onFinishInflate() {
+    super.onFinishInflate();
 
-    /**
-     * Lifecycle methods
-     */
+    LayoutInflater.from(getContext()).inflate(R.layout.view_code, this);
+    unbinder = ButterKnife.bind(this);
 
-    @Override
-    protected void onDetachedFromWindow() {
-        unbinder.unbind();
-        super.onDetachedFromWindow();
+    initDependencyInjector();
 
-        if (subscriptions.hasSubscriptions()) {
-            subscriptions.unsubscribe();
-            subscriptions.clear();
-        }
+    imgConnected.setScaleX(0);
+    imgConnected.setScaleY(0);
 
-        if (animator != null) animator.cancel();
-    }
+    txtConnected.setTranslationX(screenUtils.getWidthPx());
 
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
+    subscriptions.add(RxTextView.textChanges(editTxtCode).map(CharSequence::toString).map(s -> {
+      switch (s.length()) {
+        case 0:
+          pinCircle1.setVisibility(VISIBLE);
+          pinCircle2.setVisibility(VISIBLE);
+          pinCircle3.setVisibility(VISIBLE);
+          pinCircle4.setVisibility(VISIBLE);
+          txtCode1.setText("");
+          break;
+        case 1:
+          pinCircle1.setVisibility(INVISIBLE);
+          pinCircle2.setVisibility(VISIBLE);
+          pinCircle3.setVisibility(VISIBLE);
+          pinCircle4.setVisibility(VISIBLE);
+          txtCode1.setText(s);
+          txtCode2.setText("");
+          break;
+        case 2:
+          pinCircle1.setVisibility(INVISIBLE);
+          pinCircle2.setVisibility(INVISIBLE);
+          pinCircle3.setVisibility(VISIBLE);
+          pinCircle4.setVisibility(VISIBLE);
+          txtCode1.setText(s.substring(0, 1));
+          txtCode2.setText(s.substring(1, 2));
+          txtCode3.setText("");
+          break;
+        case 3:
+          pinCircle1.setVisibility(INVISIBLE);
+          pinCircle2.setVisibility(INVISIBLE);
+          pinCircle3.setVisibility(INVISIBLE);
+          pinCircle4.setVisibility(VISIBLE);
+          txtCode1.setText(s.substring(0, 1));
+          txtCode2.setText(s.substring(1, 2));
+          txtCode3.setText(s.substring(2, 3));
+          txtCode4.setText("");
+          break;
+        case 4:
+          pinCircle1.setVisibility(INVISIBLE);
+          pinCircle2.setVisibility(INVISIBLE);
+          pinCircle3.setVisibility(INVISIBLE);
+          pinCircle4.setVisibility(INVISIBLE);
+          txtCode1.setText(s.substring(0, 1));
+          txtCode2.setText(s.substring(1, 2));
+          txtCode3.setText(s.substring(2, 3));
+          txtCode4.setText(s.substring(3, 4));
+          break;
+      }
 
-        LayoutInflater.from(getContext()).inflate(R.layout.view_code, this);
-        unbinder = ButterKnife.bind(this);
+      return s.length() == 4;
+    }).subscribe(codeValid));
 
-        initDependencyInjector();
+    subscriptions.add(RxView.clicks(imgBack).subscribe(aVoid -> {
+      resetPinCodeView();
+      backClicked.onNext(null);
+    }));
+  }
 
-        imgConnected.setScaleX(0);
-        imgConnected.setScaleY(0);
+  protected ApplicationComponent getApplicationComponent() {
+    return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
+  }
 
-        txtConnected.setTranslationX(screenUtils.getWidthPx());
+  protected ActivityModule getActivityModule() {
+    return new ActivityModule(((Activity) getContext()));
+  }
 
-        subscriptions.add(RxTextView.textChanges(editTxtCode).map(CharSequence::toString)
-                .map(s -> {
-                    switch (s.length()) {
-                        case 0:
-                            pinCircle1.setVisibility(VISIBLE);
-                            pinCircle2.setVisibility(VISIBLE);
-                            pinCircle3.setVisibility(VISIBLE);
-                            pinCircle4.setVisibility(VISIBLE);
-                            txtCode1.setText("");
-                            break;
-                        case 1:
-                            pinCircle1.setVisibility(INVISIBLE);
-                            pinCircle2.setVisibility(VISIBLE);
-                            pinCircle3.setVisibility(VISIBLE);
-                            pinCircle4.setVisibility(VISIBLE);
-                            txtCode1.setText(s);
-                            txtCode2.setText("");
-                            break;
-                        case 2:
-                            pinCircle1.setVisibility(INVISIBLE);
-                            pinCircle2.setVisibility(INVISIBLE);
-                            pinCircle3.setVisibility(VISIBLE);
-                            pinCircle4.setVisibility(VISIBLE);
-                            txtCode1.setText(s.substring(0, 1));
-                            txtCode2.setText(s.substring(1, 2));
-                            txtCode3.setText("");
-                            break;
-                        case 3:
-                            pinCircle1.setVisibility(INVISIBLE);
-                            pinCircle2.setVisibility(INVISIBLE);
-                            pinCircle3.setVisibility(INVISIBLE);
-                            pinCircle4.setVisibility(VISIBLE);
-                            txtCode1.setText(s.substring(0, 1));
-                            txtCode2.setText(s.substring(1, 2));
-                            txtCode3.setText(s.substring(2, 3));
-                            txtCode4.setText("");
-                            break;
-                        case 4:
-                            pinCircle1.setVisibility(INVISIBLE);
-                            pinCircle2.setVisibility(INVISIBLE);
-                            pinCircle3.setVisibility(INVISIBLE);
-                            pinCircle4.setVisibility(INVISIBLE);
-                            txtCode1.setText(s.substring(0, 1));
-                            txtCode2.setText(s.substring(1, 2));
-                            txtCode3.setText(s.substring(2, 3));
-                            txtCode4.setText(s.substring(3, 4));
-                            break;
-                    }
+  private void initDependencyInjector() {
+    DaggerUserComponent.builder()
+        .activityModule(getActivityModule())
+        .applicationComponent(getApplicationComponent())
+        .build()
+        .inject(this);
+  }
 
-                    return s.length() == 4;
-                })
-                .subscribe(codeValid));
+  @OnClick(R.id.layoutPin) void clickLayoutPin() {
+    openKeyboard(0);
+  }
 
-        subscriptions.add(RxView.clicks(imgBack).subscribe(aVoid -> {
-            resetPinCodeView();
-            backClicked.onNext(null);
-        }));
-    }
+  public void openKeyboard(int delay) {
+    editTxtCode.requestFocus();
+    editTxtCode.postDelayed(() -> {
+      InputMethodManager keyboard =
+          (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+      keyboard.showSoftInput(editTxtCode, 0);
+    }, delay);
+  }
 
-    protected ApplicationComponent getApplicationComponent() {
-        return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
-    }
+  public void startCountdown() {
+    timeCodeCountdown = getContext().getResources().getInteger(R.integer.time_code_countdown);
+    progressBarCountdown.setProgress(timeCodeCountdown);
+    layoutCountdown.setVisibility(View.VISIBLE);
 
-    protected ActivityModule getActivityModule() {
-        return new ActivityModule(((Activity) getContext()));
-    }
+    animator = ObjectAnimator.ofInt(progressBarCountdown, "progress", 0);
+    animator.setDuration(timeCodeCountdown);
+    animator.addUpdateListener(animation -> {
+      currentCountdown = (Integer) animation.getAnimatedValue();
+      txtCountdown.setText("" + (currentCountdown / 1000));
+    });
 
-    private void initDependencyInjector() {
-        DaggerUserComponent.builder()
-                .activityModule(getActivityModule())
-                .applicationComponent(getApplicationComponent())
-                .build().inject(this);
-    }
+    animator.addListener(new AnimatorListenerAdapter() {
+      @Override public void onAnimationEnd(Animator animation) {
+        super.onAnimationEnd(animation);
+        countdownExpired.onNext(null);
+        currentCountdown = 0;
+      }
+    });
 
-    @OnClick(R.id.layoutPin)
-    void clickLayoutPin() {
-        openKeyboard(0);
-    }
+    animator.start();
+  }
 
-    public void openKeyboard(int delay) {
-        editTxtCode.requestFocus();
-        editTxtCode.postDelayed(() -> {
-            InputMethodManager keyboard = (InputMethodManager)
-                    getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            keyboard.showSoftInput(editTxtCode, 0);
-        }, delay);
-    }
+  public void removeCountdown() {
+    if (animator != null) animator.cancel();
+    layoutCountdown.setVisibility(GONE);
+  }
 
-    public void startCountdown() {
-        timeCodeCountdown = getContext().getResources().getInteger(R.integer.time_code_countdown);
-        progressBarCountdown.setProgress(timeCodeCountdown);
-        layoutCountdown.setVisibility(View.VISIBLE);
+  public int getCurrentCountdown() {
+    return currentCountdown;
+  }
 
-        animator = ObjectAnimator.ofInt(progressBarCountdown, "progress", 0);
-        animator.setDuration(timeCodeCountdown);
-        animator.addUpdateListener(animation -> {
-            currentCountdown = (Integer) animation.getAnimatedValue();
-            txtCountdown.setText("" + (currentCountdown / 1000));
-        });
+  /**
+   * Observable
+   */
 
-        animator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                countdownExpired.onNext(null);
-                currentCountdown = 0;
-            }
-        });
+  public Observable<Boolean> codeValid() {
+    return codeValid;
+  }
 
-        animator.start();
-    }
+  public Observable<Void> backClicked() {
+    return backClicked;
+  }
 
-    public void removeCountdown() {
-        if (animator != null) animator.cancel();
-        layoutCountdown.setVisibility(GONE);
-    }
+  public Observable<Void> countdownExpired() {
+    return countdownExpired;
+  }
 
-    public int getCurrentCountdown() {
-        return currentCountdown;
-    }
+  /**
+   * Public view methods
+   */
 
-    /**
-     * Observable
-     */
+  public String getCode() {
+    return editTxtCode.getText().toString();
+  }
 
-    public Observable<Boolean> codeValid() {
-        return codeValid;
-    }
+  public void showLoading() {
+    progressBarCountdown.setVisibility(GONE);
+    progressView.setVisibility(VISIBLE);
+  }
 
-    public Observable<Void> backClicked() {
-        return backClicked;
-    }
+  public void hideLoading() {
+    progressView.setVisibility(GONE);
+    progressBarCountdown.setVisibility(VISIBLE);
+  }
 
-    public Observable<Void> countdownExpired() {
-        return countdownExpired;
-    }
+  public void showConnected() {
+    imgConnected.animate()
+        .scaleY(1)
+        .scaleX(1)
+        .setDuration(DURATION)
+        .setInterpolator(new OvershootInterpolator(1.20f))
+        .start();
+  }
 
-    /**
-     * Public view methods
-     */
+  public void showConnectedEnd() {
+    imgConnected.animate()
+        .translationX(-screenUtils.getWidthPx() + 2 * getContext().getResources()
+            .getDimensionPixelSize(R.dimen.horizontal_margin_small) + imgConnected.getWidth())
+        .setDuration(DURATION)
+        .setStartDelay(DELAY)
+        .setInterpolator(new DecelerateInterpolator())
+        .setListener(null)
+        .start();
 
-    public String getCode() {
-        return editTxtCode.getText().toString();
-    }
+    txtConnected.animate()
+        .translationX(0)
+        .setDuration(DURATION_MEDIUM)
+        .setStartDelay(DELAY)
+        .setInterpolator(new OvershootInterpolator(0.25f))
+        .start();
 
-    public void showLoading() {
-        progressBarCountdown.setVisibility(GONE);
-        progressView.setVisibility(VISIBLE);
-    }
+    imgBack.animate()
+        .translationX(-screenUtils.getWidthPx())
+        .setDuration(DURATION)
+        .setStartDelay(DELAY)
+        .setInterpolator(new DecelerateInterpolator())
+        .setListener(null)
+        .start();
 
-    public void hideLoading() {
-        progressView.setVisibility(GONE);
-        progressBarCountdown.setVisibility(VISIBLE);
-    }
+    layoutPin.animate()
+        .translationX(-screenUtils.getWidthPx())
+        .setDuration(DURATION)
+        .setStartDelay(DELAY)
+        .setInterpolator(new DecelerateInterpolator())
+        .setListener(null)
+        .start();
+  }
 
-    public void showConnected() {
-        imgConnected.animate()
-                .scaleY(1).scaleX(1)
-                .setDuration(DURATION)
-                .setInterpolator(new OvershootInterpolator(1.20f))
-                .start();
-    }
+  public void setCode(String code) {
+    editTxtCode.setText(code);
+  }
 
-    public void showConnectedEnd() {
-        imgConnected.animate()
-                .translationX(
-                        - screenUtils.getWidthPx()
-                                + 2 * getContext().getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small)
-                                + imgConnected.getWidth()
-                )
-                .setDuration(DURATION)
-                .setStartDelay(DELAY)
-                .setInterpolator(new DecelerateInterpolator())
-                .setListener(null)
-                .start();
-
-        txtConnected.animate()
-                .translationX(0)
-                .setDuration(DURATION_MEDIUM)
-                .setStartDelay(DELAY)
-                .setInterpolator(new OvershootInterpolator(0.25f))
-                .start();
-
-        imgBack.animate()
-                .translationX(- screenUtils.getWidthPx())
-                .setDuration(DURATION)
-                .setStartDelay(DELAY)
-                .setInterpolator(new DecelerateInterpolator())
-                .setListener(null)
-                .start();
-
-        layoutPin.animate()
-                .translationX(- screenUtils.getWidthPx())
-                .setDuration(DURATION)
-                .setStartDelay(DELAY)
-                .setInterpolator(new DecelerateInterpolator())
-                .setListener(null)
-                .start();
-    }
-
-    public void setCode(String code) {
-        editTxtCode.setText(code);
-    }
-
-    private void resetPinCodeView() {
-        pinCircle1.setVisibility(VISIBLE);
-        pinCircle2.setVisibility(VISIBLE);
-        pinCircle3.setVisibility(VISIBLE);
-        pinCircle4.setVisibility(VISIBLE);
-        editTxtCode.setText("");
-        txtCode1.setText("");
-        txtCode2.setText("");
-        txtCode3.setText("");
-        txtCode4.setText("");
-    }
+  private void resetPinCodeView() {
+    pinCircle1.setVisibility(VISIBLE);
+    pinCircle2.setVisibility(VISIBLE);
+    pinCircle3.setVisibility(VISIBLE);
+    pinCircle4.setVisibility(VISIBLE);
+    editTxtCode.setText("");
+    txtCode1.setText("");
+    txtCode2.setText("");
+    txtCode3.setText("");
+    txtCode4.setText("");
+  }
 }

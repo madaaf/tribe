@@ -15,7 +15,6 @@
  */
 package com.tribe.app.data.exception;
 
-
 import com.tribe.app.domain.exception.ErrorBundle;
 
 /**
@@ -23,23 +22,21 @@ import com.tribe.app.domain.exception.ErrorBundle;
  */
 public class RepositoryErrorBundle implements ErrorBundle {
 
-    private final Exception exception;
+  private final Exception exception;
 
-    public RepositoryErrorBundle(Exception exception) {
-        this.exception = exception;
-    }
+  public RepositoryErrorBundle(Exception exception) {
+    this.exception = exception;
+  }
 
-    @Override
-    public Exception getException() {
-        return exception;
-    }
+  @Override public Exception getException() {
+    return exception;
+  }
 
-    @Override
-    public String getErrorMessage() {
-        String message = "";
-        if (this.exception != null) {
-            this.exception.getMessage();
-        }
-        return message;
+  @Override public String getErrorMessage() {
+    String message = "";
+    if (this.exception != null) {
+      this.exception.getMessage();
     }
+    return message;
+  }
 }

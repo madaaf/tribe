@@ -9,10 +9,15 @@ import java.util.List;
  */
 public interface SettingsMVPView extends UpdateUserMVPView {
 
-    void goToLauncher();
-    void onFBContactsSync(int count);
-    void onAddressBookContactSync(int count);
-    void onSuccessSync();
-    void friendshipUpdated(Friendship friendship);
-    void renderBlockedFriendshipList(List<Friendship> friendshipList);
+  void goToLauncher();
+
+  void onFBContactsSync(int count);
+
+  void onAddressBookContactSync(int count);
+
+  void onSuccessSync();
+
+  void friendshipUpdated(Friendship friendship);
+
+  void renderBlockedFriendshipList(List<Friendship> friendshipList);
 }

@@ -16,54 +16,46 @@ import javax.inject.Named;
  */
 public class RefreshHowManyFriendsJob extends BaseJob {
 
-    private static final String TAG = "RefreshHowManyFriendsJob";
+  private static final String TAG = "RefreshHowManyFriendsJob";
 
-    @Inject
-    @Named("refreshHowManyFriends")
-    UseCase refreshHowManyFriends;
+  @Inject @Named("refreshHowManyFriends") UseCase refreshHowManyFriends;
 
-    public RefreshHowManyFriendsJob() {
-        super(new Params(Priority.LOW).requireNetwork().singleInstanceBy(TAG).groupBy(TAG));
+  public RefreshHowManyFriendsJob() {
+    super(new Params(Priority.LOW).requireNetwork().singleInstanceBy(TAG).groupBy(TAG));
+  }
+
+  @Override public void onAdded() {
+
+  }
+
+  @Override public void onRun() throws Throwable {
+    refreshHowManyFriends.execute(new HowManyFriendsSubscriber());
+  }
+
+  @Override protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
+    throwable.printStackTrace();
+  }
+
+  @Override protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount,
+      int maxRunCount) {
+    return RetryConstraint.CANCEL;
+  }
+
+  @Override public void inject(ApplicationComponent appComponent) {
+    super.inject(appComponent);
+    appComponent.inject(this);
+  }
+
+  private final class HowManyFriendsSubscriber extends DefaultSubscriber<Void> {
+
+    @Override public void onCompleted() {
     }
 
-    @Override
-    public void onAdded() {
-
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
     }
 
-    @Override
-    public void onRun() throws Throwable {
-        refreshHowManyFriends.execute(new HowManyFriendsSubscriber());
+    @Override public void onNext(Void aVoid) {
     }
-
-    @Override
-    protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
-        throwable.printStackTrace();
-    }
-
-    @Override
-    protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount, int maxRunCount) {
-        return RetryConstraint.CANCEL;
-    }
-
-    @Override
-    public void inject(ApplicationComponent appComponent) {
-        super.inject(appComponent);
-        appComponent.inject(this);
-    }
-
-    private final class HowManyFriendsSubscriber extends DefaultSubscriber<Void> {
-
-        @Override
-        public void onCompleted() {}
-
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-
-        @Override
-        public void onNext(Void aVoid) {
-        }
-    }
+  }
 }

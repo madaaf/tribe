@@ -11,8 +11,10 @@ import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.signature.StringSignature;
 import com.tribe.app.R;
@@ -25,8 +27,11 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.RoundedCornerLayout;
+
 import java.io.File;
+
 import javax.inject.Inject;
+
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;

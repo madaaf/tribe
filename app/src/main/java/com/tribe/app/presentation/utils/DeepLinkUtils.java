@@ -5,5 +5,5 @@ package com.tribe.app.presentation.utils;
  */
 public class DeepLinkUtils {
 
-    public static final String MESSAGE_ACTION = "message";
+  public static final String MESSAGE_ACTION = "message";
 }

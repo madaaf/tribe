@@ -10,14 +10,12 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class Distance {
 
-    @StringDef({MILES, METERS})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface DistanceUnits {
-    }
+  @StringDef({ MILES, METERS }) @Retention(RetentionPolicy.SOURCE) public @interface DistanceUnits {
+  }
 
-    public static final String MILES = "miles";
-    public static final String METERS = "meters";
+  public static final String MILES = "miles";
+  public static final String METERS = "meters";
 
-    private Distance() {
-    }
+  private Distance() {
+  }
 }

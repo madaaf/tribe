@@ -8,82 +8,81 @@ import io.realm.annotations.PrimaryKey;
  */
 public class SearchResultRealm extends RealmObject {
 
-    @PrimaryKey
-    private String key;
+  @PrimaryKey private String key;
 
-    private String id;
-    private String display_name;
-    private String username;
-    private String picture;
-    private FriendshipRealm friendshipRealm;
-    private boolean searchDone = false;
-    private boolean invisible_mode = false;
+  private String id;
+  private String display_name;
+  private String username;
+  private String picture;
+  private FriendshipRealm friendshipRealm;
+  private boolean searchDone = false;
+  private boolean invisible_mode = false;
 
-    public SearchResultRealm() {
-        this.key = "search";
-    }
+  public SearchResultRealm() {
+    this.key = "search";
+  }
 
-    public String getKey() {
-        return key;
-    }
+  public String getKey() {
+    return key;
+  }
 
-    public void setKey(String key) {
-        this.key = key;
-    }
+  public void setKey(String key) {
+    this.key = key;
+  }
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public String getDisplayName() {
-        return display_name;
-    }
+  public String getDisplayName() {
+    return display_name;
+  }
 
-    public void setDisplayName(String displayName) {
-        this.display_name = displayName;
-    }
+  public void setDisplayName(String displayName) {
+    this.display_name = displayName;
+  }
 
-    public String getUsername() {
-        return username;
-    }
+  public String getUsername() {
+    return username;
+  }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-    public String getPicture() {
-        return picture;
-    }
+  public String getPicture() {
+    return picture;
+  }
 
-    public void setPicture(String picture) {
-        this.picture = picture;
-    }
+  public void setPicture(String picture) {
+    this.picture = picture;
+  }
 
-    public FriendshipRealm getFriendshipRealm() {
-        return friendshipRealm;
-    }
+  public FriendshipRealm getFriendshipRealm() {
+    return friendshipRealm;
+  }
 
-    public void setFriendshipRealm(FriendshipRealm friendshipRealm) {
-        this.friendshipRealm = friendshipRealm;
-    }
+  public void setFriendshipRealm(FriendshipRealm friendshipRealm) {
+    this.friendshipRealm = friendshipRealm;
+  }
 
-    public boolean isSearchDone() {
-        return searchDone;
-    }
+  public boolean isSearchDone() {
+    return searchDone;
+  }
 
-    public void setSearchDone(boolean searchDone) {
-        this.searchDone = searchDone;
-    }
+  public void setSearchDone(boolean searchDone) {
+    this.searchDone = searchDone;
+  }
 
-    public void setInvisibleMode(boolean invisibleMode) {
-        this.invisible_mode = invisibleMode;
-    }
+  public void setInvisibleMode(boolean invisibleMode) {
+    this.invisible_mode = invisibleMode;
+  }
 
-    public boolean isInvisibleMode() {
-        return invisible_mode;
-    }
+  public boolean isInvisibleMode() {
+    return invisible_mode;
+  }
 }

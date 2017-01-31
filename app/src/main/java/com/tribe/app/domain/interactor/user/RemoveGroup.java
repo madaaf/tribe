@@ -14,21 +14,20 @@ import rx.Observable;
  */
 public class RemoveGroup extends UseCase {
 
-    private UserRepository userRepository;
-    private String groupId;
+  private UserRepository userRepository;
+  private String groupId;
 
-    @Inject
-    RemoveGroup(CloudUserDataRepository userDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        super(threadExecutor, postExecutionThread);
-        this.userRepository = userDataRepository;
-    }
+  @Inject RemoveGroup(CloudUserDataRepository userDataRepository, ThreadExecutor threadExecutor,
+      PostExecutionThread postExecutionThread) {
+    super(threadExecutor, postExecutionThread);
+    this.userRepository = userDataRepository;
+  }
 
-    public void prepare(String groupId) {
-        this.groupId = groupId;
-    }
+  public void prepare(String groupId) {
+    this.groupId = groupId;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return this.userRepository.removeGroup(groupId);
-    }
+  @Override protected Observable buildUseCaseObservable() {
+    return this.userRepository.removeGroup(groupId);
+  }
 }

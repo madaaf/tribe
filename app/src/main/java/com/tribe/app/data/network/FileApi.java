@@ -8,7 +8,5 @@ import retrofit2.http.Url;
 
 public interface FileApi {
 
-    @GET
-    @Streaming
-    Call<ResponseBody> downloadFileWithUrl(@Url String fileUrl);
+  @GET @Streaming Call<ResponseBody> downloadFileWithUrl(@Url String fileUrl);
 }

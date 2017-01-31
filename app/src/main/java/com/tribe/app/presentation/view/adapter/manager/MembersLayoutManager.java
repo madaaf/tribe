@@ -8,7 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
  */
 public class MembersLayoutManager extends LinearLayoutManager {
 
-    public MembersLayoutManager(Context context) {
-        super(context, LinearLayoutManager.HORIZONTAL, false);
-    }
+  public MembersLayoutManager(Context context) {
+    super(context, LinearLayoutManager.HORIZONTAL, false);
+  }
 }

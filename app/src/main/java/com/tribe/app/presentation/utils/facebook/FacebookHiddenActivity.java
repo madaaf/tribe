@@ -18,75 +18,70 @@ import javax.inject.Inject;
 
 public class FacebookHiddenActivity extends BaseActivity {
 
-    public final static String FACEBOOK_REQUEST = "FACEBOOK_REQUEST";
+  public final static String FACEBOOK_REQUEST = "FACEBOOK_REQUEST";
 
-    @Inject
-    RxFacebook rxFacebook;
+  @Inject RxFacebook rxFacebook;
 
-    private CallbackManager callbackManager;
-    private LoginManager loginManager;
+  private CallbackManager callbackManager;
+  private LoginManager loginManager;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+  @Override protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-        initDependencyInjector();
-        init();
+    initDependencyInjector();
+    init();
 
-        if (savedInstanceState == null || rxFacebook.getCountHandle() <= 1) {
-            rxFacebook.incrementCountHandle();
-            handleIntent(getIntent());
-        } else {
-            finish();
+    if (savedInstanceState == null || rxFacebook.getCountHandle() <= 1) {
+      rxFacebook.incrementCountHandle();
+      handleIntent(getIntent());
+    } else {
+      finish();
+    }
+  }
+
+  @Override protected void onNewIntent(Intent intent) {
+    handleIntent(intent);
+  }
+
+  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    callbackManager.onActivityResult(requestCode, resultCode, data);
+  }
+
+  private void handleIntent(Intent intent) {
+    int sourceType = intent.getIntExtra(FACEBOOK_REQUEST, 0);
+
+    if (sourceType == RxFacebook.FACEBOOK_LOGIN) {
+      this.loginManager.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+        @Override public void onSuccess(LoginResult loginResult) {
+          rxFacebook.onLogin(loginResult);
+          finish();
         }
-    }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        handleIntent(intent);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        callbackManager.onActivityResult(requestCode, resultCode, data);
-    }
-
-    private void handleIntent(Intent intent) {
-        int sourceType = intent.getIntExtra(FACEBOOK_REQUEST, 0);
-
-        if (sourceType == RxFacebook.FACEBOOK_LOGIN) {
-            this.loginManager.registerCallback(callbackManager,
-                    new FacebookCallback<LoginResult>() {
-                        @Override
-                        public void onSuccess(LoginResult loginResult) {
-                            rxFacebook.onLogin(loginResult);
-                            finish();
-                        }
-
-                        @Override
-                        public void onCancel() {
-                            finish();
-                        }
-
-                        @Override
-                        public void onError(FacebookException exception) {
-                            Toast.makeText(FacebookHiddenActivity.this, exception.getMessage(), Toast.LENGTH_LONG).show();
-                            finish();
-                        }
-                    });
-            LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "user_friends"));
+        @Override public void onCancel() {
+          finish();
         }
-    }
 
-    private void init() {
-        callbackManager = CallbackManager.Factory.create();
-        loginManager = LoginManager.getInstance();
+        @Override public void onError(FacebookException exception) {
+          Toast.makeText(FacebookHiddenActivity.this, exception.getMessage(), Toast.LENGTH_LONG)
+              .show();
+          finish();
+        }
+      });
+      LoginManager.getInstance()
+          .logInWithReadPermissions(this, Arrays.asList("public_profile", "user_friends"));
     }
+  }
 
-    private void initDependencyInjector() {
-        DaggerUserComponent.builder()
-                .activityModule(getActivityModule())
-                .applicationComponent(getApplicationComponent())
-                .build().inject(this);
-    }
+  private void init() {
+    callbackManager = CallbackManager.Factory.create();
+    loginManager = LoginManager.getInstance();
+  }
+
+  private void initDependencyInjector() {
+    DaggerUserComponent.builder()
+        .activityModule(getActivityModule())
+        .applicationComponent(getApplicationComponent())
+        .build()
+        .inject(this);
+  }
 }

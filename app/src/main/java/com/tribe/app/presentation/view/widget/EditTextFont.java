@@ -18,46 +18,43 @@ import rx.subjects.PublishSubject;
  */
 public class EditTextFont extends EditText {
 
-    PublishSubject<Void> keyBackPressed = PublishSubject.create();
+  PublishSubject<Void> keyBackPressed = PublishSubject.create();
 
-    public EditTextFont(Context context) {
-        super(context);
+  public EditTextFont(Context context) {
+    super(context);
+  }
+
+  public EditTextFont(Context context, AttributeSet attrs) {
+    super(context, attrs);
+    setCustomFont(context, attrs);
+  }
+
+  public EditTextFont(Context context, AttributeSet attrs, int defStyle) {
+    super(context, attrs, defStyle);
+    setCustomFont(context, attrs);
+  }
+
+  private void setCustomFont(Context ctx, AttributeSet attrs) {
+    TypedArray a = ctx.obtainStyledAttributes(attrs, R.styleable.TextViewFont);
+    String customFont = a.getString(R.styleable.TextViewFont_customFont);
+    setCustomFont(ctx, customFont);
+    a.recycle();
+  }
+
+  public boolean setCustomFont(Context ctx, String asset) {
+    Typeface tf = FontCache.getTypeface(asset, ctx);
+    setTypeface(tf);
+    return true;
+  }
+
+  @Override public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+    if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+      keyBackPressed.onNext(null);
     }
+    return super.dispatchKeyEvent(event);
+  }
 
-    public EditTextFont(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        setCustomFont(context, attrs);
-    }
-
-    public EditTextFont(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        setCustomFont(context, attrs);
-    }
-
-    private void setCustomFont(Context ctx, AttributeSet attrs) {
-        TypedArray a = ctx.obtainStyledAttributes(attrs, R.styleable.TextViewFont);
-        String customFont = a.getString(R.styleable.TextViewFont_customFont);
-        setCustomFont(ctx, customFont);
-        a.recycle();
-    }
-
-    public boolean setCustomFont(Context ctx, String asset) {
-        Typeface tf = FontCache.getTypeface(asset, ctx);
-        setTypeface(tf);
-        return true;
-    }
-
-    @Override
-    public boolean onKeyPreIme(int keyCode, KeyEvent event) {
-        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-            keyBackPressed.onNext(null);
-        }
-        return super.dispatchKeyEvent(event);
-    }
-
-    public Observable<Void> keyBackPressed() {
-        return keyBackPressed;
-    }
-
-
+  public Observable<Void> keyBackPressed() {
+    return keyBackPressed;
+  }
 }

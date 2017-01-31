@@ -18,73 +18,69 @@ import javax.inject.Inject;
  */
 public class BlockPresenter implements Presenter {
 
-    //private BlockMVPView blockView;
+  //private BlockMVPView blockView;
 
-    private final DiskUpdateFriendship diskUpdateFriendship;
-    private final GetBlockedFriendshipList getBlockedFriendshipList;
-    private JobManager jobManager;
+  private final DiskUpdateFriendship diskUpdateFriendship;
+  private final GetBlockedFriendshipList getBlockedFriendshipList;
+  private JobManager jobManager;
 
-    private GetBlockedFriendshipListSubscriber getBlockedFriendshipListSubscriber;
+  private GetBlockedFriendshipListSubscriber getBlockedFriendshipListSubscriber;
 
-    @Inject
-    BlockPresenter(JobManager jobManager,
-                   DiskUpdateFriendship diskUpdateFriendship,
-                   GetBlockedFriendshipList getBlockedFriendshipList) {
-        this.jobManager = jobManager;
-        this.diskUpdateFriendship = diskUpdateFriendship;
-        this.getBlockedFriendshipList = getBlockedFriendshipList;
+  @Inject BlockPresenter(JobManager jobManager, DiskUpdateFriendship diskUpdateFriendship,
+      GetBlockedFriendshipList getBlockedFriendshipList) {
+    this.jobManager = jobManager;
+    this.diskUpdateFriendship = diskUpdateFriendship;
+    this.getBlockedFriendshipList = getBlockedFriendshipList;
+  }
+
+  @Override public void onViewDetached() {
+    diskUpdateFriendship.unsubscribe();
+    getBlockedFriendshipList.unsubscribe();
+  }
+
+  @Override public void onViewAttached(MVPView v) {
+    //blockView = (BlockMVPView) v;
+    loadBlockedFriendshipList();
+  }
+
+  public void loadBlockedFriendshipList() {
+    if (getBlockedFriendshipListSubscriber != null) {
+      getBlockedFriendshipListSubscriber.unsubscribe();
     }
 
-    @Override
-    public void onViewDetached() {
-        diskUpdateFriendship.unsubscribe();
-        getBlockedFriendshipList.unsubscribe();
+    getBlockedFriendshipListSubscriber = new GetBlockedFriendshipListSubscriber();
+    getBlockedFriendshipList.execute(getBlockedFriendshipListSubscriber);
+  }
+
+  public void updateFriendship(String friendshipId) {
+    diskUpdateFriendship.prepare(friendshipId, FriendshipRealm.DEFAULT);
+    diskUpdateFriendship.execute(new UpdateFriendshipSubscriber());
+    jobManager.addJobInBackground(new UpdateFriendshipJob(friendshipId, FriendshipRealm.DEFAULT));
+  }
+
+  private class GetBlockedFriendshipListSubscriber extends DefaultSubscriber<List<Friendship>> {
+
+    @Override public void onCompleted() {
     }
 
-    @Override
-    public void onViewAttached(MVPView v) {
-        //blockView = (BlockMVPView) v;
-        loadBlockedFriendshipList();
+    @Override public void onError(Throwable e) {
     }
 
-    public void loadBlockedFriendshipList() {
-        if (getBlockedFriendshipListSubscriber != null) getBlockedFriendshipListSubscriber.unsubscribe();
+    @Override public void onNext(List<Friendship> friendshipList) {
+      //blockView.renderBlockedFriendshipList(friendshipList);
+    }
+  }
 
-        getBlockedFriendshipListSubscriber = new GetBlockedFriendshipListSubscriber();
-        getBlockedFriendshipList.execute(getBlockedFriendshipListSubscriber);
+  private class UpdateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
+
+    @Override public void onCompleted() {
     }
 
-    public void updateFriendship(String friendshipId) {
-        diskUpdateFriendship.prepare(friendshipId, FriendshipRealm.DEFAULT);
-        diskUpdateFriendship.execute(new UpdateFriendshipSubscriber());
-        jobManager.addJobInBackground(new UpdateFriendshipJob(friendshipId, FriendshipRealm.DEFAULT));
+    @Override public void onError(Throwable e) {
     }
 
-    private class GetBlockedFriendshipListSubscriber extends DefaultSubscriber<List<Friendship>> {
-
-        @Override
-        public void onCompleted() {}
-
-        @Override
-        public void onError(Throwable e) {}
-
-        @Override
-        public void onNext(List<Friendship> friendshipList) {
-            //blockView.renderBlockedFriendshipList(friendshipList);
-        }
+    @Override public void onNext(Friendship friendship) {
+      //blockView.friendshipUpdated(friendship);
     }
-
-    private class UpdateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
-
-        @Override
-        public void onCompleted() {}
-
-        @Override
-        public void onError(Throwable e) {}
-
-        @Override
-        public void onNext(Friendship friendship) {
-            //blockView.friendshipUpdated(friendship);
-        }
-    }
+  }
 }

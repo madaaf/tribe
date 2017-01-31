@@ -13,16 +13,15 @@ import rx.Observable;
  */
 public class GetDiskContactList extends UseCaseDisk {
 
-    private UserRepository userRepository;
+  private UserRepository userRepository;
 
-    @Inject
-    public GetDiskContactList(DiskUserDataRepository userRepository, PostExecutionThread postExecutionThread) {
-        super(postExecutionThread);
-        this.userRepository = userRepository;
-    }
+  @Inject public GetDiskContactList(DiskUserDataRepository userRepository,
+      PostExecutionThread postExecutionThread) {
+    super(postExecutionThread);
+    this.userRepository = userRepository;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return this.userRepository.contacts();
-    }
+  @Override protected Observable buildUseCaseObservable() {
+    return this.userRepository.contacts();
+  }
 }

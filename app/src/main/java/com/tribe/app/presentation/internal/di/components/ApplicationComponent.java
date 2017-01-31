@@ -118,188 +118,212 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 /**
  * A component whose lifetime is the life of the application.
  */
-@Singleton
-@PerApplication
-@Component(modules = {ApplicationModule.class, NetModule.class, LiveModule.class})
+@Singleton @PerApplication
+@Component(modules = { ApplicationModule.class, NetModule.class, LiveModule.class })
 public interface ApplicationComponent {
 
-    void inject(Navigator navigator);
-    void inject(Tutorial tutorial);
+  void inject(Navigator navigator);
 
-    void inject(BaseFragment baseFragment);
-    void inject(BaseActivity baseActivity);
-    void inject(TribeFirebaseMessagingService tribeFirebaseMessagingService);
-    void inject(AnalyticsManager analyticsManager);
+  void inject(Tutorial tutorial);
 
-    void inject(LauncherActivity launcherActivity);
-    void inject(RecipientGridAdapterDelegate recipientGridAdapterDelegate);
-    void inject(AvatarView avatarView);
-    void inject(AvatarLiveView avatarLiveView);
-    void inject(CameraWrapper cameraWrapper);
-    void inject(HistogramVisualizerView visualizerView);
-    void inject(PlayerView playerView);
-    void inject(TribeFirebaseInstanceIDService instanceIDService);
-    void inject(LabelButton labelButton);
-    void inject(IntroVideoView introVideoView);
-    void inject(LegacyMediaPlayer legacyMediaPlayer);
-    void inject(SearchResultGridAdapterDelegate searchResultGridAdapterDelegate);
-    void inject(TopBarContainer topBarContainer);
-    void inject(TopBarView topBarView);
+  void inject(BaseFragment baseFragment);
 
-    void inject(GlPreview glPreview);
-    void inject(VisualizerView visualizerView);
-    void inject(RatingView ratingView);
-    void inject(TextViewAnimatedDots textViewAnimatedDots);
-    void inject(TileView tileView);
-    void inject(CreateGroupView tileView);
-    void inject(GroupSuggestionView groupSuggestionView);
-    void inject(AddMembersGroupView addMembersGroupView);
-    void inject(ActionView actionView);
-    void inject(SettingsGroupView settingsGroupView);
-    void inject(UpdateGroupView updateGroupView);
-    void inject(MembersGroupView membersGroupView);
-    void inject(MemberListAdapterDelegate memberListAdapterDelegate);
-    void inject(SyncView syncView);
-    void inject(UserListAdapterDelegate userListAdapterDelegate);
-    void inject(LiveGridAdapterDelegate liveGridAdapterDelegate);
+  void inject(BaseActivity baseActivity);
 
-    void inject(LiveNotificationView liveNotificationView);
-    void inject(LiveView liveView);
-    void inject(LiveContainer liveContainer);
-    void inject(LiveInviteView liveInviteView);
-    void inject(UserInviteHeaderAdapterDelegate userInviteHeaderAdapterDelegate);
-    void inject(LiveWaitingView liveWaitingView);
-    void inject(LiveRowView liveRowView);
-    void inject(LiveNotificationContainer liveNotificationContainer);
+  void inject(TribeFirebaseMessagingService tribeFirebaseMessagingService);
 
-    // JOBS
-    void inject(BaseJob baseJob);
-    void inject(UpdateUserJob updateUserJob);
-    void inject(SynchroContactsJob synchroContactsJob);
-    void inject(RefreshHowManyFriendsJob refreshHowManyFriendsJob);
-    void inject(UpdateFriendshipJob updateFriendshipJob);
-    void inject(DeleteContactsABJob deleteContactsABJob);
-    void inject(DeleteContactsFBJob deleteContactsFBJob);
+  void inject(AnalyticsManager analyticsManager);
 
-    // SERVICES
-    void inject(WSService wsService);
+  void inject(LauncherActivity launcherActivity);
 
-    //Exposed to sub-graphs.
-    Context context();
+  void inject(RecipientGridAdapterDelegate recipientGridAdapterDelegate);
 
-    ThreadExecutor threadExecutor();
+  void inject(AvatarView avatarView);
 
-    PostExecutionThread postExecutionThread();
+  void inject(AvatarLiveView avatarLiveView);
 
-    CloudUserDataRepository cloudUserRepository();
+  void inject(CameraWrapper cameraWrapper);
 
-    DiskUserDataRepository diskUserRepository();
+  void inject(HistogramVisualizerView visualizerView);
 
-    TribeAuthorizer tribeAuthorizer();
+  void inject(PlayerView playerView);
 
-    PhoneUtils phoneUtils();
+  void inject(TribeFirebaseInstanceIDService instanceIDService);
 
-    AccessToken accessToken();
+  void inject(LabelButton labelButton);
 
-    ScreenUtils screenUtils();
+  void inject(IntroVideoView introVideoView);
 
-    User currentUser();
+  void inject(LegacyMediaPlayer legacyMediaPlayer);
 
-    UserCache userCache();
+  void inject(SearchResultGridAdapterDelegate searchResultGridAdapterDelegate);
 
-    LiveCache liveCache();
+  void inject(TopBarContainer topBarContainer);
 
-    JobManager jobManager();
+  void inject(TopBarView topBarView);
 
-    Realm realm();
+  void inject(GlPreview glPreview);
 
-    @Named("simpleDateHoursMinutes") SimpleDateFormat simpleDateHoursMinutes();
+  void inject(VisualizerView visualizerView);
 
-    @Named("fullLetteredDate") DateFormat fullLetteredDate();
+  void inject(RatingView ratingView);
 
-    DateUtils dateUtils();
+  void inject(TextViewAnimatedDots textViewAnimatedDots);
 
-    PaletteGrid paletteGrid();
+  void inject(TileView tileView);
 
-    ImageUtils imageUtils();
+  void inject(CreateGroupView tileView);
 
-    @DistanceUnits
-    Preference<String> distanceUnits();
+  void inject(GroupSuggestionView groupSuggestionView);
 
-    @WeatherUnits
-    Preference<String> weatherUnits();
+  void inject(AddMembersGroupView addMembersGroupView);
 
-    @Memories
-    Preference<Boolean> memories();
+  void inject(ActionView actionView);
 
-    @AudioDefault
-    Preference<Boolean> audioDefault();
+  void inject(SettingsGroupView settingsGroupView);
 
-    @LocationContext
-    Preference<Boolean> locationContext();
+  void inject(UpdateGroupView updateGroupView);
 
-    @Theme
-    Preference<Integer> theme();
+  void inject(MembersGroupView membersGroupView);
 
-    @Filter
-    Preference<Integer> filter();
+  void inject(MemberListAdapterDelegate memberListAdapterDelegate);
 
-    @InvisibleMode
-    Preference<Boolean> invisibleMode();
+  void inject(SyncView syncView);
 
-    @AddressBook
-    Preference<Boolean> addressBook();
+  void inject(UserListAdapterDelegate userListAdapterDelegate);
 
-    @LastUserRequest
-    Preference<String> lastUserRequest();
+  void inject(LiveGridAdapterDelegate liveGridAdapterDelegate);
 
-    RxFacebook rxFacebook();
+  void inject(LiveNotificationView liveNotificationView);
 
-    RxImagePicker rxImagePicker();
+  void inject(LiveView liveView);
 
-    SharedPreferences sharedPreferences();
+  void inject(LiveContainer liveContainer);
 
-    FileUtils fileUtils();
+  void inject(LiveInviteView liveInviteView);
 
-    TagManager tagManager();
+  void inject(UserInviteHeaderAdapterDelegate userInviteHeaderAdapterDelegate);
 
-    ReactiveLocationProvider reactiveLocationProvider();
+  void inject(LiveWaitingView liveWaitingView);
 
-    TribeAudioManager tribeAudioManager();
+  void inject(LiveRowView liveRowView);
 
-    TribeLiveOptions tribeLiveOptions();
+  void inject(LiveNotificationContainer liveNotificationContainer);
 
-    @ShareProfile
-    Preference<Boolean> shareProfile();
+  // JOBS
+  void inject(BaseJob baseJob);
 
-    @HasReceivedPointsForCameraPermission
-    Preference<Boolean> hasReceivedPointsForCameraPermission();
+  void inject(UpdateUserJob updateUserJob);
 
-    @WasAskedForPermissions
-    Preference<Boolean> wasAskedForCameraPermission();
+  void inject(SynchroContactsJob synchroContactsJob);
 
-    @LastSync
-    Preference<Long> lastSync();
+  void inject(RefreshHowManyFriendsJob refreshHowManyFriendsJob);
 
-    @LastVersionCode
-    Preference<Integer> lastVersionCode();
+  void inject(UpdateFriendshipJob updateFriendshipJob);
 
-    @HasRatedApp
-    Preference<Boolean> hasRatedApp();
+  void inject(DeleteContactsABJob deleteContactsABJob);
 
-    @TutorialState
-    Preference<Set<String>> tutorialState();
+  void inject(DeleteContactsFBJob deleteContactsFBJob);
 
-    @DebugMode
-    Preference<Boolean> debugMode();
+  // SERVICES
+  void inject(WSService wsService);
 
-    @LastOnlineNotification
-    Preference<Long> lastOnlineNotification();
+  //Exposed to sub-graphs.
+  Context context();
 
-    @UISounds
-    Preference<Boolean> uiSounds();
+  ThreadExecutor threadExecutor();
 
-    SoundManager soundManager();
+  PostExecutionThread postExecutionThread();
 
-    TutorialManager tutorialManager();
+  CloudUserDataRepository cloudUserRepository();
+
+  DiskUserDataRepository diskUserRepository();
+
+  TribeAuthorizer tribeAuthorizer();
+
+  PhoneUtils phoneUtils();
+
+  AccessToken accessToken();
+
+  ScreenUtils screenUtils();
+
+  User currentUser();
+
+  UserCache userCache();
+
+  LiveCache liveCache();
+
+  JobManager jobManager();
+
+  Realm realm();
+
+  @Named("simpleDateHoursMinutes") SimpleDateFormat simpleDateHoursMinutes();
+
+  @Named("fullLetteredDate") DateFormat fullLetteredDate();
+
+  DateUtils dateUtils();
+
+  PaletteGrid paletteGrid();
+
+  ImageUtils imageUtils();
+
+  @DistanceUnits Preference<String> distanceUnits();
+
+  @WeatherUnits Preference<String> weatherUnits();
+
+  @Memories Preference<Boolean> memories();
+
+  @AudioDefault Preference<Boolean> audioDefault();
+
+  @LocationContext Preference<Boolean> locationContext();
+
+  @Theme Preference<Integer> theme();
+
+  @Filter Preference<Integer> filter();
+
+  @InvisibleMode Preference<Boolean> invisibleMode();
+
+  @AddressBook Preference<Boolean> addressBook();
+
+  @LastUserRequest Preference<String> lastUserRequest();
+
+  RxFacebook rxFacebook();
+
+  RxImagePicker rxImagePicker();
+
+  SharedPreferences sharedPreferences();
+
+  FileUtils fileUtils();
+
+  TagManager tagManager();
+
+  ReactiveLocationProvider reactiveLocationProvider();
+
+  TribeAudioManager tribeAudioManager();
+
+  TribeLiveOptions tribeLiveOptions();
+
+  @ShareProfile Preference<Boolean> shareProfile();
+
+  @HasReceivedPointsForCameraPermission Preference<Boolean> hasReceivedPointsForCameraPermission();
+
+  @WasAskedForPermissions Preference<Boolean> wasAskedForCameraPermission();
+
+  @LastSync Preference<Long> lastSync();
+
+  @LastVersionCode Preference<Integer> lastVersionCode();
+
+  @HasRatedApp Preference<Boolean> hasRatedApp();
+
+  @TutorialState Preference<Set<String>> tutorialState();
+
+  @DebugMode Preference<Boolean> debugMode();
+
+  @LastOnlineNotification Preference<Long> lastOnlineNotification();
+
+  @UISounds Preference<Boolean> uiSounds();
+
+  SoundManager soundManager();
+
+  TutorialManager tutorialManager();
 }

@@ -1,40 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
     >
 
-    <ScrollView
+  <ScrollView
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:fillViewport="true"
+      >
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
-        
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            
-            <com.tribe.app.presentation.view.widget.TextViewFont
-                android:id="@+id/viewClearTutorial"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/bottom_bar_height"
-                android:layout_gravity="center"
-                android:foreground="@drawable/selectable_button"
-                android:paddingLeft="@dimen/horizontal_margin_small"
-                android:gravity="center|left"
-                android:text="Clear Tutorial"
-                android:clickable="true"
-                style="@style/Headline.Black.Regular"
-                />
+        android:orientation="vertical"
+        >
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/divider_size"
-                android:background="@color/grey.light"
-                />
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/viewClearTutorial"
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/bottom_bar_height"
+          android:layout_gravity="center"
+          android:foreground="@drawable/selectable_button"
+          android:paddingLeft="@dimen/horizontal_margin_small"
+          android:gravity="center|left"
+          android:text="Clear Tutorial"
+          android:clickable="true"
+          style="@style/Headline.Black.Regular"
+          />
 
-        </LinearLayout>
-    </ScrollView>
+      <View
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/divider_size"
+          android:background="@color/grey.light"
+          />
+
+    </LinearLayout>
+  </ScrollView>
 </FrameLayout>

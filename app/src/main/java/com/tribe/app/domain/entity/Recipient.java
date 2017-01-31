@@ -2,6 +2,7 @@ package com.tribe.app.domain.entity;
 
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.view.utils.ObjectUtils;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
@@ -56,14 +57,11 @@ public abstract class Recipient implements Serializable {
   }
 
   @Override public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
+    if (this == obj) return true;
 
-    if (obj == null)
-      return false;
+    if (obj == null) return false;
 
-    if (getClass() != obj.getClass())
-      return false;
+    if (getClass() != obj.getClass()) return false;
 
     Recipient recipient = (Recipient) obj;
 

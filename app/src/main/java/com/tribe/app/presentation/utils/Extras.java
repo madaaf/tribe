@@ -5,6 +5,6 @@ package com.tribe.app.presentation.utils;
  */
 public class Extras {
 
-    public static String COUNTRY_CODE = "COUNTRY_CODE";
-    public static String IS_FROM_LOGIN = "IS_FROM_LOGIN";
+  public static String COUNTRY_CODE = "COUNTRY_CODE";
+  public static String IS_FROM_LOGIN = "IS_FROM_LOGIN";
 }

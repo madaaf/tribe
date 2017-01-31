@@ -1,32 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/live_notification_item_height"
-        >
+  <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/live_notification_item_height"
+      >
 
-        <com.tribe.app.presentation.view.widget.avatar.AvatarLiveView
-            android:id="@+id/avatar"
-            android:layout_width="@dimen/avatar_size_smaller"
-            android:layout_height="@dimen/avatar_size_smaller"
-            android:layout_gravity="center_vertical"
-            android:layout_margin="@dimen/horizontal_margin_small"
-            android:background="@null"
-            app:avatarLiveType="connected"
-            />
+    <com.tribe.app.presentation.view.widget.avatar.AvatarLiveView
+        android:id="@+id/avatar"
+        android:layout_width="@dimen/avatar_size_smaller"
+        android:layout_height="@dimen/avatar_size_smaller"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="@dimen/horizontal_margin_small"
+        android:background="@null"
+        app:avatarLiveType="connected"
+        />
 
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/Body.Two.White"
-            android:layout_gravity="center"
-            android:layout_marginLeft="50dp"
-            android:layout_marginRight="50dp"
-            />
-    </FrameLayout>
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Body.Two.White"
+        android:layout_gravity="center"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        />
+  </FrameLayout>
 </merge>

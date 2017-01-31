@@ -3,6 +3,7 @@
     android:duration="@integer/fast_anim"
     android:interpolator="@android:interpolator/decelerate_quad">
 
-    <translate
-        android:fromYDelta="0%p" android:toYDelta="0%p" />
+  <translate
+      android:fromYDelta="0%p"
+      android:toYDelta="0%p" />
 </set>

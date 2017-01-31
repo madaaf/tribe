@@ -14,21 +14,21 @@ import rx.Observable;
  */
 public class CreateFriendships extends UseCase {
 
-    private String[] userIds;
-    private UserRepository userRepository;
+  private String[] userIds;
+  private UserRepository userRepository;
 
-    @Inject
-    public CreateFriendships(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        super(threadExecutor, postExecutionThread);
-        this.userRepository = userRepository;
-    }
+  @Inject
+  public CreateFriendships(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
+      PostExecutionThread postExecutionThread) {
+    super(threadExecutor, postExecutionThread);
+    this.userRepository = userRepository;
+  }
 
-    public void setUserIds(String ...userIds) {
-        this.userIds = userIds;
-    }
+  public void setUserIds(String... userIds) {
+    this.userIds = userIds;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return this.userRepository.createFriendships(userIds);
-    }
+  @Override protected Observable buildUseCaseObservable() {
+    return this.userRepository.createFriendships(userIds);
+  }
 }

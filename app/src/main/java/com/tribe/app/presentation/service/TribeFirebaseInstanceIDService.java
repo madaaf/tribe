@@ -14,39 +14,35 @@ import javax.inject.Inject;
  */
 public class TribeFirebaseInstanceIDService extends FirebaseInstanceIdService {
 
-    private static final String TAG = "TribeFirebaseIDService";
+  private static final String TAG = "TribeFirebaseIDService";
 
-    @Inject
-    SendToken sendTokenUseCase;
+  @Inject SendToken sendTokenUseCase;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
+  @Override public void onCreate() {
+    super.onCreate();
 
-        ((AndroidApplication) getApplication()).getApplicationComponent().inject(this);
+    ((AndroidApplication) getApplication()).getApplicationComponent().inject(this);
+  }
+
+  @Override public void onTokenRefresh() {
+    String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+
+    if (refreshedToken != null) {
+      sendTokenUseCase.setToken(refreshedToken);
+      sendTokenUseCase.execute(new SendTokenSubscriber());
+    }
+  }
+
+  private final class SendTokenSubscriber extends DefaultSubscriber<Installation> {
+
+    @Override public void onCompleted() {
     }
 
-    @Override
-    public void onTokenRefresh() {
-        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-
-        if (refreshedToken != null) {
-            sendTokenUseCase.setToken(refreshedToken);
-            sendTokenUseCase.execute(new SendTokenSubscriber());
-        }
+    @Override public void onError(Throwable e) {
     }
 
-    private final class SendTokenSubscriber extends DefaultSubscriber<Installation> {
-
-        @Override
-        public void onCompleted() {}
-
-        @Override
-        public void onError(Throwable e) {}
-
-        @Override
-        public void onNext(Installation installation) {
-            // TODO WHATEVER NEEDS TO BE DONE
-        }
+    @Override public void onNext(Installation installation) {
+      // TODO WHATEVER NEEDS TO BE DONE
     }
+  }
 }

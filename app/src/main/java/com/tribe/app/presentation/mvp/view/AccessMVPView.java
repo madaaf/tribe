@@ -10,7 +10,9 @@ import java.util.List;
  */
 public interface AccessMVPView extends MVPView {
 
-    void renderFriendList(List<User> userRealm);
-    void groupInfosFailed();
-    void groupInfosSuccess(Group group);
+  void renderFriendList(List<User> userRealm);
+
+  void groupInfosFailed();
+
+  void groupInfosSuccess(Group group);
 }

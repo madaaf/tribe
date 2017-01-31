@@ -25,82 +25,83 @@ import butterknife.ButterKnife;
  */
 public class LabelButton extends LinearLayout {
 
-    @IntDef({ACTION, INFOS})
-    public @interface LabelType {}
+  @IntDef({ ACTION, INFOS }) public @interface LabelType {
+  }
 
-    public static final int ACTION = 1;
-    public static final int INFOS = 0;
+  public static final int ACTION = 1;
+  public static final int INFOS = 0;
 
-    private final static int DRAWABLE_PADDING = 10;
+  private final static int DRAWABLE_PADDING = 10;
 
-    @Inject
-    ScreenUtils screenUtils;
+  @Inject ScreenUtils screenUtils;
 
-    @BindView(R.id.imageView)
-    ImageView imageView;
+  @BindView(R.id.imageView) ImageView imageView;
 
-    @BindView(R.id.txtLabel)
-    TextViewFont txtLabel;
+  @BindView(R.id.txtLabel) TextViewFont txtLabel;
 
-    // VARIABLES
-    private int drawableId;
-    private int type;
-    private String label;
+  // VARIABLES
+  private int drawableId;
+  private int type;
+  private String label;
 
-    // RESOURCES
-    private int radiusImage;
+  // RESOURCES
+  private int radiusImage;
 
-    public LabelButton(Context context) {
-        this(context, null);
-        init(context, null);
+  public LabelButton(Context context) {
+    this(context, null);
+    init(context, null);
+  }
+
+  public LabelButton(Context context, AttributeSet attrs) {
+    super(context, attrs);
+    init(context, attrs);
+  }
+
+  private void init(Context context, AttributeSet attrs) {
+    LayoutInflater inflater =
+        (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    inflater.inflate(R.layout.view_label_button, this, true);
+    ButterKnife.bind(this);
+
+    ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
+
+    radiusImage = context.getResources().getDimensionPixelSize(R.dimen.radius_gallery_img);
+
+    TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.LabelButton);
+
+    setType(a.getInt(R.styleable.LabelButton_type, INFOS));
+
+    if (a.hasValue(R.styleable.LabelButton_drawable)) {
+      setDrawableResource(a.getResourceId(R.styleable.LabelButton_drawable, 0));
     }
 
-    public LabelButton(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context, attrs);
-    }
+    a.recycle();
+  }
 
-    private void init(Context context, AttributeSet attrs) {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.view_label_button, this, true);
-        ButterKnife.bind(this);
+  public void setType(int type) {
+    this.type = type;
+    TextViewUtils.setTextAppearence(getContext(), txtLabel,
+        type == INFOS ? R.style.Body_One_White : R.style.Body_Two_Black);
+    setBackgroundResource(type == INFOS ? R.drawable.bg_infos_transparent_disabled
+        : R.drawable.bg_infos_transparent_enabled);
+  }
 
-        ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
+  public void setDrawableResource(int resource) {
+    this.drawableId = resource;
+    Glide.with(getContext())
+        .load(resource)
+        .centerCrop()
+        .bitmapTransform(new RoundedCornersTransformation(getContext(), radiusImage, 0,
+            RoundedCornersTransformation.CornerType.ALL))
+        .crossFade()
+        .into(imageView);
+  }
 
-        radiusImage = context.getResources().getDimensionPixelSize(R.dimen.radius_gallery_img);
+  public void setText(String text) {
+    txtLabel.setText(text);
+  }
 
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.LabelButton);
-
-        setType(a.getInt(R.styleable.LabelButton_type, INFOS));
-
-        if (a.hasValue(R.styleable.LabelButton_drawable))
-            setDrawableResource(a.getResourceId(R.styleable.LabelButton_drawable, 0));
-
-        a.recycle();
-    }
-
-    public void setType(int type) {
-        this.type = type;
-        TextViewUtils.setTextAppearence(getContext(), txtLabel, type == INFOS ? R.style.Body_One_White : R.style.Body_Two_Black);
-        setBackgroundResource(type == INFOS ? R.drawable.bg_infos_transparent_disabled : R.drawable.bg_infos_transparent_enabled);
-    }
-
-    public void setDrawableResource(int resource) {
-        this.drawableId = resource;
-        Glide.with(getContext())
-                .load(resource)
-                .centerCrop()
-                .bitmapTransform(new RoundedCornersTransformation(getContext(), radiusImage, 0, RoundedCornersTransformation.CornerType.ALL))
-                .crossFade()
-                .into(imageView);
-    }
-
-    public void setText(String text) {
-        txtLabel.setText(text);
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-    }
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+  }
 }

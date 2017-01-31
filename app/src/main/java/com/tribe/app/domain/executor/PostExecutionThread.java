@@ -9,5 +9,5 @@ import rx.Scheduler;
  */
 
 public interface PostExecutionThread {
-    Scheduler getScheduler();
+  Scheduler getScheduler();
 }

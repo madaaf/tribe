@@ -40,285 +40,273 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class TopBarView extends FrameLayout {
 
-    private static final float OVERSHOOT_LIGHT = 0.5f;
-    private static final int DURATION = 300;
-    private static final int DURATION_MEDIUM = 450;
-    private static final int CLICK_ACTION_THRESHOLD = 5;
+  private static final float OVERSHOOT_LIGHT = 0.5f;
+  private static final int DURATION = 300;
+  private static final int DURATION_MEDIUM = 450;
+  private static final int CLICK_ACTION_THRESHOLD = 5;
 
-    @Inject
-    ScreenUtils screenUtils;
+  @Inject ScreenUtils screenUtils;
 
-    @Inject
-    User user;
+  @Inject User user;
 
-    @BindView(R.id.viewAvatar)
-    AvatarLiveView viewAvatar;
+  @BindView(R.id.viewAvatar) AvatarLiveView viewAvatar;
 
-    @BindView(R.id.btnNew)
-    View btnNew;
+  @BindView(R.id.btnNew) View btnNew;
 
-    @BindView(R.id.btnSearch)
-    ViewGroup btnSearch;
+  @BindView(R.id.btnSearch) ViewGroup btnSearch;
 
-    @BindView(R.id.editTextSearch)
-    EditTextFont editTextSearch;
+  @BindView(R.id.editTextSearch) EditTextFont editTextSearch;
 
-    @BindView(R.id.imgClose)
-    View imgClose;
+  @BindView(R.id.imgClose) View imgClose;
 
-    // VARIABLES
-    private float startX, startY = 0;
-    private boolean searchMode = false;
+  // VARIABLES
+  private float startX, startY = 0;
+  private boolean searchMode = false;
 
-    // RESOURCES
-    private int avatarSize;
-    private int clickActionThreshold;
-    private int marginSmall;
+  // RESOURCES
+  private int avatarSize;
+  private int clickActionThreshold;
+  private int marginSmall;
 
-    // OBSERVABLES
-    private Unbinder unbinder;
-    private CompositeSubscription subscriptions = new CompositeSubscription();
-    private PublishSubject<Void> clickNew = PublishSubject.create();
-    private PublishSubject<String> onSearch = PublishSubject.create();
-    private PublishSubject<Void> clickProfile = PublishSubject.create();
+  // OBSERVABLES
+  private Unbinder unbinder;
+  private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Void> clickNew = PublishSubject.create();
+  private PublishSubject<String> onSearch = PublishSubject.create();
+  private PublishSubject<Void> clickProfile = PublishSubject.create();
 
-    public TopBarView(Context context) {
-        super(context);
-        init(context, null);
+  public TopBarView(Context context) {
+    super(context);
+    init(context, null);
+  }
+
+  public TopBarView(Context context, AttributeSet attrs) {
+    super(context, attrs);
+    init(context, attrs);
+  }
+
+  @Override protected void onDetachedFromWindow() {
+    unbinder.unbind();
+
+    if (subscriptions != null && subscriptions.hasSubscriptions()) {
+      subscriptions.unsubscribe();
     }
 
-    public TopBarView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context, attrs);
-    }
+    super.onDetachedFromWindow();
+  }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        unbinder.unbind();
+  @Override protected void onFinishInflate() {
+    LayoutInflater.from(getContext()).inflate(R.layout.view_top_bar, this);
+    unbinder = ButterKnife.bind(this);
+    ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
+        .inject(this);
 
-        if (subscriptions != null && subscriptions.hasSubscriptions()) {
-            subscriptions.unsubscribe();
-        }
+    initResources();
+    initUI();
 
-        super.onDetachedFromWindow();
-    }
+    super.onFinishInflate();
+  }
 
-    @Override
-    protected void onFinishInflate() {
-        LayoutInflater.from(getContext()).inflate(R.layout.view_top_bar, this);
-        unbinder = ButterKnife.bind(this);
-        ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
+  private void init(Context context, AttributeSet attrs) {
+  }
 
-        initResources();
-        initUI();
+  private void initUI() {
+    imgClose.setTranslationX(screenUtils.getWidthPx() >> 1);
+    imgClose.setAlpha(1);
 
-        super.onFinishInflate();
-    }
+    editTextSearch.setEnabled(false);
 
-    private void init(Context context, AttributeSet attrs) {
-    }
+    btnSearch.getViewTreeObserver()
+        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 
-    private void initUI() {
-        imgClose.setTranslationX(screenUtils.getWidthPx() >> 1);
-        imgClose.setAlpha(1);
-
-        editTextSearch.setEnabled(false);
-
-        btnSearch.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-
-            @Override
-            public void onGlobalLayout() {
-                btnSearch.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                MarginLayoutParams params = (MarginLayoutParams) btnSearch.getLayoutParams();
-                params.rightMargin = btnNew.getWidth() + 2 * marginSmall;
-                params.leftMargin = viewAvatar.getWidth() + 2 * marginSmall;
-                btnSearch.setLayoutParams(params);
-            }
+          @Override public void onGlobalLayout() {
+            btnSearch.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            MarginLayoutParams params = (MarginLayoutParams) btnSearch.getLayoutParams();
+            params.rightMargin = btnNew.getWidth() + 2 * marginSmall;
+            params.leftMargin = viewAvatar.getWidth() + 2 * marginSmall;
+            btnSearch.setLayoutParams(params);
+          }
         });
 
-        viewAvatar.load(user.getProfilePicture());
+    viewAvatar.load(user.getProfilePicture());
 
-        subscriptions.add(RxTextView.textChanges(editTextSearch).map(CharSequence::toString)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(onSearch)
-        );
-    }
+    subscriptions.add(RxTextView.textChanges(editTextSearch)
+        .map(CharSequence::toString)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(onSearch));
+  }
 
-    private void initResources() {
-        avatarSize = getContext().getResources().getDimensionPixelSize(R.dimen.avatar_size_smaller);
-        clickActionThreshold = screenUtils.dpToPx(CLICK_ACTION_THRESHOLD);
-        marginSmall = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
-    }
+  private void initResources() {
+    avatarSize = getContext().getResources().getDimensionPixelSize(R.dimen.avatar_size_smaller);
+    clickActionThreshold = screenUtils.dpToPx(CLICK_ACTION_THRESHOLD);
+    marginSmall = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
+  }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        int action = event.getAction();
+  @Override public boolean onTouchEvent(MotionEvent event) {
+    int action = event.getAction();
 
-        switch (action & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_UP: {
-                if (isAClick(startX, event.getRawX(), startY, event.getRawY())) {
-                    if (isAClickInView(viewAvatar, (int) startX, (int) startY)) {
-                        viewAvatar.onTouchEvent(event);
-                        viewAvatar.performClick();
-                    } else if (isAClickInView(btnNew, (int) startX, (int) startY)) {
-                        btnNew.onTouchEvent(event);
-                        btnNew.performClick();
-                    } else if (isAClickInView(btnSearch, (int) startX, (int) startY)) {
-                        btnSearch.onTouchEvent(event);
-                        btnSearch.performClick();
-                    } else if (isAClickInView(imgClose, (int) startX, (int) startY)) {
-                        imgClose.onTouchEvent(event);
-                        imgClose.performClick();
-                    }
-                }
-
-                break;
-            }
-
-            case MotionEvent.ACTION_DOWN: {
-                startX = event.getRawX();
-                startY = event.getRawY();
-            }
-
-            default:
-                if (isAClickInView(viewAvatar, (int) event.getRawX(), (int) event.getRawY())) {
-                    viewAvatar.onTouchEvent(event);
-                } else if (isAClickInView(btnNew, (int) event.getRawX(), (int) event.getRawY())) {
-                    btnNew.onTouchEvent(event);
-                } else if (isAClickInView(btnSearch, (int) event.getRawX(), (int) event.getRawY())) {
-                    btnSearch.onTouchEvent(event);
-                } else if (isAClickInView(imgClose, (int) event.getRawX(), (int) event.getRawY())) {
-                    imgClose.onTouchEvent(event);
-                }
-
-                break;
+    switch (action & MotionEvent.ACTION_MASK) {
+      case MotionEvent.ACTION_UP: {
+        if (isAClick(startX, event.getRawX(), startY, event.getRawY())) {
+          if (isAClickInView(viewAvatar, (int) startX, (int) startY)) {
+            viewAvatar.onTouchEvent(event);
+            viewAvatar.performClick();
+          } else if (isAClickInView(btnNew, (int) startX, (int) startY)) {
+            btnNew.onTouchEvent(event);
+            btnNew.performClick();
+          } else if (isAClickInView(btnSearch, (int) startX, (int) startY)) {
+            btnSearch.onTouchEvent(event);
+            btnSearch.performClick();
+          } else if (isAClickInView(imgClose, (int) startX, (int) startY)) {
+            imgClose.onTouchEvent(event);
+            imgClose.performClick();
+          }
         }
 
-        return false;
-    }
+        break;
+      }
 
-    @OnClick(R.id.viewAvatar)
-    void launchProfileSettings() {
-        clickProfile.onNext(null);
-    }
+      case MotionEvent.ACTION_DOWN: {
+        startX = event.getRawX();
+        startY = event.getRawY();
+      }
 
-    @OnClick(R.id.btnNew)
-    void launchInvites() {
-        clickNew.onNext(null);
-    }
-
-    @OnClick(R.id.btnSearch)
-    void animateSearch() {
-        searchMode = true;
-        btnSearch.setClickable(false);
-
-        showView(imgClose, new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                editTextSearch.setEnabled(true);
-                screenUtils.showKeyboard(editTextSearch, 0);
-                imgClose.animate().setListener(null).start();
-            }
-        });
-        hideView(btnNew, false);
-        hideView(viewAvatar, true);
-
-        AnimationUtils.animateLeftMargin(btnSearch, marginSmall, DURATION, null);
-        AnimationUtils.animateRightMargin(btnSearch, imgClose.getWidth() + 2 * marginSmall, DURATION);
-    }
-
-    @OnClick(R.id.imgClose)
-    public void closeSearch() {
-        onSearch.onNext(null);
-
-        searchMode = false;
-        screenUtils.hideKeyboard(editTextSearch);
-        editTextSearch.getText().clear();
-        editTextSearch.setEnabled(false);
-        btnSearch.setClickable(true);
-
-        showView(btnNew, null);
-        hideView(imgClose, false);
-        showView(viewAvatar, null);
-
-        AnimationUtils.animateLeftMargin(btnSearch, viewAvatar.getWidth() + 2 * marginSmall, DURATION, null);
-        AnimationUtils.animateRightMargin(btnSearch, btnNew.getWidth() + 2 * marginSmall, DURATION);
-    }
-
-    private void hideView(View view, boolean left) {
-        int translateX = screenUtils.getWidthPx() >> 1;
-
-        view.animate()
-                .alpha(0)
-                .translationX(left ? -translateX : translateX)
-                .setInterpolator(new OvershootInterpolator(OVERSHOOT_LIGHT))
-                .setDuration(DURATION_MEDIUM)
-                .start();
-    }
-
-    private void showView(View view, Animator.AnimatorListener listener) {
-        view.animate()
-                .alpha(1)
-                .translationX(0)
-                .setInterpolator(new OvershootInterpolator(OVERSHOOT_LIGHT))
-                .setListener(listener)
-                .setDuration(DURATION_MEDIUM)
-                .start();
-    }
-
-    private boolean isAClick(float startX, float endX, float startY, float endY) {
-        float differenceX = Math.abs(startX - endX);
-        float differenceY = Math.abs(startY - endY);
-
-        if (differenceX > clickActionThreshold || differenceY > clickActionThreshold) {
-            return false;
+      default:
+        if (isAClickInView(viewAvatar, (int) event.getRawX(), (int) event.getRawY())) {
+          viewAvatar.onTouchEvent(event);
+        } else if (isAClickInView(btnNew, (int) event.getRawX(), (int) event.getRawY())) {
+          btnNew.onTouchEvent(event);
+        } else if (isAClickInView(btnSearch, (int) event.getRawX(), (int) event.getRawY())) {
+          btnSearch.onTouchEvent(event);
+        } else if (isAClickInView(imgClose, (int) event.getRawX(), (int) event.getRawY())) {
+          imgClose.onTouchEvent(event);
         }
 
-        return true;
+        break;
     }
 
-    private boolean isAClickInView(View v, int x, int y) {
-        final int location[] = {0, 0};
-        v.getLocationOnScreen(location);
-        Rect rect = new Rect(location[0], location[1], location[0] + v.getWidth(), location[1] + v.getHeight());
+    return false;
+  }
 
-        if (!rect.contains(x, y)) {
-            return false;
-        }
+  @OnClick(R.id.viewAvatar) void launchProfileSettings() {
+    clickProfile.onNext(null);
+  }
 
-        return true;
+  @OnClick(R.id.btnNew) void launchInvites() {
+    clickNew.onNext(null);
+  }
+
+  @OnClick(R.id.btnSearch) void animateSearch() {
+    searchMode = true;
+    btnSearch.setClickable(false);
+
+    showView(imgClose, new AnimatorListenerAdapter() {
+      @Override public void onAnimationEnd(Animator animation) {
+        editTextSearch.setEnabled(true);
+        screenUtils.showKeyboard(editTextSearch, 0);
+        imgClose.animate().setListener(null).start();
+      }
+    });
+    hideView(btnNew, false);
+    hideView(viewAvatar, true);
+
+    AnimationUtils.animateLeftMargin(btnSearch, marginSmall, DURATION, null);
+    AnimationUtils.animateRightMargin(btnSearch, imgClose.getWidth() + 2 * marginSmall, DURATION);
+  }
+
+  @OnClick(R.id.imgClose) public void closeSearch() {
+    onSearch.onNext(null);
+
+    searchMode = false;
+    screenUtils.hideKeyboard(editTextSearch);
+    editTextSearch.getText().clear();
+    editTextSearch.setEnabled(false);
+    btnSearch.setClickable(true);
+
+    showView(btnNew, null);
+    hideView(imgClose, false);
+    showView(viewAvatar, null);
+
+    AnimationUtils.animateLeftMargin(btnSearch, viewAvatar.getWidth() + 2 * marginSmall, DURATION,
+        null);
+    AnimationUtils.animateRightMargin(btnSearch, btnNew.getWidth() + 2 * marginSmall, DURATION);
+  }
+
+  private void hideView(View view, boolean left) {
+    int translateX = screenUtils.getWidthPx() >> 1;
+
+    view.animate()
+        .alpha(0)
+        .translationX(left ? -translateX : translateX)
+        .setInterpolator(new OvershootInterpolator(OVERSHOOT_LIGHT))
+        .setDuration(DURATION_MEDIUM)
+        .start();
+  }
+
+  private void showView(View view, Animator.AnimatorListener listener) {
+    view.animate()
+        .alpha(1)
+        .translationX(0)
+        .setInterpolator(new OvershootInterpolator(OVERSHOOT_LIGHT))
+        .setListener(listener)
+        .setDuration(DURATION_MEDIUM)
+        .start();
+  }
+
+  private boolean isAClick(float startX, float endX, float startY, float endY) {
+    float differenceX = Math.abs(startX - endX);
+    float differenceY = Math.abs(startY - endY);
+
+    if (differenceX > clickActionThreshold || differenceY > clickActionThreshold) {
+      return false;
     }
 
-    public boolean isSearchMode() {
-        return searchMode;
+    return true;
+  }
+
+  private boolean isAClickInView(View v, int x, int y) {
+    final int location[] = { 0, 0 };
+    v.getLocationOnScreen(location);
+    Rect rect =
+        new Rect(location[0], location[1], location[0] + v.getWidth(), location[1] + v.getHeight());
+
+    if (!rect.contains(x, y)) {
+      return false;
     }
 
-    @Override
-    public boolean dispatchKeyEventPreIme(KeyEvent event) {
-        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+    return true;
+  }
 
-        if (imm.isActive() && event.getKeyCode() == KeyEvent.KEYCODE_BACK && searchMode) {
-            closeSearch();
-            return true;
-        }
+  public boolean isSearchMode() {
+    return searchMode;
+  }
 
-        return super.dispatchKeyEventPreIme(event);
+  @Override public boolean dispatchKeyEventPreIme(KeyEvent event) {
+    InputMethodManager imm =
+        (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+    if (imm.isActive() && event.getKeyCode() == KeyEvent.KEYCODE_BACK && searchMode) {
+      closeSearch();
+      return true;
     }
 
-    //////////////////////
-    //   OBSERVABLES    //
-    //////////////////////
+    return super.dispatchKeyEventPreIme(event);
+  }
 
-    public Observable<Void> onClickNew() {
-        return clickNew;
-    }
+  //////////////////////
+  //   OBSERVABLES    //
+  //////////////////////
 
-    public Observable<String> onSearch() {
-        return onSearch;
-    }
+  public Observable<Void> onClickNew() {
+    return clickNew;
+  }
 
-    public Observable<Void> onClickProfile() {
-        return clickProfile;
-    }
+  public Observable<String> onSearch() {
+    return onSearch;
+  }
+
+  public Observable<Void> onClickProfile() {
+    return clickProfile;
+  }
 }
 

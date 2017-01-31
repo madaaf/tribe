@@ -28,59 +28,62 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import io.realm.internal.Util;
 
 /**
- * This class is responsible for keeping track of system events related to the network so it can delegate them to
+ * This class is responsible for keeping track of system events related to the network so it can
+ * delegate them to
  * interested parties.
  */
 public class NetworkStateReceiver extends BroadcastReceiver {
 
-    private static List<ConnectionListener> listeners = new CopyOnWriteArrayList<ConnectionListener>();
+  private static List<ConnectionListener> listeners =
+      new CopyOnWriteArrayList<ConnectionListener>();
 
-    /**
-     * Add a listener to be notified about any network changes.
-     * This method is thread safe.
-     * <p>
-     * IMPORTANT: Not removing it again will result in major leaks.
-     *
-     * @param listener the listener.
-     */
-    public static void addListener(ConnectionListener listener) {
-        listeners.add(listener);
+  /**
+   * Add a listener to be notified about any network changes.
+   * This method is thread safe.
+   * <p>
+   * IMPORTANT: Not removing it again will result in major leaks.
+   *
+   * @param listener the listener.
+   */
+  public static void addListener(ConnectionListener listener) {
+    listeners.add(listener);
+  }
+
+  /**
+   * Removes a network listener.
+   * This method is thread safe.
+   *
+   * @param listener the listener.
+   */
+  public static synchronized void removeListener(ConnectionListener listener) {
+    listeners.remove(listener);
+  }
+
+  /**
+   * Attempt to detect if a device is online and can transmit or receive data.
+   * This method is thread safe.
+   * <p>
+   * An emulator is always considered online, as `getActiveNetworkInfo()` does not report the
+   * correct value.
+   *
+   * @param context an Android context.
+   * @return {@code true} if device is online, otherwise {@code false}.
+   */
+  public static boolean isOnline(Context context) {
+    ConnectivityManager cm =
+        (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+    return ((networkInfo != null && networkInfo.isConnectedOrConnecting()) || Util.isEmulator());
+  }
+
+  public void onReceive(Context context, Intent intent) {
+    boolean connected = isOnline(context);
+    for (ConnectionListener listener : listeners) {
+      listener.onChange(connected);
     }
+  }
 
-    /**
-     * Removes a network listener.
-     * This method is thread safe.
-     *
-     * @param listener the listener.
-     */
-    public static synchronized void removeListener(ConnectionListener listener) {
-        listeners.remove(listener);
-    }
-
-    /**
-     * Attempt to detect if a device is online and can transmit or receive data.
-     * This method is thread safe.
-     * <p>
-     * An emulator is always considered online, as `getActiveNetworkInfo()` does not report the correct value.
-     *
-     * @param context an Android context.
-     * @return {@code true} if device is online, otherwise {@code false}.
-     */
-    public static boolean isOnline(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-        return ((networkInfo != null && networkInfo.isConnectedOrConnecting()) || Util.isEmulator());
-    }
-
-
-    public void onReceive(Context context, Intent intent) {
-        boolean connected = isOnline(context);
-        for (ConnectionListener listener : listeners) {
-            listener.onChange(connected);
-        }
-    }
-
-    public interface ConnectionListener {
-        void onChange(boolean connectionAvailable);
-    }
+  public interface ConnectionListener {
+    void onChange(boolean connectionAvailable);
+  }
 }

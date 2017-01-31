@@ -7,14 +7,18 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.component.TileView;
+
 import java.util.List;
+
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import timber.log.Timber;

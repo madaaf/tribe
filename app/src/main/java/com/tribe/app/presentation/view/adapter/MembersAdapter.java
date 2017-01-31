@@ -17,97 +17,92 @@ import rx.Observable;
  */
 public class MembersAdapter extends RecyclerView.Adapter {
 
-    protected RxAdapterDelegatesManager<List<GroupMember>> delegatesManager;
-    private MemberAdapterDelegate memberAdapterDelegate;
+  protected RxAdapterDelegatesManager<List<GroupMember>> delegatesManager;
+  private MemberAdapterDelegate memberAdapterDelegate;
 
-    private List<GroupMember> items;
+  private List<GroupMember> items;
 
-    public MembersAdapter(Context context) {
-        delegatesManager = new RxAdapterDelegatesManager<>();
+  public MembersAdapter(Context context) {
+    delegatesManager = new RxAdapterDelegatesManager<>();
 
-        memberAdapterDelegate = new MemberAdapterDelegate(context);
-        delegatesManager.addDelegate(memberAdapterDelegate);
+    memberAdapterDelegate = new MemberAdapterDelegate(context);
+    delegatesManager.addDelegate(memberAdapterDelegate);
 
-        items = new ArrayList<>();
+    items = new ArrayList<>();
 
-        setHasStableIds(true);
+    setHasStableIds(true);
+  }
+
+  @Override public int getItemViewType(int position) {
+    return delegatesManager.getItemViewType(items, position);
+  }
+
+  @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    return delegatesManager.onCreateViewHolder(parent, viewType);
+  }
+
+  @Override public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    delegatesManager.onBindViewHolder(items, position, holder);
+  }
+
+  @Override public int getItemCount() {
+    return items.size();
+  }
+
+  @Override public long getItemId(int position) {
+    GroupMember groupMember = getItemAtPosition(position);
+    return groupMember.hashCode();
+  }
+
+  public void releaseSubscriptions() {
+    delegatesManager.releaseSubscriptions();
+  }
+
+  public void setItems(List<GroupMember> items, boolean notify) {
+    this.items.clear();
+    this.items.addAll(items);
+    if (notify) this.notifyDataSetChanged();
+  }
+
+  public GroupMember getItemAtPosition(int position) {
+    if (items.size() > 0 && position < items.size()) {
+      return items.get(position);
+    } else {
+      return null;
+    }
+  }
+
+  // Returns true if add, false otherwise
+  public boolean compute(GroupMember groupMember) {
+    boolean result = false;
+
+    if (items.contains(groupMember)) {
+      remove(groupMember);
+    } else {
+      add(groupMember);
+      result = true;
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        return delegatesManager.getItemViewType(items, position);
-    }
+    return result;
+  }
 
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return delegatesManager.onCreateViewHolder(parent, viewType);
-    }
+  public void remove(GroupMember groupMember) {
+    int position = items.indexOf(groupMember);
+    items.remove(position);
+    notifyItemRemoved(position);
+  }
 
-    @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        delegatesManager.onBindViewHolder(items, position, holder);
-    }
+  public void add(GroupMember groupMember) {
+    items.add(groupMember);
+    int position = items.size() - 1;
+    notifyItemInserted(position);
+  }
 
-    @Override
-    public int getItemCount() {
-        return items.size();
-    }
+  public List<GroupMember> getItems() {
+    return items;
+  }
 
-    @Override
-    public long getItemId(int position) {
-        GroupMember groupMember = getItemAtPosition(position);
-        return groupMember.hashCode();
-    }
-
-    public void releaseSubscriptions() {
-        delegatesManager.releaseSubscriptions();
-    }
-
-    public void setItems(List<GroupMember> items, boolean notify) {
-        this.items.clear();
-        this.items.addAll(items);
-        if (notify) this.notifyDataSetChanged();
-    }
-
-    public GroupMember getItemAtPosition(int position) {
-        if (items.size() > 0 && position < items.size()) {
-            return items.get(position);
-        } else {
-            return null;
-        }
-    }
-
-    // Returns true if add, false otherwise
-    public boolean compute(GroupMember groupMember) {
-        boolean result = false;
-
-        if (items.contains(groupMember)) {
-            remove(groupMember);
-        } else {
-            add(groupMember);
-            result = true;
-        }
-
-        return result;
-    }
-
-    public void remove(GroupMember groupMember) {
-        int position = items.indexOf(groupMember);
-        items.remove(position);
-        notifyItemRemoved(position);
-    }
-
-    public void add(GroupMember groupMember) {
-        items.add(groupMember);
-        int position = items.size() - 1;
-        notifyItemInserted(position);
-    }
-
-    public List<GroupMember> getItems() {
-        return items;
-    }
-
-    public Observable<Void> onClick() {
-        return memberAdapterDelegate.onClick();
-    }
+  public Observable<Void> onClick() {
+    return memberAdapterDelegate.onClick();
+  }
 }

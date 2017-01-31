@@ -71,327 +71,268 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 /**
  * Dagger module that provides objects which will live during the application lifecycle.
  */
-@Module
-public class ApplicationModule {
+@Module public class ApplicationModule {
 
-    private final AndroidApplication application;
-    private RealmResults<UserRealm> userRealm;
+  private final AndroidApplication application;
+  private RealmResults<UserRealm> userRealm;
 
-    public ApplicationModule(AndroidApplication application) {
-        this.application = application;
+  public ApplicationModule(AndroidApplication application) {
+    this.application = application;
+  }
+
+  @Provides @Singleton Context provideApplicationContext() {
+    return this.application;
+  }
+
+  @Provides @Singleton ThreadExecutor provideThreadExecutor(JobExecutor jobExecutor) {
+    return jobExecutor;
+  }
+
+  @Provides @Singleton PostExecutionThread providePostExecutionThread(UIThread uiThread) {
+    return uiThread;
+  }
+
+  @Provides @Singleton UserRepository provideCloudUserRepository(
+      CloudUserDataRepository userDataRepository) {
+    return userDataRepository;
+  }
+
+  @Provides @Singleton UserRepository provideDiskUserRepository(
+      DiskUserDataRepository userDataRepository) {
+    return userDataRepository;
+  }
+
+  @Provides @Singleton UserCache provideUserCache(UserCacheImpl userCache) {
+    return userCache;
+  }
+
+  @Provides @Singleton LiveCache provideLiveCache(LiveCacheImpl liveCache) {
+    return liveCache;
+  }
+
+  @Provides @Singleton ContactCache provideContactCache(ContactCacheImpl contactCache) {
+    return contactCache;
+  }
+
+  @Provides @Singleton RxContacts provideRxContacts(Context context, User user,
+      PhoneUtils phoneUtils, @AddressBook Preference<Boolean> addressBook) {
+    return new RxContacts(context, user, phoneUtils, addressBook);
+  }
+
+  @Provides @Singleton Navigator provideNavigator(Context context) {
+    return new Navigator(context);
+  }
+
+  @Provides @Singleton AccessToken provideAccessToken() {
+    AccessToken accessToken = new AccessToken();
+    Realm realmInst = Realm.getDefaultInstance();
+
+    final RealmResults<AccessToken> results = realmInst.where(AccessToken.class).findAll();
+    if (results != null && results.size() > 0) {
+      accessToken = realmInst.copyFromRealm(results.get(0));
     }
 
-    @Provides
-    @Singleton
-    Context provideApplicationContext() {
-        return this.application;
+    realmInst.close();
+
+    return accessToken;
+  }
+
+  @Provides @Singleton Installation provideInstallation() {
+    Installation installation = new Installation();
+    Realm realmInst = Realm.getDefaultInstance();
+
+    final RealmResults<Installation> results = realmInst.where(Installation.class).findAll();
+    if (results != null && results.size() > 0) {
+      installation = realmInst.copyFromRealm(results.get(0));
     }
 
-    @Provides
-    @Singleton
-    ThreadExecutor provideThreadExecutor(JobExecutor jobExecutor) {
-        return jobExecutor;
+    realmInst.close();
+
+    return installation;
+  }
+
+  @Provides @Singleton User provideCurrentUser(Realm realm, AccessToken accessToken,
+      UserRealmDataMapper userRealmDataMapper) {
+    final User user = new User("");
+
+    userRealm = realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findAll();
+    userRealm.addChangeListener(element -> {
+      UserRealm userRealmRes =
+          realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
+
+      if (userRealmRes != null) {
+        user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealmRes), true));
+      }
+    });
+
+    if (userRealm != null && userRealm.size() > 0) {
+      user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealm.get(0)), true));
     }
 
-    @Provides
-    @Singleton
-    PostExecutionThread providePostExecutionThread(UIThread uiThread) {
-        return uiThread;
+    return user;
+  }
+
+  @Provides @Singleton @Named("userThreadSafe") User provideCurrentUserThreadSafe(
+      AccessToken accessToken, UserRealmDataMapper userRealmDataMapper) {
+    final User user = new User("");
+    Realm realmInst = Realm.getDefaultInstance();
+
+    UserRealm userDB =
+        realmInst.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
+    if (userDB != null) {
+      user.copy(userRealmDataMapper.transform(realmInst.copyFromRealm(userDB), true));
     }
 
-    @Provides
-    @Singleton
-    UserRepository provideCloudUserRepository(CloudUserDataRepository userDataRepository) {
-        return userDataRepository;
+    realmInst.close();
+
+    return user;
+  }
+
+  @Provides @Singleton UserRealm provideCurrentUserRealm(AccessToken accessToken) {
+    UserRealm user = new UserRealm();
+    Realm realmInst = Realm.getDefaultInstance();
+
+    final UserRealm userRealm =
+        realmInst.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
+    if (userRealm != null) {
+      user = realmInst.copyFromRealm(userRealm);
     }
 
-    @Provides
-    @Singleton
-    UserRepository provideDiskUserRepository(DiskUserDataRepository userDataRepository) {
-        return userDataRepository;
-    }
+    realmInst.close();
 
-    @Provides
-    @Singleton
-    UserCache provideUserCache(UserCacheImpl userCache) {
-        return userCache;
-    }
+    return user;
+  }
 
-    @Provides
-    @Singleton
-    LiveCache provideLiveCache(LiveCacheImpl liveCache) {
-        return liveCache;
-    }
+  @Provides @Singleton Realm provideRealm() {
+    Realm realm = Realm.getDefaultInstance();
+    return realm;
+  }
 
-    @Provides
-    @Singleton
-    ContactCache provideContactCache(ContactCacheImpl contactCache) {
-        return contactCache;
-    }
+  @Provides @Singleton PaletteGrid providePaletteGrid(Context context,
+      @Theme Preference<Integer> theme) {
+    return new PaletteGrid(context, theme);
+  }
 
-    @Provides
-    @Singleton
-    RxContacts provideRxContacts(Context context, User user, PhoneUtils phoneUtils, @AddressBook Preference<Boolean> addressBook) {
-        return new RxContacts(context, user, phoneUtils, addressBook);
-    }
+  @Provides @Singleton ImageUtils provideImageUtils(Context context, ScreenUtils screenUtils) {
+    return new ImageUtils(context, screenUtils);
+  }
 
-    @Provides
-    @Singleton
-    Navigator provideNavigator(Context context) {
-        return new Navigator(context);
-    }
+  @Provides @Singleton TagManager provideTagManager(AnalyticsManager analyticsManager) {
+    return analyticsManager;
+  }
 
-    @Provides
-    @Singleton
-    AccessToken provideAccessToken() {
-        AccessToken accessToken = new AccessToken();
-        Realm realmInst = Realm.getDefaultInstance();
+  @Provides @Singleton FileUtils provideFileUtils() {
+    return new FileUtils();
+  }
 
-        final RealmResults<AccessToken> results = realmInst.where(AccessToken.class).findAll();
-        if (results != null && results.size() > 0) {
-            accessToken = realmInst.copyFromRealm(results.get(0));
-        }
+  @Provides @Singleton PhoneUtils providePhoneUtils(Context context) {
+    return new PhoneUtils(context);
+  }
 
-        realmInst.close();
+  @Provides @Singleton ScreenUtils provideScreenUtils(Context context) {
+    return new ScreenUtils(context);
+  }
 
-        return accessToken;
-    }
+  @Provides @Singleton ReactiveLocationProvider provideReactiveLocationProvider(Context context) {
+    return new ReactiveLocationProvider(context);
+  }
 
-    @Provides
-    @Singleton
-    Installation provideInstallation() {
-        Installation installation = new Installation();
-        Realm realmInst = Realm.getDefaultInstance();
+  @Provides @Singleton SoundManager provideSoundManager(Context context,
+      @UISounds Preference<Boolean> uiSounds) {
+    return new SoundManager(context, uiSounds);
+  }
 
-        final RealmResults<Installation> results = realmInst.where(Installation.class).findAll();
-        if (results != null && results.size() > 0)
-            installation = realmInst.copyFromRealm(results.get(0));
+  @Provides @Singleton TutorialManager provideTutorialManager(ScreenUtils screenUtils,
+      @TutorialState Preference<Set<String>> tutorialState) {
+    return new TutorialManager(screenUtils, tutorialState);
+  }
 
-        realmInst.close();
+  @Provides @Named("cloudUserInfos") UseCase provideCloudGetUserInfos(
+      GetCloudUserInfos getCloudUserInfos) {
+    return getCloudUserInfos;
+  }
 
-        return installation;
-    }
+  @Provides @Named("synchroContactList") UseCase provideSynchroContactList(
+      SynchroContactList synchroContactList) {
+    return synchroContactList;
+  }
 
-    @Provides
-    @Singleton
-    User provideCurrentUser(Realm realm, AccessToken accessToken, UserRealmDataMapper userRealmDataMapper) {
-        final User user = new User("");
+  @Provides @Named("refreshHowManyFriends") UseCase provideRefreshHowManyFriends(
+      RefreshHowManyFriends refreshHowManyFriends) {
+    return refreshHowManyFriends;
+  }
 
-        userRealm = realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findAll();
-        userRealm.addChangeListener(element -> {
-            UserRealm userRealmRes = realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
+  @Provides @Named("cloudUpdateFriendship") CloudUpdateFriendship provideCloudUpdateFriendship(
+      CloudUpdateFriendship cloudUpdateFriendship) {
+    return cloudUpdateFriendship;
+  }
 
-            if (userRealmRes != null) {
-                user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealmRes), true));
-            }
+  @Provides @Singleton JobManager provideJobManager() {
+    Configuration.Builder builder = new Configuration.Builder(application).minConsumerCount(1)
+        .maxConsumerCount(3)
+        .loadFactor(3)
+        .consumerKeepAlive(180)
+        .id("JOBS")
+        .injector(job -> {
+          if (job instanceof BaseJob) {
+            ((BaseJob) job).inject(application.getApplicationComponent());
+          }
         });
 
-        if (userRealm != null && userRealm.size() > 0) {
-            user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealm.get(0)), true));
-        }
+    return new JobManager(builder.build());
+  }
 
-        return user;
-    }
+  @Provides @Singleton RxFacebook provideRxFacebook(Context context) {
+    return new RxFacebook(context);
+  }
 
-    @Provides
-    @Singleton
-    @Named("userThreadSafe")
-    User provideCurrentUserThreadSafe(AccessToken accessToken, UserRealmDataMapper userRealmDataMapper) {
-        final User user = new User("");
-        Realm realmInst = Realm.getDefaultInstance();
+  @Provides @Singleton RxImagePicker provideRxImagePicker(Context context) {
+    return new RxImagePicker(context);
+  }
 
-        UserRealm userDB = realmInst.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
-        if (userDB != null)
-            user.copy(userRealmDataMapper.transform(realmInst.copyFromRealm(userDB), true));
+  @Provides
+  public TribeLiveOptions provideTribeLiveOptions(Context context, AccessToken accessToken) {
+    List<IceConfig> configList = new ArrayList<>();
+    configList.add(new IceConfig("turn:coturn.tribe.pm:7001", "gorst", "hero"));
 
-        realmInst.close();
+    return new TribeLiveOptions.TribeLiveOptionsBuilder(context).wsUrl(
+        "wss://wssdev.tribe.pm:6001/api")
+        .iceServers(configList)
+        .tokenId(accessToken.getAccessToken())
+        .build();
+  }
 
-        return user;
-    }
+  @Provides @Singleton public TribeAudioManager provideTribeAudioManager(Context context) {
+    return TribeAudioManager.create(context);
+  }
 
-    @Provides
-    @Singleton
-    UserRealm provideCurrentUserRealm(AccessToken accessToken) {
-        UserRealm user = new UserRealm();
-        Realm realmInst = Realm.getDefaultInstance();
+  // DATES
+  @Provides @Singleton DateUtils provideDateUtils(
+      @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate) {
+    return new DateUtils(utcSimpleDate);
+  }
 
-        final UserRealm userRealm = realmInst.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
-        if (userRealm != null) {
-            user = realmInst.copyFromRealm(userRealm);
-        }
+  @Provides @Singleton @Named("utcSimpleDate") SimpleDateFormat provideUTCSimpleDateFormat() {
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+    return sdf;
+  }
 
-        realmInst.close();
+  @Provides @Singleton @Named("utcSimpleDateFull")
+  SimpleDateFormat provideUTCFullSimpleDateFormat() {
+    SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss 'GMT'Z '(UTC)'");
+    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+    return sdf;
+  }
 
-        return user;
-    }
+  @Provides @Singleton @Named("simpleDateHoursMinutes")
+  SimpleDateFormat provideSimpleDateHoursMinutes() {
+    return new SimpleDateFormat("hh:mm a");
+  }
 
-    @Provides
-    @Singleton
-    Realm provideRealm() {
-        Realm realm = Realm.getDefaultInstance();
-        return realm;
-    }
-
-    @Provides
-    @Singleton
-    PaletteGrid providePaletteGrid(Context context, @Theme Preference<Integer> theme) {
-        return new PaletteGrid(context, theme);
-    }
-
-    @Provides
-    @Singleton
-    ImageUtils provideImageUtils(Context context, ScreenUtils screenUtils) {
-        return new ImageUtils(context, screenUtils);
-    }
-
-    @Provides
-    @Singleton
-    TagManager provideTagManager(AnalyticsManager analyticsManager) {
-        return analyticsManager;
-    }
-
-    @Provides
-    @Singleton
-    FileUtils provideFileUtils() {
-        return new FileUtils();
-    }
-
-    @Provides
-    @Singleton
-    PhoneUtils providePhoneUtils(Context context) {
-        return new PhoneUtils(context);
-    }
-
-    @Provides
-    @Singleton
-    ScreenUtils provideScreenUtils(Context context) {
-        return new ScreenUtils(context);
-    }
-
-    @Provides
-    @Singleton
-    ReactiveLocationProvider provideReactiveLocationProvider(Context context) { return new ReactiveLocationProvider(context); }
-
-    @Provides
-    @Singleton
-    SoundManager provideSoundManager(Context context, @UISounds Preference<Boolean> uiSounds) {
-        return new SoundManager(context, uiSounds);
-    }
-
-    @Provides
-    @Singleton
-    TutorialManager provideTutorialManager(ScreenUtils screenUtils, @TutorialState Preference<Set<String>> tutorialState) {
-        return new TutorialManager(screenUtils, tutorialState);
-    }
-
-    @Provides
-    @Named("cloudUserInfos")
-    UseCase provideCloudGetUserInfos(GetCloudUserInfos getCloudUserInfos) {
-        return getCloudUserInfos;
-    }
-
-    @Provides
-    @Named("synchroContactList")
-    UseCase provideSynchroContactList(SynchroContactList synchroContactList) {
-        return synchroContactList;
-    }
-
-    @Provides
-    @Named("refreshHowManyFriends")
-    UseCase provideRefreshHowManyFriends(RefreshHowManyFriends refreshHowManyFriends) {
-        return refreshHowManyFriends;
-    }
-
-    @Provides
-    @Named("cloudUpdateFriendship")
-    CloudUpdateFriendship provideCloudUpdateFriendship(CloudUpdateFriendship cloudUpdateFriendship) {
-        return cloudUpdateFriendship;
-    }
-
-    @Provides
-    @Singleton
-    JobManager provideJobManager() {
-        Configuration.Builder builder = new Configuration.Builder(application)
-            .minConsumerCount(1)
-            .maxConsumerCount(3)
-            .loadFactor(3)
-            .consumerKeepAlive(180)
-            .id("JOBS")
-            .injector(job -> {
-                if (job instanceof BaseJob) {
-                    ((BaseJob) job).inject(application.getApplicationComponent());
-                }
-            });
-
-        return new JobManager(builder.build());
-    }
-
-    @Provides
-    @Singleton
-    RxFacebook provideRxFacebook(Context context) {
-        return new RxFacebook(context);
-    }
-
-    @Provides
-    @Singleton
-    RxImagePicker provideRxImagePicker(Context context) {
-        return new RxImagePicker(context);
-    }
-
-    @Provides
-    public TribeLiveOptions provideTribeLiveOptions(Context context, AccessToken accessToken) {
-        List<IceConfig> configList = new ArrayList<>();
-        configList.add(new IceConfig("turn:coturn.tribe.pm:7001", "gorst", "hero"));
-
-        return new TribeLiveOptions.TribeLiveOptionsBuilder(context)
-                .wsUrl("wss://wssdev.tribe.pm:6001/api")
-                .iceServers(configList)
-                .tokenId(accessToken.getAccessToken())
-                .build();
-    }
-
-    @Provides
-    @Singleton
-    public TribeAudioManager provideTribeAudioManager(Context context) {
-        return TribeAudioManager.create(context);
-    }
-
-    // DATES
-    @Provides
-    @Singleton
-    DateUtils provideDateUtils(@Named("utcSimpleDate") SimpleDateFormat utcSimpleDate) {
-        return new DateUtils(utcSimpleDate);
-    }
-
-    @Provides
-    @Singleton
-    @Named("utcSimpleDate")
-    SimpleDateFormat provideUTCSimpleDateFormat() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return sdf;
-    }
-
-    @Provides
-    @Singleton
-    @Named("utcSimpleDateFull")
-    SimpleDateFormat provideUTCFullSimpleDateFormat() {
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss 'GMT'Z '(UTC)'");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return sdf;
-    }
-
-    @Provides
-    @Singleton
-    @Named("simpleDateHoursMinutes")
-    SimpleDateFormat provideSimpleDateHoursMinutes() {
-        return new SimpleDateFormat("hh:mm a");
-    }
-
-    @Provides
-    @Singleton
-    @Named("fullLetteredDate")
-    DateFormat provideFullLetteredDate(Context context) {
-        return DateFormat.getDateInstance(DateFormat.LONG, context.getResources().getConfiguration().locale);
-    }
+  @Provides @Singleton @Named("fullLetteredDate") DateFormat provideFullLetteredDate(
+      Context context) {
+    return DateFormat.getDateInstance(DateFormat.LONG,
+        context.getResources().getConfiguration().locale);
+  }
 }

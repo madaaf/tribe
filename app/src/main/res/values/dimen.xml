@@ -1,83 +1,83 @@
 <resources>
-    <!-- DIVIDER -->
-    <dimen name="divider_size">0.5dp</dimen>
+  <!-- DIVIDER -->
+  <dimen name="divider_size">0.5dp</dimen>
 
-    <!-- SHAPES -->
-    <dimen name="button_size">45dp</dimen>
+  <!-- SHAPES -->
+  <dimen name="button_size">45dp</dimen>
 
-    <!-- RADIUSES-->
-    <dimen name="radius_gallery_img">2.5dp</dimen>
-    <dimen name="radius_share_img">12.5dp</dimen>
-    <dimen name="camera_radius">5dp</dimen>
+  <!-- RADIUSES-->
+  <dimen name="radius_gallery_img">2.5dp</dimen>
+  <dimen name="radius_share_img">12.5dp</dimen>
+  <dimen name="camera_radius">5dp</dimen>
 
-    <!-- PROGRESS BAR -->
-    <dimen name="progress_bar_thickness_small">1dp</dimen>
+  <!-- PROGRESS BAR -->
+  <dimen name="progress_bar_thickness_small">1dp</dimen>
 
-    <!-- MARGINS -->
-    <dimen name="horizontal_margin">20dp</dimen>
-    <dimen name="vertical_margin">20dp</dimen>
-    <dimen name="vertical_margin_mid">17.5dp</dimen>
-    <dimen name="vertical_margin_smaller">10dp</dimen>
-    <dimen name="horizontal_margin_smaller">10dp</dimen>
-    <dimen name="horizontal_margin_small">15dp</dimen>
-    <dimen name="horizontal_margin_xsmall">5dp</dimen>
-    <dimen name="vertical_margin_small">15dp</dimen>
-    <dimen name="vertical_margin_xsmall">5dp</dimen>
-    <dimen name="horizontal_margin_large">25dp</dimen>
-    <dimen name="horizontal_margin_xlarge">30dp</dimen>
-    <dimen name="vertical_margin_large">25dp</dimen>
-    <dimen name="vertical_margin_xlarge">30dp</dimen>
-    <dimen name="margin_end_action_view">70dp</dimen>
+  <!-- MARGINS -->
+  <dimen name="horizontal_margin">20dp</dimen>
+  <dimen name="vertical_margin">20dp</dimen>
+  <dimen name="vertical_margin_mid">17.5dp</dimen>
+  <dimen name="vertical_margin_smaller">10dp</dimen>
+  <dimen name="horizontal_margin_smaller">10dp</dimen>
+  <dimen name="horizontal_margin_small">15dp</dimen>
+  <dimen name="horizontal_margin_xsmall">5dp</dimen>
+  <dimen name="vertical_margin_small">15dp</dimen>
+  <dimen name="vertical_margin_xsmall">5dp</dimen>
+  <dimen name="horizontal_margin_large">25dp</dimen>
+  <dimen name="horizontal_margin_xlarge">30dp</dimen>
+  <dimen name="vertical_margin_large">25dp</dimen>
+  <dimen name="vertical_margin_xlarge">30dp</dimen>
+  <dimen name="margin_end_action_view">70dp</dimen>
 
-    <!-- PADDING -->
-    <dimen name="icons_padding">3.75dp</dimen>
-    <dimen name="section_button_vertical_padding">12dp</dimen>
+  <!-- PADDING -->
+  <dimen name="icons_padding">3.75dp</dimen>
+  <dimen name="section_button_vertical_padding">12dp</dimen>
 
-    <!-- HEIGHTS -->
-    <dimen name="top_bar_height_small">50dp</dimen>
-    <dimen name="top_bar_height">65dp</dimen>
-    <dimen name="bottom_bar_height">60dp</dimen>
-    <dimen name="onboarding_choose_name_height">64dp</dimen>
-    <dimen name="group_members_height">70dp</dimen>
-    <dimen name="load_friends_height">72.5dp</dimen>
-    <dimen name="pick_all_height">72.5dp</dimen>
-    <dimen name="live_notification_min_height">75.5dp</dimen>
-    <dimen name="live_notification_max_height">197.5dp</dimen>
-    <dimen name="live_notification_item_height">60.5dp</dimen>
+  <!-- HEIGHTS -->
+  <dimen name="top_bar_height_small">50dp</dimen>
+  <dimen name="top_bar_height">65dp</dimen>
+  <dimen name="bottom_bar_height">60dp</dimen>
+  <dimen name="onboarding_choose_name_height">64dp</dimen>
+  <dimen name="group_members_height">70dp</dimen>
+  <dimen name="load_friends_height">72.5dp</dimen>
+  <dimen name="pick_all_height">72.5dp</dimen>
+  <dimen name="live_notification_min_height">75.5dp</dimen>
+  <dimen name="live_notification_max_height">197.5dp</dimen>
+  <dimen name="live_notification_item_height">60.5dp</dimen>
 
-    <!-- WIDTHS -->
+  <!-- WIDTHS -->
 
-    <!-- SIZES -->
-    <dimen name="avatar_size">75dp</dimen>
-    <dimen name="avatar_size_with_shadow">82dp</dimen>
-    <dimen name="avatar_size_scaled">110dp</dimen>
-    <!-- CHANGE AVATAR_SIZE_INTERMEDIATE_HALF ACCORDINGLY -->
-    <dimen name="avatar_size_small">41dp</dimen>
-    <dimen name="avatar_size_smaller">35dp</dimen>
-    <dimen name="avatar_size_medium">60dp</dimen>
-    <dimen name="camera_height_settings">111.5dp</dimen>
-    <dimen name="camera_width_settings">80dp</dimen>
-    <dimen name="camera_stroke_width">8dp</dimen>
-    <dimen name="notif_size_big">40dp</dimen>
-    <dimen name="icons_start">30dp</dimen>
-    <dimen name="icons_end">60dp</dimen>
-    <dimen name="setting_theme_size">40dp</dimen>
-    <dimen name="setting_theme_vertical_padding">15dp</dimen>
-    <dimen name="dialog_fragment_width">262dp</dimen>
-    <dimen name="nav_icon_size">50dp</dimen>
-    <dimen name="filter_letter_size">35dp</dimen>
-    <dimen name="filter_letter_container_size">50dp</dimen>
-    <dimen name="cards_icon_size">15dp</dimen>
-    <dimen name="voice_message_avatar_size">75dp</dimen>
-    <dimen name="med_icon_size">40dp</dimen>
-    <dimen name="code_progress_size">25dp</dimen>
+  <!-- SIZES -->
+  <dimen name="avatar_size">75dp</dimen>
+  <dimen name="avatar_size_with_shadow">82dp</dimen>
+  <dimen name="avatar_size_scaled">110dp</dimen>
+  <!-- CHANGE AVATAR_SIZE_INTERMEDIATE_HALF ACCORDINGLY -->
+  <dimen name="avatar_size_small">41dp</dimen>
+  <dimen name="avatar_size_smaller">35dp</dimen>
+  <dimen name="avatar_size_medium">60dp</dimen>
+  <dimen name="camera_height_settings">111.5dp</dimen>
+  <dimen name="camera_width_settings">80dp</dimen>
+  <dimen name="camera_stroke_width">8dp</dimen>
+  <dimen name="notif_size_big">40dp</dimen>
+  <dimen name="icons_start">30dp</dimen>
+  <dimen name="icons_end">60dp</dimen>
+  <dimen name="setting_theme_size">40dp</dimen>
+  <dimen name="setting_theme_vertical_padding">15dp</dimen>
+  <dimen name="dialog_fragment_width">262dp</dimen>
+  <dimen name="nav_icon_size">50dp</dimen>
+  <dimen name="filter_letter_size">35dp</dimen>
+  <dimen name="filter_letter_container_size">50dp</dimen>
+  <dimen name="cards_icon_size">15dp</dimen>
+  <dimen name="voice_message_avatar_size">75dp</dimen>
+  <dimen name="med_icon_size">40dp</dimen>
+  <dimen name="code_progress_size">25dp</dimen>
 
-    <!-- THRESHOLDS -->
-    <dimen name="threshold_dismiss">100dp</dimen>
-    <dimen name="threshold_open_live_invite">100dp</dimen>
-    <dimen name="threshold_open_notification">50dp</dimen>
+  <!-- THRESHOLDS -->
+  <dimen name="threshold_dismiss">100dp</dimen>
+  <dimen name="threshold_open_live_invite">100dp</dimen>
+  <dimen name="threshold_open_notification">50dp</dimen>
 
-    <!-- TRANSLATIONS -->
-    <dimen name="transition_grid_back_to_top">150dp</dimen>
-    <dimen name="transition_replace">40dp</dimen>
+  <!-- TRANSLATIONS -->
+  <dimen name="transition_grid_back_to_top">150dp</dimen>
+  <dimen name="transition_replace">40dp</dimen>
 </resources>

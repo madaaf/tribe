@@ -13,21 +13,20 @@ import rx.Observable;
  */
 public class GetDiskUserInfos extends UseCaseDisk {
 
-    private String userId;
-    private UserRepository userRepository;
+  private String userId;
+  private UserRepository userRepository;
 
-    @Inject
-    public GetDiskUserInfos(DiskUserDataRepository userRepository, PostExecutionThread postExecutionThread) {
-        super(postExecutionThread);
-        this.userRepository = userRepository;
-    }
+  @Inject public GetDiskUserInfos(DiskUserDataRepository userRepository,
+      PostExecutionThread postExecutionThread) {
+    super(postExecutionThread);
+    this.userRepository = userRepository;
+  }
 
-    public void prepare(String userId) {
-        this.userId = userId;
-    }
+  public void prepare(String userId) {
+    this.userId = userId;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return this.userRepository.userInfos(userId);
-    }
+  @Override protected Observable buildUseCaseObservable() {
+    return this.userRepository.userInfos(userId);
+  }
 }

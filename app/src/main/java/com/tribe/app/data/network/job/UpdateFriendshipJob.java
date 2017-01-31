@@ -18,62 +18,54 @@ import javax.inject.Named;
  */
 public class UpdateFriendshipJob extends BaseJob {
 
-    private static final String TAG = "UpdateFriendshipJob";
+  private static final String TAG = "UpdateFriendshipJob";
 
-    @Inject
-    @Named("cloudUpdateFriendship")
-    transient CloudUpdateFriendship cloudUpdateFriendship;
+  @Inject @Named("cloudUpdateFriendship") transient CloudUpdateFriendship cloudUpdateFriendship;
 
-    private @FriendshipRealm.FriendshipStatus String status;
-    private String friendshipId;
+  private @FriendshipRealm.FriendshipStatus String status;
+  private String friendshipId;
 
-    public UpdateFriendshipJob(String friendshipId, @FriendshipRealm.FriendshipStatus String status) {
-        super(new Params(Priority.MID).requireNetwork().persist().groupBy(TAG).setGroupId(friendshipId));
-        this.status = status;
-        this.friendshipId = friendshipId;
+  public UpdateFriendshipJob(String friendshipId, @FriendshipRealm.FriendshipStatus String status) {
+    super(
+        new Params(Priority.MID).requireNetwork().persist().groupBy(TAG).setGroupId(friendshipId));
+    this.status = status;
+    this.friendshipId = friendshipId;
+  }
+
+  @Override public void onAdded() {
+
+  }
+
+  @Override public void onRun() throws Throwable {
+    cloudUpdateFriendship.prepare(friendshipId, status);
+    cloudUpdateFriendship.execute(new UpdateFriendshipSubscriber());
+  }
+
+  @Override protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
+    throwable.printStackTrace();
+  }
+
+  @Override protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount,
+      int maxRunCount) {
+    return RetryConstraint.createExponentialBackoff(runCount, 1000);
+  }
+
+  @Override public void inject(ApplicationComponent appComponent) {
+    super.inject(appComponent);
+    appComponent.inject(this);
+  }
+
+  public final class UpdateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
+
+    @Override public void onCompleted() {
+      if (cloudUpdateFriendship != null) cloudUpdateFriendship.unsubscribe();
     }
 
-    @Override
-    public void onAdded() {
-
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
     }
 
-    @Override
-    public void onRun() throws Throwable {
-        cloudUpdateFriendship.prepare(friendshipId, status);
-        cloudUpdateFriendship.execute(new UpdateFriendshipSubscriber());
+    @Override public void onNext(Friendship friendship) {
     }
-
-    @Override
-    protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
-        throwable.printStackTrace();
-    }
-
-    @Override
-    protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount, int maxRunCount) {
-        return RetryConstraint.createExponentialBackoff(runCount, 1000);
-    }
-
-    @Override
-    public void inject(ApplicationComponent appComponent) {
-        super.inject(appComponent);
-        appComponent.inject(this);
-    }
-
-    public final class UpdateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
-
-        @Override
-        public void onCompleted() {
-            if (cloudUpdateFriendship != null) cloudUpdateFriendship.unsubscribe();
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-
-        @Override
-        public void onNext(Friendship friendship) {
-        }
-    }
+  }
 }
