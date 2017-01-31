@@ -3,6 +3,8 @@ package com.tribe.app.presentation.service;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.notification.NotificationBuilder;
+import javax.inject.Inject;
 import timber.log.Timber;
 
 /**
@@ -10,7 +12,8 @@ import timber.log.Timber;
  */
 public class TribeFirebaseMessagingService extends FirebaseMessagingService {
 
-  private static final String TAG = "TribeFirebaseMessServ";
+  @Inject
+  NotificationBuilder notificationBuilder;
 
   @Override public void onCreate() {
     super.onCreate();
@@ -19,5 +22,6 @@ public class TribeFirebaseMessagingService extends FirebaseMessagingService {
 
   @Override public void onMessageReceived(RemoteMessage remoteMessage) {
     Timber.d("Received : " + remoteMessage.getData());
+    notificationBuilder.sendBundledNotification(remoteMessage);
   }
 }

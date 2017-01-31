@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.tribe.tribelivesdk.model.RemotePeer;
+import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.util.LogUtil;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import com.tribe.tribelivesdk.view.PeerView;
@@ -48,18 +49,18 @@ public final class StreamManager {
         return liveLocalStream.asNativeMediaStream();
     }
 
-    public void generateNewRemotePeer(String peerId) {
-        if (TextUtils.isEmpty(peerId)) {
+    public void generateNewRemotePeer(TribeSession session) {
+        if (session == null) {
             LogUtil.e(getClass(), "Attempt to generate remote stream with null peerId.");
             return;
         }
 
-        LogUtil.d(getClass(), "Generating new remote peer : " + peerId);
-        RemotePeer remotePeer = new RemotePeer(peerId);
+        LogUtil.d(getClass(), "Generating new remote peer : " + session.getPeerId());
+        RemotePeer remotePeer = new RemotePeer(session);
         RemotePeerView remotePeerView = new RemotePeerView(context);
         remotePeer.setPeerView(remotePeerView);
 
-        remotePeerMap.put(peerId, remotePeer);
+        remotePeerMap.put(session.getPeerId(), remotePeer);
     }
 
     public void setMediaStreamForClient(@NonNull String peerId, @NonNull MediaStream mediaStream) {

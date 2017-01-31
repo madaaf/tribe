@@ -368,25 +368,67 @@
         }
     </string>
 
-    <string name="online.notification" translatable="false">
-        mutation {
-            runOnlinePush
-        }
-    </string>
-
     <string name="subscription" translatable="false">
         subscription { %1$s }
     </string>
 
-    <string name="subscription.updatedUser" translatable="false">
+    <string name="subscription.userUpdated" translatable="false">
         %1$s : userUpdated ( id : \"%2$s\" ) {
             ...UserInfos
         }
     </string>
 
-    <string name="subscription.updatedGroup" translatable="false">
+    <string name="subscription.groupUpdated" translatable="false">
         %1$s : groupUpdated ( id : \"%2$s\" ) {
             ...GroupInfo
         }
     </string>
+
+  <string name="subscription.friendshipUpdated" translatable="false">
+      %1$s : friendshipUpdated ( id : \"%2$s\" ) {
+        is_live
+      }
+  </string>
+
+  <string name="subscription.friendshipCreated" translatable="false">
+      %1$s : friendshipCreated
+  </string>
+
+  <string name="subscription.friendshipRemoved" translatable="false">
+      %1$s : friendshipRemoved
+  </string>
+
+  <string name="subscription.membershipCreated" translatable="false">
+      %1$s : membershipCreated
+  </string>
+
+  <string name="subscription.membershipRemoved" translatable="false">
+      %1$s : membershipRemoved
+  </string>
+
+  <string name="joinRoomFriendship" translatable="false">
+    joinRoom(friendshipId : \"%1$s\") {
+      ...RoomInfos
+    }
+  </string>
+
+  <string name="joinRoomGroup" translatable="false">
+    joinRoom(groupId : \"%1$s\") {
+      ...RoomInfos
+    }
+  </string>
+  
+  <string name="roomFragment_infos" translatable="false">
+    fragment RoomInfos on RoomPeerCredentials {
+      room_id
+      websocketUrl
+      rtcPeerConfiguration {
+        iceServers {
+          urls
+          username
+          credential
+        }
+      }
+    }
+  </string>
 </resources>

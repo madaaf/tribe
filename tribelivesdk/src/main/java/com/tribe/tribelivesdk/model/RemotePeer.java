@@ -9,27 +9,26 @@ import com.tribe.tribelivesdk.view.RemotePeerView;
 
 public class RemotePeer extends Peer {
 
-    private String id;
-    private RemotePeerView peerView;
+  private TribeSession session;
+  private RemotePeerView peerView;
 
-    public RemotePeer(String id) {
-        this.id = id;
-    }
+  public RemotePeer(TribeSession session) {
+    this.session = session;
+  }
 
-    public String getId() {
-        return id;
-    }
+  public TribeSession getSession() {
+    return session;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setSession(TribeSession session) {
+    this.session = session;
+  }
 
-    @Override
-    public PeerView getPeerView() {
-        return peerView;
-    }
+  @Override public PeerView getPeerView() {
+    return peerView;
+  }
 
-    public void setPeerView(RemotePeerView peerView) {
-        this.peerView = peerView;
-    }
+  public void setPeerView(RemotePeerView peerView) {
+    this.peerView = peerView;
+  }
 }

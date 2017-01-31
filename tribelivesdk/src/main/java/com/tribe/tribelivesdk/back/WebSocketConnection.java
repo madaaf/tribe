@@ -25,13 +25,12 @@ public class WebSocketConnection {
     private static final int CONNECT_TIMEOUT = 1000;
     private static final int CLOSE_TIMEOUT = 1000;
 
-    @StringDef({STATE_NEW, STATE_CONNECTING, STATE_CONNECTED, STATE_READY, STATE_DISCONNECTED, STATE_ERROR})
+    @StringDef({STATE_NEW, STATE_CONNECTING, STATE_CONNECTED, STATE_DISCONNECTED, STATE_ERROR})
     public @interface WebSocketState {}
 
     public static final String STATE_NEW = "new";
     public static final String STATE_CONNECTING = "connecting";
     public static final String STATE_CONNECTED = "connected";
-    public static final String STATE_READY = "ready";
     public static final String STATE_DISCONNECTED = "disconnected";
     public static final String STATE_ERROR = "error";
 
@@ -85,7 +84,7 @@ public class WebSocketConnection {
 
             @Override
             public void onMessage(String s) {
-                if (state == STATE_CONNECTED || state == STATE_READY) {
+                if (state == STATE_CONNECTED) {
                     onMessage.onNext(s);
                 }
             }

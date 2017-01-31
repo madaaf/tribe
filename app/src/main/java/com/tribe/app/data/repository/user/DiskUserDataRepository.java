@@ -1,7 +1,6 @@
 package com.tribe.app.data.repository.user;
 
 import android.util.Pair;
-
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
@@ -23,317 +22,307 @@ import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.Constants;
-
+import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import io.realm.RealmList;
 import rx.Observable;
 
 /**
  * {@link DiskUserDataRepository} for retrieving user data.
  */
-@Singleton
-public class DiskUserDataRepository implements UserRepository {
+@Singleton public class DiskUserDataRepository implements UserRepository {
 
-    private final UserDataStoreFactory userDataStoreFactory;
-    private final UserRealmDataMapper userRealmDataMapper;
-    private final ContactRealmDataMapper contactRealmDataMapper;
-    private final SearchResultRealmDataMapper searchResultRealmDataMapper;
-    private final MembershipRealmDataMapper membershipRealmDataMapper;
+  private final UserDataStoreFactory userDataStoreFactory;
+  private final UserRealmDataMapper userRealmDataMapper;
+  private final ContactRealmDataMapper contactRealmDataMapper;
+  private final SearchResultRealmDataMapper searchResultRealmDataMapper;
+  private final MembershipRealmDataMapper membershipRealmDataMapper;
 
-    /**
-     * Constructs a {@link UserRepository}.
-     *
-     * @param dataStoreFactory A factory to construct different data source implementations.
-     * @param realmDataMapper {@link UserRealmDataMapper}.
-     */
-    @Inject
-    public DiskUserDataRepository(UserDataStoreFactory dataStoreFactory,
-                                  UserRealmDataMapper realmDataMapper,
-                                  ContactRealmDataMapper contactRealmDataMapper,
-                                  MembershipRealmDataMapper membershipRealmDataMapper) {
-        this.userDataStoreFactory = dataStoreFactory;
-        this.userRealmDataMapper = realmDataMapper;
-        this.contactRealmDataMapper = contactRealmDataMapper;
-        this.searchResultRealmDataMapper = new SearchResultRealmDataMapper(userRealmDataMapper.getFriendshipRealmDataMapper());
-        this.membershipRealmDataMapper = membershipRealmDataMapper;
-    }
+  /**
+   * Constructs a {@link UserRepository}.
+   *
+   * @param dataStoreFactory A factory to construct different data source implementations.
+   * @param realmDataMapper {@link UserRealmDataMapper}.
+   */
+  @Inject public DiskUserDataRepository(UserDataStoreFactory dataStoreFactory,
+      UserRealmDataMapper realmDataMapper, ContactRealmDataMapper contactRealmDataMapper,
+      MembershipRealmDataMapper membershipRealmDataMapper) {
+    this.userDataStoreFactory = dataStoreFactory;
+    this.userRealmDataMapper = realmDataMapper;
+    this.contactRealmDataMapper = contactRealmDataMapper;
+    this.searchResultRealmDataMapper =
+        new SearchResultRealmDataMapper(userRealmDataMapper.getFriendshipRealmDataMapper());
+    this.membershipRealmDataMapper = membershipRealmDataMapper;
+  }
 
-    @Override
-    public Observable<Pin> requestCode(String phoneNumber) { return null; }
+  @Override public Observable<Pin> requestCode(String phoneNumber) {
+    return null;
+  }
 
-    @Override
-    public Observable<AccessToken> loginWithPhoneNumber(LoginEntity loginEntity) { return null; }
+  @Override public Observable<AccessToken> loginWithPhoneNumber(LoginEntity loginEntity) {
+    return null;
+  }
 
-    @Override
-    public Observable<AccessToken> register(String displayName, String username, LoginEntity loginEntity) { return null; }
+  @Override public Observable<AccessToken> register(String displayName, String username,
+      LoginEntity loginEntity) {
+    return null;
+  }
 
-    @Override
-    public Observable<User> userInfos(String userId) {
-        final DiskUserDataStore userDataStore = (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
+  @Override public Observable<User> userInfos(String userId) {
+    final DiskUserDataStore userDataStore =
+        (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
 
-        return Observable.combineLatest(
-                userDataStore.userInfos(null),
-                userDataStore.onlineMap().startWith(new HashMap<>()),
-                userDataStore.liveMap().startWith(new HashMap<>()),
-                (userRealm, onlineMap, liveMap) -> {
-                    if (userRealm != null && userRealm.getFriendships() != null) {
-                        RealmList<FriendshipRealm> resultFr = new RealmList<>();
+    return Observable.combineLatest(userDataStore.userInfos(null),
+        userDataStore.onlineMap().startWith(new HashMap<>()),
+        userDataStore.liveMap().startWith(new HashMap<>()), (userRealm, onlineMap, liveMap) -> {
+          if (userRealm != null && userRealm.getFriendships() != null) {
+            RealmList<FriendshipRealm> resultFr = new RealmList<>();
 
-                        for (FriendshipRealm fr : userRealm.getFriendships()) {
-                            if (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus().equals(FriendshipRealm.DEFAULT) && !fr.getFriend().getId().equals(Constants.SUPPORT_ID)) {
-                                if (onlineMap.containsKey(fr.getSubId())) fr.getFriend().setIsOnline(onlineMap.get(fr.getSubId()));
-                                resultFr.add(fr);
-                            }
-                        }
+            for (FriendshipRealm fr : userRealm.getFriendships()) {
+              if (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus()
+                  .equals(FriendshipRealm.DEFAULT) && !fr.getFriend()
+                  .getId()
+                  .equals(Constants.SUPPORT_ID)) {
 
-                        userRealm.setFriendships(resultFr);
-                    }
-
-                    return userRealm;
+                if (onlineMap.containsKey(fr.getSubId())) {
+                  fr.getFriend().setIsOnline(onlineMap.get(fr.getSubId()));
                 }
-        ).map(userRealm -> userRealmDataMapper.transform(userRealm, true));
-    }
 
-    @Override
-    public Observable<List<Friendship>> friendships() {
-        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+                if (liveMap.containsKey(fr.getId())) {
+                  fr.setLive(liveMap.get(fr.getId()));
+                }
 
-        return userDataStore.friendships()
-                .map(friendshipRealmList -> {
-                    RealmList<FriendshipRealm> result = new RealmList<>();
+                resultFr.add(fr);
+              }
+            }
 
-                    for (FriendshipRealm fr : friendshipRealmList) {
-                        if (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus().equals(FriendshipRealm.DEFAULT) && !fr.getFriend().getId().equals(Constants.SUPPORT_ID)) {
-                            result.add(fr);
-                        }
-                    }
+            userRealm.setFriendships(resultFr);
+          }
 
-                    return userRealmDataMapper.getFriendshipRealmDataMapper().transform(result);
-                });
-    }
+          return userRealm;
+        }).map(userRealm -> userRealmDataMapper.transform(userRealm, true));
+  }
 
-    @Override
-    public Observable<User> updateUser(List<Pair<String, String>> values) {
-        return null;
-    }
+  @Override public Observable<List<Friendship>> friendships() {
+    final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
 
-    @Override
-    public Observable<Installation> createOrUpdateInstall(String token) {
-        return null;
-    }
+    return userDataStore.friendships().map(friendshipRealmList -> {
+      RealmList<FriendshipRealm> result = new RealmList<>();
 
-    @Override
-    public Observable<Installation> removeInstall() {
-        return null;
-    }
+      for (FriendshipRealm fr : friendshipRealmList) {
+        if (!StringUtils.isEmpty(fr.getStatus())
+            && fr.getStatus().equals(FriendshipRealm.DEFAULT)
+            && !fr.getFriend().getId().equals(Constants.SUPPORT_ID)) {
+          result.add(fr);
+        }
+      }
 
-    @Override
-    public Observable<List<Contact>> contacts() {
-        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-        return userDataStore.contacts().map(collection -> contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection)));
-    }
+      return userRealmDataMapper.getFriendshipRealmDataMapper().transform(result);
+    });
+  }
 
-    @Override
-    public Observable<List<Contact>> contactsFB() {
-        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-        return userDataStore.contactsFB().map(collection -> contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection)));
-    }
+  @Override public Observable<User> updateUser(List<Pair<String, String>> values) {
+    return null;
+  }
 
-    @Override
-    public Observable<List<Contact>> contactsOnApp() {
-        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-        return userDataStore.contactsOnApp().map(collection -> contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection)));
-    }
+  @Override public Observable<Installation> createOrUpdateInstall(String token) {
+    return null;
+  }
 
-    @Override
-    public Observable<List<Contact>> contactsInvite() {
-        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-        return Observable.combineLatest(
-                userDataStore.userInfos(null),
-                userDataStore.contactsOnApp(),
-                userDataStore.contactsToInvite(),
-                (userRealm, contactOnAppList, contactInviteList) -> {
-                    List<ContactInterface> ciList = new ArrayList<>();
+  @Override public Observable<Installation> removeInstall() {
+    return null;
+  }
 
-                    if (userRealm.getFriendships() != null && userRealm.getFriendships().size() > 0) {
-                        for (ContactInterface ciAB : contactOnAppList) {
-                            boolean add = true;
+  @Override public Observable<List<Contact>> contacts() {
+    final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+    return userDataStore.contacts()
+        .map(collection -> contactRealmDataMapper.transform(
+            new ArrayList<ContactInterface>(collection)));
+  }
 
-                            for (FriendshipRealm fr : userRealm.getFriendships()) {
-                                for (UserRealm user : ciAB.getUsers()) {
-                                    if (fr.getFriend().equals(user)) add = false;
-                                }
-                            }
+  @Override public Observable<List<Contact>> contactsFB() {
+    final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+    return userDataStore.contactsFB()
+        .map(collection -> contactRealmDataMapper.transform(
+            new ArrayList<ContactInterface>(collection)));
+  }
 
-                            if (add) ciList.add(ciAB);
-                        }
-                    }
+  @Override public Observable<List<Contact>> contactsOnApp() {
+    final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+    return userDataStore.contactsOnApp()
+        .map(collection -> contactRealmDataMapper.transform(
+            new ArrayList<ContactInterface>(collection)));
+  }
 
-                    ciList.addAll(contactInviteList);
-                    return ciList;
-                }).map(collection -> contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection)));
-    }
+  @Override public Observable<List<Contact>> contactsInvite() {
+    final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+    return Observable.combineLatest(userDataStore.userInfos(null), userDataStore.contactsOnApp(),
+        userDataStore.contactsToInvite(), (userRealm, contactOnAppList, contactInviteList) -> {
+          List<ContactInterface> ciList = new ArrayList<>();
 
-    @Override
-    public Observable<Void> howManyFriends() {
-        return null;
-    }
+          if (userRealm.getFriendships() != null && userRealm.getFriendships().size() > 0) {
+            for (ContactInterface ciAB : contactOnAppList) {
+              boolean add = true;
 
-    @Override
-    public Observable<SearchResult> findByUsername(String username) {
-        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-        return userDataStore.findByUsername(username).map(searchResultRealm -> searchResultRealmDataMapper.transform(searchResultRealm));
-    }
+              for (FriendshipRealm fr : userRealm.getFriendships()) {
+                for (UserRealm user : ciAB.getUsers()) {
+                  if (fr.getFriend().equals(user)) add = false;
+                }
+              }
 
-    @Override
-    public Observable<Boolean> lookupUsername(String username) {
-        return null;
-    }
+              if (add) ciList.add(ciAB);
+            }
+          }
 
-    @Override
-    public Observable<List<Contact>> findByValue(String value) {
-        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-        return userDataStore.findByValue(value).map(collection -> contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection)));
-    }
+          ciList.addAll(contactInviteList);
+          return ciList;
+        })
+        .map(collection -> contactRealmDataMapper.transform(
+            new ArrayList<ContactInterface>(collection)));
+  }
 
-    // TODO: update info in DB
-    @Override
-    public Observable<Friendship> createFriendship(String userId) {
-        return null;
-    }
+  @Override public Observable<Void> howManyFriends() {
+    return null;
+  }
 
-    @Override
-    public Observable<Void> createFriendships(String... userIds) {
-        return null;
-    }
+  @Override public Observable<SearchResult> findByUsername(String username) {
+    final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+    return userDataStore.findByUsername(username)
+        .map(searchResultRealm -> searchResultRealmDataMapper.transform(searchResultRealm));
+  }
 
-    @Override
-    public Observable<Void> removeFriendship(String userId) {
-        return null;
-    }
+  @Override public Observable<Boolean> lookupUsername(String username) {
+    return null;
+  }
 
-    @Override
-    public Observable<Void> notifyFBFriends() {
-        return null;
-    }
+  @Override public Observable<List<Contact>> findByValue(String value) {
+    final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+    return userDataStore.findByValue(value)
+        .map(collection -> contactRealmDataMapper.transform(
+            new ArrayList<ContactInterface>(collection)));
+  }
 
-    @Override
-    public Observable<Group> getGroupMembers(String groupId) {
-        return null;
-    }
+  // TODO: update info in DB
+  @Override public Observable<Friendship> createFriendship(String userId) {
+    return null;
+  }
 
-    @Override
-    public Observable<Group> getGroupInfos(String groupId) {
-        return null;
-    }
+  @Override public Observable<Void> createFriendships(String... userIds) {
+    return null;
+  }
 
-    @Override
-    public Observable<Membership> getMembershipInfos(String membershipId) {
-        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-        return userDataStore.getMembershipInfos(membershipId).map(membershipRealm -> membershipRealmDataMapper.transform(membershipRealm));
-    }
+  @Override public Observable<Void> removeFriendship(String userId) {
+    return null;
+  }
 
-    public Observable<Membership> createGroup(GroupEntity groupEntity) {
-        return null;
-    }
+  @Override public Observable<Void> notifyFBFriends() {
+    return null;
+  }
 
-    @Override
-    public Observable<Group> updateGroup(String groupId, List<Pair<String, String>> values) {
-        return null;
-    }
+  @Override public Observable<Group> getGroupMembers(String groupId) {
+    return null;
+  }
 
-    @Override
-    public Observable<Membership> updateMembership(String membershipId, List<Pair<String, String>> values) {
-        return null;
-    }
+  @Override public Observable<Group> getGroupInfos(String groupId) {
+    return null;
+  }
 
-    @Override
-    public Observable<Void> addMembersToGroup(String groupId, List<String> memberIds) {
-        return null;
-    }
+  @Override public Observable<Membership> getMembershipInfos(String membershipId) {
+    final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+    return userDataStore.getMembershipInfos(membershipId)
+        .map(membershipRealm -> membershipRealmDataMapper.transform(membershipRealm));
+  }
 
-    @Override
-    public Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds) {
-        return null;
-    }
+  public Observable<Membership> createGroup(GroupEntity groupEntity) {
+    return null;
+  }
 
-    @Override
-    public Observable<Void> removeGroup(String groupId) {
-        return null;
-    }
+  @Override
+  public Observable<Group> updateGroup(String groupId, List<Pair<String, String>> values) {
+    return null;
+  }
 
-    @Override
-    public Observable<Void> leaveGroup(String groupId) {
-        return null;
-    }
+  @Override public Observable<Membership> updateMembership(String membershipId,
+      List<Pair<String, String>> values) {
+    return null;
+  }
 
-    @Override
-    public Observable<Friendship> updateFriendship(String friendshipId, @FriendshipRealm.FriendshipStatus String status) {
-        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-        return userDataStore.updateFriendship(friendshipId, status)
-                .map(friendshipRealm -> userRealmDataMapper.getFriendshipRealmDataMapper().transform(friendshipRealm));
-    }
+  @Override public Observable<Void> addMembersToGroup(String groupId, List<String> memberIds) {
+    return null;
+  }
 
-    @Override
-    public Observable<List<Friendship>> getBlockedFriendshipList() {
-        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+  @Override public Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds) {
+    return null;
+  }
 
-        return userDataStore
-                .userInfos(null)
-                .map(userRealm -> {
-                    if (userRealm != null && userRealm.getFriendships() != null) {
-                        RealmList<FriendshipRealm> result = new RealmList<>();
-                        for (FriendshipRealm fr : userRealm.getFriendships()) {
-                            if (!StringUtils.isEmpty(fr.getStatus()) && !fr.getStatus().equals(FriendshipRealm.DEFAULT)) {
-                                result.add(fr);
-                            }
-                        }
+  @Override public Observable<Void> removeGroup(String groupId) {
+    return null;
+  }
 
-                        userRealm.setFriendships(result);
-                    }
+  @Override public Observable<Void> leaveGroup(String groupId) {
+    return null;
+  }
 
-                    return userRealmDataMapper.transform(userRealm, true).getFriendships();
-                });
-    }
+  @Override public Observable<Friendship> updateFriendship(String friendshipId,
+      @FriendshipRealm.FriendshipStatus String status) {
+    final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+    return userDataStore.updateFriendship(friendshipId, status)
+        .map(friendshipRealm -> userRealmDataMapper.getFriendshipRealmDataMapper()
+            .transform(friendshipRealm));
+  }
 
-    @Override
-    public Observable<String> getHeadDeepLink(String url) {
-        return null;
-    }
+  @Override public Observable<List<Friendship>> getBlockedFriendshipList() {
+    final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
 
-    @Override
-    public Observable<Membership> createMembership(String groupId) {
-        return null;
-    }
+    return userDataStore.userInfos(null).map(userRealm -> {
+      if (userRealm != null && userRealm.getFriendships() != null) {
+        RealmList<FriendshipRealm> result = new RealmList<>();
+        for (FriendshipRealm fr : userRealm.getFriendships()) {
+          if (!StringUtils.isEmpty(fr.getStatus()) && !fr.getStatus()
+              .equals(FriendshipRealm.DEFAULT)) {
+            result.add(fr);
+          }
+        }
 
-    @Override
-    public Observable<Recipient> getRecipientInfos(String recipientId, boolean isToGroup) {
-        final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+        userRealm.setFriendships(result);
+      }
 
-        return userDataStore
-                .getRecipientInfos(recipientId, isToGroup)
-                .map(recipientRealmInterface -> {
-                    if (recipientRealmInterface instanceof MembershipRealm) {
-                       return userRealmDataMapper.getMembershipRealmDataMapper().transform((MembershipRealm) recipientRealmInterface);
-                    } else {
-                        return userRealmDataMapper.getFriendshipRealmDataMapper().transform((FriendshipRealm) recipientRealmInterface);
-                    }
-                });
-    }
+      return userRealmDataMapper.transform(userRealm, true).getFriendships();
+    });
+  }
 
-    @Override
-    public Observable<Void> sendOnlineNotification() {
-        return null;
-    }
+  @Override public Observable<String> getHeadDeepLink(String url) {
+    return null;
+  }
+
+  @Override public Observable<Membership> createMembership(String groupId) {
+    return null;
+  }
+
+  @Override public Observable<Recipient> getRecipientInfos(String recipientId, boolean isToGroup) {
+    final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+
+    return userDataStore.getRecipientInfos(recipientId, isToGroup).map(recipientRealmInterface -> {
+      if (recipientRealmInterface instanceof MembershipRealm) {
+        return userRealmDataMapper.getMembershipRealmDataMapper()
+            .transform((MembershipRealm) recipientRealmInterface);
+      } else {
+        return userRealmDataMapper.getFriendshipRealmDataMapper()
+            .transform((FriendshipRealm) recipientRealmInterface);
+      }
+    });
+  }
+
+  @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup) {
+    return null;
+  }
 }

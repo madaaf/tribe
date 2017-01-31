@@ -457,7 +457,7 @@ public class UserCacheImpl implements UserCache {
     }
 
     @Override
-    public void updateUsersAndGroups(List<UserRealm> userRealmList, List<GroupRealm> groupRealmList) {
+    public void updateAll(List<UserRealm> userRealmList, List<GroupRealm> groupRealmList) {
         Realm realm = Realm.getDefaultInstance();
 
         try {

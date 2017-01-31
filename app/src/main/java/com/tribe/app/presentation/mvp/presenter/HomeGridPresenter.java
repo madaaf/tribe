@@ -23,7 +23,6 @@ import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.GetHeadDeepLink;
 import com.tribe.app.domain.interactor.user.LeaveGroup;
 import com.tribe.app.domain.interactor.user.RemoveGroup;
-import com.tribe.app.domain.interactor.user.SendOnlineNotification;
 import com.tribe.app.domain.interactor.user.SendToken;
 import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
@@ -54,7 +53,6 @@ public class HomeGridPresenter implements Presenter {
     private GetHeadDeepLink getHeadDeepLink;
     private CreateMembership createMembership;
     private UseCase cloudUserInfos;
-    private SendOnlineNotification sendOnlineNotification;
     private UpdateUser updateUser;
     private RxFacebook rxFacebook;
     private UseCase synchroContactList;
@@ -74,7 +72,6 @@ public class HomeGridPresenter implements Presenter {
                              GetHeadDeepLink getHeadDeepLink,
                              CreateMembership createMembership,
                              @Named("cloudUserInfos") UseCase cloudUserInfos,
-                             SendOnlineNotification sendOnlineNotification,
                              UpdateUser updateUser,
                              RxFacebook rxFacebook,
                              @Named("synchroContactList") UseCase synchroContactList) {
@@ -87,7 +84,6 @@ public class HomeGridPresenter implements Presenter {
         this.getHeadDeepLink = getHeadDeepLink;
         this.createMembership = createMembership;
         this.cloudUserInfos = cloudUserInfos;
-        this.sendOnlineNotification = sendOnlineNotification;
         this.updateUser = updateUser;
         this.rxFacebook = rxFacebook;
         this.synchroContactList = synchroContactList;
@@ -101,7 +97,6 @@ public class HomeGridPresenter implements Presenter {
         getHeadDeepLink.unsubscribe();
         createMembership.unsubscribe();
         cloudUserInfos.unsubscribe();
-        sendOnlineNotification.unsubscribe();
         updateUser.unsubscribe();
     }
 
@@ -169,10 +164,6 @@ public class HomeGridPresenter implements Presenter {
     public void sendToken(String token) {
         sendTokenUseCase.setToken(token);
         sendTokenUseCase.execute(new SendTokenSubscriber());
-    }
-
-    public void sendOnlineNotification() {
-        sendOnlineNotification.execute(new DefaultSubscriber());
     }
 
     protected void showViewLoading() {

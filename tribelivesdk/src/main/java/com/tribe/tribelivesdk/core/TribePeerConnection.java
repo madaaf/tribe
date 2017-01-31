@@ -60,7 +60,7 @@ public class TribePeerConnection {
 
         subscriptions.add(
                 peerConnectionObserver.onReceivedIceCandidates()
-                        .map(iceCandidates -> new TribeCandidate(id, iceCandidates))
+                        .map(iceCandidates -> new TribeCandidate(new TribeSession(id, userId), iceCandidates))
                             .subscribe(onReceivedTribeCandidate)
         );
 
@@ -112,7 +112,7 @@ public class TribePeerConnection {
     public Observable<TribeOffer> onReadyToSendSdpOffer() {
         return sdpObserver.onReadyToSendSdpOffer()
                 .map(sessionDescription -> {
-                    TribeOffer offer = new TribeOffer(id, sessionDescription);
+                    TribeOffer offer = new TribeOffer(new TribeSession(id, userId), sessionDescription);
                     return offer;
                 });
     }

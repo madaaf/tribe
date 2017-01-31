@@ -47,13 +47,13 @@ public class LiveModule {
 
     @Provides
     @Singleton
-    public WebRTCClient provideWebRTCClient(Context context, TribeLiveOptions options) {
-        return new WebRTCClient(context, options);
+    public WebRTCClient provideWebRTCClient(Context context) {
+        return new WebRTCClient(context);
     }
 
     @Provides
     @Singleton
-    public TribeLiveSDK provideTribeLiveSDK(Context context, WebSocketConnection webSocketConnection, WebRTCClient webRTCClient, TribeLiveOptions tribeLiveOptions) {
-        return new TribeLiveSDK(context, webSocketConnection, webRTCClient, tribeLiveOptions);
+    public TribeLiveSDK provideTribeLiveSDK(WebSocketConnection webSocketConnection, WebRTCClient webRTCClient) {
+        return new TribeLiveSDK(webSocketConnection, webRTCClient);
     }
 }

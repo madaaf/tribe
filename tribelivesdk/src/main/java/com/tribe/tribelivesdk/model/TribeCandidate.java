@@ -1,8 +1,7 @@
 package com.tribe.tribelivesdk.model;
 
-import org.webrtc.IceCandidate;
-
 import java.util.List;
+import org.webrtc.IceCandidate;
 
 /**
  * Created by tiago on 16/01/2017.
@@ -10,33 +9,37 @@ import java.util.List;
 
 public class TribeCandidate {
 
-    private String id;
-    private IceCandidate iceCandidate;
-    private List<IceCandidate> iceCandidateList;
+  private IceCandidate iceCandidate;
+  private List<IceCandidate> iceCandidateList;
+  private TribeSession session;
 
-    public TribeCandidate(String id, IceCandidate iceCandidate) {
-        this.id = id;
-        this.iceCandidate = iceCandidate;
-    }
+  public TribeCandidate(TribeSession session, IceCandidate iceCandidate) {
+    this.session = session;
+    this.iceCandidate = iceCandidate;
+  }
 
-    public TribeCandidate(String id, List<IceCandidate> iceCandidateList) {
-        this.id = id;
-        this.iceCandidateList = iceCandidateList;
-    }
+  public TribeCandidate(TribeSession tribeSession, List<IceCandidate> iceCandidateList) {
+    this.session = tribeSession;
+    this.iceCandidateList = iceCandidateList;
+  }
 
-    public String getId() {
-        return id;
-    }
+  public IceCandidate getIceCandidate() {
+    return iceCandidate;
+  }
 
-    public IceCandidate getIceCandidate() {
-        return iceCandidate;
-    }
+  public List<IceCandidate> getIceCandidateList() {
+    return iceCandidateList;
+  }
 
-    public List<IceCandidate> getIceCandidateList() {
-        return iceCandidateList;
-    }
+  public void setIceCandidateList(List<IceCandidate> iceCandidateList) {
+    this.iceCandidateList = iceCandidateList;
+  }
 
-    public void setIceCandidateList(List<IceCandidate> iceCandidateList) {
-        this.iceCandidateList = iceCandidateList;
-    }
+  public TribeSession getSession() {
+    return session;
+  }
+
+  public void setSession(TribeSession session) {
+    this.session = session;
+  }
 }

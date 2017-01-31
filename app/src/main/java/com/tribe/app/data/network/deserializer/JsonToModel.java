@@ -4,16 +4,16 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.network.entity.SubscriptionResponse;
+import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.utils.StringUtils;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -22,64 +22,77 @@ import javax.inject.Singleton;
  * Created by tiago on 27/01/2017.
  */
 
-@Singleton
-public class JsonToModel {
+@Singleton public class JsonToModel {
 
-    private Gson gson;
+  private Gson gson;
 
-    @Inject
-    public JsonToModel(@Named("simpleGson") Gson gson) {
-        this.gson = gson;
-    }
+  @Inject public JsonToModel(@Named("simpleGson") Gson gson) {
+    this.gson = gson;
+  }
 
-    public SubscriptionResponse convertToSubscriptionResponse(String json) {
-        if (!StringUtils.isEmpty(json) && json.contains("data")) {
-            JsonElement jsonElement = gson.fromJson(json, JsonElement.class);
-            JsonObject jsonObject = jsonElement.getAsJsonObject();
-            JsonObject results = jsonObject.getAsJsonObject("data");
+  public SubscriptionResponse convertToSubscriptionResponse(String json) {
+    if (!StringUtils.isEmpty(json) && json.contains("data")) {
+      JsonElement jsonElement = gson.fromJson(json, JsonElement.class);
+      JsonObject jsonObject = jsonElement.getAsJsonObject();
+      JsonObject results = jsonObject.getAsJsonObject("data");
 
-            SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
-            List<UserRealm> updatedUserList = new ArrayList<>();
-            List<GroupRealm> updatedGroupList = new ArrayList<>();
-            Map<String, Boolean> onlineMap = new HashMap<>();
-            Map<String, Boolean> liveMap = new HashMap<>();
+      SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
+      List<UserRealm> updatedUserList = new ArrayList<>();
+      List<GroupRealm> updatedGroupList = new ArrayList<>();
+      Map<String, Boolean> onlineMap = new HashMap<>();
+      Map<String, Boolean> liveMap = new HashMap<>();
 
-            for (Map.Entry<String, JsonElement> entry : results.entrySet()) {
-                if (!entry.getValue().isJsonNull()) {
-                    String payload = entry.getValue().toString();
-                    JsonParser jsonParser = new JsonParser();
-                    JsonObject jo = jsonParser.parse(payload).getAsJsonObject();
+      for (Map.Entry<String, JsonElement> entry : results.entrySet()) {
+        if (!entry.getValue().isJsonNull()) {
+          String payload = entry.getValue().toString();
+          JsonParser jsonParser = new JsonParser();
+          JsonElement element = jsonParser.parse(payload);
 
-                    if (entry.getKey().contains("___u")) {
-                        boolean shouldUpdateOnlineStatus = false;
+          if (element != null && element.isJsonObject()) {
+            JsonObject jo = element.getAsJsonObject();
 
-                        if (jo.has("is_online")) shouldUpdateOnlineStatus = true;
+            if (entry.getKey().contains(WSService.USER_SUFFIX)) {
+              boolean shouldUpdateOnlineStatus = false;
 
-                        UserRealm userRealm = gson.fromJson(entry.getValue().toString(), UserRealm.class);
-                        userRealm.setJsonPayloadUpdate(jo);
+              if (jo.has("is_online")) shouldUpdateOnlineStatus = true;
 
-                        if (shouldUpdateOnlineStatus) {
-                            onlineMap.put(userRealm.getId(), userRealm.isOnline());
-                            userRealm.setIsOnline(false);
-                        }
+              UserRealm userRealm = gson.fromJson(entry.getValue().toString(), UserRealm.class);
+              userRealm.setJsonPayloadUpdate(jo);
 
-                        updatedUserList.add(userRealm);
-                    } else if (entry.getKey().contains("___g")) {
-                        GroupRealm groupRealm = gson.fromJson(entry.getValue().toString(), GroupRealm.class);
-                        groupRealm.setJsonPayloadUpdate(jo);
-                        updatedGroupList.add(groupRealm);
-                    }
-                }
+              if (shouldUpdateOnlineStatus) {
+                onlineMap.put(userRealm.getId(), userRealm.isOnline());
+                userRealm.setIsOnline(false);
+              }
+
+              updatedUserList.add(userRealm);
+            } else if (entry.getKey().contains(WSService.GROUP_SUFFIX)) {
+              GroupRealm groupRealm = gson.fromJson(entry.getValue().toString(), GroupRealm.class);
+              groupRealm.setJsonPayloadUpdate(jo);
+              updatedGroupList.add(groupRealm);
+            } else if (entry.getKey().contains(WSService.FRIENDSHIP_UDPATED_SUFFIX)) {
+              boolean shouldUpdateLiveStatus = false;
+
+              if (jo.has("is_live")) shouldUpdateLiveStatus = true;
+
+              FriendshipRealm friendshipRealm =
+                  gson.fromJson(entry.getValue().toString(), FriendshipRealm.class);
+
+              if (shouldUpdateLiveStatus) {
+                liveMap.put(friendshipRealm.getId(), friendshipRealm.isLive());
+              }
             }
-
-            subscriptionResponse.setUserUpdatedList(updatedUserList);
-            subscriptionResponse.setGroupUpdatedList(updatedGroupList);
-            subscriptionResponse.setOnlineMap(onlineMap);
-            subscriptionResponse.setLiveMap(liveMap);
-
-            return subscriptionResponse;
+          }
         }
+      }
 
-        return null;
+      subscriptionResponse.setUserUpdatedList(updatedUserList);
+      subscriptionResponse.setGroupUpdatedList(updatedGroupList);
+      subscriptionResponse.setOnlineMap(onlineMap);
+      subscriptionResponse.setLiveMap(liveMap);
+
+      return subscriptionResponse;
     }
+
+    return null;
+  }
 }

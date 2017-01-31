@@ -294,7 +294,7 @@ public class HomeActivity extends BaseActivity
                 .map(view -> homeGridAdapter.getItemAtPosition(
                         recyclerViewFriends.getChildLayoutPosition(view)))
                 .subscribe(recipient -> {
-                    navigator.navigateToLive(this, recipient);
+                    navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()));
                 }));
 
         subscriptions.add(onRecipientUpdates

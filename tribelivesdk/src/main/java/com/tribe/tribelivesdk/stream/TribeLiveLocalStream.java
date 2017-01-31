@@ -67,13 +67,13 @@ public class TribeLiveLocalStream {
     }
 
     private void generateVideoCapturer() {
-        CameraEnumerator enumerator;
+        CameraEnumerator enumerator = new Camera1Enumerator(false);
 
-        if (Camera2Enumerator.isSupported(context)) {
-            enumerator = new Camera2Enumerator(context);
-        } else {
-            enumerator = new Camera1Enumerator(false);
-        }
+        //if (Camera2Enumerator.isSupported(context)) {
+        //    enumerator = new Camera2Enumerator(context);
+        //} else {
+        //    enumerator =
+        //}
 
         LogUtil.d(getClass(), "Creating capturer");
 

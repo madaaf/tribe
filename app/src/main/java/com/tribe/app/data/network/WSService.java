@@ -26,6 +26,14 @@ import timber.log.Timber;
 
 @Singleton public class WSService extends Service {
 
+  public static final String USER_SUFFIX = "___u";
+  public static final String GROUP_SUFFIX = "___g";
+  public static final String FRIENDSHIP_CREATED_SUFFIX = "___fc";
+  public static final String FRIENDSHIP_UDPATED_SUFFIX = "___fu";
+  public static final String FRIENDSHIP_REMOVED_SUFFIX = "___fr";
+  public static final String MEMBERSHIP_CREATED_SUFFIX = "___mc";
+  public static final String MEMBERSHIP_REMOVED_SUFFIX = "___mr";
+
   public static Intent getCallingIntent(Context context) {
     Intent intent = new Intent(context, WSService.class);
     return intent;
@@ -93,7 +101,8 @@ import timber.log.Timber;
 
       if (subscriptionResponse != null) {
         liveCache.putOnlineMap(subscriptionResponse.getOnlineMap());
-        userCache.updateUsersAndGroups(subscriptionResponse.getUserUpdatedList(),
+        liveCache.putLiveMap(subscriptionResponse.getLiveMap());
+        userCache.updateAll(subscriptionResponse.getUserUpdatedList(),
             subscriptionResponse.getGroupUpdatedList());
       }
     }));
@@ -105,15 +114,34 @@ import timber.log.Timber;
     StringBuffer subscriptionsBuffer = new StringBuffer();
     String hash = generateHash();
 
+    append(subscriptionsBuffer,
+        getApplicationContext().getString(R.string.subscription_friendshipCreated,
+            hash + FRIENDSHIP_CREATED_SUFFIX));
+
+    append(subscriptionsBuffer,
+        getApplicationContext().getString(R.string.subscription_friendshipRemoved,
+            hash + FRIENDSHIP_REMOVED_SUFFIX));
+
+    append(subscriptionsBuffer,
+        getApplicationContext().getString(R.string.subscription_membershipCreated,
+            hash + MEMBERSHIP_CREATED_SUFFIX));
+
+    append(subscriptionsBuffer,
+        getApplicationContext().getString(R.string.subscription_membershipRemoved,
+            hash + MEMBERSHIP_REMOVED_SUFFIX));
+
     Observable.zip(Observable.just(userRealm.getFriendships()).doOnNext(friendshipList -> {
       int count = 0;
 
       for (FriendshipRealm friendshipRealm : friendshipList) {
         if (!friendshipRealm.getSubId().equals(accessToken.getUserId())) {
-          subscriptionsBuffer.append(
-              getApplicationContext().getString(R.string.subscription_updatedUser,
-                  hash + "___u" + count, friendshipRealm.getFriend().getId()));
-          subscriptionsBuffer.append(System.getProperty("line.separator"));
+          append(subscriptionsBuffer,
+              getApplicationContext().getString(R.string.subscription_userUpdated,
+                  hash + USER_SUFFIX + count, friendshipRealm.getSubId()));
+
+          append(subscriptionsBuffer,
+              getApplicationContext().getString(R.string.subscription_friendshipUpdated,
+                  hash + FRIENDSHIP_UDPATED_SUFFIX + count, friendshipRealm.getId()));
 
           count++;
         }
@@ -122,10 +150,9 @@ import timber.log.Timber;
       int count = 0;
 
       for (MembershipRealm membershipRealm : membershipList) {
-        subscriptionsBuffer.append(
-            getApplicationContext().getString(R.string.subscription_updatedGroup,
-                hash + "___g" + count, membershipRealm.getGroup().getId()));
-        subscriptionsBuffer.append(System.getProperty("line.separator"));
+        append(subscriptionsBuffer,
+            getApplicationContext().getString(R.string.subscription_groupUpdated,
+                hash + GROUP_SUFFIX + count, membershipRealm.getGroup().getId()));
 
         count++;
       }
@@ -146,6 +173,11 @@ import timber.log.Timber;
 
           webSocketConnection.send(req);
         });
+  }
+
+  private void append(StringBuffer buffer, String str) {
+    buffer.append(str);
+    buffer.append(System.getProperty("line.separator"));
   }
 
   private String generateHash() {

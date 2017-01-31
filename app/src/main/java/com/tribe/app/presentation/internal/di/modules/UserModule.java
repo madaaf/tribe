@@ -30,7 +30,6 @@ import com.tribe.app.domain.interactor.user.NotifyFBFriends;
 import com.tribe.app.domain.interactor.user.RefreshHowManyFriends;
 import com.tribe.app.domain.interactor.user.RemoveFriendship;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
-import com.tribe.app.domain.interactor.user.SendOnlineNotification;
 import com.tribe.app.domain.interactor.user.SendToken;
 import com.tribe.app.domain.interactor.user.SynchroContactList;
 import com.tribe.app.domain.interactor.user.UpdateGroup;
@@ -231,12 +230,6 @@ public class UserModule {
     @PerActivity
     CreateMembership provideCreateMembership(CloudUserDataRepository cloudUserDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
         return new CreateMembership(cloudUserDataRepository, threadExecutor, postExecutionThread);
-    }
-
-    @Provides
-    @PerActivity
-    SendOnlineNotification provideSendOnlineNotification(CloudUserDataRepository cloudUserDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        return new SendOnlineNotification(cloudUserDataRepository, threadExecutor, postExecutionThread);
     }
 
     @Provides

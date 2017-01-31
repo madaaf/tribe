@@ -9,12 +9,6 @@
         android:animateLayoutChanges="true"
         >
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/confetti.1"
-            />
-
     </com.tribe.app.presentation.view.component.live.LiveRoomView>
 
     <ImageView

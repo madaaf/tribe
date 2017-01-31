@@ -17,20 +17,11 @@ import javax.inject.Singleton;
 @Singleton
 public class TribeLiveSDK {
 
-    private Context context;
-    private TribeLiveOptions options;
-    private WebSocketConnection webSocketConnection;
-    private WebRTCClient webRTCClient;
     private Room room;
 
     @Inject
-    public TribeLiveSDK(Context context, WebSocketConnection webSocketConnection, WebRTCClient webRTCClient, TribeLiveOptions options) {
-        this.context = context;
-        this.options = options;
-        this.webSocketConnection = webSocketConnection;
-        this.webRTCClient = webRTCClient;
-
-        room = new Room(webSocketConnection, webRTCClient, options);
+    public TribeLiveSDK(WebSocketConnection webSocketConnection, WebRTCClient webRTCClient) {
+        room = new Room(webSocketConnection, webRTCClient);
     }
 
     public Room getRoom() {

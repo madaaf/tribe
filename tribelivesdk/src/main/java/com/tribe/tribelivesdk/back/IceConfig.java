@@ -1,30 +1,42 @@
 package com.tribe.tribelivesdk.back;
 
+import java.util.List;
+
 /**
  * Created by tiago on 13/01/2017.
  */
 
 public class IceConfig {
 
-    private String url;
-    private String username;
-    private String credentials;
+  private List<String> urls;
+  private String username;
+  private String credential;
 
-    public IceConfig(String url, String username, String credentials) {
-        this.url = url;
-        this.username = username;
-        this.credentials = credentials;
-    }
+  public List<String> getUrls() {
+    return urls;
+  }
 
-    public String getUrl() {
-        return url;
-    }
+  public void setUrls(List<String> urls) {
+    this.urls = urls;
+  }
 
-    public String getUsername() {
-        return username;
-    }
+  public String getUsername() {
+    return username == null ? "" : username;
+  }
 
-    public String getCredentials() {
-        return credentials;
-    }
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
+  public String getCredential() {
+    return credential == null ? "" : credential;
+  }
+
+  public void setCredential(String credential) {
+    this.credential = credential;
+  }
+
+  @Override public String toString() {
+    return "url : " + urls + "\n username : " + username + "\n credential : " + credential + "\n";
+  }
 }

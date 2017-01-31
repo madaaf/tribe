@@ -60,13 +60,12 @@ public class TribePeerConnectionObserver implements PeerConnection.Observer {
 
         if (iceCandidate != null) {
             String type = iceCandidate.toString().split(" ")[7];
-            if (!type.equals("relay")) {
-                LogUtil.d(getClass(), "iceCandidate " + type + " ignored: TURN only mode.");
-                return;
-            } else {
-                LogUtil.d(getClass(), "iceCandidate " + type + " candidate accepted");
-                queuedLocalCandidates.add(iceCandidate);
-            }
+            //if (!type.equals("relay")) {
+            //    LogUtil.d(getClass(), "iceCandidate " + type + " ignored: TURN only mode.");
+            //    return;
+            //}
+            LogUtil.d(getClass(), "iceCandidate " + type + " candidate accepted");
+            queuedLocalCandidates.add(iceCandidate);
         }
     }
 

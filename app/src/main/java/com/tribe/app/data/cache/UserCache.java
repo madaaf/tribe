@@ -41,5 +41,5 @@ public interface UserCache {
     Observable<FriendshipRealm> updateFriendship(String friendshipId, @FriendshipRealm.FriendshipStatus String status);
     FriendshipRealm updateFriendshipNoObs(String friendshipId, @FriendshipRealm.FriendshipStatus String moreType);
     MembershipRealm membershipInfos(String membershipId);
-    void updateUsersAndGroups(List<UserRealm> userRealm, List<GroupRealm> groupRealmList);
+    void updateAll(List<UserRealm> userRealm, List<GroupRealm> groupRealmList);
 }
