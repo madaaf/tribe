@@ -5,5 +5,5 @@ import android.graphics.SurfaceTexture;
 import java.io.IOException;
 
 public interface PreviewSurfaceHelper {
-    void setPreviewTexture(SurfaceTexture surfaceTexture, int width, int height) throws IOException;
+  void setPreviewTexture(SurfaceTexture surfaceTexture, int width, int height) throws IOException;
 }

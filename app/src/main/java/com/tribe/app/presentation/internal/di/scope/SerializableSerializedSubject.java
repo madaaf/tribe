@@ -8,9 +8,10 @@ import rx.subjects.Subject;
 /**
  * Created by tiago on 05/07/2016.
  */
-public class SerializableSerializedSubject<T, R> extends SerializedSubject<T, R> implements Serializable {
+public class SerializableSerializedSubject<T, R> extends SerializedSubject<T, R>
+    implements Serializable {
 
-    public SerializableSerializedSubject(final Subject<T, R> actual) {
-        super(actual);
-    }
+  public SerializableSerializedSubject(final Subject<T, R> actual) {
+    super(actual);
+  }
 }

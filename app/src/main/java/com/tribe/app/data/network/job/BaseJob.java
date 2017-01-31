@@ -27,20 +27,18 @@ import javax.inject.Inject;
 
 abstract public class BaseJob extends Job {
 
-    @Inject
-    JobManager jobManager;
+  @Inject JobManager jobManager;
 
-    @Inject
-    TagManager tagManager;
+  @Inject TagManager tagManager;
 
-    // VARIABLES
-    protected static final boolean DEBUG = false;
+  // VARIABLES
+  protected static final boolean DEBUG = false;
 
-    public BaseJob(Params params) {
-        super(params);
-    }
+  public BaseJob(Params params) {
+    super(params);
+  }
 
-    public void inject(ApplicationComponent appComponent) {
-        appComponent.inject(this);
-    }
+  public void inject(ApplicationComponent appComponent) {
+    appComponent.inject(this);
+  }
 }

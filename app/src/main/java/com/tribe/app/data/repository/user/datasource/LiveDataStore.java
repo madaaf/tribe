@@ -10,7 +10,7 @@ import rx.Observable;
 
 public interface LiveDataStore {
 
-    Observable<Map<String, Boolean>> onlineMap();
+  Observable<Map<String, Boolean>> onlineMap();
 
-    Observable<Map<String, Boolean>> liveMap();
+  Observable<Map<String, Boolean>> liveMap();
 }

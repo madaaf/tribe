@@ -9,7 +9,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Created by horatiothomas on 9/7/16.
  */
-@Qualifier
-@Retention(RUNTIME)
-public @interface InvisibleMode {
+@Qualifier @Retention(RUNTIME) public @interface InvisibleMode {
 }

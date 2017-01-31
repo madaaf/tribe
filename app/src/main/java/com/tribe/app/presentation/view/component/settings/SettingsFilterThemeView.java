@@ -24,71 +24,66 @@ import rx.subscriptions.CompositeSubscription;
 
 public class SettingsFilterThemeView extends LinearLayout {
 
-    @Inject
-    User currentUser;
+  @Inject User currentUser;
 
-    @BindView(R.id.viewThemeSettings)
-    SettingsThemeView viewThemeSettings;
+  @BindView(R.id.viewThemeSettings) SettingsThemeView viewThemeSettings;
 
-    @BindView(R.id.viewFilterSettings)
-    SettingsFilterView viewFilterSettings;
+  @BindView(R.id.viewFilterSettings) SettingsFilterView viewFilterSettings;
 
-    // VARIABLES
+  // VARIABLES
 
-    // OBSERVABLES
-    private CompositeSubscription subscriptions;
+  // OBSERVABLES
+  private CompositeSubscription subscriptions;
 
-    public SettingsFilterThemeView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
+  public SettingsFilterThemeView(Context context, AttributeSet attrs) {
+    super(context, attrs);
+  }
 
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        ButterKnife.bind(this);
+  @Override protected void onFinishInflate() {
+    super.onFinishInflate();
+    ButterKnife.bind(this);
 
-        initDependencyInjector();
-        init();
-    }
+    initDependencyInjector();
+    init();
+  }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        viewFilterSettings.onResume();
-    }
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    viewFilterSettings.onResume();
+  }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        viewFilterSettings.onPause();
-        super.onDetachedFromWindow();
-    }
+  @Override protected void onDetachedFromWindow() {
+    viewFilterSettings.onPause();
+    super.onDetachedFromWindow();
+  }
 
-    public void onDestroy() {
-        if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
-    }
+  public void onDestroy() {
+    if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+  }
 
-    private void init() {
-        subscriptions = new CompositeSubscription();
+  private void init() {
+    subscriptions = new CompositeSubscription();
 
-        setOrientation(VERTICAL);
-    }
+    setOrientation(VERTICAL);
+  }
 
-    protected ApplicationComponent getApplicationComponent() {
-        return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
-    }
+  protected ApplicationComponent getApplicationComponent() {
+    return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
+  }
 
-    protected ActivityModule getActivityModule() {
-        return new ActivityModule(((Activity) getContext()));
-    }
+  protected ActivityModule getActivityModule() {
+    return new ActivityModule(((Activity) getContext()));
+  }
 
-    private void initDependencyInjector() {
-        DaggerUserComponent.builder()
-                .activityModule(getActivityModule())
-                .applicationComponent(getApplicationComponent())
-                .build().inject(this);
-    }
+  private void initDependencyInjector() {
+    DaggerUserComponent.builder()
+        .activityModule(getActivityModule())
+        .applicationComponent(getApplicationComponent())
+        .build()
+        .inject(this);
+  }
 
-    /**
-     * OBSERVABLES
-     */
+  /**
+   * OBSERVABLES
+   */
 }

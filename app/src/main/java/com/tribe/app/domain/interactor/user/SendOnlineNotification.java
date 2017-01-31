@@ -10,25 +10,19 @@ import javax.inject.Inject;
 import rx.Observable;
 
 /**
- * Created by horatiothomas on 9/14/16.
+ * Created by tiago on 29/06/2016.
  */
-public class GetGroupMembers extends UseCase {
+public class SendOnlineNotification extends UseCase {
 
   private UserRepository userRepository;
-  private String groupId;
 
-  @Inject
-  public GetGroupMembers(CloudUserDataRepository userDataRepository, ThreadExecutor threadExecutor,
-      PostExecutionThread postExecutionThread) {
+  @Inject public SendOnlineNotification(CloudUserDataRepository userRepository,
+      ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
     super(threadExecutor, postExecutionThread);
-    this.userRepository = userDataRepository;
-  }
-
-  public void prepare(String groupId) {
-    this.groupId = groupId;
+    this.userRepository = userRepository;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.userRepository.getGroupMembers(groupId);
+    return this.userRepository.sendOnlineNotification();
   }
 }

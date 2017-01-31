@@ -8,12 +8,12 @@ import com.facebook.login.LoginManager;
  */
 public class FacebookUtils {
 
-    public static boolean isLoggedIn() {
-        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        return accessToken != null;
-    }
+  public static boolean isLoggedIn() {
+    AccessToken accessToken = AccessToken.getCurrentAccessToken();
+    return accessToken != null;
+  }
 
-    public static void logout() {
-        LoginManager.getInstance().logOut();
-    }
+  public static void logout() {
+    LoginManager.getInstance().logOut();
+  }
 }

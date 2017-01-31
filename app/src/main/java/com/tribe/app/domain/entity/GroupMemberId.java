@@ -7,31 +7,31 @@ import java.io.Serializable;
  */
 public class GroupMemberId implements Serializable {
 
-    private String id;
-    private String groupId;
+  private String id;
+  private String groupId;
 
-    public GroupMemberId(String id, String groupId) {
-        this.id = id;
-        this.groupId = groupId;
-    }
+  public GroupMemberId(String id, String groupId) {
+    this.id = id;
+    this.groupId = groupId;
+  }
 
-    public GroupMemberId() {
+  public GroupMemberId() {
 
-    }
+  }
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public void setGroupId(String groupId) {
-        this.groupId = groupId;
-    }
+  public void setGroupId(String groupId) {
+    this.groupId = groupId;
+  }
 
-    public String getGroupId() {
-        return groupId;
-    }
+  public String getGroupId() {
+    return groupId;
+  }
 }

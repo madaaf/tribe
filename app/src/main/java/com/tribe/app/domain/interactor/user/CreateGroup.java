@@ -15,21 +15,20 @@ import rx.Observable;
  */
 public class CreateGroup extends UseCase {
 
-    private UserRepository userRepository;
-    private GroupEntity groupEntity;
+  private UserRepository userRepository;
+  private GroupEntity groupEntity;
 
-    @Inject
-    CreateGroup(CloudUserDataRepository userDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        super(threadExecutor, postExecutionThread);
-        this.userRepository = userDataRepository;
-    }
+  @Inject CreateGroup(CloudUserDataRepository userDataRepository, ThreadExecutor threadExecutor,
+      PostExecutionThread postExecutionThread) {
+    super(threadExecutor, postExecutionThread);
+    this.userRepository = userDataRepository;
+  }
 
-    public void prepare(GroupEntity groupEntity) {
-        this.groupEntity = groupEntity;
-    }
+  public void prepare(GroupEntity groupEntity) {
+    this.groupEntity = groupEntity;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return this.userRepository.createGroup(groupEntity);
-    }
+  @Override protected Observable buildUseCaseObservable() {
+    return this.userRepository.createGroup(groupEntity);
+  }
 }

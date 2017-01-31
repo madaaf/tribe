@@ -9,7 +9,7 @@ import android.support.v7.widget.RecyclerView;
  */
 public class PointsLayoutManager extends LinearLayoutManager {
 
-    public PointsLayoutManager(Context context) {
-        super(context);
-    }
+  public PointsLayoutManager(Context context) {
+    super(context);
+  }
 }

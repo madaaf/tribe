@@ -25,131 +25,126 @@ import rx.Observable;
  */
 public class UserListAdapter extends RecyclerView.Adapter {
 
-    protected RxAdapterDelegatesManager<List<Object>> delegatesManager;
-    private UserListAdapterDelegate userListAdapterDelegate;
+  protected RxAdapterDelegatesManager<List<Object>> delegatesManager;
+  private UserListAdapterDelegate userListAdapterDelegate;
 
-    private List<Object> items;
-    private List<Object> itemsFiltered;
-    private boolean hasFilter = false;
-    private UserListFilter filter;
+  private List<Object> items;
+  private List<Object> itemsFiltered;
+  private boolean hasFilter = false;
+  private UserListFilter filter;
 
-    @Inject
-    public UserListAdapter(Context context) {
-        delegatesManager = new RxAdapterDelegatesManager<>();
+  @Inject public UserListAdapter(Context context) {
+    delegatesManager = new RxAdapterDelegatesManager<>();
 
-        userListAdapterDelegate = new UserListAdapterDelegate(context);
-        delegatesManager.addDelegate(userListAdapterDelegate);
-        delegatesManager.addDelegate(new ContactsHeaderAdapterDelegate(context));
-        delegatesManager.addDelegate(new UserListEmptyAdapterDelegate(context));
+    userListAdapterDelegate = new UserListAdapterDelegate(context);
+    delegatesManager.addDelegate(userListAdapterDelegate);
+    delegatesManager.addDelegate(new ContactsHeaderAdapterDelegate(context));
+    delegatesManager.addDelegate(new UserListEmptyAdapterDelegate(context));
 
-        items = new ArrayList<>();
-        itemsFiltered = new ArrayList<>();
-        filter = new UserListFilter(items, this);
+    items = new ArrayList<>();
+    itemsFiltered = new ArrayList<>();
+    filter = new UserListFilter(items, this);
 
-        setHasStableIds(true);
+    setHasStableIds(true);
+  }
+
+  @Override public int getItemViewType(int position) {
+    return delegatesManager.getItemViewType(itemsFiltered, position);
+  }
+
+  @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    return delegatesManager.onCreateViewHolder(parent, viewType);
+  }
+
+  @Override public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    delegatesManager.onBindViewHolder(itemsFiltered, position, holder);
+  }
+
+  @Override public int getItemCount() {
+    return itemsFiltered.size();
+  }
+
+  @Override public long getItemId(int position) {
+    Object obj = getItemAtPosition(position);
+    if (obj instanceof User) return ((User) obj).hashCode();
+    return obj.hashCode();
+  }
+
+  public void releaseSubscriptions() {
+    delegatesManager.releaseSubscriptions();
+  }
+
+  public void setItems(List<Object> items) {
+    hasFilter = false;
+    this.items.clear();
+    computeHeaders(items, this.items);
+    this.items.addAll(items);
+
+    if (!hasFilter) {
+      this.itemsFiltered.clear();
+      this.itemsFiltered.addAll(this.items);
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        return delegatesManager.getItemViewType(itemsFiltered, position);
+    this.notifyDataSetChanged();
+  }
+
+  public Object getItemAtPosition(int position) {
+    if (itemsFiltered.size() > 0 && position < itemsFiltered.size()) {
+      return itemsFiltered.get(position);
+    } else {
+      return null;
     }
+  }
 
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return delegatesManager.onCreateViewHolder(parent, viewType);
+  public List<Object> getItems() {
+    return itemsFiltered;
+  }
+
+  public void setFilteredItems(List<Object> items) {
+    hasFilter = true;
+    this.itemsFiltered.clear();
+    computeHeaders(items, this.itemsFiltered);
+    this.itemsFiltered.addAll(items);
+  }
+
+  public void filterList(String text) {
+    if (!StringUtils.isEmpty(text)) {
+      filter.filter(text);
+    } else {
+      this.itemsFiltered.clear();
+      this.itemsFiltered.addAll(this.items);
+      notifyDataSetChanged();
     }
+  }
 
-    @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        delegatesManager.onBindViewHolder(itemsFiltered, position, holder);
-    }
-
-    @Override
-    public int getItemCount() {
-        return itemsFiltered.size();
-    }
-
-    @Override
-    public long getItemId(int position) {
-        Object obj = getItemAtPosition(position);
-        if (obj instanceof User) return ((User) obj).hashCode();
-        return obj.hashCode();
-    }
-
-    public void releaseSubscriptions() {
-        delegatesManager.releaseSubscriptions();
-    }
-
-    public void setItems(List<Object> items) {
-        hasFilter = false;
-        this.items.clear();
-        computeHeaders(items, this.items);
-        this.items.addAll(items);
-
-        if (!hasFilter) {
-            this.itemsFiltered.clear();
-            this.itemsFiltered.addAll(this.items);
+  public void updateUser(User user) {
+    if (itemsFiltered != null && itemsFiltered.size() > 0) {
+      int position = -1;
+      for (Object o : itemsFiltered) {
+        if (o instanceof User) {
+          User userB = (User) o;
+          if (userB.getId().equals(user.getId())) {
+            userB.setNewFriend(user.isNewFriend());
+            position = itemsFiltered.indexOf(userB);
+          }
         }
+      }
 
-        this.notifyDataSetChanged();
+      if (position != -1) notifyItemChanged(position);
     }
+  }
 
-    public Object getItemAtPosition(int position) {
-        if (itemsFiltered.size() > 0 && position < itemsFiltered.size()) {
-            return itemsFiltered.get(position);
-        } else {
-            return null;
-        }
+  private void computeHeaders(List<Object> from, List<Object> to) {
+    to.add(from == null || from.size() == 0 ? R.string.search_no_friends_to_add
+        : R.string.search_add_friends);
+    if (from == null || from.size() == 0) {
+      User user = new User(User.ID_EMPTY);
+      to.add(user);
     }
+  }
 
-    public List<Object> getItems() {
-        return itemsFiltered;
-    }
-
-    public void setFilteredItems(List<Object> items) {
-        hasFilter = true;
-        this.itemsFiltered.clear();
-        computeHeaders(items, this.itemsFiltered);
-        this.itemsFiltered.addAll(items);
-    }
-
-    public void filterList(String text) {
-        if (!StringUtils.isEmpty(text)) {
-            filter.filter(text);
-        } else {
-            this.itemsFiltered.clear();
-            this.itemsFiltered.addAll(this.items);
-            notifyDataSetChanged();
-        }
-    }
-
-    public void updateUser(User user) {
-        if (itemsFiltered != null && itemsFiltered.size() > 0) {
-            int position = -1;
-            for (Object o : itemsFiltered) {
-                if (o instanceof User) {
-                    User userB = (User) o;
-                    if (userB.getId().equals(user.getId())) {
-                        userB.setNewFriend(user.isNewFriend());
-                        position = itemsFiltered.indexOf(userB);
-                    }
-                }
-            }
-
-            if (position != -1) notifyItemChanged(position);
-        }
-    }
-
-    private void computeHeaders(List<Object> from, List<Object> to) {
-        to.add(from == null || from.size() == 0 ? R.string.search_no_friends_to_add : R.string.search_add_friends);
-        if (from == null || from.size() == 0) {
-            User user = new User(User.ID_EMPTY);
-            to.add(user);
-        }
-    }
-
-    // OBSERVABLES
-    public Observable<View> clickAdd() {
-        return userListAdapterDelegate.clickAdd();
-    }
+  // OBSERVABLES
+  public Observable<View> clickAdd() {
+    return userListAdapterDelegate.clickAdd();
+  }
 }

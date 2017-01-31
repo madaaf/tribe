@@ -10,14 +10,14 @@ import java.text.SimpleDateFormat;
  */
 public class FriendshipRealmListDeserializer {
 
-    protected SimpleDateFormat utcSimpleDate;
-    protected User currentUser;
-    protected UserCache userCache;
+  protected SimpleDateFormat utcSimpleDate;
+  protected User currentUser;
+  protected UserCache userCache;
 
-    public FriendshipRealmListDeserializer(SimpleDateFormat utcSimpleDate, UserCache userCache,
-                                           User currentUser) {
-        this.utcSimpleDate = utcSimpleDate;
-        this.userCache = userCache;
-        this.currentUser = currentUser;
-    }
+  public FriendshipRealmListDeserializer(SimpleDateFormat utcSimpleDate, UserCache userCache,
+      User currentUser) {
+    this.utcSimpleDate = utcSimpleDate;
+    this.userCache = userCache;
+    this.currentUser = currentUser;
+  }
 }

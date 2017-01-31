@@ -14,21 +14,21 @@ import rx.Observable;
  */
 public class GetHeadDeepLink extends UseCase {
 
-    private String link;
-    private UserRepository userRepository;
+  private String link;
+  private UserRepository userRepository;
 
-    @Inject
-    public GetHeadDeepLink(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        super(threadExecutor, postExecutionThread);
-        this.userRepository = userRepository;
-    }
+  @Inject
+  public GetHeadDeepLink(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
+      PostExecutionThread postExecutionThread) {
+    super(threadExecutor, postExecutionThread);
+    this.userRepository = userRepository;
+  }
 
-    public void prepare(String link) {
-        this.link = link;
-    }
+  public void prepare(String link) {
+    this.link = link;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return this.userRepository.getHeadDeepLink(link);
-    }
+  @Override protected Observable buildUseCaseObservable() {
+    return this.userRepository.getHeadDeepLink(link);
+  }
 }

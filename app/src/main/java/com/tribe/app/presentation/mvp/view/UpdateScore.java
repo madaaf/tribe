@@ -5,5 +5,5 @@ package com.tribe.app.presentation.mvp.view;
  */
 public interface UpdateScore {
 
-    void updateScore(int previousScore, int newScore);
+  void updateScore(int previousScore, int newScore);
 }

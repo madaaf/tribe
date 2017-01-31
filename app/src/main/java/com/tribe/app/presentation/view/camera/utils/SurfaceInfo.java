@@ -18,35 +18,34 @@ package com.tribe.app.presentation.view.camera.utils;
 
 import android.graphics.SurfaceTexture;
 
-
 /**
  * Stores information about the {@link SurfaceTexture} showing camera preview.
  */
 public class SurfaceInfo {
 
-    private SurfaceTexture surface;
-    private int width;
-    private int height;
+  private SurfaceTexture surface;
+  private int width;
+  private int height;
 
-    public void configure(SurfaceTexture s, int w, int h) {
-        surface = s;
-        width = w;
-        height = h;
-    }
+  public void configure(SurfaceTexture s, int w, int h) {
+    surface = s;
+    width = w;
+    height = h;
+  }
 
-    public SurfaceTexture getSurface() {
-        return surface;
-    }
+  public SurfaceTexture getSurface() {
+    return surface;
+  }
 
-    public void setSurface(SurfaceTexture surfaceTexture) {
-        surface = surfaceTexture;
-    }
+  public void setSurface(SurfaceTexture surfaceTexture) {
+    surface = surfaceTexture;
+  }
 
-    public int getWidth() {
-        return width;
-    }
+  public int getWidth() {
+    return width;
+  }
 
-    public int getHeight() {
-        return height;
-    }
+  public int getHeight() {
+    return height;
+  }
 }

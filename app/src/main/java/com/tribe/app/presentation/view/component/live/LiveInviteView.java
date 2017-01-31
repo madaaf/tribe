@@ -32,130 +32,125 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class LiveInviteView extends FrameLayout {
 
-    @Inject
-    ScreenUtils screenUtils;
+  @Inject ScreenUtils screenUtils;
 
-    @Inject
-    LiveInviteAdapter adapter;
+  @Inject LiveInviteAdapter adapter;
 
-    @BindView(R.id.recyclerViewFriends)
-    RecyclerView recyclerViewFriends;
+  @BindView(R.id.recyclerViewFriends) RecyclerView recyclerViewFriends;
 
-    // VARIABLES
+  // VARIABLES
 
-    // VARIABLES
-    private LiveInviteLayoutManager layoutManager;
+  // VARIABLES
+  private LiveInviteLayoutManager layoutManager;
 
-    // RESOURCES
+  // RESOURCES
 
-    // OBSERVABLES
-    private Unbinder unbinder;
-    private CompositeSubscription subscriptions = new CompositeSubscription();
-    private PublishSubject<Integer> onScroll = PublishSubject.create();
-    private PublishSubject<Integer> onScrollStateChanged = PublishSubject.create();
+  // OBSERVABLES
+  private Unbinder unbinder;
+  private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Integer> onScroll = PublishSubject.create();
+  private PublishSubject<Integer> onScrollStateChanged = PublishSubject.create();
 
-    public LiveInviteView(Context context) {
-        super(context);
-        init(context, null);
+  public LiveInviteView(Context context) {
+    super(context);
+    init(context, null);
+  }
+
+  public LiveInviteView(Context context, AttributeSet attrs) {
+    super(context, attrs);
+    init(context, attrs);
+  }
+
+  @Override protected void onDetachedFromWindow() {
+    unbinder.unbind();
+
+    if (subscriptions != null && subscriptions.hasSubscriptions()) {
+      subscriptions.unsubscribe();
     }
 
-    public LiveInviteView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context, attrs);
-    }
+    super.onDetachedFromWindow();
+  }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        unbinder.unbind();
+  @Override protected void onFinishInflate() {
+    LayoutInflater.from(getContext()).inflate(R.layout.view_live_invite, this);
+    unbinder = ButterKnife.bind(this);
+    ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
+        .inject(this);
 
-        if (subscriptions != null && subscriptions.hasSubscriptions()) {
-            subscriptions.unsubscribe();
-        }
+    initResources();
+    initUI();
+    initRecyclerView();
 
-        super.onDetachedFromWindow();
-    }
+    super.onFinishInflate();
+  }
 
-    @Override
-    protected void onFinishInflate() {
-        LayoutInflater.from(getContext()).inflate(R.layout.view_live_invite, this);
-        unbinder = ButterKnife.bind(this);
-        ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent().inject(this);
+  //////////////////////
+  //      INIT        //
+  //////////////////////
 
-        initResources();
-        initUI();
-        initRecyclerView();
+  private void init(Context context, AttributeSet attrs) {
 
-        super.onFinishInflate();
-    }
+  }
 
-    //////////////////////
-    //      INIT        //
-    //////////////////////
+  private void initUI() {
+  }
 
-    private void init(Context context, AttributeSet attrs) {
+  private void initResources() {
 
-    }
+  }
 
-    private void initUI() {
-    }
+  private void initRecyclerView() {
+    layoutManager = new LiveInviteLayoutManager(getContext());
+    recyclerViewFriends.setLayoutManager(layoutManager);
+    recyclerViewFriends.setItemAnimator(null);
+    adapter.setItems(new ArrayList<>());
+    recyclerViewFriends.setAdapter(adapter);
 
-    private void initResources() {
+    // TODO HACK FIND ANOTHER WAY OF OPTIMIZING THE VIEW?
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(0, 50);
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(1, 50);
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(2, 50);
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(3, 50);
 
-    }
+    recyclerViewFriends.addOnScrollListener(new RecyclerView.OnScrollListener() {
+      @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        onScroll.onNext(dy);
+      }
 
-    private void initRecyclerView() {
-        layoutManager = new LiveInviteLayoutManager(getContext());
-        recyclerViewFriends.setLayoutManager(layoutManager);
-        recyclerViewFriends.setItemAnimator(null);
-        adapter.setItems(new ArrayList<>());
-        recyclerViewFriends.setAdapter(adapter);
+      @Override public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+        onScrollStateChanged.onNext(newState);
+      }
+    });
+  }
 
-        // TODO HACK FIND ANOTHER WAY OF OPTIMIZING THE VIEW?
-        recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(0, 50);
-        recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(1, 50);
-        recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(2, 50);
-        recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(3, 50);
+  public TileView findViewByCoords(float rawX, float rawY) {
+    // Find the child view that was touched (perform a hit test)
+    int[] recyclerViewCoords = new int[2];
+    recyclerViewFriends.getLocationOnScreen(recyclerViewCoords);
 
-        recyclerViewFriends.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                onScroll.onNext(dy);
-            }
+    TileView view = (TileView) ViewUtils.findViewAt(recyclerViewFriends, TileView.class, (int) rawX,
+        (int) rawY);
+    return view;
+  }
 
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                onScrollStateChanged.onNext(newState);
-            }
-        });
-    }
+  public void renderFriendshipList(List<Friendship> friendshipList) {
+    adapter.setItems(new ArrayList<>(friendshipList));
+  }
 
-    public TileView findViewByCoords(float rawX, float rawY) {
-        // Find the child view that was touched (perform a hit test)
-        int[] recyclerViewCoords = new int[2];
-        recyclerViewFriends.getLocationOnScreen(recyclerViewCoords);
+  public void removeItemAtPosition(int position) {
+    adapter.removeItem(position);
+  }
 
-        TileView view = (TileView) ViewUtils.findViewAt(recyclerViewFriends, TileView.class, (int) rawX, (int) rawY);
-        return view;
-    }
+  //////////////////////
+  //   OBSERVABLES    //
+  //////////////////////
 
-    public void renderFriendshipList(List<Friendship> friendshipList) {
-        adapter.setItems(new ArrayList<>(friendshipList));
-    }
+  public Observable<Integer> onScroll() {
+    return onScroll;
+  }
 
-    public void removeItemAtPosition(int position) {
-        adapter.removeItem(position);
-    }
-
-    //////////////////////
-    //   OBSERVABLES    //
-    //////////////////////
-
-    public Observable<Integer> onScroll() {
-        return onScroll;
-    }
-
-    public Observable<Integer> onScrollStateChanged() {
-        return onScrollStateChanged;
-    }
+  public Observable<Integer> onScrollStateChanged() {
+    return onScrollStateChanged;
+  }
 }
 

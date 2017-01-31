@@ -17,24 +17,24 @@ import java.util.List;
 
 public class InstallsDeserializer implements JsonDeserializer<List<Installation>> {
 
-    @Override
-    public List<Installation> deserialize(JsonElement je, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        Gson gson = new GsonBuilder().create();
-        List<Installation> installations = new ArrayList<>();
+  @Override public List<Installation> deserialize(JsonElement je, Type typeOfT,
+      JsonDeserializationContext context) throws JsonParseException {
+    Gson gson = new GsonBuilder().create();
+    List<Installation> installations = new ArrayList<>();
 
-        JsonObject result = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("user");
+    JsonObject result = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("user");
 
-        JsonArray resultsInstalls = result.getAsJsonArray("installs");
+    JsonArray resultsInstalls = result.getAsJsonArray("installs");
 
-        if (resultsInstalls != null) {
-            for (JsonElement obj : resultsInstalls) {
-                if (!(obj instanceof JsonNull)) {
-                    Installation installation = gson.fromJson(obj, Installation.class);
-                    installations.add(installation);
-                }
-            }
+    if (resultsInstalls != null) {
+      for (JsonElement obj : resultsInstalls) {
+        if (!(obj instanceof JsonNull)) {
+          Installation installation = gson.fromJson(obj, Installation.class);
+          installations.add(installation);
         }
-
-        return installations;
+      }
     }
+
+    return installations;
+  }
 }

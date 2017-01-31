@@ -13,16 +13,15 @@ import rx.Observable;
  */
 public class GetDiskFriendshipList extends UseCaseDisk {
 
-    private UserRepository userRepository;
+  private UserRepository userRepository;
 
-    @Inject
-    public GetDiskFriendshipList(DiskUserDataRepository userRepository, PostExecutionThread postExecutionThread) {
-        super(postExecutionThread);
-        this.userRepository = userRepository;
-    }
+  @Inject public GetDiskFriendshipList(DiskUserDataRepository userRepository,
+      PostExecutionThread postExecutionThread) {
+    super(postExecutionThread);
+    this.userRepository = userRepository;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return this.userRepository.friendships();
-    }
+  @Override protected Observable buildUseCaseObservable() {
+    return this.userRepository.friendships();
+  }
 }

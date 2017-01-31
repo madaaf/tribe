@@ -14,21 +14,21 @@ import rx.Observable;
  */
 public class GetGroupInfos extends UseCase {
 
-    private UserRepository userRepository;
-    private String groupId;
+  private UserRepository userRepository;
+  private String groupId;
 
-    @Inject
-    public GetGroupInfos(CloudUserDataRepository userDataRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        super(threadExecutor, postExecutionThread);
-        this.userRepository = userDataRepository;
-    }
+  @Inject
+  public GetGroupInfos(CloudUserDataRepository userDataRepository, ThreadExecutor threadExecutor,
+      PostExecutionThread postExecutionThread) {
+    super(threadExecutor, postExecutionThread);
+    this.userRepository = userDataRepository;
+  }
 
-    public void prepare(String groupId) {
-        this.groupId = groupId;
-    }
+  public void prepare(String groupId) {
+    this.groupId = groupId;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return this.userRepository.getGroupInfos(groupId);
-    }
+  @Override protected Observable buildUseCaseObservable() {
+    return this.userRepository.getGroupInfos(groupId);
+  }
 }

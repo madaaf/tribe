@@ -36,168 +36,156 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by tiago on 10/06/2016.
  * Last Modified by Horatio
- * Activity used for a user to select their country when inputting their phone number in the AuthViewFragment.
+ * Activity used for a user to select their country when inputting their phone number in the
+ * AuthViewFragment.
  */
 public class CountryActivity extends BaseActivity {
 
-    public static Intent getCallingIntent(Context context) {
-        return new Intent(context, CountryActivity.class);
-    }
+  public static Intent getCallingIntent(Context context) {
+    return new Intent(context, CountryActivity.class);
+  }
 
-    /**
-     * Globals
-     */
+  /**
+   * Globals
+   */
 
-    @Inject
-    CountryPhoneNumberAdapter countryAdapter;
+  @Inject CountryPhoneNumberAdapter countryAdapter;
 
-    @Inject
-    ScreenUtils screenUtils;
+  @Inject ScreenUtils screenUtils;
 
-    @BindView(R.id.recyclerViewCountry)
-    RecyclerView recyclerViewCountry;
+  @BindView(R.id.recyclerViewCountry) RecyclerView recyclerViewCountry;
 
-    @BindView(R.id.countrySearchView)
-    EditTextFont countrySearchView;
+  @BindView(R.id.countrySearchView) EditTextFont countrySearchView;
 
-    private PhoneUtils phoneUtils;
-    private LinearLayoutManager linearLayoutManager;
+  private PhoneUtils phoneUtils;
+  private LinearLayoutManager linearLayoutManager;
 
-    private List<Country> listCountry;
-    private List<Country> listCountryCopy;
+  private List<Country> listCountry;
+  private List<Country> listCountryCopy;
 
-    private Unbinder unbinder;
-    private CompositeSubscription subscriptions = new CompositeSubscription();
+  private Unbinder unbinder;
+  private CompositeSubscription subscriptions = new CompositeSubscription();
 
-    /**
-     * Lifecycle methods
-     */
+  /**
+   * Lifecycle methods
+   */
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+  @Override protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-        phoneUtils = getApplicationComponent().phoneUtils();
-        initUI();
-        initSearchView();
-        initDependencyInjector();
-        initCountryList();
-    }
+    phoneUtils = getApplicationComponent().phoneUtils();
+    initUI();
+    initSearchView();
+    initDependencyInjector();
+    initCountryList();
+  }
 
-    @Override
-    protected void onPause() {
-        screenUtils.hideKeyboard(this);
-        super.onPause();
-    }
+  @Override protected void onPause() {
+    screenUtils.hideKeyboard(this);
+    super.onPause();
+  }
 
-    @Override
-    protected void onDestroy() {
-        countryAdapter.releaseSubscriptions();
-        subscriptions.unsubscribe();
-        super.onDestroy();
-    }
+  @Override protected void onDestroy() {
+    countryAdapter.releaseSubscriptions();
+    subscriptions.unsubscribe();
+    super.onDestroy();
+  }
 
-    public void initUI() {
-        setContentView(R.layout.activity_country);
-        unbinder = ButterKnife.bind(this);
-    }
+  public void initUI() {
+    setContentView(R.layout.activity_country);
+    unbinder = ButterKnife.bind(this);
+  }
 
-    /**
-     * Initialize view methods
-     */
+  /**
+   * Initialize view methods
+   */
 
-    public void initCountryList() {
-        listCountry = new ArrayList<>();
-        listCountryCopy = new ArrayList<>();
+  public void initCountryList() {
+    listCountry = new ArrayList<>();
+    listCountryCopy = new ArrayList<>();
 
-        subscriptions.add(
-                Observable.just(new ArrayList<>(phoneUtils.getSupportedRegions()))
-                        .subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(listCodeCountry -> {
+    subscriptions.add(Observable.just(new ArrayList<>(phoneUtils.getSupportedRegions()))
+        .subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(listCodeCountry -> {
 
-                            for (String countryCode : listCodeCountry) {
-                                String countryName = (new Locale("", countryCode).getDisplayCountry());
-                                listCountry.add(new Country(countryCode, countryName));
-                            }
+          for (String countryCode : listCodeCountry) {
+            String countryName = (new Locale("", countryCode).getDisplayCountry());
+            listCountry.add(new Country(countryCode, countryName));
+          }
 
-                            Collections.sort(listCountry);
-                            listCountryCopy.addAll(listCountry);
-                            countryAdapter.setItems(listCountry);
-                            linearLayoutManager = new LinearLayoutManager(this);
-                            recyclerViewCountry.setLayoutManager(linearLayoutManager);
-                            recyclerViewCountry.setAdapter(countryAdapter);
+          Collections.sort(listCountry);
+          listCountryCopy.addAll(listCountry);
+          countryAdapter.setItems(listCountry);
+          linearLayoutManager = new LinearLayoutManager(this);
+          recyclerViewCountry.setLayoutManager(linearLayoutManager);
+          recyclerViewCountry.setAdapter(countryAdapter);
 
-                            subscriptions.add(countryAdapter.clickCountryItem().subscribe(view -> {
-                                Country country = countryAdapter.getItemAtPosition(recyclerViewCountry.getChildLayoutPosition(view));
-                                Intent resultIntent = new Intent();
-                                resultIntent.putExtra(Extras.COUNTRY_CODE, country.code);
-                                setResult(Activity.RESULT_OK, resultIntent);
-                                finish();
-                            }));
-                        }));
-    }
+          subscriptions.add(countryAdapter.clickCountryItem().subscribe(view -> {
+            Country country =
+                countryAdapter.getItemAtPosition(recyclerViewCountry.getChildLayoutPosition(view));
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra(Extras.COUNTRY_CODE, country.code);
+            setResult(Activity.RESULT_OK, resultIntent);
+            finish();
+          }));
+        }));
+  }
 
-    private void initSearchView() {
-        countrySearchView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+  private void initSearchView() {
+    countrySearchView.addTextChangedListener(new TextWatcher() {
+      @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            }
+      }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+      @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-            }
+      }
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                filter(s.toString());
-            }
-        });
-    }
+      @Override public void afterTextChanged(Editable s) {
+        filter(s.toString());
+      }
+    });
+  }
 
-    /**
-     * Method used for search. Takes in a string parameter and updates recycler view accordingly.
-     *
-     * @param text
-     */
+  /**
+   * Method used for search. Takes in a string parameter and updates recycler view accordingly.
+   */
 
-    private void filter(String text) {
-        if (text.isEmpty()) {
-            listCountry.clear();
-            listCountry.addAll(listCountryCopy);
-        } else {
-            ArrayList<Country> result = new ArrayList<>();
-            text = text.toLowerCase();
+  private void filter(String text) {
+    if (text.isEmpty()) {
+      listCountry.clear();
+      listCountry.addAll(listCountryCopy);
+    } else {
+      ArrayList<Country> result = new ArrayList<>();
+      text = text.toLowerCase();
 
-            for (Country item : listCountryCopy) {
-                if (item.name.toLowerCase().contains(text) || item.name.toLowerCase().contains(text)) {
-                    result.add(item);
-                }
-            }
-
-            listCountry.clear();
-            listCountry.addAll(result);
+      for (Country item : listCountryCopy) {
+        if (item.name.toLowerCase().contains(text) || item.name.toLowerCase().contains(text)) {
+          result.add(item);
         }
-        countryAdapter.setItems(listCountry);
-    }
+      }
 
-    /**
-     * Dagger Setup
-     */
-
-    private void initDependencyInjector() {
-        DaggerUserComponent.builder()
-                .applicationComponent(getApplicationComponent())
-                .activityModule(getActivityModule())
-                .build()
-                .inject(this);
+      listCountry.clear();
+      listCountry.addAll(result);
     }
+    countryAdapter.setItems(listCountry);
+  }
 
-    @Override
-    public void finish() {
-        super.finish();
-        overridePendingTransition(0, R.anim.slide_in_down);
-    }
+  /**
+   * Dagger Setup
+   */
+
+  private void initDependencyInjector() {
+    DaggerUserComponent.builder()
+        .applicationComponent(getApplicationComponent())
+        .activityModule(getActivityModule())
+        .build()
+        .inject(this);
+  }
+
+  @Override public void finish() {
+    super.finish();
+    overridePendingTransition(0, R.anim.slide_in_down);
+  }
 }

@@ -28,84 +28,80 @@ import rx.android.schedulers.AndroidSchedulers;
  */
 public class TextViewAnimatedDots extends LinearLayout {
 
-    private static final int TIME = 300;
+  private static final int TIME = 300;
 
-    @Inject
-    ScreenUtils screenUtils;
+  @Inject ScreenUtils screenUtils;
 
-    @Nullable
-    @BindView(R.id.txtLabel)
-    TextViewFont txtLabel;
+  @Nullable @BindView(R.id.txtLabel) TextViewFont txtLabel;
 
-    @Nullable
-    @BindView(R.id.txtDots)
-    TextViewFont txtDots;
+  @Nullable @BindView(R.id.txtDots) TextViewFont txtDots;
 
-    // VARIABLES
-    Subscription subscription;
+  // VARIABLES
+  Subscription subscription;
 
-    public TextViewAnimatedDots(Context context) {
-        this(context, null);
-        init(context, null);
+  public TextViewAnimatedDots(Context context) {
+    this(context, null);
+    init(context, null);
+  }
+
+  public TextViewAnimatedDots(Context context, AttributeSet attrs) {
+    super(context, attrs);
+    init(context, attrs);
+  }
+
+  private void init(Context context, AttributeSet attrs) {
+    LayoutInflater inflater =
+        (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    inflater.inflate(R.layout.view_text_animated_dots, this, true);
+    ButterKnife.bind(this);
+
+    TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TextViewAnimatedDots);
+
+    if (a.hasValue(R.styleable.TextViewAnimatedDots_textStyle)) {
+      TextViewUtils.setTextAppearence(getContext(), txtLabel,
+          a.getResourceId(R.styleable.TextViewAnimatedDots_textStyle, 0));
+      TextViewUtils.setTextAppearence(getContext(), txtDots,
+          a.getResourceId(R.styleable.TextViewAnimatedDots_textStyle, 0));
     }
 
-    public TextViewAnimatedDots(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context, attrs);
+    ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
+  }
+
+  public void setText(String str) {
+    txtLabel.setText(str);
+  }
+
+  public void setText(int str) {
+    txtLabel.setText(str);
+  }
+
+  public void startDotsAnimation() {
+    txtDots.setText("");
+    txtDots.setVisibility(View.VISIBLE);
+    subscription = Observable.interval(TIME, TimeUnit.MILLISECONDS)
+        .onBackpressureDrop()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          if (aLong % 4 == 0) {
+            txtDots.setText("");
+          } else if (aLong % 4 == 1) {
+            txtDots.setText(".");
+          } else if (aLong % 4 == 2) {
+            txtDots.setText("..");
+          } else if (aLong % 4 == 3) {
+            txtDots.setText("...");
+          }
+        });
+  }
+
+  public void stopDotsAnimation() {
+    if (subscription != null) {
+      subscription.unsubscribe();
     }
+    txtDots.setVisibility(View.GONE);
+  }
 
-    private void init(Context context, AttributeSet attrs) {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.view_text_animated_dots, this, true);
-        ButterKnife.bind(this);
-
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TextViewAnimatedDots);
-
-        if (a.hasValue(R.styleable.TextViewAnimatedDots_textStyle)) {
-            TextViewUtils.setTextAppearence(getContext(), txtLabel, a.getResourceId(R.styleable.TextViewAnimatedDots_textStyle, 0));
-            TextViewUtils.setTextAppearence(getContext(), txtDots, a.getResourceId(R.styleable.TextViewAnimatedDots_textStyle, 0));
-        }
-
-        ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
-    }
-
-    public void setText(String str) {
-        txtLabel.setText(str);
-    }
-
-    public void setText(int str) {
-        txtLabel.setText(str);
-    }
-
-    public void startDotsAnimation() {
-        txtDots.setText("");
-        txtDots.setVisibility(View.VISIBLE);
-        subscription = Observable
-                .interval(TIME, TimeUnit.MILLISECONDS)
-                .onBackpressureDrop()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(aLong -> {
-                    if (aLong % 4 == 0) {
-                        txtDots.setText("");
-                    } else if (aLong % 4 == 1) {
-                        txtDots.setText(".");
-                    } else if (aLong % 4 == 2) {
-                        txtDots.setText("..");
-                    } else if (aLong % 4 == 3) {
-                        txtDots.setText("...");
-                    }
-                });
-    }
-
-    public void stopDotsAnimation() {
-        if (subscription != null) {
-            subscription.unsubscribe();
-        }
-        txtDots.setVisibility(View.GONE);
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-    }
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+  }
 }

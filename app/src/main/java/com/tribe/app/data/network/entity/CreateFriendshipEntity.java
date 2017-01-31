@@ -9,13 +9,13 @@ import java.util.List;
  */
 public class CreateFriendshipEntity {
 
-    private List<FriendshipRealm> newFriendshipList;
+  private List<FriendshipRealm> newFriendshipList;
 
-    public List<FriendshipRealm> getNewFriendshipList() {
-        return newFriendshipList;
-    }
+  public List<FriendshipRealm> getNewFriendshipList() {
+    return newFriendshipList;
+  }
 
-    public void setNewFriendshipList(List<FriendshipRealm> newFriendshipList) {
-        this.newFriendshipList = newFriendshipList;
-    }
+  public void setNewFriendshipList(List<FriendshipRealm> newFriendshipList) {
+    this.newFriendshipList = newFriendshipList;
+  }
 }

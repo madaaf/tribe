@@ -9,7 +9,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Created by tiago on 12/01/16.
  */
-@Qualifier
-@Retention(RUNTIME)
-public @interface LastOnlineNotification {
+@Qualifier @Retention(RUNTIME) public @interface LastOnlineNotification {
 }

@@ -8,13 +8,13 @@ import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
  */
 public class RxAdapterDelegatesManager<T> extends AdapterDelegatesManager<T> {
 
-    public void releaseSubscriptions() {
-        for (int i = 0, size = delegates.size(); i < size; i++) {
-            if (delegates.valueAt(i) instanceof RxAdapterDelegate) {
+  public void releaseSubscriptions() {
+    for (int i = 0, size = delegates.size(); i < size; i++) {
+      if (delegates.valueAt(i) instanceof RxAdapterDelegate) {
 
-                RxAdapterDelegate<T> delegate = (RxAdapterDelegate<T>) delegates.valueAt(i);
-                delegate.releaseSubscriptions();
-            }
-        }
+        RxAdapterDelegate<T> delegate = (RxAdapterDelegate<T>) delegates.valueAt(i);
+        delegate.releaseSubscriptions();
+      }
     }
+  }
 }

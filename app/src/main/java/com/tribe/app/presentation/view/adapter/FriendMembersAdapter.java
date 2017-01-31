@@ -20,95 +20,90 @@ import rx.Observable;
  */
 public class FriendMembersAdapter extends RecyclerView.Adapter {
 
-    protected RxAdapterDelegatesManager<List<GroupMember>> delegatesManager;
-    private FriendMemberAdapterDelegate friendMemberAdapterDelegate;
+  protected RxAdapterDelegatesManager<List<GroupMember>> delegatesManager;
+  private FriendMemberAdapterDelegate friendMemberAdapterDelegate;
 
-    private List<GroupMember> items;
-    private List<GroupMember> itemsFiltered;
-    private boolean hasFilter = false;
-    private GroupMemberListFilter filter;
+  private List<GroupMember> items;
+  private List<GroupMember> itemsFiltered;
+  private boolean hasFilter = false;
+  private GroupMemberListFilter filter;
 
-    public FriendMembersAdapter(Context context) {
-        delegatesManager = new RxAdapterDelegatesManager<>();
+  public FriendMembersAdapter(Context context) {
+    delegatesManager = new RxAdapterDelegatesManager<>();
 
-        friendMemberAdapterDelegate = new FriendMemberAdapterDelegate(context);
-        delegatesManager.addDelegate(friendMemberAdapterDelegate);
+    friendMemberAdapterDelegate = new FriendMemberAdapterDelegate(context);
+    delegatesManager.addDelegate(friendMemberAdapterDelegate);
 
-        items = new ArrayList<>();
-        itemsFiltered = new ArrayList<>();
-        filter = new GroupMemberListFilter(items, this);
+    items = new ArrayList<>();
+    itemsFiltered = new ArrayList<>();
+    filter = new GroupMemberListFilter(items, this);
 
-        setHasStableIds(true);
+    setHasStableIds(true);
+  }
+
+  @Override public int getItemViewType(int position) {
+    return delegatesManager.getItemViewType(itemsFiltered, position);
+  }
+
+  @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    return delegatesManager.onCreateViewHolder(parent, viewType);
+  }
+
+  @Override public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    delegatesManager.onBindViewHolder(itemsFiltered, position, holder);
+  }
+
+  @Override public int getItemCount() {
+    return itemsFiltered.size();
+  }
+
+  @Override public long getItemId(int position) {
+    GroupMember obj = getItemAtPosition(position);
+    return obj.hashCode();
+  }
+
+  public void releaseSubscriptions() {
+    delegatesManager.releaseSubscriptions();
+  }
+
+  public void setItems(List<GroupMember> items) {
+    hasFilter = false;
+    this.items.clear();
+    this.items.addAll(items);
+
+    if (!hasFilter) {
+      this.itemsFiltered.clear();
+      this.itemsFiltered.addAll(this.items);
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        return delegatesManager.getItemViewType(itemsFiltered, position);
+    this.notifyDataSetChanged();
+  }
+
+  public void setFilteredItems(List<GroupMember> items) {
+    hasFilter = true;
+    this.itemsFiltered.clear();
+    this.itemsFiltered.addAll(items);
+  }
+
+  public GroupMember getItemAtPosition(int position) {
+    if (itemsFiltered.size() > 0 && position < itemsFiltered.size()) {
+      return itemsFiltered.get(position);
+    } else {
+      return null;
     }
+  }
 
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return delegatesManager.onCreateViewHolder(parent, viewType);
+  public void filterList(String text) {
+    if (!StringUtils.isEmpty(text)) {
+      filter.filter(text);
+    } else {
+      this.itemsFiltered.clear();
+      this.itemsFiltered.addAll(this.items);
+      notifyDataSetChanged();
     }
+  }
 
-    @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        delegatesManager.onBindViewHolder(itemsFiltered, position, holder);
-    }
-
-    @Override
-    public int getItemCount() {
-        return itemsFiltered.size();
-    }
-
-    @Override
-    public long getItemId(int position) {
-        GroupMember obj = getItemAtPosition(position);
-        return obj.hashCode();
-    }
-
-    public void releaseSubscriptions() {
-        delegatesManager.releaseSubscriptions();
-    }
-
-    public void setItems(List<GroupMember> items) {
-        hasFilter = false;
-        this.items.clear();
-        this.items.addAll(items);
-
-        if (!hasFilter) {
-            this.itemsFiltered.clear();
-            this.itemsFiltered.addAll(this.items);
-        }
-
-        this.notifyDataSetChanged();
-    }
-
-    public void setFilteredItems(List<GroupMember> items) {
-        hasFilter = true;
-        this.itemsFiltered.clear();
-        this.itemsFiltered.addAll(items);
-    }
-
-    public GroupMember getItemAtPosition(int position) {
-        if (itemsFiltered.size() > 0 && position < itemsFiltered.size()) {
-            return itemsFiltered.get(position);
-        } else {
-            return null;
-        }
-    }
-
-    public void filterList(String text) {
-        if (!StringUtils.isEmpty(text)) {
-            filter.filter(text);
-        } else {
-            this.itemsFiltered.clear();
-            this.itemsFiltered.addAll(this.items);
-            notifyDataSetChanged();
-        }
-    }
-
-    public Observable<View> clickAdd() {
-        return friendMemberAdapterDelegate.clickAdd();
-    }
+  public Observable<View> clickAdd() {
+    return friendMemberAdapterDelegate.clickAdd();
+  }
 }

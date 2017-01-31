@@ -23,146 +23,140 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class AuthVideoView extends FrameLayout implements TextureView.SurfaceTextureListener {
 
-    private static final String PAUSED = "PAUSED";
+  private static final String PAUSED = "PAUSED";
 
-    @BindView(R.id.viewVideoScalable)
-    ScalableVideoView viewVideoScalable;
+  @BindView(R.id.viewVideoScalable) ScalableVideoView viewVideoScalable;
 
-    // VARIABLES
-    private TribeMediaPlayer mediaPlayer;
-    private SurfaceTexture surfaceTexture;
-    private boolean isPaused, shouldResume = false;
-    private int videoWidth, videoHeight;
+  // VARIABLES
+  private TribeMediaPlayer mediaPlayer;
+  private SurfaceTexture surfaceTexture;
+  private boolean isPaused, shouldResume = false;
+  private int videoWidth, videoHeight;
 
-    // OBSERVABLES
-    private Unbinder unbinder;
-    private CompositeSubscription subscriptions = new CompositeSubscription();
-    private final PublishSubject<Boolean> videoStarted = PublishSubject.create();
-    private final PublishSubject<Boolean> videoCompleted = PublishSubject.create();
+  // OBSERVABLES
+  private Unbinder unbinder;
+  private CompositeSubscription subscriptions = new CompositeSubscription();
+  private final PublishSubject<Boolean> videoStarted = PublishSubject.create();
+  private final PublishSubject<Boolean> videoCompleted = PublishSubject.create();
 
-    public AuthVideoView(Context context) {
-        this(context, null);
-        init(context, null);
+  public AuthVideoView(Context context) {
+    this(context, null);
+    init(context, null);
+  }
+
+  public AuthVideoView(Context context, AttributeSet attrs) {
+    super(context, attrs);
+    init(context, attrs);
+  }
+
+  private void init(Context context, AttributeSet attrs) {
+    LayoutInflater inflater =
+        (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    inflater.inflate(R.layout.view_auth_video, this, true);
+    unbinder = ButterKnife.bind(this);
+  }
+
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    initPlayer();
+  }
+
+  @Override protected void onDetachedFromWindow() {
+    releasePlayer();
+    super.onDetachedFromWindow();
+  }
+
+  public void onPause(boolean shouldResume) {
+    if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+      mediaPlayer.pause();
+      isPaused = true;
+      shouldResume = true;
+    }
+  }
+
+  public void initPlayer() {
+    viewVideoScalable.setSurfaceTextureListener(this);
+
+    mediaPlayer = new TribeMediaPlayer.TribeMediaPlayerBuilder(getContext(),
+        "asset:///video/onboarding_video.mp4").autoStart(true)
+        .looping(true)
+        .isLocal(true)
+        .forceLegacy(true)
+        .build();
+
+    if (surfaceTexture != null) {
+      mediaPlayer.setSurface(surfaceTexture);
+      mediaPlayer.prepare();
     }
 
-    public AuthVideoView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context, attrs);
-    }
+    subscriptions.add(mediaPlayer.onVideoSizeChanged().subscribe(videoSize -> {
+      videoWidth = videoSize.getWidth();
+      videoHeight = videoSize.getHeight();
+      viewVideoScalable.scaleVideoSize(videoWidth, videoHeight);
+    }));
 
-    private void init(Context context, AttributeSet attrs) {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.view_auth_video, this, true);
-        unbinder = ButterKnife.bind(this);
-    }
+    subscriptions.add(mediaPlayer.onVideoStarted().subscribe(videoStarted));
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        initPlayer();
-    }
+    subscriptions.add(mediaPlayer.onCompletion().subscribe(videoCompleted));
+  }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        releasePlayer();
-        super.onDetachedFromWindow();
-    }
+  public void releasePlayer() {
+    if (mediaPlayer != null) mediaPlayer.release();
 
-    public void onPause(boolean shouldResume) {
-        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-            mediaPlayer.pause();
-            isPaused = true;
-            shouldResume = true;
+    if (subscriptions != null && subscriptions.hasSubscriptions()) {
+      subscriptions.clear();
+    }
+  }
+
+  public void play() {
+    mediaPlayer.play();
+    isPaused = false;
+  }
+
+  public boolean isPaused() {
+    return isPaused;
+  }
+
+  @Override public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+    surfaceTexture = surface;
+
+    if (mediaPlayer != null) {
+      mediaPlayer.setSurface(surface);
+
+      try {
+        if (isPaused && shouldResume) {
+          play();
+          isPaused = false;
+          shouldResume = false;
+        } else if (isPaused && !shouldResume) {
+          mediaPlayer.seekTo(mediaPlayer.getPosition());
+        } else if (!isPaused) {
+          mediaPlayer.prepare();
         }
+      } catch (Exception ex) {
+        ex.printStackTrace();
+      }
     }
+  }
 
-    public void initPlayer() {
-        viewVideoScalable.setSurfaceTextureListener(this);
+  @Override public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+    viewVideoScalable.scaleVideoSize(videoWidth, videoHeight);
+  }
 
-        mediaPlayer = new TribeMediaPlayer.TribeMediaPlayerBuilder(getContext(), "asset:///video/onboarding_video.mp4")
-                .autoStart(true)
-                .looping(true)
-                .isLocal(true)
-                .forceLegacy(true)
-                .build();
+  @Override public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+    surfaceTexture = null;
+    return false;
+  }
 
-        if (surfaceTexture != null) {
-            mediaPlayer.setSurface(surfaceTexture);
-            mediaPlayer.prepare();
-        }
+  @Override public void onSurfaceTextureUpdated(SurfaceTexture surface) {
 
-        subscriptions.add(mediaPlayer.onVideoSizeChanged().subscribe(videoSize -> {
-            videoWidth = videoSize.getWidth();
-            videoHeight = videoSize.getHeight();
-            viewVideoScalable.scaleVideoSize(videoWidth, videoHeight);
-        }));
+  }
 
-        subscriptions.add(mediaPlayer.onVideoStarted().subscribe(videoStarted));
+  public Observable<Boolean> videoStarted() {
+    return videoStarted;
+  }
 
-        subscriptions.add(mediaPlayer.onCompletion().subscribe(videoCompleted));
-    }
-
-    public void releasePlayer() {
-        if (mediaPlayer != null) mediaPlayer.release();
-
-        if (subscriptions != null && subscriptions.hasSubscriptions()) {
-            subscriptions.clear();
-        }
-    }
-
-    public void play() {
-        mediaPlayer.play();
-        isPaused = false;
-    }
-
-    public boolean isPaused() {
-        return isPaused;
-    }
-
-    @Override
-    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        surfaceTexture = surface;
-
-        if (mediaPlayer != null) {
-            mediaPlayer.setSurface(surface);
-
-            try {
-                if (isPaused && shouldResume) {
-                    play();
-                    isPaused = false;
-                    shouldResume = false;
-                } else if (isPaused && !shouldResume) {
-                    mediaPlayer.seekTo(mediaPlayer.getPosition());
-                } else if (!isPaused) {
-                    mediaPlayer.prepare();
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-        viewVideoScalable.scaleVideoSize(videoWidth, videoHeight);
-    }
-
-    @Override
-    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        surfaceTexture = null;
-        return false;
-    }
-
-    @Override
-    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-
-    }
-
-    public Observable<Boolean> videoStarted() {
-        return videoStarted;
-    }
-
-    public Observable<Boolean> videoCompleted() {
-        return videoCompleted;
-    }
+  public Observable<Boolean> videoCompleted() {
+    return videoCompleted;
+  }
 }

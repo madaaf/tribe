@@ -8,69 +8,68 @@ import io.realm.annotations.PrimaryKey;
  */
 public class LocationRealm extends RealmObject {
 
-    @PrimaryKey
-    private String id;
+  @PrimaryKey private String id;
 
-    private double longitude;
-    private double latitude;
-    private String city;
-    private String countryCode;
-    private boolean hasLocation = false;
+  private double longitude;
+  private double latitude;
+  private String city;
+  private String countryCode;
+  private boolean hasLocation = false;
 
-    public LocationRealm() {
+  public LocationRealm() {
 
-    }
+  }
 
-    public LocationRealm(double longitude, double latitude) {
-        this.longitude = longitude;
-        this.latitude = latitude;
-    }
+  public LocationRealm(double longitude, double latitude) {
+    this.longitude = longitude;
+    this.latitude = latitude;
+  }
 
-    public double getLongitude() {
-        return longitude;
-    }
+  public double getLongitude() {
+    return longitude;
+  }
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
+  public void setLongitude(double longitude) {
+    this.longitude = longitude;
+  }
 
-    public double getLatitude() {
-        return latitude;
-    }
+  public double getLatitude() {
+    return latitude;
+  }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
+  public void setLatitude(double latitude) {
+    this.latitude = latitude;
+  }
 
-    public String getCity() {
-        return city;
-    }
+  public String getCity() {
+    return city;
+  }
 
-    public void setCity(String city) {
-        this.city = city;
-    }
+  public void setCity(String city) {
+    this.city = city;
+  }
 
-    public boolean hasLocation() {
-        return hasLocation;
-    }
+  public boolean hasLocation() {
+    return hasLocation;
+  }
 
-    public void setHasLocation(boolean hasLocation) {
-        this.hasLocation = hasLocation;
-    }
+  public void setHasLocation(boolean hasLocation) {
+    this.hasLocation = hasLocation;
+  }
 
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
-    }
+  public void setCountryCode(String countryCode) {
+    this.countryCode = countryCode;
+  }
 
-    public String getCountryCode() {
-        return countryCode;
-    }
+  public String getCountryCode() {
+    return countryCode;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 }

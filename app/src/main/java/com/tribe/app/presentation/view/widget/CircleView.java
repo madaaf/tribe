@@ -11,41 +11,40 @@ import android.view.View;
  */
 public class CircleView extends View {
 
-    private Rect rect;
-    private float radius;
-    private Paint paint;
+  private Rect rect;
+  private float radius;
+  private Paint paint;
 
-    public CircleView(Context context) {
-        super(context);
+  public CircleView(Context context) {
+    super(context);
+  }
+
+  @Override protected void onDraw(Canvas canvas) {
+    super.onDraw(canvas);
+
+    if (rect != null) {
+      canvas.drawCircle(getWidth() / 2, getHeight() / 2, radius, paint);
     }
+  }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+  public float getRadius() {
+    return radius;
+  }
 
-        if (rect != null) {
-            canvas.drawCircle(getWidth() / 2, getHeight() / 2, radius, paint);
-        }
-    }
+  public void setRadius(float radius) {
+    this.radius = radius;
+    invalidate();
+  }
 
-    public float getRadius() {
-        return radius;
-    }
+  public Rect getRect() {
+    return rect;
+  }
 
-    public void setRadius(float radius) {
-        this.radius = radius;
-        invalidate();
-    }
+  public void setRect(Rect rect) {
+    this.rect = rect;
+  }
 
-    public Rect getRect() {
-        return rect;
-    }
-
-    public void setRect(Rect rect) {
-        this.rect = rect;
-    }
-
-    public void setPaint(Paint paint) {
-        this.paint = paint;
-    }
+  public void setPaint(Paint paint) {
+    this.paint = paint;
+  }
 }

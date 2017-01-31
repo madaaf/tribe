@@ -14,17 +14,15 @@ import java.util.List;
  */
 public class GroupGridAdapterDelegate extends RecipientGridAdapterDelegate {
 
-    public GroupGridAdapterDelegate(Context context) {
-        super(context);
-    }
+  public GroupGridAdapterDelegate(Context context) {
+    super(context);
+  }
 
-    @Override
-    public boolean isForViewType(@NonNull List<Recipient> items, int position) {
-        return items.get(position) instanceof Membership;
-    }
+  @Override public boolean isForViewType(@NonNull List<Recipient> items, int position) {
+    return items.get(position) instanceof Membership;
+  }
 
-    @Override
-    protected int getLayoutId() {
-        return R.layout.item_user_grid;
-    }
+  @Override protected int getLayoutId() {
+    return R.layout.item_user_grid;
+  }
 }

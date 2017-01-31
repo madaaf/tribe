@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+
 import com.tribe.app.R;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
@@ -16,10 +17,13 @@ import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
+
 import java.util.UUID;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+
 import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;

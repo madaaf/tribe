@@ -9,14 +9,13 @@ import android.support.v7.widget.RecyclerView;
  */
 public class FilterViewLayoutManager extends GridLayoutManager {
 
-    public static final int spanCount = 6;
+  public static final int spanCount = 6;
 
-    public FilterViewLayoutManager(Context context) {
-        super(context, spanCount);
-    }
+  public FilterViewLayoutManager(Context context) {
+    super(context, spanCount);
+  }
 
-    @Override
-    public boolean canScrollVertically() {
-        return false;
-    }
+  @Override public boolean canScrollVertically() {
+    return false;
+  }
 }

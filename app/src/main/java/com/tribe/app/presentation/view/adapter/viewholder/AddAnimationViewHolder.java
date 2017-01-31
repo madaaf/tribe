@@ -14,19 +14,15 @@ import butterknife.BindView;
  */
 public class AddAnimationViewHolder extends RecyclerView.ViewHolder {
 
-    public AddAnimationViewHolder(View itemView) {
-        super(itemView);
-    }
+  public AddAnimationViewHolder(View itemView) {
+    super(itemView);
+  }
 
-    @BindView(R.id.btnAdd)
-    public View btnAdd;
+  @BindView(R.id.btnAdd) public View btnAdd;
 
-    @BindView(R.id.btnAddBG)
-    public View btnAddBG;
+  @BindView(R.id.btnAddBG) public View btnAddBG;
 
-    @BindView(R.id.imgPicto)
-    public ImageView imgPicto;
+  @BindView(R.id.imgPicto) public ImageView imgPicto;
 
-    @BindView(R.id.progressBarAdd)
-    public CircularProgressView progressBarAdd;
+  @BindView(R.id.progressBarAdd) public CircularProgressView progressBarAdd;
 }

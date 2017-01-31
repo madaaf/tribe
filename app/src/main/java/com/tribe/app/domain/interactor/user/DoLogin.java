@@ -13,20 +13,19 @@ import rx.Observable;
  */
 public class DoLogin extends UseCase {
 
-    private final String phoneNumber;
-    private final String code;
-    private UserRepository userRepository;
+  private final String phoneNumber;
+  private final String code;
+  private UserRepository userRepository;
 
-    @Inject
-    public DoLogin(String phoneNumber, String code, UserRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        super(threadExecutor, postExecutionThread);
-        this.phoneNumber = phoneNumber;
-        this.code = code;
-        this.userRepository = userRepository;
-    }
+  @Inject public DoLogin(String phoneNumber, String code, UserRepository userRepository,
+      ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+    super(threadExecutor, postExecutionThread);
+    this.phoneNumber = phoneNumber;
+    this.code = code;
+    this.userRepository = userRepository;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return null;
-    }
+  @Override protected Observable buildUseCaseObservable() {
+    return null;
+  }
 }

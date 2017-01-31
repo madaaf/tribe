@@ -13,23 +13,22 @@ import rx.Observable;
  */
 public class GetRecipientInfos extends UseCaseDisk {
 
-    private String recipientId;
-    private boolean isToGroup;
-    private UserRepository userRepository;
+  private String recipientId;
+  private boolean isToGroup;
+  private UserRepository userRepository;
 
-    @Inject
-    public GetRecipientInfos(DiskUserDataRepository userRepository, PostExecutionThread postExecutionThread) {
-        super(postExecutionThread);
-        this.userRepository = userRepository;
-    }
+  @Inject public GetRecipientInfos(DiskUserDataRepository userRepository,
+      PostExecutionThread postExecutionThread) {
+    super(postExecutionThread);
+    this.userRepository = userRepository;
+  }
 
-    public void prepare(String recipientId, boolean isToGroup) {
-        this.recipientId = recipientId;
-        this.isToGroup = isToGroup;
-    }
+  public void prepare(String recipientId, boolean isToGroup) {
+    this.recipientId = recipientId;
+    this.isToGroup = isToGroup;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return this.userRepository.getRecipientInfos(recipientId, isToGroup);
-    }
+  @Override protected Observable buildUseCaseObservable() {
+    return this.userRepository.getRecipientInfos(recipientId, isToGroup);
+  }
 }

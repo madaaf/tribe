@@ -5,69 +5,77 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@null"
-    tools:context=".presentation.view.activity.ProfileActivity">
+    tools:context=".presentation.view.activity.ProfileActivity"
+    >
 
-    <ScrollView
+  <ScrollView
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:fillViewport="true"
+      >
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        >
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/white"
-            android:orientation="vertical">
+      <com.tribe.app.presentation.view.component.ActionView
+          android:id="@+id/viewActionProfile"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:background="@android:color/white"
+          app:actionTitle="@string/profile_user_infos"
+          app:actionType="hierarchy"
+          />
 
-            <com.tribe.app.presentation.view.component.ActionView
-                android:id="@+id/viewActionProfile"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                app:actionTitle="@string/profile_user_infos"
-                app:actionType="hierarchy" />
+      <include layout="@layout/view_separator_simple" />
 
-            <include layout="@layout/view_separator_simple" />
+      <com.tribe.app.presentation.view.component.ActionView
+          android:id="@+id/viewActionVisible"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:background="@android:color/white"
+          app:actionTitle="@string/profile_invisible_mode"
+          app:actionType="toggle"
+          />
 
-            <com.tribe.app.presentation.view.component.ActionView
-                android:id="@+id/viewActionVisible"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                app:actionTitle="@string/profile_invisible_mode"
-                app:actionType="toggle" />
+      <include layout="@layout/view_separator_simple" />
 
-            <include layout="@layout/view_separator_simple" />
+      <com.tribe.app.presentation.view.component.ActionView
+          android:id="@+id/viewActionRateUs"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:background="@android:color/white"
+          app:actionTitle="@string/profile_rate_us"
+          app:actionType="regular"
+          />
 
-            <com.tribe.app.presentation.view.component.ActionView
-                android:id="@+id/viewActionRateUs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                app:actionTitle="@string/profile_rate_us"
-                app:actionType="regular" />
+      <include layout="@layout/view_separator_simple" />
 
-            <include layout="@layout/view_separator_simple" />
+      <com.tribe.app.presentation.view.component.ActionView
+          android:id="@+id/viewActionFollow"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:background="@android:color/white"
+          app:actionTitle="@string/profile_follow_us"
+          app:actionType="regular"
+          />
 
-            <com.tribe.app.presentation.view.component.ActionView
-                android:id="@+id/viewActionFollow"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                app:actionTitle="@string/profile_follow_us"
-                app:actionType="regular" />
+      <include layout="@layout/view_separator_simple" />
 
-            <include layout="@layout/view_separator_simple" />
+      <com.tribe.app.presentation.view.component.ActionView
+          android:id="@+id/viewActionLogout"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:background="@android:color/white"
+          app:actionTitle="@string/profile_logout"
+          app:actionType="critical"
+          />
 
-            <com.tribe.app.presentation.view.component.ActionView
-                android:id="@+id/viewActionLogout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                app:actionTitle="@string/profile_logout"
-                app:actionType="critical" />
+      <include layout="@layout/view_separator_simple" />
 
-            <include layout="@layout/view_separator_simple" />
-
-        </LinearLayout>
-    </ScrollView>
+    </LinearLayout>
+  </ScrollView>
 </com.tribe.app.presentation.view.component.profile.ProfileView>

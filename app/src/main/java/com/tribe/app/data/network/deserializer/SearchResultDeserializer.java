@@ -14,19 +14,19 @@ import java.lang.reflect.Type;
 
 public class SearchResultDeserializer implements JsonDeserializer<SearchResultRealm> {
 
-    @Override
-    public SearchResultRealm deserialize(JsonElement je, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        JsonObject results = je.getAsJsonObject().getAsJsonObject("data");
+  @Override public SearchResultRealm deserialize(JsonElement je, Type typeOfT,
+      JsonDeserializationContext context) throws JsonParseException {
+    JsonObject results = je.getAsJsonObject().getAsJsonObject("data");
 
-        Gson gson = new Gson();
-        JsonArray array = results.getAsJsonArray("lookupByUsername");
-        if (array != null && !array.isJsonNull() && array.isJsonArray() && !array.get(0).isJsonNull()) {
-            JsonElement jsonElement = array.get(0).getAsJsonObject();
-            if (!(jsonElement instanceof JsonNull) && jsonElement != null) {
-                return gson.fromJson(jsonElement, SearchResultRealm.class);
-            }
-        }
-
-        return null;
+    Gson gson = new Gson();
+    JsonArray array = results.getAsJsonArray("lookupByUsername");
+    if (array != null && !array.isJsonNull() && array.isJsonArray() && !array.get(0).isJsonNull()) {
+      JsonElement jsonElement = array.get(0).getAsJsonObject();
+      if (!(jsonElement instanceof JsonNull) && jsonElement != null) {
+        return gson.fromJson(jsonElement, SearchResultRealm.class);
+      }
     }
+
+    return null;
+  }
 }

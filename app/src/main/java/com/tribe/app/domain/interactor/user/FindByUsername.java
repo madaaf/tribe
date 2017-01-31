@@ -14,21 +14,21 @@ import rx.Observable;
  */
 public class FindByUsername extends UseCase {
 
-    private String username;
-    private UserRepository userRepository;
+  private String username;
+  private UserRepository userRepository;
 
-    @Inject
-    public FindByUsername(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
-        super(threadExecutor, postExecutionThread);
-        this.userRepository = userRepository;
-    }
+  @Inject
+  public FindByUsername(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
+      PostExecutionThread postExecutionThread) {
+    super(threadExecutor, postExecutionThread);
+    this.userRepository = userRepository;
+  }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-    @Override
-    protected Observable buildUseCaseObservable() {
-        return this.userRepository.findByUsername(username);
-    }
+  @Override protected Observable buildUseCaseObservable() {
+    return this.userRepository.findByUsername(username);
+  }
 }
